@@ -1,0 +1,28 @@
+{
+  "name": "jv",
+  "version": "0.0.1",
+  "description": "JSON schema validator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/epoberezkin/jv.git"
+  },
+  "keywords": [
+    "JSON",
+    "schema",
+    "validator"
+  ],
+  "author": "Evgeny Poberezkin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/epoberezkin/jv/issues"
+  },
+  "homepage": "https://github.com/epoberezkin/jv",
+  "dependencies": {
+    "dot": "^1.0.3",
+    "json-stable-stringify": "^1.0.0"
+  }
+}
