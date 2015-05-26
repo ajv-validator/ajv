@@ -1,0 +1,3 @@
+[submodule "JSON-Schema-Test-Suite"]
+	path = JSON-Schema-Test-Suite
+	url = https://github.com/epoberezkin/JSON-Schema-Test-Suite

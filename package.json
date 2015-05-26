@@ -2,7 +2,7 @@
   "name": "jv",
   "version": "0.0.1",
   "description": "JSON schema validator",
-  "main": "index.js",
+  "main": "lib/jv.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -24,5 +24,9 @@
   "dependencies": {
     "dot": "^1.0.3",
     "json-stable-stringify": "^1.0.0"
+  },
+  "devDependencies": {
+    "JSON-Schema-Test-Suite": "git+ssh://git@github.com/json-schema/JSON-Schema-Test-Suite.git",
+    "mocha": "^2.2.5"
   }
 }
