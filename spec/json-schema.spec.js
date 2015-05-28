@@ -6,8 +6,10 @@ var fs = require('fs')
   , TESTS_PATH = 'JSON-Schema-Test-Suite/tests/draft4/';
 
 var ONLY_RULES;
-// ONLY_RULES = ['properties'];
-ONLY_RULES = ['type', 'not', 'maximum', 'minimum', 'allOf', 'properties', 'required'];
+// ONLY_RULES = ['maxItems', 'minItems'];
+// ONLY_RULES = ['type', 'not', 'maximum', 'minimum', 'allOf', 'anyOf', 'oneOf', 'enum',
+// 'properties', 'required', 'multipleOf', 'maxProperties', 'minProperties',
+// 'maxLength', 'minLength', 'pattern', 'maxItems', 'minItems'];
 
 
 var Jv = require('../lib/jv')
@@ -23,7 +25,7 @@ describe.only('JSON-Schema tests', function () {
     describe(file.name, function() {
       var testSets = require(file.path);
       testSets.forEach(function (testSet) {
-        // if (testSet.description != 'not more complex schema') return;
+        // if (testSet.description != 'oneOf') return;
         describe(testSet.description, function() {
         // it(testSet.description, function() {
           var validate, fullValidate;
@@ -33,15 +35,19 @@ describe.only('JSON-Schema tests', function () {
           });
 
           testSet.tests.forEach(function (test) {
-            // if (test.description != 'both properties present and valid is valid') return;
+            // if (test.description != 'neither oneOf valid') return;
             it(test.description, function() {
               var result = validate(test.data);
               // console.log('result', result);
               assert.equal(result.valid, test.valid);
+              if (result.valid) assert(result.errors.length == 0);
+              else assert(result.errors.length > 0);
 
               var result = fullValidate(test.data);
               // console.log('full result', result);
               assert.equal(result.valid, test.valid);
+              if (result.valid) assert(result.errors.length == 0);
+              else assert(result.errors.length > 0);
             });
           });
         });
