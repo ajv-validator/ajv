@@ -6,12 +6,15 @@ var fs = require('fs')
   , TESTS_PATH = 'JSON-Schema-Test-Suite/tests/draft4/';
 
 var ONLY_RULES;
-ONLY_RULES = ['type'];
+// ONLY_RULES = ['properties'];
+ONLY_RULES = ['type', 'not', 'maximum', 'minimum', 'allOf', 'properties', 'required'];
 
 
-var jv = require('../lib/jv')();
+var Jv = require('../lib/jv')
+  , jv = Jv()
+  , fullJv = Jv({ allErrors: true, verbose: true });
 
-describe.only('JSON-Schema tests', function (done) {
+describe.only('JSON-Schema tests', function () {
   var testsPath = path.join(__dirname, '..', TESTS_PATH);
   var files = getTestFilesRecursive(testsPath);
 
@@ -20,16 +23,24 @@ describe.only('JSON-Schema tests', function (done) {
     describe(file.name, function() {
       var testSets = require(file.path);
       testSets.forEach(function (testSet) {
+        // if (testSet.description != 'not more complex schema') return;
         describe(testSet.description, function() {
-          var validate;
+        // it(testSet.description, function() {
+          var validate, fullValidate;
           before(function() {
             validate = jv.compile(testSet.schema);
+            fullValidate = fullJv.compile(testSet.schema);
           });
 
           testSet.tests.forEach(function (test) {
-            // if (test.description != 'an integer is valid') return;
+            // if (test.description != 'both properties present and valid is valid') return;
             it(test.description, function() {
               var result = validate(test.data);
+              // console.log('result', result);
+              assert.equal(result.valid, test.valid);
+
+              var result = fullValidate(test.data);
+              // console.log('full result', result);
               assert.equal(result.valid, test.valid);
             });
           });
