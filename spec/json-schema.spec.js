@@ -31,17 +31,14 @@ describe.only('JSON-Schema tests', function () {
       var testSets = require(file.path);
       testSets.forEach(function (testSet) {
         // if (testSet.description != 'additionalProperties can exist by itself') return;
-        // describe(testSet.description, function() {
-        it(testSet.description, function() {
-          var validate, fullValidate;
-          // before(function() {
-            validate = jv.compile(testSet.schema);
-            fullValidate = fullJv.compile(testSet.schema);
-          // });
+        describe(testSet.description, function() {
+        // it(testSet.description, function() {
+          var validate = jv.compile(testSet.schema);
+          var fullValidate = fullJv.compile(testSet.schema);
 
           testSet.tests.forEach(function (test) {
             // if (test.description != 'a single invalid match is invalid') return;
-            // it(test.description, function() {
+            it(test.description, function() {
               var result = validate(test.data);
               // console.log('result', result);
               assert.equal(result.valid, test.valid);
@@ -53,7 +50,7 @@ describe.only('JSON-Schema tests', function () {
               assert.equal(result.valid, test.valid);
               if (result.valid) assert(result.errors.length == 0);
               else assert(result.errors.length > 0);
-            // });
+            });
           });
         });
       });
