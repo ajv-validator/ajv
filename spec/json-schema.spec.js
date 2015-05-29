@@ -6,10 +6,15 @@ var fs = require('fs')
   , TESTS_PATH = 'JSON-Schema-Test-Suite/tests/draft4/';
 
 var ONLY_RULES;
-// ONLY_RULES = ['maxItems', 'minItems'];
-// ONLY_RULES = ['type', 'not', 'maximum', 'minimum', 'allOf', 'anyOf', 'oneOf', 'enum',
-// 'properties', 'required', 'multipleOf', 'maxProperties', 'minProperties',
-// 'maxLength', 'minLength', 'pattern', 'maxItems', 'minItems'];
+// ONLY_RULES = ['enum'];
+ONLY_RULES = [
+'type', 'not', 'allOf', 'anyOf', 'oneOf', 'enum',
+'maximum', 'minimum', 'multipleOf', 
+'maxLength', 'minLength', 'pattern',
+'properties', 'patternProperties', 'additionalProperties',
+'required', 'maxProperties', 'minProperties',
+'maxItems', 'minItems', 'items', 'additionalItems', 'uniqueItems'
+];
 
 
 var Jv = require('../lib/jv')
@@ -25,18 +30,18 @@ describe.only('JSON-Schema tests', function () {
     describe(file.name, function() {
       var testSets = require(file.path);
       testSets.forEach(function (testSet) {
-        // if (testSet.description != 'oneOf') return;
-        describe(testSet.description, function() {
-        // it(testSet.description, function() {
+        // if (testSet.description != 'additionalProperties can exist by itself') return;
+        // describe(testSet.description, function() {
+        it(testSet.description, function() {
           var validate, fullValidate;
-          before(function() {
+          // before(function() {
             validate = jv.compile(testSet.schema);
             fullValidate = fullJv.compile(testSet.schema);
-          });
+          // });
 
           testSet.tests.forEach(function (test) {
-            // if (test.description != 'neither oneOf valid') return;
-            it(test.description, function() {
+            // if (test.description != 'a single invalid match is invalid') return;
+            // it(test.description, function() {
               var result = validate(test.data);
               // console.log('result', result);
               assert.equal(result.valid, test.valid);
@@ -48,7 +53,7 @@ describe.only('JSON-Schema tests', function () {
               assert.equal(result.valid, test.valid);
               if (result.valid) assert(result.errors.length == 0);
               else assert(result.errors.length > 0);
-            });
+            // });
           });
         });
       });
