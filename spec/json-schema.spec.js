@@ -6,7 +6,6 @@ var fs = require('fs')
   , TESTS_PATH = 'JSON-Schema-Test-Suite/tests/draft4/';
 
 var ONLY_RULES;
-// ONLY_RULES = ['enum'];
 // ONLY_RULES = [
 // 'type', 'not', 'allOf', 'anyOf', 'oneOf', 'enum',
 // 'maximum', 'minimum', 'multipleOf', 
@@ -14,7 +13,9 @@ var ONLY_RULES;
 // 'properties', 'patternProperties', 'additionalProperties',
 // 'dependencies',
 // 'required', 'maxProperties', 'minProperties',
-// 'maxItems', 'minItems', 'items', 'additionalItems', 'uniqueItems'
+// 'maxItems', 'minItems', 'items', 'additionalItems', 'uniqueItems',
+// 'optional/format',
+// 'optional/bignum'
 // ];
 
 
@@ -31,15 +32,15 @@ describe.only('JSON-Schema tests', function () {
     describe(file.name, function() {
       var testSets = require(file.path);
       testSets.forEach(function (testSet) {
-        // if (testSet.description != 'multiple dependencies') return;
-        describe(testSet.description, function() {
-        // it(testSet.description, function() {
+        // if (testSet.description != 'validation of URIs') return;
+        // describe(testSet.description, function() {
+        it(testSet.description, function() {
           var validate = jv.compile(testSet.schema);
           var fullValidate = fullJv.compile(testSet.schema);
 
           testSet.tests.forEach(function (test) {
-            // if (test.description != 'missing dependency') return;
-            it(test.description, function() {
+            // if (test.description != 'a valid date-time string') return;
+            // it(test.description, function() {
               var result = validate(test.data);
               // console.log('result', result);
               assert.equal(result.valid, test.valid);
@@ -51,7 +52,7 @@ describe.only('JSON-Schema tests', function () {
               assert.equal(result.valid, test.valid);
               if (result.valid) assert(result.errors.length == 0);
               else assert(result.errors.length > 0);
-            });
+            // });
           });
         });
       });
