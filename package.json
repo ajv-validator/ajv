@@ -1,7 +1,7 @@
 {
-  "name": "jv",
-  "version": "0.0.3",
-  "description": "JSON schema validator",
+  "name": "ajv",
+  "version": "0.0.4",
+  "description": "Another JSON schema Validator",
   "main": "lib/jv.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter=spec spec/*.spec.js"

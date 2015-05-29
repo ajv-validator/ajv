@@ -1,6 +1,4 @@
-# jv
-
-JSON schema validator
+# ajv - Another JSON schema Validator
 
 ## TODO
 
@@ -13,22 +11,22 @@ JSON schema validator
 ## Install
 
 ```
-npm install jv
+npm install ajv
 ```
 
 
 ## Usage
 
 ```
-var jv = require('jv')(options);
-var validate = jv.compile(schema);
+var ajv = require('ajv')(options);
+var validate = ajv.compile(schema);
 var result = validate(data);
 ```
 
 or
 
 ```
-var result = jv.validate(schema, data);
+var result = ajv.validate(schema, data);
 ```
 
 Compiles and caches in both cases, so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.

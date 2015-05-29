@@ -19,9 +19,9 @@ var ONLY_RULES;
 // ];
 
 
-var Jv = require('../lib/jv')
-  , jv = Jv()
-  , fullJv = Jv({ allErrors: true, verbose: true });
+var Ajv = require('../lib/ajv')
+  , ajv = Ajv()
+  , fullAjv = Ajv({ allErrors: true, verbose: true });
 
 describe.only('JSON-Schema tests', function () {
   var testsPath = path.join(__dirname, '..', TESTS_PATH);
@@ -35,8 +35,8 @@ describe.only('JSON-Schema tests', function () {
         // if (testSet.description != 'validation of URIs') return;
         // describe(testSet.description, function() {
         it(testSet.description, function() {
-          var validate = jv.compile(testSet.schema);
-          var fullValidate = fullJv.compile(testSet.schema);
+          var validate = ajv.compile(testSet.schema);
+          var fullValidate = fullAjv.compile(testSet.schema);
 
           testSet.tests.forEach(function (test) {
             // if (test.description != 'a valid date-time string') return;
