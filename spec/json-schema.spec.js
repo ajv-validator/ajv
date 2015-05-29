@@ -7,14 +7,15 @@ var fs = require('fs')
 
 var ONLY_RULES;
 // ONLY_RULES = ['enum'];
-ONLY_RULES = [
-'type', 'not', 'allOf', 'anyOf', 'oneOf', 'enum',
-'maximum', 'minimum', 'multipleOf', 
-'maxLength', 'minLength', 'pattern',
-'properties', 'patternProperties', 'additionalProperties',
-'required', 'maxProperties', 'minProperties',
-'maxItems', 'minItems', 'items', 'additionalItems', 'uniqueItems'
-];
+// ONLY_RULES = [
+// 'type', 'not', 'allOf', 'anyOf', 'oneOf', 'enum',
+// 'maximum', 'minimum', 'multipleOf', 
+// 'maxLength', 'minLength', 'pattern',
+// 'properties', 'patternProperties', 'additionalProperties',
+// 'dependencies',
+// 'required', 'maxProperties', 'minProperties',
+// 'maxItems', 'minItems', 'items', 'additionalItems', 'uniqueItems'
+// ];
 
 
 var Jv = require('../lib/jv')
@@ -30,14 +31,14 @@ describe.only('JSON-Schema tests', function () {
     describe(file.name, function() {
       var testSets = require(file.path);
       testSets.forEach(function (testSet) {
-        // if (testSet.description != 'additionalProperties can exist by itself') return;
+        // if (testSet.description != 'multiple dependencies') return;
         describe(testSet.description, function() {
         // it(testSet.description, function() {
           var validate = jv.compile(testSet.schema);
           var fullValidate = fullJv.compile(testSet.schema);
 
           testSet.tests.forEach(function (test) {
-            // if (test.description != 'a single invalid match is invalid') return;
+            // if (test.description != 'missing dependency') return;
             it(test.description, function() {
               var result = validate(test.data);
               // console.log('result', result);
