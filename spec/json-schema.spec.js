@@ -7,24 +7,20 @@ var fs = require('fs')
 
 var ONLY_RULES, SKIP_RULES;
 // ONLY_RULES = [
-// // 'type',
-// // 'not',
-// // 'allOf', 'anyOf',  'oneOf', 'enum',
-// // 'maximum', 'minimum', 'multipleOf', 
-// // 'maxLength', 'minLength', 'pattern',
-// // 'properties', 'patternProperties', 'additionalProperties',
-// // 'dependencies',
-// // 'required',
-// // 'maxProperties', 'minProperties', 'maxItems', 'minItems',
-// // 'items', 'additionalItems',
-// // 'uniqueItems',
-// // 'optional/format', 'optional/bignum',
+// 'type', 'not', 'allOf', 'anyOf',  'oneOf', 'enum',
+// 'maximum', 'minimum', 'multipleOf', 
+// 'maxLength', 'minLength', 'pattern',
+// 'properties', 'patternProperties', 'additionalProperties',
+// 'dependencies', 'required',
+// 'maxProperties', 'minProperties', 'maxItems', 'minItems',
+// 'items', 'additionalItems', 'uniqueItems',
+// 'optional/format', 'optional/bignum',
 // 'ref'
 // ];
 
 SKIP_RULES = [
 // 'refRemote',
-'optional/zeroTerminatedFloats'
+// 'optional/zeroTerminatedFloats'
 ];
 
 
@@ -62,7 +58,7 @@ describe('JSON-Schema tests', function () {
           var fullValidate = fullAjv.compile(testSet.schema);
 
           testSet.tests.forEach(function (test) {
-            // if (test.description != 'allowed') return;
+            // if (test.description != 'a float is not an integer') return;
             it(test.description, function() {
               var valid = validate(test.data);
               // console.log('result', result);
