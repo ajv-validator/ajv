@@ -20,13 +20,16 @@ npm install ajv
 ```
 var ajv = require('ajv')(options);
 var validate = ajv.compile(schema);
-var result = validate(data);
+var valid = validate(data);
+if (!valid) console.log(validate.errors);
 ```
 
 or
 
 ```
-var result = ajv.validate(schema, data);
+// ...
+var valid = ajv.validate(schema, data);
+// ...
 ```
 
 Compiles and caches in both cases, so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.

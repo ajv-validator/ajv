@@ -7,20 +7,23 @@ var fs = require('fs')
 
 var ONLY_RULES, SKIP_RULES;
 // ONLY_RULES = [
-// 'type', 'not', 'allOf', 'anyOf', 'oneOf', 'enum',
-// 'maximum', 'minimum', 'multipleOf', 
-// 'maxLength', 'minLength', 'pattern',
-// 'properties', 'patternProperties', 'additionalProperties',
-// 'dependencies',
-// 'required', 'maxProperties', 'minProperties',
-// 'maxItems', 'minItems', 'items', 'additionalItems', 'uniqueItems',
-// 'optional/format',
-// 'optional/bignum',
+// // 'type',
+// // 'not',
+// // 'allOf', 'anyOf',  'oneOf', 'enum',
+// // 'maximum', 'minimum', 'multipleOf', 
+// // 'maxLength', 'minLength', 'pattern',
+// // 'properties', 'patternProperties', 'additionalProperties',
+// // 'dependencies',
+// // 'required',
+// // 'maxProperties', 'minProperties', 'maxItems', 'minItems',
+// // 'items', 'additionalItems',
+// // 'uniqueItems',
+// // 'optional/format', 'optional/bignum',
 // 'ref'
 // ];
 
 SKIP_RULES = [
-'refRemote',
+// 'refRemote',
 'optional/zeroTerminatedFloats'
 ];
 
@@ -52,26 +55,26 @@ describe('JSON-Schema tests', function () {
     describe(file.name, function() {
       var testSets = require(file.path);
       testSets.forEach(function (testSet) {
-        // if (testSet.description != 'relative pointer ref to object') return;
+        // if (testSet.description != 'not') return;
         describe(testSet.description, function() {
         // it(testSet.description, function() {
           var validate = ajv.compile(testSet.schema);
           var fullValidate = fullAjv.compile(testSet.schema);
 
           testSet.tests.forEach(function (test) {
-            // if (test.description != 'match') return;
+            // if (test.description != 'allowed') return;
             it(test.description, function() {
-              var result = validate(test.data);
+              var valid = validate(test.data);
               // console.log('result', result);
-              assert.equal(result.valid, test.valid);
-              if (result.valid) assert(result.errors.length == 0);
-              else assert(result.errors.length > 0);
+              assert.equal(valid, test.valid);
+              if (valid) assert(validate.errors.length == 0);
+              else assert(validate.errors.length > 0);
 
-              var result = fullValidate(test.data);
+              var valid = fullValidate(test.data);
               // console.log('full result', result);
-              assert.equal(result.valid, test.valid);
-              if (result.valid) assert(result.errors.length == 0);
-              else assert(result.errors.length > 0);
+              assert.equal(valid, test.valid);
+              if (valid) assert(validate.errors.length == 0);
+              else assert(validate.errors.length > 0);
             });
           });
         });
