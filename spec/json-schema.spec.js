@@ -33,14 +33,14 @@ describe.only('JSON-Schema tests', function () {
       var testSets = require(file.path);
       testSets.forEach(function (testSet) {
         // if (testSet.description != 'validation of URIs') return;
-        // describe(testSet.description, function() {
-        it(testSet.description, function() {
+        describe(testSet.description, function() {
+        // it(testSet.description, function() {
           var validate = ajv.compile(testSet.schema);
           var fullValidate = fullAjv.compile(testSet.schema);
 
           testSet.tests.forEach(function (test) {
             // if (test.description != 'a valid date-time string') return;
-            // it(test.description, function() {
+            it(test.description, function() {
               var result = validate(test.data);
               // console.log('result', result);
               assert.equal(result.valid, test.valid);
@@ -52,7 +52,7 @@ describe.only('JSON-Schema tests', function () {
               assert.equal(result.valid, test.valid);
               if (result.valid) assert(result.errors.length == 0);
               else assert(result.errors.length > 0);
-            // });
+            });
           });
         });
       });
