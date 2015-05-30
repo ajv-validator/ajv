@@ -4,7 +4,8 @@ var compileSchema = require('../lib/compile');
 var mockInstance = { opts: {} };
 
 describe('Schema compilation', function() {
-    it('works', function() {
-        compileSchema.call(mockInstance, { type: 'string' });
+    it.skip('works', function() {
+        var compiled = compileSchema.call(mockInstance, { type: 'string' });
+        console.log(compiled.validate.toString());
     });
 });

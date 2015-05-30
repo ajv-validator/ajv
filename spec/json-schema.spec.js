@@ -5,7 +5,7 @@ var fs = require('fs')
   , assert = require('assert')
   , TESTS_PATH = 'JSON-Schema-Test-Suite/tests/draft4/';
 
-var ONLY_RULES;
+var ONLY_RULES, SKIP_RULES;
 // ONLY_RULES = [
 // 'type', 'not', 'allOf', 'anyOf', 'oneOf', 'enum',
 // 'maximum', 'minimum', 'multipleOf', 
@@ -19,17 +19,36 @@ var ONLY_RULES;
 // 'ref'
 // ];
 
+SKIP_RULES = [
+'refRemote',
+'optional/zeroTerminatedFloats'
+];
+
 
 var Ajv = require('../lib/ajv')
   , ajv = Ajv()
   , fullAjv = Ajv({ allErrors: true, verbose: true });
 
-describe.only('JSON-Schema tests', function () {
+var remoteRefs = {
+    'http://localhost:1234/integer.json': require('../JSON-Schema-Test-Suite/remotes/integer.json'),
+    'http://localhost:1234/subSchemas.json': require('../JSON-Schema-Test-Suite/remotes/subSchemas.json'),
+    'http://localhost:1234/folder/folderInteger.json': require('../JSON-Schema-Test-Suite/remotes/folder/folderInteger.json')
+};
+
+for (var id in remoteRefs) {
+  ajv.addSchema(remoteRefs[id], id);
+  fullAjv.addSchema(remoteRefs[id], id);
+}
+
+
+describe('JSON-Schema tests', function () {
   var testsPath = path.join(__dirname, '..', TESTS_PATH);
   var files = getTestFilesRecursive(testsPath);
 
   files.forEach(function (file) {
     if (ONLY_RULES && ONLY_RULES.indexOf(file.name) == -1) return;
+    if (SKIP_RULES && SKIP_RULES.indexOf(file.name) >= 0) return;
+
     describe(file.name, function() {
       var testSets = require(file.path);
       testSets.forEach(function (testSet) {
