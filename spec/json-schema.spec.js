@@ -15,7 +15,8 @@ var ONLY_RULES;
 // 'required', 'maxProperties', 'minProperties',
 // 'maxItems', 'minItems', 'items', 'additionalItems', 'uniqueItems',
 // 'optional/format',
-// 'optional/bignum'
+// 'optional/bignum',
+// 'ref'
 // ];
 
 
@@ -32,14 +33,14 @@ describe.only('JSON-Schema tests', function () {
     describe(file.name, function() {
       var testSets = require(file.path);
       testSets.forEach(function (testSet) {
-        // if (testSet.description != 'validation of URIs') return;
+        // if (testSet.description != 'relative pointer ref to object') return;
         describe(testSet.description, function() {
         // it(testSet.description, function() {
           var validate = ajv.compile(testSet.schema);
           var fullValidate = fullAjv.compile(testSet.schema);
 
           testSet.tests.forEach(function (test) {
-            // if (test.description != 'a valid date-time string') return;
+            // if (test.description != 'match') return;
             it(test.description, function() {
               var result = validate(test.data);
               // console.log('result', result);
