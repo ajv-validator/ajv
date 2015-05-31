@@ -7,7 +7,11 @@ var glob = require('glob')
 var ONLY_RULES, SKIP_RULES;
 // ONLY_RULES = [
 // 'type',
-// 'not', 'allOf', 'anyOf',  'oneOf', 'enum',
+// 'not',
+// 'allOf',
+// 'anyOf',
+'oneOf',
+// 'enum',
 // 'maximum', 'minimum', 'multipleOf', 
 // 'maxLength', 'minLength', 'pattern',
 // 'properties', 'patternProperties', 'additionalProperties',
@@ -61,7 +65,7 @@ describe('JSON-Schema tests', function () {
               var fullValidate = fullAjv.compile(testSet.schema);
 
               testSet.tests.forEach(function (test) {
-                // if (test.description != 'an integer is valid') return;
+                // if (test.description != 'mismatch base schema') return;
                 it(test.description, function() {
                   var valid = validate(test.data);
                   // console.log('result', result);

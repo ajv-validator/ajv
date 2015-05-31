@@ -2,10 +2,11 @@
 
 var compileSchema = require('../lib/compile');
 var mockInstance = { opts: {} };
+var assert = require('assert');
 
 describe('Schema compilation', function() {
-    it.skip('works', function() {
-        var compiled = compileSchema.call(mockInstance, { type: 'string' });
-        console.log(compiled.validate.toString());
+    it('works', function() {
+        var validate = compileSchema.call(mockInstance, { type: 'string' });
+        assert.equal(typeof validate, 'function');
     });
 });
