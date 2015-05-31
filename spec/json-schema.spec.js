@@ -1,9 +1,8 @@
 'use strict';
 
-var fs = require('fs')
+var glob = require('glob')
   , path = require('path')
-  , assert = require('assert')
-  , TESTS_PATH = 'JSON-Schema-Test-Suite/tests/draft4/';
+  , assert = require('assert');
 
 var ONLY_RULES, SKIP_RULES;
 // ONLY_RULES = [
@@ -20,8 +19,8 @@ var ONLY_RULES, SKIP_RULES;
 // ];
 
 SKIP_RULES = [
-// 'refRemote',
-// 'optional/zeroTerminatedFloats'
+  'refRemote',
+  'optional/zeroTerminatedFloats'
 ];
 
 
@@ -30,9 +29,9 @@ var Ajv = require('../lib/ajv')
   , fullAjv = Ajv({ allErrors: true, verbose: true });
 
 var remoteRefs = {
-    'http://localhost:1234/integer.json': require('../JSON-Schema-Test-Suite/remotes/integer.json'),
-    'http://localhost:1234/subSchemas.json': require('../JSON-Schema-Test-Suite/remotes/subSchemas.json'),
-    'http://localhost:1234/folder/folderInteger.json': require('../JSON-Schema-Test-Suite/remotes/folder/folderInteger.json')
+    'http://localhost:1234/integer.json': require('./JSON-Schema-Test-Suite/remotes/integer.json'),
+    'http://localhost:1234/subSchemas.json': require('./JSON-Schema-Test-Suite/remotes/subSchemas.json'),
+    'http://localhost:1234/folder/folderInteger.json': require('./JSON-Schema-Test-Suite/remotes/folder/folderInteger.json')
 };
 
 for (var id in remoteRefs) {
@@ -42,58 +41,54 @@ for (var id in remoteRefs) {
 
 
 describe('JSON-Schema tests', function () {
-  var testsPath = path.join(__dirname, '..', TESTS_PATH);
-  var files = getTestFilesRecursive(testsPath);
+  addTests('draft4: ', './json-schema-test-suite/tests/draft4/{**/,}*.json');
 
-  files.forEach(function (file) {
-    if (ONLY_RULES && ONLY_RULES.indexOf(file.name) == -1) return;
-    if (SKIP_RULES && SKIP_RULES.indexOf(file.name) >= 0) return;
+  function addTests(description, testsPath) {
+    describe(description, function() {
+      var files = getTestFiles(testsPath);
 
-    describe(file.name, function() {
-      var testSets = require(file.path);
-      testSets.forEach(function (testSet) {
-        // if (testSet.description != 'multiple types can be specified in an array') return;
-        describe(testSet.description, function() {
-        // it(testSet.description, function() {
-          var validate = ajv.compile(testSet.schema);
-          var fullValidate = fullAjv.compile(testSet.schema);
+      files.forEach(function (file) {
+        if (ONLY_RULES && ONLY_RULES.indexOf(file.name) == -1) return;
+        if (SKIP_RULES && SKIP_RULES.indexOf(file.name) >= 0) return;
 
-          testSet.tests.forEach(function (test) {
-            // if (test.description != 'an integer is valid') return;
-            it(test.description, function() {
-              var valid = validate(test.data);
-              // console.log('result', result);
-              assert.equal(valid, test.valid);
-              if (valid) assert(validate.errors.length == 0);
-              else assert(validate.errors.length > 0);
+        describe(file.name, function() {
+          var testSets = require(file.path);
+          testSets.forEach(function (testSet) {
+            // if (testSet.description != 'multiple types can be specified in an array') return;
+            describe(testSet.description, function() {
+            // it(testSet.description, function() {
+              var validate = ajv.compile(testSet.schema);
+              var fullValidate = fullAjv.compile(testSet.schema);
 
-              var valid = fullValidate(test.data);
-              // console.log('full result', result);
-              assert.equal(valid, test.valid);
-              if (valid) assert(validate.errors.length == 0);
-              else assert(validate.errors.length > 0);
+              testSet.tests.forEach(function (test) {
+                // if (test.description != 'an integer is valid') return;
+                it(test.description, function() {
+                  var valid = validate(test.data);
+                  // console.log('result', result);
+                  assert.equal(valid, test.valid);
+                  if (valid) assert(validate.errors.length == 0);
+                  else assert(validate.errors.length > 0);
+
+                  var valid = fullValidate(test.data);
+                  // console.log('full result', result);
+                  assert.equal(valid, test.valid);
+                  if (valid) assert(validate.errors.length == 0);
+                  else assert(validate.errors.length > 0);
+                });
+              });
             });
           });
         });
       });
     });
-  });
+  }
 });
 
 
-function getTestFilesRecursive(rootPath) {
-  var list = fs.readdirSync(rootPath);
-  var files = [];
-  list.forEach(function (item) {
-    var itemPath = path.join(rootPath, item);
-    var stat = fs.statSync(itemPath);
-    if (stat.isFile()) files.push({ name: path.basename(item, '.json'), path: itemPath });
-    else if (stat.isDirectory()) {
-      var _files = getTestFilesRecursive(itemPath);
-      _files.forEach(function (f) {
-        files.push({ name: path.join(item, f.name), path: f.path })
-      });
-    }
+function getTestFiles(testsPath) {
+  var files = glob.sync(testsPath, { cwd: __dirname });
+  return files.map(function (file) {
+    var optional = /optional\/\w+\.json/.test(file) ? 'optional/' : '';
+    return { path: file, name: optional + path.basename(file, '.json') };
   });
-  return files;
 }

@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "JSON-Schema-Test-Suite": "git+ssh://git@github.com/json-schema/JSON-Schema-Test-Suite.git",
+    "glob": "^5.0.10",
     "mocha": "^2.2.5"
   }
 }
