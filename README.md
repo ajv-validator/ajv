@@ -41,4 +41,5 @@ ajv compiles schemas to functions and caches them in both cases (using stringifi
 - _allErrors_: if true, jv will continue validating all rules collecting all errors (false by default)
 - _verbose_: include the reference to the validated data in the errors (false by default)
 - _format_: if false, the formats won't be validated (true by default)
+- _uniqueItems_: if false, `uniqueItems` keyword will be ignored (true by default)
 - _unicode_: if true, the lengths of strings with unicode pairs will be correct (false by default) - not implemented yet.
