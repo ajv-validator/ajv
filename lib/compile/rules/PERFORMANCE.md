@@ -1,0 +1,24 @@
+- [ ] $ref
+- [ ] allOf
+- [ ] anyOf
+- [ ] dependencies
+- [ ] enum
+- [ ] format
+- [ ] index
+- [ ] items (+ additionalItems)
+- [ ] maxItems
+- [ ] maxLength
+- [ ] maxProperties
+- [ ] maximum (+ exclusiveMaximum)
+- [ ] minItems
+- [ ] minLength
+- [ ] minProperties
+- [ ] minimum (+ exclusiveMinimum)
+- [ ] multipleOf
+- [ ] not
+- [ ] oneOf
+- [ ] pattern
+- [ ] properties (+ patternProperties, additionalProperties)
+- [ ] required
+- [ ] type
+- [+] uniqueItems

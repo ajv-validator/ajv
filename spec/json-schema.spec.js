@@ -7,10 +7,10 @@ var glob = require('glob')
 var ONLY_RULES, SKIP_RULES;
 // ONLY_RULES = [
 // 'type',
-// 'not',
+'not',
 // 'allOf',
 // 'anyOf',
-'oneOf',
+// 'oneOf',
 // 'enum',
 // 'maximum', 'minimum', 'multipleOf', 
 // 'maxLength', 'minLength', 'pattern',
@@ -58,14 +58,15 @@ describe('JSON-Schema tests', function () {
         describe(file.name, function() {
           var testSets = require(file.path);
           testSets.forEach(function (testSet) {
-            // if (testSet.description != 'multiple types can be specified in an array') return;
+            // if (testSet.description != 'not more complex schema') return;
             describe(testSet.description, function() {
             // it(testSet.description, function() {
               var validate = ajv.compile(testSet.schema);
               var fullValidate = fullAjv.compile(testSet.schema);
 
               testSet.tests.forEach(function (test) {
-                // if (test.description != 'mismatch base schema') return;
+                // if (test.description != 'match') return;
+                // console.log(testSet.schema, '\n\n***\n\n', validate.toString());
                 it(test.description, function() {
                   var valid = validate(test.data);
                   // console.log('result', result);
