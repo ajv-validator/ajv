@@ -7,15 +7,17 @@ var glob = require('glob')
 var ONLY_RULES, SKIP_RULES;
 // ONLY_RULES = [
 // 'type',
-'not',
+// 'not',
 // 'allOf',
 // 'anyOf',
 // 'oneOf',
 // 'enum',
-// 'maximum', 'minimum', 'multipleOf', 
+// 'maximum', 'minimum',
+'multipleOf', 
 // 'maxLength', 'minLength', 'pattern',
 // 'properties', 'patternProperties', 'additionalProperties',
-// 'dependencies', 'required',
+// 'dependencies',
+// 'required',
 // 'maxProperties', 'minProperties', 'maxItems', 'minItems',
 // 'items', 'additionalItems', 'uniqueItems',
 // 'optional/format', 'optional/bignum',
@@ -58,27 +60,27 @@ describe('JSON-Schema tests', function () {
         describe(file.name, function() {
           var testSets = require(file.path);
           testSets.forEach(function (testSet) {
-            // if (testSet.description != 'not more complex schema') return;
+            // if (testSet.description != 'invalid string value for default') return;
             describe(testSet.description, function() {
             // it(testSet.description, function() {
               var validate = ajv.compile(testSet.schema);
               var fullValidate = fullAjv.compile(testSet.schema);
 
               testSet.tests.forEach(function (test) {
-                // if (test.description != 'match') return;
+                // if (test.description != 'valid when property is specified') return;
                 // console.log(testSet.schema, '\n\n***\n\n', validate.toString());
                 it(test.description, function() {
                   var valid = validate(test.data);
-                  // console.log('result', result);
+                  // console.log('result', valid, validate.errors);
                   assert.equal(valid, test.valid);
                   if (valid) assert(validate.errors.length == 0);
                   else assert(validate.errors.length > 0);
 
                   var valid = fullValidate(test.data);
-                  // console.log('full result', result);
+                  // console.log('full result', valid, fullValidate.errors);
                   assert.equal(valid, test.valid);
-                  if (valid) assert(validate.errors.length == 0);
-                  else assert(validate.errors.length > 0);
+                  if (valid) assert(fullValidate.errors.length == 0);
+                  else assert(fullValidate.errors.length > 0);
                 });
               });
             });
