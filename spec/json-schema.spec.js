@@ -13,7 +13,7 @@ var ONLY_RULES, SKIP_RULES;
 // 'oneOf',
 // 'enum',
 // 'maximum', 'minimum',
-'multipleOf', 
+// 'multipleOf', 
 // 'maxLength', 'minLength', 'pattern',
 // 'properties', 'patternProperties', 'additionalProperties',
 // 'dependencies',
