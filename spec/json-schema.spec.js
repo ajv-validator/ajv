@@ -6,18 +6,10 @@ var glob = require('glob')
 
 var ONLY_RULES, SKIP_RULES;
 // ONLY_RULES = [
-// 'type',
-// 'not',
-// 'allOf',
-// 'anyOf',
-// 'oneOf',
-// 'enum',
-// 'maximum', 'minimum',
-// 'multipleOf', 
-// 'maxLength', 'minLength', 'pattern',
+// 'type', 'not', 'allOf', 'anyOf', 'oneOf', 'enum',
+// 'maximum', 'minimum', 'multipleOf', 'maxLength', 'minLength', 'pattern',
 // 'properties', 'patternProperties', 'additionalProperties',
-// 'dependencies',
-// 'required',
+// 'dependencies', 'required',
 // 'maxProperties', 'minProperties', 'maxItems', 'minItems',
 // 'items', 'additionalItems', 'uniqueItems',
 // 'optional/format', 'optional/bignum',
@@ -31,8 +23,8 @@ SKIP_RULES = [
 
 
 var Ajv = require('../lib/ajv')
-  , ajv = Ajv()
-  , fullAjv = Ajv({ allErrors: true, verbose: true });
+  , ajv = Ajv({ unicode: true })
+  , fullAjv = Ajv({ unicode: true, allErrors: true, verbose: true });
 
 var remoteRefs = {
     'http://localhost:1234/integer.json': require('./JSON-Schema-Test-Suite/remotes/integer.json'),
@@ -67,7 +59,7 @@ describe('JSON-Schema tests', function () {
               var fullValidate = fullAjv.compile(testSet.schema);
 
               testSet.tests.forEach(function (test) {
-                // if (test.description != 'valid') return;
+                // if (test.description != 'one supplementary Unicode code point is not long enough') return;
                 // console.log(testSet.schema, '\n\n***\n\n', validate.toString());
                 it(test.description, function() {
                   var valid = validate(test.data);
