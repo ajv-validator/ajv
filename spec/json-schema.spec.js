@@ -60,14 +60,14 @@ describe('JSON-Schema tests', function () {
         describe(file.name, function() {
           var testSets = require(file.path);
           testSets.forEach(function (testSet) {
-            // if (testSet.description != 'invalid string value for default') return;
+            // if (testSet.description != 'allOf with base schema') return;
             describe(testSet.description, function() {
             // it(testSet.description, function() {
               var validate = ajv.compile(testSet.schema);
               var fullValidate = fullAjv.compile(testSet.schema);
 
               testSet.tests.forEach(function (test) {
-                // if (test.description != 'valid when property is specified') return;
+                // if (test.description != 'valid') return;
                 // console.log(testSet.schema, '\n\n***\n\n', validate.toString());
                 it(test.description, function() {
                   var valid = validate(test.data);
