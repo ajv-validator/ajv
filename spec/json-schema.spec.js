@@ -23,8 +23,8 @@ SKIP_RULES = [
 
 
 var Ajv = require('../lib/ajv')
-  , ajv = Ajv({ unicode: true })
-  , fullAjv = Ajv({ unicode: true, allErrors: true, verbose: true });
+  , ajv = Ajv()
+  , fullAjv = Ajv({ allErrors: true, verbose: true });
 
 var remoteRefs = {
     'http://localhost:1234/integer.json': require('./JSON-Schema-Test-Suite/remotes/integer.json'),

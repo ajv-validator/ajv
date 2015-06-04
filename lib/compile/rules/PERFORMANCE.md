@@ -21,4 +21,4 @@
 - [ ] properties (+ patternProperties, additionalProperties)
 - [ ] required
 - [ ] type
-- [+] uniqueItems
+- [x] uniqueItems
