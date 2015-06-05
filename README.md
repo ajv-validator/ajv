@@ -42,3 +42,11 @@ ajv compiles schemas to functions and caches them in both cases (using stringifi
 - _format_: if false, the formats won't be validated (true by default)
 - _uniqueItems_: if false, `uniqueItems` keyword will be ignored (true by default, i.e. uniqueItems is checked)
 - _unicode_: if false, sting.length will be used and the string lengths with unicode pairs will be "incorrect" because each unicode pair will be counted as two characters (true by default - string lengths are calculated correctly but it is slower)
+
+
+## Tests
+
+```
+git submodule update --init
+npm test
+```
