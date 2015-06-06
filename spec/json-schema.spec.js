@@ -38,50 +38,50 @@ for (var id in remoteRefs) {
 }
 
 
-describe('JSON-Schema tests', function () {
-  addTests('draft4: ', './json-schema-test-suite/tests/draft4/{**/,}*.json');
+addTests('JSON-Schema tests draft4', './json-schema-test-suite/tests/draft4/{**/,}*.json');
+addTests('Advanced schema tests', './tests/{**/,}*.json');
 
-  function addTests(description, testsPath) {
-    describe(description, function() {
-      var files = getTestFiles(testsPath);
 
-      files.forEach(function (file) {
-        if (ONLY_RULES && ONLY_RULES.indexOf(file.name) == -1) return;
-        if (SKIP_RULES && SKIP_RULES.indexOf(file.name) >= 0) return;
+function addTests(description, testsPath) {
+  describe(description, function() {
+    var files = getTestFiles(testsPath);
 
-        describe(file.name, function() {
-          var testSets = require(file.path);
-          testSets.forEach(function (testSet) {
-            // if (testSet.description != 'allOf with base schema') return;
-            describe(testSet.description, function() {
-            // it(testSet.description, function() {
-              var validate = ajv.compile(testSet.schema);
-              var fullValidate = fullAjv.compile(testSet.schema);
+    files.forEach(function (file) {
+      if (ONLY_RULES && ONLY_RULES.indexOf(file.name) == -1) return;
+      if (SKIP_RULES && SKIP_RULES.indexOf(file.name) >= 0) return;
 
-              testSet.tests.forEach(function (test) {
-                // if (test.description != 'one supplementary Unicode code point is not long enough') return;
-                // console.log(testSet.schema, '\n\n***\n\n', validate.toString());
-                it(test.description, function() {
-                  var valid = validate(test.data);
-                  // console.log('result', valid, validate.errors);
-                  assert.equal(valid, test.valid);
-                  if (valid) assert(validate.errors.length == 0);
-                  else assert(validate.errors.length > 0);
+      describe(file.name, function() {
+        var testSets = require(file.path);
+        testSets.forEach(function (testSet) {
+          // if (testSet.description != 'allOf with base schema') return;
+          describe(testSet.description, function() {
+          // it(testSet.description, function() {
+            var validate = ajv.compile(testSet.schema);
+            var fullValidate = fullAjv.compile(testSet.schema);
 
-                  var valid = fullValidate(test.data);
-                  // console.log('full result', valid, fullValidate.errors);
-                  assert.equal(valid, test.valid);
-                  if (valid) assert(fullValidate.errors.length == 0);
-                  else assert(fullValidate.errors.length > 0);
-                });
+            testSet.tests.forEach(function (test) {
+              // if (test.description != 'one supplementary Unicode code point is not long enough') return;
+              // console.log(testSet.schema, '\n\n***\n\n', validate.toString());
+              it(test.description, function() {
+                var valid = validate(test.data);
+                // console.log('result', valid, validate.errors);
+                assert.equal(valid, test.valid);
+                if (valid) assert(validate.errors.length == 0);
+                else assert(validate.errors.length > 0);
+
+                var valid = fullValidate(test.data);
+                // console.log('full result', valid, fullValidate.errors);
+                assert.equal(valid, test.valid);
+                if (valid) assert(fullValidate.errors.length == 0);
+                else assert(fullValidate.errors.length > 0);
               });
             });
           });
         });
       });
     });
-  }
-});
+  });
+}
 
 
 function getTestFiles(testsPath) {
