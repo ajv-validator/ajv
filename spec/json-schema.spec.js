@@ -13,12 +13,14 @@ var ONLY_RULES, SKIP_RULES;
 // 'maxProperties', 'minProperties', 'maxItems', 'minItems',
 // 'items', 'additionalItems', 'uniqueItems',
 // 'optional/format', 'optional/bignum',
-// 'ref'
+// 'ref',
+// 'schemas/complex'
 // ];
 
 SKIP_RULES = [
   'refRemote',
-  'optional/zeroTerminatedFloats'
+  'optional/zeroTerminatedFloats',
+  'schemas/complex'
 ];
 
 
@@ -47,17 +49,21 @@ function addTests(description, testsPath) {
     var files = getTestFiles(testsPath);
 
     files.forEach(function (file) {
-      if (ONLY_RULES && ONLY_RULES.indexOf(file.name) == -1) return;
-      if (SKIP_RULES && SKIP_RULES.indexOf(file.name) >= 0) return;
+      var skip = (ONLY_RULES && ONLY_RULES.indexOf(file.name) == -1) ||
+                 (SKIP_RULES && SKIP_RULES.indexOf(file.name) >= 0);
+      // if (skip) return;
 
-      describe(file.name, function() {
+      (skip ? describe.skip : describe) (file.name, function() {
         var testSets = require(file.path);
         testSets.forEach(function (testSet) {
           // if (testSet.description != 'allOf with base schema') return;
           describe(testSet.description, function() {
+            var validate, fullValidate;
           // it(testSet.description, function() {
-            var validate = ajv.compile(testSet.schema);
-            var fullValidate = fullAjv.compile(testSet.schema);
+            before(function() {
+              validate = ajv.compile(testSet.schema);
+              fullValidate = fullAjv.compile(testSet.schema);
+            });
 
             testSet.tests.forEach(function (test) {
               // if (test.description != 'one supplementary Unicode code point is not long enough') return;
@@ -87,7 +93,9 @@ function addTests(description, testsPath) {
 function getTestFiles(testsPath) {
   var files = glob.sync(testsPath, { cwd: __dirname });
   return files.map(function (file) {
-    var optional = /optional\/\w+\.json/.test(file) ? 'optional/' : '';
-    return { path: file, name: optional + path.basename(file, '.json') };
+    var match = file.match(/(\w+\/)\w+\.json/)
+    var folder = match ? match[1] : '';
+    if (folder == 'draft4/') folder = '';
+    return { path: file, name: folder + path.basename(file, '.json') };
   });
 }

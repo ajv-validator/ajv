@@ -134,8 +134,109 @@
                 "valid": true
             },
             {
-                "description": "not array",
+                "description": "not object",
                 "data": 1,
+                "valid": false
+            },
+            {
+                "description": "root only is valid",
+                "data": {
+                    "/": {
+                        "storage": {
+                            "type": "disk",
+                            "device": "/dev/sda1"
+                        },
+                        "fstype": "btrfs",
+                        "readonly": true
+                    }
+                },
+                "valid": true
+            },
+            {
+                "description": "missing root entry",
+                "data": {
+                    "no root/": {
+                        "storage": {
+                            "type": "disk",
+                            "device": "/dev/sda1"
+                        },
+                        "fstype": "btrfs",
+                        "readonly": true
+                    }
+                },
+                "valid": false
+            },
+            {
+                "description": "invalid entry key",
+                "data": {
+                    "/": {
+                        "storage": {
+                            "type": "disk",
+                            "device": "/dev/sda1"
+                        },
+                        "fstype": "btrfs",
+                        "readonly": true
+                    },
+                    "invalid/var": {
+                        "storage": {
+                            "type": "disk",
+                            "label": "8f3ba6f4-5c70-46ec-83af-0d5434953e5f"
+                        },
+                        "fstype": "ext4",
+                        "options": [ "nosuid" ]
+                    }
+                },
+                "valid": false
+            },
+            {
+                "description": "missing storage in entry",
+                "data": {
+                    "/": {
+                        "fstype": "btrfs",
+                        "readonly": true
+                    }
+                },
+                "valid": false
+            },
+            {
+                "description": "missing storage type",
+                "data": {
+                    "/": {
+                        "storage": {
+                            "device": "/dev/sda1"
+                        },
+                        "fstype": "btrfs",
+                        "readonly": true
+                    }
+                },
+                "valid": false
+            },
+            {
+                "description": "storage type should be a string",
+                "data": {
+                    "/": {
+                        "storage": {
+                            "type": null,
+                            "device": "/dev/sda1"
+                        },
+                        "fstype": "btrfs",
+                        "readonly": true
+                    }
+                },
+                "valid": false
+            },
+            {
+                "description": "storage device should match pattern",
+                "data": {
+                    "/": {
+                        "storage": {
+                            "type": null,
+                            "device": "invalid/dev/sda1"
+                        },
+                        "fstype": "btrfs",
+                        "readonly": true
+                    }
+                },
                 "valid": false
             }
         ]
