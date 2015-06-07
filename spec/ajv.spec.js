@@ -96,14 +96,10 @@ describe('Ajv', function () {
       ajv.validate('int', '1') .should.equal(false);
       ajv.validate('//e.com/int.json', 1) .should.equal(true);
       ajv.validate('//e.com/int.json', '1') .should.equal(false);
-      ajv.validate('int/', 1) .should.equal(true);
-      ajv.validate('int/', '1') .should.equal(false);
-      ajv.validate('//e.com/int.json/#', 1) .should.equal(true);
-      ajv.validate('//e.com/int.json/#', '1') .should.equal(false);
       ajv.validate('int#/', 1) .should.equal(true);
       ajv.validate('int#/', '1') .should.equal(false);
-      ajv.validate('//e.com/int.json/#/', 1) .should.equal(true);
-      ajv.validate('//e.com/int.json/#/', '1') .should.equal(false);
+      ajv.validate('//e.com/int.json#/', 1) .should.equal(true);
+      ajv.validate('//e.com/int.json#/', '1') .should.equal(false);
     });
 
     it('should add and compile array of schemas with ids', function() {
@@ -138,16 +134,7 @@ describe('Ajv', function () {
         ajv.addSchema({ type: 'integer' }, 'num#');
       });
       should.throw(function() {
-        ajv.addSchema({ type: 'integer' }, 'num/');
-      });
-      should.throw(function() {
-        ajv.addSchema({ type: 'integer' }, 'num/#');
-      });
-      should.throw(function() {
         ajv.addSchema({ type: 'integer' }, 'num#/');
-      });
-      should.throw(function() {
-        ajv.addSchema({ type: 'integer' }, 'num/#/');
       });
     });
 
@@ -158,9 +145,6 @@ describe('Ajv', function () {
       });
       should.throw(function() {
         ajv.addSchema({ type: 'integer' }, '');
-      });
-      should.throw(function() {
-        ajv.addSchema({ type: 'integer' }, '/');
       });
       should.throw(function() {
         ajv.addSchema({ type: 'integer' }, '#');

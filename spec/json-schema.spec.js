@@ -14,20 +14,21 @@ var ONLY_RULES, SKIP_RULES;
 // 'items', 'additionalItems', 'uniqueItems',
 // 'optional/format', 'optional/bignum',
 // 'ref',
+// 'refRemote',
 // 'definitions'
 // 'schemas/complex'
 // ];
 
 SKIP_RULES = [
-  'refRemote',
+  // 'refRemote',
   'optional/zeroTerminatedFloats',
   'schemas/complex'
 ];
 
 
 var Ajv = require('../lib/ajv')
-  , ajv = Ajv()
-  , fullAjv = Ajv({ allErrors: true, verbose: true });
+  , ajv = Ajv({ beautify: true })
+  , fullAjv = Ajv({ allErrors: true, verbose: true, beautify: true });
 
 var remoteRefs = {
     'http://localhost:1234/integer.json': require('./JSON-Schema-Test-Suite/remotes/integer.json'),
@@ -41,8 +42,10 @@ for (var id in remoteRefs) {
 }
 
 
-addTests('JSON-Schema tests draft4', './json-schema-test-suite/tests/draft4/{**/,}*.json');
-addTests('Advanced schema tests', './tests/{**/,}*.json');
+describe('Schema validation tests', function() {
+  addTests('JSON-Schema tests draft4', './json-schema-test-suite/tests/draft4/{**/,}*.json');
+  addTests('Advanced schema tests', './tests/{**/,}*.json');
+});
 
 
 function addTests(description, testsPath) {
@@ -52,12 +55,12 @@ function addTests(description, testsPath) {
     files.forEach(function (file) {
       var skip = (ONLY_RULES && ONLY_RULES.indexOf(file.name) == -1) ||
                  (SKIP_RULES && SKIP_RULES.indexOf(file.name) >= 0);
-      if (skip) return;
+      // if (skip) return;
 
       (skip ? describe.skip : describe) (file.name, function() {
         var testSets = require(file.path);
         testSets.forEach(function (testSet) {
-          // if (testSet.description != 'allOf with base schema') return;
+          // if (testSet.description != 'remote ref, containing refs itself') return;
           describe(testSet.description, function() {
             var validate, fullValidate;
           // it(testSet.description, function() {
@@ -67,7 +70,7 @@ function addTests(description, testsPath) {
             });
 
             testSet.tests.forEach(function (test) {
-              // if (test.description != 'one supplementary Unicode code point is not long enough') return;
+              // if (test.description != 'changed scope ref valid') return;
               // console.log(testSet.schema, '\n\n***\n\n', validate.toString());
               it(test.description, function() {
                 var valid = validate(test.data);

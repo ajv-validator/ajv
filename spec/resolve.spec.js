@@ -41,7 +41,7 @@ describe('resolve', function () {
   describe('resolve.ids method', function() {
     it('should resolve ids in schema', function() {
       var validate = ajv.compile(schema);
-      console.log(ajv._refs);
+      // console.log(ajv._refs);
     });
   });
 });
