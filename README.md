@@ -1,16 +1,16 @@
-# ajv - Another JSON schema Validator
+# ajv - Another JSON Schema Validator
 
-One of the fastest JSON schema validators. It uses [doT templates](https://github.com/olado/doT) to generate super-fast validating functions.
+One of the fastest JSON Schema validators. It uses [doT templates](https://github.com/olado/doT) to generate super-fast validating functions.
 
 
-## JSON-schema standard
+## JSON Schema standard
 
-ajv implements full JSON-schema draft 4 standard:
+ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
 
 - all validation keywords
 - full support of remote refs (remote schemas have to be pre-loaded)
 - correct string lengths for strings with unicode pairs (can be turned off)
-- formats defined by JSON-schema (can be turned off)
+- formats defined by JSON Schema draft 4 standard (can be turned off)
 
 ajv passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (apart from the one that requires that `1.0` is not an integer).
 
