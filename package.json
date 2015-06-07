@@ -26,6 +26,7 @@
     "json-stable-stringify": "^1.0.0"
   },
   "devDependencies": {
+    "chai": "^3.0.0",
     "glob": "^5.0.10",
     "js-beautify": "^1.5.6",
     "mocha": "^2.2.5"

@@ -14,6 +14,7 @@ var ONLY_RULES, SKIP_RULES;
 // 'items', 'additionalItems', 'uniqueItems',
 // 'optional/format', 'optional/bignum',
 // 'ref',
+// 'definitions'
 // 'schemas/complex'
 // ];
 
@@ -51,7 +52,7 @@ function addTests(description, testsPath) {
     files.forEach(function (file) {
       var skip = (ONLY_RULES && ONLY_RULES.indexOf(file.name) == -1) ||
                  (SKIP_RULES && SKIP_RULES.indexOf(file.name) >= 0);
-      // if (skip) return;
+      if (skip) return;
 
       (skip ? describe.skip : describe) (file.name, function() {
         var testSets = require(file.path);
