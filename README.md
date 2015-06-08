@@ -63,10 +63,14 @@ ajv compiles schemas to functions and caches them in both cases (using stringifi
 
 Create ajv instance.
 
+All the instance methods below are bound to the instance, so they can be used without the instance.
+
 
 ##### .compile(Object schema) -&gt; Function&lt;Object data&gt;
 
 Generate validating function and cache the compiled schema for future use.
+
+Validating function returns boolean and has properties `errors` with the errors from the last validation and `schema` with the reference to the original schema. 
 
 
 ##### .validate(Object schema|String key|String ref, data) -&gt; Boolean
@@ -76,7 +80,7 @@ Validate data using passed schema (it will be compiled and cached).
 Instead of the schema you can use the key that was previously passed to `addSchema`, the schema id if it was present in the schema or any previously resolved reference.
 
 
-##### .addSchema(Array schemas|Object schema [, String key]) -&gt; Function&lt;Object data&gt;|Array&lt;Function&lt;Object data&gt;&gt;
+##### .addSchema(Array&lt;Object&gt;|Object schema [, String key]) -&gt; Function|Array&lt;Function&gt;
 
 Add and compile schema(s). It does the same as `.compile` with two differences:
 
@@ -92,7 +96,7 @@ In the current version all the referenced schemas should be added before the sch
 
 ##### .getSchema(String key) -&gt; Function&lt;Object data&gt;
 
-Retrieve schema previously added with `addSchema`. Validating function has `schema` property with the reference to the original schema.
+Retrieve compiled schema previously added with `addSchema`. Validating function has `schema` property with the reference to the original schema.
 
 
 ## Options
