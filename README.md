@@ -42,6 +42,7 @@ or
 ```
 // ...
 var valid = ajv.validate(schema, data);
+if (!valid) console.log(ajv.errors);
 // ...
 ```
 
@@ -51,10 +52,11 @@ or
 // ...
 ajv.addSchema(schema, 'mySchema');
 var valid = ajv.validate('mySchema', data);
+if (!valid) console.log(ajv.errors);
 // ...
 ```
 
-ajv compiles schemas to functions and caches them in both cases (using stringified schema as a key - using [json-stable-stringify](https://github.com/substack/json-stable-stringify)), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
+ajv compiles schemas to functions and caches them in all cases (using stringified schema as a key - using [json-stable-stringify](https://github.com/substack/json-stable-stringify)), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
 
 
 ## API
@@ -78,6 +80,8 @@ Validating function returns boolean and has properties `errors` with the errors 
 Validate data using passed schema (it will be compiled and cached).
 
 Instead of the schema you can use the key that was previously passed to `addSchema`, the schema id if it was present in the schema or any previously resolved reference.
+
+Validation errors will be available in the `errors` property of ajv instance.
 
 
 ##### .addSchema(Array&lt;Object&gt;|Object schema [, String key]) -&gt; Function|Array&lt;Function&gt;
