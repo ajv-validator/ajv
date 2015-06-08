@@ -66,17 +66,17 @@ Create ajv instance.
 
 ##### .compile(Object schema) -&gt; Function&lt;Object data&gt;
 
-Generate validating function and cache compiled schema for future use.
+Generate validating function and cache the compiled schema for future use.
 
 
 ##### .validate(Object schema|String key|String ref, data) -&gt; Boolean
 
 Validate data using passed schema (it will be compiled and cached).
 
-Instead of the schema you can use the key that was previously passed to `addSchema` or a previously resolved reference.
+Instead of the schema you can use the key that was previously passed to `addSchema`, the schema id if it was present in the schema or any previously resolved reference.
 
 
-##### .addSchema(Array schemas|Object schema [, String key]) -&gt; Function&lt;Object data&gt;
+##### .addSchema(Array schemas|Object schema [, String key]) -&gt; Function&lt;Object data&gt;|Array&lt;Function&lt;Object data&gt;&gt;
 
 Add and compile schema(s). It does the same as `.compile` with two differences:
 
