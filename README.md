@@ -15,6 +15,11 @@ ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
 ajv passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (apart from the one that requires that `1.0` is not an integer).
 
 
+## Benchmarks
+
+Benchmark of the test suite - [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark).
+
+
 ## Install
 
 ```
