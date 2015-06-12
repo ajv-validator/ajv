@@ -2,6 +2,7 @@
   {
     "description": "complex schema from jsck benchmark (https://github.com/pandastrike/jsck)",
     "schema": {
+      "id": "http://example.com",
       "type": "array",
       "items": { "$ref": "#transaction" },
       "minItems": 1,

@@ -18,7 +18,7 @@ var ONLY_RULES, SKIP_RULES;
 // 'ref',
 // 'refRemote',
 // 'definitions'
-// 'schemas/complex'
+'schemas/complex'
 // ];
 
 SKIP_RULES = [
@@ -26,10 +26,12 @@ SKIP_RULES = [
   'schemas/complex'
 ];
 
+var DEBUG = false;
+
 
 var Ajv = require('../lib/ajv')
-  , ajv = Ajv({ beautify: true })
-  , fullAjv = Ajv({ allErrors: true, verbose: true, format: 'full', beautify: true });
+  , ajv = Ajv({ beautify: true, _debug: DEBUG })
+  , fullAjv = Ajv({ allErrors: true, verbose: true, format: 'full', beautify: true, _debug: DEBUG });
 
 var remoteRefs = {
     'http://localhost:1234/integer.json': require('./JSON-Schema-Test-Suite/remotes/integer.json'),
@@ -71,11 +73,11 @@ function addTests(description, testsPath) {
             });
 
             testSet.tests.forEach(function (test) {
-              // if (test.description != 'valid definition schema') return;
+              // if (test.description != 'valid array from jsck benchmark') return;
               // console.log(testSet.schema, '\n\n***\n\n', validate.toString());
               it(test.description, function() {
                 var valid = validate(test.data);
-                // console.log('result', valid, validate.errors);
+                // console.log('result', valid, validate.errors, ajv._refs);
                 assert.equal(valid, test.valid);
                 if (valid) assert(validate.errors.length == 0);
                 else assert(validate.errors.length > 0);
