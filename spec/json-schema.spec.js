@@ -6,7 +6,9 @@ var glob = require('glob')
 
 var ONLY_RULES, SKIP_RULES;
 // ONLY_RULES = [
-// 'type', 'not', 'allOf', 'anyOf', 'oneOf', 'enum',
+// 'type', 'not',
+// 'allOf',
+// 'anyOf', 'oneOf', 'enum',
 // 'maximum', 'minimum', 'multipleOf', 'maxLength', 'minLength', 'pattern',
 // 'properties', 'patternProperties', 'additionalProperties',
 // 'dependencies', 'required',
@@ -20,7 +22,6 @@ var ONLY_RULES, SKIP_RULES;
 // ];
 
 SKIP_RULES = [
-  // 'refRemote',
   'optional/zeroTerminatedFloats',
   'schemas/complex'
 ];
@@ -70,7 +71,7 @@ function addTests(description, testsPath) {
             });
 
             testSet.tests.forEach(function (test) {
-              // if (test.description != 'changed scope ref valid') return;
+              // if (test.description != 'valid definition schema') return;
               // console.log(testSet.schema, '\n\n***\n\n', validate.toString());
               it(test.description, function() {
                 var valid = validate(test.data);
