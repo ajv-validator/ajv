@@ -17,8 +17,9 @@ var ONLY_RULES, SKIP_RULES;
 // 'optional/format', 'optional/bignum',
 // 'ref',
 // 'refRemote',
-// 'definitions'
-'schemas/complex'
+// 'definitions',
+// 'schemas/complex',
+// 'schemas/basic'
 // ];
 
 SKIP_RULES = [
@@ -73,7 +74,7 @@ function addTests(description, testsPath) {
             });
 
             testSet.tests.forEach(function (test) {
-              // if (test.description != 'valid array from jsck benchmark') return;
+              // if (test.description != 'valid array from z-schema benchmark') return;
               // console.log(testSet.schema, '\n\n***\n\n', validate.toString());
               it(test.description, function() {
                 var valid = validate(test.data);
