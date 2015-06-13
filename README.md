@@ -73,7 +73,7 @@ All the instance methods below are bound to the instance, so they can be used wi
 
 Generate validating function and cache the compiled schema for future use.
 
-Validating function returns boolean and has properties `errors` with the errors from the last validation and `schema` with the reference to the original schema. 
+Validating function returns boolean and has properties `errors` with the errors from the last validation (`null` if there were no errors) and `schema` with the reference to the original schema. 
 
 
 ##### .validate(Object schema|String key|String ref, data) -&gt; Boolean
@@ -82,7 +82,7 @@ Validate data using passed schema (it will be compiled and cached).
 
 Instead of the schema you can use the key that was previously passed to `addSchema`, the schema id if it was present in the schema or any previously resolved reference.
 
-Validation errors will be available in the `errors` property of ajv instance.
+Validation errors will be available in the `errors` property of ajv instance (`null` if there were no errors).
 
 
 ##### .addSchema(Array&lt;Object&gt;|Object schema [, String key]) -&gt; Function|Array&lt;Function&gt;
@@ -121,3 +121,9 @@ Retrieve compiled schema previously added with `addSchema`. Validating function 
 git submodule update --init
 npm test
 ```
+
+## Changes history
+
+##### 0.4.0
+
+To improve performance, errors are set to `null` if there are no errors (previously empty array).

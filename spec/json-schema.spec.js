@@ -78,15 +78,15 @@ function addTests(description, testsPath) {
               // console.log(testSet.schema, '\n\n***\n\n', validate.toString());
               it(test.description, function() {
                 var valid = validate(test.data);
-                // console.log('result', valid, validate.errors, ajv._refs);
+                // console.log('result', valid, test.valid, validate.errors);
                 assert.equal(valid, test.valid);
-                if (valid) assert(validate.errors.length == 0);
+                if (valid) assert(validate.errors === null);
                 else assert(validate.errors.length > 0);
 
                 var valid = fullValidate(test.data);
                 // console.log('full result', valid, fullValidate.errors);
                 assert.equal(valid, test.valid);
-                if (valid) assert(fullValidate.errors.length == 0);
+                if (valid) assert(fullValidate.errors === null);
                 else assert(fullValidate.errors.length > 0);
               });
             });
