@@ -2,6 +2,7 @@
 
 One of the fastest JSON Schema validators for node.js. It uses [doT templates](https://github.com/olado/doT) to generate super-fast validating functions.
 
+[![Build Status](https://travis-ci.org/epoberezkin/ajv.svg?branch=master)](https://travis-ci.org/epoberezkin/ajv)
 
 ## JSON Schema standard
 
