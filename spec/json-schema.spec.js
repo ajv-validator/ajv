@@ -4,8 +4,8 @@ var glob = require('glob')
   , path = require('path')
   , assert = require('assert');
 
-var ONLY_RULES, SKIP_RULES;
-// ONLY_RULES = [
+var ONLY_FILES, SKIP_FILES;
+// ONLY_FILES = [
 // 'type', 'not',
 // 'allOf',
 // 'anyOf', 'oneOf', 'enum',
@@ -20,9 +20,10 @@ var ONLY_RULES, SKIP_RULES;
 // 'definitions',
 // 'schemas/complex',
 // 'schemas/basic'
+// 'schemas/advanced'
 // ];
 
-SKIP_RULES = [
+SKIP_FILES = [
   'optional/zeroTerminatedFloats',
   'schemas/complex'
 ];
@@ -57,8 +58,8 @@ function addTests(description, testsPath) {
     var files = getTestFiles(testsPath);
 
     files.forEach(function (file) {
-      var skip = (ONLY_RULES && ONLY_RULES.indexOf(file.name) == -1) ||
-                 (SKIP_RULES && SKIP_RULES.indexOf(file.name) >= 0);
+      var skip = (ONLY_FILES && ONLY_FILES.indexOf(file.name) == -1) ||
+                 (SKIP_FILES && SKIP_FILES.indexOf(file.name) >= 0);
       // if (skip) return;
 
       (skip ? describe.skip : describe) (file.name, function() {
@@ -74,11 +75,12 @@ function addTests(description, testsPath) {
             });
 
             testSet.tests.forEach(function (test) {
-              // if (test.description != 'valid array from z-schema benchmark') return;
+              // if (test.description != 'valid object from z-schema benchmark') return;
               // console.log(testSet.schema, '\n\n***\n\n', validate.toString());
               it(test.description, function() {
                 var valid = validate(test.data);
                 // console.log('result', valid, test.valid, validate.errors);
+                // console.log('validate', validate.toString());
                 assert.equal(valid, test.valid);
                 if (valid) assert(validate.errors === null);
                 else assert(validate.errors.length > 0);
