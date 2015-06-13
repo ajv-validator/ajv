@@ -1,0 +1,486 @@
+[
+  {
+    "description": "complex schema from jsck benchmark without IDs in definitions",
+    "schema": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/transaction" },
+      "minItems": 1,
+      "definitions": {
+        "base58": {
+          "type": "string",
+          "pattern": "^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]+$"
+        },
+        "hex": {
+          "type": "string",
+          "pattern": "^[0123456789A-Fa-f]+$"
+        },
+        "tx_id": {
+          "allOf": [
+            { "$ref": "#/definitions/hex" },
+            {
+              "minLength": 64,
+              "maxLength": 64
+            }
+          ]
+        },
+        "address": {
+          "allOf": [
+            { "$ref": "#/definitions/base58" },
+            {
+              "minLength": 34,
+              "maxLength": 34
+            }
+          ]
+        },
+        "signature": {
+          "allOf": [
+            { "$ref": "#/definitions/hex" },
+            {
+              "minLength": 128,
+              "maxLength": 128
+            }
+          ]
+        },
+        "transaction": {
+          "additionalProperties": false,
+          "required": [
+            "metadata",
+            "hash",
+            "inputs",
+            "outputs"
+          ],
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "required": [
+                "amount",
+                "fee"
+              ],
+              "properties": {
+                "amount": {
+                  "type": "integer"
+                },
+                "fee": {
+                  "type": "integer",
+                  "multipleOf": 10000
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unsigned",
+                    "unconfirmed",
+                    "confirmed",
+                    "invalid"
+                  ]
+                },
+                "confirmations": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "block_time": {
+                  "type": "integer"
+                }
+              }
+            },
+            "version": {
+              "type": "integer"
+            },
+            "lock_time": {
+              "type": "integer"
+            },
+            "hash": { "$ref": "#/definitions/tx_id" },
+            "inputs": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/input" },
+              "minItems": 1
+            },
+            "outputs": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/output" },
+              "minItems": 1
+            }
+          }
+        },
+        "input": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "index",
+            "output",
+            "script_sig"
+          ],
+          "properties": {
+            "index": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "output": { "$ref": "#/definitions/output" },
+            "sig_hash": { "$ref": "#/definitions/hex" },
+            "script_sig": { "$ref": "#/definitions/hex" },
+            "signatures": {
+              "type": "object",
+              "description": "A dictionary of signatures.  Keys represent keypair names",
+              "minProperties": 1,
+              "maxProperties": 3,
+              "additionalProperties": { "$ref": "#/definitions/signature" }
+            }
+          }
+        },
+        "output": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hash",
+            "index",
+            "value",
+            "script"
+          ],
+          "properties": {
+            "hash": { "$ref": "#/definitions/tx_id" },
+            "index": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "value": {
+              "type": "integer"
+            },
+            "script": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "standard",
+                    "p2sh"
+                  ]
+                },
+                "asm": {
+                  "type": "string"
+                }
+              }
+            },
+            "address": { "$ref": "#/definitions/address" },
+            "metadata": {
+              "type": "object",
+              "dependencies": {
+                "wallet_path": [
+                  "public_seeds"
+                ]
+              },
+              "properties": {
+                "wallet_path": {
+                  "type": "string"
+                },
+                "public_seeds": {
+                  "type": "object",
+                  "minProperties": 1,
+                  "maxProperties": 3,
+                  "additionalProperties": {
+                    "anyOf": [
+                      { "$ref": "#/definitions/base58" },
+                      { "$ref": "#/definitions/hex" }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid array from jsck benchmark",
+        "data": [
+          {
+            "metadata": {
+              "amount": 38043749285,
+              "fee": 20000,
+              "status": "confirmed",
+              "confirmations": 73,
+              "block_time": 1415993584376
+            },
+            "version": 1,
+            "lock_time": 0,
+            "hash": "60c1f1a3160042152114e2bba45600a5045711c3a8a458016248acec59653471",
+            "inputs": [
+              {
+                "index": 0,
+                "script_sig": "3046022100be69797cf5d784412b1258256eb657c191a04893479dfa2ae5c7f2088c7adbe0022100e6b000bd633b286ed1b9bc7682fe753d9fdad61fbe5da2a6e9444198e33a670f01",
+                "signatures": {
+                  "primary": "3046022100be69797cf5d784412b1258256eb657c191a04893479dfa2ae5c7f2088c7adbe0022100e6b000bd633b286ed1b9bc7682fe753d9fdad61fbe5da2a7",
+                  "cosigner": "a2ad5ebf16dadf9d357ef2867cb9b1de682b336db000b6e0012200ebda7c8802f7c5ea2afd97439840a191c756be6528521b214487d5fc79796eb00122064037"
+                },
+                "output": {
+                  "hash": "6b040cd7a4676b5c7b11f144e73c1958c177fcd79e934f6be8ce02c8cd12546d",
+                  "index": 1,
+                  "value": 38043749285,
+                  "script": {
+                    "type": "standard",
+                    "asm": "OP_DUP OP_HASH160 7d4e6d55e1dffb0df85f509343451d170d147551 OP_EQUALVERIFY OP_CHECKSIG"
+                  }
+                }
+              }
+            ],
+            "outputs": [
+              {
+                "hash": "60c1f1a3160042152114e2bba45600a5045711c3a8a458016248acec59653471",
+                "index": 0,
+                "value": 38042249285,
+                "script": {
+                  "type": "standard",
+                  "asm": "OP_DUP OP_HASH160 7d4e6d55e1dffb0df85f509343451d170d147551 OP_EQUALVERIFY OP_CHECKSIG"
+                },
+                "address": "1CRZRBwfuwUaVSPJtd6DBuezbm7XPBHLa1",
+                "metadata": {
+                  "type": "change",
+                  "wallet_path": "m/44/0/1/356",
+                  "public_seeds": {
+                    "primary": "xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8",
+                    "cosigner": "xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8"
+                  }
+                }
+              },
+              {
+                "hash": "60c1f1a3160042152114e2bba45600a5045711c3a8a458016248acec59653471",
+                "index": 1,
+                "value": 1500000,
+                "script": {
+                  "type": "standard",
+                  "asm": "OP_DUP OP_HASH160 3bc576e6960a9d45201ba5087e39224d0a05a079 OP_EQUALVERIFY OP_CHECKSIG"
+                },
+                "address": "16T3RPZLmxtXQCgWi1S8kef5Ca6jqXhoeT"
+              }
+            ]
+          },
+          {
+            "metadata": {
+              "amount": 38043749285,
+              "fee": 20000,
+              "status": "unconfirmed",
+              "confirmations": 73,
+              "block_time": 1415993584376
+            },
+            "version": 1,
+            "lock_time": 0,
+            "hash": "60c1f1a3160042152114e2bba45600a5045711c3a8a458016248acec59653471",
+            "inputs": [
+              {
+                "index": 0,
+                "script_sig": "3046022100be69797cf5d784412b1258256eb657c191a04893479dfa2ae5c7f2088c7adbe0022100e6b000bd633b286ed1b9bc7682fe753d9fdad61fbe5da2a6e9444198e33a670f01",
+                "output": {
+                  "hash": "6b040cd7a4676b5c7b11f144e73c1958c177fcd79e934f6be8ce02c8cd12546d",
+                  "index": 1,
+                  "value": 38043749285,
+                  "script": {
+                    "type": "standard",
+                    "asm": "OP_DUP OP_HASH160 7d4e6d55e1dffb0df85f509343451d170d147551 OP_EQUALVERIFY OP_CHECKSIG"
+                  }
+                }
+              }
+            ],
+            "outputs": [
+              {
+                "hash": "60c1f1a3160042152114e2bba45600a5045711c3a8a458016248acec59653471",
+                "index": 0,
+                "value": 38042249285,
+                "script": {
+                  "type": "standard",
+                  "asm": "OP_DUP OP_HASH160 7d4e6d55e1dffb0df85f509343451d170d147551 OP_EQUALVERIFY OP_CHECKSIG"
+                },
+                "address": "1CRZRBwfuwUaVSPJtd6DBuezbm7XPBHLa1",
+                "metadata": {
+                  "type": "change"
+                }
+              },
+              {
+                "hash": "60c1f1a3160042152114e2bba45600a5045711c3a8a458016248acec59653471",
+                "index": 1,
+                "value": 1500000,
+                "script": {
+                  "type": "standard",
+                  "asm": "OP_DUP OP_HASH160 3bc576e6960a9d45201ba5087e39224d0a05a079 OP_EQUALVERIFY OP_CHECKSIG"
+                },
+                "address": "16T3RPZLmxtXQCgWi1S8kef5Ca6jqXhoeT"
+              }
+            ]
+          },
+          {
+            "metadata": {
+              "amount": 38043749285,
+              "fee": 20000,
+              "status": "unconfirmed",
+              "confirmations": 73,
+              "block_time": 1415993584376
+            },
+            "version": 1,
+            "lock_time": 0,
+            "hash": "60c1f1a3160042152114e2bba45600a5045711c3a8a458016248acec59653471",
+            "inputs": [
+              {
+                "index": 0,
+                "script_sig": "3046022100be69797cf5d784412b1258256eb657c191a04893479dfa2ae5c7f2088c7adbe0022100e6b000bd633b286ed1b9bc7682fe753d9fdad61fbe5da2a6e9444198e33a670f01",
+                "output": {
+                  "hash": "6b040cd7a4676b5c7b11f144e73c1958c177fcd79e934f6be8ce02c8cd12546d",
+                  "index": 1,
+                  "value": 38043749285,
+                  "script": {
+                    "type": "standard",
+                    "asm": "OP_DUP OP_HASH160 7d4e6d55e1dffb0df85f509343451d170d147551 OP_EQUALVERIFY OP_CHECKSIG"
+                  }
+                }
+              }
+            ],
+            "outputs": [
+              {
+                "hash": "60c1f1a3160042152114e2bba45600a5045711c3a8a458016248acec59653471",
+                "index": 0,
+                "value": 38042249285,
+                "script": {
+                  "type": "standard",
+                  "asm": "OP_DUP OP_HASH160 7d4e6d55e1dffb0df85f509343451d170d147551 OP_EQUALVERIFY OP_CHECKSIG"
+                },
+                "address": "1CRZRBwfuwUaVSPJtd6DBuezbm7XPBHLa1",
+                "metadata": {
+                  "type": "change"
+                }
+              },
+              {
+                "hash": "60c1f1a3160042152114e2bba45600a5045711c3a8a458016248acec59653471",
+                "index": 1,
+                "value": 1500000,
+                "script": {
+                  "type": "standard",
+                  "asm": "OP_DUP OP_HASH160 3bc576e6960a9d45201ba5087e39224d0a05a079 OP_EQUALVERIFY OP_CHECKSIG"
+                },
+                "address": "16T3RPZLmxtXQCgWi1S8kef5Ca6jqXhoeT"
+              }
+            ]
+          }
+        ],
+        "valid": true
+      },
+      {
+        "description": "not array",
+        "data": 1,
+        "valid": false
+      },
+      {
+        "description": "one valid item",
+        "data": [
+          {
+            "metadata": {
+              "amount": 38043749285,
+              "fee": 20000,
+              "status": "unconfirmed",
+              "confirmations": 73,
+              "block_time": 1415993584376
+            },
+            "version": 1,
+            "lock_time": 0,
+            "hash": "60c1f1a3160042152114e2bba45600a5045711c3a8a458016248acec59653471",
+            "inputs": [
+              {
+                "index": 0,
+                "script_sig": "3046022100be69797cf5d784412b1258256eb657c191a04893479dfa2ae5c7f2088c7adbe0022100e6b000bd633b286ed1b9bc7682fe753d9fdad61fbe5da2a6e9444198e33a670f01",
+                "output": {
+                  "hash": "6b040cd7a4676b5c7b11f144e73c1958c177fcd79e934f6be8ce02c8cd12546d",
+                  "index": 1,
+                  "value": 38043749285,
+                  "script": {
+                    "type": "standard",
+                    "asm": "OP_DUP OP_HASH160 7d4e6d55e1dffb0df85f509343451d170d147551 OP_EQUALVERIFY OP_CHECKSIG"
+                  }
+                }
+              }
+            ],
+            "outputs": [
+              {
+                "hash": "60c1f1a3160042152114e2bba45600a5045711c3a8a458016248acec59653471",
+                "index": 0,
+                "value": 38042249285,
+                "script": {
+                  "type": "standard",
+                  "asm": "OP_DUP OP_HASH160 7d4e6d55e1dffb0df85f509343451d170d147551 OP_EQUALVERIFY OP_CHECKSIG"
+                },
+                "address": "1CRZRBwfuwUaVSPJtd6DBuezbm7XPBHLa1",
+                "metadata": {
+                  "type": "change"
+                }
+              },
+              {
+                "hash": "60c1f1a3160042152114e2bba45600a5045711c3a8a458016248acec59653471",
+                "index": 1,
+                "value": 1500000,
+                "script": {
+                  "type": "standard",
+                  "asm": "OP_DUP OP_HASH160 3bc576e6960a9d45201ba5087e39224d0a05a079 OP_EQUALVERIFY OP_CHECKSIG"
+                },
+                "address": "16T3RPZLmxtXQCgWi1S8kef5Ca6jqXhoeT"
+              }
+            ]
+          }
+        ],
+        "valid": true
+      },
+      {
+        "description": "one invalid item",
+        "data": [
+          {
+            "metadata": {
+              "amount": 38043749285,
+              "fee": 20000,
+              "status": "unconfirmed",
+              "confirmations": 73,
+              "block_time": 1415993584376
+            },
+            "version": 1,
+            "lock_time": 0,
+            "hash": "$_is_invalid",
+            "inputs": [
+              {
+                "index": 0,
+                "script_sig": "3046022100be69797cf5d784412b1258256eb657c191a04893479dfa2ae5c7f2088c7adbe0022100e6b000bd633b286ed1b9bc7682fe753d9fdad61fbe5da2a6e9444198e33a670f01",
+                "output": {
+                  "hash": "6b040cd7a4676b5c7b11f144e73c1958c177fcd79e934f6be8ce02c8cd12546d",
+                  "index": 1,
+                  "value": 38043749285,
+                  "script": {
+                    "type": "standard",
+                    "asm": "OP_DUP OP_HASH160 7d4e6d55e1dffb0df85f509343451d170d147551 OP_EQUALVERIFY OP_CHECKSIG"
+                  }
+                }
+              }
+            ],
+            "outputs": [
+              {
+                "hash": "60c1f1a3160042152114e2bba45600a5045711c3a8a458016248acec59653471",
+                "index": 0,
+                "value": 38042249285,
+                "script": {
+                  "type": "standard",
+                  "asm": "OP_DUP OP_HASH160 7d4e6d55e1dffb0df85f509343451d170d147551 OP_EQUALVERIFY OP_CHECKSIG"
+                },
+                "address": "1CRZRBwfuwUaVSPJtd6DBuezbm7XPBHLa1",
+                "metadata": {
+                  "type": "change"
+                }
+              },
+              {
+                "hash": "60c1f1a3160042152114e2bba45600a5045711c3a8a458016248acec59653471",
+                "index": 1,
+                "value": 1500000,
+                "script": {
+                  "type": "standard",
+                  "asm": "OP_DUP OP_HASH160 3bc576e6960a9d45201ba5087e39224d0a05a079 OP_EQUALVERIFY OP_CHECKSIG"
+                },
+                "address": "16T3RPZLmxtXQCgWi1S8kef5Ca6jqXhoeT"
+              }
+            ]
+          }
+        ],
+        "valid": false
+      }
+    ]
+  }
+]
