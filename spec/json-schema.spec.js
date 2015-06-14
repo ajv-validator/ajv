@@ -71,16 +71,15 @@ function addTests(description, testsPath) {
           // it(testSet.description, function() {
             before(function() {
               validate = ajv.compile(testSet.schema);
+              // console.log('validate', validate.toString());
               fullValidate = fullAjv.compile(testSet.schema);
             });
 
             testSet.tests.forEach(function (test) {
               // if (test.description != 'valid object from z-schema benchmark') return;
-              // console.log(testSet.schema, '\n\n***\n\n', validate.toString());
               it(test.description, function() {
                 var valid = validate(test.data);
                 // console.log('result', valid, test.valid, validate.errors);
-                // console.log('validate', validate.toString());
                 assert.equal(valid, test.valid);
                 if (valid) assert(validate.errors === null);
                 else assert(validate.errors.length > 0);
