@@ -66,7 +66,7 @@ function addTests(description, testsPath) {
         var testSets = require(file.path);
         testSets.forEach(function (testSet) {
           // if (testSet.description != 'remote ref, containing refs itself') return;
-          describe(testSet.description, function() {
+          (testSet.skip ? describe.skip : describe)(testSet.description, function() {
             var validate, fullValidate;
           // it(testSet.description, function() {
             before(function() {
@@ -77,7 +77,7 @@ function addTests(description, testsPath) {
 
             testSet.tests.forEach(function (test) {
               // if (test.description != 'valid object from z-schema benchmark') return;
-              it(test.description, function() {
+              (test.skip ? it.skip : it)(test.description, function() {
                 var valid = validate(test.data);
                 // console.log('result', valid, test.valid, validate.errors);
                 assert.equal(valid, test.valid);
