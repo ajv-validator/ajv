@@ -1,0 +1,54 @@
+[
+  {
+    "skip": true,
+    "description": "root ref in ref (#2)",
+    "schema": {
+      "definitions": {
+        "arr": {
+           "type": "array",
+           "items": { "$ref": "#" }
+        }
+      },
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "children": { "$ref": "#/definitions/arr" }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid",
+        "data": {
+          "name": "foo",
+          "children": [
+            { "name": "bar" },
+            { "name": "baz" }
+          ]
+        },
+        "valid": true
+      },
+      {
+        "description": "invalid",
+        "data": {
+          "name": "foo",
+          "children": [
+            { "name": 1 },
+            { "name": 2 }
+          ]
+        },
+        "valid": false
+      },
+      {
+        "description": "invalid",
+        "data": {
+          "name": "foo",
+          "children": [
+            [ ],
+            [ ]
+          ]
+        },
+        "valid": false
+      }
+    ]
+  }
+]
