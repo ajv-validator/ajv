@@ -17,6 +17,15 @@ ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
 ajv passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (apart from the one that requires that `1.0` is not an integer).
 
 
+## Benchmarks
+
+Benchmark of the test suite - [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark).
+
+[Same benchmark](https://github.com/epoberezkin/json-schema-benchmark) run on faster CPU with node 0.12.
+
+[Benchmark of individual test cases](https://rawgit.com/zaggino/z-schema/master/benchmark/results.html) by [z-schema](https://github.com/zaggino/z-schema).
+
+
 ## Install
 
 ```
@@ -54,15 +63,6 @@ if (!valid) console.log(ajv.errors);
 ```
 
 ajv compiles schemas to functions and caches them in all cases (using stringified schema as a key - using [json-stable-stringify](https://github.com/substack/json-stable-stringify)), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
-
-
-## Benchmarks
-
-Benchmark of the test suite - [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark).
-
-[Same benchmark](https://github.com/epoberezkin/json-schema-benchmark) run on faster CPU with node 0.12:
-
-[![performance](https://chart.googleapis.com/chart?chxt=x,y&cht=bhs&chco=76A4FB&chls=2.0&chbh=26,4,1&chs=600x410&chxl=-1:|ajv|jsen|is-my-json-valid|schemasaurus|themis|z-schema|jjv|jsck|jsonschema|skeemas|request-validator|tv4|jayschema&chd=t:100,63.4,59.7,17.3,12.2,6.3,3.8,2.6,0.6,0.6,0.4,0.2,0.1)](https://github.com/epoberezkin/json-schema-benchmark)
 
 
 ## API
