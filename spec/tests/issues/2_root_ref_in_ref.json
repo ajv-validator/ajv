@@ -28,7 +28,7 @@
         "valid": true
       },
       {
-        "description": "invalid",
+        "description": "child numbers are invalid",
         "data": {
           "name": "foo",
           "children": [
@@ -39,7 +39,7 @@
         "valid": false
       },
       {
-        "description": "invalid",
+        "description": "child arrays are invalid",
         "data": {
           "name": "foo",
           "children": [
