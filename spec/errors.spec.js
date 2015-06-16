@@ -55,6 +55,13 @@ describe('Validation errors', function () {
     shouldBeInvalid(fullValidate, invalidData, 2);
     shouldBeError(fullValidate.errors[0], 'additionalProperties', "['baz']");
     shouldBeError(fullValidate.errors[1], 'additionalProperties', "['quux']");
+
+    fullValidate.errors
+    .filter(function(err) { return err.keyword == 'additionalProperties'; })
+    .map(function(err) { return err.dataPath.slice(2,-2); })
+    .forEach(function(p) { delete invalidData[p]; });
+
+    invalidData .should.eql({ foo: 1, bar: 2 });
   });
 
 
