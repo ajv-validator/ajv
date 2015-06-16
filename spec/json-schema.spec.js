@@ -19,7 +19,7 @@ var ONLY_FILES, SKIP_FILES;
 // 'schemas/complex',
 // 'schemas/basic'
 // 'schemas/advanced'
-'issues/12_restoring_root_after_resolve'
+// 'issues/12_restoring_root_after_resolve'
 // ];
 
 SKIP_FILES = [
@@ -78,7 +78,7 @@ function addTests(description, testsPath) {
               // if (test.description != 'valid number') return;
               (test.skip ? it.skip : it)(test.description, function() {
                 var valid = validate(test.data);
-                // console.log('result', valid, test.valid, validate.errors);
+                // if (valid !== test.valid) console.log('result', valid, test.valid, validate.errors);
                 assert.equal(valid, test.valid);
                 if (valid) assert(validate.errors === null);
                 else assert(validate.errors.length > 0);
