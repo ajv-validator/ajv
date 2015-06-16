@@ -1,4 +1,6 @@
 language: node_js
+before_script:
+  - git submodule update --init
 node_js:
   - "0.10"
   - "0.12"
