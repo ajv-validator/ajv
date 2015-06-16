@@ -1,0 +1,62 @@
+[
+  {
+    "description": "restoring root after ref resolution (#12)",
+    "schema": {
+      "definitions": {
+        "int": { "$ref": "http://localhost:1234/integer.json" },
+        "str": { "type": "string" }
+      },
+      "anyOf": [
+        { "$ref": "#/definitions/int" },
+        { "$ref": "#/definitions/str" }
+      ]
+    },
+    "tests": [
+      {
+        "description": "valid string",
+        "data": "foo",
+        "valid": true
+      },
+      {
+        "description": "valid number",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "invalid object",
+        "data": {},
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "all refs are in the same place",
+    "schema": {
+      "definitions": {
+        "int": { "type": "integer" },
+        "str": { "type": "string" }
+      },
+      "anyOf": [
+        { "$ref": "#/definitions/int" },
+        { "$ref": "#/definitions/str" }
+      ]
+    },
+    "tests": [
+      {
+        "description": "valid string",
+        "data": "foo",
+        "valid": true
+      },
+      {
+        "description": "valid number",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "invalid object",
+        "data": {},
+        "valid": false
+      }
+    ]
+  }
+]

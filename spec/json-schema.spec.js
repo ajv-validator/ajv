@@ -19,7 +19,7 @@ var ONLY_FILES, SKIP_FILES;
 // 'schemas/complex',
 // 'schemas/basic'
 // 'schemas/advanced'
-// 'issues/2_root_ref_in_ref'
+'issues/12_restoring_root_after_resolve'
 // ];
 
 SKIP_FILES = [
@@ -64,7 +64,7 @@ function addTests(description, testsPath) {
       (skip ? describe.skip : describe) (file.name, function() {
         var testSets = require(file.path);
         testSets.forEach(function (testSet) {
-          // if (testSet.description != 'remote ref, containing refs itself') return;
+          // if (testSet.description != 'restoring root after ref resolution (#12)') return;
           (testSet.skip ? describe.skip : describe)(testSet.description, function() {
             var validate, fullValidate;
           // it(testSet.description, function() {
@@ -75,7 +75,7 @@ function addTests(description, testsPath) {
             });
 
             testSet.tests.forEach(function (test) {
-              // if (test.description != 'valid') return;
+              // if (test.description != 'valid number') return;
               (test.skip ? it.skip : it)(test.description, function() {
                 var valid = validate(test.data);
                 // console.log('result', valid, test.valid, validate.errors);
