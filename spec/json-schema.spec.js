@@ -46,7 +46,7 @@ for (var id in remoteRefs) {
 }
 
 
-describe.only('Schema validation tests', function() {
+describe('Schema validation tests', function() {
   addTests('JSON-Schema tests draft4', './json-schema-test-suite/tests/draft4/{**/,}*.json');
   addTests('Advanced schema tests', './tests/{**/,}*.json');
 });
