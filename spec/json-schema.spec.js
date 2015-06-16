@@ -6,9 +6,7 @@ var glob = require('glob')
 
 var ONLY_FILES, SKIP_FILES;
 // ONLY_FILES = [
-// 'type', 'not',
-// 'allOf',
-// 'anyOf', 'oneOf', 'enum',
+// 'type', 'not', 'allOf', 'anyOf', 'oneOf', 'enum',
 // 'maximum', 'minimum', 'multipleOf', 'maxLength', 'minLength', 'pattern',
 // 'properties', 'patternProperties', 'additionalProperties',
 // 'dependencies', 'required',
@@ -21,6 +19,7 @@ var ONLY_FILES, SKIP_FILES;
 // 'schemas/complex',
 // 'schemas/basic'
 // 'schemas/advanced'
+// 'issues/2_root_ref_in_ref'
 // ];
 
 SKIP_FILES = [
@@ -47,7 +46,7 @@ for (var id in remoteRefs) {
 }
 
 
-describe('Schema validation tests', function() {
+describe.only('Schema validation tests', function() {
   addTests('JSON-Schema tests draft4', './json-schema-test-suite/tests/draft4/{**/,}*.json');
   addTests('Advanced schema tests', './tests/{**/,}*.json');
 });
@@ -76,7 +75,7 @@ function addTests(description, testsPath) {
             });
 
             testSet.tests.forEach(function (test) {
-              // if (test.description != 'valid object from z-schema benchmark') return;
+              // if (test.description != 'valid') return;
               (test.skip ? it.skip : it)(test.description, function() {
                 var valid = validate(test.data);
                 // console.log('result', valid, test.valid, validate.errors);
