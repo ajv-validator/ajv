@@ -1,6 +1,9 @@
 # ajv - Another JSON Schema Validator
 
-One of the fastest JSON Schema validators for node.js. It uses [doT templates](https://github.com/olado/doT) to generate super-fast validating functions.
+One of the fastest JSON Schema validators for node.js.
+
+It uses precompiled [doT templates](https://github.com/olado/doT) to generate super-fast validating functions.
+
 
 [![Build Status](https://travis-ci.org/epoberezkin/ajv.svg?branch=master)](https://travis-ci.org/epoberezkin/ajv)
 [![npm version](https://badge.fury.io/js/ajv.svg)](http://badge.fury.io/js/ajv)
@@ -149,6 +152,18 @@ Returns the text with all errors in a String. Options can have these properties:
 git submodule update --init
 npm test
 ```
+
+
+## Contributing
+
+All validation functions are generated using doT templates in dot folder. Templates are precompiled so doT is not a run-time dependency.
+
+`bin/compile_dots` to compile templates to dotjs folder
+
+`bin/watch_dots` to automatically compile templates when files in dot folder change
+
+There is pre-commit hook that runs compile_dots and tests.
+
 
 ## Changes history
 
