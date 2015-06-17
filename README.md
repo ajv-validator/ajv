@@ -108,6 +108,19 @@ Once the schema added it and all the references inside it can be referenced in o
 
 In the current version all the referenced schemas should be added before the schema that uses them is compiled, so the circular references are not supported.
 
+By default schema is validated against meta-schema before it is compiled and if the schema does not pass validation the exception is thrown. This behaviour is controlled by `validateSchema` option.
+
+
+##### .validateSchema(Object schema) -&gt; Boolean
+
+Validates schema.
+
+If schema doesn't have `$schema` property it is validated against draft 4 meta-schema (option `meta` should not be false).
+
+If schema has `$schema` property than the schema with this id (should be previously added) is used to validate passed schema.
+
+Errors are available at `ajv.errors`.
+
 
 ##### .getSchema(String key) -&gt; Function&lt;Object data&gt;
 
@@ -140,7 +153,7 @@ Returns the text with all errors in a String. Options can have these properties:
 - _format_: formats validation mode ('fast' by default). Pass 'full' for more correct and slow validation or `false` not to validate formats at all. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
 - _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
 - _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default).
-- _validateSchema: validate schema against meta-schema (true by default). `$schema` property in the schema can either be absent (draft-4 meta-schema will be used) or can be a reference to any previously added schema. If the validation fails, the errors will be logged.
+- _validateSchema: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can either be absent (draft-4 meta-schema will be used) or can be a reference to any previously added schema. If the validation fails, the exception is thrown. Pass "log" in this option to log error instead of throwing exception.
 - _uniqueItems_: validate `uniqueItems` keyword (true by default).
 - _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.
 - _beautify_: format the generated function with [js-beautify](https://github.com/beautify-web/js-beautify) (the validating function is generated without line-breaks). `npm install js-beautify` to use this option. `true` or js-beautify options can be passed.
@@ -166,6 +179,13 @@ There is pre-commit hook that runs compile_dots and tests.
 
 
 ## Changes history
+
+##### 0.5.2
+
+doT is no longer a run-time dependency
+
+ajv can be used in the browser (with browserify)
+
 
 ##### 0.5.0
 

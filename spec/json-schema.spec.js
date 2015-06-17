@@ -31,8 +31,8 @@ var DEBUG = false;
 
 
 var Ajv = require('../lib/ajv')
-  , ajv = Ajv({ beautify: DEBUG, _debug: DEBUG })
-  , fullAjv = Ajv({ allErrors: true, verbose: true, format: 'full', beautify: DEBUG, _debug: DEBUG });
+  , ajv = Ajv({ beautify: true, _debug: DEBUG })
+  , fullAjv = Ajv({ allErrors: true, verbose: true, format: 'full', beautify: true, _debug: DEBUG });
 
 var remoteRefs = {
     'http://localhost:1234/integer.json': require('./JSON-Schema-Test-Suite/remotes/integer.json'),
