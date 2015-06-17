@@ -1,6 +1,6 @@
 # ajv - Another JSON Schema Validator
 
-One of the fastest JSON Schema validators for node.js.
+One of the fastest JSON Schema validators for node.js and browser.
 
 It uses precompiled [doT templates](https://github.com/olado/doT) to generate super-fast validating functions.
 
