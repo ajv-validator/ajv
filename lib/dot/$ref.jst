@@ -26,18 +26,23 @@
       } {{? $breakOnError }} else { {{?}}
     {{?}}
   {{??}}
-    {{ var $v = 'v' + $lvl; }}
-    var {{=$v}} = root.refVal[0];
-    {{# def.validateRef:$v }}
+    {{# def.validateRef:'root.refVal[0]' }}
   {{?}}
 {{??}}
   {{ var $refVal = it.resolveRef(it.baseId, $schema, it.rootId); }}
   {{? $refVal === undefined }}
-    {{# def.error:'$ref' }}
-    {{? $breakOnError }} if (false) { {{?}}
+    {{ var $message = 'can\'t resolve reference ' + $schema; }}
+    {{? it.opts.missingRefs == 'fail' }}
+      {{ console.log($message); }}
+      {{# def.error:'$ref' }}
+      {{? $breakOnError }} if (false) { {{?}}
+    {{?? it.opts.missingRefs == 'ignore' }}
+      {{ console.log($message); }}
+      {{? $breakOnError }} if (true) { {{?}}
+    {{??}}
+      {{ throw new Error($message); }}
+    {{?}}
   {{??}}
-    {{ var $v = 'v' + $lvl; }}
-    var {{=$v}} = {{=$refVal}};
-    {{# def.validateRef:$v }}
+    {{# def.validateRef:$refVal }}
   {{?}}
 {{?}}
