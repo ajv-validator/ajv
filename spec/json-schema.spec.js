@@ -31,8 +31,8 @@ var DEBUG = false;
 
 
 var Ajv = require('../lib/ajv')
-  , ajv = Ajv({ beautify: true, _debug: DEBUG })
-  , fullAjv = Ajv({ allErrors: true, verbose: true, format: 'full', beautify: true, _debug: DEBUG });
+  , ajv = Ajv({ beautify: DEBUG, _debug: DEBUG })
+  , fullAjv = Ajv({ allErrors: true, verbose: true, format: 'full', beautify: DEBUG, _debug: DEBUG });
 
 var remoteRefs = {
     'http://localhost:1234/integer.json': require('./JSON-Schema-Test-Suite/remotes/integer.json'),
@@ -64,7 +64,7 @@ function addTests(description, testsPath) {
       (skip ? describe.skip : describe) (file.name, function() {
         var testSets = require(file.path);
         testSets.forEach(function (testSet) {
-          // if (testSet.description != 'restoring root after ref resolution (#12)') return;
+          // if (testSet.description != 'change resolution scope') return;
           (testSet.skip ? describe.skip : describe)(testSet.description, function() {
             var validate, fullValidate;
           // it(testSet.description, function() {

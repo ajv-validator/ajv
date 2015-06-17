@@ -39,10 +39,10 @@ describe('Ajv', function () {
       });
     })
 
-    it.skip('should throw if schema is invalid', function() {
-      should.throw(function() {
-        ajv.compile({ type: null });
-      });
+    it('should validate schema when it is compiled', function() {
+      ajv.errors = null;
+      ajv.compile({ type: null });
+      ajv.errors.length .should.be.greaterThan(0);
     });
   });
 

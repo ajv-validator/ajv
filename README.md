@@ -58,7 +58,7 @@ or
 // ...
 ajv.addSchema(schema, 'mySchema');
 var valid = ajv.validate('mySchema', data);
-if (!valid) console.log(ajv.errors);
+if (!valid) console.log(ajv.errorsText());
 // ...
 ```
 
@@ -79,6 +79,8 @@ All the instance methods below are bound to the instance, so they can be used wi
 Generate validating function and cache the compiled schema for future use.
 
 Validating function returns boolean and has properties `errors` with the errors from the last validation (`null` if there were no errors) and `schema` with the reference to the original schema. 
+
+Unless options `validateSchema` is false, the schema will be validated against meta-schema and if schema is invalid the errors will be logged. See [options](#options).
 
 
 ##### .validate(Object schema|String key|String ref, data) -&gt; Boolean
@@ -120,6 +122,14 @@ Function should return validation result as `true` or `false`.
 Custom formats can be also added via `formats` option.
 
 
+##### .errorsText([Array<Object> errors [, Object options]]) -&gt; String
+
+Returns the text with all errors in a String. Options can have these properties:
+
+- separator: string used to separate errors, ", " is used by default.
+- dataVar: the variable name that dataPaths are prefixed with, "data" by default.
+
+
 ## Options
 
 - _allErrors_: check all rules collecting all errors. Default is to return after the first error.
@@ -127,6 +137,7 @@ Custom formats can be also added via `formats` option.
 - _format_: formats validation mode ('fast' by default). Pass 'full' for more correct and slow validation or `false` not to validate formats at all. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
 - _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
 - _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default).
+- _validateSchema: validate schema against meta-schema (true by default). `$schema` property in the schema can either be absent (draft-4 meta-schema will be used) or can be a reference to any previously added schema. If the validation fails, the errors will be logged.
 - _uniqueItems_: validate `uniqueItems` keyword (true by default).
 - _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.
 - _beautify_: format the generated function with [js-beautify](https://github.com/beautify-web/js-beautify) (the validating function is generated without line-breaks). `npm install js-beautify` to use this option. `true` or js-beautify options can be passed.
@@ -140,6 +151,11 @@ npm test
 ```
 
 ## Changes history
+
+##### 0.5.0
+
+Schemas are validated against meta-schema before compilation
+
 
 ##### 0.4.1
 
