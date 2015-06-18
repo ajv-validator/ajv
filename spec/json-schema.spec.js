@@ -17,9 +17,10 @@ var ONLY_FILES, SKIP_FILES;
 // 'refRemote',
 // 'definitions',
 // 'schemas/complex',
-// 'schemas/basic'
-// 'schemas/advanced'
-// 'issues/12_restoring_root_after_resolve'
+// 'schemas/basic',
+// 'schemas/advanced',
+// 'issues/12_restoring_root_after_resolve',
+// 'issues/2_root_ref_in_ref'
 // ];
 
 SKIP_FILES = [
@@ -35,9 +36,12 @@ var Ajv = require('../lib/ajv')
   , fullAjv = Ajv({ allErrors: true, verbose: true, format: 'full', beautify: true, _debug: DEBUG });
 
 var remoteRefs = {
+    // for JSON-Schema-Test-Suite
     'http://localhost:1234/integer.json': require('./JSON-Schema-Test-Suite/remotes/integer.json'),
     'http://localhost:1234/subSchemas.json': require('./JSON-Schema-Test-Suite/remotes/subSchemas.json'),
-    'http://localhost:1234/folder/folderInteger.json': require('./JSON-Schema-Test-Suite/remotes/folder/folderInteger.json')
+    'http://localhost:1234/folder/folderInteger.json': require('./JSON-Schema-Test-Suite/remotes/folder/folderInteger.json'),
+    // for tests
+    'http://localhost:1234/name.json': require('./remotes/name.json')
 };
 
 for (var id in remoteRefs) {

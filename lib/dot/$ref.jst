@@ -31,7 +31,7 @@
 {{??}}
   {{ var $refVal = it.resolveRef(it.baseId, $schema, it.rootId); }}
   {{? $refVal === undefined }}
-    {{ var $message = 'can\'t resolve reference ' + $schema; }}
+    {{ var $message = 'can\'t resolve reference ' + $schema + ' from id ' + it.baseId; }}
     {{? it.opts.missingRefs == 'fail' }}
       {{ console.log($message); }}
       {{# def.error:'$ref' }}

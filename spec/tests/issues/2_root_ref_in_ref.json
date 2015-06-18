@@ -49,5 +49,92 @@
         "valid": false
       }
     ]
+  },
+  {
+    "description": "root ref in ref with anyOf (#2)",
+    "schema": {
+      "definitions": {
+        "orNull": {
+          "anyOf": [
+            { "type": "null" },
+            { "$ref": "#" }
+          ]
+        }
+      },
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "parent": { "$ref": "#/definitions/orNull" }
+      }
+    },
+    "tests": [
+      {
+        "description": "null parent is valid",
+        "data": {
+          "name": "foo",
+          "parent": null
+        },
+        "valid": true
+      },
+      {
+        "skip": false,
+        "description": "object parent is valid",
+        "data": {
+          "name": "foo",
+          "parent": {
+            "name": "bar",
+            "parent": null
+          }
+        },
+        "valid": true
+      },
+      {
+        "description": "object parent is valid",
+        "data": {
+          "name": "foo",
+          "parent": {
+            "name": "bar",
+            "parent": {
+              "name": "baz",
+              "parent": null
+            }
+          }
+        },
+        "valid": true
+      },
+      {
+        "description": "string parent is invalid",
+        "data": {
+          "name": "foo",
+          "parent": "buu"
+        },
+        "valid": false
+      },
+      {
+        "description": "string subparent is invalid",
+        "data": {
+          "name": "foo",
+          "parent": {
+            "name": "bar",
+            "parent": "baz"
+          }
+        },
+        "valid": false
+      },
+      {
+        "description": "string sub-subparent is invalid",
+        "data": {
+          "name": "foo",
+          "parent": {
+            "name": "bar",
+            "parent": {
+              "name": "baz",
+              "parent": "quux"
+            }
+          }
+        },
+        "valid": false
+      }
+    ]
   }
 ]

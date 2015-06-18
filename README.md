@@ -4,9 +4,9 @@ One of the fastest JSON Schema validators for node.js and browser.
 
 It uses precompiled [doT templates](https://github.com/olado/doT) to generate super-fast validating functions.
 
-
 [![Build Status](https://travis-ci.org/epoberezkin/ajv.svg?branch=master)](https://travis-ci.org/epoberezkin/ajv)
 [![npm version](https://badge.fury.io/js/ajv.svg)](http://badge.fury.io/js/ajv)
+
 
 ## JSON Schema standard
 
@@ -152,8 +152,9 @@ Returns the text with all errors in a String. Options can have these properties:
 - _verbose_: include the reference to the part of the schema and validated data in errors (false by default).
 - _format_: formats validation mode ('fast' by default). Pass 'full' for more correct and slow validation or `false` not to validate formats at all. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
 - _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
+- _schemas_: an array or object of schemas that will be added to the instance. If the order is important, pass array. In this case schemas must have IDs in them. Otherwise the object can be passed - `addSchema(value, key)` will be called for each schema in this object.
 - _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default).
-- _validateSchema_: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can either be absent (draft-4 meta-schema will be used) or can be a reference to any previously added schema. If the validation fails, the exception is thrown. Pass "log" in this option to log error instead of throwing exception.
+- _validateSchema_: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can either be absent (draft-4 meta-schema will be used) or can be a reference to any previously added schema. If the validation fails, the exception is thrown. Pass "log" in this option to log error instead of throwing exception. Pass `false` to skip schema validation.
 - _missingRefs_: by default if the reference cannot be resolved during compilation the exception is thrown. Pass 'ignore' to log error during compilation and pass validation. Pass 'fail' to log error and successfully compile schema but fail validation if this rule is checked.
 - _uniqueItems_: validate `uniqueItems` keyword (true by default).
 - _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.
