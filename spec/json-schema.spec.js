@@ -44,10 +44,19 @@ var remoteRefs = {
     'http://localhost:1234/name.json': require('./remotes/name.json')
 };
 
+var remoteRefsWithIds = [ // order is important
+  require('./remotes/bar.json'),
+  require('./remotes/foo.json'),
+  require('./remotes/buu.json'),
+];
+
 for (var id in remoteRefs) {
   ajv.addSchema(remoteRefs[id], id);
   fullAjv.addSchema(remoteRefs[id], id);
 }
+
+ajv.addSchema(remoteRefsWithIds);
+fullAjv.addSchema(remoteRefsWithIds);
 
 
 describe('Schema validation tests', function() {

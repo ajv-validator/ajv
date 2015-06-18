@@ -1,0 +1,59 @@
+[
+  {
+    "description": "ref in remote ref with ids",
+    "schema": {
+      "id": "http://localhost:1234/issue14a.json",
+      "type": "array",
+      "items": { "$ref": "foo.json" }
+    },
+    "tests": [
+      {
+        "description": "string is valid",
+        "data": [
+          {
+            "bar": "any string"
+          }
+        ],
+        "valid": true
+      },
+      {
+        "description": "not string is invalid",
+        "data": [
+          {
+            "bar": 1
+          }
+        ],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "skip": true,
+    "description": "remote ref in definitions in remote ref with ids (#14)",
+    "schema": {
+      "id": "http://localhost:1234/issue14b.json",
+      "type": "array",
+      "items": { "$ref": "buu.json#/definitions/buu" }
+    },
+    "tests": [
+      {
+        "description": "string is valid",
+        "data": [
+          {
+            "bar": "any string"
+          }
+        ],
+        "valid": true
+      },
+      {
+        "description": "not string is invalid",
+        "data": [
+          {
+            "bar": 1
+          }
+        ],
+        "valid": false
+      }
+    ]
+  }
+]

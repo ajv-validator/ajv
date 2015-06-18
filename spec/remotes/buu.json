@@ -1,0 +1,11 @@
+{
+  "id": "http://localhost:1234/buu.json",
+  "definitions": {
+    "buu": {
+      "type": "object",
+      "properties": {
+        "bar": { "$ref": "bar.json" }
+      }
+    }
+  }
+}
