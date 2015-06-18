@@ -5,7 +5,7 @@ var glob = require('glob')
   , assert = require('assert');
 
 var ONLY_FILES, SKIP_FILES;
-// ONLY_FILES = [
+ONLY_FILES = [
 // 'type', 'not', 'allOf', 'anyOf', 'oneOf', 'enum',
 // 'maximum', 'minimum', 'multipleOf', 'maxLength', 'minLength', 'pattern',
 // 'properties', 'patternProperties', 'additionalProperties',
@@ -15,7 +15,7 @@ var ONLY_FILES, SKIP_FILES;
 // 'optional/format', 'optional/bignum',
 // 'ref', 'refRemote', 'definitions',
 // 'schemas/complex', 'schemas/basic', 'schemas/advanced',
-// ];
+];
 
 SKIP_FILES = [
   'optional/zeroTerminatedFloats',
@@ -64,38 +64,35 @@ function addTests(description, testsPath) {
     var files = getTestFiles(testsPath);
 
     files.forEach(function (file) {
-      var skip = (ONLY_FILES && ONLY_FILES.indexOf(file.name) == -1) ||
-                 (SKIP_FILES && SKIP_FILES.indexOf(file.name) >= 0);
-      // if (skip) return;
+      var filter = {
+        skip: SKIP_FILES && SKIP_FILES.indexOf(file.name) >= 0,
+        only: ONLY_FILES && ONLY_FILES.indexOf(file.name) >= 0
+      }
 
-      (skip ? describe.skip : describe) (file.name, function() {
+      skipOrOnly(filter, describe)(file.name, function() {
         var testSets = require(file.path);
         testSets.forEach(function (testSet) {
-          // if (testSet.description != 'change resolution scope') return;
           skipOrOnly(testSet, describe)(testSet.description, function() {
             var validate, fullValidate;
-          // it(testSet.description, function() {
             before(function() {
               validate = ajv.compile(testSet.schema);
               // console.log('validate', validate.toString());
-              fullValidate = fullAjv.compile(testSet.schema);
+              // fullValidate = fullAjv.compile(testSet.schema);
             });
 
             testSet.tests.forEach(function (test) {
-              // if (test.description != 'valid number') return;
               skipOrOnly(test, it)(test.description, function() {
+                doTest(validate);
+                // doTest(fullValidate);
+              });
+
+              function doTest(validate) {
                 var valid = validate(test.data);
-                // if (valid !== test.valid) console.log('result', valid, test.valid, validate.errors);
+                if (valid !== test.valid) console.log('result', valid, test.valid, validate.errors);
                 assert.equal(valid, test.valid);
                 if (valid) assert(validate.errors === null);
                 else assert(validate.errors.length > 0);
-
-                var valid = fullValidate(test.data);
-                // console.log('full result', valid, fullValidate.errors);
-                assert.equal(valid, test.valid);
-                if (valid) assert(fullValidate.errors === null);
-                else assert(fullValidate.errors.length > 0);
-              });
+              }
             });
           });
         });
@@ -105,8 +102,8 @@ function addTests(description, testsPath) {
 }
 
 
-function skipOrOnly(test, func) {
-  return test.only ? func.only : test.skip ? func.skip : func;
+function skipOrOnly(filter, func) {
+  return filter.only ? func.only : filter.skip ? func.skip : func;
 }
 
 

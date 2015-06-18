@@ -100,15 +100,20 @@
 #}}
 
 
+{{## def.addError:_rule:
+  var err = {{# def._error:_rule }};
+  if (validate.errors === null) validate.errors = [err];
+  else validate.errors.push(err);
+  errors++;
+#}}
+
+
 {{## def.error:_rule:
   {{? it.wasTop && $breakOnError }}
     validate.errors = [{{# def._error:_rule }}];
     return false;
   {{??}}
-    var err = {{# def._error:_rule }};
-    if (validate.errors === null) validate.errors = [err];
-    else validate.errors.push(err);
-    errors++;
+    {{# def.addError:_rule }}
   {{?}}
 #}}
 
@@ -124,6 +129,7 @@
   $ref:            "'can\\\'t resolve reference {{=$schema}}'",
   additionalItems: "'should NOT have more than {{=$schema.length}} items'",
   additionalProperties: "'additional properties NOT allowed'",
+  anyOf:           "'should match some schema in anyOf'",
   dependencies:    "'{{? $deps.length == 1 }}property {{= $deps[0] }} is{{??}}properties {{= $deps.join(\", \") }} are{{?}} required when property {{= $property }} is present'",
   enum:            "'should be equal to one of values'",
   format:          "'should match format {{=$schema}}'",
@@ -149,6 +155,7 @@
   $ref:            "'{{=$schema}}'",
   additionalItems: "false",
   additionalProperties: "false",
+  anyOf:           "validate.schema{{=$schemaPath}}",
   dependencies:    "validate.schema{{=$schemaPath}}",
   enum:            "validate.schema{{=$schemaPath}}",
   format:          "'{{=$schema}}'",

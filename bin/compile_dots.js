@@ -9,6 +9,8 @@ var glob = require('glob')
 var defs = fs.readFileSync(path.join(__dirname, '../lib/dot/definitions.def'));
 var files = glob.sync('../lib/dot/*.jst', { cwd: __dirname });
 
+console.log('\n\nCompiling:')
+
 files.forEach(function (f) {
   var template = fs.readFileSync(path.join(__dirname, f));
   var code = doT.compile(template, { definitions: defs });

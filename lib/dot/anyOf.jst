@@ -27,7 +27,9 @@
 
   {{= $closingBraces }}
 
-  if ({{=$valid}}) {
+  if (!{{=$valid}}) {
+    {{# def.addError:'anyOf' }}
+  } else {
     errors = {{=$errs}};
     if (validate.errors !== null) {
       if ({{=$errs}}) validate.errors.length = {{=$errs}};
