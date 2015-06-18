@@ -28,7 +28,6 @@
     ]
   },
   {
-    "skip": true,
     "description": "remote ref in definitions in remote ref with ids (#14)",
     "schema": {
       "id": "http://localhost:1234/issue14b.json",

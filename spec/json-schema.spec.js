@@ -13,14 +13,8 @@ var ONLY_FILES, SKIP_FILES;
 // 'maxProperties', 'minProperties', 'maxItems', 'minItems',
 // 'items', 'additionalItems', 'uniqueItems',
 // 'optional/format', 'optional/bignum',
-// 'ref',
-// 'refRemote',
-// 'definitions',
-// 'schemas/complex',
-// 'schemas/basic',
-// 'schemas/advanced',
-// 'issues/12_restoring_root_after_resolve',
-// 'issues/2_root_ref_in_ref'
+// 'ref', 'refRemote', 'definitions',
+// 'schemas/complex', 'schemas/basic', 'schemas/advanced',
 // ];
 
 SKIP_FILES = [
@@ -78,7 +72,7 @@ function addTests(description, testsPath) {
         var testSets = require(file.path);
         testSets.forEach(function (testSet) {
           // if (testSet.description != 'change resolution scope') return;
-          (testSet.skip ? describe.skip : describe)(testSet.description, function() {
+          skipOrOnly(testSet, describe)(testSet.description, function() {
             var validate, fullValidate;
           // it(testSet.description, function() {
             before(function() {
@@ -89,7 +83,7 @@ function addTests(description, testsPath) {
 
             testSet.tests.forEach(function (test) {
               // if (test.description != 'valid number') return;
-              (test.skip ? it.skip : it)(test.description, function() {
+              skipOrOnly(test, it)(test.description, function() {
                 var valid = validate(test.data);
                 // if (valid !== test.valid) console.log('result', valid, test.valid, validate.errors);
                 assert.equal(valid, test.valid);
@@ -108,6 +102,11 @@ function addTests(description, testsPath) {
       });
     });
   });
+}
+
+
+function skipOrOnly(test, func) {
+  return test.only ? func.only : test.skip ? func.skip : func;
 }
 
 
