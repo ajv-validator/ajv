@@ -202,3 +202,8 @@ Custom formats support.
 ##### 0.4.0
 
 Errors are set to `null` if there are no errors (previously empty array).
+
+
+## License
+
+[MIT](https://github.com/epoberezkin/ajv/blob/master/LICENSE)
