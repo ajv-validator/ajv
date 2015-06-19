@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "description": "Another JSON schema Validator",
   "main": "lib/ajv.js",
   "scripts": {
@@ -29,6 +29,7 @@
     "dot": "^1.0.3",
     "glob": "^5.0.10",
     "js-beautify": "^1.5.6",
+    "json-schema-test": "0.0.3",
     "mocha": "^2.2.5",
     "watch": "^0.16.0"
   }
