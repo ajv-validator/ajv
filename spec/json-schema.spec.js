@@ -77,13 +77,13 @@ function addTests(description, testsPath) {
             before(function() {
               validate = ajv.compile(testSet.schema);
               // console.log('validate', validate.toString());
-              // fullValidate = fullAjv.compile(testSet.schema);
+              fullValidate = fullAjv.compile(testSet.schema);
             });
 
             testSet.tests.forEach(function (test) {
               skipOrOnly(test, it)(test.description, function() {
                 doTest(validate);
-                // doTest(fullValidate);
+                doTest(fullValidate);
               });
 
               function doTest(validate) {
