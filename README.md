@@ -192,6 +192,11 @@ There is pre-commit hook that runs compile_dots and tests.
 
 ## Changes history
 
+##### 0.5.9
+
+`cache` option and `removeSchema` method
+
+
 ##### 0.5.2
 
 doT is no longer a run-time dependency
