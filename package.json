@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "description": "Another JSON schema Validator",
   "main": "lib/ajv.js",
   "scripts": {
