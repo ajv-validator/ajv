@@ -2,7 +2,8 @@
 
 
 var Ajv = require('../lib/ajv')
-  , should = require('chai').should();
+  , should = require('chai').should()
+  , stableStringify = require('json-stable-stringify');
 
 
 describe('Ajv', function () {
@@ -179,6 +180,44 @@ describe('Ajv', function () {
 
       var v = ajv.getSchema();
       v .should.equal(validate);
+    });
+  });
+
+
+  describe('removeSchema method', function() {
+    it('should remove schema by key', function() {
+      var schema = { type: 'integer' }
+        , str = stableStringify(schema);
+      var v = ajv.addSchema(schema, 'int');
+      ajv.getSchema('int') .should.equal(v);
+      ajv._cache.get(str) .should.equal(v);
+
+      ajv.removeSchema('int');
+      should.not.exist(ajv.getSchema('int'));
+      should.not.exist(ajv._cache.get(str));
+    });
+
+    it('should remove schema by id', function() {
+      var schema = { id: '//e.com/int.json', type: 'integer' }
+        , str = stableStringify(schema);
+      var v = ajv.addSchema(schema);
+      ajv.getSchema('//e.com/int.json') .should.equal(v);
+      ajv._cache.get(str) .should.equal(v);
+
+      ajv.removeSchema('//e.com/int.json');
+      should.not.exist(ajv.getSchema('//e.com/int.json'));
+      should.not.exist(ajv._cache.get(str));
+    });
+
+    it('should remove schema by schema object', function() {
+      var schema = { type: 'integer' }
+        , str = stableStringify(schema);
+      var v = ajv.addSchema(schema);
+      ajv._cache.get(str) .should.equal(v);
+
+      ajv.removeSchema({ type: 'integer' });
+      // should.not.exist(ajv.getSchema('int'));
+      should.not.exist(ajv._cache.get(str));
     });
   });
 });

@@ -126,7 +126,14 @@ Errors will be available at `ajv.errors`.
 
 ##### .getSchema(String key) -&gt; Function&lt;Object data&gt;
 
-Retrieve compiled schema previously added with `addSchema`. Validating function has `schema` property with the reference to the original schema.
+Retrieve compiled schema previously added with `addSchema` by the key passed to `addSchema` or by its full reference (id). Returned validating function has `schema` property with the reference to the original schema.
+
+
+##### .removeSchema(Object schema|String key|String ref)
+
+Remove added/cached schema. Even if schema is referenced by other schemas it can be safely removed as dependent schemas have local references.
+
+Schema can be removed using key passed to `addSchema`, it's full reference (id) or using actual schema object that will be stable-stringified to remove schema from cache.
 
 
 ##### .addFormat(String name, String|RegExp|Function format)
