@@ -113,13 +113,15 @@ By default schema is validated against meta-schema before it is compiled and if 
 
 ##### .validateSchema(Object schema) -&gt; Boolean
 
-Validates schema.
+Validates schema. This method should be used to validate schemas rather than `validate` due to the inconsistency of `uri` format in JSON-Schema standart.
+
+By default this method is called automatically when the schema is added, so you rarely need to use it directly.
 
 If schema doesn't have `$schema` property it is validated against draft 4 meta-schema (option `meta` should not be false).
 
-If schema has `$schema` property than the schema with this id (should be previously added) is used to validate passed schema.
+If schema has `$schema` property then the schema with this id (should be previously added) is used to validate passed schema.
 
-Errors are available at `ajv.errors`.
+Errors will be available at `ajv.errors`.
 
 
 ##### .getSchema(String key) -&gt; Function&lt;Object data&gt;
