@@ -150,7 +150,6 @@ Custom formats can be also added via `formats` option.
 ##### .errorsText([Array<Object> errors [, Object options]]) -&gt; String
 
 Returns the text with all errors in a String. Options can have these properties:
-
 - separator: string used to separate errors, ", " is used by default.
 - dataVar: the variable name that dataPaths are prefixed with, "data" by default.
 
