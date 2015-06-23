@@ -119,7 +119,7 @@ var valid{{=$it.level}} = true;
   {{? {{# def.nonEmptySchema:$sch}} }}
     {{
       $it.schema = $sch;
-      $it.schemaPath = it.schemaPath + '.patternProperties.' + $pProperty;
+      $it.schemaPath = it.schemaPath + '.patternProperties' + it.util.getProperty($pProperty);
     }}
 
     for (var key{{=$lvl}} in {{=$data}}) {

@@ -1,0 +1,22 @@
+[
+  {
+    "description": "escaping pattern property (#17)",
+    "schema": {
+      "type" : "object",
+      "patternProperties": {
+        "^.+$" : {
+          "type" : "object",
+          "required" : ["unit"]
+        }
+      },
+      "additionalProperties" : false
+    },
+    "tests": [
+      {
+        "description": "empty object",
+        "data": {},
+        "valid": true
+      }
+    ]
+  }
+]
