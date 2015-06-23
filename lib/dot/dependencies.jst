@@ -41,7 +41,7 @@ var {{=$errs}} = errors;
     if ({{=$data}}['{{= $property }}'] !== undefined) {
       {{ 
         $it.schema = $sch;
-        $it.schemaPath = $schemaPath + "['" + it.util.escapeQuotes($property) + "']";
+        $it.schemaPath = $schemaPath + it.util.getProperty($property);
       }}
 
       {{= it.validate($it) }}

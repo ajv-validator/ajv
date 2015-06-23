@@ -79,9 +79,9 @@ var valid{{=$it.level}} = true;
     {{? {{# def.nonEmptySchema:$sch}} }}
       {{
         $it.schema = $sch;
-        $it.schemaPath = $schemaPath + "['" + it.util.escapeQuotes($propertyKey) + "']";
         var $prop = it.util.getProperty($propertyKey)
           , $passData = $data + $prop;
+        $it.schemaPath = $schemaPath + $prop;
         $it.errorPath = (it.errorPath + ' + "' + $prop + '"').replace('" + "', '');
         $it.dataPath = it.dataPath + $prop;
       }}
