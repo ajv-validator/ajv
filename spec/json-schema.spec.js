@@ -42,8 +42,7 @@ jsonSchemaTest([ ajv, fullAjv ], {
     // 'schemas/complex', 'schemas/basic', 'schemas/advanced',
   ],
   skip: [
-    'optional/zeroTerminatedFloats',
-    'schemas/complex'
+    'optional/zeroTerminatedFloats'
   ],
   cwd: __dirname,
   hideFolder: 'draft4/'
