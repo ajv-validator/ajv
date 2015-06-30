@@ -10,7 +10,7 @@ describe('Validation errors', function () {
 
   beforeEach(function() {
     ajv = Ajv();
-    fullAjv = Ajv({ allErrors: true });
+    fullAjv = Ajv({ allErrors: true, beautify: true });
   });
 
   it('error should include dataPath', function() {
@@ -65,7 +65,7 @@ describe('Validation errors', function () {
   });
 
 
-  it.skip('errors for required should include missing property in dataPath', function() {
+  it('errors for required should include missing property in dataPath', function() {
     var schema = {
       required: ['foo', 'bar', 'baz']
     };
@@ -77,17 +77,17 @@ describe('Validation errors', function () {
     var validate = ajv.compile(schema);
     shouldBeValid(validate, data);
     shouldBeInvalid(validate, invalidData1);
-    shouldBeError(validate.errors[0], 'required', ".bar");
+    shouldBeError(validate.errors[0], 'required', '.bar');
     shouldBeInvalid(validate, invalidData2);
-    shouldBeError(validate.errors[0], 'required', ".foo");
+    shouldBeError(validate.errors[0], 'required', '.foo');
 
     var fullValidate = fullAjv.compile(schema);
     shouldBeValid(fullValidate, data);
-    shouldBeInvalid(validate, invalidData1);
-    shouldBeError(validate.errors[0], 'required', ".bar");
-    shouldBeInvalid(validate, invalidData2, 2);
-    shouldBeError(validate.errors[0], 'required', ".foo");
-    shouldBeError(validate.errors[0], 'required', ".baz");
+    shouldBeInvalid(fullValidate, invalidData1);
+    shouldBeError(fullValidate.errors[0], 'required', '.bar');
+    shouldBeInvalid(fullValidate, invalidData2, 2);
+    shouldBeError(fullValidate.errors[0], 'required', '.foo');
+    shouldBeError(fullValidate.errors[1], 'required', '.baz');
   });
 
 
