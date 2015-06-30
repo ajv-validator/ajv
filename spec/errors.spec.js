@@ -65,6 +65,32 @@ describe('Validation errors', function () {
   });
 
 
+  it.skip('errors for required should include missing property in dataPath', function() {
+    var schema = {
+      required: ['foo', 'bar', 'baz']
+    };
+
+    var data = { foo: 1, bar: 2, baz: 3 }
+      , invalidData1 = { foo: 1, baz: 3 }
+      , invalidData2 = { bar: 2 };
+
+    var validate = ajv.compile(schema);
+    shouldBeValid(validate, data);
+    shouldBeInvalid(validate, invalidData1);
+    shouldBeError(validate.errors[0], 'required', ".bar");
+    shouldBeInvalid(validate, invalidData2);
+    shouldBeError(validate.errors[0], 'required', ".foo");
+
+    var fullValidate = fullAjv.compile(schema);
+    shouldBeValid(fullValidate, data);
+    shouldBeInvalid(validate, invalidData1);
+    shouldBeError(validate.errors[0], 'required', ".bar");
+    shouldBeInvalid(validate, invalidData2, 2);
+    shouldBeError(validate.errors[0], 'required', ".foo");
+    shouldBeError(validate.errors[0], 'required', ".baz");
+  });
+
+
   function testSchema1(schema) {
     _testSchema1(ajv, schema);
     _testSchema1(fullAjv, schema)
