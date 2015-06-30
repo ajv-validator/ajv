@@ -191,6 +191,14 @@ There is pre-commit hook that runs compile_dots and tests.
 
 ## Changes history
 
+
+##### 0.6.1
+
+Errors for "required" keyword validation include missing properties
+
+Better references resolution in schemas without IDs
+
+
 ##### 0.5.9
 
 `cache` option and `removeSchema` method

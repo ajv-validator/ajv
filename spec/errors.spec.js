@@ -77,17 +77,17 @@ describe('Validation errors', function () {
     var validate = ajv.compile(schema);
     shouldBeValid(validate, data);
     shouldBeInvalid(validate, invalidData1);
-    shouldBeError(validate.errors[0], 'required', '.bar');
+    shouldBeError(validate.errors[0], 'required', '.bar', 'property .bar is required');
     shouldBeInvalid(validate, invalidData2);
-    shouldBeError(validate.errors[0], 'required', '.foo');
+    shouldBeError(validate.errors[0], 'required', '.foo', 'property .foo is required');
 
     var fullValidate = fullAjv.compile(schema);
     shouldBeValid(fullValidate, data);
     shouldBeInvalid(fullValidate, invalidData1);
-    shouldBeError(fullValidate.errors[0], 'required', '.bar');
+    shouldBeError(fullValidate.errors[0], 'required', '.bar', 'property .bar is required');
     shouldBeInvalid(fullValidate, invalidData2, 2);
-    shouldBeError(fullValidate.errors[0], 'required', '.foo');
-    shouldBeError(fullValidate.errors[1], 'required', '.baz');
+    shouldBeError(fullValidate.errors[0], 'required', '.foo', 'property .foo is required');
+    shouldBeError(fullValidate.errors[1], 'required', '.baz', 'property .baz is required');
   });
 
 
@@ -96,29 +96,29 @@ describe('Validation errors', function () {
       , data = {}
       , invalidData1 = {}
       , invalidData2 = {};
-    for (var i=0; i<200; i++) {
-      schema.required.push(''+i); // properties from '0' to '199' are required
+    for (var i=0; i<100; i++) {
+      schema.required.push(''+i); // properties from '0' to '99' are required
       data[i] = invalidData1[i] = invalidData2[i] = i;
     }
 
     delete invalidData1[1]; // property '1' will be missing
     delete invalidData2[2]; // properties '2' and '198' will be missing
-    delete invalidData2[198];
+    delete invalidData2[98];
 
     var validate = ajv.compile(schema);
     shouldBeValid(validate, data);
     shouldBeInvalid(validate, invalidData1);
-    shouldBeError(validate.errors[0], 'required', "['1']");
+    shouldBeError(validate.errors[0], 'required', "['1']", "property '1' is required");
     shouldBeInvalid(validate, invalidData2);
-    shouldBeError(validate.errors[0], 'required', "['2']");
+    shouldBeError(validate.errors[0], 'required', "['2']", "property '2' is required");
 
     var fullValidate = fullAjv.compile(schema);
     shouldBeValid(fullValidate, data);
     shouldBeInvalid(fullValidate, invalidData1);
-    shouldBeError(fullValidate.errors[0], 'required', "['1']");
+    shouldBeError(fullValidate.errors[0], 'required', "['1']", "property '1' is required");
     shouldBeInvalid(fullValidate, invalidData2, 2);
-    shouldBeError(fullValidate.errors[0], 'required', "['2']");
-    shouldBeError(fullValidate.errors[1], 'required', "['198']");
+    shouldBeError(fullValidate.errors[0], 'required', "['2']", "property '2' is required");
+    shouldBeError(fullValidate.errors[1], 'required', "['98']", "property '98' is required");
   });
 
 
@@ -151,9 +151,11 @@ describe('Validation errors', function () {
   }
 
 
-  function shouldBeError(error, keyword, dataPath) {
+  function shouldBeError(error, keyword, dataPath, message) {
     error.keyword .should.equal(keyword);
-    error.message .should.be.a('string');
     error.dataPath .should.equal(dataPath);
+    error.message .should.be.a('string');
+    if (message !== undefined)
+      error.message .should.equal(message);
   }
 });

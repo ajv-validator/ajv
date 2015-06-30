@@ -145,7 +145,7 @@
   not:             "'should NOT be valid'",
   oneOf:           "'should match exactly one schema in oneOf'",
   pattern:         "'should match pattern \"{{=$schema}}\"'",
-  required:        "'properties {{=$schema.slice(0,7).join(\", \") }}{{? $schema.length > 7}}...{{?}} are required'",
+  required:        "'property {{=$missingProperty}} is required'",
   type:            "'should be {{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}'",
   uniqueItems:     "'items ## ' + j + ' and ' + i + ' are duplicate'"
 } #}}
