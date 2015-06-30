@@ -21,6 +21,7 @@
     } else {
   {{??}}
     var schema{{=$lvl}} = validate.schema{{=$schemaPath}};
+    {{ it.errorPath = ($currentErrorPath + ' + "[\'" + schema' + $lvl + '[i] + "\']"').replace('" + "', ''); }}
 
     for (var i = 0; i < schema{{=$lvl}}.length; i++) {
       var {{=$valid}} = data[schema{{=$lvl}}[i]] !== undefined;
@@ -43,13 +44,14 @@
     {{~}}
   {{??}}
     var schema{{=$lvl}} = validate.schema{{=$schemaPath}};
+    {{ it.errorPath = ($currentErrorPath + ' + "[\'" + schema' + $lvl + '[i] + "\']"').replace('" + "', ''); }}
 
     for (var i = 0; i < schema{{=$lvl}}.length; i++) {
       var {{=$valid}} = data[schema{{=$lvl}}[i]] !== undefined;
-      if (!{{=$valid}}) break;
+      if (!{{=$valid}}) {
+        {{# def.error:'required' }}
+      }
     }
-
-    {{# def.checkError:'required' }}
   {{?}}
 {{?}}
 

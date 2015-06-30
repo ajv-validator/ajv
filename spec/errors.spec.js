@@ -91,7 +91,7 @@ describe('Validation errors', function () {
   });
 
 
-  it.skip('required validation and errors for large data/schemas', function() {
+  it('required validation and errors for large data/schemas', function() {
     var schema = { required: [] }
       , data = {}
       , invalidData1 = {}
