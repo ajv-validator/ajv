@@ -91,6 +91,37 @@ describe('Validation errors', function () {
   });
 
 
+  it.skip('required validation and errors for large data/schemas', function() {
+    var schema = { required: [] }
+      , data = {}
+      , invalidData1 = {}
+      , invalidData2 = {};
+    for (var i=0; i<200; i++) {
+      schema.required.push(''+i); // properties from '0' to '199' are required
+      data[i] = invalidData1[i] = invalidData2[i] = i;
+    }
+
+    delete invalidData1[1]; // property '1' will be missing
+    delete invalidData2[2]; // properties '2' and '198' will be missing
+    delete invalidData2[198];
+
+    var validate = ajv.compile(schema);
+    shouldBeValid(validate, data);
+    shouldBeInvalid(validate, invalidData1);
+    shouldBeError(validate.errors[0], 'required', "['1']");
+    shouldBeInvalid(validate, invalidData2);
+    shouldBeError(validate.errors[0], 'required', "['2']");
+
+    var fullValidate = fullAjv.compile(schema);
+    shouldBeValid(fullValidate, data);
+    shouldBeInvalid(fullValidate, invalidData1);
+    shouldBeError(fullValidate.errors[0], 'required', "['1']");
+    shouldBeInvalid(fullValidate, invalidData2, 2);
+    shouldBeError(fullValidate.errors[0], 'required', "['2']");
+    shouldBeError(fullValidate.errors[1], 'required', "['198']");
+  });
+
+
   function testSchema1(schema) {
     _testSchema1(ajv, schema);
     _testSchema1(fullAjv, schema)
