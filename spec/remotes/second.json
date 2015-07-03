@@ -1,0 +1,7 @@
+{
+    "id": "http://localhost:1234/second.json",
+    "type": "object",
+    "properties": {
+        "first": { "$ref": "first.json" }
+    }
+}

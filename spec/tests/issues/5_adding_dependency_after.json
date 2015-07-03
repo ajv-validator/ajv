@@ -1,0 +1,18 @@
+[
+  {
+    "description": "Adding dependency after dependent schema (#5)",
+    "schema": "http://localhost:1234/second.json",
+    "tests": [
+      {
+        "description": "valid object",
+        "data": { "first": "foo" },
+        "valid": true
+      },
+      {
+        "description": "valid object",
+        "data": { "first": 1 },
+        "valid": false
+      }
+    ]
+  }
+]
