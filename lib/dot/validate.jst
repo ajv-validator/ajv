@@ -24,8 +24,8 @@
 
   validate = function (data, dataPath) {
     'use strict';
-    validate.errors = null;{{ /* don't edit, used in replace */ }}
-    var errors = 0;        {{ /* don't edit, used in replace */ }}
+    var vErrors = null; {{ /* don't edit, used in replace */ }}
+    var errors = 0;     {{ /* don't edit, used in replace */ }}
 {{??}}
   {{? it.opts._debug }} console.log('validate dataPath:', dataPath); {{?}}
 
@@ -99,7 +99,8 @@
 {{? $breakOnError }} {{= $closingBraces2 }} {{?}}
 
 {{? $top }}
-    return errors === 0;{{ /* don't edit, used in replace */ }}
+    validate.errors = vErrors; {{ /* don't edit, used in replace */ }}
+    return errors === 0;       {{ /* don't edit, used in replace */ }}
   }
 {{??}}
     var {{=$valid}} = errors === errs_{{=$lvl}};

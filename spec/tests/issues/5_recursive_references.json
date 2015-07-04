@@ -33,7 +33,6 @@
         "valid": true
       },
       {
-        "skip": true,
         "description": "invalid tree",
         "data": { 
           "meta": "root",
