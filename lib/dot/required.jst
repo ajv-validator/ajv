@@ -12,7 +12,8 @@
 {{## def.setupLoop:
   var schema{{=$lvl}} = validate.schema{{=$schemaPath}};
   {{
-    var $propertyPath = ' + schema' + $lvl + '[i] + '
+    var $i = 'i' + $lvl
+      , $propertyPath = ' + schema' + $lvl + '[' + $i + '] + '
       , $missingProperty = '\' + "\'"' + $propertyPath + '"\'" + \'';
     it.errorPath = ($currentErrorPath + ' + "[\'"' + $propertyPath + '"\']"').replace('" + "', '');
   }}
@@ -35,8 +36,8 @@
   {{??}}
     {{# def.setupLoop }}
 
-    for (var i = 0; i < schema{{=$lvl}}.length; i++) {
-      var {{=$valid}} = data[schema{{=$lvl}}[i]] !== undefined;
+    for (var {{=$i}} = 0; {{=$i}} < schema{{=$lvl}}.length; {{=$i}}++) {
+      var {{=$valid}} = {{=$data}}[schema{{=$lvl}}[{{=$i}}]] !== undefined;
       if (!{{=$valid}}) break;
     }
 
@@ -58,8 +59,8 @@
   {{??}}
     {{# def.setupLoop }}
 
-    for (var i = 0; i < schema{{=$lvl}}.length; i++) {
-      if (data[schema{{=$lvl}}[i]] === undefined) {
+    for (var {{=$i}} = 0; {{=$i}} < schema{{=$lvl}}.length; {{=$i}}++) {
+      if ({{=$data}}[schema{{=$lvl}}[{{=$i}}]] === undefined) {
         {{# def.error:'required' }}
       }
     }
