@@ -69,6 +69,26 @@ if (!valid) console.log(ajv.errorsText());
 ajv compiles schemas to functions and caches them in all cases (using stringified schema as a key - using [json-stable-stringify](https://github.com/substack/json-stable-stringify)), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
 
 
+## Formats
+
+The following formats are supported for string validation with "format" keyword:
+
+- _date_: full-date from http://tools.ietf.org/html/rfc3339#section-5.6
+- _date-time_: date-time from the same source. Both `date` and `date-time` validate ranges in `full` mode and only regexp in `fast` mode (see [options](#options)).
+- _uri_: full uri with optional protocol.
+- _email_: email address.
+- _hostname_: host name acording to http://tools.ietf.org/html/rfc1034#section-3.5
+- _ipv4_: IP address v4.
+- _ipv6_: IP address v6.
+- _regex_: tests whether a string is a valid regular expression by passing it to RegExp constructor.
+
+There are two modes of fomat validation: `fast` and `full` that affect all formats but `ipv4` and `ipv6`. See [Options](#options) for details.
+
+You can add additional formats and replace any of the formats above using [addFormat](#addformatstring-name-stringregexpfunction-format) method.
+
+You can find patterns used for format validation and the sources that were used in [formats.js](https://github.com/epoberezkin/ajv/blob/master/lib/compile/formats.js).
+
+
 ## API
 
 ##### Ajv(Object options) -&gt; Object
@@ -150,10 +170,9 @@ Custom formats can be also added via `formats` option.
 
 ##### .errorsText([Array<Object> errors [, Object options]]) -&gt; String
 
-Returns the text with all errors in a String. Options can have these properties:
+Returns the text with all errors in a String.
 
-- separator: string used to separate errors, ", " is used by default.
-- dataVar: the variable name that dataPaths are prefixed with, "data" by default.
+Options can have properties `separator` (string used to separate errors, ", " by default) and `dataVar` (the variable name that dataPaths are prefixed with, "data" by default).
 
 
 ## Options
