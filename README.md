@@ -168,7 +168,7 @@ Function should return validation result as `true` or `false`.
 Custom formats can be also added via `formats` option.
 
 
-##### .errorsText([Array<Object> errors [, Object options]]) -&gt; String
+##### .errorsText([Array&lt;Object&gt; errors [, Object options]]) -&gt; String
 
 Returns the text with all errors in a String.
 
