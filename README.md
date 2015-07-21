@@ -6,6 +6,7 @@ It uses precompiled [doT templates](https://github.com/olado/doT) to generate su
 
 [![Build Status](https://travis-ci.org/epoberezkin/ajv.svg?branch=master)](https://travis-ci.org/epoberezkin/ajv)
 [![npm version](https://badge.fury.io/js/ajv.svg)](http://badge.fury.io/js/ajv)
+[![Code Climate](https://codeclimate.com/github/epoberezkin/ajv/badges/gpa.svg)](https://codeclimate.com/github/epoberezkin/ajv)
 
 
 ## JSON Schema standard
