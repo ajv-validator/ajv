@@ -203,11 +203,11 @@ npm test
 
 All validation functions are generated using doT templates in dot folder. Templates are precompiled so doT is not a run-time dependency.
 
-`bin/compile_dots` to compile templates to dotjs folder
+`bin/compile-dots` to compile templates to dotjs folder
 
-`bin/watch_dots` to automatically compile templates when files in dot folder change
+`bin/watch-dots` to automatically compile templates when files in dot folder change
 
-There is pre-commit hook that runs compile_dots and tests.
+`bin/git-hook` to install symbolic link to pre-commit hook that will compile templates and run tests when you commit.
 
 
 ## Changes history
