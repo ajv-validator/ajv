@@ -84,7 +84,7 @@ The following formats are supported for string validation with "format" keyword:
 
 There are two modes of fomat validation: `fast` and `full` that affect all formats but `ipv4` and `ipv6`. See [Options](#options) for details.
 
-You can add additional formats and replace any of the formats above using [addFormat](#addformatstring-name-stringregexpfunction-format) method.
+You can add additional formats and replace any of the formats above using [addFormat](#api-addformat) method.
 
 You can find patterns used for format validation and the sources that were used in [formats.js](https://github.com/epoberezkin/ajv/blob/master/lib/compile/formats.js).
 
@@ -157,7 +157,7 @@ Remove added/cached schema. Even if schema is referenced by other schemas it can
 Schema can be removed using key passed to `addSchema`, it's full reference (id) or using actual schema object that will be stable-stringified to remove schema from cache.
 
 
-##### .addFormat(String name, String|RegExp|Function format)
+##### <a name="api-addformat"></a>.addFormat(String name, String|RegExp|Function format)
 
 Add custom format to validate strings. It can also be used to replace pre-defined formats for ajv instance.
 
