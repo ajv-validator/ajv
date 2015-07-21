@@ -141,11 +141,12 @@ Schema can be removed using key passed to `addSchema`, it's full reference (id) 
 
 Add custom format to validate strings. It can also be used to replace pre-defined formats for ajv instance.
 
-Strins be converted to RegExp.
+Strings are converted to RegExp.
 
 Function should return validation result as `true` or `false`.
 
 Custom formats can be also added via `formats` option.
+
 
 ##### .errorsText([Array<Object> errors [, Object options]]) -&gt; String
 
