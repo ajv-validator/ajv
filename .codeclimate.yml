@@ -1,2 +1,2 @@
 exclude_paths:
-- lib/dotjs
+- lib/dotjs/**
