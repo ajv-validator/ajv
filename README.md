@@ -194,6 +194,7 @@ Options can have properties `separator` (string used to separate errors, ", " by
 ## Tests
 
 ```
+npm install
 git submodule update --init
 npm test
 ```
@@ -207,7 +208,7 @@ All validation functions are generated using doT templates in dot folder. Templa
 
 `bin/watch-dots` to automatically compile templates when files in dot folder change
 
-`bin/git-hook` to install symbolic link to pre-commit hook that will compile templates and run tests when you commit.
+`bin/git-hook` to install symbolic link to pre-commit hook that will compile templates and run tests.
 
 
 ## Changes history

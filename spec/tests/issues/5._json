@@ -1,0 +1,47 @@
+[
+  {
+    "description": "root ref in ref (#2)",
+    "schema": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "id": "AdditionalInfo",
+      "title": "AdditionalInfo",
+      "description": "More info about this payment",
+      "definitions": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "description": "A human-readable string describing the error",
+              "type": "string"
+            },
+            "code": {
+              "description": "A machine-parseable string describing the error",
+              "type": "string"
+            }
+          },
+          "required": ["message", "code"]
+        }
+      },
+      "type": "object",
+      "properties": {
+        "error": {
+          "description": "Present if the SubPayment incurred an error",
+          "$ref": "#/definitions/error"
+        },
+        "hash": { "$ref": "Hash256" }
+      },
+      "additionalProperties": true
+    },
+    "tests": [
+      {
+        "description": "valid object",
+        "data": {
+          "name": "foo",
+          "children": [
+            { "name": "bar" },
+            { "name": "baz" }
+          ]
+        },
+        "valid": true
+      }
+
