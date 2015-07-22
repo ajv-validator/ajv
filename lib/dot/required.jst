@@ -5,7 +5,7 @@
   {{~ $schema:$property:$i }}
     {{? $i}} || {{?}}
     {{ var $prop = it.util.getProperty($property); }}
-    ( {{=$data}}{{=$prop}} === undefined && (missing{{=$lvl}} = '{{=$prop}}') )
+    ( {{=$data}}{{=$prop}} === undefined && (missing{{=$lvl}} = '{{= it.util.escapeQuotes($prop) }}') )
   {{~}}
 #}}
 
@@ -49,8 +49,8 @@
     {{~ $schema:$property:$i }}
       {{
         var $prop = it.util.getProperty($property)
-          , $missingProperty = $prop;
-        it.errorPath = ($currentErrorPath + ' + "' + $prop + '"').replace('" + "', '');
+          , $missingProperty = it.util.escapeQuotes($prop);
+        it.errorPath = ($currentErrorPath + ' + \'' + $missingProperty + '\'').replace('" + "', '');
       }}
       if ({{=$data}}{{=$prop}} === undefined) {
         {{# def.error:'required' }}
