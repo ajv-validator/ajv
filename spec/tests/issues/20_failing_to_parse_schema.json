@@ -1,0 +1,25 @@
+[
+  {
+    "skip": true,
+    "description": "Failing to parse schema with required property that is not an identifier (#20)",
+    "schema": {
+        "type": "object",
+        "required": [ "a-b", "'" ]
+    },
+    "tests": [
+      {
+        "description": "valid",
+        "data": {
+          "a-b": "test",
+          "'": "test"
+        },
+        "valid": true
+      },
+      {
+        "description": "invalid",
+        "data": {},
+        "valid": false
+      }
+    ]
+  }
+]
