@@ -2,8 +2,10 @@
 
 set -e
 
+mkdir -p .browser
+
 browserify -r js-beautify -r ./lib/ajv.js:ajv -o .browser/ajv.beautify.js
 
 find spec -type f -name '*.spec.js' | \
 xargs -I {} sh -c \
-'export f="{}"; browserify $f -t require-globify -x ajv -o ${f/spec/.browser};'
+'export f="{}"; browserify $f -t require-globify -x ajv -o $(echo $f | sed -e "s/spec/.browser/");'
