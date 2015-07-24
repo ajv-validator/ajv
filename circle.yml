@@ -1,0 +1,3 @@
+checkout:
+  post:
+    - git submodule update --init
