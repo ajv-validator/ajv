@@ -1,3 +1,23 @@
+machine:
+  environment:
+    SAUCE_USERNAME: epoberezkin
+    SAUCE_ACCESS_KEY: 6ab61c89-e0d3-46bc-8719-aa44d58cea84
 checkout:
   post:
     - git submodule update --init
+dependencies:
+  post:
+    - wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz
+    - tar -xzf sc-latest-linux.tar.gz
+    - npm install -g karma
+    - npm install -g browserify
+test:
+  override:
+    - npm test
+    - ./bin/prepare-tests
+    - ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY -f ~/sc_ready:
+        background: true
+        pwd: sc-*-linux
+    # Wait for tunnel to be ready
+    - while [ ! -e ~/sc_ready ]; do sleep 1; done
+    - karma start karma.sauce.js
