@@ -4,7 +4,7 @@ var jsonSchemaTest = require('json-schema-test')
   , path = require('path');
 
 
-var Ajv = require('../lib/ajv')
+var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
   , ajv = Ajv({ beautify: true, _debug: false })
   , fullAjv = Ajv({ allErrors: true, verbose: true, format: 'full', beautify: true, _debug: false });
 

@@ -102,7 +102,8 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      '.browser/*.js'
+      '.browser/ajv.beautify.js',
+      '.browser/*.spec.js'
     ],
 
 

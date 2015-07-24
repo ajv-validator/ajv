@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+set -e
+
+browserify -r js-beautify -r ./lib/ajv.js:ajv -o .browser/ajv.beautify.js
+
 find spec -type f -name '*.spec.js' | \
 xargs -I {} sh -c \
-'export f="{}"; browserify $f -t require-globify -r js-beautify -o ${f/spec/.browser};'
+'export f="{}"; browserify $f -t require-globify -x ajv -o ${f/spec/.browser};'

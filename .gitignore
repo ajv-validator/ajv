@@ -28,7 +28,7 @@ node_modules
 
 .DS_Store
 
-# Browserified browser tests
+# Browserified tests
 .browser
 
 # Ajv bundle
