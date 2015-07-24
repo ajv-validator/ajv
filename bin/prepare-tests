@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+find spec -type f -name '*.spec.js' | \
+xargs -I {} sh -c \
+'export f="{}"; browserify $f -t require-globify -r js-beautify -o ${f/spec/.browser};'

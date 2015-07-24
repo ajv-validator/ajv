@@ -147,7 +147,7 @@ describe('Validation errors', function () {
 
   function shouldBeInvalid(validate, data, numErrors) {
     validate(data) .should.equal(false);
-    validate.errors.length .should.equal(numErrors || 1);
+    should.equal(validate.errors.length, numErrors || 1)
   }
 
 

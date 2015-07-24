@@ -27,3 +27,9 @@ build/Release
 node_modules
 
 .DS_Store
+
+# Browserified browser tests
+.browser
+
+# Ajv bundle
+ajv.bundle.js

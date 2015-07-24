@@ -69,6 +69,25 @@ if (!valid) console.log(ajv.errorsText());
 ajv compiles schemas to functions and caches them in all cases (using stringified schema as a key - using [json-stable-stringify](https://github.com/substack/json-stable-stringify)), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
 
 
+## Using in browser
+
+You can require ajv directly from the code you browserify - in this case ajv will be a part of your bundle.
+
+If you need to use ajv in several bundles you probably don't won't to have it included separately in each one. In this case you can create browserify bundle using `bin/create-bundle` script (thanks to [siddo420](https://github.com/siddo420)).
+
+
+Then you need to load ajv in the browser:
+```
+<script src="ajv.bundle.js"></script>
+```
+
+Then you can use it as shown above - `require` will be global and you can `require('ajv')`.
+
+Ajv passes tests with these browsers:
+
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/epoberezkin.svg)](https://saucelabs.com/u/epoberezkin)
+
+
 ## Formats
 
 The following formats are supported for string validation with "format" keyword:
