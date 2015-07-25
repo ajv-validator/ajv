@@ -14,6 +14,7 @@ dependencies:
 test:
   override:
     - npm test
+    - ls -l node_modules
     - ./bin/prepare-tests
     - ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY -f ~/sc_ready:
         background: true
