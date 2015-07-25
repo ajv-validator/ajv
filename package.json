@@ -35,6 +35,7 @@
     "karma-mocha": "^0.2.0",
     "karma-sauce-launcher": "^0.2.14",
     "mocha": "^2.2.5",
+    "require-globify": "^1.2.1",
     "watch": "^0.16.0"
   }
 }
