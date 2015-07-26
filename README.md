@@ -122,7 +122,7 @@ Generate validating function and cache the compiled schema for future use.
 
 Validating function returns boolean and has properties `errors` with the errors from the last validation (`null` if there were no errors) and `schema` with the reference to the original schema. 
 
-Unless options `validateSchema` is false, the schema will be validated against meta-schema and if schema is invalid the errors will be logged. See [options](#options).
+Unless the option `validateSchema` is false, the schema will be validated against meta-schema and if schema is invalid the error will be thrown. See [options](#options).
 
 
 ##### .validate(Object schema|String key|String ref, data) -&gt; Boolean
@@ -146,6 +146,8 @@ Add and compile schema(s). It does the same as `.compile` with two differences:
 Once the schema added it and all the references inside it can be referenced in other schemas and used to validate data.
 
 In the current version all the referenced schemas should be added before the schema that uses them is compiled, so the circular references are not supported.
+
+Version [1.0](https://github.com/epoberezkin/ajv/tree/1.0.0) will only compile schemas when they are used the first time. The order of addition in this version is not important and it supports circular references. Try it from the branch if you need them and please report any issues.
 
 By default schema is validated against meta-schema before it is compiled and if the schema does not pass validation the exception is thrown. This behaviour is controlled by `validateSchema` option.
 
