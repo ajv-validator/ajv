@@ -5,14 +5,15 @@
   {{~ $schema:$property:$i }}
     {{? $i}} || {{?}}
     {{ var $prop = it.util.getProperty($property); }}
-    ( {{=$data}}{{=$prop}} === undefined && (missing{{=$lvl}} = '{{=$prop}}') )
+    ( {{=$data}}{{=$prop}} === undefined && (missing{{=$lvl}} = '{{= it.util.escapeQuotes($prop) }}') )
   {{~}}
 #}}
 
 {{## def.setupLoop:
   var schema{{=$lvl}} = validate.schema{{=$schemaPath}};
   {{
-    var $propertyPath = ' + schema' + $lvl + '[i] + '
+    var $i = 'i' + $lvl
+      , $propertyPath = ' + schema' + $lvl + '[' + $i + '] + '
       , $missingProperty = '\' + "\'"' + $propertyPath + '"\'" + \'';
     it.errorPath = ($currentErrorPath + ' + "[\'"' + $propertyPath + '"\']"').replace('" + "', '');
   }}
@@ -35,8 +36,8 @@
   {{??}}
     {{# def.setupLoop }}
 
-    for (var i = 0; i < schema{{=$lvl}}.length; i++) {
-      var {{=$valid}} = data[schema{{=$lvl}}[i]] !== undefined;
+    for (var {{=$i}} = 0; {{=$i}} < schema{{=$lvl}}.length; {{=$i}}++) {
+      var {{=$valid}} = {{=$data}}[schema{{=$lvl}}[{{=$i}}]] !== undefined;
       if (!{{=$valid}}) break;
     }
 
@@ -48,8 +49,8 @@
     {{~ $schema:$property:$i }}
       {{
         var $prop = it.util.getProperty($property)
-          , $missingProperty = $prop;
-        it.errorPath = ($currentErrorPath + ' + "' + $prop + '"').replace('" + "', '');
+          , $missingProperty = it.util.escapeQuotes($prop);
+        it.errorPath = ($currentErrorPath + ' + \'' + $missingProperty + '\'').replace('" + "', '');
       }}
       if ({{=$data}}{{=$prop}} === undefined) {
         {{# def.error:'required' }}
@@ -58,8 +59,8 @@
   {{??}}
     {{# def.setupLoop }}
 
-    for (var i = 0; i < schema{{=$lvl}}.length; i++) {
-      if (data[schema{{=$lvl}}[i]] === undefined) {
+    for (var {{=$i}} = 0; {{=$i}} < schema{{=$lvl}}.length; {{=$i}}++) {
+      if ({{=$data}}[schema{{=$lvl}}[{{=$i}}]] === undefined) {
         {{# def.error:'required' }}
       }
     }

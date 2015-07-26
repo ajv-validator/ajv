@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -e
+
+hook=.git/hooks/pre-commit
+[ -e "$hook" ] || [ -h "$hook" ] && rm $hook
+ln -s $(pwd)/bin/pre-commit $hook

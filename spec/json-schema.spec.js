@@ -1,9 +1,10 @@
 'use strict';
 
-var jsonSchemaTest = require('json-schema-test');
+var jsonSchemaTest = require('json-schema-test')
+  , path = require('path');
 
 
-var Ajv = require('../lib/ajv')
+var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
   , ajv = Ajv({ beautify: true, _debug: false })
   , fullAjv = Ajv({ allErrors: true, verbose: true, format: 'full', beautify: true, _debug: false });
 
@@ -30,10 +31,7 @@ addRemoteRefs();
 
 
 jsonSchemaTest([ ajv, fullAjv ], {
-  suites: {
-    'JSON-Schema tests draft4': './JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json',
-    'Advanced schema tests': './tests/{**/,}*.json'
-  },
+  suites: testSuites(),
   only: [
     // 'type', 'not', 'allOf', 'anyOf', 'oneOf', 'enum',
     // 'maximum', 'minimum', 'multipleOf', 'maxLength', 'minLength', 'pattern',
@@ -51,6 +49,29 @@ jsonSchemaTest([ ajv, fullAjv ], {
   cwd: __dirname,
   hideFolder: 'draft4/'
 });
+
+
+function testSuites() {
+  if (typeof window == 'object') {
+    var suites = {
+      'JSON-Schema tests draft4': require('./JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json', {mode: 'hash'}),
+      'Advanced schema tests': require('./tests/{**/,}*.json', {mode: 'hash'})
+    };
+    for (var suiteName in suites) {
+      var suite = suites[suiteName];
+      var suiteArr = [];
+      for (var testSetName in suite)
+        suiteArr.push({ name: testSetName, test: suite[testSetName] });
+      suites[suiteName] = suiteArr;
+    }
+  } else {
+    var suites = {
+      'JSON-Schema tests draft4': './JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json',
+      'Advanced schema tests': './tests/{**/,}*.json'
+    }
+  }
+  return suites;
+}
 
 
 function addRemoteRefs() {

@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-node ./bin/compile_dots.js

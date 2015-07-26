@@ -6,6 +6,7 @@ It uses precompiled [doT templates](https://github.com/olado/doT) to generate su
 
 [![Build Status](https://travis-ci.org/epoberezkin/ajv.svg?branch=master)](https://travis-ci.org/epoberezkin/ajv)
 [![npm version](https://badge.fury.io/js/ajv.svg)](http://badge.fury.io/js/ajv)
+[![Code Climate](https://codeclimate.com/github/epoberezkin/ajv/badges/gpa.svg)](https://codeclimate.com/github/epoberezkin/ajv)
 
 
 ## JSON Schema standard
@@ -69,6 +70,44 @@ if (!valid) console.log(ajv.errorsText());
 ajv compiles schemas to functions and caches them in all cases (using stringified schema as a key - using [json-stable-stringify](https://github.com/substack/json-stable-stringify)), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
 
 
+## Using in browser
+
+You can require ajv directly from the code you browserify - in this case ajv will be a part of your bundle.
+
+If you need to use ajv in several bundles you can create a separate browserified bundle using `bin/create-bundle` script (thanks to [siddo420](https://github.com/siddo420)).
+
+Then you need to load ajv in the browser:
+```
+<script src="ajv.bundle.js"></script>
+```
+
+Now you can use it as shown above - `require` will be global and you can `require('ajv')`.
+
+Ajv was tested with these browsers:
+
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/epoberezkin.svg)](https://saucelabs.com/u/epoberezkin)
+
+
+## Formats
+
+The following formats are supported for string validation with "format" keyword:
+
+- _date_: full-date from http://tools.ietf.org/html/rfc3339#section-5.6
+- _date-time_: date-time from the same source. Both `date` and `date-time` validate ranges in `full` mode and only regexp in `fast` mode (see [options](#options)).
+- _uri_: full uri with optional protocol.
+- _email_: email address.
+- _hostname_: host name acording to http://tools.ietf.org/html/rfc1034#section-3.5
+- _ipv4_: IP address v4.
+- _ipv6_: IP address v6.
+- _regex_: tests whether a string is a valid regular expression by passing it to RegExp constructor.
+
+There are two modes of fomat validation: `fast` and `full` that affect all formats but `ipv4` and `ipv6`. See [Options](#options) for details.
+
+You can add additional formats and replace any of the formats above using [addFormat](#api-addformat) method.
+
+You can find patterns used for format validation and the sources that were used in [formats.js](https://github.com/epoberezkin/ajv/blob/master/lib/compile/formats.js).
+
+
 ## API
 
 ##### Ajv(Object options) -&gt; Object
@@ -84,7 +123,7 @@ Generate validating function and cache the compiled schema for future use.
 
 Validating function returns boolean and has properties `errors` with the errors from the last validation (`null` if there were no errors) and `schema` with the reference to the original schema. 
 
-Unless options `validateSchema` is false, the schema will be validated against meta-schema and if schema is invalid the errors will be logged. See [options](#options).
+Unless the option `validateSchema` is false, the schema will be validated against meta-schema and if schema is invalid the error will be thrown. See [options](#options).
 
 
 ##### .validate(Object schema|String key|String ref, data) -&gt; Boolean
@@ -109,7 +148,7 @@ Once the schema is added, it (and all the references inside it) can be reference
 
 Although `addSchema` does not compile schemas, explicit compilation is not required - the schema will be compiled when it is used first time.
 
-By default schema is validated against meta-schema when it is added, and if the schema does not pass validation the exception is thrown. This behaviour is controlled by `validateSchema` option.
+By default the schema is validated against meta-schema before it is added, and if the schema does not pass validation the exception is thrown. This behaviour is controlled by `validateSchema` option.
 
 
 ##### .validateSchema(Object schema) -&gt; Boolean
@@ -137,22 +176,22 @@ Remove added/cached schema. Even if schema is referenced by other schemas it can
 Schema can be removed using key passed to `addSchema`, it's full reference (id) or using actual schema object that will be stable-stringified to remove schema from cache.
 
 
-##### .addFormat(String name, String|RegExp|Function format)
+##### <a name="api-addformat"></a>.addFormat(String name, String|RegExp|Function format)
 
 Add custom format to validate strings. It can also be used to replace pre-defined formats for ajv instance.
 
-Strins be converted to RegExp.
+Strings are converted to RegExp.
 
 Function should return validation result as `true` or `false`.
 
 Custom formats can be also added via `formats` option.
 
 
-##### .errorsText([Array<Object> errors [, Object options]]) -&gt; String
+##### .errorsText([Array&lt;Object&gt; errors [, Object options]]) -&gt; String
 
-Returns the text with all errors in a String. Options can have these properties:
-- separator: string used to separate errors, ", " is used by default.
-- dataVar: the variable name that dataPaths are prefixed with, "data" by default.
+Returns the text with all errors in a String.
+
+Options can have properties `separator` (string used to separate errors, ", " by default) and `dataVar` (the variable name that dataPaths are prefixed with, "data" by default).
 
 
 ## Options
@@ -174,6 +213,7 @@ Returns the text with all errors in a String. Options can have these properties:
 ## Tests
 
 ```
+npm install
 git submodule update --init
 npm test
 ```
@@ -183,11 +223,11 @@ npm test
 
 All validation functions are generated using doT templates in dot folder. Templates are precompiled so doT is not a run-time dependency.
 
-`bin/compile_dots` to compile templates to dotjs folder
+`bin/compile-dots` to compile templates to dotjs folder
 
-`bin/watch_dots` to automatically compile templates when files in dot folder change
+`bin/watch-dots` to automatically compile templates when files in dot folder change
 
-There is pre-commit hook that runs compile_dots and tests.
+`bin/git-hook` to install symbolic link to pre-commit hook that will compile templates and run tests.
 
 
 ## Changes history

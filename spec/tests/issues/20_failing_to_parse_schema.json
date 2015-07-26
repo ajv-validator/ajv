@@ -1,0 +1,94 @@
+[
+  {
+    "description": "Failing to parse schema with required property that is not an identifier (#20)",
+    "schema": {
+        "type": "object",
+        "required": [ "a-b", "a'", "a\"" ]
+    },
+    "tests": [
+      {
+        "description": "valid",
+        "data": {
+          "a-b": "test",
+          "a'": "test",
+          "a\"": "test"
+        },
+        "valid": true
+      },
+      {
+        "description": "invalid",
+        "data": {},
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "Failing to parse schema with required property that is not an identifier for many properties (#20)",
+    "schema": {
+        "type": "object",
+        "required": [
+          "a-1",
+          "a-2",
+          "a-3",
+          "a-4",
+          "a-5",
+          "a-6",
+          "a-7",
+          "a-8",
+          "a-9",
+          "a-10",
+          "a-11",
+          "a-12",
+          "a-13",
+          "a-14",
+          "a-15",
+          "a-16",
+          "a-17",
+          "a-18",
+          "a-19",
+          "a-20",
+          "a-21",
+          "a-22",
+          "'",
+          "\""
+        ]
+    },
+    "tests": [
+      {
+        "description": "valid",
+        "data": {
+          "a-1": "test",
+          "a-2": "test",
+          "a-3": "test",
+          "a-4": "test",
+          "a-5": "test",
+          "a-6": "test",
+          "a-7": "test",
+          "a-8": "test",
+          "a-9": "test",
+          "a-10": "test",
+          "a-11": "test",
+          "a-12": "test",
+          "a-13": "test",
+          "a-14": "test",
+          "a-15": "test",
+          "a-16": "test",
+          "a-17": "test",
+          "a-18": "test",
+          "a-19": "test",
+          "a-20": "test",
+          "a-21": "test",
+          "a-22": "test",
+          "'": "test",
+          "\"": "test"
+        },
+        "valid": true
+      },
+      {
+        "description": "invalid",
+        "data": {},
+        "valid": false
+      }
+    ]
+  }
+]

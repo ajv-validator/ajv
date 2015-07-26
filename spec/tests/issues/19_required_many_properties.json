@@ -1,0 +1,96 @@
+[
+  {
+    "description": "Required for many properties in inner level (#19)",
+    "schema": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "p1",
+          "p2",
+          "p3",
+          "p4",
+          "p5",
+          "p6",
+          "p7",
+          "p8",
+          "p9",
+          "p10",
+          "p11",
+          "p12",
+          "p13",
+          "p14",
+          "p15",
+          "p16",
+          "p17",
+          "p18",
+          "p19",
+          "p20",
+          "p21",
+          "p22"
+        ]
+      }
+    },
+    "tests": [
+      {
+        "description": "valid",
+        "data": [
+          {
+            "p1": "test",
+            "p2": "test",
+            "p3": "test",
+            "p4": "test",
+            "p5": "test",
+            "p6": "test",
+            "p7": "test",
+            "p8": "test",
+            "p9": "test",
+            "p10": "test",
+            "p11": "test",
+            "p12": "test",
+            "p13": "test",
+            "p14": "test",
+            "p15": "test",
+            "p16": "test",
+            "p17": "test",
+            "p18": "test",
+            "p19": "test",
+            "p20": "test",
+            "p21": "test",
+            "p22": "test"
+          }
+        ],
+        "valid": true
+      },
+      {
+        "description": "invalid",
+        "data": [
+          {
+            "p2": "test",
+            "p3": "test",
+            "p4": "test",
+            "p5": "test",
+            "p6": "test",
+            "p7": "test",
+            "p8": "test",
+            "p9": "test",
+            "p10": "test",
+            "p11": "test",
+            "p12": "test",
+            "p13": "test",
+            "p14": "test",
+            "p15": "test",
+            "p16": "test",
+            "p17": "test",
+            "p18": "test",
+            "p19": "test",
+            "p20": "test",
+            "p21": "test",
+            "p22": "test"
+          }
+        ],
+        "valid": false
+      }
+    ]
+  }
+]

@@ -1,7 +1,7 @@
 'use strict';
 
 
-var Ajv = require('../lib/ajv')
+var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
   , should = require('chai').should()
   , stableStringify = require('json-stable-stringify');
 

@@ -1,7 +1,7 @@
 'use strict';
 
 
-var Ajv = require('../lib/ajv')
+var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
   , should = require('chai').should();
 
 
@@ -147,7 +147,7 @@ describe('Validation errors', function () {
 
   function shouldBeInvalid(validate, data, numErrors) {
     validate(data) .should.equal(false);
-    validate.errors.length .should.equal(numErrors || 1);
+    should.equal(validate.errors.length, numErrors || 1)
   }
 
 

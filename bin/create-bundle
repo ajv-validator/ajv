@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+browserify -r ./lib/ajv.js:ajv -o ajv.bundle.js
