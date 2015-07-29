@@ -7,6 +7,7 @@ var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
 describe('Ajv Options', function () {
 
   describe('removeAdditional', function() {
+
     it('should remove properties that would error when `additionalProperties = false`', function() {
       var ajv = Ajv({ removeAdditional: true });
 
@@ -20,9 +21,31 @@ describe('Ajv Options', function () {
         foo: 'foo', bar: 'bar', baz: 'baz-to-be-removed'
       };
 
-      ajv.validate('//test/fooBar', object) .should.equal(true);
-      object.should.have.all.keys(['foo', 'bar']);
+      ajv.validate('//test/fooBar', object).should.equal(true);
+      object.should.have.property('foo');
+      object.should.have.property('bar');
       object.should.not.have.property('baz');
+
+    });
+
+    it('should remove properties that would error when `additionalProperties` is a schema', function() {
+      var ajv = Ajv({ removeAdditional: true });
+
+      ajv.compile({
+        id: '//test/fooBar',
+        properties: { foo: { type: 'string' }, bar: { type: 'string' } },
+        additionalProperties: { type: 'string' }
+      });
+
+      var object = {
+        foo: 'foo', bar: 'bar', baz: 'baz-to-be-kept', fizz: 1000
+      };
+
+      ajv.validate('//test/fooBar', object).should.equal(true);
+      object.should.have.property('foo');
+      object.should.have.property('bar');
+      object.should.have.property('baz');
+      object.should.not.have.property('fizz');
 
     });
 
