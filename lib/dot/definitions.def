@@ -1,11 +1,11 @@
 {{## def.setup:_keyword:
-  {{
+  {{ 
     var $lvl = it.level
       , $dataLvl = it.dataLevel
       , $schema = it.schema[_keyword]
       , $schemaPath = it.schemaPath + '.' + _keyword
-      , $breakOnError = !it.opts.allErrors
-      , $removeAdditional = it.opts.removeAdditional;
+      , $breakOnError = !it.opts.allErrors;
+
 
     var $data = 'data' + ($dataLvl || '')
       , $valid = 'valid' + $lvl
