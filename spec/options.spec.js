@@ -28,7 +28,7 @@ describe('Ajv Options', function () {
 
     });
 
-    it('should remove properties that would error when `additionalProperties` is a schema', function() {
+    it.skip('should remove properties that would error when `additionalProperties` is a schema', function() {
       var ajv = Ajv({ removeAdditional: true });
 
       ajv.compile({
