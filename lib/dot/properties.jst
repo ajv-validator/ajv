@@ -4,8 +4,6 @@
 
 
 {{
-  var $removeAdditional = it.opts.removeAdditional;
-
   var $dataNxt = $it.dataLevel = it.dataLevel + 1
     , $nextData = 'data' + $dataNxt;
 
@@ -15,7 +13,8 @@
     , $noAdditional = $aProperties === false
     , $additionalIsSchema = typeof $aProperties == 'object'
                               && Object.keys($aProperties).length
-    , $checkAdditional = $noAdditional || $additionalIsSchema;
+    , $checkAdditional = $noAdditional || $additionalIsSchema
+    , $removeAdditional = it.opts.removeAdditional;
 }}
 
 
@@ -44,33 +43,37 @@ var valid{{=$it.level}} = true;
     {{?}}
 
     if (isAdditional{{=$lvl}}) {
-      {{
-        var $currentErrorPath = it.errorPath;
-        it.errorPath = (it.errorPath + ' + "[\'" + key' + $lvl + ' + "\']"').replace('" + "', '');
-      }}
-      {{? $noAdditional }}
-        valid{{=$it.level}} = false;
-        {{? $removeAdditional }}
-          delete {{=$data}}[key{{=$lvl}}];
-        {{??}}
-          {{# def.error:'additionalProperties' }}
-          {{? $breakOnError }} break; {{?}}
-        {{?}}
+      {{? $removeAdditional == 'all' }}
+        delete {{=$data}}[key{{=$lvl}}];
       {{??}}
-        {{ /* additionalProperties is schema */
-          $it.schema = $aProperties;
-          $it.schemaPath = it.schemaPath + '.additionalProperties';
-          $it.errorPath = it.errorPath;
-          $it.dataPath = it.dataPath + '[key' + $lvl + ']';
-          var $passData = $data + '[key' + $lvl + ']';
+        {{
+          var $currentErrorPath = it.errorPath;
+          it.errorPath = (it.errorPath + ' + "[\'" + key' + $lvl + ' + "\']"').replace('" + "', '');
         }}
+        {{? $noAdditional }}
+          {{? $removeAdditional }}
+            delete {{=$data}}[key{{=$lvl}}];
+          {{??}}
+            valid{{=$it.level}} = false;
+            {{# def.error:'additionalProperties' }}
+            {{? $breakOnError }} break; {{?}}
+          {{?}}
+        {{??}}
+          {{ /* additionalProperties is schema */
+            $it.schema = $aProperties;
+            $it.schemaPath = it.schemaPath + '.additionalProperties';
+            $it.errorPath = it.errorPath;
+            $it.dataPath = it.dataPath + '[key' + $lvl + ']';
+            var $passData = $data + '[key' + $lvl + ']';
+          }}
 
-        {{ var $code = it.validate($it); }}
-        {{# def.optimizeValidate }}
+          {{ var $code = it.validate($it); }}
+          {{# def.optimizeValidate }}
 
-        {{? $breakOnError }} if (!valid{{=$it.level}}) break; {{?}}
+          {{? $breakOnError }} if (!valid{{=$it.level}}) break; {{?}}
+        {{?}}
+        {{ it.errorPath = $currentErrorPath; }}
       {{?}}
-      {{ it.errorPath = $currentErrorPath; }}
     }
   }
 
