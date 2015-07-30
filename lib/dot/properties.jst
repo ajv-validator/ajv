@@ -4,6 +4,8 @@
 
 
 {{
+  var $removeAdditional = it.opts.removeAdditional;
+
   var $dataNxt = $it.dataLevel = it.dataLevel + 1
     , $nextData = 'data' + $dataNxt;
 
@@ -48,9 +50,12 @@ var valid{{=$it.level}} = true;
       }}
       {{? $noAdditional }}
         valid{{=$it.level}} = false;
-
+        {{? $removeAdditional }}
+        delete {{=$data}}[key{{=$lvl}}];
+        {{??}}
         {{# def.error:'additionalProperties' }}
         {{? $breakOnError }} break; {{?}}
+        {{?}}
       {{??}}
         {{ /* additionalProperties is schema */
           $it.schema = $aProperties;
