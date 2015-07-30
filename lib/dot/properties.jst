@@ -51,10 +51,10 @@ var valid{{=$it.level}} = true;
       {{? $noAdditional }}
         valid{{=$it.level}} = false;
         {{? $removeAdditional }}
-        delete {{=$data}}[key{{=$lvl}}];
+          delete {{=$data}}[key{{=$lvl}}];
         {{??}}
-        {{# def.error:'additionalProperties' }}
-        {{? $breakOnError }} break; {{?}}
+          {{# def.error:'additionalProperties' }}
+          {{? $breakOnError }} break; {{?}}
         {{?}}
       {{??}}
         {{ /* additionalProperties is schema */

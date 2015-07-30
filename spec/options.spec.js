@@ -1,13 +1,12 @@
 'use strict';
 
+
 var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
-  , should = require('chai').should()
-  , stableStringify = require('json-stable-stringify');
+  , should = require('chai').should();
+
 
 describe('Ajv Options', function () {
-
   describe('removeAdditional', function() {
-
     it('should remove properties that would error when `additionalProperties = false`', function() {
       var ajv = Ajv({ removeAdditional: true });
 
@@ -25,8 +24,8 @@ describe('Ajv Options', function () {
       object.should.have.property('foo');
       object.should.have.property('bar');
       object.should.not.have.property('baz');
-
     });
+
 
     it.skip('should remove properties that would error when `additionalProperties` is a schema', function() {
       var ajv = Ajv({ removeAdditional: true });
@@ -46,9 +45,6 @@ describe('Ajv Options', function () {
       object.should.have.property('bar');
       object.should.have.property('baz');
       object.should.not.have.property('fizz');
-
     });
-
   });
-
 });
