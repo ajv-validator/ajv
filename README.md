@@ -108,6 +108,13 @@ You can add additional formats and replace any of the formats above using [addFo
 You can find patterns used for format validation and the sources that were used in [formats.js](https://github.com/epoberezkin/ajv/blob/master/lib/compile/formats.js).
 
 
+## Filtering data
+
+With [option `removeAdditional`](#options) (added by [andyscott](https://github.com/andyscott)) you can filter data during the validation.
+
+This option modifies original object.
+
+
 ## API
 
 ##### Ajv(Object options) -&gt; Object
@@ -197,6 +204,7 @@ Options can have properties `separator` (string used to separate errors, ", " by
 ## Options
 
 - _allErrors_: check all rules collecting all errors. Default is to return after the first error.
+- _removeAdditional_: remove additional properties. Default is not to remove. If the option is 'all', then all additional properties are removed, regardless of `additionalProperties` keyword in schema (and no validation is made for them). If the option is `true` (or truthy), only additional properties with `additionalProperties` keyword equal to `false` are removed. If the option is 'failing', then additional properties that fail schema validation will be removed too (where `additionalProperties` keyword is schema).
 - _verbose_: include the reference to the part of the schema and validated data in errors (false by default).
 - _format_: formats validation mode ('fast' by default). Pass 'full' for more correct and slow validation or `false` not to validate formats at all. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
 - _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
@@ -231,6 +239,15 @@ All validation functions are generated using doT templates in dot folder. Templa
 
 
 ## Changes history
+
+##### 0.6.11
+
+Improved/fixed data filtering with `removeAdditional` option.
+
+
+##### 0.6.10
+
+`removeAdditional` option allowing to remove additional properties.
 
 
 ##### 1.0.0
