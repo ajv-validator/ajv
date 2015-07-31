@@ -7,10 +7,29 @@ var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
 
 describe('Ajv Options', function () {
   describe('removeAdditional', function() {
+    it('should remove all additional properties', function() {
+      var ajv = Ajv({ removeAdditional: 'all' });
+
+      ajv.addSchema({
+        id: '//test/fooBar',
+        properties: { foo: { type: 'string' }, bar: { type: 'string' } }
+      });
+
+      var object = {
+        foo: 'foo', bar: 'bar', baz: 'baz-to-be-removed'
+      };
+
+      ajv.validate('//test/fooBar', object).should.equal(true);
+      object.should.have.property('foo');
+      object.should.have.property('bar');
+      object.should.not.have.property('baz');
+    });
+
+
     it('should remove properties that would error when `additionalProperties = false`', function() {
       var ajv = Ajv({ removeAdditional: true });
 
-      ajv.compile({
+      ajv.addSchema({
         id: '//test/fooBar',
         properties: { foo: { type: 'string' }, bar: { type: 'string' } },
         additionalProperties: false
@@ -27,10 +46,10 @@ describe('Ajv Options', function () {
     });
 
 
-    it.skip('should remove properties that would error when `additionalProperties` is a schema', function() {
-      var ajv = Ajv({ removeAdditional: true });
+    it('should remove properties that would error when `additionalProperties` is a schema', function() {
+      var ajv = Ajv({ removeAdditional: 'failing' });
 
-      ajv.compile({
+      ajv.addSchema({
         id: '//test/fooBar',
         properties: { foo: { type: 'string' }, bar: { type: 'string' } },
         additionalProperties: { type: 'string' }

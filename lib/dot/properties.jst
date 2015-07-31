@@ -13,8 +13,8 @@
     , $noAdditional = $aProperties === false
     , $additionalIsSchema = typeof $aProperties == 'object'
                               && Object.keys($aProperties).length
-    , $checkAdditional = $noAdditional || $additionalIsSchema
-    , $removeAdditional = it.opts.removeAdditional;
+    , $removeAdditional = it.opts.removeAdditional
+    , $checkAdditional = $noAdditional || $additionalIsSchema || $removeAdditional;
 }}
 
 
@@ -23,10 +23,7 @@ var valid{{=$it.level}} = true;
 
 {{? $checkAdditional }}
   var propertiesSchema{{=$lvl}} = validate.schema{{=$schemaPath}} || {};
-{{?}}
 
-
-{{? $checkAdditional }}
   for (var key{{=$lvl}} in {{=$data}}) {
     var isAdditional{{=$lvl}} = propertiesSchema{{=$lvl}}[key{{=$lvl}}] === undefined;
 
@@ -58,7 +55,10 @@ var valid{{=$it.level}} = true;
             {{# def.error:'additionalProperties' }}
             {{? $breakOnError }} break; {{?}}
           {{?}}
-        {{??}}
+        {{?? $additionalIsSchema }}
+          {{? $removeAdditional == 'failing' }}
+            var {{=$errs}} = errors;
+          {{?}}
           {{ /* additionalProperties is schema */
             $it.schema = $aProperties;
             $it.schemaPath = it.schemaPath + '.additionalProperties';
@@ -70,7 +70,18 @@ var valid{{=$it.level}} = true;
           {{ var $code = it.validate($it); }}
           {{# def.optimizeValidate }}
 
-          {{? $breakOnError }} if (!valid{{=$it.level}}) break; {{?}}
+          {{? $removeAdditional == 'failing' }}
+            if (!valid{{=$it.level}}) {
+              errors = {{=$errs}};
+              if (validate.errors !== null) {
+                if (errors) validate.errors.length = errors;
+                else validate.errors = null;
+              }
+              delete {{=$data}}[key{{=$lvl}}];
+            }
+          {{??}}
+            {{? $breakOnError }} if (!valid{{=$it.level}}) break; {{?}}
+          {{?}}
         {{?}}
         {{ it.errorPath = $currentErrorPath; }}
       {{?}}
