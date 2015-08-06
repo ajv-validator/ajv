@@ -146,7 +146,7 @@
   oneOf:           "'should match exactly one schema in oneOf'",
   pattern:         "'should match pattern \"{{=it.util.escapeQuotes($schema)}}\"'",
   required:        "'property {{=$missingProperty}} is required'",
-  type:            "'should be {{? $isArray }}{{= it.util.escapeQuotes($typeSchema.join(\",\")) }}{{??}}{{=it.util.escapeQuotes($typeSchema)}}{{?}}'",
+  type:            "'should be {{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}'",
   uniqueItems:     "'items ## ' + j + ' and ' + i + ' are duplicate'"
 } #}}
 
@@ -172,6 +172,6 @@
   oneOf:           "validate.schema{{=$schemaPath}}",
   pattern:         "'{{=it.util.escapeQuotes($schema)}}'",
   required:        "validate.schema{{=$schemaPath}}",
-  type:            "{{? $isArray }}validate.schema{{=$schemaPath}}{{??}}'{{=it.util.escapeQuotes($typeSchema)}}'{{?}}",
+  type:            "{{? $isArray }}validate.schema{{=$schemaPath}}{{??}}'{{=$typeSchema}}'{{?}}",
   uniqueItems:     "{{=$schema}}"
 } #}}
