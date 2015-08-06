@@ -1,5 +1,5 @@
 {{## def.setup:_keyword:
-  {{ 
+  {{
     var $lvl = it.level
       , $dataLvl = it.dataLevel
       , $schema = it.schema[_keyword]
@@ -144,7 +144,7 @@
   multipleOf:      "'should be multiple of {{=$schema}}'",
   not:             "'should NOT be valid'",
   oneOf:           "'should match exactly one schema in oneOf'",
-  pattern:         "'should match pattern \"{{=$schema}}\"'",
+  pattern:         "'should match pattern \"{{=it.util.escapeQuotes($schema)}}\"'",
   required:        "'property {{=$missingProperty}} is required'",
   type:            "'should be {{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}'",
   uniqueItems:     "'items ## ' + j + ' and ' + i + ' are duplicate'"
@@ -170,7 +170,7 @@
   multipleOf:      "{{=$schema}}",
   not:             "validate.schema{{=$schemaPath}}",
   oneOf:           "validate.schema{{=$schemaPath}}",
-  pattern:         "'{{=$schema}}'",
+  pattern:         "'{{=it.util.escapeQuotes($schema)}}'",
   required:        "validate.schema{{=$schemaPath}}",
   type:            "{{? $isArray }}validate.schema{{=$schemaPath}}{{??}}'{{=$typeSchema}}'{{?}}",
   uniqueItems:     "{{=$schema}}"
