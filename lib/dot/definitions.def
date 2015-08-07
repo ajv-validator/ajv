@@ -1,5 +1,5 @@
 {{## def.setup:_keyword:
-  {{ 
+  {{
     var $lvl = it.level
       , $dataLvl = it.dataLevel
       , $schema = it.schema[_keyword]
@@ -126,13 +126,13 @@
 
 
 {{## def._errorMessages = {
-  $ref:            "'can\\\'t resolve reference {{=$schema}}'",
+  $ref:            "'can\\\'t resolve reference {{=it.util.escapeQuotes($schema)}}'",
   additionalItems: "'should NOT have more than {{=$schema.length}} items'",
   additionalProperties: "'additional properties NOT allowed'",
   anyOf:           "'should match some schema in anyOf'",
-  dependencies:    "'{{? $deps.length == 1 }}property {{= $deps[0] }} is{{??}}properties {{= $deps.join(\", \") }} are{{?}} required when property {{= $property }} is present'",
+  dependencies:    "'{{? $deps.length == 1 }}property {{= it.util.escapeQuotes($deps[0]) }} is{{??}}properties {{= it.util.escapeQuotes($deps.join(\", \")) }} are{{?}} required when property {{= it.util.escapeQuotes($property) }} is present'",
   enum:            "'should be equal to one of values'",
-  format:          "'should match format {{=$schema}}'",
+  format:          "'should match format {{=it.util.escapeQuotes($schema)}}'",
   maximum:         "'should be {{=$op}} {{=$schema}}'",
   minimum:         "'should be {{=$op}} {{=$schema}}'",
   maxItems:        "'should NOT have more than {{=$schema}} items'",
@@ -144,7 +144,7 @@
   multipleOf:      "'should be multiple of {{=$schema}}'",
   not:             "'should NOT be valid'",
   oneOf:           "'should match exactly one schema in oneOf'",
-  pattern:         "'should match pattern \"{{=$schema}}\"'",
+  pattern:         "'should match pattern \"{{=it.util.escapeQuotes($schema)}}\"'",
   required:        "'property {{=$missingProperty}} is required'",
   type:            "'should be {{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}'",
   uniqueItems:     "'items ## ' + j + ' and ' + i + ' are duplicate'"
@@ -152,13 +152,13 @@
 
 
 {{## def._errorSchemas = {
-  $ref:            "'{{=$schema}}'",
+  $ref:            "'{{=it.util.escapeQuotes($schema)}}'",
   additionalItems: "false",
   additionalProperties: "false",
   anyOf:           "validate.schema{{=$schemaPath}}",
   dependencies:    "validate.schema{{=$schemaPath}}",
   enum:            "validate.schema{{=$schemaPath}}",
-  format:          "'{{=$schema}}'",
+  format:          "'{{=it.util.escapeQuotes($schema)}}'",
   maximum:         "{{=$schema}}",
   minimum:         "{{=$schema}}",
   maxItems:        "{{=$schema}}",
@@ -170,7 +170,7 @@
   multipleOf:      "{{=$schema}}",
   not:             "validate.schema{{=$schemaPath}}",
   oneOf:           "validate.schema{{=$schemaPath}}",
-  pattern:         "'{{=$schema}}'",
+  pattern:         "'{{=it.util.escapeQuotes($schema)}}'",
   required:        "validate.schema{{=$schemaPath}}",
   type:            "{{? $isArray }}validate.schema{{=$schemaPath}}{{??}}'{{=$typeSchema}}'{{?}}",
   uniqueItems:     "{{=$schema}}"

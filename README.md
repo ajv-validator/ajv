@@ -226,16 +226,23 @@ git submodule update --init
 npm test
 ```
 
+Browser:
+
+```
+bin/prepare-tests
+karma start
+```
+
 
 ## Contributing
 
-All validation functions are generated using doT templates in dot folder. Templates are precompiled so doT is not a run-time dependency.
+All validation functions are generated using doT templates in [dot](https://github.com/epoberezkin/ajv/tree/master/lib/dot) folder. Templates are precompiled so doT is not a run-time dependency.
 
-`bin/compile-dots` to compile templates to dotjs folder
+`bin/compile-dots` - compiles templates to [dotjs](https://github.com/epoberezkin/ajv/tree/master/lib/dotjs) folder (please use node 0.10 to compile - 0.12 is fully supported but it inserts some empty comments in function parameters when Function constructor is called).
 
-`bin/watch-dots` to automatically compile templates when files in dot folder change
+`bin/watch-dots` - automatically compiles templates when files in dot folder change
 
-`bin/git-hook` to install symbolic link to pre-commit hook that will compile templates and run tests.
+`bin/git-hook` - installs symbolic link to pre-commit hook that will compile templates and run tests.
 
 
 ## Changes history

@@ -1,0 +1,21 @@
+[
+  {
+    "description": "escaping pattern error (#28)",
+    "schema": {
+      "type" : "object",
+      "properties": {
+        "mediaType": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9!#$%^&\\*_\\-\\+{}\\|'.`~]+/[a-zA-Z0-9!#$%^&\\*_\\-\\+{}\\|'.`~]+$"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "empty object",
+        "data": {},
+        "valid": true
+      }
+    ]
+  }
+]
