@@ -1,0 +1,87 @@
+[
+  {
+    "description": "Recursive reference (#27)",
+    "schema": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "id": "testrec",
+      "type": "object",
+      "properties": {
+        "layout": {
+          "id": "layout",
+          "type": "object",
+          "properties": {
+            "layout": { "type": "string" },
+            "panels": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  { "type": "string" },
+                  { "$ref": "layout" }
+                ]
+              }
+            }
+          },
+          "required": [
+            "layout",
+            "panels"
+          ]
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "empty object is valid",
+        "data": {},
+        "valid": true
+      },
+      {
+        "description": "valid object",
+        "data": {
+          "layout": {
+            "layout": "test1",
+            "panels": [
+              "panel1",
+              {
+                "layout": "test2",
+                "panels": [
+                  "panel2",
+                  {
+                    "layout": "test3",
+                    "panels": [
+                      "panel3"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "valid": true
+      },
+      {
+        "description": "invalid object",
+        "data": {
+          "layout": {
+            "layout": "test1",
+            "panels": [
+              "panel1",
+              {
+                "layout": "test2",
+                "panels": [
+                  "panel2",
+                  {
+                    "layout": "test3",
+                    "panels": [
+                      3
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "valid": false
+      }
+    ]
+  }
+]
