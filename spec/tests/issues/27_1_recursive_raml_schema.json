@@ -1,7 +1,6 @@
 [
   {
     "description": "JSON schema for a standard RAML object (#27)",
-    "skip": true,
     "schema": {
       "title": "A JSON schema for a standard RAML object",
       "$schema": "http://json-schema.org/draft-04/schema#",
@@ -140,7 +139,7 @@
         },
         "mediaType": {
           "type": "string",
-          "pattern": "^[a-zA-Z0-9!#$%^&\\*_\\-\\+{}\\|'.`~]+/[a-zA-Z0-9!#$%^&\\*_\\-\\+{}\\|'.`~]+$",
+          "pattern": "^[a-zA-Z0-9!#$%^&*_\\-+{}|'.`~]+/[a-zA-Z0-9!#$%^&*_\\-+{}|'.`~]+$",
           "description": "The media types returned by API responses, and expected from API requests that accept a body, MAY be defaulted by specifying the mediaType property."
         },
         "protocols": {
@@ -387,7 +386,7 @@
             }
           },
           "patternProperties": {
-            "^[a-zA-Z0-9!#$%^&\\*_\\-\\+{}\\|'.`~]+/[a-zA-Z0-9!#$%^&\\*_\\-\\+{}\\|'.`~]+$": {
+            "^[a-zA-Z0-9!#$%^&*_\\-+{}|'.`~]+/[a-zA-Z0-9!#$%^&*_\\-+{}|'.`~]+$": {
               "$ref": "#/definitions/standardResponseBody"
             }
           },
@@ -501,7 +500,7 @@
         "rootResource": {
           "type": "object",
           "patternProperties": {
-            "^\\/": {
+            "^/": {
               "$ref": "#/definitions/resource"
             }
           },
@@ -532,7 +531,7 @@
             "^(?:head|get|post|put|patch|delete|options|trace|connect)$": {
               "$ref": "#/definitions/method"
             },
-            "^\\/": {
+            "^/": {
               "$ref": "#/definitions/resource"
             }
           },
@@ -617,7 +616,7 @@
       {
         "description": "empty object is valid",
         "data": {},
-        "valid": true
+        "valid": false
       }
     ]
   }
