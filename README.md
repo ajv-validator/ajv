@@ -39,6 +39,8 @@ npm install ajv
 
 ## Usage
 
+The fastest validation call:
+
 ```
 var Ajv = require('ajv');
 var ajv = Ajv(); // options can be passed
@@ -47,7 +49,7 @@ var valid = validate(data);
 if (!valid) console.log(validate.errors);
 ```
 
-or
+or with less code
 
 ```
 // ...
@@ -67,6 +69,8 @@ if (!valid) console.log(ajv.errorsText());
 ```
 
 ajv compiles schemas to functions and caches them in all cases (using stringified schema as a key - using [json-stable-stringify](https://github.com/substack/json-stable-stringify)), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
+
+The best performance is achieved when using compiled functions (there is no additional function call).
 
 
 ## Using in browser
@@ -157,6 +161,13 @@ In the current version all the referenced schemas should be added before the sch
 Version [1.0](https://github.com/epoberezkin/ajv/tree/1.0.0) will only compile schemas when they are used the first time. The order of addition in this version is not important and it supports circular references. Try it from the branch if you need them and please report any issues.
 
 By default schema is validated against meta-schema before it is compiled and if the schema does not pass validation the exception is thrown. This behaviour is controlled by `validateSchema` option.
+
+
+##### .addMetaSchema(Object schema [, String key]) -&gt; Function
+
+Adds meta schema that can be used to validate other schemas. That function should be used instead of `addSchema` because there may be instance options that would compile a meta schema incorrectly (at the moment it is `removeAdditional` option).
+
+There is no need to explicitely add draft 4 meta schema (http://json-schema.org/draft-04/schema) - it is added by default, unless option `meta` is set to `false`. You only need to use it if you have a changed meta-schema that you want to use to validate your schemas. See `validateSchema`.
 
 
 ##### .validateSchema(Object schema) -&gt; Boolean
