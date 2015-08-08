@@ -1,0 +1,624 @@
+[
+  {
+    "description": "JSON schema for a standard RAML object (#27)",
+    "skip": true,
+    "schema": {
+      "title": "A JSON schema for a standard RAML object",
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "required": [
+        "title"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "The title property is a short plain text description of the RESTful API. The title property's value SHOULD be suitable for use as a title for the contained user documentation."
+        },
+        "version": {
+          "type": "string",
+          "description": "If the RAML API definition is targeted to a specific API version, the API definition MUST contain a version property."
+        },
+        "baseUri": {
+          "type": "string",
+          "format": "uri",
+          "description": "A RESTful API's resources are defined relative to the API's base URI. The use of the baseUri field is OPTIONAL to allow describing APIs that have not yet been implemented."
+        },
+        "baseUriParameters": {
+          "$ref": "#/definitions/namedParameters"
+        },
+        "mediaType": {
+          "$ref": "#/definitions/mediaType"
+        },
+        "protocols": {
+          "$ref": "#/definitions/protocols"
+        },
+        "securitySchemes": {
+          "$ref": "#/definitions/securitySchemes"
+        },
+        "securedBy": {
+          "$ref": "#/definitions/securedBy"
+        },
+        "documentation": {
+          "$ref": "#/definitions/documentation"
+        },
+        "resources": {
+          "$ref": "#/definitions/rootResource"
+        },
+        "traits": {
+          "$ref": "#/definitions/traits"
+        },
+        "resourceTypes": {
+          "$ref": "#/definitions/resourceTypes"
+        }
+      },
+      "definitions": {
+        "namedParameters": {
+          "patternProperties": {
+            "^[\\w-]+$": {
+              "oneOf": [
+                {
+                  "$ref": "#/definitions/namedParameter"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/namedParameter"
+                  }
+                }
+              ]
+            }
+          },
+          "description": "This RAML Specification describes collections of named parameters for the following properties: URI parameters, query string parameters, form parameters, request bodies (depending on the media type), and request and response headers. Read more: https://github.com/raml-org/raml-spec/blob/master/raml-0.8.md#named-parameters"
+        },
+        "namedParameter": {
+          "type": "object",
+          "properties": {
+            "displayName": {
+              "type": "string",
+              "description": "The displayName attribute specifies the parameter's display name. It is a friendly name used only for display or documentation purposes. If displayName is not specified, it defaults to the property's key (the name of the property itself)."
+            },
+            "description": {
+              "type": "string",
+              "description": "The description attribute describes the intended use or meaning of the parameter. This value MAY be formatted using Markdown."
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "string",
+                "number",
+                "integer",
+                "date",
+                "boolean",
+                "file"
+              ],
+              "default": "string",
+              "description": "The type attribute specifies the primitive type of the parameter's resolved value. If the type is not specified, it defaults to string. API clients MUST return/throw an error if the parameter's resolved value does not match the specified type."
+            },
+            "enum": {
+              "$ref": "#/definitions/enum",
+              "description": "The enum attribute provides an enumeration of the parameter's valid values. This MUST be an array. If the enum attribute is defined, API clients and servers MUST verify that a parameter's value matches a value in the enum array. If there is no matching value, the clients and servers MUST treat this as an error."
+            },
+            "pattern": {
+              "type": "string",
+              "format": "regex",
+              "description": "The pattern attribute is a regular expression that a parameter of type string MUST match. Regular expressions MUST follow the regular expression specification from ECMA 262/Perl 5."
+            },
+            "minLength": {
+              "$ref": "#/definitions/minIntegerDefault0",
+              "description": "The minLength attribute specifies the parameter value's minimum number of characters."
+            },
+            "maxLength": {
+              "$ref": "#/definitions/minInteger",
+              "description": "The maxLength attribute specifies the parameter value's maximum number of characters."
+            },
+            "minimum": {
+              "type": "number",
+              "description": "The minimum attribute specifies the parameter's minimum value."
+            },
+            "maximum": {
+              "type": "number",
+              "description": "The maximum attribute specifies the parameter's maximum value."
+            },
+            "example": {
+              "$ref": "#/definitions/primitiveType",
+              "description": "The example attribute shows an example value for the property. This can be used, e.g., by documentation generators to generate sample values for the property."
+            },
+            "repeat": {
+              "$ref": "#/definitions/booleanDefaultFalse",
+              "description": "The repeat attribute specifies that the parameter can be repeated. If the parameter can be used multiple times, the repeat parameter value MUST be set to true. Otherwise, the default value is false and the parameter may not be repeated."
+            },
+            "required": {
+              "$ref": "#/definitions/booleanDefaultFalse",
+              "description": "The required attribute specifies whether the parameter and its value MUST be present in the API definition. It must be either 'true' if the value MUST be present or false otherwise. arameters are optional unless the required attribute is included and its value set to true. For a URI parameter, the required attribute MAY be omitted, but its default value is true."
+            },
+            "default": {
+              "$ref": "#/definitions/primitiveType",
+              "default": "The default attribute specifies the default value to use for the property if the property is omitted or its value is not specified. This SHOULD NOT be interpreted as a requirement for the client to send the default attribute's value if there is no other value to send. Instead, the default attribute's value is the value the server uses if the client does not send a value."
+            }
+          },
+          "additionalProperties": false
+        },
+        "mediaType": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9!#$%^&\\*_\\-\\+{}\\|'.`~]+/[a-zA-Z0-9!#$%^&\\*_\\-\\+{}\\|'.`~]+$",
+          "description": "The media types returned by API responses, and expected from API requests that accept a body, MAY be defaulted by specifying the mediaType property."
+        },
+        "protocols": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": ["HTTP", "HTTPS"]
+          },
+          "uniqueItems": true,
+          "description": "A RESTful API can be reached via HTTP, HTTPS, or both. The protocols property MAY be used to specify the protocols that an API supports. If the protocols property is not specified, the protocol specified at the baseUri property is used."
+        },
+        "securitySchemes": {
+          "type": "object",
+          "patternProperties": {
+            "^[\\w-]+$": {
+              "$ref": "#/definitions/securityScheme"
+            }
+          },
+          "additionalProperties": false,
+          "description": "The securitySchemes property MUST be used to specify an API's security mechanisms, including the required settings and the authentication methods that the API supports. one authentication method is allowed if the API supports them."
+        },
+        "securityScheme": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "The type attribute MAY be used to convey information about authentication flows and mechanisms to processing applications such as Documentation Generators and Client generators."
+            },
+            "description": {
+              "type": "string",
+              "description": "The description attribute MAY be used to describe a securitySchemes property."
+            },
+            "describedBy": {
+              "$ref": "#/definitions/describedBy"
+            },
+            "settings": {
+              "type": "object",
+              "description": "The settings attribute MAY be used to provide security schema-specific information. Depending on the value of the type parameter, its attributes can vary."
+            }
+          },
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "enum": ["OAuth 1.0"]
+                },
+                "settings": {
+                  "type": "object",
+                  "required": [
+                    "requestTokenUri",
+                    "authorizationUri",
+                    "tokenCredentialsUri"
+                  ],
+                  "properties": {
+                    "requestTokenUri": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "authorizationUri": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "tokenCredentialsUri": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "enum": ["OAuth 2.0"]
+                },
+                "settings": {
+                  "type": "object",
+                  "required": [
+                    "authorizationUri",
+                    "accessTokenUri",
+                    "authorizationGrants"
+                  ],
+                  "properties": {
+                    "authorizationUri": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "accessTokenUri": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "authorizationGrants": {
+                      "type": "array",
+                      "items": {
+                        "enum": ["code", "token", "owner", "credentials"]
+                      }
+                    },
+                    "scopes": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "oneOf": [
+                    {
+                      "enum": [
+                        "Basic Authentication",
+                        "Digest Authentication"
+                      ]
+                    },
+                    {
+                      "type": "string",
+                      "pattern": "^x-"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "additionalProperties": false
+        },
+        "traits": {
+          "type": "object",
+          "patternProperties": {
+            "^[\\w-]+$": {
+              "$ref": "#/definitions/trait"
+            }
+          },
+          "additionalProperties": false
+        },
+        "describedBy": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "queryParameters": {
+              "$ref": "#/definitions/namedParameters"
+            },
+            "headers": {
+              "$ref": "#/definitions/namedParameters"
+            },
+            "responses": {
+              "$ref": "#/definitions/responses"
+            },
+            "body": {
+              "$ref": "#/definitions/body"
+            }
+          },
+          "additionalProperties": false,
+          "description": "The describedBy attribute MAY be used to apply a trait-like structure to a security scheme mechanism so as to extend the mechanism, such as specifying response codes, HTTP headers or custom documentation."
+        },
+        "trait": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "queryParameters": {
+              "$ref": "#/definitions/namedParameters"
+            },
+            "headers": {
+              "$ref": "#/definitions/namedParameters"
+            },
+            "responses": {
+              "$ref": "#/definitions/responses"
+            },
+            "body": {
+              "$ref": "#/definitions/body"
+            },
+            "securedBy": {
+              "$ref": "#/definitions/securedBy"
+            }
+          },
+          "additionalProperties": false,
+          "description": "A trait is a partial method definition that, like a method, can provide method-level properties such as description, headers, query string parameters, and responses. Methods that use one or more traits inherit those traits' properties."
+        },
+        "resourceTypes": {
+          "type": "object",
+          "patternProperties": {
+            "^[\\w-]+$": {
+              "$ref": "#/definitions/resourceType"
+            }
+          }
+        },
+        "resourceType": {
+          "type": "object",
+          "properties": {
+            "is": {
+              "$ref": "#/definitions/is"
+            },
+            "type": {
+              "$ref": "#/definitions/reference"
+            }
+          },
+          "patternProperties": {
+            "^(?:head|get|post|put|patch|delete|options|trace|connect)\\??$": {
+              "$ref": "#/definitions/method"
+            }
+          },
+          "additionalProperties": false,
+          "description": "A resource type is a partial resource definition that, like a resource, can specify a description and methods and their properties. Resources that use a resource type inherit its properties, such as its methods."
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "schema": {
+              "type": "string"
+            },
+            "formParameters": {
+              "$ref": "#/definitions/namedParameters"
+            },
+            "application/x-www-form-urlencoded": {
+              "$ref": "#/definitions/formBody"
+            },
+            "multipart/form-data": {
+              "$ref": "#/definitions/formBody"
+            },
+            "application/json": {
+              "$ref": "#/definitions/schemaBody"
+            },
+            "text/xml": {
+              "$ref": "#/definitions/schemaBody"
+            }
+          },
+          "patternProperties": {
+            "^[a-zA-Z0-9!#$%^&\\*_\\-\\+{}\\|'.`~]+/[a-zA-Z0-9!#$%^&\\*_\\-\\+{}\\|'.`~]+$": {
+              "$ref": "#/definitions/standardResponseBody"
+            }
+          },
+          "additionalProperties": false
+        },
+        "formBody": {
+          "$ref": "#/definitions/responseBody",
+          "properties": {
+            "formParameters": {
+              "$ref": "#/definitions/namedParameters"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Web forms REQUIRE special encoding and custom declaration."
+        },
+        "schemaBody": {
+          "$ref": "#/definitions/responseBody",
+          "properties": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "description": "The structure of a request or response body MAY be further specified by the schema property under the appropriate media type."
+        },
+        "standardResponseBody": {
+          "$ref": "#/definitions/responseBody",
+          "additionalProperties": false
+        },
+        "responseBody": {
+          "type": ["null", "object"],
+          "properties": {
+            "example": {
+              "type": "string"
+            }
+          }
+        },
+        "responses": {
+          "type": "object",
+          "patternProperties": {
+            "^\\d{3}$": {
+              "$ref": "#/definitions/response"
+            }
+          },
+          "additionalProperties": false
+        },
+        "response": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "headers": {
+              "$ref": "#/definitions/namedParameters",
+              "description": "An API's methods may support custom header values in responses. The custom, non-standard HTTP headers MUST be specified by the headers property."
+            },
+            "body": {
+              "$ref": "#/definitions/body"
+            }
+          },
+          "additionalProperties": false
+        },
+        "securedBy": {
+          "$ref": "#/definitions/enum",
+          "items": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/definitions/reference"
+              }
+            ]
+          },
+          "description": "A securityScheme may also be applied to a resource by using the securedBy key, which is equivalent to applying the securityScheme to all methods that may be declared, explicitly or implicitly, by defining the resourceTypes or traits property for that resource."
+        },
+        "reference": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[\\w-]+$"
+            },
+            {
+              "type": "object",
+              "minProperties": 1,
+              "maxProperties": 1,
+              "patternProperties": {
+                "^[\\w-]+$": {
+                  "type": "object"
+                }
+              }
+            }
+          ]
+        },
+        "documentation": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          "description": "The API definition can include a variety of documents that serve as a user guides and reference documentation for the API. Such documents can clarify how the API works or provide business context."
+        },
+        "rootResource": {
+          "type": "object",
+          "patternProperties": {
+            "^\\/": {
+              "$ref": "#/definitions/resource"
+            }
+          },
+          "additionalProperties": false
+        },
+        "resource": {
+          "type": "object",
+          "properties": {
+            "displayName": {
+              "type": "string",
+              "description": "The displayName attribute provides a friendly name to the resource and can be used by documentation generation tools. The displayName key is OPTIONAL. If the displayName attribute is not defined for a resource, documentation tools SHOULD refer to the resource by its property key (i.e. its relative URI, e.g., \"/jobs\"), which acts as the resource's name."
+            },
+            "description": {
+              "type": "string",
+              "description": "Each resource, whether top-level or nested, MAY contain a description property that briefly describes the resource. It is RECOMMENDED that all the API definition's resources includes the description property."
+            },
+            "uriParameters": {
+              "$ref": "#/definitions/namedParameters"
+            },
+            "is": {
+              "$ref": "#/definitions/is"
+            },
+            "type": {
+              "$ref": "#/definitions/reference"
+            }
+          },
+          "patternProperties": {
+            "^(?:head|get|post|put|patch|delete|options|trace|connect)$": {
+              "$ref": "#/definitions/method"
+            },
+            "^\\/": {
+              "$ref": "#/definitions/resource"
+            }
+          },
+          "additionalProperties": false
+        },
+        "method": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "Each declared method MAY contain a description attribute that briefly describes what the method does to the resource. It is RECOMMENDED that all API definition methods include the description property."
+            },
+            "queryParameters": {
+              "$ref": "#/definitions/namedParameters",
+              "description": "An API's resources MAY be filtered (to return a subset of results) or altered (such as transforming a response body from JSON to XML format) by the use of query strings. If the resource or its method supports a query string, the query string MUST be defined by the queryParameters property."
+            },
+            "headers": {
+              "$ref": "#/definitions/namedParameters",
+              "description": "An API's methods MAY support or require non-standard HTTP headers. In the API definition, specify the non-standard HTTP headers by using the headers property."
+            },
+            "protocols": {
+              "$ref": "#/definitions/protocols",
+              "description": "A method can override an API's protocols value for that single method by setting a different value for the fields."
+            },
+            "responses": {
+              "$ref": "#/definitions/responses",
+              "description": "Resource methods MAY have one or more responses. Responses MAY be described using the description property, and MAY include example attributes or schema properties."
+            },
+            "body": {
+              "$ref": "#/definitions/body",
+              "description": "Some method verbs expect the resource to be sent as a request body. For example, to create a resource, the request must include the details of the resource to create. Resources CAN have alternate representations. For example, an API might support both JSON and XML representations."
+            },
+            "securedBy": {
+              "$ref": "#/definitions/securedBy"
+            },
+            "is": {
+              "$ref": "#/definitions/is"
+            }
+          },
+          "additionalProperties": false
+        },
+        "is": {
+          "$ref": "#/definitions/enum",
+          "items": {
+            "$ref": "#/definitions/reference"
+          }
+        },
+        "enum": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "minInteger": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "minIntegerDefault0": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/minInteger"
+            },
+            {
+              "default": 0
+            }
+          ]
+        },
+        "booleanDefaultFalse": {
+          "type": "boolean",
+          "default": false
+        },
+        "date": {
+          "type": "string",
+          "pattern": "^(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat), \\d{2} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} GMT$"
+        },
+        "primitiveType": {
+          "type": ["boolean", "integer", "number", "string"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "tests": [
+      {
+        "description": "empty object is valid",
+        "data": {},
+        "valid": true
+      }
+    ]
+  }
+]
