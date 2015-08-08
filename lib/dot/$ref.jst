@@ -21,10 +21,10 @@
       {{# def.validateRef:'validate' }}
     {{?}}
   {{??}}
-    {{# def.validateRef:'rootRefVal[0]' }}
+    {{# def.validateRef:'root.refVal[0]' }}
   {{?}}
 {{??}}
-  {{ var $refVal = it.resolveRef(it.baseId, $schema, it.rootId); }}
+  {{ var $refVal = it.resolveRef(it.baseId, $schema, it.isRoot); }}
   {{? $refVal === undefined }}
     {{ var $message = 'can\'t resolve reference ' + $schema + ' from id ' + it.baseId; }}
     {{? it.opts.missingRefs == 'fail' }}
