@@ -1,5 +1,6 @@
 [
   {
+    "skip": true,
     "description": "root ref in remote ref (#13)",
     "schema": {
       "id": "http://localhost:1234/object",
