@@ -183,7 +183,7 @@ describe('Ajv', function () {
       ajv.addSchema(schema, 'int');
       var v = ajv.getSchema('int')
       v .should.be.a('function');
-      ajv._cache.get(str) .should.equal(v);
+      ajv._cache.get(str).validate .should.equal(v);
 
       ajv.removeSchema('int');
       should.not.exist(ajv.getSchema('int'));
@@ -196,7 +196,7 @@ describe('Ajv', function () {
       ajv.addSchema(schema);
       var v = ajv.getSchema('//e.com/int.json')
       v .should.be.a('function');
-      ajv._cache.get(str) .should.equal(v);
+      ajv._cache.get(str).validate .should.equal(v);
 
       ajv.removeSchema('//e.com/int.json');
       should.not.exist(ajv.getSchema('//e.com/int.json'));
