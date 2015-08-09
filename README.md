@@ -70,7 +70,7 @@ if (!valid) console.log(ajv.errorsText());
 
 ajv compiles schemas to functions and caches them in all cases (using stringified schema as a key - using [json-stable-stringify](https://github.com/substack/json-stable-stringify)), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
 
-The best performance is achieved when using compiled functions (there is no additional function call).
+The best performance is achieved when using compiled functions returned by `compile` or `getSchema` methods (there is no additional function call).
 
 
 ## Using in browser
@@ -104,7 +104,7 @@ The following formats are supported for string validation with "format" keyword:
 - _ipv6_: IP address v6.
 - _regex_: tests whether a string is a valid regular expression by passing it to RegExp constructor.
 
-There are two modes of fomat validation: `fast` and `full` that affect all formats but `ipv4` and `ipv6`. See [Options](#options) for details.
+There are two modes of format validation: `fast` and `full` that affect all formats but `ipv4` and `ipv6`. See [Options](#options) for details.
 
 You can add additional formats and replace any of the formats above using [addFormat](#api-addformat) method.
 
@@ -224,12 +224,12 @@ Options can have properties `separator` (string used to separate errors, ", " by
 - _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
 - _schemas_: an array or object of schemas that will be added to the instance. If the order is important, pass array. In this case schemas must have IDs in them. Otherwise the object can be passed - `addSchema(value, key)` will be called for each schema in this object.
 - _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default).
-- _validateSchema_: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can either be absent (draft-4 meta-schema will be used) or can be a reference to any previously added schema. If the validation fails, the exception is thrown. Pass "log" in this option to log error instead of throwing exception. Pass `false` to skip schema validation.
+- _validateSchema_: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can either be http://json-schema.org/draft-04/schema or absent (draft-4 meta-schema will be used) or can be a reference to the schema previously added with `addMetaSchema` method. If the validation fails, the exception is thrown. Pass "log" in this option to log error instead of throwing exception. Pass `false` to skip schema validation.
 - _missingRefs_: by default if the reference cannot be resolved during compilation the exception is thrown. Pass 'ignore' to log error during compilation and pass validation. Pass 'fail' to log error and successfully compile schema but fail validation if this rule is checked.
 - _uniqueItems_: validate `uniqueItems` keyword (true by default).
 - _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.
 - _beautify_: format the generated function with [js-beautify](https://github.com/beautify-web/js-beautify) (the validating function is generated without line-breaks). `npm install js-beautify` to use this option. `true` or js-beautify options can be passed.
-- _cache_: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache [sacjs](https://github.com/epoberezkin/sacjs) can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods `put(key, value)` and `get(key)`. 
+- _cache_: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache [sacjs](https://github.com/epoberezkin/sacjs) can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods `put(key, value)`, `get(key)` and `del(key)`. 
 
 
 ## Tests
@@ -263,9 +263,11 @@ All validation functions are generated using doT templates in [dot](https://gith
 
 ##### 0.7.0
 
-`addShema` no longer returns compiled schema(s)
+`addShema` no longer returns compiled schema(s).
 
-Improved / fixed compiling of recursive schemas
+Improved / fixed compilation of recursive schemas.
+
+If cache instance is supplied it must have `put`, `get` and `del` methods.
 
 
 ##### 0.6.11
