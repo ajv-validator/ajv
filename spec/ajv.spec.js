@@ -70,7 +70,8 @@ describe('Ajv', function () {
 
   describe('addSchema method', function() {
     it('should add and compile schema with key', function() {
-      var validate = ajv.addSchema({ type: 'integer' }, 'int');
+      ajv.addSchema({ type: 'integer' }, 'int');
+      var validate = ajv.getSchema('int');
       validate .should.be.a('function');
       validate(1) .should.equal(true);
       validate(1.1) .should.equal(false);
@@ -104,17 +105,18 @@ describe('Ajv', function () {
     });
 
     it('should add and compile array of schemas with ids', function() {
-      var validators = ajv.addSchema([
+      ajv.addSchema([
         { id: '//e.com/int.json', type: 'integer' },
         { id: '//e.com/str.json', type: 'string' }
       ]);
 
-      validators .should.be.an('array').with.length(2);
+      var validate0 = ajv.getSchema('//e.com/int.json');
+      var validate1 = ajv.getSchema('//e.com/str.json');
 
-      validators[0](1) .should.equal(true);
-      validators[0]('1') .should.equal(false);
-      validators[1]('a') .should.equal(true);
-      validators[1](1) .should.equal(false);
+      validate0(1) .should.equal(true);
+      validate0('1') .should.equal(false);
+      validate1('a') .should.equal(true);
+      validate1(1) .should.equal(false);
 
       ajv.validate('//e.com/int.json', 1) .should.equal(true);
       ajv.validate('//e.com/int.json', '1') .should.equal(false);
@@ -156,27 +158,25 @@ describe('Ajv', function () {
 
   describe('getSchema method', function() {
     it('should return compiled schema by key', function() {
-      var validate = ajv.addSchema({ type: 'integer' }, 'int');
-      var v = ajv.getSchema('int');
-      v .should.equal(validate);
-      v(1) .should.equal(true);
-      v('1') .should.equal(false);
+      ajv.addSchema({ type: 'integer' }, 'int');
+      var validate = ajv.getSchema('int');
+      validate(1) .should.equal(true);
+      validate('1') .should.equal(false);
     });
 
     it('should return compiled schema by id or ref', function() {
-      var validate = ajv.addSchema({ id: '//e.com/int.json', type: 'integer' });
-      var v = ajv.getSchema('//e.com/int.json');
-      v .should.equal(validate);
-      v(1) .should.equal(true);
-      v('1') .should.equal(false);
+      ajv.addSchema({ id: '//e.com/int.json', type: 'integer' });
+      var validate = ajv.getSchema('//e.com/int.json');
+      validate .should.equal(validate);
+      validate(1) .should.equal(true);
+      validate('1') .should.equal(false);
     });
 
     it('should return compiled schema without key or with empty key', function() {
-      var validate = ajv.addSchema({ type: 'integer' });
-      var v = ajv.getSchema('');
-      v .should.equal(validate);
-      v(1) .should.equal(true);
-      v('1') .should.equal(false);
+      ajv.addSchema({ type: 'integer' });
+      var validate = ajv.getSchema('');
+      validate(1) .should.equal(true);
+      validate('1') .should.equal(false);
 
       var v = ajv.getSchema();
       v .should.equal(validate);
@@ -188,8 +188,8 @@ describe('Ajv', function () {
     it('should remove schema by key', function() {
       var schema = { type: 'integer' }
         , str = stableStringify(schema);
-      var v = ajv.addSchema(schema, 'int');
-      ajv.getSchema('int') .should.equal(v);
+      ajv.addSchema(schema, 'int');
+      var v = ajv.getSchema('int')
       ajv._cache.get(str) .should.equal(v);
 
       ajv.removeSchema('int');
@@ -200,8 +200,8 @@ describe('Ajv', function () {
     it('should remove schema by id', function() {
       var schema = { id: '//e.com/int.json', type: 'integer' }
         , str = stableStringify(schema);
-      var v = ajv.addSchema(schema);
-      ajv.getSchema('//e.com/int.json') .should.equal(v);
+      ajv.addSchema(schema);
+      var v = ajv.getSchema('//e.com/int.json')
       ajv._cache.get(str) .should.equal(v);
 
       ajv.removeSchema('//e.com/int.json');
@@ -212,8 +212,8 @@ describe('Ajv', function () {
     it('should remove schema by schema object', function() {
       var schema = { type: 'integer' }
         , str = stableStringify(schema);
-      var v = ajv.addSchema(schema);
-      ajv._cache.get(str) .should.equal(v);
+      ajv.addSchema(schema);
+      ajv._cache.get(str) .should.be.a('function');
 
       ajv.removeSchema({ type: 'integer' });
       // should.not.exist(ajv.getSchema('int'));

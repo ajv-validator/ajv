@@ -145,13 +145,15 @@ Instead of the schema you can use the key that was previously passed to `addSche
 Validation errors will be available in the `errors` property of ajv instance (`null` if there were no errors).
 
 
-##### .addSchema(Array&lt;Object&gt;|Object schema [, String key]) -&gt; Function|Array&lt;Function&gt;
+##### .addSchema(Array&lt;Object&gt;|Object schema [, String key])
 
-Add and compile schema(s). It does the same as `.compile` with two differences:
+Add and compile schema(s). It does the same as `.compile` with three differences:
 
 - array of schemas can be passed (schemas should have ids), the second parameter will be ignored.
 
 - key can be passed that can be used to reference the schema and will be used as the schema id if there is no id inside the schema. If the key is not passed, the schema id will be used as the key.
+
+- compiled schema is not returned.
 
 
 Once the schema added it and all the references inside it can be referenced in other schemas and used to validate data.
@@ -163,7 +165,7 @@ Version [1.0](https://github.com/epoberezkin/ajv/tree/1.0.0) will only compile s
 By default schema is validated against meta-schema before it is compiled and if the schema does not pass validation the exception is thrown. This behaviour is controlled by `validateSchema` option.
 
 
-##### .addMetaSchema(Object schema [, String key]) -&gt; Function
+##### .addMetaSchema(Object schema [, String key])
 
 Adds meta schema that can be used to validate other schemas. That function should be used instead of `addSchema` because there may be instance options that would compile a meta schema incorrectly (at the moment it is `removeAdditional` option).
 
@@ -258,6 +260,13 @@ All validation functions are generated using doT templates in [dot](https://gith
 
 
 ## Changes history
+
+##### 0.7.0
+
+`addShema` no longer returns compiled schema(s)
+
+Improved / fixed compiling of recursive schemas
+
 
 ##### 0.6.11
 
