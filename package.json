@@ -4,7 +4,9 @@
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter=spec spec/*.spec.js"
+    "test-spec": "mocha spec/*.spec.js -R spec --bail",
+    "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- spec/*.spec.js -R spec --bail",
+    "test": "npm run test-cov"
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,7 @@
     "chai": "^3.0.0",
     "dot": "^1.0.3",
     "glob": "^5.0.10",
+    "istanbul": "^0.3.17",
     "js-beautify": "^1.5.6",
     "json-schema-test": "0.1.1",
     "karma": "^0.13.3",
