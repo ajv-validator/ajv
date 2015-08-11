@@ -5,7 +5,7 @@
   "main": "lib/ajv.js",
   "scripts": {
     "test-spec": "mocha spec/*.spec.js -R spec --bail",
-    "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- spec/*.spec.js -R spec --bail",
+    "test-cov": "istanbul cover -x '**/spec/**' node_modules/mocha/bin/_mocha -- spec/*.spec.js -R spec --bail",
     "test": "npm run test-cov"
   },
   "repository": {
