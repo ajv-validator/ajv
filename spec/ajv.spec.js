@@ -220,4 +220,29 @@ describe('Ajv', function () {
       should.not.exist(ajv._cache.get(str));
     });
   });
+
+
+  describe('addFormat method', function() {
+    it('should add format as regular expression', function() {
+      ajv.addFormat('identifier', /^[a-z_$][a-z0-9_$]*$/);
+      testFormat();
+    });
+
+    it('should add format as string', function() {
+      ajv.addFormat('identifier', '^[a-z_$][a-z0-9_$]*$');
+      testFormat();
+    });
+
+    it('should add format as function', function() {
+      ajv.addFormat('identifier', function (str) { return /^[a-z_$][a-z0-9_$]*$/.test(str); });
+      testFormat();
+    });
+
+    function testFormat() {
+      var validate = ajv.compile({ format: 'identifier' });
+      validate('abc1') .should.equal(true);
+      validate('123') .should.equal(false);
+      validate(123) .should.equal(true);
+    }
+  });
 });
