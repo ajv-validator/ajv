@@ -3,4 +3,4 @@
 set -e
 
 bin/compile-dots
-npm test
+npm run test-spec
