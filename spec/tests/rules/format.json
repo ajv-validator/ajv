@@ -1,0 +1,25 @@
+[
+  {
+    "description": "format: regex",
+    "schema": {
+      "format": "regex"
+    },
+    "tests": [
+      {
+        "description": "valid regex",
+        "data": "[0-9]",
+        "valid": true
+      },
+      {
+        "description": "invalid regex",
+        "data": "[9-0]",
+        "valid": false
+      },
+      {
+        "description": "not string is valid",
+        "data": 123,
+        "valid": true
+      }
+    ]
+  }
+]

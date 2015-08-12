@@ -65,6 +65,12 @@ describe('Ajv', function () {
       ajv.validate('//e.com/str.json', 'a') .should.equal(true);
       ajv.validate('//e.com/str.json', 1) .should.equal(false);      
     });
+
+    it('should throw exception if no schema with ref', function() {
+      ajv.validate({ id: 'integer', type: 'integer' }, 1) .should.equal(true);
+      ajv.validate('integer', 1) .should.equal(true);
+      should.throw(function() { ajv.validate('string', 'foo'); });
+    });
   });
 
 
@@ -153,6 +159,10 @@ describe('Ajv', function () {
         ajv.addSchema({ type: 'integer' }, '#');
       });
     });
+
+    it('should throw if schema is not an object', function() {
+      should.throw(function() { ajv.addSchema('foo') });
+    });
   });
 
 
@@ -201,7 +211,7 @@ describe('Ajv', function () {
       var schema = { id: '//e.com/int.json', type: 'integer' }
         , str = stableStringify(schema);
       ajv.addSchema(schema);
-      var v = ajv.getSchema('//e.com/int.json')
+      var v = ajv.getSchema('//e.com/int.json');
       ajv._cache.get(str) .should.equal(v);
 
       ajv.removeSchema('//e.com/int.json');
@@ -224,23 +234,23 @@ describe('Ajv', function () {
 
   describe('addFormat method', function() {
     it('should add format as regular expression', function() {
-      ajv.addFormat('identifier', /^[a-z_$][a-z0-9_$]*$/);
+      ajv.addFormat('identifier', /^[a-z_$][a-z0-9_$]*$/i);
       testFormat();
     });
 
     it('should add format as string', function() {
-      ajv.addFormat('identifier', '^[a-z_$][a-z0-9_$]*$');
+      ajv.addFormat('identifier', '^[A-Za-z_$][A-Za-z0-9_$]*$');
       testFormat();
     });
 
     it('should add format as function', function() {
-      ajv.addFormat('identifier', function (str) { return /^[a-z_$][a-z0-9_$]*$/.test(str); });
+      ajv.addFormat('identifier', function (str) { return /^[a-z_$][a-z0-9_$]*$/i.test(str); });
       testFormat();
     });
 
     function testFormat() {
       var validate = ajv.compile({ format: 'identifier' });
-      validate('abc1') .should.equal(true);
+      validate('Abc1') .should.equal(true);
       validate('123') .should.equal(false);
       validate(123) .should.equal(true);
     }
