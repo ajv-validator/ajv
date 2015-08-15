@@ -5,8 +5,8 @@ var jsonSchemaTest = require('json-schema-test')
 
 
 var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
-  , ajv = Ajv({ beautify: true, _debug: false })
-  , fullAjv = Ajv({ allErrors: true, verbose: true, format: 'full', beautify: true, _debug: false });
+  , ajv = Ajv({ beautify: true })
+  , fullAjv = Ajv({ allErrors: true, verbose: true, format: 'full', beautify: true });
 
 var remoteRefs = {
     // for JSON-Schema-Test-Suite
