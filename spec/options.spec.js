@@ -155,4 +155,43 @@ describe('Ajv Options', function () {
       validate(123) .should.equal(true);
     });
   });
+
+
+  describe('missingRefs', function() {
+    it('should throw if ref is missing without this option', function() {
+      var ajv = Ajv();
+      should.throw(function() {
+        ajv.compile({ $ref: 'missing_reference' });
+      });
+    });
+
+    it('should not throw and pass validation with missingRef == "ignore"', function() {
+      testMissingRefsIgnore(Ajv({ missingRefs: 'ignore' }));
+      testMissingRefsIgnore(Ajv({ missingRefs: 'ignore', allErrors: true }));
+
+      function testMissingRefsIgnore(ajv) {
+        var validate = ajv.compile({ $ref: 'missing_reference' });
+        validate({}) .should.equal(true);
+      }
+    });
+
+    it('should not throw and fail validation with missingRef == "fail" if the ref is used', function() {
+      testMissingRefsFail(Ajv({ missingRefs: 'fail' }));
+      testMissingRefsFail(Ajv({ missingRefs: 'fail', allErrors: true }));
+
+      function testMissingRefsFail(ajv) {
+        var validate = ajv.compile({
+          anyOf: [
+            { type: 'number' },
+            { $ref: 'missing_reference' }
+          ]
+        });
+        validate(123) .should.equal(true);
+        validate('foo') .should.equal(false);
+
+        validate = ajv.compile({ $ref: 'missing_reference' });
+        validate({}) .should.equal(false);
+      }
+    });
+  });
 });
