@@ -1,0 +1,66 @@
+[
+  {
+    "description": "Recursive references between schemas (#5)",
+    "schema": "http://localhost:1234/tree.json",
+    "tests": [
+      {
+        "description": "valid tree",
+        "data": { 
+          "meta": "root",
+          "nodes": [
+            {
+              "value": 1,
+              "subtree": {
+                "meta": "child",
+                "nodes": [
+                  { "value": 1.1 },
+                  { "value": 1.2 }
+                ]
+              }
+            },
+            {
+              "value": 2,
+              "subtree": {
+                "meta": "child",
+                "nodes": [
+                  { "value": 2.1 },
+                  { "value": 2.2 }
+                ]
+              }
+            }
+          ]
+        },
+        "valid": true
+      },
+      {
+        "description": "invalid tree",
+        "data": { 
+          "meta": "root",
+          "nodes": [
+            {
+              "value": 1,
+              "subtree": {
+                "meta": "child",
+                "nodes": [
+                  { "value": "string is invalid" },
+                  { "value": 1.2 }
+                ]
+              }
+            },
+            {
+              "value": 2,
+              "subtree": {
+                "meta": "child",
+                "nodes": [
+                  { "value": 2.1 },
+                  { "value": 2.2 }
+                ]
+              }
+            }
+          ]
+        },
+        "valid": false
+      }
+    ]
+  }
+]

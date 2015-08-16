@@ -22,6 +22,10 @@ var remoteRefsWithIds = [ // order is important
   require('./remotes/bar.json'),
   require('./remotes/foo.json'),
   require('./remotes/buu.json'),
+  require('./remotes/tree.json'),
+  require('./remotes/node.json'),
+  require('./remotes/second.json'),
+  require('./remotes/first.json'),
 ];
 
 var instances = [ ajv, fullAjv, verboseAjv ];

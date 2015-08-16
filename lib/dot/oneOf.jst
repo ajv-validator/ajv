@@ -35,9 +35,9 @@ if (!{{=$valid}}) {
   {{# def.error:'oneOf' }}
 } else {
   errors = {{=$errs}};
-  if (validate.errors !== null) {
-    if ({{=$errs}}) validate.errors.length = {{=$errs}};
-    else validate.errors = null;
+  if (vErrors !== null) {
+    if ({{=$errs}}) vErrors.length = {{=$errs}};
+    else vErrors = null;
   }
 
 {{? it.opts.allErrors }} } {{?}}

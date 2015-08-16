@@ -16,6 +16,7 @@ ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
 
 - all validation keywords
 - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
+- support of circular dependencies between schemas
 - correct string lengths for strings with unicode pairs (can be turned off)
 - formats defined by JSON Schema draft 4 standard and custom formats (can be turned off)
 
@@ -148,22 +149,18 @@ Validation errors will be available in the `errors` property of ajv instance (`n
 
 ##### .addSchema(Array&lt;Object&gt;|Object schema [, String key])
 
-Add and compile schema(s). It does the same as `.compile` with three differences:
+Add schema(s) to validator instance. From version 1.0.0 this method does not compile schemas (but it still validates them). Because of that change, dependencies can be added in any order and circular dependencies are supported. It also prevents unnecessary compilation of schemas that are containers for other schemas but not used as a whole.
 
-- array of schemas can be passed (schemas should have ids), the second parameter will be ignored.
+Array of schemas can be passed (schemas should have ids), the second parameter will be ignored.
 
-- key can be passed that can be used to reference the schema and will be used as the schema id if there is no id inside the schema. If the key is not passed, the schema id will be used as the key.
-
-- compiled schema is not returned.
+Key can be passed that can be used to reference the schema and will be used as the schema id if there is no id inside the schema. If the key is not passed, the schema id will be used as the key.
 
 
-Once the schema added it and all the references inside it can be referenced in other schemas and used to validate data.
+Once the schema is added, it (and all the references inside it) can be referenced in other schemas and used to validate data.
 
-In the current version all the referenced schemas should be added before the schema that uses them is compiled, so the circular references are not supported.
+Although `addSchema` does not compile schemas, explicit compilation is not required - the schema will be compiled when it is used first time.
 
-Version [1.0](https://github.com/epoberezkin/ajv/tree/1.0.0) will only compile schemas when they are used the first time. The order of addition in this version is not important and it supports circular references. Try it from the branch if you need them and please report any issues.
-
-By default schema is validated against meta-schema before it is compiled and if the schema does not pass validation the exception is thrown. This behaviour is controlled by `validateSchema` option.
+By default the schema is validated against meta-schema before it is added, and if the schema does not pass validation the exception is thrown. This behaviour is controlled by `validateSchema` option.
 
 
 ##### .addMetaSchema(Object schema [, String key])
@@ -279,6 +276,15 @@ Improved/fixed data filtering with `removeAdditional` option.
 ##### 0.6.10
 
 `removeAdditional` option allowing to remove additional properties.
+
+
+##### 1.0.0
+
+`addSchema` no longer compiles schemas and its return value is `undefined`
+
+Dependencies can be added in any order (all dependencies should be present when the schema is compiled though)
+
+Circular dependencies support
 
 
 ##### 0.6.1
