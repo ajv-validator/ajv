@@ -6,6 +6,7 @@ var jsonSchemaTest = require('json-schema-test')
 
 var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
   , ajv = Ajv({ beautify: true })
+  , verboseAjv = Ajv({ verbose: true, beautify: true })
   , fullAjv = Ajv({ allErrors: true, verbose: true, format: 'full', beautify: true });
 
 var remoteRefs = {
@@ -23,10 +24,12 @@ var remoteRefsWithIds = [ // order is important
   require('./remotes/buu.json'),
 ];
 
-addRemoteRefs();
+var instances = [ ajv, fullAjv, verboseAjv ];
+
+instances.forEach(addRemoteRefs);
 
 
-jsonSchemaTest([ ajv, fullAjv ], {
+jsonSchemaTest(instances, {
   suites: testSuites(),
   only: [
     // 'type', 'not', 'allOf', 'anyOf', 'oneOf', 'enum',
@@ -70,12 +73,10 @@ function testSuites() {
 }
 
 
-function addRemoteRefs() {
+function addRemoteRefs(ajv) {
   for (var id in remoteRefs) {
     ajv.addSchema(remoteRefs[id], id);
-    fullAjv.addSchema(remoteRefs[id], id);
   }
 
   ajv.addSchema(remoteRefsWithIds);
-  fullAjv.addSchema(remoteRefsWithIds);
 }
