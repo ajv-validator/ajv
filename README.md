@@ -29,6 +29,8 @@ Benchmark of the test suite - [json-schema-benchmark](https://github.com/ebdrup/
 
 [Same benchmark](https://github.com/epoberezkin/json-schema-benchmark) run on faster CPU with node 0.12.
 
+[Benchmark of schemas of different complexity by jsck](https://github.com/pandastrike/jsck#benchmarks).
+
 [Benchmark of individual test cases](https://rawgit.com/zaggino/z-schema/master/benchmark/results.html) by [z-schema](https://github.com/zaggino/z-schema).
 
 
@@ -258,6 +260,15 @@ All validation functions are generated using doT templates in [dot](https://gith
 
 
 ## Changes history
+
+##### 1.0.0
+
+Only compile schemas when they are used first time.
+
+Order in which schemas are added is not important.
+
+Circular references are supported.
+
 
 ##### 0.7.0
 
