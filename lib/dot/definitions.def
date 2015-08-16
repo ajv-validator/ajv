@@ -11,9 +11,6 @@
       , $valid = 'valid' + $lvl
       , $errs = 'errs' + $lvl;
   }}
-  {{? it.opts._debug }}
-    console.log('Keyword {{= _keyword }}');
-  {{?}}
 #}}
 
 

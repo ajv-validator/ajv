@@ -1,0 +1,23 @@
+[
+  {
+    "description": "anyOf with one of schemas empty",
+    "schema": {
+      "anyOf": [
+        { "type": "number" },
+        {}
+      ]
+    },
+    "tests": [
+      {
+        "description": "string is valid",
+        "data": "foo",
+        "valid": true
+      },
+      {
+        "description": "number is valid",
+        "data": 123,
+        "valid": true
+      }
+    ]
+  }
+]

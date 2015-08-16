@@ -1,0 +1,8 @@
+{
+  "laxcomma": true,
+  "laxbreak": true,
+  "curly": false,
+  "-W058": true,
+  "eqeqeq": false,
+  "node": true
+}

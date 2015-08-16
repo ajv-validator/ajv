@@ -614,7 +614,7 @@
     },
     "tests": [
       {
-        "description": "empty object is valid",
+        "description": "empty object is invalid",
         "data": {},
         "valid": false
       }

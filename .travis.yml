@@ -1,6 +1,9 @@
 language: node_js
 before_script:
   - git submodule update --init
+  - npm install -g codeclimate-test-reporter
 node_js:
   - "0.10"
   - "0.12"
+after_script:
+  - codeclimate-test-reporter < coverage/lcov.info

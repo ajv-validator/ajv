@@ -65,6 +65,12 @@ describe('Ajv', function () {
       ajv.validate('//e.com/str.json', 'a') .should.equal(true);
       ajv.validate('//e.com/str.json', 1) .should.equal(false);      
     });
+
+    it('should throw exception if no schema with ref', function() {
+      ajv.validate({ id: 'integer', type: 'integer' }, 1) .should.equal(true);
+      ajv.validate('integer', 1) .should.equal(true);
+      should.throw(function() { ajv.validate('string', 'foo'); });
+    });
   });
 
 
@@ -73,6 +79,8 @@ describe('Ajv', function () {
       var res = ajv.addSchema({ type: 'integer' }, 'int');
       should.not.exist(res);
       var validate = ajv.getSchema('int');
+      validate .should.be.a('function');
+
       validate(1) .should.equal(true);
       validate(1.1) .should.equal(false);
       validate('1') .should.equal(false);
@@ -110,6 +118,14 @@ describe('Ajv', function () {
         { id: '//e.com/str.json', type: 'string' }
       ]);
 
+      var validate0 = ajv.getSchema('//e.com/int.json');
+      var validate1 = ajv.getSchema('//e.com/str.json');
+
+      validate0(1) .should.equal(true);
+      validate0('1') .should.equal(false);
+      validate1('a') .should.equal(true);
+      validate1(1) .should.equal(false);
+
       ajv.validate('//e.com/int.json', 1) .should.equal(true);
       ajv.validate('//e.com/int.json', '1') .should.equal(false);
       ajv.validate('//e.com/str.json', 'a') .should.equal(true);
@@ -145,29 +161,33 @@ describe('Ajv', function () {
         ajv.addSchema({ type: 'integer' }, '#');
       });
     });
+
+    it('should throw if schema is not an object', function() {
+      should.throw(function() { ajv.addSchema('foo') });
+    });
   });
 
 
   describe('getSchema method', function() {
     it('should return compiled schema by key', function() {
       ajv.addSchema({ type: 'integer' }, 'int');
-      var v = ajv.getSchema('int');
-      v(1) .should.equal(true);
-      v('1') .should.equal(false);
+      var validate = ajv.getSchema('int');
+      validate(1) .should.equal(true);
+      validate('1') .should.equal(false);
     });
 
     it('should return compiled schema by id or ref', function() {
       ajv.addSchema({ id: '//e.com/int.json', type: 'integer' });
-      var v = ajv.getSchema('//e.com/int.json');
-      v(1) .should.equal(true);
-      v('1') .should.equal(false);
+      var validate = ajv.getSchema('//e.com/int.json');
+      validate(1) .should.equal(true);
+      validate('1') .should.equal(false);
     });
 
     it('should return compiled schema without key or with empty key', function() {
       ajv.addSchema({ type: 'integer' });
-      var v = ajv.getSchema('');
-      v(1) .should.equal(true);
-      v('1') .should.equal(false);
+      var validate = ajv.getSchema('');
+      validate(1) .should.equal(true);
+      validate('1') .should.equal(false);
 
       var v = ajv.getSchema();
       v(1) .should.equal(true);
@@ -182,6 +202,7 @@ describe('Ajv', function () {
         , str = stableStringify(schema);
       ajv.addSchema(schema, 'int');
       var v = ajv.getSchema('int')
+
       v .should.be.a('function');
       ajv._cache.get(str).validate .should.equal(v);
 
@@ -194,6 +215,7 @@ describe('Ajv', function () {
       var schema = { id: '//e.com/int.json', type: 'integer' }
         , str = stableStringify(schema);
       ajv.addSchema(schema);
+
       var v = ajv.getSchema('//e.com/int.json')
       v .should.be.a('function');
       ajv._cache.get(str).validate .should.equal(v);
@@ -208,10 +230,34 @@ describe('Ajv', function () {
         , str = stableStringify(schema);
       ajv.addSchema(schema);
       ajv._cache.get(str) .should.be.an('object');
-
       ajv.removeSchema({ type: 'integer' });
       // should.not.exist(ajv.getSchema('int'));
       should.not.exist(ajv._cache.get(str));
     });
+  });
+
+
+  describe('addFormat method', function() {
+    it('should add format as regular expression', function() {
+      ajv.addFormat('identifier', /^[a-z_$][a-z0-9_$]*$/i);
+      testFormat();
+    });
+
+    it('should add format as string', function() {
+      ajv.addFormat('identifier', '^[A-Za-z_$][A-Za-z0-9_$]*$');
+      testFormat();
+    });
+
+    it('should add format as function', function() {
+      ajv.addFormat('identifier', function (str) { return /^[a-z_$][a-z0-9_$]*$/i.test(str); });
+      testFormat();
+    });
+
+    function testFormat() {
+      var validate = ajv.compile({ format: 'identifier' });
+      validate('Abc1') .should.equal(true);
+      validate('123') .should.equal(false);
+      validate(123) .should.equal(true);
+    }
   });
 });

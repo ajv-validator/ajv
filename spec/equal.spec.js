@@ -34,6 +34,7 @@ describe('equal', function() {
   it('should compare arrays', function() {
     equal([1, 2, 3], [1, 2, 3]) .should.equal(true);
     equal([1, 2, 3], [1, 2, 4]) .should.equal(false);
+    equal([1, 2, 3], [1, 2]) .should.equal(false);
     equal([{a: 'a'}, {b: 'b'}], [{a: 'a'}, {b: 'b'}]) .should.equal(true);
     equal([{a: 'a'}, {b: 'b'}], [{a: 'a'}, {b: 'c'}]) .should.equal(false);
     equal({'0': 0, '1': 1, length: 2}, [0, 1]) .should.equal(false);
