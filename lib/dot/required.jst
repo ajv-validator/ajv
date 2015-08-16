@@ -53,7 +53,7 @@
         it.errorPath = ($currentErrorPath + ' + \'' + $missingProperty + '\'').replace('" + "', '');
       }}
       if ({{=$data}}{{=$prop}} === undefined) {
-        {{# def.error:'required' }}
+        {{# def.addError:'required' }}
       }
     {{~}}
   {{??}}
@@ -61,7 +61,7 @@
 
     for (var {{=$i}} = 0; {{=$i}} < schema{{=$lvl}}.length; {{=$i}}++) {
       if ({{=$data}}[schema{{=$lvl}}[{{=$i}}]] === undefined) {
-        {{# def.error:'required' }}
+        {{# def.addError:'required' }}
       }
     }
   {{?}}
