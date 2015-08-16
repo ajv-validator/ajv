@@ -194,4 +194,18 @@ describe('Ajv Options', function () {
       }
     });
   });
+
+
+  describe('uniqueItems', function() {
+    it('should not validate uniqueItems with this option == false', function() {
+      testUniqueItems(Ajv({ uniqueItems: false }));
+      testUniqueItems(Ajv({ uniqueItems: false, allErrors: true }));
+
+      function testUniqueItems(ajv) {
+        var validate = ajv.compile({ uniqueItems: true });
+        validate([1,2,3]) .should.equal(true);
+        validate([1,1,1]) .should.equal(true);
+      }
+    });
+  });
 });
