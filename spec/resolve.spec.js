@@ -43,5 +43,33 @@ describe('resolve', function () {
       var validate = ajv.compile(schema);
       // console.log(ajv._refs);
     });
+
+    it('should throw if same id resolve to two different schemas', function() {
+      ajv.compile({
+        "id": "http://example.com/1.json",
+        "type": "integer"
+      });
+      should.throw(function() {
+        ajv.compile({
+          "additionalProperties": {
+            "id": "http://example.com/1.json",
+            "type": "string"
+          }
+        });
+      });
+
+      should.throw(function() {
+        ajv.compile({
+          "items": {
+            "id": "#int",
+            "type": "integer"
+          },
+          "additionalProperties": {
+            "id": "#int",
+            "type": "string"
+          }
+        });
+      });
+    });
   });
 });
