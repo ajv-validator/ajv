@@ -263,9 +263,11 @@ All validation functions are generated using doT templates in [dot](https://gith
 
 ##### 1.0.0
 
-Only compile schemas when they are used first time.
+`addSchema` no longer compiles schemas.
 
-Order in which schemas are added is not important.
+Compiles schemas when they are used first time.
+
+Order in which schemas are added is not important (referenced schemas should be available when compiled).
 
 Circular references are supported.
 
@@ -287,15 +289,6 @@ Improved/fixed data filtering with `removeAdditional` option.
 ##### 0.6.10
 
 `removeAdditional` option allowing to remove additional properties.
-
-
-##### 1.0.0
-
-`addSchema` no longer compiles schemas and its return value is `undefined`
-
-Dependencies can be added in any order (all dependencies should be present when the schema is compiled though)
-
-Circular dependencies support
 
 
 ##### 0.6.1
