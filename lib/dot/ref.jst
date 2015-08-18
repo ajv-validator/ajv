@@ -9,7 +9,7 @@
   } {{? $breakOnError }} else { {{?}}
 #}}
 
-{{## def._validateRef:_v: {{=_v}}({{=$data}}, (dataPath || '') + {{= it.errorPath }}) #}}
+{{## def._validateRef:_v: {{=_v}}({{=$data}}, (dataPath || ''){{? it.errorPath != '""'}} + {{= it.errorPath }}{{?}}) #}}
 
 {{? $schema == '#' || $schema == '#/' }}
   {{? it.isRoot }}

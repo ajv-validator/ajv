@@ -7,7 +7,6 @@
   for (var i{{=$lvl}} = {{=startFrom}}; i{{=$lvl}} < {{=$data}}.length; i{{=$lvl}}++) {
     {{
       $it.errorPath = (it.errorPath + ' + "[" + i' + $lvl + ' + "]"').replace('" + "', '');
-      $it.dataPath = it.dataPath + '[i' + $lvl + ']';
       var $passData = $data + '[i' + $lvl + ']';
     }}
 
@@ -46,7 +45,6 @@ var {{=$valid}};
           $it.schema = $sch;
           $it.schemaPath = $schemaPath + '[' + $i + ']';
           $it.errorPath = (it.errorPath + ' + "[' + $i + ']"').replace('" + "', '');
-          $it.dataPath = it.dataPath + '[' + $i + ']';
           var $passData = $data + '[' + $i + ']';
         }}
 

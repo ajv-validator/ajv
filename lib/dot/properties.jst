@@ -63,7 +63,6 @@ var valid{{=$it.level}} = true;
             $it.schema = $aProperties;
             $it.schemaPath = it.schemaPath + '.additionalProperties';
             $it.errorPath = it.errorPath;
-            $it.dataPath = it.dataPath + '[key' + $lvl + ']';
             var $passData = $data + '[key' + $lvl + ']';
           }}
 
@@ -102,7 +101,6 @@ var valid{{=$it.level}} = true;
           , $passData = $data + $prop;
         $it.schemaPath = $schemaPath + $prop;
         $it.errorPath = (it.errorPath + ' + "' + $prop + '"').replace('" + "', '');
-        $it.dataPath = it.dataPath + $prop;
       }}
 
       {{ var $code = it.validate($it); }}
@@ -145,7 +143,6 @@ var valid{{=$it.level}} = true;
       if (/{{= it.util.escapeRegExp($pProperty) }}/.test(key{{=$lvl}})) {
         {{
           $it.errorPath = (it.errorPath + ' + "[\'" + key' + $lvl + ' + "\']"').replace('" + "', '');
-          $it.dataPath = it.dataPath + '[key' + $lvl + ']';
           var $passData = $data + '[key' + $lvl + ']';
         }}
 
