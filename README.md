@@ -261,68 +261,7 @@ All validation functions are generated using doT templates in [dot](https://gith
 
 ## Changes history
 
-##### 1.0.0
-
-`addSchema` no longer compiles schemas.
-
-Compiles schemas when they are used first time.
-
-Order in which schemas are added is not important (referenced schemas should be available when compiled).
-
-Circular references are supported.
-
-
-##### 0.7.0
-
-`addShema` no longer returns compiled schema(s).
-
-Improved / fixed compilation of recursive schemas.
-
-If cache instance is supplied it must have `put`, `get` and `del` methods.
-
-
-##### 0.6.11
-
-Improved/fixed data filtering with `removeAdditional` option.
-
-
-##### 0.6.10
-
-`removeAdditional` option allowing to remove additional properties.
-
-
-##### 0.6.1
-
-Errors for "required" keyword validation include missing properties
-
-Better references resolution in schemas without IDs
-
-
-##### 0.5.9
-
-`cache` option and `removeSchema` method
-
-
-##### 0.5.2
-
-doT is no longer a run-time dependency
-
-ajv can be used in the browser (with browserify)
-
-
-##### 0.5.0
-
-Schemas are validated against meta-schema before compilation
-
-
-##### 0.4.1
-
-Custom formats support.
-
-
-##### 0.4.0
-
-Errors are set to `null` if there are no errors (previously empty array).
+See https://github.com/epoberezkin/ajv/releases
 
 
 ## License
