@@ -197,7 +197,7 @@ describe('Ajv Options', function () {
 
 
   describe('uniqueItems', function() {
-    it('should not validate uniqueItems with this option == false', function() {
+    it('should not validate uniqueItems with uniqueItems option == false', function() {
       testUniqueItems(Ajv({ uniqueItems: false }));
       testUniqueItems(Ajv({ uniqueItems: false, allErrors: true }));
 
@@ -205,6 +205,29 @@ describe('Ajv Options', function () {
         var validate = ajv.compile({ uniqueItems: true });
         validate([1,2,3]) .should.equal(true);
         validate([1,1,1]) .should.equal(true);
+      }
+    });
+  });
+
+
+  describe('unicode', function() {
+    it('should use String.prototype.length with unicode option == false', function() {
+      var ajvUnicode = Ajv();
+      testUnicode(Ajv({ unicode: false }));
+      testUnicode(Ajv({ unicode: false, allErrors: true }));
+
+      function testUnicode(ajv) {
+        var validateWithUnicode = ajvUnicode.compile({ minLength: 2 });
+        var validate = ajv.compile({ minLength: 2 });
+
+        validateWithUnicode('😀') .should.equal(false);
+        validate('😀') .should.equal(true);        
+
+        var validateWithUnicode = ajvUnicode.compile({ maxLength: 1 });
+        var validate = ajv.compile({ maxLength: 1 });
+
+        validateWithUnicode('😀') .should.equal(true);
+        validate('😀') .should.equal(false);        
       }
     });
   });
