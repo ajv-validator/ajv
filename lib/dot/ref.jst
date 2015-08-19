@@ -37,7 +37,18 @@
     {{??}}
       {{ throw new Error($message); }}
     {{?}}
-  {{??}}
+  {{?? typeof $refVal == 'string' }}
     {{# def.validateRef:$refVal }}
+  {{??}}
+    {{ /* console.log('inline: ', $refVal); */ }}
+    {{# def.setupNextLevel }}
+    {{
+      $it.schema = $refVal;
+      $it.schemaPath = '';
+    }}
+    {{= it.validate($it) }}
+    {{? $breakOnError}}
+      if (valid{{=$it.level}}) {
+    {{?}}
   {{?}}
 {{?}}
