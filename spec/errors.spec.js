@@ -10,7 +10,7 @@ describe('Validation errors', function () {
 
   beforeEach(function() {
     ajv = Ajv();
-    fullAjv = Ajv({ allErrors: true, beautify: true });
+    fullAjv = Ajv({ allErrors: true, beautify: true, jsonPointers: true });
   });
 
   it('error should include dataPath', function() {
@@ -53,12 +53,12 @@ describe('Validation errors', function () {
     var fullValidate = fullAjv.compile(schema);
     shouldBeValid(fullValidate, data);
     shouldBeInvalid(fullValidate, invalidData, 2);
-    shouldBeError(fullValidate.errors[0], 'additionalProperties', "['baz']");
-    shouldBeError(fullValidate.errors[1], 'additionalProperties', "['quux']");
+    shouldBeError(fullValidate.errors[0], 'additionalProperties', '/baz');
+    shouldBeError(fullValidate.errors[1], 'additionalProperties', '/quux');
 
     fullValidate.errors
     .filter(function(err) { return err.keyword == 'additionalProperties'; })
-    .map(function(err) { return err.dataPath.slice(2,-2); })
+    .map(function(err) { return fullAjv.opts.jsonPointers ? err.dataPath.substr(1) : err.dataPath.slice(2,-2); })
     .forEach(function(p) { delete invalidData[p]; });
 
     invalidData .should.eql({ foo: 1, bar: 2 });
@@ -84,10 +84,10 @@ describe('Validation errors', function () {
     var fullValidate = fullAjv.compile(schema);
     shouldBeValid(fullValidate, data);
     shouldBeInvalid(fullValidate, invalidData1);
-    shouldBeError(fullValidate.errors[0], 'required', '.bar', 'property .bar is required');
+    shouldBeError(fullValidate.errors[0], 'required', '/bar', 'property .bar is required');
     shouldBeInvalid(fullValidate, invalidData2, 2);
-    shouldBeError(fullValidate.errors[0], 'required', '.foo', 'property .foo is required');
-    shouldBeError(fullValidate.errors[1], 'required', '.baz', 'property .baz is required');
+    shouldBeError(fullValidate.errors[0], 'required', '/foo', 'property .foo is required');
+    shouldBeError(fullValidate.errors[1], 'required', '/baz', 'property .baz is required');
   });
 
 
@@ -115,10 +115,10 @@ describe('Validation errors', function () {
     var fullValidate = fullAjv.compile(schema);
     shouldBeValid(fullValidate, data);
     shouldBeInvalid(fullValidate, invalidData1);
-    shouldBeError(fullValidate.errors[0], 'required', "['1']", "property '1' is required");
+    shouldBeError(fullValidate.errors[0], 'required', '/1', "property '1' is required");
     shouldBeInvalid(fullValidate, invalidData2, 2);
-    shouldBeError(fullValidate.errors[0], 'required', "['2']", "property '2' is required");
-    shouldBeError(fullValidate.errors[1], 'required', "['98']", "property '98' is required");
+    shouldBeError(fullValidate.errors[0], 'required', '/2', "property '2' is required");
+    shouldBeError(fullValidate.errors[1], 'required', '/98', "property '98' is required");
   });
 
 
@@ -135,7 +135,7 @@ describe('Validation errors', function () {
     var validate = ajv.compile(schema);
     shouldBeValid(validate, data);
     shouldBeInvalid(validate, invalidData);
-    shouldBeError(validate.errors[0], 'type', '.foo');
+    shouldBeError(validate.errors[0], 'type', ajv.opts.jsonPointers ? '/foo' : '.foo');
   }
 
 

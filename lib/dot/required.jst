@@ -5,7 +5,7 @@
   {{~ $schema:$property:$i }}
     {{? $i}} || {{?}}
     {{ var $prop = it.util.getProperty($property); }}
-    ( {{=$data}}{{=$prop}} === undefined && (missing{{=$lvl}} = '{{= it.util.escapeQuotes($prop) }}') )
+    ( {{=$data}}{{=$prop}} === undefined && (missing{{=$lvl}} = {{= it.util.toQuotedString($prop) }}) )
   {{~}}
 #}}
 
@@ -13,9 +13,9 @@
   var schema{{=$lvl}} = validate.schema{{=$schemaPath}};
   {{
     var $i = 'i' + $lvl
-      , $propertyPath = ' + schema' + $lvl + '[' + $i + '] + '
-      , $missingProperty = '\' + "\'"' + $propertyPath + '"\'" + \'';
-    it.errorPath = ($currentErrorPath + ' + "[\'"' + $propertyPath + '"\']"').replace('" + "', '');
+      , $propertyPath = 'schema' + $lvl + '[' + $i + ']'
+      , $missingProperty = '\' + "\'" + ' + $propertyPath + ' + "\'" + \'';
+    it.errorPath = it.util.getPathExpr($currentErrorPath, $propertyPath, it.opts.jsonPointers);
   }}
 #}}
 
@@ -50,7 +50,7 @@
       {{
         var $prop = it.util.getProperty($property)
           , $missingProperty = it.util.escapeQuotes($prop);
-        it.errorPath = ($currentErrorPath + ' + \'' + $missingProperty + '\'').replace('" + "', '');
+        it.errorPath = it.util.getPath($currentErrorPath, $property, it.opts.jsonPointers);
       }}
       if ({{=$data}}{{=$prop}} === undefined) {
         {{# def.addError:'required' }}
