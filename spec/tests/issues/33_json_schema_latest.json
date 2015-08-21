@@ -1,0 +1,21 @@
+[
+  {
+    "description": "use latest json schema as v4 (#33)",
+    "schema": {
+      "$schema": "http://json-schema.org/schema",
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "empty object",
+        "data": {},
+        "valid": true
+      }
+    ]
+  }
+]
