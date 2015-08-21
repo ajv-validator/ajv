@@ -6,7 +6,9 @@
   "scripts": {
     "test-spec": "mocha spec/*.spec.js -R spec",
     "test-cov": "istanbul cover -x '**/spec/**' node_modules/mocha/bin/_mocha -- spec/*.spec.js -R spec",
-    "test": "npm run test-cov"
+    "build": "node bin/compile-dots.js",
+    "test": "npm run build && npm run test-cov",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
