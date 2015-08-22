@@ -30,7 +30,7 @@ var valid{{=$it.level}} = true;
     {{? $pPropertyKeys.length }}
       if (isAdditional{{=$lvl}}) {
         {{~ $pPropertyKeys:$pProperty:$i }}
-          if (/{{= it.util.escapeRegExp($pProperty) }}/.test(key{{=$lvl}}))
+          if ({{= it.usePattern($pProperty) }}.test(key{{=$lvl}}))
             isAdditional{{=$lvl}} = false;
           {{? $i < $pPropertyKeys.length-1 }}
             else
@@ -140,7 +140,7 @@ var valid{{=$it.level}} = true;
     }}
 
     for (var key{{=$lvl}} in {{=$data}}) {
-      if (/{{= it.util.escapeRegExp($pProperty) }}/.test(key{{=$lvl}})) {
+      if ({{= it.usePattern($pProperty) }}.test(key{{=$lvl}})) {
         {{
           $it.errorPath = it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
           var $passData = $data + '[key' + $lvl + ']';
