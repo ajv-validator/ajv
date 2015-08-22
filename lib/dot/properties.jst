@@ -45,7 +45,7 @@ var valid{{=$it.level}} = true;
       {{??}}
         {{
           var $currentErrorPath = it.errorPath;
-          it.errorPath = (it.errorPath + ' + "[\'" + key' + $lvl + ' + "\']"').replace('" + "', '');
+          it.errorPath = it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
         }}
         {{? $noAdditional }}
           {{? $removeAdditional }}
@@ -100,7 +100,7 @@ var valid{{=$it.level}} = true;
         var $prop = it.util.getProperty($propertyKey)
           , $passData = $data + $prop;
         $it.schemaPath = $schemaPath + $prop;
-        $it.errorPath = (it.errorPath + ' + "' + $prop + '"').replace('" + "', '');
+        $it.errorPath = it.util.getPath(it.errorPath, $propertyKey, it.opts.jsonPointers);
       }}
 
       {{ var $code = it.validate($it); }}
@@ -142,7 +142,7 @@ var valid{{=$it.level}} = true;
     for (var key{{=$lvl}} in {{=$data}}) {
       if (/{{= it.util.escapeRegExp($pProperty) }}/.test(key{{=$lvl}})) {
         {{
-          $it.errorPath = (it.errorPath + ' + "[\'" + key' + $lvl + ' + "\']"').replace('" + "', '');
+          $it.errorPath = it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
           var $passData = $data + '[key' + $lvl + ']';
         }}
 
