@@ -6,11 +6,12 @@ var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
 
 
 describe('Validation errors', function () {
-  var ajv, fullAjv;
+  var ajv, ajvJP, fullAjv;
 
   beforeEach(function() {
     ajv = Ajv();
-    fullAjv = Ajv({ allErrors: true, beautify: true, jsonPointers: true });
+    ajvJP = Ajv({ jsonPointers: true });
+    fullAjv = Ajv({ allErrors: true, jsonPointers: true });
   });
 
   it('error should include dataPath', function() {
@@ -50,6 +51,11 @@ describe('Validation errors', function () {
     shouldBeInvalid(validate, invalidData);
     shouldBeError(validate.errors[0], 'additionalProperties', "['baz']");
 
+    var validateJP = ajvJP.compile(schema);
+    shouldBeValid(validateJP, data);
+    shouldBeInvalid(validateJP, invalidData);
+    shouldBeError(validateJP.errors[0], 'additionalProperties', "/baz");
+
     var fullValidate = fullAjv.compile(schema);
     shouldBeValid(fullValidate, data);
     shouldBeInvalid(fullValidate, invalidData, 2);
@@ -80,6 +86,13 @@ describe('Validation errors', function () {
     shouldBeError(validate.errors[0], 'required', '.bar', 'property .bar is required');
     shouldBeInvalid(validate, invalidData2);
     shouldBeError(validate.errors[0], 'required', '.foo', 'property .foo is required');
+
+    var validateJP = ajvJP.compile(schema);
+    shouldBeValid(validateJP, data);
+    shouldBeInvalid(validateJP, invalidData1);
+    shouldBeError(validateJP.errors[0], 'required', '/bar', 'property bar is required');
+    shouldBeInvalid(validateJP, invalidData2);
+    shouldBeError(validateJP.errors[0], 'required', '/foo', 'property foo is required');
 
     var fullValidate = fullAjv.compile(schema);
     shouldBeValid(fullValidate, data);
@@ -112,6 +125,13 @@ describe('Validation errors', function () {
     shouldBeInvalid(validate, invalidData2);
     shouldBeError(validate.errors[0], 'required', "['2']", "property '2' is required");
 
+    var validateJP = ajvJP.compile(schema);
+    shouldBeValid(validateJP, data);
+    shouldBeInvalid(validateJP, invalidData1);
+    shouldBeError(validateJP.errors[0], 'required', "/1", "property '1' is required");
+    shouldBeInvalid(validateJP, invalidData2);
+    shouldBeError(validateJP.errors[0], 'required', "/2", "property '2' is required");
+
     var fullValidate = fullAjv.compile(schema);
     shouldBeValid(fullValidate, data);
     shouldBeInvalid(fullValidate, invalidData1);
@@ -124,6 +144,7 @@ describe('Validation errors', function () {
 
   function testSchema1(schema) {
     _testSchema1(ajv, schema);
+    _testSchema1(ajvJP, schema);
     _testSchema1(fullAjv, schema)
   }
 

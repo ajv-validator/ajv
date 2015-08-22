@@ -5,7 +5,7 @@
   {{~ $schema:$property:$i }}
     {{? $i}} || {{?}}
     {{ var $prop = it.util.getProperty($property); }}
-    ( {{=$data}}{{=$prop}} === undefined && (missing{{=$lvl}} = {{= it.util.toQuotedString($prop) }}) )
+    ( {{=$data}}{{=$prop}} === undefined && (missing{{=$lvl}} = {{= it.util.toQuotedString(it.opts.jsonPointers ? $property : $prop) }}) )
   {{~}}
 #}}
 
@@ -27,9 +27,11 @@
   {{? $schema.length <= 20 }}
     if ({{# def.checkRequired }}) {
       {{
-        var $propertyPath = ' + missing' + $lvl
-          , $missingProperty = '\'' + $propertyPath + ' + \'';
-        it.errorPath = $currentErrorPath + $propertyPath;
+        var $propertyPath = 'missing' + $lvl
+          , $missingProperty = '\' + ' + $propertyPath + ' + \'';
+        it.errorPath = it.opts.jsonPointers
+                        ? it.util.getPathExpr($currentErrorPath,  $propertyPath, true)
+                        : $currentErrorPath + ' + ' + $propertyPath;
       }}
       {{# def.error:'required' }}
     } else {
