@@ -6,7 +6,7 @@
 {{## def.validateItems:startFrom:
   for (var i{{=$lvl}} = {{=startFrom}}; i{{=$lvl}} < {{=$data}}.length; i{{=$lvl}}++) {
     {{
-      $it.errorPath = it.util.getPathExpr(it.errorPath, 'i' + $lvl, it.opts.jsonPointers);
+      $it.errorPath = it.util.getPathExpr(it.errorPath, 'i' + $lvl, it.opts.jsonPointers, true);
       var $passData = $data + '[i' + $lvl + ']';
     }}
 
@@ -44,7 +44,7 @@ var {{=$valid}};
         {{
           $it.schema = $sch;
           $it.schemaPath = $schemaPath + '[' + $i + ']';
-          $it.errorPath = it.util.getPathExpr(it.errorPath, $i, it.opts.jsonPointers);
+          $it.errorPath = it.util.getPathExpr(it.errorPath, $i, it.opts.jsonPointers, true);
           var $passData = $data + '[' + $i + ']';
         }}
 
