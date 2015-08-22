@@ -9,6 +9,9 @@ var glob = require('glob')
 var defs = fs.readFileSync(path.join(__dirname, '../lib/dot/definitions.def'));
 var files = glob.sync('../lib/dot/*.jst', { cwd: __dirname });
 
+var dotjsPath = path.join(__dirname, '../lib/dotjs');
+try { fs.mkdirSync(dotjsPath); } catch(e) {}
+
 console.log('\n\nCompiling:');
 
 files.forEach(function (f) {
@@ -18,7 +21,7 @@ files.forEach(function (f) {
   code = code.replace(/out\s*\+=\s*'\s*';/g, '');
   code = beautify(code, { indent_size: 2 }) + '\n';
   var targetFile = f.replace('../lib/dot', '').replace('.jst', '.js')
-    , targetPath = path.join(__dirname, '../lib/dotjs', targetFile);
+    , targetPath = path.join(dotjsPath, targetFile);
   fs.writeFileSync(targetPath, code);
   console.log('compiled', targetFile);
 });

@@ -9,7 +9,7 @@
     "bundle": "browserify -r ./lib/ajv.js:ajv -o ajv.bundle.js",
     "build": "node scripts/compile-dots.js",
     "test-browser": "scripts/prepare-tests && karma start --single-run --browsers PhantomJS",
-    "test": "npm run test-cov && npm run test-browser",
+    "test": "npm run build && npm run test-cov && npm run test-browser",
     "prepublish": "npm run build",
     "watch": "watch 'npm run build' ./lib/dot"
   },
