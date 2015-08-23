@@ -1,13 +1,20 @@
 'use strict';
 
 var jsonSchemaTest = require('json-schema-test')
-  , path = require('path');
+  , path = require('path')
+  , util = require('../lib/compile/util');
 
 
-var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
-  , ajv = Ajv({ beautify: true })
-  , verboseAjv = Ajv({ verbose: true, beautify: true })
-  , fullAjv = Ajv({ allErrors: true, verbose: true, format: 'full', beautify: true, jsonPointers: true });
+var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv');
+
+var instances = getAjvInstances({
+  beautify:     true,
+  allErrors:    true,
+  verbose:      true,
+  format:       'full',
+  inlineRefs:   false,
+  jsonPointers: true
+});
 
 var remoteRefs = {
     // for JSON-Schema-Test-Suite
@@ -28,12 +35,11 @@ var remoteRefsWithIds = [ // order is important
   require('./remotes/first.json'),
 ];
 
-var instances = [ ajv, fullAjv, verboseAjv ];
-
 instances.forEach(addRemoteRefs);
 
 
 jsonSchemaTest(instances, {
+  description: 'Schema tests of ' + instances.length + ' ajv instances with different options',
   suites: testSuites(),
   only: [
     // 'type', 'not', 'allOf', 'anyOf', 'oneOf', 'enum',
@@ -50,7 +56,8 @@ jsonSchemaTest(instances, {
     'optional/zeroTerminatedFloats'
   ],
   cwd: __dirname,
-  hideFolder: 'draft4/'
+  hideFolder: 'draft4/',
+  timeout: 60000
 });
 
 
@@ -76,6 +83,24 @@ function testSuites() {
   return suites;
 }
 
+
+function getAjvInstances(options) {
+  return _getAjvInstances(options, {})
+}
+
+function _getAjvInstances(opts, useOpts) {
+  var optNames = Object.keys(opts);
+  if (optNames.length) {
+    opts = util.copy(opts);
+    var useOpts1 = util.copy(useOpts)
+      , optName = optNames[0];
+    useOpts1[optName] = opts[optName];
+    delete opts[optName];
+    var instances = _getAjvInstances(opts, useOpts)
+      , instances1 = _getAjvInstances(opts, useOpts1);
+    return instances.concat(instances1);
+  } else return [ Ajv(useOpts) ];
+}
 
 function addRemoteRefs(ajv) {
   for (var id in remoteRefs) {

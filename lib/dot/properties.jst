@@ -7,9 +7,11 @@
   var $dataNxt = $it.dataLevel = it.dataLevel + 1
     , $nextData = 'data' + $dataNxt;
 
-  var $pProperties = it.schema.patternProperties || {}
+  var $schemaKeys = Object.keys($schema || {})
+    , $pProperties = it.schema.patternProperties || {}
     , $pPropertyKeys = Object.keys($pProperties)
     , $aProperties = it.schema.additionalProperties
+    , $someProperties = $schemaKeys.length || $pPropertyKeys.length
     , $noAdditional = $aProperties === false
     , $additionalIsSchema = typeof $aProperties == 'object'
                               && Object.keys($aProperties).length
@@ -22,24 +24,27 @@ var {{=$errs}} = errors;
 var valid{{=$it.level}} = true;
 
 {{? $checkAdditional }}
-  var propertiesSchema{{=$lvl}} = validate.schema{{=$schemaPath}} || {};
-
   for (var key{{=$lvl}} in {{=$data}}) {
-    var isAdditional{{=$lvl}} = propertiesSchema{{=$lvl}}[key{{=$lvl}}] === undefined;
-
-    {{? $pPropertyKeys.length }}
-      if (isAdditional{{=$lvl}}) {
-        {{~ $pPropertyKeys:$pProperty:$i }}
-          if ({{= it.usePattern($pProperty) }}.test(key{{=$lvl}}))
-            isAdditional{{=$lvl}} = false;
-          {{? $i < $pPropertyKeys.length-1 }}
-            else
+    {{? $someProperties }}
+      var isAdditional{{=$lvl}} = !(false
+        {{? $schemaKeys.length }}
+          {{? $schemaKeys.length > 5 }}
+            || validate.schema{{=$schemaPath}}[key{{=$lvl}}]
+          {{??}}
+            {{~ $schemaKeys:$propertyKey }}
+              || key{{=$lvl}} == {{= it.util.toQuotedString($propertyKey) }}
+            {{~}}
           {{?}}
-        {{~}}
-      }
-    {{?}}
+        {{?}}
+        {{? $pPropertyKeys.length }}
+          {{~ $pPropertyKeys:$pProperty:$i }}
+            || {{= it.usePattern($pProperty) }}.test(key{{=$lvl}})
+          {{~}}
+        {{?}}
+      );
 
-    if (isAdditional{{=$lvl}}) {
+      if (isAdditional{{=$lvl}}) {
+    {{?}}
       {{? $removeAdditional == 'all' }}
         delete {{=$data}}[key{{=$lvl}}];
       {{??}}
@@ -84,14 +89,16 @@ var valid{{=$it.level}} = true;
         {{?}}
         {{ it.errorPath = $currentErrorPath; }}
       {{?}}
-    }
+    {{? $someProperties }}
+      }
+    {{?}}
   }
 
   {{# def.ifResultValid }}
 {{?}}
 
-{{? $schema }}
-  {{ for (var $propertyKey in $schema) {  }}
+{{? $schemaKeys.length }}
+  {{~ $schemaKeys:$propertyKey }}
     {{ var $sch = $schema[$propertyKey]; }}
 
     {{? {{# def.nonEmptySchema:$sch}} }}
@@ -127,7 +134,7 @@ var valid{{=$it.level}} = true;
     {{?}} {{ /* def.nonEmptySchema */ }}
 
     {{# def.ifResultValid }}
-  {{  }  }}
+  {{~}}
 {{?}}
 
 {{~ $pPropertyKeys:$pProperty }}
