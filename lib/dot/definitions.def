@@ -169,6 +169,6 @@
   oneOf:           "validate.schema{{=$schemaPath}}",
   pattern:         "{{=it.util.toQuotedString($schema)}}",
   required:        "validate.schema{{=$schemaPath}}",
-  type:            "{{? $isArray }}validate.schema{{=$schemaPath}}{{??}}'{{=$typeSchema}}'{{?}}",
+  type:            "{{? $isArray }}['{{= $typeSchema.join(\"','\") }}']{{??}}'{{=$typeSchema}}'{{?}}",
   uniqueItems:     "{{=$schema}}"
 } #}}

@@ -37,7 +37,25 @@
     {{??}}
       {{ throw new Error($message); }}
     {{?}}
-  {{??}}
+  {{?? typeof $refVal == 'string' }}
     {{# def.validateRef:$refVal }}
+  {{??}}
+    {{# def.setupNextLevel }}
+    {{
+      $it.schema = $refVal.schema;
+      $it.schemaPath = '';
+    }}
+    {{ var $code = it.validate($it); }}
+    {{? /validate\.schema/.test($code) }}
+      var rootSchema{{=$it.level}} = validate.schema;
+      validate.schema = {{=$refVal.code}};
+      {{= $code }}
+      validate.schema = rootSchema{{=$it.level}};
+    {{??}}
+      {{= $code }}
+    {{?}}
+    {{? $breakOnError}}
+      if (valid{{=$it.level}}) {
+    {{?}}
   {{?}}
 {{?}}
