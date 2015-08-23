@@ -1,2 +1,0 @@
-#!/usr/bin/env bash
-./node_modules/.bin/watch 'node bin/compile-dots.js' ./lib/dot

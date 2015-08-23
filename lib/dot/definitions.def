@@ -149,13 +149,13 @@
 
 
 {{## def._errorSchemas = {
-  $ref:            "'{{=it.util.escapeQuotes($schema)}}'",
+  $ref:            "{{=it.util.toQuotedString($schema)}}",
   additionalItems: "false",
   additionalProperties: "false",
   anyOf:           "validate.schema{{=$schemaPath}}",
   dependencies:    "validate.schema{{=$schemaPath}}",
   enum:            "validate.schema{{=$schemaPath}}",
-  format:          "'{{=it.util.escapeQuotes($schema)}}'",
+  format:          "{{=it.util.toQuotedString($schema)}}",
   maximum:         "{{=$schema}}",
   minimum:         "{{=$schema}}",
   maxItems:        "{{=$schema}}",
@@ -167,7 +167,7 @@
   multipleOf:      "{{=$schema}}",
   not:             "validate.schema{{=$schemaPath}}",
   oneOf:           "validate.schema{{=$schemaPath}}",
-  pattern:         "'{{=it.util.escapeQuotes($schema)}}'",
+  pattern:         "{{=it.util.toQuotedString($schema)}}",
   required:        "validate.schema{{=$schemaPath}}",
   type:            "{{? $isArray }}['{{= $typeSchema.join(\"','\") }}']{{??}}'{{=$typeSchema}}'{{?}}",
   uniqueItems:     "{{=$schema}}"

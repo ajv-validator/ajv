@@ -28,6 +28,9 @@ node_modules
 
 .DS_Store
 
+# Compiled templates
+lib/dotjs/*.js
+
 # Browserified tests
 .browser
 

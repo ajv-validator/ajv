@@ -1,12 +1,21 @@
 {
   "name": "ajv",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
+  "files": [
+    "lib/",
+    "LICENSE"
+  ],
   "scripts": {
     "test-spec": "mocha spec/*.spec.js -R spec",
     "test-cov": "istanbul cover -x '**/spec/**' node_modules/mocha/bin/_mocha -- spec/*.spec.js -R spec",
-    "test": "npm run test-cov"
+    "bundle": "browserify -r ./lib/ajv.js:ajv -o ajv.bundle.js",
+    "build": "node scripts/compile-dots.js",
+    "test-browser": "scripts/prepare-tests && karma start --single-run --browsers PhantomJS",
+    "test": "npm run build && npm run test-cov && npm run test-browser",
+    "prepublish": "npm run build",
+    "watch": "watch 'npm run build' ./lib/dot"
   },
   "repository": {
     "type": "git",
@@ -27,6 +36,7 @@
     "json-stable-stringify": "^1.0.0"
   },
   "devDependencies": {
+    "browserify": "^11.0.1",
     "chai": "^3.0.0",
     "dot": "^1.0.3",
     "glob": "^5.0.10",
@@ -36,8 +46,11 @@
     "karma": "^0.13.3",
     "karma-chrome-launcher": "^0.2.0",
     "karma-mocha": "^0.2.0",
+    "karma-phantomjs-launcher": "^0.2.1",
     "karma-sauce-launcher": "^0.2.14",
     "mocha": "^2.2.5",
+    "phantomjs": "^1.9.18",
+    "pre-commit": "^1.1.1",
     "require-globify": "^1.2.1",
     "watch": "^0.16.0"
   }

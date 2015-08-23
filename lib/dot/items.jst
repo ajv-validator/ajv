@@ -6,7 +6,7 @@
 {{## def.validateItems:startFrom:
   for (var i{{=$lvl}} = {{=startFrom}}; i{{=$lvl}} < {{=$data}}.length; i{{=$lvl}}++) {
     {{
-      $it.errorPath = (it.errorPath + ' + "[" + i' + $lvl + ' + "]"').replace('" + "', '');
+      $it.errorPath = it.util.getPathExpr(it.errorPath, 'i' + $lvl, it.opts.jsonPointers, true);
       var $passData = $data + '[i' + $lvl + ']';
     }}
 
@@ -39,12 +39,12 @@ var {{=$valid}};
   {{~ $schema:$sch:$i }}
     {{? {{# def.nonEmptySchema:$sch }} }}
       valid{{=$it.level}} = true;
-      
+
       if ({{=$data}}.length > {{=$i}}) {
         {{
           $it.schema = $sch;
           $it.schemaPath = $schemaPath + '[' + $i + ']';
-          $it.errorPath = (it.errorPath + ' + "[' + $i + ']"').replace('" + "', '');
+          $it.errorPath = it.util.getPathExpr(it.errorPath, $i, it.opts.jsonPointers, true);
           var $passData = $data + '[' + $i + ']';
         }}
 

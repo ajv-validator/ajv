@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-set -e
-
-bin/compile-dots
-npm run test-spec
