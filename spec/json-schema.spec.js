@@ -64,15 +64,13 @@ jsonSchemaTest(instances, {
 function testSuites() {
   if (typeof window == 'object') {
     var suites = {
-      'JSON-Schema tests draft4': require('./JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json', {mode: 'hash'}),
-      'Advanced schema tests': require('./tests/{**/,}*.json', {mode: 'hash'})
+      'JSON-Schema tests draft4': require('./JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json', {mode: 'list'}),
+      'Advanced schema tests': require('./tests/{**/,}*.json', {mode: 'list'})
     };
     for (var suiteName in suites) {
-      var suite = suites[suiteName];
-      var suiteArr = [];
-      for (var testSetName in suite)
-        suiteArr.push({ name: testSetName, test: suite[testSetName] });
-      suites[suiteName] = suiteArr;
+      suites[suiteName].forEach(function (suite) {
+        suite.test = suite.module;
+      });
     }
   } else {
     var suites = {
