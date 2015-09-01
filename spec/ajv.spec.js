@@ -167,6 +167,74 @@ describe('Ajv', function () {
     });
   });
 
+  describe('registerSchemaLookup', function() {
+    it('should find and compile schema', function() {
+      var res = ajv.registerSchemaLookup(function(key) {
+        if (key === 'int') {
+          return { id: key, type: 'integer' };
+        }
+      });
+      should.not.exist(res);
+
+      var validate = ajv.getSchema('int');
+      validate.should.be.a('function');
+      validate(1).should.equal(true);
+      validate(1.1).should.equal(false);
+      validate('1').should.equal(false);
+      ajv.validate('int', 1).should.equal(true);
+      ajv.validate('int', '1').should.equal(false);
+    });
+
+    it('should find and compile schema from many lookup functions', function() {
+      ajv.registerSchemaLookup(function(key) {
+        if (key === 'int2') {
+          return { id: key, type: 'integer' };
+        }
+      });
+
+      ajv.registerSchemaLookup(function(key) {
+        if (key === 'string2') {
+          return { id: key, type: 'string' };
+        }
+      });
+
+      var validate = ajv.getSchema('int2');
+      validate.should.be.a('function');
+      validate(1).should.equal(true);
+      validate(1.1).should.equal(false);
+      validate('1').should.equal(false);
+      ajv.validate('int2', 1).should.equal(true);
+      ajv.validate('int2', '1').should.equal(false);
+
+      validate = ajv.getSchema('string2');
+      validate.should.be.a('function');
+      validate('foo').should.equal(true);
+      validate(1).should.equal(false);
+      ajv.validate('string2', '1').should.equal(true);
+      ajv.validate('string2', 1).should.equal(false);
+    });
+
+    it('should stop after finding a schema', function() {
+      ajv.registerSchemaLookup(function(key) {
+        if (key === 'int3') {
+          return { id: key, type: 'integer' };
+        }
+      });
+
+      ajv.registerSchemaLookup(function(key) {
+        return false;
+      });
+
+      var validate = ajv.getSchema('int3');
+      validate.should.be.a('function');
+      validate(1).should.equal(true);
+      ajv.validate('int3', 1).should.equal(true);
+    })
+
+    it('should throw if lookup is not a function', function() {
+      should.throw(function() { ajv.registerSchemaLookup('foo') });
+    });
+  });
 
   describe('getSchema method', function() {
     it('should return compiled schema by key', function() {

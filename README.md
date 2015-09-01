@@ -164,6 +164,17 @@ Although `addSchema` does not compile schemas, explicit compilation is not requi
 
 By default the schema is validated against meta-schema before it is added, and if the schema does not pass validation the exception is thrown. This behaviour is controlled by `validateSchema` option.
 
+##### .registerSchemaLookup(Function lookup)
+
+Register a synchronous `lookup` function that takes the desired reference (id) and returns the matching schema at runtime. This is useful when one has a large number of schemas and loading them at once results in too large of an overhead.
+
+The `lookup` function should return either:
+
+- the schema in a format accepted by .addSchema()
+- a falsey value indicating the schema was not found
+
+If more than one `lookup` function is registered, each will called in the order they where registered until one returns a schema.
+
 
 ##### .addMetaSchema(Object schema [, String key])
 
