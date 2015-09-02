@@ -115,6 +115,31 @@ You can add additional formats and replace any of the formats above using [addFo
 You can find patterns used for format validation and the sources that were used in [formats.js](https://github.com/epoberezkin/ajv/blob/master/lib/compile/formats.js).
 
 
+## Asynchronous compilation
+
+Starting from  version 1.3 ajv supports asynchronous compilation when remote references are loaded using supplied function. See `compileAsync` method and `loadSchema` option.
+
+Example:
+
+```
+var ajv = Ajv({ loadSchema: loadSchema });
+
+ajv.compileAsync(schema, function (err, validate) {
+	if (err) return;
+	var valid = validate(data);
+});
+
+function loadSchema(uri, callback) {
+	request.json(uri, function(err, res, body) {
+		if (err || res.statusCode >= 400)
+			callback(err || new Error('Loading error: ' + res.statusCode));
+		else
+			callback(null, body);
+	});
+}
+```
+
+
 ## Filtering data
 
 With [option `removeAdditional`](#options) (added by [andyscott](https://github.com/andyscott)) you can filter data during the validation.
@@ -138,6 +163,19 @@ Generate validating function and cache the compiled schema for future use.
 Validating function returns boolean and has properties `errors` with the errors from the last validation (`null` if there were no errors) and `schema` with the reference to the original schema.
 
 Unless the option `validateSchema` is false, the schema will be validated against meta-schema and if schema is invalid the error will be thrown. See [options](#options).
+
+
+##### .compileAsync(Object schema, Function callback)
+
+Asyncronous version of `compile` method that loads missing remote schemas using asynchronous function in `options.loadSchema`. Callback will always be called with 2 parameters: error (or null) and validating function. Error will be not null in the following cases:
+
+- missing schema can't be loaded (`loadSchema` calls callback with error).
+- the schema containing missing reference is loaded, but the reference cannot be resolved.
+- schema (or some referenced schema) is invalid.
+
+The function compiles schema and loads the first missing schema multiple times, until all missing schemas are loaded.
+
+See example in Asynchronous compilation.
 
 
 ##### .validate(Object schema|String key|String ref, data) -&gt; Boolean
@@ -227,6 +265,7 @@ Options can have properties `separator` (string used to separate errors, ", " by
 - _validateSchema_: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can either be http://json-schema.org/schema or http://json-schema.org/draft-04/schema or absent (draft-4 meta-schema will be used) or can be a reference to the schema previously added with `addMetaSchema` method. If the validation fails, the exception is thrown. Pass "log" in this option to log error instead of throwing exception. Pass `false` to skip schema validation.
 - _inlineRefs_: by default the referenced schemas that don't have refs in them are inlined, regardless of their size - that substantially improves performance at the cost of the bigger size of compiled schema functions. Pass `false` to not inline referenced schemas (they will be compiled as separate functions). Pass integer number to limit the maximum number of keywords of the schema that will be inlined.
 - _missingRefs_: by default if the reference cannot be resolved during compilation the exception is thrown. The thrown error has properties `missingRef` (with hash fragment) and `missingSchema` (without it). Both properties are resolved relative to the current base id (usually schema id, unless it was substituted). Pass 'ignore' to log error during compilation and pass validation. Pass 'fail' to log error and successfully compile schema but fail validation if this rule is checked.
+- _loadSchema_: asynchronous function that will be used to load remote schemas when the method `compileAsync` is used and some reference is missing (option `missingRefs` should not be 'fail' or 'ignore'). This function should accept 2 parameters: remote schema uri and node-style callback. See example in Asynchronous compilation.
 - _uniqueItems_: validate `uniqueItems` keyword (true by default).
 - _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.
 - _beautify_: format the generated function with [js-beautify](https://github.com/beautify-web/js-beautify) (the validating function is generated without line-breaks). `npm install js-beautify` to use this option. `true` or js-beautify options can be passed.
