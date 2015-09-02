@@ -35,7 +35,12 @@
       {{ console.log($message); }}
       {{? $breakOnError }} if (true) { {{?}}
     {{??}}
-      {{ throw new Error($message); }}
+      {{
+        var $error = new Error($message);
+        $error.missingRef = it.resolve.url(it.baseId, $schema);
+        $error.missingSchema = it.resolve.normalizeId(it.resolve.fullPath($error.missingRef));
+        throw $error;
+      }}
     {{?}}
   {{?? typeof $refVal == 'string' }}
     {{# def.validateRef:$refVal }}
