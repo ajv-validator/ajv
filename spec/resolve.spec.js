@@ -103,7 +103,7 @@ describe('resolve', function () {
       }, done);
     });
 
-    it('missingRef should and missingSchema should NOT include hash fragment', function (done) {
+    it('missingRef should and missingSchema should NOT include JSON path (hash fragment)', function (done) {
       testMissingSchemaError({
         baseId: 'http://example.com/1.json',
         ref: 'int.json#/definitions/positive',
