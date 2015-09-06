@@ -24,9 +24,11 @@ describe('equal', function() {
 
 
   it('should compare objects', function() {
-    equal({a: 1, b: '2'}, {b: '2', a: 1}) .should.equal(true)
-    equal({a: 1, b: '2'}, {b: '2', a: 1, c: []}) .should.equal(false)
-    equal({a: 1, b: '2'}, {a: 1, b: '2'}) .should.equal(true)
+    equal({a: 1, b: '2'}, {b: '2', a: 1}) .should.equal(true);
+    equal({a: 1, b: '2'}, {b: '2', a: 1, c: []}) .should.equal(false);
+    equal({a: 1, b: '2', c: 3}, {b: '2', a: 1, d: 3}) .should.equal(false);
+    equal({b: '2', a: 1, d: 3}, {a: 1, b: '2', c: 3}) .should.equal(false);
+    equal({a: 1, b: '2'}, {a: 1, b: '2'}) .should.equal(true);
     equal({ a: [ { b: 'c' } ] }, { a: [ { b: 'c' } ] }) .should.equal(true);
     equal({ a: [ { b: 'c' } ] }, { a: [ { b: 'd' } ] }) .should.equal(false);
     equal({ a: [ { b: 'c' } ] }, { a: [ { c: 'c' } ] }) .should.equal(false);
