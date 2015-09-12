@@ -13,7 +13,8 @@ var instances = getAjvInstances({
   verbose:      true,
   format:       'full',
   inlineRefs:   false,
-  jsonPointers: true
+  jsonPointers: true,
+  i18n:         true
 });
 
 var remoteRefs = {
@@ -25,7 +26,7 @@ var remoteRefs = {
     'http://localhost:1234/name.json': require('./remotes/name.json')
 };
 
-var remoteRefsWithIds = [ // order is important
+var remoteRefsWithIds = [
   require('./remotes/bar.json'),
   require('./remotes/foo.json'),
   require('./remotes/buu.json'),
@@ -57,7 +58,7 @@ jsonSchemaTest(instances, {
   ],
   cwd: __dirname,
   hideFolder: 'draft4/',
-  timeout: 60000
+  timeout: 90000
 });
 
 

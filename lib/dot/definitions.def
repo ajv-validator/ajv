@@ -90,9 +90,17 @@
 {{## def._error:_rule:
   {
     keyword: '{{=_rule}}',
-    dataPath: (dataPath || '') + {{= it.errorPath }},
-    message: {{# def._errorMessages[_rule] }}
-    {{? it.opts.verbose }}, schema: {{# def._errorSchemas[_rule] }}, data: {{=$data}}{{?}}
+    dataPath: (dataPath || '') + {{= it.errorPath }}
+    {{? it.opts.messages !== false }}
+      , message: {{# def._errorMessages[_rule] }}
+    {{?}}
+    {{? it.opts.verbose || it.opts.i18n }}
+      , schema: {{# def._errorSchemas[_rule] }}
+    {{?}}
+    {{? it.opts.verbose }}
+      , data: {{=$data}}
+    {{?}}
+    {{# def._errorParams[_rule] || '' }}
   }
 #}}
 
@@ -125,9 +133,9 @@
 {{## def._errorMessages = {
   $ref:            "'can\\\'t resolve reference {{=it.util.escapeQuotes($schema)}}'",
   additionalItems: "'should NOT have more than {{=$schema.length}} items'",
-  additionalProperties: "'additional properties NOT allowed'",
+  additionalProperties: "'should NOT have additional properties'",
   anyOf:           "'should match some schema in anyOf'",
-  dependencies:    "'{{? $deps.length == 1 }}property {{= it.util.escapeQuotes($deps[0]) }} is{{??}}properties {{= it.util.escapeQuotes($deps.join(\", \")) }} are{{?}} required when property {{= it.util.escapeQuotes($property) }} is present'",
+  dependencies:    "'should have {{? $deps.length == 1 }}property {{= it.util.escapeQuotes($deps[0]) }}{{??}}properties {{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}} when property {{= it.util.escapeQuotes($property) }} is present'",
   enum:            "'should be equal to one of values'",
   format:          "'should match format {{=it.util.escapeQuotes($schema)}}'",
   maximum:         "'should be {{=$op}} {{=$schema}}'",
@@ -142,9 +150,9 @@
   not:             "'should NOT be valid'",
   oneOf:           "'should match exactly one schema in oneOf'",
   pattern:         "'should match pattern \"{{=it.util.escapeQuotes($schema)}}\"'",
-  required:        "'property {{=$missingProperty}} is required'",
+  required:        "'should have required property {{=$missingProperty}}'",
   type:            "'should be {{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}'",
-  uniqueItems:     "'items ## ' + j + ' and ' + i + ' are duplicate'"
+  uniqueItems:     "'should NOT have duplicate items (items ## ' + j + ' and ' + i + ' are identical)'"
 } #}}
 
 
@@ -171,4 +179,19 @@
   required:        "validate.schema{{=$schemaPath}}",
   type:            "{{? $isArray }}['{{= $typeSchema.join(\"','\") }}']{{??}}'{{=$typeSchema}}'{{?}}",
   uniqueItems:     "{{=$schema}}"
+} #}}
+
+
+{{## def._params = "{{? it.opts.i18n }}, params: " #}}
+
+{{## def._errorParams = {
+  $ref:         "{{# def._params }}{ escaped: '{{=it.util.escapeQuotes($schema)}}' }{{?}}",
+  dependencies: "{{# def._params }}{ n: {{=$deps.length}}, deps: '{{? $deps.length==1 }}{{= it.util.escapeQuotes($deps[0]) }}{{??}}{{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}}', property: '{{= it.util.escapeQuotes($property) }}' }{{?}}",
+  format:       "{{# def._params }}{ escaped: '{{=it.util.escapeQuotes($schema)}}' }{{?}}",
+  maximum:      "{{# def._params }}{ condition: '{{=$op}} {{=$schema}}' }{{?}}",
+  minimum:      "{{# def._params }}{ condition: '{{=$op}} {{=$schema}}' }{{?}}",
+  pattern:      "{{# def._params }}{ escaped: '{{=it.util.escapeQuotes($schema)}}' }{{?}}",
+  required:     "{{# def._params }}{ missingProperty: '{{=$missingProperty}}' }{{?}}",
+  type:         "{{# def._params }}{ type: '{{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}' }{{?}}",
+  uniqueItems:  "{{# def._params }}{ i: i, j: j }{{?}}"
 } #}}

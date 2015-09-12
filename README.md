@@ -1,6 +1,6 @@
 # ajv - Another JSON Schema Validator
 
-One of the fastest JSON Schema validators for node.js and browser.
+Currently the fastest JSON Schema validator for node.js and browser.
 
 It uses precompiled [doT templates](https://github.com/olado/doT) to generate super-fast validating functions.
 
@@ -255,6 +255,31 @@ Options can have properties `separator` (string used to separate errors, ", " by
 
 ## Options
 
+Defaults:
+
+```
+{
+  allErrors:        false,
+  removeAdditional: false,
+  verbose:          false,
+  format:           'fast',
+  formats:          {},
+  schemas:          {},
+  meta:             true,
+  validateSchema:   true,
+  inlineRefs:       true,
+  missingRefs:      true,
+  loadSchema:       function(uri, cb) { /* ... */ cb(err, schema); },
+  uniqueItems:      true,
+  unicode:          true,
+  beautify:         false,
+  cache:            new Cache,
+  jsonPointers:     false,
+  i18n:             false,
+  messages:         true
+}
+```
+
 - _allErrors_: check all rules collecting all errors. Default is to return after the first error.
 - _removeAdditional_: remove additional properties. Default is not to remove. If the option is 'all', then all additional properties are removed, regardless of `additionalProperties` keyword in schema (and no validation is made for them). If the option is `true` (or truthy), only additional properties with `additionalProperties` keyword equal to `false` are removed. If the option is 'failing', then additional properties that fail schema validation will be removed too (where `additionalProperties` keyword is schema).
 - _verbose_: include the reference to the part of the schema and validated data in errors (false by default).
@@ -271,6 +296,9 @@ Options can have properties `separator` (string used to separate errors, ", " by
 - _beautify_: format the generated function with [js-beautify](https://github.com/beautify-web/js-beautify) (the validating function is generated without line-breaks). `npm install js-beautify` to use this option. `true` or js-beautify options can be passed.
 - _cache_: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache [sacjs](https://github.com/epoberezkin/sacjs) can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods `put(key, value)`, `get(key)` and `del(key)`.
 - _jsonPointers_: Output `dataPath` using JSON Pointers instead of JS path notation.
+- _i18n_: Support internationalization of error messages using [ajv-i18n](https://github.com/epoberezkin/ajv-i18n). See its repo for details.
+- _messages_: Include human-readable messages in errors. `true` by default. `messages: false` can be added when internationalization (options `i18n`) is used.
+
 
 ## Tests
 

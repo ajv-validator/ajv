@@ -83,24 +83,24 @@ describe('Validation errors', function () {
     var validate = ajv.compile(schema);
     shouldBeValid(validate, data);
     shouldBeInvalid(validate, invalidData1);
-    shouldBeError(validate.errors[0], 'required', '.bar', 'property .bar is required');
+    shouldBeError(validate.errors[0], 'required', '.bar', 'should have required property .bar');
     shouldBeInvalid(validate, invalidData2);
-    shouldBeError(validate.errors[0], 'required', '.foo', 'property .foo is required');
+    shouldBeError(validate.errors[0], 'required', '.foo', 'should have required property .foo');
 
     var validateJP = ajvJP.compile(schema);
     shouldBeValid(validateJP, data);
     shouldBeInvalid(validateJP, invalidData1);
-    shouldBeError(validateJP.errors[0], 'required', '/bar', 'property bar is required');
+    shouldBeError(validateJP.errors[0], 'required', '/bar', 'should have required property bar');
     shouldBeInvalid(validateJP, invalidData2);
-    shouldBeError(validateJP.errors[0], 'required', '/foo', 'property foo is required');
+    shouldBeError(validateJP.errors[0], 'required', '/foo', 'should have required property foo');
 
     var fullValidate = fullAjv.compile(schema);
     shouldBeValid(fullValidate, data);
     shouldBeInvalid(fullValidate, invalidData1);
-    shouldBeError(fullValidate.errors[0], 'required', '/bar', 'property .bar is required');
+    shouldBeError(fullValidate.errors[0], 'required', '/bar', 'should have required property .bar');
     shouldBeInvalid(fullValidate, invalidData2, 2);
-    shouldBeError(fullValidate.errors[0], 'required', '/foo', 'property .foo is required');
-    shouldBeError(fullValidate.errors[1], 'required', '/baz', 'property .baz is required');
+    shouldBeError(fullValidate.errors[0], 'required', '/foo', 'should have required property .foo');
+    shouldBeError(fullValidate.errors[1], 'required', '/baz', 'should have required property .baz');
   });
 
 
@@ -121,24 +121,24 @@ describe('Validation errors', function () {
     var validate = ajv.compile(schema);
     shouldBeValid(validate, data);
     shouldBeInvalid(validate, invalidData1);
-    shouldBeError(validate.errors[0], 'required', "['1']", "property '1' is required");
+    shouldBeError(validate.errors[0], 'required', "['1']", "should have required property '1'");
     shouldBeInvalid(validate, invalidData2);
-    shouldBeError(validate.errors[0], 'required', "['2']", "property '2' is required");
+    shouldBeError(validate.errors[0], 'required', "['2']", "should have required property '2'");
 
     var validateJP = ajvJP.compile(schema);
     shouldBeValid(validateJP, data);
     shouldBeInvalid(validateJP, invalidData1);
-    shouldBeError(validateJP.errors[0], 'required', "/1", "property '1' is required");
+    shouldBeError(validateJP.errors[0], 'required', "/1", "should have required property '1'");
     shouldBeInvalid(validateJP, invalidData2);
-    shouldBeError(validateJP.errors[0], 'required', "/2", "property '2' is required");
+    shouldBeError(validateJP.errors[0], 'required', "/2", "should have required property '2'");
 
     var fullValidate = fullAjv.compile(schema);
     shouldBeValid(fullValidate, data);
     shouldBeInvalid(fullValidate, invalidData1);
-    shouldBeError(fullValidate.errors[0], 'required', '/1', "property '1' is required");
+    shouldBeError(fullValidate.errors[0], 'required', '/1', "should have required property '1'");
     shouldBeInvalid(fullValidate, invalidData2, 2);
-    shouldBeError(fullValidate.errors[0], 'required', '/2', "property '2' is required");
-    shouldBeError(fullValidate.errors[1], 'required', '/98', "property '98' is required");
+    shouldBeError(fullValidate.errors[0], 'required', '/2', "should have required property '2'");
+    shouldBeError(fullValidate.errors[1], 'required', '/98', "should have required property '98'");
   });
 
 
