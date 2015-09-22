@@ -14,14 +14,19 @@ try { fs.mkdirSync(dotjsPath); } catch(e) {}
 
 console.log('\n\nCompiling:');
 
+var FUNCTION_NAME = /function\s+anonymous\s*\(it[^)]*\)\s*{/;
+var OUT_EMPTY_STRING = /out\s*\+=\s*'\s*';/g;
+
 files.forEach(function (f) {
+  var keyword = path.basename(f, '.jst');
+  var targetPath = path.join(dotjsPath, keyword + '.js');
   var template = fs.readFileSync(path.join(__dirname, f));
   var code = doT.compile(template, { definitions: defs });
-  code = "'use strict';\nmodule.exports = " + code.toString();
-  code = code.replace(/out\s*\+=\s*'\s*';/g, '');
+  code = code.toString()
+             .replace(OUT_EMPTY_STRING, '')
+             .replace(FUNCTION_NAME, 'function generate_' + keyword + '(it) {');
+  code = "'use strict';\nmodule.exports = " + code;
   code = beautify(code, { indent_size: 2 }) + '\n';
-  var targetFile = f.replace('../lib/dot', '').replace('.jst', '.js')
-    , targetPath = path.join(dotjsPath, targetFile);
   fs.writeFileSync(targetPath, code);
-  console.log('compiled', targetFile);
+  console.log('compiled', keyword);
 });

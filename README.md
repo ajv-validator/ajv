@@ -2,7 +2,7 @@
 
 Currently the fastest JSON Schema validator for node.js and browser.
 
-It uses precompiled [doT templates](https://github.com/olado/doT) to generate super-fast validating functions.
+It uses [doT templates](https://github.com/olado/doT) to generate super-fast validating functions.
 
 [![Build Status](https://travis-ci.org/epoberezkin/ajv.svg?branch=master)](https://travis-ci.org/epoberezkin/ajv)
 [![npm version](https://badge.fury.io/js/ajv.svg)](http://badge.fury.io/js/ajv)
@@ -16,22 +16,24 @@ ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
 
 - all validation keywords
 - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
+- asynchronous loading of referenced schemas during compilation.
 - support of circular dependencies between schemas
 - correct string lengths for strings with unicode pairs (can be turned off)
 - formats defined by JSON Schema draft 4 standard and custom formats (can be turned off)
 
-ajv passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (apart from the one that requires that `1.0` is not an integer).
+Currently ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
 
 
-## Benchmarks
+## Performance
 
-Benchmark of the test suite - [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark).
+ajv generates code to turn JSON schemas into javascript functions that are efficient for v8 optimization.
 
-[Same benchmark](https://github.com/epoberezkin/json-schema-benchmark) run on faster CPU with node 0.12.
+Currently ajv is the fastest validator according to these benchmarks:
 
-[Benchmark of schemas of different complexity by jsck](https://github.com/pandastrike/jsck#benchmarks).
-
-[Benchmark of individual test cases](https://rawgit.com/zaggino/z-schema/master/benchmark/results.html) by [z-schema](https://github.com/zaggino/z-schema).
+- [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark) - 70% faster than the second place
+- [jsck benchmark](https://github.com/pandastrike/jsck#benchmarks) - 20-190% faster
+- [z-schema benchmark](https://rawgit.com/zaggino/z-schema/master/benchmark/results.html)
+- [themis benchmark](https://cdn.rawgit.com/playlyfe/themis/master/benchmark/results.html)
 
 
 ## Install
@@ -300,6 +302,11 @@ Defaults:
 - _messages_: Include human-readable messages in errors. `true` by default. `messages: false` can be added when internationalization (options `i18n`) is used.
 
 
+## Command line interface
+
+Simple JSON-schema validation can be done from command line using [ajv-cli](https://github.com/jessedc/ajv-cli) package. At the moment it does not support referenced schemas.
+
+
 ## Tests
 
 ```
@@ -312,7 +319,7 @@ npm test
 
 All validation functions are generated using doT templates in [dot](https://github.com/epoberezkin/ajv/tree/master/lib/dot) folder. Templates are precompiled so doT is not a run-time dependency.
 
-`npm run build` - compiles templates to [dotjs](https://github.com/epoberezkin/ajv/tree/master/lib/dotjs) folder (please use node 0.10 to compile - 0.12 is fully supported but it inserts some empty comments in function parameters when Function constructor is called).
+`npm run build` - compiles templates to [dotjs](https://github.com/epoberezkin/ajv/tree/master/lib/dotjs) folder.
 
 `npm run watch` - automatically compiles templates when files in dot folder change
 
