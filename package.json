@@ -9,8 +9,8 @@
   ],
   "scripts": {
     "jshint": "jshint lib/**/*.js --exclude lib/dotjs/**/*",
-    "test-spec": "mocha spec/*.spec.js --recursive -R spec",
-    "test-cov": "istanbul cover -x '**/spec/**' node_modules/mocha/bin/_mocha -- spec/*.spec.js --recursive -R spec",
+    "test-spec": "mocha spec/*.spec.js -R spec",
+    "test-cov": "istanbul cover -x '**/spec/**' node_modules/mocha/bin/_mocha -- spec/*.spec.js -R spec",
     "bundle": "browserify -r ./lib/ajv.js:ajv -o ajv.bundle.js",
     "build": "node scripts/compile-dots.js",
     "test-browser": "scripts/prepare-tests && karma start --single-run --browsers PhantomJS",

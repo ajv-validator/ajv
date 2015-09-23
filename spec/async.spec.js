@@ -124,6 +124,40 @@ describe('compileAsync method', function() {
   });
 
 
+  it('should return compiled schema on the next tick if there are no references', function (done) {
+    var loadCalled = false;
+    var ajv = Ajv({ loadSchema: function() {
+      loadCalled = true;
+    } });
+    var schema = {
+      "id": "http://example.com/int2plus.json",
+      "type": "integer",
+      "minimum": 2
+    };
+    ajv.compileAsync(schema, function (err, validate) {
+      beforeCallback1 .should.equal(true);
+      spec(err, validate);
+      ajv.compileAsync(schema, function (err, validate) {
+        beforeCallback2 .should.equal(true);
+        spec(err, validate);
+        done();
+      });
+      var beforeCallback2 = true;
+    });
+    var beforeCallback1 = true;
+
+    function spec(err, validate) {
+      should.not.exist(err);
+      loadCalled .should.equal(false);
+      validate .should.be.a('function');
+      var validData = 2;
+      var invalidData = 1;
+      validate(validData) .should.equal(true);
+      validate(invalidData) .should.equal(false);
+    }
+  });
+
+
   function loadSchema(uri, callback) {
     setTimeout(function() {
       if (SCHEMAS[uri]) callback(null, SCHEMAS[uri]);
