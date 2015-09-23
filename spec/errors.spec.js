@@ -142,7 +142,7 @@ describe('Validation errors', function () {
   });
 
 
-  it('errors for items should include item index without quotes in dataPath', function() {
+  it('errors for items should include item index without quotes in dataPath (#48)', function() {
     var schema1 = {
       id: 'schema1',
       type: 'array',
