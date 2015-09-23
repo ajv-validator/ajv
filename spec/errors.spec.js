@@ -142,6 +142,57 @@ describe('Validation errors', function () {
   });
 
 
+  it('errors for items should include item index without quotes in dataPath', function() {
+    var schema1 = {
+      id: 'schema1',
+      type: 'array',
+      items: {
+        type: 'integer',
+        minimum: 10
+      }
+    };
+
+    var data = [ 10, 11, 12]
+      , invalidData1 = [ 1, 10 ]
+      , invalidData2 = [ 10, 9, 11, 8, 12];
+
+    var validate = ajv.compile(schema1);
+    shouldBeValid(validate, data);
+    shouldBeInvalid(validate, invalidData1);
+    shouldBeError(validate.errors[0], 'minimum', '[0]', 'should be >= 10');
+    shouldBeInvalid(validate, invalidData2);
+    shouldBeError(validate.errors[0], 'minimum', '[1]', 'should be >= 10');
+
+    var validateJP = ajvJP.compile(schema1);
+    shouldBeValid(validateJP, data);
+    shouldBeInvalid(validateJP, invalidData1);
+    shouldBeError(validateJP.errors[0], 'minimum', '/0', 'should be >= 10');
+    shouldBeInvalid(validateJP, invalidData2);
+    shouldBeError(validateJP.errors[0], 'minimum', '/1', 'should be >= 10');
+
+    var fullValidate = fullAjv.compile(schema1);
+    shouldBeValid(fullValidate, data);
+    shouldBeInvalid(fullValidate, invalidData1);
+    shouldBeError(fullValidate.errors[0], 'minimum', '/0', 'should be >= 10');
+    shouldBeInvalid(fullValidate, invalidData2, 2);
+    shouldBeError(fullValidate.errors[0], 'minimum', '/1', 'should be >= 10');
+    shouldBeError(fullValidate.errors[1], 'minimum', '/3', 'should be >= 10');
+
+    var schema2 = {
+      id: 'schema2',
+      type: 'array',
+      items: [{ minimum: 10 }, { minimum: 9 }, { minimum: 12 }]
+    };
+
+    var validate = ajv.compile(schema2);
+    shouldBeValid(validate, data);
+    shouldBeInvalid(validate, invalidData1);
+    shouldBeError(validate.errors[0], 'minimum', '[0]', 'should be >= 10');
+    shouldBeInvalid(validate, invalidData2);
+    shouldBeError(validate.errors[0], 'minimum', '[2]', 'should be >= 12');
+  });
+
+
   function testSchema1(schema) {
     _testSchema1(ajv, schema);
     _testSchema1(ajvJP, schema);
