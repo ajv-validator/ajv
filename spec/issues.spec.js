@@ -1,9 +1,10 @@
 'use strict';
 
-var Ajv = require(typeof window == 'object' ? 'ajv' : '../../lib/ajv')
+var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
     , should = require('chai').should();
 
-describe('references with "definitions"', function () {
+
+describe('issue #50: references with "definitions"', function () {
     it.skip('should be supported by addSchema', function () {
         spec('addSchema');
     });
