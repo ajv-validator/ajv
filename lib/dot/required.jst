@@ -31,7 +31,7 @@
           , $missingProperty = '\' + ' + $propertyPath + ' + \'';
         it.errorPath = it.opts.jsonPointers
                         ? it.util.getPathExpr($currentErrorPath,  $propertyPath, true)
-                        : $currentErrorPath;
+                        : $currentErrorPath + ' + ' + $propertyPath;
       }}
       {{# def.error:'required' }}
     } else {
