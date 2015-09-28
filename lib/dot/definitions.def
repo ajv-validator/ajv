@@ -150,7 +150,7 @@
   not:             "'should NOT be valid'",
   oneOf:           "'should match exactly one schema in oneOf'",
   pattern:         "'should match pattern \"{{=it.util.escapeQuotes($schema)}}\"'",
-  required:        "'should have required property {{=$missingProperty}}'",
+  required:        "'is a required property'",
   type:            "'should be {{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}'",
   uniqueItems:     "'should NOT have duplicate items (items ## ' + j + ' and ' + i + ' are identical)'"
 } #}}
