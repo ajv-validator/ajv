@@ -91,7 +91,7 @@ describe('compileAsync method', function() {
   });
 
 
-  it.skip('should correctly compile with remote schemas that have mutual references', function (done) {
+  it('should correctly compile with remote schemas that have mutual references', function (done) {
     var schema = {
       "id": "http://example.com/root.json",
       "properties": {

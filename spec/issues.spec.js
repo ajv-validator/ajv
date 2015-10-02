@@ -5,7 +5,7 @@ var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
 
 
 describe('issue #50: references with "definitions"', function () {
-    it.skip('should be supported by addSchema', function () {
+    it('should be supported by addSchema', function () {
         spec('addSchema');
     });
 
@@ -20,7 +20,7 @@ describe('issue #50: references with "definitions"', function () {
         var ajv = Ajv();
 
         ajv[method]({
-            id: 'http://schemas.domain.xyz/test/person.json#',
+            id: 'http://example.com/test/person.json#',
             definitions: {
                 name: { type: 'string' }
             },
@@ -31,7 +31,7 @@ describe('issue #50: references with "definitions"', function () {
         });
 
         ajv[method]({
-            id: 'http://schemas.domain.xyz/test/employee.json#',
+            id: 'http://example.com/test/employee.json#',
             type: 'object',
             properties: {
                 person: { $ref: '/test/person.json#' },
@@ -39,7 +39,7 @@ describe('issue #50: references with "definitions"', function () {
             }
         });
 
-        result = ajv.validate('http://schemas.domain.xyz/test/employee.json#', {
+        result = ajv.validate('http://example.com/test/employee.json#', {
             person: {
                 name: 'Alice'
             },
