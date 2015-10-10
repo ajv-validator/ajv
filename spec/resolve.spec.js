@@ -2,7 +2,8 @@
 
 
 var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
-  , should = require('chai').should();
+  , should = require('chai').should()
+  , getAjvInstances = require('./ajv_instances');
 
 
 // Example from http://json-schema.org/latest/json-schema-core.html#anchor29
@@ -32,43 +33,52 @@ var schema = {
 
 
 describe('resolve', function () {
-  var ajv;
+  var instances;
 
   beforeEach(function() {
-    ajv = Ajv();
+    instances = getAjvInstances({
+      allErrors:    true,
+      verbose:      true,
+      inlineRefs:   false,
+      i18n:         true
+    });
   });
 
   describe('resolve.ids method', function() {
     it('should resolve ids in schema', function() {
-      var validate = ajv.compile(schema);
-      // console.log(ajv._refs);
+      instances.forEach(function (ajv) {
+        var validate = ajv.compile(schema);
+        // console.log(ajv._refs);
+      });
     });
 
 
     it('should throw if the same id resolves to two different schemas', function() {
-      ajv.compile({
-        "id": "http://example.com/1.json",
-        "type": "integer"
-      });
-      should.throw(function() {
+      instances.forEach(function (ajv) {
         ajv.compile({
-          "additionalProperties": {
-            "id": "http://example.com/1.json",
-            "type": "string"
-          }
+          "id": "http://example.com/1.json",
+          "type": "integer"
         });
-      });
+        should.throw(function() {
+          ajv.compile({
+            "additionalProperties": {
+              "id": "http://example.com/1.json",
+              "type": "string"
+            }
+          });
+        });
 
-      should.throw(function() {
-        ajv.compile({
-          "items": {
-            "id": "#int",
-            "type": "integer"
-          },
-          "additionalProperties": {
-            "id": "#int",
-            "type": "string"
-          }
+        should.throw(function() {
+          ajv.compile({
+            "items": {
+              "id": "#int",
+              "type": "integer"
+            },
+            "additionalProperties": {
+              "id": "#int",
+              "type": "string"
+            }
+          });
         });
       });
     });
@@ -76,54 +86,55 @@ describe('resolve', function () {
 
 
   describe('missing schema error', function() {
-    it('should contain missingRef and missingSchema', function (done) {
+    it('should contain missingRef and missingSchema', function() {
       testMissingSchemaError({
         baseId: 'http://example.com/1.json',
         ref: 'http://another.com/int.json',
         expectedMissingRef: 'http://another.com/int.json',
         expectedMissingSchema: 'http://another.com/int.json'
-      }, done);
+      });
     });
 
-    it('should resolve missingRef and missingSchema relative to base id', function (done) {
+    it('should resolve missingRef and missingSchema relative to base id', function() {
       testMissingSchemaError({
         baseId: 'http://example.com/folder/1.json',
         ref: 'int.json',
         expectedMissingRef: 'http://example.com/folder/int.json',
         expectedMissingSchema: 'http://example.com/folder/int.json'
-      }, done);
+      });
     });
 
-    it('should resolve missingRef and missingSchema relative to base id from root', function (done) {
+    it('should resolve missingRef and missingSchema relative to base id from root', function() {
       testMissingSchemaError({
         baseId: 'http://example.com/folder/1.json',
         ref: '/int.json',
         expectedMissingRef: 'http://example.com/int.json',
         expectedMissingSchema: 'http://example.com/int.json'
-      }, done);
+      });
     });
 
-    it('missingRef should and missingSchema should NOT include JSON path (hash fragment)', function (done) {
+    it('missingRef should and missingSchema should NOT include JSON path (hash fragment)', function() {
       testMissingSchemaError({
         baseId: 'http://example.com/1.json',
         ref: 'int.json#/definitions/positive',
         expectedMissingRef: 'http://example.com/int.json#/definitions/positive',
         expectedMissingSchema: 'http://example.com/int.json'
-      }, done);
+      });
     });
 
 
-    function testMissingSchemaError(opts, done) {
-      try {
-        ajv.compile({
-          "id": opts.baseId,
-          "properties": { "a": { "$ref": opts.ref } }
-        });
-      } catch(e) {
-        e.missingRef .should.equal(opts.expectedMissingRef);
-        e.missingSchema .should.equal(opts.expectedMissingSchema);
-        done();
-      }
+    function testMissingSchemaError(opts) {
+      instances.forEach(function (ajv) {
+        try {
+          ajv.compile({
+            "id": opts.baseId,
+            "properties": { "a": { "$ref": opts.ref } }
+          });
+        } catch(e) {
+          e.missingRef .should.equal(opts.expectedMissingRef);
+          e.missingSchema .should.equal(opts.expectedMissingSchema);
+        }
+      });
     }
   });
 

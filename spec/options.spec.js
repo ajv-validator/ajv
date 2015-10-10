@@ -177,7 +177,9 @@ describe('Ajv Options', function () {
 
     it('should not throw and fail validation with missingRef == "fail" if the ref is used', function() {
       testMissingRefsFail(Ajv({ missingRefs: 'fail' }));
+      testMissingRefsFail(Ajv({ missingRefs: 'fail', verbose: true, i18n: true }));
       testMissingRefsFail(Ajv({ missingRefs: 'fail', allErrors: true }));
+      testMissingRefsFail(Ajv({ missingRefs: 'fail', allErrors: true, verbose: true, i18n: true }));
 
       function testMissingRefsFail(ajv) {
         var validate = ajv.compile({

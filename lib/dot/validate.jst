@@ -112,15 +112,16 @@
 
 {{
   function $shouldUseGroup($rulesGroup) {
-    return $rulesGroup.rules.some(function ($rule) {
-      return $shouldUseRule($rule);
-    });
+    for (var i=0; i < $rulesGroup.rules.length; i++)
+      if ($shouldUseRule($rulesGroup.rules[i]))
+        return true;
   }
 
   function $shouldUseRule($rule) {
     return it.schema[$rule.keyword] !== undefined ||
            ( $rule.keyword == 'properties' &&
-             ( it.schema.additionalProperties !== undefined ||
+             ( ( it.schema.additionalProperties !== undefined &&
+                 it.schema.additionalProperties !== true ) ||
                ( it.schema.patternProperties &&
                  Object.keys(it.schema.patternProperties).length )));
   }
