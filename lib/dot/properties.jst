@@ -16,7 +16,8 @@
     , $additionalIsSchema = typeof $aProperties == 'object'
                               && Object.keys($aProperties).length
     , $removeAdditional = it.opts.removeAdditional
-    , $checkAdditional = $noAdditional || $additionalIsSchema || $removeAdditional;
+    , $checkAdditional = $noAdditional || $additionalIsSchema || $removeAdditional
+    , $requiredProperties = it.util.toHash(it.schema.required || []);
 }}
 
 
@@ -45,50 +46,50 @@ var valid{{=$it.level}} = true;
 
       if (isAdditional{{=$lvl}}) {
     {{?}}
-      {{? $removeAdditional == 'all' }}
-        delete {{=$data}}[key{{=$lvl}}];
-      {{??}}
-        {{
-          var $currentErrorPath = it.errorPath;
-          it.errorPath = it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
-        }}
-        {{? $noAdditional }}
-          {{? $removeAdditional }}
-            delete {{=$data}}[key{{=$lvl}}];
-          {{??}}
-            valid{{=$it.level}} = false;
-            {{# def.error:'additionalProperties' }}
-            {{? $breakOnError }} break; {{?}}
-          {{?}}
-        {{?? $additionalIsSchema }}
-          {{? $removeAdditional == 'failing' }}
-            var {{=$errs}} = errors;
-          {{?}}
-          {{ /* additionalProperties is schema */
-            $it.schema = $aProperties;
-            $it.schemaPath = it.schemaPath + '.additionalProperties';
-            $it.errorPath = it.errorPath;
-            var $passData = $data + '[key' + $lvl + ']';
-          }}
-
-          {{ var $code = it.validate($it); }}
-          {{# def.optimizeValidate }}
-
-          {{? $removeAdditional == 'failing' }}
-            if (!valid{{=$it.level}}) {
-              errors = {{=$errs}};
-              if (validate.errors !== null) {
-                if (errors) validate.errors.length = errors;
-                else validate.errors = null;
-              }
-              delete {{=$data}}[key{{=$lvl}}];
-            }
-          {{??}}
-            {{? $breakOnError }} if (!valid{{=$it.level}}) break; {{?}}
-          {{?}}
+    {{? $removeAdditional == 'all' }}
+      delete {{=$data}}[key{{=$lvl}}];
+    {{??}}
+      {{
+        var $currentErrorPath = it.errorPath;
+        it.errorPath = it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
+      }}
+      {{? $noAdditional }}
+        {{? $removeAdditional }}
+          delete {{=$data}}[key{{=$lvl}}];
+        {{??}}
+          valid{{=$it.level}} = false;
+          {{# def.error:'additionalProperties' }}
+          {{? $breakOnError }} break; {{?}}
         {{?}}
-        {{ it.errorPath = $currentErrorPath; }}
+      {{?? $additionalIsSchema }}
+        {{? $removeAdditional == 'failing' }}
+          var {{=$errs}} = errors;
+        {{?}}
+        {{ /* additionalProperties is schema */
+          $it.schema = $aProperties;
+          $it.schemaPath = it.schemaPath + '.additionalProperties';
+          $it.errorPath = it.errorPath;
+          var $passData = $data + '[key' + $lvl + ']';
+        }}
+
+        {{ var $code = it.validate($it); }}
+        {{# def.optimizeValidate }}
+
+        {{? $removeAdditional == 'failing' }}
+          if (!valid{{=$it.level}}) {
+            errors = {{=$errs}};
+            if (validate.errors !== null) {
+              if (errors) validate.errors.length = errors;
+              else validate.errors = null;
+            }
+            delete {{=$data}}[key{{=$lvl}}];
+          }
+        {{??}}
+          {{? $breakOnError }} if (!valid{{=$it.level}}) break; {{?}}
+        {{?}}
       {{?}}
+      {{ it.errorPath = $currentErrorPath; }}
+    {{?}}
     {{? $someProperties }}
       }
     {{?}}
@@ -122,15 +123,29 @@ var valid{{=$it.level}} = true;
         var {{=$nextData}} = {{=$passData}};
       {{?}}
 
-      {{? $breakOnError }}
+      {{? $requiredProperties[$propertyKey] }}
         if ({{=$useData}} === undefined) {
-          valid{{=$it.level}} = true;
+          valid{{=$it.level}} = false;
+          {{
+            var $currentErrorPath = it.errorPath
+              , $missingProperty = it.util.escapeQuotes($propertyKey);
+            it.errorPath = it.util.getPath($currentErrorPath, $propertyKey, it.opts.jsonPointers);
+          }}
+          {{# def.error:'required' }}
+          {{ it.errorPath = $currentErrorPath; }}
         } else {
       {{??}}
-        if ({{=$useData}} !== undefined) {
+        {{? $breakOnError }}
+          if ({{=$useData}} === undefined) {
+            valid{{=$it.level}} = true;
+          } else {
+        {{??}}
+          if ({{=$useData}} !== undefined) {
+        {{?}}
       {{?}}
-          {{= $code }}
-        }
+
+        {{= $code }}
+      }
     {{?}} {{ /* def.nonEmptySchema */ }}
 
     {{# def.ifResultValid }}

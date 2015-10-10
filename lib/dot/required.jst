@@ -2,7 +2,7 @@
 {{# def.setup:'required' }}
 
 {{## def.checkRequired:
-  {{~ $schema:$property:$i }}
+  {{~ $required:$property:$i }}
     {{? $i}} || {{?}}
     {{ var $prop = it.util.getProperty($property); }}
     ( {{=$data}}{{=$prop}} === undefined && (missing{{=$lvl}} = {{= it.util.toQuotedString(it.opts.jsonPointers ? $property : $prop) }}) )
@@ -20,53 +20,71 @@
 #}}
 
 
-{{ var $currentErrorPath = it.errorPath; }}
-
-{{? $breakOnError }}
-  var missing{{=$lvl}};
-  {{? $schema.length <= 20 }}
-    if ({{# def.checkRequired }}) {
-      {{
-        var $propertyPath = 'missing' + $lvl
-          , $missingProperty = '\' + ' + $propertyPath + ' + \'';
-        it.errorPath = it.opts.jsonPointers
-                        ? it.util.getPathExpr($currentErrorPath,  $propertyPath, true)
-                        : $currentErrorPath + ' + ' + $propertyPath;
-      }}
-      {{# def.error:'required' }}
-    } else {
-  {{??}}
-    {{# def.setupLoop }}
-
-    for (var {{=$i}} = 0; {{=$i}} < schema{{=$lvl}}.length; {{=$i}}++) {
-      var {{=$valid}} = {{=$data}}[schema{{=$lvl}}[{{=$i}}]] !== undefined;
-      if (!{{=$valid}}) break;
-    }
-
-    {{# def.checkError:'required' }}
-    else {
-  {{?}}
+{{? it.schema.properties && Object.keys(it.schema.properties).length }}
+  {{ var $required = []; }}
+  {{~ $schema:$property }}
+    {{ var $propertySch = it.schema.properties[$property]; }}
+    {{? !($propertySch && {{# def.nonEmptySchema:$propertySch}}) }}
+      {{ $required[$required.length] = $property; }}
+    {{?}}
+  {{~}}
 {{??}}
-  {{? $schema.length <= 10 }}
-    {{~ $schema:$property:$i }}
-      {{
-        var $prop = it.util.getProperty($property)
-          , $missingProperty = it.util.escapeQuotes($prop);
-        it.errorPath = it.util.getPath($currentErrorPath, $property, it.opts.jsonPointers);
-      }}
-      if ({{=$data}}{{=$prop}} === undefined) {
-        {{# def.addError:'required' }}
-      }
-    {{~}}
-  {{??}}
-    {{# def.setupLoop }}
-
-    for (var {{=$i}} = 0; {{=$i}} < schema{{=$lvl}}.length; {{=$i}}++) {
-      if ({{=$data}}[schema{{=$lvl}}[{{=$i}}]] === undefined) {
-        {{# def.addError:'required' }}
-      }
-    }
-  {{?}}
+  {{ var $required = $schema; }}
 {{?}}
 
-{{ it.errorPath = $currentErrorPath; }}
+
+{{? $required.length }}
+  {{ var $currentErrorPath = it.errorPath; }}
+
+  {{? $breakOnError }}
+    var missing{{=$lvl}};
+    {{? $required.length <= 20 }}
+      if ({{# def.checkRequired }}) {
+        {{
+          var $propertyPath = 'missing' + $lvl
+            , $missingProperty = '\' + ' + $propertyPath + ' + \'';
+          it.errorPath = it.opts.jsonPointers
+                          ? it.util.getPathExpr($currentErrorPath,  $propertyPath, true)
+                          : $currentErrorPath + ' + ' + $propertyPath;
+        }}
+        {{# def.error:'required' }}
+      } else {
+    {{??}}
+      {{# def.setupLoop }}
+
+      for (var {{=$i}} = 0; {{=$i}} < schema{{=$lvl}}.length; {{=$i}}++) {
+        var {{=$valid}} = {{=$data}}[schema{{=$lvl}}[{{=$i}}]] !== undefined;
+        if (!{{=$valid}}) break;
+      }
+
+      {{# def.checkError:'required' }}
+      else {
+    {{?}}
+  {{??}}
+    {{? $required.length <= 20 }}
+      {{~ $required:$property:$i }}
+        {{
+          var $prop = it.util.getProperty($property)
+            , $missingProperty = it.util.escapeQuotes($prop);
+          it.errorPath = it.util.getPath($currentErrorPath, $property, it.opts.jsonPointers);
+        }}
+        if ({{=$data}}{{=$prop}} === undefined) {
+          {{# def.addError:'required' }}
+        }
+      {{~}}
+    {{??}}
+      {{# def.setupLoop }}
+
+      for (var {{=$i}} = 0; {{=$i}} < schema{{=$lvl}}.length; {{=$i}}++) {
+        if ({{=$data}}[schema{{=$lvl}}[{{=$i}}]] === undefined) {
+          {{# def.addError:'required' }}
+        }
+      }
+    {{?}}
+  {{?}}
+
+  {{ it.errorPath = $currentErrorPath; }}
+
+{{?? $breakOnError }}
+  if (true) {
+{{?}}

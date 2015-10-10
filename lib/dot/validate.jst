@@ -120,8 +120,8 @@
   function $shouldUseRule($rule) {
     return it.schema[$rule.keyword] !== undefined ||
            ( $rule.keyword == 'properties' &&
-             ( ( it.schema.additionalProperties !== undefined &&
-                 it.schema.additionalProperties !== true ) ||
+             ( it.schema.additionalProperties === false ||
+               typeof it.schema.additionalProperties == 'object' ||
                ( it.schema.patternProperties &&
                  Object.keys(it.schema.patternProperties).length )));
   }
