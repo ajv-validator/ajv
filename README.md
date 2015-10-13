@@ -14,7 +14,7 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
 
 ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
 
-- all validation keywords
+- all validation keywords (see [JSON-Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md))
 - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
 - asynchronous loading of referenced schemas during compilation.
 - support of circular dependencies between schemas
