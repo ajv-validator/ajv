@@ -13,13 +13,7 @@
 
 {{? $schema == '#' || $schema == '#/' }}
   {{? it.isRoot }}
-    {{? $breakOnError && it.wasTop }}
-      if (!{{# def._validateRef:'validate' }})
-        return false;
-      else {
-    {{??}}
-      {{# def.validateRef:'validate' }}
-    {{?}}
+    {{# def.validateRef:'validate' }}
   {{??}}
     {{# def.validateRef:'root.refVal[0]' }}
   {{?}}
