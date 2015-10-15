@@ -1,6 +1,5 @@
 [
   {
-    "skip": true,
     "description": "id property in referenced schema in object that is not a schema (#63)",
     "schema": {
       "type" : "object",
@@ -10,9 +9,19 @@
     },
     "tests": [
       {
-        "description": "empty object",
+        "description": "empty object is valid",
         "data": {},
         "valid": true
+      },
+      {
+        "description": "string is valid",
+        "data": { "title": "foo" },
+        "valid": true
+      },
+      {
+        "description": "number is invalid",
+        "data": { "title": 1 },
+        "valid": false
       }
     ]
   }
