@@ -33,6 +33,7 @@ var remoteRefsWithIds = [
   require('./remotes/node.json'),
   require('./remotes/second.json'),
   require('./remotes/first.json'),
+  require('./remotes/scope_change.json'),
 ];
 
 instances.forEach(addRemoteRefs);

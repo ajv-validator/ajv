@@ -1,0 +1,46 @@
+[
+  {
+    "skip": true,
+    "description": "change resolution scope - change filename (#62)",
+    "schema": {
+      "type" : "object",
+      "properties": {
+        "title": { "$ref": "http://localhost:1234/scope_foo.json#/definitions/bar" }
+      }
+    },
+    "tests": [
+      {
+        "description": "string is valid",
+        "data": { "title": "baz" },
+        "valid": true
+      },
+      {
+        "description": "string is invalid",
+        "data": { "title": 1 },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "skip": true,
+    "description": "resolution scope change - change folder (#62)",
+    "schema": {
+      "type" : "object",
+      "properties": {
+        "list": { "$ref": "http://localhost:1234/scope_change.json#/definitions/baz" }
+      }
+    },
+    "tests": [
+      {
+        "description": "string is valid",
+        "data": { "list": [1] },
+        "valid": true
+      },
+      {
+        "description": "string is invalid",
+        "data": { "list": ["a"] },
+        "valid": false
+      }
+    ]
+  }
+]

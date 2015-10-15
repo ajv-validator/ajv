@@ -1,0 +1,18 @@
+{
+  "id": "http://localhost:1234/scope_change.json",
+  "definitions": {
+    "foo": {
+      "id": "http://localhost:1234/scope_foo.json",
+      "definitions": {
+        "bar": {
+          "type": "string"
+        }
+      }
+    },
+    "baz": {
+      "id": "/folder",
+      "type": "array",
+      "items": { "$ref": "folderInteger.json" }
+    }
+  }
+}
