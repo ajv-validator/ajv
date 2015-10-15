@@ -1,5 +1,24 @@
 [
   {
+    "description": "items with empty schema",
+    "schema": {
+      "items": [{}],
+      "additionalItems": { "type": "string" }
+    },
+    "tests": [
+      {
+        "description": "array with second string is valid",
+        "data": [1, "a"],
+        "valid": true
+      },
+      {
+        "description": "array with second number is invalid",
+        "data": [1, 2],
+        "valid": false
+      }
+    ]
+  },
+  {
     "description": "items with subitems",
     "schema": {
       "definitions": {

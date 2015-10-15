@@ -1,0 +1,23 @@
+[
+  {
+    "description": "oneOf with one of schemas empty",
+    "schema": {
+      "oneOf": [
+        { "type": "number" },
+        {}
+      ]
+    },
+    "tests": [
+      {
+        "description": "string is valid",
+        "data": "foo",
+        "valid": true
+      },
+      {
+        "description": "number is invalid",
+        "data": 123,
+        "valid": false
+      }
+    ]
+  }
+]
