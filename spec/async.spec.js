@@ -243,6 +243,20 @@ describe('compileAsync method', function() {
       });
     });
 
+    it('if required schema is loaded but the reference cannot be resolved', function (done) {
+      var schema = {
+        "id": "http://example.com/parent.json",
+        "properties": {
+          "a": { "$ref": "object.json#/definitions/not_found" }
+        }
+      };
+      ajv.compileAsync(schema, function (err, validate) {
+        should.exist(err);
+        should.not.exist(validate);
+        done();
+      });
+    });
+
     it('if loadSchema returned error', function (done) {
       var schema = {
         "id": "http://example.com/parent.json",
