@@ -63,7 +63,7 @@ describe('compileAsync method', function() {
       }
     };
     ajv.compileAsync(schema, function (err, validate) {
-      loadCallCount .should.equal(2);
+      should.equal(loadCallCount, 2);
       should.not.exist(err);
       validate .should.be.a('function');
       validate({ a: { b: 2 } }) .should.equal(true);
@@ -81,7 +81,7 @@ describe('compileAsync method', function() {
       }
     };
     ajv.compileAsync(schema, function (err, validate) {
-      loadCallCount .should.equal(2);
+      should.equal(loadCallCount, 2);
       should.not.exist(err);
       validate .should.be.a('function');
       validate({ a: 2 }) .should.equal(true);
@@ -123,7 +123,7 @@ describe('compileAsync method', function() {
       }
     };
     ajv.compileAsync(schema, function (err, validate) {
-      loadCallCount .should.equal(1);
+      should.equal(loadCallCount, 1);
       should.not.exist(err);
       validate .should.be.a('function');
       var validData = { a: { b: { a: { b: {} } } } };
@@ -155,7 +155,7 @@ describe('compileAsync method', function() {
 
     function spec(err, validate) {
       should.not.exist(err);
-      loadCallCount .should.equal(0);
+      should.equal(loadCallCount, 0);
       validate .should.be.a('function');
       var validData = 2;
       var invalidData = 1;
@@ -189,7 +189,7 @@ describe('compileAsync method', function() {
     function completed() {
       completedCount++;
       if (completedCount == 3) {
-        loadCallCount .should.equal(2);
+        should.equal(loadCallCount, 2);
         done();
       }
     }
@@ -208,7 +208,10 @@ describe('compileAsync method', function() {
         done(new Error('it should have thrown exception'));
       });
     });
-    setTimeout(done);
+    setTimeout(function() {
+      // function is needed for the test to pass in Firefox 4
+      done();
+    });
   });
 
 

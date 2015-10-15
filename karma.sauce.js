@@ -125,8 +125,8 @@ module.exports = function(config) {
     sauceLabs: {
       testName: 'Ajv'
     },
-    captureTimeout: 300000,
-    browserNoActivityTimeout: 120000,
+    captureTimeout: 600000,
+    browserNoActivityTimeout: 240000,
 
     customLaunchers: customLaunchers,
 
