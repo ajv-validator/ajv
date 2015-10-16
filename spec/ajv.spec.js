@@ -231,7 +231,16 @@ describe('Ajv', function () {
       ajv.addSchema(schema);
       ajv._cache.get(str) .should.be.an('object');
       ajv.removeSchema({ type: 'integer' });
-      // should.not.exist(ajv.getSchema('int'));
+      should.not.exist(ajv._cache.get(str));
+    });
+
+    it('should remove schema with id by schema object', function() {
+      var schema = { id: '//e.com/int.json', type: 'integer' }
+        , str = stableStringify(schema);
+      ajv.addSchema(schema);
+      ajv._cache.get(str) .should.be.an('object');
+      ajv.removeSchema({ id: '//e.com/int.json', type: 'integer' });
+      // should.not.exist(ajv.getSchema('//e.com/int.json'));
       should.not.exist(ajv._cache.get(str));
     });
   });
