@@ -45,6 +45,9 @@ npm install ajv
 
 ## Usage
 
+Try it in the node REPL: https://tonicdev.com/npm/ajv
+
+
 The fastest validation call:
 
 ```
