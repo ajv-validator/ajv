@@ -42,5 +42,27 @@
         "valid": false
       }
     ]
+  },
+  {
+    "skip": true,
+    "description": "resolution scope change - change folder in subschema (#62)",
+    "schema": {
+      "type" : "object",
+      "properties": {
+        "list": { "$ref": "http://localhost:1234/scope_change.json#/definitions/baz/bar" }
+      }
+    },
+    "tests": [
+      {
+        "description": "string is valid",
+        "data": { "list": [1] },
+        "valid": true
+      },
+      {
+        "description": "string is invalid",
+        "data": { "list": ["a"] },
+        "valid": false
+      }
+    ]
   }
 ]
