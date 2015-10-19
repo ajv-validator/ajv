@@ -3,10 +3,11 @@
 var jsonSchemaTest = require('json-schema-test')
   , getAjvInstances = require('./ajv_instances');
 
+var isBrowser = typeof window == 'object';
+var Ajv = require(isBrowser ? 'ajv' : '../lib/ajv');
 
-var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv');
-
-var instances = getAjvInstances({
+var fullTest = isBrowser || !process.env.AJV_FAST_TEST;
+var instances = getAjvInstances(fullTest ? {
   beautify:     true,
   allErrors:    true,
   verbose:      true,
@@ -14,7 +15,7 @@ var instances = getAjvInstances({
   inlineRefs:   false,
   jsonPointers: true,
   i18n:         true
-});
+} : { allErrors: true });
 
 var remoteRefs = {
     // for JSON-Schema-Test-Suite
