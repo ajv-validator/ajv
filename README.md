@@ -81,6 +81,8 @@ ajv compiles schemas to functions and caches them in all cases (using stringifie
 
 The best performance is achieved when using compiled functions returned by `compile` or `getSchema` methods (there is no additional function call).
 
+__Please note__: every time validation function or `ajv.validate` are called `errors` property is overwritten. You need to copy `errors` array reference to another variable if you want to use it later (e.g., in the callback).
+
 
 ## Using in browser
 
@@ -190,6 +192,8 @@ Validate data using passed schema (it will be compiled and cached).
 Instead of the schema you can use the key that was previously passed to `addSchema`, the schema id if it was present in the schema or any previously resolved reference.
 
 Validation errors will be available in the `errors` property of ajv instance (`null` if there were no errors).
+
+__Please note__: every time this method is called the errors are overwritten so you need to copy them to another variable if you want to use them later.
 
 
 ##### .addSchema(Array&lt;Object&gt;|Object schema [, String key])
