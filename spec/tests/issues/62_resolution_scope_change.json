@@ -14,7 +14,7 @@
         "valid": true
       },
       {
-        "description": "string is invalid",
+        "description": "number is invalid",
         "data": { "title": 1 },
         "valid": false
       }
@@ -30,7 +30,7 @@
     },
     "tests": [
       {
-        "description": "string is valid",
+        "description": "number is valid",
         "data": { "list": [1] },
         "valid": true
       },
@@ -42,7 +42,6 @@
     ]
   },
   {
-    "skip": true,
     "description": "resolution scope change - change folder in subschema (#62)",
     "schema": {
       "type" : "object",
@@ -52,7 +51,7 @@
     },
     "tests": [
       {
-        "description": "string is valid",
+        "description": "number is valid",
         "data": { "list": [1] },
         "valid": true
       },

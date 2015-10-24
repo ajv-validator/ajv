@@ -17,7 +17,8 @@
       , $lvl = it.level = 0
       , $dataLvl = it.dataLevel = 0
       , $data = 'data';
-    it.rootId = it.baseId = it.resolve.fullPath(it.root.schema.id);
+    it.rootId = it.resolve.fullPath(it.root.schema.id);
+    it.baseId = it.baseId || it.rootId;
     delete it.isTop;
     it.wasTop = true;
   }}
@@ -32,6 +33,7 @@
       , $dataLvl = it.dataLevel
       , $data = 'data' + ($dataLvl || '');
 
+    if (it.schema.id) it.baseId = it.resolve.url(it.baseId, it.schema.id);
     delete it.wasTop;
   }}
 
@@ -39,8 +41,6 @@
 {{?}}
 
 {{
-  if (it.schema.id) it.baseId = it.resolve.url(it.baseId, it.schema.id);
-
   var $valid = 'valid' + $lvl
     , $breakOnError = !it.opts.allErrors
     , $closingBraces1 = ''
