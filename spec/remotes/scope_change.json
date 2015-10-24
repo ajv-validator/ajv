@@ -10,7 +10,7 @@
       }
     },
     "baz": {
-      "id": "/folder",
+      "id": "folder/",
       "type": "array",
       "items": { "$ref": "folderInteger.json" },
       "bar": {

@@ -21,7 +21,6 @@
     ]
   },
   {
-    "skip": true,
     "description": "resolution scope change - change folder (#62)",
     "schema": {
       "type" : "object",
