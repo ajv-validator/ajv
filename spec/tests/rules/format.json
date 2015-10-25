@@ -21,5 +21,23 @@
         "valid": true
       }
     ]
+  },
+  {
+    "description": "format: uri",
+    "schema": {
+      "format": "uri"
+    },
+    "tests": [
+      {
+        "description": "valid uri",
+        "data": "urn:isbn:978-3-531-18621-4",
+        "valid": true
+      },
+      {
+        "description": "valid relative uri",
+        "data": "/abc",
+        "valid": true
+      }
+    ]
   }
 ]

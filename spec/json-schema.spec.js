@@ -57,6 +57,9 @@ jsonSchemaTest(instances, {
   skip: [
     'optional/zeroTerminatedFloats'
   ],
+  afterError: function (res) {
+    console.log('ajv options:', res.validator.opts);
+  },
   cwd: __dirname,
   hideFolder: 'draft4/',
   timeout: 90000
