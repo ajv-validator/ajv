@@ -2,10 +2,11 @@
 {{# def.setup:'oneOf' }}
 {{# def.setupNextLevel }}
 
-
 var {{=$errs}} = errors;
 var prevValid{{=$lvl}} = false;
 var {{=$valid}} = false;
+
+{{# def.setCompositeRule }}
 
 {{~ $schema:$sch:$i }}
   {{? {{# def.nonEmptySchema:$sch }} }}
@@ -28,6 +29,8 @@ var {{=$valid}} = false;
 
     if (valid{{=$it.level}}) {{=$valid}} = prevValid{{=$lvl}} = true;
 {{~}}
+
+{{# def.resetCompositeRule }}
 
 {{= $closingBraces }}
 

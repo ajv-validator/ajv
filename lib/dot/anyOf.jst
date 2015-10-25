@@ -11,6 +11,8 @@
   var {{=$errs}} = errors;
   var {{=$valid}} = false;
 
+  {{# def.setCompositeRule }}
+
   {{~ $schema:$sch:$i }}
     {{
       $it.schema = $sch;
@@ -24,6 +26,8 @@
     if (!{{=$valid}}) {
     {{ $closingBraces += '}'; }}
   {{~}}
+
+  {{# def.resetCompositeRule }}
 
   {{= $closingBraces }}
 

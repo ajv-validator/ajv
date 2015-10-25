@@ -3,6 +3,19 @@
 {{# def.setupNextLevel }}
 
 
+{{## def.validateAdditional:
+  {{ /* additionalProperties is schema */
+    $it.schema = $aProperties;
+    $it.schemaPath = it.schemaPath + '.additionalProperties';
+    $it.errorPath = it.errorPath;
+    var $passData = $data + '[key' + $lvl + ']';
+  }}
+
+  {{ var $code = it.validate($it); }}
+  {{# def.optimizeValidate }}
+#}}
+
+
 {{
   var $dataNxt = $it.dataLevel = it.dataLevel + 1
     , $nextData = 'data' + $dataNxt;
@@ -64,18 +77,10 @@ var valid{{=$it.level}} = true;
       {{?? $additionalIsSchema }}
         {{? $removeAdditional == 'failing' }}
           var {{=$errs}} = errors;
-        {{?}}
-        {{ /* additionalProperties is schema */
-          $it.schema = $aProperties;
-          $it.schemaPath = it.schemaPath + '.additionalProperties';
-          $it.errorPath = it.errorPath;
-          var $passData = $data + '[key' + $lvl + ']';
-        }}
+          {{# def.setCompositeRule }}
 
-        {{ var $code = it.validate($it); }}
-        {{# def.optimizeValidate }}
+          {{# def.validateAdditional }}
 
-        {{? $removeAdditional == 'failing' }}
           if (!valid{{=$it.level}}) {
             errors = {{=$errs}};
             if (validate.errors !== null) {
@@ -84,7 +89,10 @@ var valid{{=$it.level}} = true;
             }
             delete {{=$data}}[key{{=$lvl}}];
           }
+
+          {{# def.resetCompositeRule }}
         {{??}}
+          {{# def.validateAdditional }}
           {{? $breakOnError }} if (!valid{{=$it.level}}) break; {{?}}
         {{?}}
       {{?}}

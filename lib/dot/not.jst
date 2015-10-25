@@ -10,7 +10,11 @@
 
   var {{=$errs}} = errors;
 
+  {{# def.setCompositeRule }}
+
   {{= it.validate($it) }}
+
+  {{# def.resetCompositeRule }}
 
   if (valid{{=$it.level}}) {
     {{# def.error:'not' }}

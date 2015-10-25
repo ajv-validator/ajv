@@ -14,6 +14,19 @@
 #}}
 
 
+{{## def.setCompositeRule:
+  {{
+    var $wasComposite = it.compositeRule;
+    it.compositeRule = $it.compositeRule = true;
+  }}
+#}}
+
+
+{{## def.resetCompositeRule:
+  {{ it.compositeRule = $it.compositeRule = $wasComposite; }}
+#}}
+
+
 {{## def.setupNextLevel:
   {{
     var $it = it.util.copy(it)
@@ -114,7 +127,7 @@
 
 
 {{## def.error:_rule:
-  {{? it.wasTop && $breakOnError }}
+  {{? !it.compositeRule && $breakOnError }}
     validate.errors = [{{# def._error:_rule }}];
     return false;
   {{??}}

@@ -60,10 +60,26 @@ describe('Ajv Options', function () {
       };
 
       ajv.validate('//test/fooBar', object).should.equal(true);
-      object.should.have.property('foo');
-      object.should.have.property('bar');
-      object.should.have.property('baz');
-      object.should.not.have.property('fizz');
+        object.should.have.property('foo');
+        object.should.have.property('bar');
+        object.should.have.property('baz');
+        object.should.not.have.property('fizz');
+
+      ajv.addSchema({
+        id: '//test/fooBar2',
+        properties: { foo: { type: 'string' }, bar: { type: 'string' } },
+        additionalProperties: { type: 'string', pattern: '^to-be-', maxLength: 10 }
+      });
+
+      var object = {
+        foo: 'foo', bar: 'bar', baz: 'to-be-kept', quux: 'to-be-removed', fizz: 1000
+      };
+
+      ajv.validate('//test/fooBar2', object).should.equal(true);
+        object.should.have.property('foo');
+        object.should.have.property('bar');
+        object.should.have.property('baz');
+        object.should.not.have.property('fizz');
     });
   });
 
