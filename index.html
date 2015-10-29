@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Ajv : The fastest JSON schema Validator">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Ajv</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/epoberezkin/ajv">View on GitHub</a>
+
+          <h1 id="project_title">Ajv</h1>
+          <h2 id="project_tagline">The fastest JSON schema Validator</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/epoberezkin/ajv/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/epoberezkin/ajv/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="ajv---another-json-schema-validator" class="anchor" href="#ajv---another-json-schema-validator" aria-hidden="true"><span class="octicon octicon-link"></span></a>ajv - Another JSON Schema Validator</h1>
+
+<p>Currently the fastest JSON Schema validator for node.js and browser.</p>
+
+<p>It uses <a href="https://github.com/olado/doT">doT templates</a> to generate super-fast validating functions.</p>
+
+<p><a href="https://travis-ci.org/epoberezkin/ajv"><img src="https://travis-ci.org/epoberezkin/ajv.svg?branch=master" alt="Build Status"></a>
+<a href="http://badge.fury.io/js/ajv"><img src="https://badge.fury.io/js/ajv.svg" alt="npm version"></a>
+<a href="https://codeclimate.com/github/epoberezkin/ajv"><img src="https://codeclimate.com/github/epoberezkin/ajv/badges/gpa.svg" alt="Code Climate"></a>
+<a href="https://codeclimate.com/github/epoberezkin/ajv/coverage"><img src="https://codeclimate.com/github/epoberezkin/ajv/badges/coverage.svg" alt="Test Coverage"></a></p>
+
+<h2>
+<a id="json-schema-standard" class="anchor" href="#json-schema-standard" aria-hidden="true"><span class="octicon octicon-link"></span></a>JSON Schema standard</h2>
+
+<p>ajv implements full <a href="http://json-schema.org/">JSON Schema draft 4</a> standard:</p>
+
+<ul>
+<li>all validation keywords (see <a href="https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md">JSON-Schema validation keywords</a>)</li>
+<li>full support of remote refs (remote schemas have to be added with <code>addSchema</code> or compiled to be available)</li>
+<li>asynchronous loading of referenced schemas during compilation.</li>
+<li>support of circular dependencies between schemas</li>
+<li>correct string lengths for strings with unicode pairs (can be turned off)</li>
+<li>formats defined by JSON Schema draft 4 standard and custom formats (can be turned off)</li>
+</ul>
+
+<p>Currently ajv is the only validator that passes all the tests from <a href="https://github.com/json-schema/JSON-Schema-Test-Suite">JSON Schema Test Suite</a> (according to <a href="https://github.com/ebdrup/json-schema-benchmark">json-schema-benchmark</a>, apart from the test that requires that <code>1.0</code> is not an integer that is impossible to satisfy in JavaScript).</p>
+
+<h2>
+<a id="performance" class="anchor" href="#performance" aria-hidden="true"><span class="octicon octicon-link"></span></a>Performance</h2>
+
+<p>ajv generates code to turn JSON schemas into javascript functions that are efficient for v8 optimization.</p>
+
+<p>Currently ajv is the fastest validator according to these benchmarks:</p>
+
+<ul>
+<li>
+<a href="https://github.com/ebdrup/json-schema-benchmark">json-schema-benchmark</a> - 70% faster than the second place</li>
+<li>
+<a href="https://github.com/pandastrike/jsck#benchmarks">jsck benchmark</a> - 20-190% faster</li>
+<li><a href="https://rawgit.com/zaggino/z-schema/master/benchmark/results.html">z-schema benchmark</a></li>
+<li><a href="https://cdn.rawgit.com/playlyfe/themis/master/benchmark/results.html">themis benchmark</a></li>
+</ul>
+
+<h2>
+<a id="install" class="anchor" href="#install" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install</h2>
+
+<pre><code>npm install ajv
+</code></pre>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>Try it in the node REPL: <a href="https://tonicdev.com/npm/ajv">https://tonicdev.com/npm/ajv</a></p>
+
+<p>The fastest validation call:</p>
+
+<pre><code>var Ajv = require('ajv');
+var ajv = Ajv(); // options can be passed
+var validate = ajv.compile(schema);
+var valid = validate(data);
+if (!valid) console.log(validate.errors);
+</code></pre>
+
+<p>or with less code</p>
+
+<pre><code>// ...
+var valid = ajv.validate(schema, data);
+if (!valid) console.log(ajv.errors);
+// ...
+</code></pre>
+
+<p>or</p>
+
+<pre><code>// ...
+ajv.addSchema(schema, 'mySchema');
+var valid = ajv.validate('mySchema', data);
+if (!valid) console.log(ajv.errorsText());
+// ...
+</code></pre>
+
+<p>ajv compiles schemas to functions and caches them in all cases (using stringified schema as a key - using <a href="https://github.com/substack/json-stable-stringify">json-stable-stringify</a>), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.</p>
+
+<p>The best performance is achieved when using compiled functions returned by <code>compile</code> or <code>getSchema</code> methods (there is no additional function call).</p>
+
+<p><strong>Please note</strong>: every time validation function or <code>ajv.validate</code> are called <code>errors</code> property is overwritten. You need to copy <code>errors</code> array reference to another variable if you want to use it later (e.g., in the callback).</p>
+
+<h2>
+<a id="using-in-browser" class="anchor" href="#using-in-browser" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using in browser</h2>
+
+<p>You can require ajv directly from the code you browserify - in this case ajv will be a part of your bundle.</p>
+
+<p>If you need to use ajv in several bundles you can create a separate browserified bundle using <code>bin/create-bundle</code> script (thanks to <a href="https://github.com/siddo420">siddo420</a>).</p>
+
+<p>Then you need to load ajv in the browser:</p>
+
+<pre><code>&lt;script src="ajv.bundle.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>Now you can use it as shown above - <code>require</code> will be global and you can <code>require('ajv')</code>.</p>
+
+<p>Ajv was tested with these browsers:</p>
+
+<p><a href="https://saucelabs.com/u/epoberezkin"><img src="https://saucelabs.com/browser-matrix/epoberezkin.svg" alt="Sauce Test Status"></a></p>
+
+<h2>
+<a id="formats" class="anchor" href="#formats" aria-hidden="true"><span class="octicon octicon-link"></span></a>Formats</h2>
+
+<p>The following formats are supported for string validation with "format" keyword:</p>
+
+<ul>
+<li>
+<em>date</em>: full-date from <a href="http://tools.ietf.org/html/rfc3339#section-5.6">http://tools.ietf.org/html/rfc3339#section-5.6</a>
+</li>
+<li>
+<em>date-time</em>: date-time from the same source. Both <code>date</code> and <code>date-time</code> validate ranges in <code>full</code> mode and only regexp in <code>fast</code> mode (see <a href="#options">options</a>).</li>
+<li>
+<em>uri</em>: full uri with optional protocol.</li>
+<li>
+<em>email</em>: email address.</li>
+<li>
+<em>hostname</em>: host name acording to <a href="http://tools.ietf.org/html/rfc1034#section-3.5">http://tools.ietf.org/html/rfc1034#section-3.5</a>
+</li>
+<li>
+<em>ipv4</em>: IP address v4.</li>
+<li>
+<em>ipv6</em>: IP address v6.</li>
+<li>
+<em>regex</em>: tests whether a string is a valid regular expression by passing it to RegExp constructor.</li>
+</ul>
+
+<p>There are two modes of format validation: <code>fast</code> and <code>full</code> that affect all formats but <code>ipv4</code> and <code>ipv6</code>. See <a href="#options">Options</a> for details.</p>
+
+<p>You can add additional formats and replace any of the formats above using <a href="#api-addformat">addFormat</a> method.</p>
+
+<p>You can find patterns used for format validation and the sources that were used in <a href="https://github.com/epoberezkin/ajv/blob/master/lib/compile/formats.js">formats.js</a>.</p>
+
+<h2>
+<a id="asynchronous-compilation" class="anchor" href="#asynchronous-compilation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Asynchronous compilation</h2>
+
+<p>Starting from  version 1.3 ajv supports asynchronous compilation when remote references are loaded using supplied function. See <code>compileAsync</code> method and <code>loadSchema</code> option.</p>
+
+<p>Example:</p>
+
+<pre><code>var ajv = Ajv({ loadSchema: loadSchema });
+
+ajv.compileAsync(schema, function (err, validate) {
+    if (err) return;
+    var valid = validate(data);
+});
+
+function loadSchema(uri, callback) {
+    request.json(uri, function(err, res, body) {
+        if (err || res.statusCode &gt;= 400)
+            callback(err || new Error('Loading error: ' + res.statusCode));
+        else
+            callback(null, body);
+    });
+}
+</code></pre>
+
+<h2>
+<a id="filtering-data" class="anchor" href="#filtering-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Filtering data</h2>
+
+<p>With <a href="#options">option <code>removeAdditional</code></a> (added by <a href="https://github.com/andyscott">andyscott</a>) you can filter data during the validation.</p>
+
+<p>This option modifies original object.</p>
+
+<h2>
+<a id="api" class="anchor" href="#api" aria-hidden="true"><span class="octicon octicon-link"></span></a>API</h2>
+
+<h5>
+<a id="ajvobject-options---object" class="anchor" href="#ajvobject-options---object" aria-hidden="true"><span class="octicon octicon-link"></span></a>Ajv(Object options) -&gt; Object</h5>
+
+<p>Create ajv instance.</p>
+
+<p>All the instance methods below are bound to the instance, so they can be used without the instance.</p>
+
+<h5>
+<a id="compileobject-schema---functionobject-data" class="anchor" href="#compileobject-schema---functionobject-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>.compile(Object schema) -&gt; Function&lt;Object data&gt;</h5>
+
+<p>Generate validating function and cache the compiled schema for future use.</p>
+
+<p>Validating function returns boolean and has properties <code>errors</code> with the errors from the last validation (<code>null</code> if there were no errors) and <code>schema</code> with the reference to the original schema.</p>
+
+<p>Unless the option <code>validateSchema</code> is false, the schema will be validated against meta-schema and if schema is invalid the error will be thrown. See <a href="#options">options</a>.</p>
+
+<h5>
+<a id="compileasyncobject-schema-function-callback" class="anchor" href="#compileasyncobject-schema-function-callback" aria-hidden="true"><span class="octicon octicon-link"></span></a>.compileAsync(Object schema, Function callback)</h5>
+
+<p>Asyncronous version of <code>compile</code> method that loads missing remote schemas using asynchronous function in <code>options.loadSchema</code>. Callback will always be called with 2 parameters: error (or null) and validating function. Error will be not null in the following cases:</p>
+
+<ul>
+<li>missing schema can't be loaded (<code>loadSchema</code> calls callback with error).</li>
+<li>the schema containing missing reference is loaded, but the reference cannot be resolved.</li>
+<li>schema (or some referenced schema) is invalid.</li>
+</ul>
+
+<p>The function compiles schema and loads the first missing schema multiple times, until all missing schemas are loaded.</p>
+
+<p>See example in Asynchronous compilation.</p>
+
+<h5>
+<a id="validateobject-schemastring-keystring-ref-data---boolean" class="anchor" href="#validateobject-schemastring-keystring-ref-data---boolean" aria-hidden="true"><span class="octicon octicon-link"></span></a>.validate(Object schema|String key|String ref, data) -&gt; Boolean</h5>
+
+<p>Validate data using passed schema (it will be compiled and cached).</p>
+
+<p>Instead of the schema you can use the key that was previously passed to <code>addSchema</code>, the schema id if it was present in the schema or any previously resolved reference.</p>
+
+<p>Validation errors will be available in the <code>errors</code> property of ajv instance (<code>null</code> if there were no errors).</p>
+
+<p><strong>Please note</strong>: every time this method is called the errors are overwritten so you need to copy them to another variable if you want to use them later.</p>
+
+<h5>
+<a id="addschemaarrayobjectobject-schema--string-key" class="anchor" href="#addschemaarrayobjectobject-schema--string-key" aria-hidden="true"><span class="octicon octicon-link"></span></a>.addSchema(Array&lt;Object&gt;|Object schema [, String key])</h5>
+
+<p>Add schema(s) to validator instance. From version 1.0.0 this method does not compile schemas (but it still validates them). Because of that change, dependencies can be added in any order and circular dependencies are supported. It also prevents unnecessary compilation of schemas that are containers for other schemas but not used as a whole.</p>
+
+<p>Array of schemas can be passed (schemas should have ids), the second parameter will be ignored.</p>
+
+<p>Key can be passed that can be used to reference the schema and will be used as the schema id if there is no id inside the schema. If the key is not passed, the schema id will be used as the key.</p>
+
+<p>Once the schema is added, it (and all the references inside it) can be referenced in other schemas and used to validate data.</p>
+
+<p>Although <code>addSchema</code> does not compile schemas, explicit compilation is not required - the schema will be compiled when it is used first time.</p>
+
+<p>By default the schema is validated against meta-schema before it is added, and if the schema does not pass validation the exception is thrown. This behaviour is controlled by <code>validateSchema</code> option.</p>
+
+<h5>
+<a id="addmetaschemaobject-schema--string-key" class="anchor" href="#addmetaschemaobject-schema--string-key" aria-hidden="true"><span class="octicon octicon-link"></span></a>.addMetaSchema(Object schema [, String key])</h5>
+
+<p>Adds meta schema that can be used to validate other schemas. That function should be used instead of <code>addSchema</code> because there may be instance options that would compile a meta schema incorrectly (at the moment it is <code>removeAdditional</code> option).</p>
+
+<p>There is no need to explicitly add draft 4 meta schema (<a href="http://json-schema.org/draft-04/schema">http://json-schema.org/draft-04/schema</a> and <a href="http://json-schema.org/schema">http://json-schema.org/schema</a>) - it is added by default, unless option <code>meta</code> is set to <code>false</code>. You only need to use it if you have a changed meta-schema that you want to use to validate your schemas. See <code>validateSchema</code>.</p>
+
+<h5>
+<a id="validateschemaobject-schema---boolean" class="anchor" href="#validateschemaobject-schema---boolean" aria-hidden="true"><span class="octicon octicon-link"></span></a>.validateSchema(Object schema) -&gt; Boolean</h5>
+
+<p>Validates schema. This method should be used to validate schemas rather than <code>validate</code> due to the inconsistency of <code>uri</code> format in JSON-Schema standart.</p>
+
+<p>By default this method is called automatically when the schema is added, so you rarely need to use it directly.</p>
+
+<p>If schema doesn't have <code>$schema</code> property it is validated against draft 4 meta-schema (option <code>meta</code> should not be false).</p>
+
+<p>If schema has <code>$schema</code> property then the schema with this id (should be previously added) is used to validate passed schema.</p>
+
+<p>Errors will be available at <code>ajv.errors</code>.</p>
+
+<h5>
+<a id="getschemastring-key---functionobject-data" class="anchor" href="#getschemastring-key---functionobject-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>.getSchema(String key) -&gt; Function&lt;Object data&gt;</h5>
+
+<p>Retrieve compiled schema previously added with <code>addSchema</code> by the key passed to <code>addSchema</code> or by its full reference (id). Returned validating function has <code>schema</code> property with the reference to the original schema.</p>
+
+<h5>
+<a id="removeschemaobject-schemastring-keystring-ref" class="anchor" href="#removeschemaobject-schemastring-keystring-ref" aria-hidden="true"><span class="octicon octicon-link"></span></a>.removeSchema(Object schema|String key|String ref)</h5>
+
+<p>Remove added/cached schema. Even if schema is referenced by other schemas it can be safely removed as dependent schemas have local references.</p>
+
+<p>Schema can be removed using key passed to <code>addSchema</code>, it's full reference (id) or using actual schema object that will be stable-stringified to remove schema from cache.</p>
+
+<h5>
+<a id="addformatstring-name-stringregexpfunction-format" class="anchor" href="#addformatstring-name-stringregexpfunction-format" aria-hidden="true"><span class="octicon octicon-link"></span></a><a name="api-addformat"></a>.addFormat(String name, String|RegExp|Function format)</h5>
+
+<p>Add custom format to validate strings. It can also be used to replace pre-defined formats for ajv instance.</p>
+
+<p>Strings are converted to RegExp.</p>
+
+<p>Function should return validation result as <code>true</code> or <code>false</code>.</p>
+
+<p>Custom formats can be also added via <code>formats</code> option.</p>
+
+<h5>
+<a id="errorstextarrayobject-errors--object-options---string" class="anchor" href="#errorstextarrayobject-errors--object-options---string" aria-hidden="true"><span class="octicon octicon-link"></span></a>.errorsText([Array&lt;Object&gt; errors [, Object options]]) -&gt; String</h5>
+
+<p>Returns the text with all errors in a String.</p>
+
+<p>Options can have properties <code>separator</code> (string used to separate errors, ", " by default) and <code>dataVar</code> (the variable name that dataPaths are prefixed with, "data" by default).</p>
+
+<h2>
+<a id="options" class="anchor" href="#options" aria-hidden="true"><span class="octicon octicon-link"></span></a>Options</h2>
+
+<p>Defaults:</p>
+
+<pre><code>{
+  allErrors:        false,
+  removeAdditional: false,
+  verbose:          false,
+  format:           'fast',
+  formats:          {},
+  schemas:          {},
+  meta:             true,
+  validateSchema:   true,
+  inlineRefs:       true,
+  missingRefs:      true,
+  loadSchema:       function(uri, cb) { /* ... */ cb(err, schema); },
+  uniqueItems:      true,
+  unicode:          true,
+  beautify:         false,
+  cache:            new Cache,
+  jsonPointers:     false,
+  i18n:             false,
+  messages:         true
+}
+</code></pre>
+
+<ul>
+<li>
+<em>allErrors</em>: check all rules collecting all errors. Default is to return after the first error.</li>
+<li>
+<em>removeAdditional</em>: remove additional properties. Default is not to remove. If the option is 'all', then all additional properties are removed, regardless of <code>additionalProperties</code> keyword in schema (and no validation is made for them). If the option is <code>true</code> (or truthy), only additional properties with <code>additionalProperties</code> keyword equal to <code>false</code> are removed. If the option is 'failing', then additional properties that fail schema validation will be removed too (where <code>additionalProperties</code> keyword is schema).</li>
+<li>
+<em>verbose</em>: include the reference to the part of the schema and validated data in errors (false by default).</li>
+<li>
+<em>format</em>: formats validation mode ('fast' by default). Pass 'full' for more correct and slow validation or <code>false</code> not to validate formats at all. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.</li>
+<li>
+<em>formats</em>: an object with custom formats. Keys and values will be passed to <code>addFormat</code> method.</li>
+<li>
+<em>schemas</em>: an array or object of schemas that will be added to the instance. If the order is important, pass array. In this case schemas must have IDs in them. Otherwise the object can be passed - <code>addSchema(value, key)</code> will be called for each schema in this object.</li>
+<li>
+<em>meta</em>: add <a href="http://json-schema.org/documentation.html">meta-schema</a> so it can be used by other schemas (true by default).</li>
+<li>
+<em>validateSchema</em>: validate added/compiled schemas against meta-schema (true by default). <code>$schema</code> property in the schema can either be <a href="http://json-schema.org/schema">http://json-schema.org/schema</a> or <a href="http://json-schema.org/draft-04/schema">http://json-schema.org/draft-04/schema</a> or absent (draft-4 meta-schema will be used) or can be a reference to the schema previously added with <code>addMetaSchema</code> method. If the validation fails, the exception is thrown. Pass "log" in this option to log error instead of throwing exception. Pass <code>false</code> to skip schema validation.</li>
+<li>
+<em>inlineRefs</em>: by default the referenced schemas that don't have refs in them are inlined, regardless of their size - that substantially improves performance at the cost of the bigger size of compiled schema functions. Pass <code>false</code> to not inline referenced schemas (they will be compiled as separate functions). Pass integer number to limit the maximum number of keywords of the schema that will be inlined.</li>
+<li>
+<em>missingRefs</em>: by default if the reference cannot be resolved during compilation the exception is thrown. The thrown error has properties <code>missingRef</code> (with hash fragment) and <code>missingSchema</code> (without it). Both properties are resolved relative to the current base id (usually schema id, unless it was substituted). Pass 'ignore' to log error during compilation and pass validation. Pass 'fail' to log error and successfully compile schema but fail validation if this rule is checked.</li>
+<li>
+<em>loadSchema</em>: asynchronous function that will be used to load remote schemas when the method <code>compileAsync</code> is used and some reference is missing (option <code>missingRefs</code> should not be 'fail' or 'ignore'). This function should accept 2 parameters: remote schema uri and node-style callback. See example in Asynchronous compilation.</li>
+<li>
+<em>uniqueItems</em>: validate <code>uniqueItems</code> keyword (true by default).</li>
+<li>
+<em>unicode</em>: calculate correct length of strings with unicode pairs (true by default). Pass <code>false</code> to use <code>.length</code> of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.</li>
+<li>
+<em>beautify</em>: format the generated function with <a href="https://github.com/beautify-web/js-beautify">js-beautify</a> (the validating function is generated without line-breaks). <code>npm install js-beautify</code> to use this option. <code>true</code> or js-beautify options can be passed.</li>
+<li>
+<em>cache</em>: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache <a href="https://github.com/epoberezkin/sacjs">sacjs</a> can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods <code>put(key, value)</code>, <code>get(key)</code> and <code>del(key)</code>.</li>
+<li>
+<em>jsonPointers</em>: Output <code>dataPath</code> using JSON Pointers instead of JS path notation.</li>
+<li>
+<em>i18n</em>: Support internationalization of error messages using <a href="https://github.com/epoberezkin/ajv-i18n">ajv-i18n</a>. See its repo for details.</li>
+<li>
+<em>messages</em>: Include human-readable messages in errors. <code>true</code> by default. <code>messages: false</code> can be added when internationalization (options <code>i18n</code>) is used.</li>
+</ul>
+
+<h2>
+<a id="command-line-interface" class="anchor" href="#command-line-interface" aria-hidden="true"><span class="octicon octicon-link"></span></a>Command line interface</h2>
+
+<p>Simple JSON-schema validation can be done from command line using <a href="https://github.com/jessedc/ajv-cli">ajv-cli</a> package. At the moment it does not support referenced schemas.</p>
+
+<h2>
+<a id="tests" class="anchor" href="#tests" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tests</h2>
+
+<pre><code>npm install
+git submodule update --init
+npm test
+</code></pre>
+
+<h2>
+<a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>All validation functions are generated using doT templates in <a href="https://github.com/epoberezkin/ajv/tree/master/lib/dot">dot</a> folder. Templates are precompiled so doT is not a run-time dependency.</p>
+
+<p><code>npm run build</code> - compiles templates to <a href="https://github.com/epoberezkin/ajv/tree/master/lib/dotjs">dotjs</a> folder.</p>
+
+<p><code>npm run watch</code> - automatically compiles templates when files in dot folder change</p>
+
+<h2>
+<a id="changes-history" class="anchor" href="#changes-history" aria-hidden="true"><span class="octicon octicon-link"></span></a>Changes history</h2>
+
+<p>See <a href="https://github.com/epoberezkin/ajv/releases">https://github.com/epoberezkin/ajv/releases</a></p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p><a href="https://github.com/epoberezkin/ajv/blob/master/LICENSE">MIT</a></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Ajv maintained by <a href="https://github.com/epoberezkin">epoberezkin</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
