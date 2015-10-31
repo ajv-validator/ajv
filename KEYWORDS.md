@@ -64,7 +64,7 @@ __Examples__
 
     _valid_: `1`, `1.5`, `"abc"`, `"1"`
 
-    _invalid_: `"abc"`, `"1"`, `[]`, `{}`, `null`, `true`
+    _invalid_: `[]`, `{}`, `null`, `true`
 
 
 All examples above are JSON schemas that only require data to be of certain type to be valid.
@@ -123,7 +123,7 @@ __Examples__
 
 2.  _schema_: `{ "multipleOf": 2.5 }`
 
-    _valid_: `2.5`, `5, `7.5`, `"abc"`, `[]`, `{}`, `null`, `true`
+    _valid_: `2.5`, `5`, `7.5`, `"abc"`, `[]`, `{}`, `null`, `true`
 
     _invalid_: `1`, `4`
 
@@ -164,9 +164,9 @@ __Example__
 
 _schema_: `{ "pattern": "[abc]+" }`
 
-_valid_: `"a"`, `"abc"`, `"abccba"`, `1`, `[]`, `{}`, `null`, `true`
+_valid_: `"a"`, `"abcd"`, `"cde"`, `1`, `[]`, `{}`, `null`, `true`
 
-_invalid_: `"abcd"`, `""`
+_invalid_: `"def"`, `""`
 
 
 
@@ -211,11 +211,11 @@ The value of the keyword should be a boolean. If the keyword value is `true`, th
 
 __Example__
 
-_schema_: `{ "uniqueItems": "true" }`
+_schema_: `{ "uniqueItems": true }`
 
 _valid_: `[]`, `[1]`, `["1", 2, "3"]`, `"abc"`, `1`, `{}`, `null`, `true`
 
-_invalid_: `[1, 2, 1]`,  `[{ a: 1 }, { a: 1 }]`
+_invalid_: `[1, 2, 1]`,  `[{ "a": 1, "b": 2 }, { "b": 2, "a": 1 }]`
 
 
 
@@ -247,9 +247,9 @@ __Examples__
     }
     ```
 
-    _valid_: `[1, "abc"]`, `[1]`, `[]`, `1`, `"abc"`, `{}`, `null`, `true`
+    _valid_: `[1]`, `[1, "abc"]`, `[1, "abc", 2]`, `[]`, `1`, `"abc"`, `{}`, `null`, `true`
 
-    _invalid_: `["abc", 1]`, `["abc"]`, `[1, "abc", 2]`
+    _invalid_: `["abc", 1]`, `["abc"]`
 
 
 
@@ -415,23 +415,26 @@ If the value is `false` the data object to be valid should not have "additional 
 If the value is a schema for the data object to be valid the values in all "additional properties" should be valid according to this schema.
 
 
-__Example__
+__Examples__
 
-_schema_:
-```
-{
-    "properties": {
-        "foo": { "type": "number" }
-    },
-    "patternProperties": {
-        "^.*r$": { "type": "number" }
+1.  _schema_:
+    ```
+    {
+        "properties": {
+            "foo": { "type": "number" }
+        },
+        "patternProperties": {
+            "^.*r$": { "type": "number" }
+        },
+        "additionalProperties": false
     }
-}
-```
+    ```
 
-_valid_: `{}`, `{"foo": 1}`, `{"foo": 1, "bar": 2}`, any non-object
+    _valid_: `{}`, `{"foo": 1}`, `{"foo": 1, "bar": 2}`, any non-object
 
-_invalid_: `{"a": 3}`, `{"foo": 1, "baz": 3}`
+    _invalid_: `{"a": 3}`, `{"foo": 1, "baz": 3}`
+    
+2. TODO: `additionalProperties` is schema
 
 
 
@@ -523,7 +526,7 @@ _schema_:
 {
     "oneOf": [
         { "maximum": 3 },
-        { "type": integer }
+        { "type": "integer" }
     ]
 }
 ```
@@ -546,7 +549,7 @@ _schema_:
 {
     "anyOf": [
         { "maximum": 3 },
-        { "type": integer }
+        { "type": "integer" }
     ]
 }
 ```
@@ -569,11 +572,11 @@ _schema_:
 {
     "allOf": [
         { "maximum": 3 },
-        { "type": integer }
+        { "type": "integer" }
     ]
 }
 ```
 
-_valid_: `2`, `3`, `4`, `5`
+_valid_: `2`, `3`
 
 _invalid_: `1.5`, `2.5`, `4`, `4.5`, `5`, `5.5`, any non-number
