@@ -87,21 +87,21 @@ __Examples__
 
 1.  _schema_: `{ "maximum": 5 }`
 
-    _valid_: `4`, `5`, `"abc"`, `[]`, `{}`, `null`, `true`
+    _valid_: `4`, `5`, any non-number (`"abc"`, `[]`, `{}`, `null`, `true`)
 
     _invalid_: `6`, `7`
 
 
 2.  _schema_: `{ "minimum": 5 }`
 
-    _valid_: `5`, `6`, `"abc"`, `[]`, `{}`, `null`, `true`
+    _valid_: `5`, `6`, any non-number (`"abc"`, `[]`, `{}`, `null`, `true`)
 
     _invalid_: `4`, `4.5`
 
 
 3.  _schema_: `{ "minimum": 5, "exclusiveMinimum": true }`
 
-    _valid_: `6`, `7`, `"abc"`, `[]`, `{}`, `null`, `true`
+    _valid_: `6`, `7`, any non-number (`"abc"`, `[]`, `{}`, `null`, `true`)
 
     _invalid_: `4.5`, `5`
 
@@ -116,14 +116,14 @@ __Examples__
 
 1.  _schema_: `{ "multipleOf": 5 }`
 
-    _valid_: `5`, `10`, `"abc"`, `[]`, `{}`, `null`, `true`
+    _valid_: `5`, `10`, any non-number (`"abc"`, `[]`, `{}`, `null`, `true`)
 
     _invalid_: `1`, `4`
 
 
 2.  _schema_: `{ "multipleOf": 2.5 }`
 
-    _valid_: `2.5`, `5`, `7.5`, `"abc"`, `[]`, `{}`, `null`, `true`
+    _valid_: `2.5`, `5`, `7.5`, any non-number (`"abc"`, `[]`, `{}`, `null`, `true`)
 
     _invalid_: `1`, `4`
 
@@ -140,14 +140,14 @@ __Examples__
 
 1.  _schema_: `{ "maxLength": 5 }`
 
-    _valid_: `"abc"`, `"abcde"`, `1`, `[]`, `{}`, `null`, `true`
+    _valid_: `"abc"`, `"abcde"`, any non-string (`1`, `[]`, `{}`, `null`, `true`)
 
     _invalid_: `"abcdef"`
 
 
 2.  _schema_: `{ "minLength": 2 }`
 
-    _valid_: `"ab"`, `"😀😀"`, `1`, `[]`, `{}`, `null`, `true`
+    _valid_: `"ab"`, `"😀😀"`, any non-string (`1`, `[]`, `{}`, `null`, `true`)
 
     _invalid_: `"a"`, `"😀"`
 
@@ -164,7 +164,7 @@ __Example__
 
 _schema_: `{ "pattern": "[abc]+" }`
 
-_valid_: `"a"`, `"abcd"`, `"cde"`, `1`, `[]`, `{}`, `null`, `true`
+_valid_: `"a"`, `"abcd"`, `"cde"`, any non-string (`1`, `[]`, `{}`, `null`, `true`)
 
 _invalid_: `"def"`, `""`
 
@@ -181,7 +181,7 @@ __Example__
 
 _schema_: `{ "format": "ipv4" }`
 
-_valid_: `"192.168.0.1"`, `1`, `[]`, `{}`, `null`, `true`
+_valid_: `"192.168.0.1"`, any non-string (`1`, `[]`, `{}`, `null`, `true`)
 
 _invalid_: `"abc"`
 
@@ -198,7 +198,7 @@ __Example__
 
 _schema_: `{ "maxItems": 3 }`
 
-_valid_: `[]`, `[1]`, `["1", 2, "3"]`, `"abc"`, `1`, `{}`, `null`, `true`
+_valid_: `[]`, `[1]`, `["1", 2, "3"]`, any non-array (`"abc"`, `1`, `{}`, `null`, `true`)
 
 _invalid_: `[1, 2, 3, 4]`
 
@@ -213,7 +213,7 @@ __Example__
 
 _schema_: `{ "uniqueItems": true }`
 
-_valid_: `[]`, `[1]`, `["1", 2, "3"]`, `"abc"`, `1`, `{}`, `null`, `true`
+_valid_: `[]`, `[1]`, `["1", 2, "3"]`, any non-array (`"abc"`, `1`, `{}`, `null`, `true`)
 
 _invalid_: `[1, 2, 1]`,  `[{ "a": 1, "b": 2 }, { "b": 2, "a": 1 }]`
 
@@ -232,7 +232,7 @@ __Examples__
 
 1.  _schema_: `{ "items": { "type": "integer" } }`
 
-    _valid_: `[1,2,3]`, `[]`, `1`, `"abc"`, `{}`, `null`, `true`
+    _valid_: `[1,2,3]`, `[]`, any non-array (`1`, `"abc"`, `{}`, `null`, `true`)
 
     _invalid_: `[1,"abc"]`
 
@@ -247,7 +247,7 @@ __Examples__
     }
     ```
 
-    _valid_: `[1]`, `[1, "abc"]`, `[1, "abc", 2]`, `[]`, `1`, `"abc"`, `{}`, `null`, `true`
+    _valid_: `[1]`, `[1, "abc"]`, `[1, "abc", 2]`, `[]`, any non-array (`1`, `"abc"`, `{}`, `null`, `true`)
 
     _invalid_: `["abc", 1]`, `["abc"]`
 
@@ -283,7 +283,7 @@ __Examples__
     }
     ```
 
-    _valid_: `[]`, `[1, 2]`, any non-array data ("additionalItems" is ignored)
+    _valid_: `[]`, `[1, 2]`, any non-array ("additionalItems" is ignored)
 
     _invalid_: `[1, "abc"]`, (any array with some items other than integers)
 
@@ -299,7 +299,7 @@ __Examples__
     }
     ```
 
-    _valid_: `[]`, `[1, 2]`, `[1, 2, 3]`, `[1, 2, "abc"]`, any non-array data
+    _valid_: `[]`, `[1, 2]`, `[1, 2, 3]`, `[1, 2, "abc"]`, any non-array
 
     _invalid_: `["abc"]`, `[1, "abc", 3]`
 
@@ -315,7 +315,7 @@ __Examples__
     }
     ```
 
-    _valid_: `[]`, `[1, 2]`, `[1, 2, "abc"]`, any non-array data
+    _valid_: `[]`, `[1, 2]`, `[1, 2, "abc"]`, any non-array
 
     _invalid_: `["abc"]`, `[1, 2, 3]`
 
@@ -434,7 +434,22 @@ __Examples__
 
     _invalid_: `{"a": 3}`, `{"foo": 1, "baz": 3}`
     
-2. TODO: `additionalProperties` is schema
+2. _schema_:
+    ```
+    {
+        "properties": {
+            "foo": { "type": "number" }
+        },
+        "patternProperties": {
+            "^.*r$": { "type": "number" }
+        },
+        "additionalProperties": { "type": "string" }
+    }
+    ```
+
+    _valid_: `{}`, `{"a": "b"}`, `{"foo": 1}`, `{"foo": 1, "bar": 2}`, `{"foo": 1, "bar": 2, "a": "b"}`, any non-object
+
+    _invalid_: `{"a": 3}`, `{"foo": 1, "baz": 3}`
 
 
 
@@ -504,14 +519,29 @@ _invalid_: `1`, `"bar"`, `{"foo": "baz"}`, `[1, 2, 3, 4]`, any value not in the 
 The value of the keyword should be a JSON schema. The data is valid if it is invalid according to this schema.
 
 
-__Example__
+__Examples__
 
-_schema_: `{ "not": { "minimum": 3 } }`
+1.  _schema_: `{ "not": { "minimum": 3 } }`
 
-_valid_: `1`, `2`
+    _valid_: `1`, `2`
 
-_invalid_: `3`, `4`, any non-number
+    _invalid_: `3`, `4`, any non-number
 
+2.  _schema_:
+
+    ```
+    {
+        "not": {
+            "items": {
+                "not": { "type": "string" }
+            }
+        }
+    }
+    ```
+
+    _valid_: `["a"]`, `[1, "a"]`, any array containing at least one string
+
+    _invalid_: `[]`, `[1]`, any non-array, any array not containing strings
 
 
 ### `oneOf`
