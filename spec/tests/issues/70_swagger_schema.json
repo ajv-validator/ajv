@@ -1,6 +1,5 @@
 [
   {
-    "skip": true,
     "description": "Swagger api schema does not compile (#70)",
     "schema": {
       "title": "A JSON Schema for Swagger 2.0 API.",
@@ -1595,8 +1594,20 @@
     },
     "tests": [
       {
-        "description": "empty object is valid",
+        "description": "empty object is invalid",
         "data": {},
+        "valid": false
+      },
+      {
+        "description": "minimal valid object",
+        "data": {
+          "swagger": "2.0",
+          "info": {
+            "title": "sample api definition",
+            "version": "0.1"
+          },
+          "paths": {}
+        },
         "valid": true
       }
     ]

@@ -126,7 +126,7 @@ module.exports = function(config) {
       testName: 'Ajv'
     },
     captureTimeout: 600000,
-    browserNoActivityTimeout: 240000,
+    browserNoActivityTimeout: 300000,
 
     customLaunchers: customLaunchers,
 

@@ -39,7 +39,6 @@
     ]
   },
   {
-    "skip": true,
     "description": "local hash ref with remote hash ref that has inner hash ref (#70)",
     "schema": {
       "definitions": {
