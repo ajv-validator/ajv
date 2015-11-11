@@ -4,7 +4,6 @@ var jsonSchemaTest = require('json-schema-test')
   , getAjvInstances = require('./ajv_instances');
 
 var isBrowser = typeof window == 'object';
-var Ajv = require(isBrowser ? 'ajv' : '../lib/ajv');
 
 var fullTest = isBrowser || !process.env.AJV_FAST_TEST;
 var instances = getAjvInstances(fullTest ? {

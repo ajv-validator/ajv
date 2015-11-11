@@ -54,7 +54,11 @@
     {{?}}
       {{~ $rulesGroup.rules:$rule }}
         {{? $shouldUseRule($rule) }}
-          {{= $rule.code(it) }}
+          {{? $rule.custom }}
+            {{# def.customRule }}
+          {{??}}
+            {{= $rule.code(it) }}
+          {{?}}
           {{? $breakOnError }}
             {{ $closingBraces1 += '}'; }}
           {{?}}
