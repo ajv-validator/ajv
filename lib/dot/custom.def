@@ -1,22 +1,36 @@
-{{? $rule.definition.validate }}
-  {{
-    var $ruleValidate = it.useCustomRule($rule)
-      , $ruleErrs = $ruleValidate + '.errors'
-      , $schemaPath = it.schemaPath + '.' + $rule.keyword;
-  }}
-  {{=$ruleErrs}} = null;
+{{
+  var $schema = it.schema[$rule.keyword]
+    , $ruleValidate = it.useCustomRule($rule, $schema)
+    , $ruleErrs = $ruleValidate.code + '.errors'
+    , $schemaPath = it.schemaPath + '.' + $rule.keyword;
+}}
+{{=$ruleErrs}} = null;
 
-    if (!{{=$ruleValidate}}.call(self, validate.schema{{=$schemaPath}}, {{=$data}})) {
-      if (Array.isArray({{=$ruleErrs}})) {
-        if (vErrors === null) vErrors = [];
-        vErrors.concat({{=$ruleErrs}});
-      } else {
-        {{# def.error:'custom' }}
-      }
-  {{? $breakOnError }}
-      return false;
+{{## def.callRuleValidate:
+  {{ var argsLen; }}
+  {{=$ruleValidate.code}}.call(self
+    {{? !$ruleValidate.compiled }}
+      , validate.schema{{=$schemaPath}}
+      , {{=$data}}
+      {{ argsLen = 2; }}
+    {{??}}
+      , {{=$data}}
+      {{ argsLen = 1; }}
+    {{?}}
+  )
+#}}
+
+  if (!{{# def.callRuleValidate }}) {
+    if (Array.isArray({{=$ruleErrs}})) {
+      if (vErrors === null) vErrors = {{=$ruleErrs}};
+      else vErrors.concat({{=$ruleErrs}});
+      errors = vErrors.length;
     } else {
-  {{??}}
+      {{# def.error:'custom' }}
     }
-  {{?}}
+{{? $breakOnError }}
+    return false;
+  } else {
+{{??}}
+  }
 {{?}}
