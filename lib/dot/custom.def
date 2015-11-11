@@ -1,0 +1,22 @@
+{{? $rule.definition.validate }}
+  {{
+    var $ruleValidate = it.useCustomRule($rule)
+      , $ruleErrs = $ruleValidate + '.errors'
+      , $schemaPath = it.schemaPath + '.' + $rule.keyword;
+  }}
+  {{=$ruleErrs}} = null;
+
+    if (!{{=$ruleValidate}}.call(self, validate.schema{{=$schemaPath}}, {{=$data}})) {
+      if (Array.isArray({{=$ruleErrs}})) {
+        if (vErrors === null) vErrors = [];
+        vErrors.concat({{=$ruleErrs}});
+      } else {
+        {{# def.error:'custom' }}
+      }
+  {{? $breakOnError }}
+      return false;
+    } else {
+  {{??}}
+    }
+  {{?}}
+{{?}}

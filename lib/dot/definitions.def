@@ -165,7 +165,8 @@
   pattern:         "'should match pattern \"{{=it.util.escapeQuotes($schema)}}\"'",
   required:        "'is a required property'",
   type:            "'should be {{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}'",
-  uniqueItems:     "'should NOT have duplicate items (items ## ' + j + ' and ' + i + ' are identical)'"
+  uniqueItems:     "'should NOT have duplicate items (items ## ' + j + ' and ' + i + ' are identical)'",
+  custom:          "'should pass \"{{=$rule.keyword}}\" keyword validation'"
 } #}}
 
 
@@ -191,7 +192,8 @@
   pattern:         "{{=it.util.toQuotedString($schema)}}",
   required:        "validate.schema{{=$schemaPath}}",
   type:            "{{? $isArray }}['{{= $typeSchema.join(\"','\") }}']{{??}}'{{=$typeSchema}}'{{?}}",
-  uniqueItems:     "{{=$schema}}"
+  uniqueItems:     "{{=$schema}}",
+  custom:          "validate.schema{{=$schemaPath}}"
 } #}}
 
 
@@ -206,5 +208,6 @@
   pattern:      "{{# def._params }}{ escaped: '{{=it.util.escapeQuotes($schema)}}' }{{?}}",
   required:     "{{# def._params }}{ missingProperty: '{{=$missingProperty}}' }{{?}}",
   type:         "{{# def._params }}{ type: '{{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}' }{{?}}",
-  uniqueItems:  "{{# def._params }}{ i: i, j: j }{{?}}"
+  uniqueItems:  "{{# def._params }}{ i: i, j: j }{{?}}",
+  custom:       "{{# def._params }}{ keyword: '$rule.keyword' }{{?}}"
 } #}}
