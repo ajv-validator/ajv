@@ -11,20 +11,20 @@ describe('Custom keywords', function () {
   var ajv, instances;
 
   beforeEach(function() {
-    ajv = Ajv();
     instances = getAjvInstances({
       allErrors:    true,
       verbose:      true,
       inlineRefs:   false,
       i18n:         true
     });
+    ajv = instances[0];
   });
 
   describe('custom rules', function() {
-    var compileCount;
+    var compileCount = 0;
 
     it('should add and validate rule with "interpreted" keyword validation', function() {
-      instances.forEach(testAddEvenKeyword({ type: 'number', validate: validateEven }));
+      testAddEvenKeyword({ type: 'number', validate: validateEven });
 
       function validateEven(schema, data) {
         if (typeof schema != 'boolean') throw new Error('The value of "even" keyword must be boolean');
@@ -33,7 +33,7 @@ describe('Custom keywords', function () {
     });
 
     it('should add and validate rule with "compiled" keyword validation', function() {
-      instances.forEach(testAddEvenKeyword({ type: 'number', compile: compileEven }));
+      testAddEvenKeyword({ type: 'number', compile: compileEven });
 
       function compileEven(schema) {
         if (typeof schema != 'boolean') throw new Error('The value of "even" keyword must be boolean');
@@ -45,9 +45,7 @@ describe('Custom keywords', function () {
     });
 
     it('should compile keyword validating function only once per schema', function () {
-      instances.forEach(test);
-
-      function test(ajv) {
+      instances.forEach(function (ajv) {
         ajv.addKeyword('constant', { compile: compileConstant });
 
         var schema = { "constant": "abc" };
@@ -58,13 +56,11 @@ describe('Custom keywords', function () {
         shouldBeValid(validate, 'abc');
         shouldBeInvalid(validate, 2);
         shouldBeInvalid(validate, {});
-      }
+      });
     });
 
     it('should allow multiple schemas for the same keyword', function () {
-      instances.forEach(test);
-
-      function test(ajv) {
+      instances.forEach(function (ajv) {
         ajv.addKeyword('constant', { compile: compileConstant });
 
         var schema = {
@@ -89,7 +85,50 @@ describe('Custom keywords', function () {
         shouldBeValid(validate, [{foo: 'bar'}, {foo: 'bar'}]);
 
         shouldBeInvalid(validate, [1]);
+      });
+    });
+
+    it('should pass parent schema to "interpreted" keyword validation', function() {
+      testRangeKeyword({ type: 'number', validate: validateRange });
+
+      function validateRange(schema, data, parentSchema) {
+        validateRangeSchema(schema, parentSchema);
+
+        return parentSchema.exclusiveRange === true
+                ? data > schema[0] && data < schema[1]
+                : data >= schema[0] && data <= schema[1];
       }
+    });
+
+    it('should pass parent schema to "compiled" keyword validation', function() {
+      testRangeKeyword({ type: 'number', compile: compileRange });
+    });
+
+    it('should allow multiple parent schemas for the same keyword', function () {
+      instances.forEach(function (ajv) {
+        ajv.addKeyword('range', { type: 'number', compile: compileRange });
+
+        var schema = {
+          "properties": {
+            "a": { "range": [2, 4], "exclusiveRange": true },
+            "b": { "range": [2, 4], "exclusiveRange": false }
+          },
+          "additionalProperties": { "range": [5, 7] },
+          "items": { "range": [5, 7] }
+        };
+        compileCount = 0;
+        var validate = ajv.compile(schema);
+        should.equal(compileCount, 3);
+
+        shouldBeValid(validate, {a:3.99, b:4});
+        shouldBeInvalid(validate, {a:4, b:4});
+
+        shouldBeValid(validate, {a:2.01, c: 7});
+        shouldBeInvalid(validate, {a:2.01, c: 7.01});
+
+        shouldBeValid(validate, [5, 6, 7]);
+        shouldBeInvalid(validate, [7.01]);
+      });
     });
 
     function compileConstant(schema) {
@@ -102,8 +141,20 @@ describe('Custom keywords', function () {
       function isStrictEqual(data) { return data === schema; }
     }
 
+    function compileRange(schema, parentSchema) {
+      compileCount++;
+      validateRangeSchema(schema, parentSchema);
+
+      var min = schema[0];
+      var max = schema[1];
+
+      return parentSchema.exclusiveRange === true
+              ? function (data) { return data > min && data < max; }
+              : function (data) { return data >= min && data <= max; }
+    }
+
     function testAddEvenKeyword(definition) {
-      return function (ajv) {
+      instances.forEach(function (ajv) {
         ajv.addKeyword('even', definition);
         var schema = { "even": true };
         var validate = ajv.compile(schema);
@@ -112,7 +163,52 @@ describe('Custom keywords', function () {
         shouldBeValid(validate, 'abc');
         shouldBeInvalid(validate, 2.5);
         shouldBeInvalid(validate, 3);
-      };
+      });
+    }
+
+    function testRangeKeyword(definition) {
+      instances.forEach(function (ajv) {
+        ajv.addKeyword('range', definition);
+
+        var schema = { "range": [2, 4] };
+        var validate = ajv.compile(schema);
+
+        shouldBeValid(validate, 2);
+        shouldBeValid(validate, 3);
+        shouldBeValid(validate, 4);
+        shouldBeValid(validate, 'abc');
+
+        shouldBeInvalid(validate, 1.99);
+        shouldBeInvalid(validate, 4.01);
+
+        var schema = {
+          "properties": {
+            "foo": {
+              "range": [2, 4],
+              "exclusiveRange": true
+            }
+          }
+        };
+        var validate = ajv.compile(schema);
+
+        shouldBeValid(validate, { foo: 2.01 });
+        shouldBeValid(validate, { foo: 3 });
+        shouldBeValid(validate, { foo: 3.99 });
+
+        shouldBeInvalid(validate, { foo: 2 });
+        shouldBeInvalid(validate, { foo: 4 });
+      });
+    }
+
+    function validateRangeSchema(schema, parentSchema) {
+      var schemaValid = Array.isArray(schema) && schema.length == 2
+                        && typeof schema[0] == 'number'
+                        && typeof schema[1] == 'number';
+      if (!schemaValid) throw new Error('Invalid schema for range keyword, should be array of 2 numbers');
+
+      var exclusiveRangeSchemaValid = parentSchema.exclusiveRange === undefined
+                                      || typeof parentSchema.exclusiveRange == 'boolean';
+      if (!exclusiveRangeSchemaValid) throw new Error('Invalid schema for exclusiveRange keyword, should be bolean');
     }
   });
 
@@ -161,11 +257,11 @@ describe('Custom keywords', function () {
       });
 
       should.throw(function() {
-        addKeyword('custom3', ['number', 'wrongtype']);
+        addKeyword('custom2', ['number', 'wrongtype']);
       });
 
       should.throw(function() {
-        addKeyword('custom4', ['number', undefined]);
+        addKeyword('custom3', ['number', undefined]);
       });
     });
 

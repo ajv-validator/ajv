@@ -1,6 +1,6 @@
 {{
   var $schema = it.schema[$rule.keyword]
-    , $ruleValidate = it.useCustomRule($rule, $schema)
+    , $ruleValidate = it.useCustomRule($rule, $schema, it.schema)
     , $ruleErrs = $ruleValidate.code + '.errors'
     , $schemaPath = it.schemaPath + '.' + $rule.keyword;
 }}
@@ -12,10 +12,11 @@
     {{? !$ruleValidate.compiled }}
       , validate.schema{{=$schemaPath}}
       , {{=$data}}
-      {{ argsLen = 2; }}
+      {{? $ruleValidate.validate.length > 2 }}
+        , validate.schema{{=it.schemaPath}}
+      {{?}}
     {{??}}
       , {{=$data}}
-      {{ argsLen = 1; }}
     {{?}}
   )
 #}}
