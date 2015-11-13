@@ -16,10 +16,11 @@ ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
 
 - all validation keywords (see [JSON-Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md))
 - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
-- asynchronous loading of referenced schemas during compilation.
+- [asynchronous loading](#asynchronous-compilation) of referenced schemas during compilation.
 - support of circular dependencies between schemas
 - correct string lengths for strings with unicode pairs (can be turned off)
 - formats defined by JSON Schema draft 4 standard and custom formats (can be turned off)
+- BETA: [custom keywords](https://github.com/epoberezkin/ajv/tree/v2.0#defining-custom-keywords) supported starting from version [2.0.0](https://github.com/epoberezkin/ajv/tree/v2.0), `npm install ajv@2.0.0-beta.0` to use it
 
 Currently ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
 
