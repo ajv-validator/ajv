@@ -10,7 +10,6 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
 [![Test Coverage](https://codeclimate.com/github/epoberezkin/ajv/badges/coverage.svg)](https://codeclimate.com/github/epoberezkin/ajv/coverage)
 
 
-
 ## JSON Schema standard
 
 ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
@@ -126,32 +125,39 @@ You can find patterns used for format validation and the sources that were used 
 
 ## Defining custom keywords
 
-Starting from version 2.0 (2.0.0-beta.0) ajv supports custom keyword definitions.
+Starting from version 2.0 (ajv@^2.0.0-beta) ajv supports custom keyword definitions.
 
-Disclaimer: The main drawback of extending JSON-schema standard with custom keywords is the loss of portability of your schemas - it may not be possible to support these custom keywords on some other platforms. Also your schemas may be more challenging to read for other people. If portability is important you may prefer using additional validation logic outside of JSON-schema rather than putting it inside your JSON-schema.
+WARNING: The main drawback of extending JSON-schema standard with custom keywords is the loss of portability of your schemas - it may not be possible to support these custom keywords on some other platforms. Also your schemas may be more challenging to read for other people. If portability is important you may prefer using additional validation logic outside of JSON-schema rather than putting it inside your JSON-schema.
 
 The advantages of using custom keywords are:
 - they allow you keeping a larger portion of your validation logic in the schema
-- they may make schema more expressive and less verbose
-- they are fun to use and help keeping more people off the street
+- they make your schemas more expressive and less verbose
+- they are fun to use
 
-You can define custom keywords with `addKeyword` method. Keywords are defined on the `ajv` instance level - new instances will not have previously defined keywords automatically.
+You can define custom keywords with [addKeyword](https://github.com/epoberezkin/ajv/tree/v2.0#api-addkeyword) method. Keywords are defined on the `ajv` instance level - new instances will not have previously defined keywords automatically.
 
-Ajv allows defining keywords in several ways:
-- with validation function that will be called with keyword schema, data and, optionally, parent schema during validation (generally not recommended for performance reason, but can be useful to test your custom keyword ideas)
-- with compilation function that will be called only once during schema compilation with keyword schema and, optionally, parent schema and should return schema validation function (in some cases it's the best approach with the performance cost of an extra function call during validation).
-- NOT IMPLEMENTED: with schema macro function that will be called once before schema compilation with keyword schema and parent schema and should return another schema that will be applied to the data in addition to the original schema (`allOf` keyword is used to achieve that). In many cases it is the most efficient approach as it is relatively easy to implement and no extra function call happens during validation.
-- NOT IMPLEMETED: with compilation function that should return code that will be inlined in the currently compiled schema. It can be more performance-efficient approach than macro expansion for some cases but it is the most difficult to use as it requires good understanding of Ajv schema compilation process.
+Ajv allows defining keywords with:
+- validation function
+- compilation function
+- macro function
+- NOT IMPLEMETED: compilation function that should return code (as string) that will be inlined in the currently compiled schema.
 
 
-### Define keyword using validation function
+### Define keyword using validation function (NOT RECOMMENDED)
 
-Keyword can be defined with validation function that will be passed schema, data and parentSchema (if it has 3 arguments) at validation time and that should return validation result as boolean.
+Validation function will be called during data validation. It will be passed schema, data and parentSchema (if it has 3 arguments) at validation time and it should return validation result as boolean. It can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
+
+This way to define keywords is added as a way to quickly test your keyword and is not recommended because of worse performance than compiling schemas.
+
 
 Example. draft5 `constant` keyword (that is equivalent to `enum` keyword with one item):
 
 ```
-ajv.addKeyword('constant', { validate: validateConstant });
+ajv.addKeyword('constant', { validate: function (schema, data) {
+  return typeof schema == 'object && schema !== null'
+          ? deepEqual(schema, data)
+          : schema === data;
+} });
 
 var schema = { "constant": 2 };
 var validate = ajv.compile(schema);
@@ -162,25 +168,26 @@ var schema = { "constant": { "foo": "bar" } };
 var validate = ajv.compile(schema);
 console.log(validate({foo: 'bar'})); // true
 console.log(validate({foo: 'baz'})); // false
-
-function validateConstant(schema, data) {
-  return typeof schema == 'object && schema !== null'
-          ? deepEqual(schema, data)
-          : schema === data;
-}
 ```
-
-This approach exists as a way to quickly test your keyword and is not recommended because of worse performance than compiling schemas.
 
 
 ### Define keyword using "compilation" function
 
-Keyword can also be defined using schema compilation function that is passed schema (and optionally parentSchema) and that should return validation function that will only be passed data.
+Compilation function will be called during schema compilation. It will be passed schema and parent schema and it should return a validation function. This validation function will be passed data during validation; it should return validation result as boolean and it can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
+
+In some cases it is the best approach to define keywords, but it has the performance cost of an extra function call during validation. If keyword logic can be expressed via some other JSON-schema then `macro` keyword definition is more efficient (see below).
 
 Example. `range` and `exclusiveRange` keywords using compiled schema:
 
 ```
-ajv.addKeyword('range', { type: 'number', compile: compileRange });
+ajv.addKeyword('range', { type: 'number', compile: function (sch, parentSchema) {
+  var min = sch[0];
+  var max = sch[1];
+
+  return parentSchema.exclusiveRange === true
+          ? function (data) { return data > min && data < max; }
+          : function (data) { return data >= min && data <= max; }
+} });
 
 var schema = { "range": [2, 4], "exclusiveRange": true };
 var validate = ajv.compile(schema);
@@ -188,29 +195,51 @@ console.log(validate(2.01)); // true
 console.log(validate(3.99)); // true
 console.log(validate(2)); // false
 console.log(validate(4)); // false
-
-function compileRange(schema, parentSchema) {
-  validateRangeSchema(schema, parentSchema);
-
-  var min = schema[0];
-  var max = schema[1];
-
-  return parentSchema.exclusiveRange === true
-          ? function (data) { return data > min && data < max; }
-          : function (data) { return data >= min && data <= max; }
-}
-
-function validateRangeSchema(schema, parentSchema) {
-  var schemaValid = Array.isArray(schema) && schema.length == 2
-                    && typeof schema[0] == 'number'
-                    && typeof schema[1] == 'number';
-  if (!schemaValid) throw new Error('Invalid schema for range keyword, should be array of 2 numbers');
-
-  var exclusiveRangeSchemaValid = parentSchema.exclusiveRange === undefined
-                                  || typeof parentSchema.exclusiveRange == 'boolean';
-  if (!exclusiveRangeSchemaValid) throw new Error('Invalid schema for exclusiveRange keyword, should be bolean');
-}
 ```
+
+
+### Define keyword using "macro" function
+
+"Macro" function is called duting schema compilation. It is passed schema and parent schema and it should return another schema that will be applied to the data in addition to the original schema (if possible, schemas are merged, otherwise `allOf` keyword is used).
+
+It is the most efficient approach (in cases when the keyword logic can be expressed with another JSON-schema) because it is usually easy to implement and there is no extra function call during validation.
+
+
+`range` and `exclusiveRange` keywords from the previous example defined with macro:
+
+```
+ajv.addKeyword('range', { macro: function (schema, parentSchema) {
+  return {
+    minimum: schema[0],
+    maximum: schema[1],
+    exclusiveMinimum: !!parentSchema.exclusiveRange,
+    exclusiveMaximum: !!parentSchema.exclusiveRange
+  };
+} });
+```
+
+Example draft5 `contains` keyword that requires that the array has at least one item matching schema (see https://github.com/json-schema/json-schema/wiki/contains-(v5-proposal)):
+
+```
+ajv.addKeyword('contains', { macro: function (schema) {
+  return { "not": { "items": { "not": schema } } };
+} });
+
+var schema = {
+  "contains": {
+    "type": "number",
+    "minimum": 4,
+    "exclusiveMinimum": true
+  }
+};
+
+var validate = ajv.compile(schema);
+console.log(validate([1,2,3])); // false
+console.log(validate([2,3,4])); // false
+console.log(validate([3,4,5])); // true, number 5 matches schema inside "contains"
+```
+
+See the example of defining recursive macro keyword `deepProperties` in the [test](https://github.com/epoberezkin/ajv/blob/v2.0/spec/custom.spec.js#L240).
 
 
 ## Asynchronous compilation
@@ -346,7 +375,7 @@ Function should return validation result as `true` or `false`.
 Custom formats can be also added via `formats` option.
 
 
-##### .addKeyword(String keyword, Object definition)
+##### <a name="api-addkeyword"></a>.addKeyword(String keyword, Object definition)
 
 Add custom validation keyword to ajv instance.
 
@@ -357,12 +386,16 @@ Keyword should be different from all standard JSON schema keywords and different
 Keyword definition is an object with the following properties:
 
 - _type_: optional string or array of strings with data type(s) that the keyword will apply to. If keyword is validating another type the validation function will not be called, so there is no need to check for data type inside validation function if `type` property is used.
-- _validate_: validating function that will be called at validation time with keyword schema, data and parent schema (it will be passed only if the function has 3 arguments) and should return validation result as boolean. Validation function can return custom errors via `errors` property of itself. If validation result is false and errors are not returned, ajv will add default error with `keyword` property set to 'custom'. This aproach has the worst performance and is only recommending only for trying your custom keywords.
-- _compile_: compiling function that will be called at schema compilation time with keyword schema and parent schema (it will be passed only if the function has 2 arguments) and should return validating function.
-- _macro_ (NOT IMPLEMENTED): macro function that that will be called before schema compilation with keyword schema and parent schema (it will be passed only if the function has 2 arguments) and should return another schema that will be applied on the save data level in addition to the original schema (`allOf` keyword us used to do it). The returned schema may contain the same or other custom keywords that will be recusively expanded until the final schema has no custom keywords defined with macros.
-- _inline_ (NOT IMPLEMENTED): compiling function that will be called at schema compilation time with keyword schema and parent schema (it will be passed only if the function has 2 arguments) and should return code (as string) that will be inlined in the currently compiled validation function.
+- _validate_: validating function
+- _compile_: compiling function
+- _macro_: macro function
+- _inline_ (NOT IMPLEMENTED): compiling function that returns code (as string)
 
 _validate_, _compile_, _macro_ and _inline_ are mutually exclusive, only one should be used at a time.
+
+With _macro_ function _type_ must not be specified, the types that the keyword will be applied for will be determined by the final schema.
+
+See [Defining custom keywords](https://github.com/epoberezkin/ajv/tree/v2.0#defining-custom-keywords) for more details.
 
 
 ##### .errorsText([Array&lt;Object&gt; errors [, Object options]]) -&gt; String

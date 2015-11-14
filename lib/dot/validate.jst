@@ -47,6 +47,10 @@
   var $typeSchema = it.schema.type;
 }}
 
+{{? it.RULES.macros }}
+  {{ it.expandMacros(); }}
+{{?}}
+
 {{~ it.RULES:$rulesGroup }}
   {{? $shouldUseGroup($rulesGroup) }}
     {{? $rulesGroup.type }}
