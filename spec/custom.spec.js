@@ -21,8 +21,6 @@ describe('Custom keywords', function () {
 
 
   describe('custom rules', function() {
-    var compileCount = 0;
-
     it('should add and validate rule with "interpreted" keyword validation', function() {
       testAddEvenKeyword({ type: 'number', validate: validateEven });
 
@@ -49,9 +47,7 @@ describe('Custom keywords', function () {
         ajv.addKeyword('constant', { compile: compileConstant });
 
         var schema = { "constant": "abc" };
-        compileCount = 0;
         var validate = ajv.compile(schema);
-        should.equal(compileCount, 1);
 
         shouldBeValid(validate, 'abc');
         shouldBeInvalid(validate, 2);
@@ -71,9 +67,7 @@ describe('Custom keywords', function () {
           "additionalProperties": { "constant": { "foo": "bar" } },
           "items": { "constant": { "foo": "bar" } }
         };
-        compileCount = 0;
         var validate = ajv.compile(schema);
-        should.equal(compileCount, 2);
 
         shouldBeValid(validate, {a:1, b:1});
         shouldBeInvalid(validate, {a:2, b:1});
@@ -116,9 +110,7 @@ describe('Custom keywords', function () {
           "additionalProperties": { "range": [5, 7] },
           "items": { "range": [5, 7] }
         };
-        compileCount = 0;
         var validate = ajv.compile(schema);
-        should.equal(compileCount, 3);
 
         shouldBeValid(validate, {a:3.99, b:4});
         shouldBeInvalid(validate, {a:4, b:4});
@@ -132,7 +124,6 @@ describe('Custom keywords', function () {
     });
 
     function compileConstant(schema) {
-      compileCount++;
       return typeof schema == 'object' && schema !== null
               ? isDeepEqual
               : isStrictEqual;
@@ -142,7 +133,6 @@ describe('Custom keywords', function () {
     }
 
     function compileRange(schema, parentSchema) {
-      compileCount++;
       validateRangeSchema(schema, parentSchema);
 
       var min = schema[0];
