@@ -2,7 +2,8 @@
 
 var getAjvInstances = require('./ajv_instances')
   , should = require('chai').should()
-  , equal = require('../lib/compile/equal');
+  , equal = require('../lib/compile/equal')
+  , doT = require('dot');
 
 
 describe('Custom keywords', function () {
@@ -17,6 +18,7 @@ describe('Custom keywords', function () {
     });
     ajv = instances[0];
   });
+
 
   describe('custom rules', function() {
     var compileCount = 0;
@@ -151,6 +153,7 @@ describe('Custom keywords', function () {
               : function (data) { return data >= min && data <= max; }
     }
   });
+
 
   describe('macro rules', function() {
     it('should add and validate rule with "macro" keyword', function() {
@@ -427,6 +430,19 @@ describe('Custom keywords', function () {
       });
     });
 
+    it('should throw exception is macro expansion is an invalid schema', function() {
+      ajv.addKeyword('invalid', { macro: macroInvalid });
+      var schema = { "invalid": true };
+
+      should.throw(function() {
+        var validate = ajv.compile(schema);
+      });
+
+      function macroInvalid(schema) {
+        return { "type": "invalid" };
+      }
+    });
+
     function macroEven(schema) {
       if (schema === true) return { "multipleOf": 2 };
       if (schema === false) return { "not": { "multipleOf": 2 } };
@@ -449,6 +465,52 @@ describe('Custom keywords', function () {
       };
     }
   });
+
+
+  describe('inline rules', function() {
+    it('should add and validate rule with "inline" code keyword', function() {
+      testAddEvenKeyword({ type: 'number', inline: inlineEven });
+    });
+
+    it('should pass parent schema to "inline" keyword', function() {
+      testRangeKeyword({ type: 'number', inline: inlineRange, statements: true });
+    });
+
+    it('should define "inline" keyword as template', function() {
+      var inlineRangeTemplate = doT.compile("\
+{{ \
+  var $data = 'data' + (it.dataLevel || '') \
+    , $min = it.schema.range[0] \
+    , $max = it.schema.range[1] \
+    , $gt = it.schema.exclusiveRange ? '>' : '>=' \
+    , $lt = it.schema.exclusiveRange ? '<' : '<='; \
+}} \
+var valid{{=it.lvl}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{=$max}}; \
+");
+
+      testRangeKeyword({
+        type: 'number',
+        inline: inlineRangeTemplate,
+        parentSchema: true,
+        statements: true
+      });
+    });
+
+    function inlineEven(it, schema) {
+      var op = schema ? '===' : '!==';
+      return 'data' + (it.dataLevel || '') + ' % 2 ' + op + ' 0';
+    }
+
+    function inlineRange(it, schema, parentSchema) {
+      var min = schema[0]
+        , max = schema[1]
+        , data = 'data' + (it.dataLevel || '')
+        , gt = parentSchema.exclusiveRange ? ' > ' : ' >= '
+        , lt = parentSchema.exclusiveRange ? ' < ' : ' <= ';
+      return 'var valid' + it.lvl + ' = ' + data + gt + min + ' && ' + data + lt + max + ';';
+    }
+  });
+
 
   function testAddEvenKeyword(definition) {
     instances.forEach(function (ajv) {
@@ -517,6 +579,7 @@ describe('Custom keywords', function () {
     validate(data) .should.equal(false);
     validate.errors .should.have.length(numErrors || 1);
   }
+
 
   describe('addKeyword method', function() {
     var TEST_TYPES = [ undefined, 'number', 'string', 'boolean', ['number', 'string']];
