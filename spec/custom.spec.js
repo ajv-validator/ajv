@@ -22,7 +22,7 @@ describe('Custom keywords', function () {
 
   describe('custom rules', function() {
     it('should add and validate rule with "interpreted" keyword validation', function() {
-      testAddEvenKeyword({ type: 'number', validate: validateEven });
+      testEvenKeyword({ type: 'number', validate: validateEven });
 
       function validateEven(schema, data) {
         if (typeof schema != 'boolean') throw new Error('The value of "even" keyword must be boolean');
@@ -31,7 +31,7 @@ describe('Custom keywords', function () {
     });
 
     it('should add and validate rule with "compiled" keyword validation', function() {
-      testAddEvenKeyword({ type: 'number', compile: compileEven });
+      testEvenKeyword({ type: 'number', compile: compileEven });
 
       function compileEven(schema) {
         if (typeof schema != 'boolean') throw new Error('The value of "even" keyword must be boolean');
@@ -43,43 +43,11 @@ describe('Custom keywords', function () {
     });
 
     it('should compile keyword validating function only once per schema', function () {
-      instances.forEach(function (ajv) {
-        ajv.addKeyword('constant', { compile: compileConstant });
-
-        var schema = { "constant": "abc" };
-        var validate = ajv.compile(schema);
-
-        shouldBeValid(validate, 'abc');
-        shouldBeInvalid(validate, 2);
-        shouldBeInvalid(validate, {});
-      });
+      testConstantKeyword({ compile: compileConstant });
     });
 
     it('should allow multiple schemas for the same keyword', function () {
-      instances.forEach(function (ajv) {
-        ajv.addKeyword('constant', { compile: compileConstant });
-
-        var schema = {
-          "properties": {
-            "a": { "constant": 1 },
-            "b": { "constant": 1 }
-          },
-          "additionalProperties": { "constant": { "foo": "bar" } },
-          "items": { "constant": { "foo": "bar" } }
-        };
-        var validate = ajv.compile(schema);
-
-        shouldBeValid(validate, {a:1, b:1});
-        shouldBeInvalid(validate, {a:2, b:1});
-
-        shouldBeValid(validate, {a:1, c: {foo: 'bar'}});
-        shouldBeInvalid(validate, {a:1, c: {foo: 'baz'}});
-
-        shouldBeValid(validate, [{foo: 'bar'}]);
-        shouldBeValid(validate, [{foo: 'bar'}, {foo: 'bar'}]);
-
-        shouldBeInvalid(validate, [1]);
-      });
+      testMultipleConstantKeyword({ compile: compileConstant });
     });
 
     it('should pass parent schema to "interpreted" keyword validation', function() {
@@ -99,28 +67,7 @@ describe('Custom keywords', function () {
     });
 
     it('should allow multiple parent schemas for the same keyword', function () {
-      instances.forEach(function (ajv) {
-        ajv.addKeyword('range', { type: 'number', compile: compileRange });
-
-        var schema = {
-          "properties": {
-            "a": { "range": [2, 4], "exclusiveRange": true },
-            "b": { "range": [2, 4], "exclusiveRange": false }
-          },
-          "additionalProperties": { "range": [5, 7] },
-          "items": { "range": [5, 7] }
-        };
-        var validate = ajv.compile(schema);
-
-        shouldBeValid(validate, {a:3.99, b:4});
-        shouldBeInvalid(validate, {a:4, b:4});
-
-        shouldBeValid(validate, {a:2.01, c: 7});
-        shouldBeInvalid(validate, {a:2.01, c: 7.01});
-
-        shouldBeValid(validate, [5, 6, 7]);
-        shouldBeInvalid(validate, [7.01]);
-      });
+      testMultipleRangeKeyword({ type: 'number', compile: compileRange });
     });
 
     function compileConstant(schema) {
@@ -147,53 +94,15 @@ describe('Custom keywords', function () {
 
   describe('macro rules', function() {
     it('should add and validate rule with "macro" keyword', function() {
-      testAddEvenKeyword({ macro: macroEven });
+      testEvenKeyword({ macro: macroEven });
     });
 
     it('should add and expand macro rule', function() {
-      instances.forEach(function (ajv) {
-        try {
-        ajv.addKeyword('constant', { macro: macroConstant });
-
-        var schema = { "constant": "abc" };
-        var validate = ajv.compile(schema);
-
-        shouldBeValid(validate, 'abc');
-        shouldBeInvalid(validate, 2);
-        shouldBeInvalid(validate, {});
-        } catch(e) {
-          console.log(e.stack);
-          console.log(validate.toString());
-          throw e;
-        }
-      });
+      testConstantKeyword({ macro: macroConstant });
     });
 
     it('should allow multiple schemas for the same macro keyword', function () {
-      instances.forEach(function (ajv) {
-        ajv.addKeyword('constant', { macro: macroConstant });
-
-        var schema = {
-          "properties": {
-            "a": { "constant": 1 },
-            "b": { "constant": 1 }
-          },
-          "additionalProperties": { "constant": { "foo": "bar" } },
-          "items": { "constant": { "foo": "bar" } }
-        };
-        var validate = ajv.compile(schema);
-
-        shouldBeValid(validate, {a:1, b:1});
-        shouldBeInvalid(validate, {a:2, b:1});
-
-        shouldBeValid(validate, {a:1, c: {foo: 'bar'}});
-        shouldBeInvalid(validate, {a:1, c: {foo: 'baz'}});
-
-        shouldBeValid(validate, [{foo: 'bar'}]);
-        shouldBeValid(validate, [{foo: 'bar'}, {foo: 'bar'}]);
-
-        shouldBeInvalid(validate, [1]);
-      });
+      testMultipleConstantKeyword({ macro: macroConstant });
     });
 
     it('should pass parent schema to "macro" keyword', function() {
@@ -201,28 +110,7 @@ describe('Custom keywords', function () {
     });
 
     it('should allow multiple parent schemas for the same macro keyword', function () {
-      instances.forEach(function (ajv) {
-        ajv.addKeyword('range', { macro: macroRange });
-
-        var schema = {
-          "properties": {
-            "a": { "range": [2, 4], "exclusiveRange": true },
-            "b": { "range": [2, 4], "exclusiveRange": false }
-          },
-          "additionalProperties": { "range": [5, 7] },
-          "items": { "range": [5, 7] }
-        };
-        var validate = ajv.compile(schema);
-
-        shouldBeValid(validate, {a:3.99, b:4});
-        shouldBeInvalid(validate, {a:4, b:4});
-
-        shouldBeValid(validate, {a:2.01, c: 7});
-        shouldBeInvalid(validate, {a:2.01, c: 7.01});
-
-        shouldBeValid(validate, [5, 6, 7]);
-        shouldBeInvalid(validate, [7.01]);
-      });
+      testMultipleRangeKeyword({ macro: macroRange });
     });
 
     it('should recursively expand macro keywords', function() {
@@ -459,7 +347,7 @@ describe('Custom keywords', function () {
 
   describe('inline rules', function() {
     it('should add and validate rule with "inline" code keyword', function() {
-      testAddEvenKeyword({ type: 'number', inline: inlineEven });
+      testEvenKeyword({ type: 'number', inline: inlineEven });
     });
 
     it('should pass parent schema to "inline" keyword', function() {
@@ -502,7 +390,7 @@ var valid{{=it.lvl}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{=$
   });
 
 
-  function testAddEvenKeyword(definition) {
+  function testEvenKeyword(definition) {
     instances.forEach(function (ajv) {
       ajv.addKeyword('even', definition);
       var schema = { "even": true };
@@ -512,6 +400,46 @@ var valid{{=it.lvl}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{=$
       shouldBeValid(validate, 'abc');
       shouldBeInvalid(validate, 2.5);
       shouldBeInvalid(validate, 3);
+    });
+  }
+
+  function testConstantKeyword(definition) {
+    instances.forEach(function (ajv) {
+      ajv.addKeyword('constant', definition);
+
+      var schema = { "constant": "abc" };
+      var validate = ajv.compile(schema);
+
+      shouldBeValid(validate, 'abc');
+      shouldBeInvalid(validate, 2);
+      shouldBeInvalid(validate, {});
+    });
+  }
+
+  function testMultipleConstantKeyword(definition) {
+    instances.forEach(function (ajv) {
+      ajv.addKeyword('constant', definition);
+
+      var schema = {
+        "properties": {
+          "a": { "constant": 1 },
+          "b": { "constant": 1 }
+        },
+        "additionalProperties": { "constant": { "foo": "bar" } },
+        "items": { "constant": { "foo": "bar" } }
+      };
+      var validate = ajv.compile(schema);
+
+      shouldBeValid(validate, {a:1, b:1});
+      shouldBeInvalid(validate, {a:2, b:1});
+
+      shouldBeValid(validate, {a:1, c: {foo: 'bar'}});
+      shouldBeInvalid(validate, {a:1, c: {foo: 'baz'}});
+
+      shouldBeValid(validate, [{foo: 'bar'}]);
+      shouldBeValid(validate, [{foo: 'bar'}, {foo: 'bar'}]);
+
+      shouldBeInvalid(validate, [1]);
     });
   }
 
@@ -546,6 +474,31 @@ var valid{{=it.lvl}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{=$
 
       shouldBeInvalid(validate, { foo: 2 });
       shouldBeInvalid(validate, { foo: 4 });
+    });
+  }
+
+  function testMultipleRangeKeyword(definition) {
+    instances.forEach(function (ajv) {
+      ajv.addKeyword('range', definition);
+
+      var schema = {
+        "properties": {
+          "a": { "range": [2, 4], "exclusiveRange": true },
+          "b": { "range": [2, 4], "exclusiveRange": false }
+        },
+        "additionalProperties": { "range": [5, 7] },
+        "items": { "range": [5, 7] }
+      };
+      var validate = ajv.compile(schema);
+
+      shouldBeValid(validate, {a:3.99, b:4});
+      shouldBeInvalid(validate, {a:4, b:4});
+
+      shouldBeValid(validate, {a:2.01, c: 7});
+      shouldBeInvalid(validate, {a:2.01, c: 7.01});
+
+      shouldBeValid(validate, [5, 6, 7]);
+      shouldBeInvalid(validate, [7.01]);
     });
   }
 
