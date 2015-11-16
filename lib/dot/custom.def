@@ -1,37 +1,66 @@
 {{
   var $schema = it.schema[$rule.keyword]
-    , $ruleValidate = it.useCustomRule($rule, $schema, it.schema)
+    , $ruleValidate = it.useCustomRule($rule, $schema, it.schema, it)
     , $ruleErrs = $ruleValidate.code + '.errors'
     , $schemaPath = it.schemaPath + '.' + $rule.keyword;
 }}
-{{=$ruleErrs}} = null;
+
+{{? !$rule.definition.inline }}
+  {{=$ruleErrs}} = null;
+{{?}}
 
 {{## def.callRuleValidate:
-  {{ var argsLen; }}
-  {{=$ruleValidate.code}}.call(self
-    {{? !$ruleValidate.compiled }}
-      , validate.schema{{=$schemaPath}}
-      , {{=$data}}
-      {{? $ruleValidate.validate.length > 2 }}
-        , validate.schema{{=it.schemaPath}}
-      {{?}}
+  {{? $rule.definition.inline }}
+    {{? $rule.definition.statements }}
+      valid{{=it.lvl}}
     {{??}}
-      , {{=$data}}
+      ({{= $ruleValidate.validate }})
     {{?}}
-  )
+  {{??}}
+    {{=$ruleValidate.code}}.call(self
+      {{? $rule.definition.compile }}
+        , {{=$data}}
+      {{??}}
+        , validate.schema{{=$schemaPath}}
+        , {{=$data}}
+        {{? $ruleValidate.validate.length > 2 }}
+          , validate.schema{{=it.schemaPath}}
+        {{?}}
+      {{?}}
+    )
+  {{?}}
 #}}
 
-  if (!{{# def.callRuleValidate }}) {
+{{## def.extendErrors:
+  {{ var $i = 'i' + $lvl; }}
+  for (var {{=$i}}=0; {{=$i}}<{{=$ruleErrs}}.length; {{=$i}}++) {
+    {{ var $ruleErr = 'ruleErr' + $lvl; }}
+    var {{=$ruleErr}} = {{=$ruleErrs}}[{{=$i}}];
+    {{=$ruleErr}}.dataPath = (dataPath || '') + {{= it.errorPath }};
+    {{? it.opts.verbose || it.opts.i18n }}
+      {{=$ruleErr}}.schema = validate.schema{{=$schemaPath}};
+    {{?}}
+    {{? it.opts.verbose }}
+      {{=$ruleErr}}.data = {{=$data}};
+    {{?}}
+  }
+#}}
+
+{{? $rule.definition.inline && $rule.definition.statements }}
+  {{= $ruleValidate.validate }}
+{{?}}
+
+if (!{{# def.callRuleValidate }}) {
+  {{? $rule.definition.inline }}
+    {{# def.error:'custom' }}
+  {{??}}
     if (Array.isArray({{=$ruleErrs}})) {
+      {{# def.extendErrors }}
       if (vErrors === null) vErrors = {{=$ruleErrs}};
       else vErrors.concat({{=$ruleErrs}});
       errors = vErrors.length;
     } else {
       {{# def.error:'custom' }}
     }
-{{? $breakOnError }}
-    return false;
-  } else {
-{{??}}
-  }
-{{?}}
+  {{?}}
+} {{? $breakOnError }} else { {{?}}
