@@ -102,8 +102,9 @@
 
 {{## def._error:_rule:
   {
-    keyword: '{{=_rule}}',
-    dataPath: (dataPath || '') + {{= it.errorPath }}
+    keyword: '{{=_rule}}'
+    , dataPath: (dataPath || '') + {{= it.errorPath }}
+    , params: {{# def._errorParams[_rule] }}
     {{? it.opts.messages !== false }}
       , message: {{# def._errorMessages[_rule] }}
     {{?}}
@@ -111,7 +112,6 @@
       , schema: {{# def._errorSchemas[_rule] }}
       , data: {{=$data}}
     {{?}}
-    {{# def._errorParams[_rule] || '' }}
   }
 #}}
 
@@ -195,29 +195,27 @@
 } #}}
 
 
-{{## def._params = "{{? it.opts.i18n }}, params: " #}}
-
 {{## def._errorParams = {
-  $ref:         "{{# def._params }}{ ref: '{{=it.util.escapeQuotes($schema)}}' }{{?}}",
-  additionalItems: "{{# def._params }}{ limit: {{=$schema.length}}, length: {{=$data}}.length }{{?}}",
-  additionalProperties: "",
-  anyOf:        "",
-  dependencies: "{{# def._params }}{ depsCount: {{=$deps.length}}, deps: '{{? $deps.length==1 }}{{= it.util.escapeQuotes($deps[0]) }}{{??}}{{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}}', property: '{{= it.util.escapeQuotes($property) }}' }{{?}}",
-  format:       "{{# def._params }}{ format: '{{=it.util.escapeQuotes($schema)}}' }{{?}}",
-  maximum:      "{{# def._params }}{ comparison: '{{=$op}}', limit: {{=$schema}}, exclusive: {{=$exclusive}} }{{?}}",
-  minimum:      "{{# def._params }}{ comparison: '{{=$op}}', limit: {{=$schema}}, exclusive: {{=$exclusive}} }{{?}}",
-  maxItems:     "{{# def._params }}{ limit: {{=$schema}} }{{?}}",
-  minItems:     "{{# def._params }}{ limit: {{=$schema}} }{{?}}",
-  maxLength:    "{{# def._params }}{ limit: {{=$schema}} }{{?}}",
-  minLength:    "{{# def._params }}{ limit: {{=$schema}} }{{?}}",
-  maxProperties:"{{# def._params }}{ limit: {{=$schema}} }{{?}}",
-  minProperties:"{{# def._params }}{ limit: {{=$schema}} }{{?}}",
-  multipleOf:   "{{# def._params }}{ multipleOf: {{=$schema}} }{{?}}",
-  not:          "",
-  oneOf:        "",
-  pattern:      "{{# def._params }}{ pattern: '{{=it.util.escapeQuotes($schema)}}' }{{?}}",
-  required:     "{{# def._params }}{ missingProperty: '{{=$missingProperty}}' }{{?}}",
-  type:         "{{# def._params }}{ type: '{{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}' }{{?}}",
-  uniqueItems:  "{{# def._params }}{ i: i, j: j }{{?}}",
-  custom:       "{{# def._params }}{ keyword: '$rule.keyword' }{{?}}"
+  $ref:         "{ ref: '{{=it.util.escapeQuotes($schema)}}' }",
+  additionalItems: "{ limit: {{=$schema.length}} }",
+  additionalProperties: "{}",
+  anyOf:        "{}",
+  dependencies: "{ depsCount: {{=$deps.length}}, deps: '{{? $deps.length==1 }}{{= it.util.escapeQuotes($deps[0]) }}{{??}}{{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}}', property: '{{= it.util.escapeQuotes($property) }}' }",
+  format:       "{ format: '{{=it.util.escapeQuotes($schema)}}' }",
+  maximum:      "{ comparison: '{{=$op}}', limit: {{=$schema}}, exclusive: {{=$exclusive}} }",
+  minimum:      "{ comparison: '{{=$op}}', limit: {{=$schema}}, exclusive: {{=$exclusive}} }",
+  maxItems:     "{ limit: {{=$schema}} }",
+  minItems:     "{ limit: {{=$schema}} }",
+  maxLength:    "{ limit: {{=$schema}} }",
+  minLength:    "{ limit: {{=$schema}} }",
+  maxProperties:"{ limit: {{=$schema}} }",
+  minProperties:"{ limit: {{=$schema}} }",
+  multipleOf:   "{ multipleOf: {{=$schema}} }",
+  not:          "{}",
+  oneOf:        "{}",
+  pattern:      "{ pattern: '{{=it.util.escapeQuotes($schema)}}' }",
+  required:     "{ missingProperty: '{{=$missingProperty}}' }",
+  type:         "{ type: '{{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}' }",
+  uniqueItems:  "{ i: i, j: j }",
+  custom:       "{ keyword: '$rule.keyword' }"
 } #}}

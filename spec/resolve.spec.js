@@ -39,8 +39,7 @@ describe('resolve', function () {
     instances = getAjvInstances({
       allErrors:    true,
       verbose:      true,
-      inlineRefs:   false,
-      i18n:         true
+      inlineRefs:   false
     });
   });
 

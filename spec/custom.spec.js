@@ -13,8 +13,7 @@ describe('Custom keywords', function () {
     instances = getAjvInstances({
       allErrors:    true,
       verbose:      true,
-      inlineRefs:   false,
-      i18n:         true
+      inlineRefs:   false
     });
     ajv = instances[0];
   });
