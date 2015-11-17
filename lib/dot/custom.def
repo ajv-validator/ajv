@@ -37,10 +37,8 @@
     {{ var $ruleErr = 'ruleErr' + $lvl; }}
     var {{=$ruleErr}} = {{=$ruleErrs}}[{{=$i}}];
     {{=$ruleErr}}.dataPath = (dataPath || '') + {{= it.errorPath }};
-    {{? it.opts.verbose || it.opts.i18n }}
-      {{=$ruleErr}}.schema = validate.schema{{=$schemaPath}};
-    {{?}}
     {{? it.opts.verbose }}
+      {{=$ruleErr}}.schema = validate.schema{{=$schemaPath}};
       {{=$ruleErr}}.data = {{=$data}};
     {{?}}
   }
