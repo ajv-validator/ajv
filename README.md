@@ -10,16 +10,20 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
 [![Test Coverage](https://codeclimate.com/github/epoberezkin/ajv/badges/coverage.svg)](https://codeclimate.com/github/epoberezkin/ajv/coverage)
 
 
-## JSON Schema standard
+## Features
 
-ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
-
-- all validation keywords (see [JSON-Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md))
-- full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
-- [asynchronous loading](#asynchronous-compilation) of referenced schemas during compilation.
-- support of circular dependencies between schemas
-- correct string lengths for strings with unicode pairs (can be turned off)
-- formats defined by JSON Schema draft 4 standard and custom formats (can be turned off)
+- ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
+  - all validation keywords (see [JSON-Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md))
+  - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
+  - support of circular dependencies between schemas
+  - correct string lengths for strings with unicode pairs (can be turned off)
+  - [formats](#formats) defined by JSON Schema draft 4 standard and custom formats (can be turned off)
+  - [validates schemas against meta-schema](#api-validateschema)
+- supports [browsers](#using-in-browser) and nodejs 0.10-5.0
+- [asynchronous loading](#asynchronous-compilation) of referenced schemas during compilation
+- [error messages with parameters](#validation-errors) describing error reasons to allow creating custom error messages
+- i18n error messages support with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package
+- [filtering data](#filtering-data) from additional properties
 - BETA: [custom keywords](https://github.com/epoberezkin/ajv/tree/v2.0#defining-custom-keywords) supported starting from version [2.0.0](https://github.com/epoberezkin/ajv/tree/v2.0), `npm install ajv@^2.0.0-beta` to use it
 
 Currently ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
@@ -53,7 +57,7 @@ The fastest validation call:
 
 ```
 var Ajv = require('ajv');
-var ajv = Ajv(); // options can be passed
+var ajv = Ajv(); // options can be passed, e.g. {allErrors: true}
 var validate = ajv.compile(schema);
 var valid = validate(data);
 if (!valid) console.log(validate.errors);
@@ -82,7 +86,7 @@ ajv compiles schemas to functions and caches them in all cases (using stringifie
 
 The best performance is achieved when using compiled functions returned by `compile` or `getSchema` methods (there is no additional function call).
 
-__Please note__: every time validation function or `ajv.validate` are called `errors` property is overwritten. You need to copy `errors` array reference to another variable if you want to use it later (e.g., in the callback).
+__Please note__: every time validation function or `ajv.validate` are called `errors` property is overwritten. You need to copy `errors` array reference to another variable if you want to use it later (e.g., in the callback). See [Validation errors](#validation-errors)
 
 
 ## Using in browser
@@ -134,16 +138,16 @@ The advantages of using custom keywords are:
 - they make your schemas more expressive and less verbose
 - they are fun to use
 
-You can define custom keywords with [addKeyword](https://github.com/epoberezkin/ajv/tree/v2.0#api-addkeyword) method. Keywords are defined on the `ajv` instance level - new instances will not have previously defined keywords automatically.
+You can define custom keywords with [addKeyword](#api-addkeyword) method. Keywords are defined on the `ajv` instance level - new instances will not have previously defined keywords.
 
 Ajv allows defining keywords with:
 - validation function
 - compilation function
 - macro function
-- NOT IMPLEMETED: compilation function that should return code (as string) that will be inlined in the currently compiled schema.
+- inline compilation function that should return code (as string) that will be inlined in the currently compiled schema.
 
 
-### Define keyword using validation function (NOT RECOMMENDED)
+### Define keyword with validation function (NOT RECOMMENDED)
 
 Validation function will be called during data validation. It will be passed schema, data and parentSchema (if it has 3 arguments) at validation time and it should return validation result as boolean. It can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
 
@@ -171,7 +175,7 @@ console.log(validate({foo: 'baz'})); // false
 ```
 
 
-### Define keyword using "compilation" function
+### Define keyword with "compilation" function
 
 Compilation function will be called during schema compilation. It will be passed schema and parent schema and it should return a validation function. This validation function will be passed data during validation; it should return validation result as boolean and it can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
 
@@ -198,9 +202,9 @@ console.log(validate(4)); // false
 ```
 
 
-### Define keyword using "macro" function
+### Define keyword with "macro" function
 
-"Macro" function is called duting schema compilation. It is passed schema and parent schema and it should return another schema that will be applied to the data in addition to the original schema (if possible, schemas are merged, otherwise `allOf` keyword is used).
+"Macro" function is called during schema compilation. It is passed schema and parent schema and it should return another schema that will be applied to the data in addition to the original schema (if schemas have different keys they are merged, otherwise `allOf` keyword is used).
 
 It is the most efficient approach (in cases when the keyword logic can be expressed with another JSON-schema) because it is usually easy to implement and there is no extra function call during validation.
 
@@ -242,6 +246,57 @@ console.log(validate([3,4,5])); // true, number 5 matches schema inside "contain
 See the example of defining recursive macro keyword `deepProperties` in the [test](https://github.com/epoberezkin/ajv/blob/v2.0/spec/custom.spec.js#L240).
 
 
+### Define keyword with "inline" compilation function
+
+Inline compilation function is called during schema compilation. It is passed three parameters: `it` (the current schema compilation context), `schema` and `parentSchema` and it should return the code (as a string) that will be inlined in the code of compiled schema. This code can be either an expression that evaluates to the validation result (boolean) or a set of statements that assign the validation result to a variable.
+
+While it can be more difficult to define keywords with "inline" functions, it can have the best performance.
+
+Example `even` keyword:
+
+```
+ajv.addKeyword('even', { type: 'number', inline: function (it, schema) {
+  var op = schema ? '===' : '!==';
+  return 'data' + (it.dataLevel || '') + ' % 2 ' + op + ' 0';
+} });
+
+var schema = { "even": true };
+
+var validate = ajv.compile(schema);
+console.log(validate(2)); // true
+console.log(validate(3)); // false
+```
+
+`'data' + (it.dataLevel || '')` in the example above is the reference to the currently validated data. Also note that `schema` (keyword schema) is the same as `it.schema.even`, so schema is not strictly necessary here - it is passed for convenience.
+
+
+Example `range` keyword defined using [doT template](https://github.com/olado/doT):
+
+```
+var doT = require('dot');
+var inlineRangeTemplate = doT.compile("\
+{{ \
+  var $data = 'data' + (it.dataLevel || '') \
+    , $min = it.schema.range[0] \
+    , $max = it.schema.range[1] \
+    , $gt = it.schema.exclusiveRange ? '>' : '>=' \
+    , $lt = it.schema.exclusiveRange ? '<' : '<='; \
+}} \
+var valid{{=it.lvl}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{=$max}}; \
+");
+
+ajv.addKeyword('range', {
+  type: 'number',
+  inline: inlineRangeTemplate,
+  statements: true
+});
+```
+
+`'valid' + it.lvl` in the example above is the expected name of the variable that should be set to the validation result.
+
+Property `statements` in the keyword definition should be set to `true` if the validation code sets the variable instead of evaluating to the validation result.
+
+
 ## Asynchronous compilation
 
 Starting from  version 1.3 ajv supports asynchronous compilation when remote references are loaded using supplied function. See `compileAsync` method and `loadSchema` option.
@@ -272,6 +327,8 @@ function loadSchema(uri, callback) {
 With [option `removeAdditional`](#options) (added by [andyscott](https://github.com/andyscott)) you can filter data during the validation.
 
 This option modifies original object.
+
+TODO: example
 
 
 ## API
@@ -339,7 +396,7 @@ Adds meta schema that can be used to validate other schemas. That function shoul
 There is no need to explicitly add draft 4 meta schema (http://json-schema.org/draft-04/schema and http://json-schema.org/schema) - it is added by default, unless option `meta` is set to `false`. You only need to use it if you have a changed meta-schema that you want to use to validate your schemas. See `validateSchema`.
 
 
-##### .validateSchema(Object schema) -&gt; Boolean
+##### <a name="api-validateschema"></a>.validateSchema(Object schema) -&gt; Boolean
 
 Validates schema. This method should be used to validate schemas rather than `validate` due to the inconsistency of `uri` format in JSON-Schema standart.
 
@@ -389,7 +446,7 @@ Keyword definition is an object with the following properties:
 - _validate_: validating function
 - _compile_: compiling function
 - _macro_: macro function
-- _inline_ (NOT IMPLEMENTED): compiling function that returns code (as string)
+- _inline_: compiling function that returns code (as string)
 
 _validate_, _compile_, _macro_ and _inline_ are mutually exclusive, only one should be used at a time.
 
@@ -447,9 +504,50 @@ Defaults:
 - _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.
 - _beautify_: format the generated function with [js-beautify](https://github.com/beautify-web/js-beautify) (the validating function is generated without line-breaks). `npm install js-beautify` to use this option. `true` or js-beautify options can be passed.
 - _cache_: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache [sacjs](https://github.com/epoberezkin/sacjs) can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods `put(key, value)`, `get(key)` and `del(key)`.
-- _jsonPointers_: Output `dataPath` using JSON Pointers instead of JS path notation.
+- _jsonPointers_: set `dataPath` propery of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
 - _i18n_: DEPRECATED. Support internationalization of error messages using [ajv-i18n](https://github.com/epoberezkin/ajv-i18n). See its repo for details.
 - _messages_: Include human-readable messages in errors. `true` by default. `messages: false` can be added when internationalization (options `i18n`) is used.
+
+
+## Validation errors
+
+In case of validation failure Ajv assigns the array of errors to `.errors` property of validation function (or to `.errors` property of ajv instance in case `validate` or `validateSchema` methods were called).
+
+
+### Error objects
+
+Each error is an object with the following properties:
+
+- _keyword_: validation keyword. For user defined validation keywords it is set to `"custom"` (with the exception of macro keywords and unless keyword definition defines its own errors).
+- _dataPath_: the path to the part of the data that was validated. By default `dataPath` uses JavaScript property access notation (e.g., `".prop[1].subProp"`). When the option `jsonPointers` is true (see [Options](#options)) `dataPath` will be set using JSON pointer standard (e.g., `"/prop/1/subProp"`).
+- _params_: the object with the additional information about error that can be used to create custom error messages (e.g., using [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package). See below for parameters set by all keywords.
+- _message_: the standard error message (can be excluded with option `messages` set to false).
+- _schema_: the schema of the keyword (added with `verbose` option).
+- _data_: the data validated by the keyword (added with `verbose` option).
+
+
+### Error parameters
+
+Properties of `params` object in errors depend on the keyword that failed validation.
+
+- `maxItems`, `minItems`, `maxLength`, `minLength`, `maxProperties`, `minProperties` - property `limit` (number, the schema of the keyword).
+- `additionalItems` - property `limit` (the maximum number of allowed items in case when `items` keyword is an array of schemas and `additionalItems` is false).
+- `dependencies` - properties:
+  - `property` (dependent property),
+  - `deps` (required dependencies, comma separated list as a string),
+  - `depsCount` (the number of required dependedncies).
+- `format` - property `format` (the schema of the keyword).
+- `maximum`, `minimum` - properties:
+  - `limit` (number, the schema of the keyword),
+  - `exclusive` (boolean, the schema of `exclusiveMaximum` or `exclusiveMinimum`),
+  - `comparison` (string, comparison operation to compare the data to the limit, with the data on the left and the limit on the right; can be "<", "<=", ">", ">=")
+- `multipleOf` - property `multipleOf` (the schema of the keyword)
+- `pattern` - property `pattern` (the schema of the keyword)
+- `required` - property `missingProperty` (required property that is missing).
+- `type` - property `type` (required type(s), a string, can be a comma-separated list)
+- `uniqueItems` - properties `i` and `j` (indices of duplicate items).
+- `$ref` - property `ref` with the referenced schema URI.
+- custom keywords (in case keyword definition doesn't create errors) - property `keyword` (the keyword name).
 
 
 ## Command line interface

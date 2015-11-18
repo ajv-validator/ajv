@@ -368,7 +368,6 @@ var valid{{=it.lvl}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{=$
       testRangeKeyword({
         type: 'number',
         inline: inlineRangeTemplate,
-        parentSchema: true,
         statements: true
       });
     });
