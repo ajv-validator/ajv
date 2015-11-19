@@ -15,7 +15,9 @@
     var $i = 'i' + $lvl
       , $propertyPath = 'schema' + $lvl + '[' + $i + ']'
       , $missingProperty = '\' + "\'" + ' + $propertyPath + ' + "\'" + \'';
-    it.errorPath = it.util.getPathExpr($currentErrorPath, $propertyPath, it.opts.jsonPointers);
+    if (it.opts._errorDataPathProperty) {
+      it.errorPath = it.util.getPathExpr($currentErrorPath, $propertyPath, it.opts.jsonPointers);
+    }
   }}
 #}}
 
@@ -43,9 +45,11 @@
         {{
           var $propertyPath = 'missing' + $lvl
             , $missingProperty = '\' + ' + $propertyPath + ' + \'';
-          it.errorPath = it.opts.jsonPointers
-                          ? it.util.getPathExpr($currentErrorPath,  $propertyPath, true)
-                          : $currentErrorPath + ' + ' + $propertyPath;
+          if (it.opts._errorDataPathProperty) {
+            it.errorPath = it.opts.jsonPointers
+                            ? it.util.getPathExpr($currentErrorPath,  $propertyPath, true)
+                            : $currentErrorPath + ' + ' + $propertyPath;
+          }
         }}
         {{# def.error:'required' }}
       } else {
@@ -66,7 +70,9 @@
         {{
           var $prop = it.util.getProperty($property)
             , $missingProperty = it.util.escapeQuotes($prop);
-          it.errorPath = it.util.getPath($currentErrorPath, $property, it.opts.jsonPointers);
+          if (it.opts._errorDataPathProperty) {
+            it.errorPath = it.util.getPath($currentErrorPath, $property, it.opts.jsonPointers);
+          }
         }}
         if ({{=$data}}{{=$prop}} === undefined) {
           {{# def.addError:'required' }}

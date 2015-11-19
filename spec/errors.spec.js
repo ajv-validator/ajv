@@ -9,10 +9,14 @@ describe('Validation errors', function () {
   var ajv, ajvJP, fullAjv;
 
   beforeEach(function() {
-    ajv = Ajv();
-    ajvJP = Ajv({ jsonPointers: true });
-    fullAjv = Ajv({ allErrors: true, jsonPointers: true });
+    createInstances();
   });
+
+  function createInstances(errorDataPath) {
+    ajv = Ajv({ errorDataPath: errorDataPath });
+    ajvJP = Ajv({ errorDataPath: errorDataPath, jsonPointers: true });
+    fullAjv = Ajv({ errorDataPath: errorDataPath, allErrors: true, jsonPointers: true });
+  }
 
   it('error should include dataPath', function() {
     testSchema1({
@@ -71,7 +75,18 @@ describe('Validation errors', function () {
   });
 
 
-  it('errors for required should include missing property in dataPath', function() {
+  it('with option errorDataPath="property" errors for required should include missing property in dataPath', function() {
+    createInstances('property');
+    testRequired('property');
+  });
+
+
+  it('without option errorDataPath errors for required should NOT include missing property in dataPath', function() {
+    testRequired();
+  });
+
+
+  function testRequired(errorDataPath) {
     var schema = {
       required: ['foo', 'bar', 'baz']
     };
@@ -83,28 +98,49 @@ describe('Validation errors', function () {
     var validate = ajv.compile(schema);
     shouldBeValid(validate, data);
     shouldBeInvalid(validate, invalidData1);
-    shouldBeError(validate.errors[0], 'required', '.bar', 'is a required property');
+    shouldBeError(validate.errors[0], 'required', path('.bar'), msg('.bar'));
     shouldBeInvalid(validate, invalidData2);
-    shouldBeError(validate.errors[0], 'required', '.foo', 'is a required property');
+    shouldBeError(validate.errors[0], 'required', path('.foo'), msg('.foo'));
 
     var validateJP = ajvJP.compile(schema);
     shouldBeValid(validateJP, data);
     shouldBeInvalid(validateJP, invalidData1);
-    shouldBeError(validateJP.errors[0], 'required', '/bar', 'is a required property');
+    shouldBeError(validateJP.errors[0], 'required', path('/bar'), msg('bar'));
     shouldBeInvalid(validateJP, invalidData2);
-    shouldBeError(validateJP.errors[0], 'required', '/foo', 'is a required property');
+    shouldBeError(validateJP.errors[0], 'required', path('/foo'),  msg('foo'));
 
     var fullValidate = fullAjv.compile(schema);
     shouldBeValid(fullValidate, data);
     shouldBeInvalid(fullValidate, invalidData1);
-    shouldBeError(fullValidate.errors[0], 'required', '/bar', 'is a required property');
+    shouldBeError(fullValidate.errors[0], 'required', path('/bar'), msg('.bar'));
     shouldBeInvalid(fullValidate, invalidData2, 2);
-    shouldBeError(fullValidate.errors[0], 'required', '/foo', 'is a required property');
-    shouldBeError(fullValidate.errors[1], 'required', '/baz', 'is a required property');
+    shouldBeError(fullValidate.errors[0], 'required', path('/foo'), msg('.foo'));
+    shouldBeError(fullValidate.errors[1], 'required', path('/baz'), msg('.baz'));
+
+    function path(dataPath) {
+      return errorDataPath == 'property' ? dataPath : '';
+    }
+
+    function msg(prop) {
+      return errorDataPath == 'property'
+              ? 'is a required property'
+              : 'should have required property ' + prop;
+    }
+  }
+
+
+  it('required validation and errors for large data/schemas with option errorDataPath="property"', function() {
+    createInstances('property');
+    testRequiredLargeSchema('property');
   });
 
 
-  it('required validation and errors for large data/schemas', function() {
+  it('required validation and errors for large data/schemas WITHOUT option errorDataPath="property"', function() {
+    testRequiredLargeSchema();
+  });
+
+
+  function testRequiredLargeSchema(errorDataPath) {
     var schema = { required: [] }
       , data = {}
       , invalidData1 = {}
@@ -121,25 +157,35 @@ describe('Validation errors', function () {
     var validate = ajv.compile(schema);
     shouldBeValid(validate, data);
     shouldBeInvalid(validate, invalidData1);
-    shouldBeError(validate.errors[0], 'required', "['1']", "is a required property");
+    shouldBeError(validate.errors[0], 'required', path("['1']"), msg("'1'"));
     shouldBeInvalid(validate, invalidData2);
-    shouldBeError(validate.errors[0], 'required', "['2']", "is a required property");
+    shouldBeError(validate.errors[0], 'required', path("['2']"), msg("'2'"));
 
     var validateJP = ajvJP.compile(schema);
     shouldBeValid(validateJP, data);
     shouldBeInvalid(validateJP, invalidData1);
-    shouldBeError(validateJP.errors[0], 'required', "/1", "is a required property");
+    shouldBeError(validateJP.errors[0], 'required', path("/1"), msg("'1'"));
     shouldBeInvalid(validateJP, invalidData2);
-    shouldBeError(validateJP.errors[0], 'required', "/2", "is a required property");
+    shouldBeError(validateJP.errors[0], 'required', path("/2"), msg("'2'"));
 
     var fullValidate = fullAjv.compile(schema);
     shouldBeValid(fullValidate, data);
     shouldBeInvalid(fullValidate, invalidData1);
-    shouldBeError(fullValidate.errors[0], 'required', '/1', "is a required property");
+    shouldBeError(fullValidate.errors[0], 'required', path('/1'), msg("'1'"));
     shouldBeInvalid(fullValidate, invalidData2, 2);
-    shouldBeError(fullValidate.errors[0], 'required', '/2', "is a required property");
-    shouldBeError(fullValidate.errors[1], 'required', '/98', "is a required property");
-  });
+    shouldBeError(fullValidate.errors[0], 'required', path('/2'), msg("'2'"));
+    shouldBeError(fullValidate.errors[1], 'required', path('/98'), msg("'98'"));
+
+    function path(dataPath) {
+      return errorDataPath == 'property' ? dataPath : '';
+    }
+
+    function msg(prop) {
+      return errorDataPath == 'property'
+              ? 'is a required property'
+              : 'should have required property ' + prop;
+    }
+  }
 
 
   it('errors for items should include item index without quotes in dataPath (#48)', function() {
