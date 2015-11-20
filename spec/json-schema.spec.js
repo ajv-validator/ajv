@@ -12,8 +12,7 @@ var instances = getAjvInstances(fullTest ? {
   verbose:      true,
   format:       'full',
   inlineRefs:   false,
-  jsonPointers: true,
-  errorDataPath: 'property'
+  jsonPointers: true
 } : { allErrors: true });
 
 var remoteRefs = {

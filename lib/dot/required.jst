@@ -69,7 +69,7 @@
       {{~ $required:$property:$i }}
         {{
           var $prop = it.util.getProperty($property)
-            , $missingProperty = it.util.escapeQuotes($prop);
+            , $missingProperty = it.util.escapeQuotes($property);
           if (it.opts._errorDataPathProperty) {
             it.errorPath = it.util.getPath($currentErrorPath, $property, it.opts.jsonPointers);
           }

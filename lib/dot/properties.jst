@@ -137,7 +137,9 @@ var valid{{=$it.level}} = true;
           {{
             var $currentErrorPath = it.errorPath
               , $missingProperty = it.util.escapeQuotes($propertyKey);
-            it.errorPath = it.util.getPath($currentErrorPath, $propertyKey, it.opts.jsonPointers);
+            if (it.opts._errorDataPathProperty) {
+              it.errorPath = it.util.getPath($currentErrorPath, $propertyKey, it.opts.jsonPointers);
+            }
           }}
           {{# def.error:'required' }}
           {{ it.errorPath = $currentErrorPath; }}
