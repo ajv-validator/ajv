@@ -532,6 +532,7 @@ Properties of `params` object in errors depend on the keyword that failed valida
 
 - `maxItems`, `minItems`, `maxLength`, `minLength`, `maxProperties`, `minProperties` - property `limit` (number, the schema of the keyword).
 - `additionalItems` - property `limit` (the maximum number of allowed items in case when `items` keyword is an array of schemas and `additionalItems` is false).
+- `additionalProperties` - property `additionalProperty` (the property not used in `properties` and `patternProperties` keywords).
 - `dependencies` - properties:
   - `property` (dependent property),
   - `deps` (required dependencies, comma separated list as a string),

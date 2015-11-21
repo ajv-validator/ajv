@@ -38,7 +38,16 @@ describe('Validation errors', function () {
   });
 
 
-  it('errors for additionalProperties should include property in dataPath', function() {
+  it('with option errorDataPath="property" errors for additionalProperties should include property in dataPath ', function() {
+    createInstances('property');
+    testAdditional('property');
+  });
+
+  it('WITHOUT option errorDataPath errors for additionalProperties should NOT include property in dataPath', function() {
+    testAdditional();
+  });
+
+  function testAdditional(errorDataPath) {
     var schema = {
       properties: {
         foo: {},
@@ -50,29 +59,34 @@ describe('Validation errors', function () {
     var data = { foo: 1, bar: 2 }
       , invalidData = { foo: 1, bar: 2, baz: 3, quux: 4 };
 
+    var path = pathFunc(errorDataPath);
+    var msg = msgFunc(errorDataPath);
+
     var validate = ajv.compile(schema);
     shouldBeValid(validate, data);
     shouldBeInvalid(validate, invalidData);
-    shouldBeError(validate.errors[0], 'additionalProperties', "['baz']");
+    shouldBeError(validate.errors[0], 'additionalProperties', path("['baz']"), undefined, { additionalProperty: 'baz' });
 
     var validateJP = ajvJP.compile(schema);
     shouldBeValid(validateJP, data);
     shouldBeInvalid(validateJP, invalidData);
-    shouldBeError(validateJP.errors[0], 'additionalProperties', "/baz");
+    shouldBeError(validateJP.errors[0], 'additionalProperties', path("/baz"), undefined, { additionalProperty: 'baz' });
 
     var fullValidate = fullAjv.compile(schema);
     shouldBeValid(fullValidate, data);
     shouldBeInvalid(fullValidate, invalidData, 2);
-    shouldBeError(fullValidate.errors[0], 'additionalProperties', '/baz');
-    shouldBeError(fullValidate.errors[1], 'additionalProperties', '/quux');
+    shouldBeError(fullValidate.errors[0], 'additionalProperties', path('/baz'), undefined, { additionalProperty: 'baz' });
+    shouldBeError(fullValidate.errors[1], 'additionalProperties', path('/quux'), undefined, { additionalProperty: 'quux' });
 
-    fullValidate.errors
-    .filter(function(err) { return err.keyword == 'additionalProperties'; })
-    .map(function(err) { return fullAjv.opts.jsonPointers ? err.dataPath.substr(1) : err.dataPath.slice(2,-2); })
-    .forEach(function(p) { delete invalidData[p]; });
+    if (errorDataPath == 'property') {
+      fullValidate.errors
+      .filter(function(err) { return err.keyword == 'additionalProperties'; })
+      .map(function(err) { return fullAjv.opts.jsonPointers ? err.dataPath.substr(1) : err.dataPath.slice(2,-2); })
+      .forEach(function(p) { delete invalidData[p]; });
 
-    invalidData .should.eql({ foo: 1, bar: 2 });
-  });
+      invalidData .should.eql({ foo: 1, bar: 2 });
+    }
+  }
 
 
   it('with option errorDataPath="property" errors for required should include missing property in dataPath', function() {
@@ -129,24 +143,24 @@ describe('Validation errors', function () {
       var validate = ajv.compile(schema);
       shouldBeValid(validate, data);
       shouldBeInvalid(validate, invalidData1, 1 + extraErrors);
-      shouldBeError(validate.errors[0], 'required', path("['1']"), msg("'1'"));
+      shouldBeError(validate.errors[0], 'required', path("['1']"), msg('1'), { missingProperty: '1' });
       shouldBeInvalid(validate, invalidData2, 1 + extraErrors);
-      shouldBeError(validate.errors[0], 'required', path("['2']"), msg("'2'"));
+      shouldBeError(validate.errors[0], 'required', path("['2']"), msg('2'), { missingProperty: '2' });
 
       var validateJP = ajvJP.compile(schema);
       shouldBeValid(validateJP, data);
       shouldBeInvalid(validateJP, invalidData1, 1 + extraErrors);
-      shouldBeError(validateJP.errors[0], 'required', path("/1"), msg("'1'"));
+      shouldBeError(validateJP.errors[0], 'required', path("/1"), msg('1'), { missingProperty: '1' });
       shouldBeInvalid(validateJP, invalidData2, 1 + extraErrors);
-      shouldBeError(validateJP.errors[0], 'required', path("/2"), msg("'2'"));
+      shouldBeError(validateJP.errors[0], 'required', path("/2"), msg('2'), { missingProperty: '2' });
 
       var fullValidate = fullAjv.compile(schema);
       shouldBeValid(fullValidate, data);
       shouldBeInvalid(fullValidate, invalidData1, 1 + extraErrors);
-      shouldBeError(fullValidate.errors[0], 'required', path('/1'), msg("'1'"));
+      shouldBeError(fullValidate.errors[0], 'required', path('/1'), msg('1'), { missingProperty: '1' });
       shouldBeInvalid(fullValidate, invalidData2, 2 + extraErrors);
-      shouldBeError(fullValidate.errors[0], 'required', path('/2'), msg("'2'"));
-      shouldBeError(fullValidate.errors[1], 'required', path('/98'), msg("'98'"));
+      shouldBeError(fullValidate.errors[0], 'required', path('/2'), msg('2'), { missingProperty: '2' });
+      shouldBeError(fullValidate.errors[1], 'required', path('/98'), msg('98'), { missingProperty: '98' });
     }
   }
 
@@ -194,8 +208,8 @@ describe('Validation errors', function () {
   }
 
 
-  function _testRequired(errorDataPath, schema, propPrefix, extraErrors) {
-    propPrefix = propPrefix || '';
+  function _testRequired(errorDataPath, schema, prefix, extraErrors) {
+    prefix = prefix || '';
     extraErrors = extraErrors || 0;
 
     var data = { foo: 1, bar: 2, baz: 3 }
@@ -208,24 +222,24 @@ describe('Validation errors', function () {
     var validate = ajv.compile(schema);
     shouldBeValid(validate, data);
     shouldBeInvalid(validate, invalidData1, 1 + extraErrors);
-    shouldBeError(validate.errors[0], 'required', path('.bar'), msg(propPrefix + 'bar'));
+    shouldBeError(validate.errors[0], 'required', path('.bar'), msg(prefix + 'bar'), { missingProperty: prefix + 'bar' });
     shouldBeInvalid(validate, invalidData2, 1 + extraErrors);
-    shouldBeError(validate.errors[0], 'required', path('.foo'), msg(propPrefix + 'foo'));
+    shouldBeError(validate.errors[0], 'required', path('.foo'), msg(prefix + 'foo'), { missingProperty: prefix + 'foo' });
 
     var validateJP = ajvJP.compile(schema);
     shouldBeValid(validateJP, data);
     shouldBeInvalid(validateJP, invalidData1, 1 + extraErrors);
-    shouldBeError(validateJP.errors[0], 'required', path('/bar'), msg('bar'));
+    shouldBeError(validateJP.errors[0], 'required', path('/bar'), msg('bar'), { missingProperty: 'bar' });
     shouldBeInvalid(validateJP, invalidData2, 1 + extraErrors);
-    shouldBeError(validateJP.errors[0], 'required', path('/foo'),  msg('foo'));
+    shouldBeError(validateJP.errors[0], 'required', path('/foo'),  msg('foo'), { missingProperty: 'foo' });
 
     var fullValidate = fullAjv.compile(schema);
     shouldBeValid(fullValidate, data);
     shouldBeInvalid(fullValidate, invalidData1, 1 + extraErrors);
-    shouldBeError(fullValidate.errors[0], 'required', path('/bar'), msg('bar'));
+    shouldBeError(fullValidate.errors[0], 'required', path('/bar'), msg('bar'), { missingProperty: 'bar' });
     shouldBeInvalid(fullValidate, invalidData2, 2 + extraErrors);
-    shouldBeError(fullValidate.errors[0], 'required', path('/foo'), msg('foo'));
-    shouldBeError(fullValidate.errors[1], 'required', path('/baz'), msg('baz'));
+    shouldBeError(fullValidate.errors[0], 'required', path('/foo'), msg('foo'), { missingProperty: 'foo' });
+    shouldBeError(fullValidate.errors[1], 'required', path('/baz'), msg('baz'), { missingProperty: 'baz' });
   }
 
   function pathFunc(errorDataPath) {
@@ -238,7 +252,7 @@ describe('Validation errors', function () {
     return function (prop) {
       return errorDataPath == 'property'
               ? 'is a required property'
-              : 'should have required property ' + prop;
+              : 'should have required property \'' + prop + '\'';
     };
   }
 
@@ -324,11 +338,11 @@ describe('Validation errors', function () {
   }
 
 
-  function shouldBeError(error, keyword, dataPath, message) {
+  function shouldBeError(error, keyword, dataPath, message, params) {
     error.keyword .should.equal(keyword);
     error.dataPath .should.equal(dataPath);
     error.message .should.be.a('string');
-    if (message !== undefined)
-      error.message .should.equal(message);
+    if (message !== undefined) error.message .should.equal(message);
+    if (params !== undefined) error.params .should.eql(params);
   }
 });

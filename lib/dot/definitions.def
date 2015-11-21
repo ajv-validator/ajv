@@ -161,7 +161,7 @@
   not:             "'should NOT be valid'",
   oneOf:           "'should match exactly one schema in oneOf'",
   pattern:         "'should match pattern \"{{=it.util.escapeQuotes($schema)}}\"'",
-  required:        "'{{? it.opts._errorDataPathProperty }}is a required property{{??}}should have required property {{=$missingProperty}}{{?}}'",
+  required:        "'{{? it.opts._errorDataPathProperty }}is a required property{{??}}should have required property \\'{{=$missingProperty}}\\'{{?}}'",
   type:            "'should be {{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}'",
   uniqueItems:     "'should NOT have duplicate items (items ## ' + j + ' and ' + i + ' are identical)'",
   custom:          "'should pass \"{{=$rule.keyword}}\" keyword validation'"
@@ -198,7 +198,7 @@
 {{## def._errorParams = {
   $ref:         "{ ref: '{{=it.util.escapeQuotes($schema)}}' }",
   additionalItems: "{ limit: {{=$schema.length}} }",
-  additionalProperties: "{}",
+  additionalProperties: "{ additionalProperty: '{{=$additionalProperty}}' }",
   anyOf:        "{}",
   dependencies: "{ depsCount: {{=$deps.length}}, deps: '{{? $deps.length==1 }}{{= it.util.escapeQuotes($deps[0]) }}{{??}}{{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}}', property: '{{= it.util.escapeQuotes($property) }}' }",
   format:       "{ format: '{{=it.util.escapeQuotes($schema)}}' }",

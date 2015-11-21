@@ -7,7 +7,9 @@
   {{ /* additionalProperties is schema */
     $it.schema = $aProperties;
     $it.schemaPath = it.schemaPath + '.additionalProperties';
-    $it.errorPath = it.errorPath;
+    $it.errorPath = it.opts._errorDataPathProperty
+                    ? it.errorPath
+                    : it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
     var $passData = $data + '[key' + $lvl + ']';
   }}
 
@@ -64,7 +66,10 @@ var valid{{=$it.level}} = true;
     {{??}}
       {{
         var $currentErrorPath = it.errorPath;
-        it.errorPath = it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
+        var $additionalProperty = '\' + key' + $lvl + ' + \'';
+        if (it.opts._errorDataPathProperty) {
+          it.errorPath = it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
+        }
       }}
       {{? $noAdditional }}
         {{? $removeAdditional }}
