@@ -200,7 +200,7 @@
   additionalItems: "{ limit: {{=$schema.length}} }",
   additionalProperties: "{ additionalProperty: '{{=$additionalProperty}}' }",
   anyOf:        "{}",
-  dependencies: "{ depsCount: {{=$deps.length}}, deps: '{{? $deps.length==1 }}{{= it.util.escapeQuotes($deps[0]) }}{{??}}{{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}}', property: '{{= it.util.escapeQuotes($property) }}' }",
+  dependencies: "{ property: '{{= it.util.escapeQuotes($property) }}', missingProperty: '{{=$missingProperty}}', depsCount: {{=$deps.length}}, deps: '{{? $deps.length==1 }}{{= it.util.escapeQuotes($deps[0]) }}{{??}}{{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}}' }",
   format:       "{ format: '{{=it.util.escapeQuotes($schema)}}' }",
   maximum:      "{ comparison: '{{=$op}}', limit: {{=$schema}}, exclusive: {{=$exclusive}} }",
   minimum:      "{ comparison: '{{=$op}}', limit: {{=$schema}}, exclusive: {{=$exclusive}} }",

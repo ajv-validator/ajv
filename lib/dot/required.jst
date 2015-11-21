@@ -1,13 +1,6 @@
 {{# def.definitions }}
+{{# def.missing }}
 {{# def.setup:'required' }}
-
-{{## def.checkRequired:
-  {{~ $required:$property:$i }}
-    {{? $i}} || {{?}}
-    {{ var $prop = it.util.getProperty($property); }}
-    ( {{=$data}}{{=$prop}} === undefined && (missing{{=$lvl}} = {{= it.util.toQuotedString(it.opts.jsonPointers ? $property : $prop) }}) )
-  {{~}}
-#}}
 
 {{## def.setupLoop:
   var schema{{=$lvl}} = validate.schema{{=$schemaPath}};
@@ -41,16 +34,8 @@
   {{? $breakOnError }}
     var missing{{=$lvl}};
     {{? $required.length <= 20 }}
-      if ({{# def.checkRequired }}) {
-        {{
-          var $propertyPath = 'missing' + $lvl
-            , $missingProperty = '\' + ' + $propertyPath + ' + \'';
-          if (it.opts._errorDataPathProperty) {
-            it.errorPath = it.opts.jsonPointers
-                            ? it.util.getPathExpr($currentErrorPath,  $propertyPath, true)
-                            : $currentErrorPath + ' + ' + $propertyPath;
-          }
-        }}
+      if ({{# def.checkMissingProperty:$required }}) {
+        {{# def.errorMissingProperty }}
         {{# def.error:'required' }}
       } else {
     {{??}}

@@ -6,8 +6,10 @@ var glob = require('glob')
   , doT = require('dot')
   , beautify = require('js-beautify').js_beautify;
 
-var defs = fs.readFileSync(path.join(__dirname, '../lib/dot/definitions.def'));
-var customRule = fs.readFileSync(path.join(__dirname, '../lib/dot/custom.def'));
+var defs = {};
+['definitions', 'custom', 'missing'].forEach(function (name) {
+  defs[name] = fs.readFileSync(path.join(__dirname, '../lib/dot/' + name + '.def'));
+});
 var files = glob.sync('../lib/dot/*.jst', { cwd: __dirname });
 
 var dotjsPath = path.join(__dirname, '../lib/dotjs');
@@ -22,7 +24,7 @@ files.forEach(function (f) {
   var keyword = path.basename(f, '.jst');
   var targetPath = path.join(dotjsPath, keyword + '.js');
   var template = fs.readFileSync(path.join(__dirname, f));
-  var code = doT.compile(template, { definitions: defs, customRule: customRule });
+  var code = doT.compile(template, defs);
   code = code.toString()
              .replace(OUT_EMPTY_STRING, '')
              .replace(FUNCTION_NAME, 'function generate_' + keyword + '(it) {');

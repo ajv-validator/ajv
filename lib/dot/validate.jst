@@ -59,7 +59,7 @@
       {{~ $rulesGroup.rules:$rule }}
         {{? $shouldUseRule($rule) }}
           {{? $rule.custom }}
-            {{# def.customRule }}
+            {{# def.custom }}
           {{??}}
             {{= $rule.code(it) }}
           {{?}}

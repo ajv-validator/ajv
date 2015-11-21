@@ -535,6 +535,7 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - `additionalProperties` - property `additionalProperty` (the property not used in `properties` and `patternProperties` keywords).
 - `dependencies` - properties:
   - `property` (dependent property),
+  - `missingProperty` (required missing dependency - only the first one is reported currently)
   - `deps` (required dependencies, comma separated list as a string),
   - `depsCount` (the number of required dependedncies).
 - `format` - property `format` (the schema of the keyword).
