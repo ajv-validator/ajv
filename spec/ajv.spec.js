@@ -45,6 +45,24 @@ describe('Ajv', function () {
         ajv.compile({ type: null });
       });
     });
+
+    it('should throw if compiled schema has an invalid JavaScript code', function() {
+      ajv.addKeyword('even', { inline: badEvenCode });
+      var schema = { even: true };
+      var validate = ajv.compile(schema);
+      validate(2) .should.equal(true);
+      validate(3) .should.equal(false);
+
+      var schema = { even: false };
+      should.throw(function() {
+        var validate = ajv.compile(schema);
+      });
+
+      function badEvenCode(it, schema) {
+        var op = schema ? '===' : '!==='; // invalid on purpose
+        return 'data' + (it.dataLevel || '') + ' % 2 ' + op + ' 0';
+      }
+    });
   });
 
 

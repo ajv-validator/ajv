@@ -39,6 +39,7 @@
     "json-stable-stringify": "^1.0.0"
   },
   "devDependencies": {
+    "brfs": "^0.0.8",
     "browserify": "^11.0.1",
     "chai": "^3.0.0",
     "dot": "^1.0.3",

@@ -3,7 +3,7 @@
 var getAjvInstances = require('./ajv_instances')
   , should = require('chai').should()
   , equal = require('../lib/compile/equal')
-  , doT = require('dot');
+  , customRules = require('./custom_rules');
 
 
 describe('Custom keywords', function () {
@@ -58,6 +58,42 @@ describe('Custom keywords', function () {
         return parentSchema.exclusiveRange === true
                 ? data > schema[0] && data < schema[1]
                 : data >= schema[0] && data <= schema[1];
+      }
+    });
+
+    it('should allow defining custom errors for "interpreted" keyword', function() {
+      testRangeKeyword({ type: 'number', validate: validateRange }, true);
+
+      function validateRange(schema, data, parentSchema) {
+        validateRangeSchema(schema, parentSchema);
+        var min = schema[0]
+          , max = schema[1]
+          , exclusive = parentSchema.exclusiveRange === true;
+
+        var minOk = exclusive ? data > min : data >= min;
+        var maxOk = exclusive ? data < max : data <= max;
+        var valid = minOk && maxOk;
+
+        if (!valid) {
+          var err = { keyword: 'range' };
+          validateRange.errors = [err];
+          var comparison, limit;
+          if (minOk) {
+            comparison = exclusive ? '<' : '<=';
+            limit = max;
+          } else {
+            comparison = exclusive ? '>' : '>=';
+            limit = min;
+          }
+          err.message = 'should be ' + comparison + ' ' + limit;
+          err.params = {
+            comparison: comparison,
+            limit: limit,
+            exclusive: exclusive
+          };
+        }
+
+        return valid;
       }
     });
 
@@ -354,16 +390,7 @@ describe('Custom keywords', function () {
     });
 
     it('should define "inline" keyword as template', function() {
-      var inlineRangeTemplate = doT.compile("\
-{{ \
-  var $data = 'data' + (it.dataLevel || '') \
-    , $min = it.schema.range[0] \
-    , $max = it.schema.range[1] \
-    , $gt = it.schema.exclusiveRange ? '>' : '>=' \
-    , $lt = it.schema.exclusiveRange ? '<' : '<='; \
-}} \
-var valid{{=it.lvl}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{=$max}}; \
-");
+      var inlineRangeTemplate = customRules.range;
 
       testRangeKeyword({
         type: 'number',
@@ -371,6 +398,28 @@ var valid{{=it.lvl}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{=$
         statements: true
       });
     });
+
+    it('should allow defining optional errors', function() {
+      var inlineRangeTemplate = customRules.rangeWithErrors;
+
+      testRangeKeyword({
+        type: 'number',
+        inline: inlineRangeTemplate,
+        statements: true
+      }, true);
+    });
+
+    it('should allow defining required errors', function() {
+      var inlineRangeTemplate = customRules.rangeWithErrors;
+
+      testRangeKeyword({
+        type: 'number',
+        inline: inlineRangeTemplate,
+        statements: true,
+        errors: true
+      }, true);
+    });
+
 
     function inlineEven(it, schema) {
       var op = schema ? '===' : '!==';
@@ -383,7 +432,7 @@ var valid{{=it.lvl}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{=$
         , data = 'data' + (it.dataLevel || '')
         , gt = parentSchema.exclusiveRange ? ' > ' : ' >= '
         , lt = parentSchema.exclusiveRange ? ' < ' : ' <= ';
-      return 'var valid' + it.lvl + ' = ' + data + gt + min + ' && ' + data + lt + max + ';';
+      return 'var valid' + it.level + ' = ' + data + gt + min + ' && ' + data + lt + max + ';';
     }
   });
 
@@ -441,7 +490,7 @@ var valid{{=it.lvl}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{=$
     });
   }
 
-  function testRangeKeyword(definition) {
+  function testRangeKeyword(definition, customErrors) {
     instances.forEach(function (ajv) {
       ajv.addKeyword('range', definition);
 
@@ -454,7 +503,9 @@ var valid{{=it.lvl}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{=$
       shouldBeValid(validate, 'abc');
 
       shouldBeInvalid(validate, 1.99);
+      if (customErrors) shouldBeRangeError(validate.errors[0], '', '>=', 2);
       shouldBeInvalid(validate, 4.01);
+      if (customErrors) shouldBeRangeError(validate.errors[0], '', '<=', 4);
 
       var schema = {
         "properties": {
@@ -471,7 +522,9 @@ var valid{{=it.lvl}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{=$
       shouldBeValid(validate, { foo: 3.99 });
 
       shouldBeInvalid(validate, { foo: 2 });
+      if (customErrors) shouldBeRangeError(validate.errors[0], '.foo', '>', 2, true);
       shouldBeInvalid(validate, { foo: 4 });
+      if (customErrors) shouldBeRangeError(validate.errors[0], '.foo', '<', 4, true);
     });
   }
 
@@ -497,6 +550,21 @@ var valid{{=it.lvl}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{=$
 
       shouldBeValid(validate, [5, 6, 7]);
       shouldBeInvalid(validate, [7.01]);
+    });
+  }
+
+  function shouldBeRangeError(error, dataPath, comparison, limit, exclusive) {
+    delete error.schema;
+    delete error.data;
+    error .should.eql({
+      keyword: 'range',
+      dataPath: dataPath,
+      message: 'should be ' + comparison + ' ' + limit,
+      params: {
+        comparison: comparison,
+        limit: limit,
+        exclusive: !!exclusive
+      }
     });
   }
 

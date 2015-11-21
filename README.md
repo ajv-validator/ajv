@@ -282,7 +282,7 @@ var inlineRangeTemplate = doT.compile("\
     , $gt = it.schema.exclusiveRange ? '>' : '>=' \
     , $lt = it.schema.exclusiveRange ? '<' : '<='; \
 }} \
-var valid{{=it.lvl}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{=$max}}; \
+var valid{{=it.level}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{=$max}}; \
 ");
 
 ajv.addKeyword('range', {
@@ -292,9 +292,35 @@ ajv.addKeyword('range', {
 });
 ```
 
-`'valid' + it.lvl` in the example above is the expected name of the variable that should be set to the validation result.
+`'valid' + it.level` in the example above is the expected name of the variable that should be set to the validation result.
 
 Property `statements` in the keyword definition should be set to `true` if the validation code sets the variable instead of evaluating to the validation result.
+
+
+### Defining errors in custom keywords
+
+All custom keywords but macro keywords can create custom error messages.
+
+Validating and compiled keywords should define errors by assigning them to `.errors` property of validation function.
+
+Inline custom keyword should increase error counter `errors` and add error to `vErrors` array (it can be null). See [example range keyword](https://github.com/epoberezkin/ajv/blob/v2.0/spec/custom_rules/range_with_errors.jst).
+
+When inline keyword performes validation Ajv checks whether it created errors by comparing errors count before and after validation. To skip this check add option `errors` to keyword definition:
+
+```
+ajv.addKeyword('range', {
+  type: 'number',
+  inline: inlineRangeTemplate,
+  statements: true,
+  errors: true // keyword should create custom errors when validation fails
+});
+```
+
+Each error object should have properties `keyword`, `message` and `params`, other properties will be added.
+
+Inlined keywords can optionally define `dataPath` property in error objects.
+
+If custom keyword doesn't create errors, the default error will be created in case the keyword fails validation (see [Validation errors](#validation-errors)).
 
 
 ## Asynchronous compilation
