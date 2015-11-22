@@ -134,7 +134,7 @@ You can find patterns used for format validation and the sources that were used 
 
 ## Defining custom keywords
 
-Starting from version 2.0 (ajv@^2.0.0-beta) ajv supports custom keyword definitions.
+Starting from version 2.0.0 ajv supports custom keyword definitions.
 
 WARNING: The main drawback of extending JSON-schema standard with custom keywords is the loss of portability of your schemas - it may not be possible to support these custom keywords on some other platforms. Also your schemas may be more challenging to read for other people. If portability is important you may prefer using additional validation logic outside of JSON-schema rather than putting it inside your JSON-schema.
 
