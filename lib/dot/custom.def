@@ -1,0 +1,76 @@
+{{
+  var $schema = it.schema[$rule.keyword]
+    , $ruleValidate = it.useCustomRule($rule, $schema, it.schema, it)
+    , $ruleErrs = $ruleValidate.code + '.errors'
+    , $schemaPath = it.schemaPath + '.' + $rule.keyword
+    , $errs = 'errs' + $lvl
+    , $i = 'i' + $lvl
+    , $ruleErr = 'ruleErr' + $lvl
+    , $rDef = $rule.definition
+    , $inline = $rDef.inline;
+}}
+
+{{? !$inline }}{{=$ruleErrs}} = null;{{?}}
+var {{=$errs}} = errors;
+
+{{## def.callRuleValidate:
+  {{? $inline }}
+    {{? $rDef.statements }}
+      valid{{=$lvl}}
+    {{??}}
+      ({{= $ruleValidate.validate }})
+    {{?}}
+  {{??}}
+    {{=$ruleValidate.code}}.call(self
+      {{? $rDef.compile }}
+        , {{=$data}}
+      {{??}}
+        , validate.schema{{=$schemaPath}}
+        , {{=$data}}
+        {{? $ruleValidate.validate.length > 2 }}
+          , validate.schema{{=it.schemaPath}}
+        {{?}}
+      {{?}}
+    )
+  {{?}}
+#}}
+
+{{## def.extendErrors:_inline:
+  for (var {{=$i}}={{=$errs}}; {{=$i}}<errors; {{=$i}}++) {
+    var {{=$ruleErr}} = vErrors[{{=$i}}];
+    {{# _inline ? 'if (\{\{=$ruleErr\}\}.dataPath === undefined) {' : '' }}
+      {{=$ruleErr}}.dataPath = (dataPath || '') + {{= it.errorPath }};
+    {{# _inline ? '}' : '' }}
+    {{? it.opts.verbose }}
+      {{=$ruleErr}}.schema = validate.schema{{=$schemaPath}};
+      {{=$ruleErr}}.data = {{=$data}};
+    {{?}}
+  }
+#}}
+
+{{? $inline && $rDef.statements }}
+  {{= $ruleValidate.validate }}
+{{?}}
+
+if (!{{# def.callRuleValidate }}) {
+  {{? $inline }}
+    {{? $rDef.errors }}
+      {{# def.extendErrors:true }}
+    {{??}}
+      if ({{=$errs}} == errors) {
+        {{# def.error:'custom' }}
+      } else {
+        {{# def.extendErrors:true }}
+      }
+    {{?}}
+  {{??}}
+    if (Array.isArray({{=$ruleErrs}})) {
+      if (vErrors === null) vErrors = {{=$ruleErrs}};
+      else vErrors.concat({{=$ruleErrs}});
+      errors = vErrors.length;
+      {{# def.extendErrors:false }}
+    } else {
+      {{# def.error:'custom' }}
+    }
+  {{?}}
+} {{? $breakOnError }} else { {{?}}

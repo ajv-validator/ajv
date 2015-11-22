@@ -102,18 +102,16 @@
 
 {{## def._error:_rule:
   {
-    keyword: '{{=_rule}}',
-    dataPath: (dataPath || '') + {{= it.errorPath }}
+    keyword: '{{=_rule}}'
+    , dataPath: (dataPath || '') + {{= it.errorPath }}
+    , params: {{# def._errorParams[_rule] }}
     {{? it.opts.messages !== false }}
       , message: {{# def._errorMessages[_rule] }}
     {{?}}
-    {{? it.opts.verbose || it.opts.i18n }}
-      , schema: {{# def._errorSchemas[_rule] }}
-    {{?}}
     {{? it.opts.verbose }}
+      , schema: {{# def._errorSchemas[_rule] }}
       , data: {{=$data}}
     {{?}}
-    {{# def._errorParams[_rule] || '' }}
   }
 #}}
 
@@ -163,9 +161,10 @@
   not:             "'should NOT be valid'",
   oneOf:           "'should match exactly one schema in oneOf'",
   pattern:         "'should match pattern \"{{=it.util.escapeQuotes($schema)}}\"'",
-  required:        "'is a required property'",
+  required:        "'{{? it.opts._errorDataPathProperty }}is a required property{{??}}should have required property \\'{{=$missingProperty}}\\'{{?}}'",
   type:            "'should be {{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}'",
-  uniqueItems:     "'should NOT have duplicate items (items ## ' + j + ' and ' + i + ' are identical)'"
+  uniqueItems:     "'should NOT have duplicate items (items ## ' + j + ' and ' + i + ' are identical)'",
+  custom:          "'should pass \"{{=$rule.keyword}}\" keyword validation'"
 } #}}
 
 
@@ -191,20 +190,32 @@
   pattern:         "{{=it.util.toQuotedString($schema)}}",
   required:        "validate.schema{{=$schemaPath}}",
   type:            "{{? $isArray }}['{{= $typeSchema.join(\"','\") }}']{{??}}'{{=$typeSchema}}'{{?}}",
-  uniqueItems:     "{{=$schema}}"
+  uniqueItems:     "{{=$schema}}",
+  custom:          "validate.schema{{=$schemaPath}}"
 } #}}
 
 
-{{## def._params = "{{? it.opts.i18n }}, params: " #}}
-
 {{## def._errorParams = {
-  $ref:         "{{# def._params }}{ escaped: '{{=it.util.escapeQuotes($schema)}}' }{{?}}",
-  dependencies: "{{# def._params }}{ n: {{=$deps.length}}, deps: '{{? $deps.length==1 }}{{= it.util.escapeQuotes($deps[0]) }}{{??}}{{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}}', property: '{{= it.util.escapeQuotes($property) }}' }{{?}}",
-  format:       "{{# def._params }}{ escaped: '{{=it.util.escapeQuotes($schema)}}' }{{?}}",
-  maximum:      "{{# def._params }}{ condition: '{{=$op}} {{=$schema}}' }{{?}}",
-  minimum:      "{{# def._params }}{ condition: '{{=$op}} {{=$schema}}' }{{?}}",
-  pattern:      "{{# def._params }}{ escaped: '{{=it.util.escapeQuotes($schema)}}' }{{?}}",
-  required:     "{{# def._params }}{ missingProperty: '{{=$missingProperty}}' }{{?}}",
-  type:         "{{# def._params }}{ type: '{{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}' }{{?}}",
-  uniqueItems:  "{{# def._params }}{ i: i, j: j }{{?}}"
+  $ref:         "{ ref: '{{=it.util.escapeQuotes($schema)}}' }",
+  additionalItems: "{ limit: {{=$schema.length}} }",
+  additionalProperties: "{ additionalProperty: '{{=$additionalProperty}}' }",
+  anyOf:        "{}",
+  dependencies: "{ property: '{{= it.util.escapeQuotes($property) }}', missingProperty: '{{=$missingProperty}}', depsCount: {{=$deps.length}}, deps: '{{? $deps.length==1 }}{{= it.util.escapeQuotes($deps[0]) }}{{??}}{{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}}' }",
+  format:       "{ format: '{{=it.util.escapeQuotes($schema)}}' }",
+  maximum:      "{ comparison: '{{=$op}}', limit: {{=$schema}}, exclusive: {{=$exclusive}} }",
+  minimum:      "{ comparison: '{{=$op}}', limit: {{=$schema}}, exclusive: {{=$exclusive}} }",
+  maxItems:     "{ limit: {{=$schema}} }",
+  minItems:     "{ limit: {{=$schema}} }",
+  maxLength:    "{ limit: {{=$schema}} }",
+  minLength:    "{ limit: {{=$schema}} }",
+  maxProperties:"{ limit: {{=$schema}} }",
+  minProperties:"{ limit: {{=$schema}} }",
+  multipleOf:   "{ multipleOf: {{=$schema}} }",
+  not:          "{}",
+  oneOf:        "{}",
+  pattern:      "{ pattern: '{{=it.util.escapeQuotes($schema)}}' }",
+  required:     "{ missingProperty: '{{=$missingProperty}}' }",
+  type:         "{ type: '{{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}' }",
+  uniqueItems:  "{ i: i, j: j }",
+  custom:       "{ keyword: '$rule.keyword' }"
 } #}}

@@ -1,21 +1,16 @@
 {{# def.definitions }}
+{{# def.missing }}
 {{# def.setup:'required' }}
-
-{{## def.checkRequired:
-  {{~ $required:$property:$i }}
-    {{? $i}} || {{?}}
-    {{ var $prop = it.util.getProperty($property); }}
-    ( {{=$data}}{{=$prop}} === undefined && (missing{{=$lvl}} = {{= it.util.toQuotedString(it.opts.jsonPointers ? $property : $prop) }}) )
-  {{~}}
-#}}
 
 {{## def.setupLoop:
   var schema{{=$lvl}} = validate.schema{{=$schemaPath}};
   {{
     var $i = 'i' + $lvl
       , $propertyPath = 'schema' + $lvl + '[' + $i + ']'
-      , $missingProperty = '\' + "\'" + ' + $propertyPath + ' + "\'" + \'';
-    it.errorPath = it.util.getPathExpr($currentErrorPath, $propertyPath, it.opts.jsonPointers);
+      , $missingProperty = '\' + ' + $propertyPath + ' + \'';
+    if (it.opts._errorDataPathProperty) {
+      it.errorPath = it.util.getPathExpr($currentErrorPath, $propertyPath, it.opts.jsonPointers);
+    }
   }}
 #}}
 
@@ -39,14 +34,8 @@
   {{? $breakOnError }}
     var missing{{=$lvl}};
     {{? $required.length <= 20 }}
-      if ({{# def.checkRequired }}) {
-        {{
-          var $propertyPath = 'missing' + $lvl
-            , $missingProperty = '\' + ' + $propertyPath + ' + \'';
-          it.errorPath = it.opts.jsonPointers
-                          ? it.util.getPathExpr($currentErrorPath,  $propertyPath, true)
-                          : $currentErrorPath + ' + ' + $propertyPath;
-        }}
+      if ({{# def.checkMissingProperty:$required }}) {
+        {{# def.errorMissingProperty }}
         {{# def.error:'required' }}
       } else {
     {{??}}
@@ -65,8 +54,10 @@
       {{~ $required:$property:$i }}
         {{
           var $prop = it.util.getProperty($property)
-            , $missingProperty = it.util.escapeQuotes($prop);
-          it.errorPath = it.util.getPath($currentErrorPath, $property, it.opts.jsonPointers);
+            , $missingProperty = it.util.escapeQuotes($property);
+          if (it.opts._errorDataPathProperty) {
+            it.errorPath = it.util.getPath($currentErrorPath, $property, it.opts.jsonPointers);
+          }
         }}
         if ({{=$data}}{{=$prop}} === undefined) {
           {{# def.addError:'required' }}

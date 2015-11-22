@@ -5,5 +5,7 @@ before_script:
 node_js:
   - "0.10"
   - "0.12"
+  - "4"
+  - "5"
 after_script:
   - codeclimate-test-reporter < coverage/lcov.info

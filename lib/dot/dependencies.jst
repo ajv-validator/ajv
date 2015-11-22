@@ -1,4 +1,5 @@
 {{# def.definitions }}
+{{# def.missing }}
 {{# def.setup:'dependencies' }}
 {{# def.setupNextLevel }}
 
@@ -16,21 +17,20 @@
 
 var {{=$errs}} = errors;
 
-{{## def.checkPropertyDeps:
-  {{~ $deps:$dep:$i }}
-    {{?$i}} || {{?}}
-    {{=$data}}{{= it.util.getProperty($dep) }} === undefined
-  {{~}}
-#}}
+{{ var $currentErrorPath = it.errorPath; }}
 
+var missing{{=$lvl}};
 {{ for (var $property in $propertyDeps) { }}
   if ({{=$data}}{{= it.util.getProperty($property) }} !== undefined) {
     {{ $deps = $propertyDeps[$property]; }}
-    if ({{# def.checkPropertyDeps }}) {
+    if ({{# def.checkMissingProperty:$deps }}) {
+      {{# def.errorMissingProperty }}
       {{# def.error:'dependencies' }}
     } {{# def.elseIfValid }}
   }
 {{ } }}
+
+{{ it.errorPath = $currentErrorPath; }}
 
 
 {{ for (var $property in $schemaDeps) { }}

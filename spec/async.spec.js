@@ -275,6 +275,20 @@ describe('compileAsync method', function() {
         setTimeout(function() { callback(new Error('cant load')); });
       }
     });
+
+    it('if schema compilation throws some other exception', function (done) {
+      ajv.addKeyword('badkeyword', { compile: badCompile });
+      var schema = { badkeyword: true };
+      ajv.compileAsync(schema, function (err, validate) {
+        should.exist(err);
+        should.not.exist(validate);
+        done();
+      });
+
+      function badCompile(schema) {
+        throw new Error('cant compile keyword schema');
+      }
+    });
   });
 
 
