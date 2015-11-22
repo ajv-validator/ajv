@@ -249,4 +249,29 @@ describe('Ajv Options', function () {
       }
     });
   });
+
+
+  describe('v5', function() {
+    it('should define keywords "constant" and "contains"', function() {
+      testV5(Ajv({ v5: true }));
+      testV5(Ajv({ v5: true, allErrors: true }));
+
+      function testV5(ajv) {
+        var validate = ajv.compile({ constant: 2 });
+        validate(2) .should.equal(true);
+        validate(5) .should.equal(false);
+        validate('a') .should.equal(false);
+
+        var validate = ajv.compile({ contains: { minimum: 5 }});
+        validate([1,2,3,4]) .should.equal(false);
+        validate([3,4,5]) .should.equal(true);
+        validate([3,4,6]) .should.equal(true);
+
+        var validate = ajv.compile({ contains: { constant: 5 }});
+        validate([1,2,3,4]) .should.equal(false);
+        validate([3,4,6]) .should.equal(false);
+        validate([3,4,5]) .should.equal(true);
+      }
+    });
+  });
 });

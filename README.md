@@ -4,10 +4,13 @@ Currently the fastest JSON Schema validator for node.js and browser.
 
 It uses [doT templates](https://github.com/olado/doT) to generate super-fast validating functions.
 
-[![Build Status](https://travis-ci.org/epoberezkin/ajv.svg?branch=v2.0)](https://travis-ci.org/epoberezkin/ajv)
+[![Build Status](https://travis-ci.org/epoberezkin/ajv.svg)](https://travis-ci.org/epoberezkin/ajv)
 [![npm version](https://badge.fury.io/js/ajv.svg)](http://badge.fury.io/js/ajv)
 [![Code Climate](https://codeclimate.com/github/epoberezkin/ajv/badges/gpa.svg)](https://codeclimate.com/github/epoberezkin/ajv)
 [![Test Coverage](https://codeclimate.com/github/epoberezkin/ajv/badges/coverage.svg)](https://codeclimate.com/github/epoberezkin/ajv/coverage)
+
+
+NB: [Upgrading to version 2.0.0](https://github.com/epoberezkin/ajv/releases/tag/2.0.0).
 
 
 ## Features
@@ -21,10 +24,12 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
   - [validates schemas against meta-schema](#api-validateschema)
 - supports [browsers](#using-in-browser) and nodejs 0.10-5.0
 - [asynchronous loading](#asynchronous-compilation) of referenced schemas during compilation
+- "All errors" validation mode with [option allErrors](#options)
 - [error messages with parameters](#validation-errors) describing error reasons to allow creating custom error messages
 - i18n error messages support with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package
 - [filtering data](#filtering-data) from additional properties
-- BETA: [custom keywords](https://github.com/epoberezkin/ajv/tree/v2.0#defining-custom-keywords) supported starting from version [2.0.0](https://github.com/epoberezkin/ajv/tree/v2.0), `npm install ajv@^2.0.0-beta` to use it
+- NEW: [custom keywords](#defining-custom-keywords)
+- NEW: keywords `constant` and `contains` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
 
 Currently ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
 
@@ -243,7 +248,7 @@ console.log(validate([2,3,4])); // false
 console.log(validate([3,4,5])); // true, number 5 matches schema inside "contains"
 ```
 
-See the example of defining recursive macro keyword `deepProperties` in the [test](https://github.com/epoberezkin/ajv/blob/v2.0/spec/custom.spec.js#L240).
+See the example of defining recursive macro keyword `deepProperties` in the [test](https://github.com/epoberezkin/ajv/blob/master/spec/custom.spec.js#L151).
 
 
 ### Define keyword with "inline" compilation function
@@ -303,7 +308,7 @@ All custom keywords but macro keywords can create custom error messages.
 
 Validating and compiled keywords should define errors by assigning them to `.errors` property of validation function.
 
-Inline custom keyword should increase error counter `errors` and add error to `vErrors` array (it can be null). See [example range keyword](https://github.com/epoberezkin/ajv/blob/v2.0/spec/custom_rules/range_with_errors.jst).
+Inline custom keyword should increase error counter `errors` and add error to `vErrors` array (it can be null). See [example range keyword](https://github.com/epoberezkin/ajv/blob/master/spec/custom_rules/range_with_errors.jst).
 
 When inline keyword performes validation Ajv checks whether it created errors by comparing errors count before and after validation. To skip this check add option `errors` to keyword definition:
 
@@ -478,7 +483,7 @@ _validate_, _compile_, _macro_ and _inline_ are mutually exclusive, only one sho
 
 With _macro_ function _type_ must not be specified, the types that the keyword will be applied for will be determined by the final schema.
 
-See [Defining custom keywords](https://github.com/epoberezkin/ajv/tree/v2.0#defining-custom-keywords) for more details.
+See [Defining custom keywords](#defining-custom-keywords) for more details.
 
 
 ##### .errorsText([Array&lt;Object&gt; errors [, Object options]]) -&gt; String
@@ -509,9 +514,10 @@ Defaults:
   unicode:          true,
   beautify:         false,
   cache:            new Cache,
+  errorDataPath:    'object',
   jsonPointers:     false,
-  i18n:             false, // deprecated
   messages:         true
+  v5:               true
 }
 ```
 
@@ -530,9 +536,10 @@ Defaults:
 - _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.
 - _beautify_: format the generated function with [js-beautify](https://github.com/beautify-web/js-beautify) (the validating function is generated without line-breaks). `npm install js-beautify` to use this option. `true` or js-beautify options can be passed.
 - _cache_: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache [sacjs](https://github.com/epoberezkin/sacjs) can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods `put(key, value)`, `get(key)` and `del(key)`.
+- _errorDataPath_: set `dataPath` to point to 'object' (default) or to 'property' (default behavior in versions before 2.0) when validating keywords `required`, `additionalProperties` and `dependencies`.
 - _jsonPointers_: set `dataPath` propery of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
-- _i18n_: DEPRECATED. Support internationalization of error messages using [ajv-i18n](https://github.com/epoberezkin/ajv-i18n). See its repo for details.
-- _messages_: Include human-readable messages in errors. `true` by default. `messages: false` can be added when internationalization (options `i18n`) is used.
+- _messages_: Include human-readable messages in errors. `true` by default. `messages: false` can be added when custom messages are used (e.g. with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)).
+- _v5_: add keywords `constant` and `contains` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals)
 
 
 ## Validation errors
