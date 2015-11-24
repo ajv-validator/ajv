@@ -26,7 +26,7 @@ NB: [Upgrading to version 2.0.0](https://github.com/epoberezkin/ajv/releases/tag
 - [asynchronous loading](#asynchronous-compilation) of referenced schemas during compilation
 - "All errors" validation mode with [option allErrors](#options)
 - [error messages with parameters](#validation-errors) describing error reasons to allow creating custom error messages
-- i18n error messages support with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package
+- i18n error messages support with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package (version >= 1.0.0)
 - [filtering data](#filtering-data) from additional properties
 - NEW: [custom keywords](#defining-custom-keywords)
 - NEW: keywords `constant` and `contains` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)

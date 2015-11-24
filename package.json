@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
   "files": [
@@ -58,8 +58,5 @@
     "pre-commit": "^1.1.1",
     "require-globify": "^1.3.0",
     "watch": "^0.16.0"
-  },
-  "peerDependencies": {
-    "ajv-i18n": "^1.0.0"
   }
 }
