@@ -175,6 +175,72 @@ describe('resolve', function () {
     });
 
 
+    it('should avoid schema substitution when refs are inlined (issue #77)', function() {
+      var ajv = Ajv({ verbose: true });
+
+      var schemaMessage = {
+        $schema: "http://json-schema.org/draft-04/schema#",
+        id: "http://e.com/message.json#",
+        type: "object",
+        required: ["header"],
+        properties: {
+          header: {
+            allOf: [
+              { $ref: "header.json" },
+              { properties: { msgType: { "enum": [0] } } }
+            ]
+          }
+        }
+      };
+
+      // header schema
+      var schemaHeader = {
+        $schema: "http://json-schema.org/draft-04/schema#",
+        id: "http://e.com/header.json#",
+        type: "object",
+        properties: {
+          version: {
+            type: "integer",
+            maximum: 5
+          },
+          msgType: { type: "integer" }
+        },
+        required: ["version", "msgType"]
+      };
+
+      // a good message
+      var validMessage = {
+        header: {
+          version: 4,
+          msgType: 0
+        }
+      };
+
+      // a bad message
+      var invalidMessage = {
+        header: {
+          version: 6,
+          msgType: 0
+        }
+      };
+
+      // add schemas and get validator function
+      ajv.addSchema(schemaHeader);
+      ajv.addSchema(schemaMessage);
+      var v = ajv.getSchema('http://e.com/message.json#');
+
+      v(validMessage) .should.equal(true);
+      v.schema.id .should.equal('http://e.com/message.json#');
+
+      v(invalidMessage) .should.equal(false);
+      v.errors .should.have.length(1);
+      v.schema.id .should.equal('http://e.com/message.json#');
+
+      v(validMessage) .should.equal(true);
+      v.schema.id .should.equal('http://e.com/message.json#');
+    });
+
+
     function testSchemas(ajv, expectedInlined) {
       var v1 = ajv.getSchema('http://e.com/obj.json')
         , v2 = ajv.getSchema('http://e.com/obj1.json')

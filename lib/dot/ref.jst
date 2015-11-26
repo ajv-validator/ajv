@@ -44,15 +44,8 @@
       $it.schema = $refVal.schema;
       $it.schemaPath = '';
     }}
-    {{ var $code = it.validate($it); }}
-    {{? /validate\.schema/.test($code) }}
-      var rootSchema{{=$it.level}} = validate.schema;
-      validate.schema = {{=$refVal.code}};
-      {{= $code }}
-      validate.schema = rootSchema{{=$it.level}};
-    {{??}}
-      {{= $code }}
-    {{?}}
+    {{ var $code = it.validate($it).replace(/validate\.schema/g, $refVal.code); }}
+    {{= $code }}
     {{? $breakOnError}}
       if (valid{{=$it.level}}) {
     {{?}}
