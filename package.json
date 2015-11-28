@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
   "files": [
@@ -35,6 +35,7 @@
     "url": "https://github.com/epoberezkin/ajv/issues"
   },
   "homepage": "https://github.com/epoberezkin/ajv",
+  "tonicExampleFilename": ".tonic_example.js",
   "dependencies": {
     "json-stable-stringify": "^1.0.0"
   },
