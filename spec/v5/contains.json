@@ -1,0 +1,49 @@
+[
+  {
+    "description": "contains keyword requires the item matching schema to be present",
+    "schema": {
+        "contains": { "minimum": 5 }
+    },
+    "tests": [
+      {
+        "description": "array with item matching schema (5) is valid",
+        "data": [3, 4, 5],
+        "valid": true
+      },
+      {
+        "description": "array with item matching schema (6) is valid",
+        "data": [3, 4, 6],
+        "valid": true
+      },
+      {
+        "description": "array without item matching schema is invalid",
+        "data": [1, 2, 3, 4],
+        "valid": false
+      },
+      {
+        "skip": true,
+        "description": "not array is valid",
+        "data": {},
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "contains keyword with constant keyword requires a specific item to be present",
+    "schema": {
+        "contains": { "constant": 5 }
+    },
+    "tests": [
+      {
+        "description": "array with item 5 is valid",
+        "data": [3, 4, 5],
+        "valid": true
+      },
+      {
+        "description": "array without item 5 is invalid",
+        "data": [1, 2, 3, 4],
+        "valid": false
+      }
+    ]
+  }
+]

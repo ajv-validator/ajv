@@ -33,6 +33,11 @@
     , $removeAdditional = it.opts.removeAdditional
     , $checkAdditional = $noAdditional || $additionalIsSchema || $removeAdditional
     , $requiredProperties = it.util.toHash(it.schema.required || []);
+
+  if (it.opts.v5) {
+    var $pgProperties = it.schema.patternGroups || {}
+      , $pgPropertyKeys = Object.keys($pgProperties);
+  }
 }}
 
 
@@ -55,6 +60,11 @@ var valid{{=$it.level}} = true;
         {{? $pPropertyKeys.length }}
           {{~ $pPropertyKeys:$pProperty:$i }}
             || {{= it.usePattern($pProperty) }}.test(key{{=$lvl}})
+          {{~}}
+        {{?}}
+        {{? it.opts.v5 && $pgPropertyKeys && $pgPropertyKeys.length }}
+          {{~ $pgPropertyKeys:$pgProperty:$i }}
+            || {{= it.usePattern($pgProperty) }}.test(key{{=$lvl}})
           {{~}}
         {{?}}
       );
@@ -194,6 +204,69 @@ var valid{{=$it.level}} = true;
     {{# def.ifResultValid }}
   {{?}} {{ /* def.nonEmptySchema */ }}
 {{~}}
+
+
+{{? it.opts.v5 }}
+  {{~ $pgPropertyKeys:$pgProperty }}
+    {{
+      var $pgSchema = $pgProperties[$pgProperty]
+        , $sch = $pgSchema.schema;
+    }}
+
+    {{? {{# def.nonEmptySchema:$sch}} }}
+      {{
+        $it.schema = $sch;
+        $it.schemaPath = it.schemaPath + '.patternGroups' + it.util.getProperty($pgProperty);
+      }}
+
+      var pgPropCount{{=$lvl}} = 0;
+
+      for (var key{{=$lvl}} in {{=$data}}) {
+        if ({{= it.usePattern($pgProperty) }}.test(key{{=$lvl}})) {
+          pgPropCount{{=$lvl}}++;
+
+          {{
+            $it.errorPath = it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
+            var $passData = $data + '[key' + $lvl + ']';
+          }}
+
+          {{ var $code = it.validate($it); }}
+          {{# def.optimizeValidate }}
+
+          {{? $breakOnError }} if (!valid{{=$it.level}}) break; {{?}}
+        }
+        {{? $breakOnError }} else valid{{=$it.level}} = true; {{?}}
+      }
+
+      {{# def.ifResultValid }}
+
+      {{
+        var $pgMin = $pgSchema.minimum
+          , $pgMax = $pgSchema.maximum;
+      }}
+      {{? $pgMin !== undefined || $pgMax !== undefined }}
+        var {{=$valid}} = true;
+        {{? $pgMin !== undefined }}
+          {{ var $limit = $pgMin, $reason = 'minimum', $moreOrLess = 'less'; }}
+          {{=$valid}} = pgPropCount{{=$lvl}} >= {{=$pgMin}};
+          {{# def.checkError:'patternGroups' }}
+          {{? $pgMax !== undefined }}
+            else
+          {{?}}
+        {{?}}
+
+        {{? $pgMax !== undefined }}
+          {{ var $limit = $pgMax, $reason = 'maximum', $moreOrLess = 'more'; }}
+          {{=$valid}} = pgPropCount{{=$lvl}} <= {{=$pgMax}};
+          {{# def.checkError:'patternGroups' }}
+        {{?}}
+
+        {{# def.ifValid }}
+      {{?}}
+    {{?}} {{ /* def.nonEmptySchema */ }}
+  {{~}}
+{{?}}
+
 
 {{? $breakOnError }}
   {{= $closingBraces }}

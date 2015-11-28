@@ -29,7 +29,7 @@ NB: [Upgrading to version 2.0.0](https://github.com/epoberezkin/ajv/releases/tag
 - i18n error messages support with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package (version >= 1.0.0)
 - [filtering data](#filtering-data) from additional properties
 - NEW: [custom keywords](#defining-custom-keywords)
-- NEW: keywords `constant` and `contains` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
+- NEW: keywords `constant`, `contains` and `patternGroups` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
 
 Currently ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
 
@@ -539,7 +539,7 @@ Defaults:
 - _errorDataPath_: set `dataPath` to point to 'object' (default) or to 'property' (default behavior in versions before 2.0) when validating keywords `required`, `additionalProperties` and `dependencies`.
 - _jsonPointers_: set `dataPath` propery of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
 - _messages_: Include human-readable messages in errors. `true` by default. `messages: false` can be added when custom messages are used (e.g. with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)).
-- _v5_: add keywords `constant` and `contains` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals)
+- _v5_: add keywords `constant`, `contains` and `patternGroups` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals)
 
 
 ## Validation errors
@@ -566,6 +566,10 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - `maxItems`, `minItems`, `maxLength`, `minLength`, `maxProperties`, `minProperties` - property `limit` (number, the schema of the keyword).
 - `additionalItems` - property `limit` (the maximum number of allowed items in case when `items` keyword is an array of schemas and `additionalItems` is false).
 - `additionalProperties` - property `additionalProperty` (the property not used in `properties` and `patternProperties` keywords).
+- `patternGroups` (with v5 option) - properties:
+  - `pattern`
+  - `reason` ("minimum"/"maximum"),
+  - `limit` (max/min allowed number of properties matching number)
 - `dependencies` - properties:
   - `property` (dependent property),
   - `missingProperty` (required missing dependency - only the first one is reported currently)

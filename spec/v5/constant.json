@@ -1,0 +1,49 @@
+[
+  {
+    "description": "constant keyword requires the value to be equal to some constant",
+    "schema": { "constant": 2 },
+    "tests": [
+      {
+        "description": "same value is valid",
+        "data": 2,
+        "valid": true
+      },
+      {
+        "description": "another value is invalid",
+        "data": 5,
+        "valid": false
+      },
+      {
+        "description": "another type is invalid",
+        "data": "a",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "constant keyword requires the value to be equal to some object",
+    "schema": { "constant": { "foo": "bar", "baz": "bax" } },
+    "tests": [
+      {
+        "description": "same object is valid",
+        "data": { "foo": "bar", "baz": "bax" },
+        "valid": true
+      },
+      {
+        "description": "same object with different property order is valid",
+        "data": { "baz": "bax", "foo": "bar" },
+        "valid": true
+      },
+      {
+        "description": "another object is invalid",
+        "data": { "foo": "bar" },
+        "valid": false
+      },
+      {
+        "description": "another type is invalid",
+        "data": [ 1, 2 ],
+        "valid": false
+      }
+    ]
+  }
+]

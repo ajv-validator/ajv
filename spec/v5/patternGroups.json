@@ -1,0 +1,272 @@
+[
+  {
+    "description":
+      "patternGroups validates properties matching a regex (equivalent to the test from draft 4)",
+    "schema": {
+      "patternGroups": {
+        "f.*o": {
+          "schema": {"type": "integer"}
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a single valid match is valid",
+        "data": {"foo": 1},
+        "valid": true
+      },
+      {
+        "description": "multiple valid matches is valid",
+        "data": {"foo": 1, "foooooo" : 2},
+        "valid": true
+      },
+      {
+        "description": "a single invalid match is invalid",
+        "data": {"foo": "bar", "fooooo": 2},
+        "valid": false
+      },
+      {
+        "description": "multiple invalid matches is invalid",
+        "data": {"foo": "bar", "foooooo" : "baz"},
+        "valid": false
+      },
+      {
+        "description": "ignores non-objects",
+        "data": 12,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "multiple simultaneous patternGroups are validated (equivalent to the test from draft 4)",
+    "schema": {
+      "patternGroups": {
+        "a*": {
+          "schema": {"type": "integer"}
+        },
+        "aaa*": {
+          "schema": {"maximum": 20}
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a single valid match is valid",
+        "data": {"a": 21},
+        "valid": true
+      },
+      {
+        "description": "a simultaneous match is valid",
+        "data": {"aaaa": 18},
+        "valid": true
+      },
+      {
+        "description": "multiple matches is valid",
+        "data": {"a": 21, "aaaa": 18},
+        "valid": true
+      },
+      {
+        "description": "an invalid due to one is invalid",
+        "data": {"a": "bar"},
+        "valid": false
+      },
+      {
+        "description": "an invalid due to the other is invalid",
+        "data": {"aaaa": 31},
+        "valid": false
+      },
+      {
+        "description": "an invalid due to both is invalid",
+        "data": {"aaa": "foo", "aaaa": 31},
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "regexes in patternGroups are not anchored by default and are case sensitive (equivalent to the test from draft 4)",
+    "schema": {
+      "patternGroups": {
+        "[0-9]{2,}": {
+          "schema": { "type": "boolean" }
+        },
+        "X_": {
+          "schema": { "type": "string" }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "non recognized members are ignored",
+        "data": { "answer 1": "42" },
+        "valid": true
+      },
+      {
+        "description": "recognized members are accounted for",
+        "data": { "a31b": null },
+        "valid": false
+      },
+      {
+        "description": "regexes are case sensitive",
+        "data": { "a_x_3": 3 },
+        "valid": true
+      },
+      {
+        "description": "regexes are case sensitive, 2",
+        "data": { "a_X_3": 3 },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description":
+      "patternGroups validates that the number of properties matching a regex is within limit",
+    "schema": {
+      "patternGroups": {
+        "f.*o": {
+          "schema": {"type": "integer"},
+          "minimum": 1,
+          "maximum": 2
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a single valid match is valid",
+        "data": {"foo": 1},
+        "valid": true
+      },
+      {
+        "description": "2 valid matches are valid",
+        "data": {"foo": 1, "foooo" : 2},
+        "valid": true
+      },
+      {
+        "description": "no valid matches are invalid",
+        "data": {},
+        "valid": false
+      },
+      {
+        "description": "more than 2 valid matches are invalid",
+        "data": {"foo": 1, "foooo" : 2, "foooooo" : 3},
+        "valid": false
+      },
+      {
+        "description": "sinlge invalid match is invalid",
+        "data": {"foo": 1, "foooooo" : "baz"},
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "multiple simultaneous patternGroups are validated for number of matching properties",
+    "schema": {
+      "patternGroups": {
+        "a*": {
+          "schema": {"type": "integer"},
+          "minimum": 1
+        },
+        "aaa*": {
+          "schema": {"maximum": 20},
+          "maximum": 1
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a single first match is valid",
+        "data": {"a": 21},
+        "valid": true
+      },
+      {
+        "description": "no first match is invalid",
+        "data": {},
+        "valid": false
+      },
+      {
+        "description": "simultaneous match is valid",
+        "data": {"aaaa": 18},
+        "valid": true
+      },
+      {
+        "description": "multiple matches is valid",
+        "data": {"a": 21, "aaaa": 18},
+        "valid": true
+      },
+      {
+        "description": "two second matches are invalid",
+        "data": {"aaa": 17, "aaaa": 18},
+        "valid": false
+      },
+      {
+        "description": "invalid due to the first is invalid",
+        "data": {"a": "bar"},
+        "valid": false
+      },
+      {
+        "description": "invalid due to the second is invalid",
+        "data": {"a": 21, "aaaa": 31},
+        "valid": false
+      },
+      {
+        "description": "invalid due to both is invalid",
+        "data": {"a": "foo", "aaaa": 31},
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "properties, patternGroups, additionalProperties interaction (equivalent to the test from draft 4)",
+    "schema": {
+      "properties": {
+        "foo": {"type": "array", "maxItems": 3},
+        "bar": {"type": "array"}
+      },
+      "patternGroups": {
+        "f.o": { "schema": {"minItems": 2} }
+      },
+      "additionalProperties": {"type": "integer"}
+    },
+    "tests": [
+      {
+        "description": "property validates property",
+        "data": {"foo": [1, 2]},
+        "valid": true
+      },
+      {
+        "description": "property invalidates property",
+        "data": {"foo": [1, 2, 3, 4]},
+        "valid": false
+      },
+      {
+        "description": "patternGroups invalidates property",
+        "data": {"foo": []},
+        "valid": false
+      },
+      {
+        "description": "patternGroups validates nonproperty",
+        "data": {"fxo": [1, 2]},
+        "valid": true
+      },
+      {
+        "description": "patternGroups invalidates nonproperty",
+        "data": {"fxo": []},
+        "valid": false
+      },
+      {
+        "description": "additionalProperty ignores property",
+        "data": {"bar": []},
+        "valid": true
+      },
+      {
+        "description": "additionalProperty validates others",
+        "data": {"quux": 3},
+        "valid": true
+      },
+      {
+        "description": "additionalProperty invalidates others",
+        "data": {"quux": "foo"},
+        "valid": false
+      }
+    ]
+  }
+]
