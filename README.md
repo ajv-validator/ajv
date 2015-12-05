@@ -29,7 +29,7 @@ NB: [Upgrading to version 2.0.0](https://github.com/epoberezkin/ajv/releases/tag
 - i18n error messages support with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package (version >= 1.0.0)
 - [filtering data](#filtering-data) from additional properties
 - NEW: [custom keywords](#defining-custom-keywords)
-- NEW: keywords `constant`, `contains` and `patternGroups` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
+- NEW: keywords `constant`, `contains`, `patternGroups`, `formatMaximum`/`formatMinimum` and `exclusiveFormatMaximum`/`exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
 
 Currently ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
 
@@ -452,13 +452,15 @@ Remove added/cached schema. Even if schema is referenced by other schemas it can
 Schema can be removed using key passed to `addSchema`, it's full reference (id) or using actual schema object that will be stable-stringified to remove schema from cache.
 
 
-##### <a name="api-addformat"></a>.addFormat(String name, String|RegExp|Function format)
+##### <a name="api-addformat"></a>.addFormat(String name, String|RegExp|Function|Object format)
 
 Add custom format to validate strings. It can also be used to replace pre-defined formats for ajv instance.
 
 Strings are converted to RegExp.
 
 Function should return validation result as `true` or `false`.
+
+If object is passed it should have properties `validate` and `compare`. `validate` can be a string, RegExp or a function as described above. `compare` is a comparison function that accepts two strings and compares them according to the format meaning. This function is used with keywords `formatMaximum`/`formatMinimum` (from [v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) - `v5` option should be used). It should return `1` if the first value is bigger than the second value, `-1` if it is smaller and `0` if it is equal.
 
 Custom formats can be also added via `formats` option.
 
@@ -539,7 +541,7 @@ Defaults:
 - _errorDataPath_: set `dataPath` to point to 'object' (default) or to 'property' (default behavior in versions before 2.0) when validating keywords `required`, `additionalProperties` and `dependencies`.
 - _jsonPointers_: set `dataPath` propery of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
 - _messages_: Include human-readable messages in errors. `true` by default. `messages: false` can be added when custom messages are used (e.g. with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)).
-- _v5_: add keywords `constant`, `contains` and `patternGroups` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals)
+- _v5_: add keywords `constant`, `contains`, `patternGroups`, `formatMaximum`/`formatMinimum` and `exclusiveFormatMaximum`/`exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals)
 
 
 ## Validation errors

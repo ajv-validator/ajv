@@ -220,6 +220,6 @@
   required:        "{ missingProperty: '{{=$missingProperty}}' }",
   type:            "{ type: '{{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}' }",
   uniqueItems:     "{ i: i, j: j }",
-  custom:          "{ keyword: '$rule.keyword' }",
+  custom:          "{ keyword: '{{=$rule.keyword}}' }",
   patternGroups:   "{ reason: '{{=$reason}}', limit: {{=$limit}}, pattern: '{{=it.util.escapeQuotes($pgProperty)}}' }"
 } #}}

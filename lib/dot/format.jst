@@ -1,9 +1,17 @@
 {{# def.definitions }}
 {{# def.setup:'format' }}
 
-{{ var $format = it.formats[$schema]; }}
+{{
+  var $format = it.formats[$schema];
+  var $isObject = typeof $format == 'object'
+                  && !($format instanceof RegExp)
+                  && $format.validate;
+  if ($isObject) $format = $format.validate;
+}}
 
-{{## def.format: formats{{= it.util.getProperty($schema) }} #}}
+{{## def.format:
+  formats{{= it.util.getProperty($schema) }}{{? $isObject }}.validate{{?}}
+#}}
 
 {{## def.checkFormat:
   {{? typeof $format == 'function' }}
