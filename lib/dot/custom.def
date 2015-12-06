@@ -56,6 +56,8 @@ if (!{{# def.callRuleValidate }}) {
   {{? $inline }}
     {{? $rDef.errors }}
       {{# def.extendErrors:true }}
+    {{?? $rDef.errors === false}}
+      {{# def.error:'custom' }}
     {{??}}
       if ({{=$errs}} == errors) {
         {{# def.error:'custom' }}

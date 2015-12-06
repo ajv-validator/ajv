@@ -98,7 +98,7 @@ __Please note__: every time validation function or `ajv.validate` are called `er
 
 You can require ajv directly from the code you browserify - in this case ajv will be a part of your bundle.
 
-If you need to use ajv in several bundles you can create a separate browserified bundle using `bin/create-bundle` script (thanks to [siddo420](https://github.com/siddo420)).
+If you need to use ajv in several bundles you can create a separate browserified bundle using `npm run bundle` script (thanks to [siddo420](https://github.com/siddo420)).
 
 Then you need to load ajv in the browser:
 ```
@@ -117,7 +117,8 @@ Ajv was tested with these browsers:
 The following formats are supported for string validation with "format" keyword:
 
 - _date_: full-date from http://tools.ietf.org/html/rfc3339#section-5.6
-- _date-time_: date-time from the same source. Both `date` and `date-time` validate ranges in `full` mode and only regexp in `fast` mode (see [options](#options)).
+- _time_: time with optional time-zone.
+- _date-time_: date-time from the same source (time-zone is mandatory). `date`, `time` and `date-time` validate ranges in `full` mode and only regexp in `fast` mode (see [options](#options)).
 - _uri_: full uri with optional protocol.
 - _email_: email address.
 - _hostname_: host name acording to http://tools.ietf.org/html/rfc1034#section-3.5
@@ -159,7 +160,7 @@ Validation function will be called during data validation. It will be passed sch
 This way to define keywords is added as a way to quickly test your keyword and is not recommended because of worse performance than compiling schemas.
 
 
-Example. draft5 `constant` keyword (that is equivalent to `enum` keyword with one item):
+Example. `constant` keyword from version 5 proposals (that is equivalent to `enum` keyword with one item):
 
 ```
 ajv.addKeyword('constant', { validate: function (schema, data) {
@@ -178,6 +179,8 @@ var validate = ajv.compile(schema);
 console.log(validate({foo: 'bar'})); // true
 console.log(validate({foo: 'baz'})); // false
 ```
+
+`constant` keyword is already available in Ajv with option `v5: true`.
 
 
 ### Define keyword with "compilation" function
@@ -213,8 +216,10 @@ console.log(validate(4)); // false
 
 It is the most efficient approach (in cases when the keyword logic can be expressed with another JSON-schema) because it is usually easy to implement and there is no extra function call during validation.
 
+The disadvantage of macro keywords is that you won't receive any keyword related error message if it fails (and you can't define custom errors for them).
 
-`range` and `exclusiveRange` keywords from the previous example defined with macro:
+
+Example. `range` and `exclusiveRange` keywords from the previous example defined with macro:
 
 ```
 ajv.addKeyword('range', { macro: function (schema, parentSchema) {
@@ -227,7 +232,7 @@ ajv.addKeyword('range', { macro: function (schema, parentSchema) {
 } });
 ```
 
-Example draft5 `contains` keyword that requires that the array has at least one item matching schema (see https://github.com/json-schema/json-schema/wiki/contains-(v5-proposal)):
+Example. `contains` keyword from version 5 proposals that requires that the array has at least one item matching schema (see https://github.com/json-schema/json-schema/wiki/contains-(v5-proposal)):
 
 ```
 ajv.addKeyword('contains', { macro: function (schema) {
@@ -247,6 +252,8 @@ console.log(validate([1,2,3])); // false
 console.log(validate([2,3,4])); // false
 console.log(validate([3,4,5])); // true, number 5 matches schema inside "contains"
 ```
+
+`contains` keyword is already available in Ajv with option `v5: true`.
 
 See the example of defining recursive macro keyword `deepProperties` in the [test](https://github.com/epoberezkin/ajv/blob/master/spec/custom.spec.js#L151).
 
@@ -306,11 +313,11 @@ Property `statements` in the keyword definition should be set to `true` if the v
 
 All custom keywords but macro keywords can create custom error messages.
 
-Validating and compiled keywords should define errors by assigning them to `.errors` property of validation function.
+Validating and compiled keywords should define errors by assigning them to `.errors` property of the validation function.
 
 Inline custom keyword should increase error counter `errors` and add error to `vErrors` array (it can be null). See [example range keyword](https://github.com/epoberezkin/ajv/blob/master/spec/custom_rules/range_with_errors.jst).
 
-When inline keyword performes validation Ajv checks whether it created errors by comparing errors count before and after validation. To skip this check add option `errors` to keyword definition:
+When inline keyword performs validation Ajv checks whether it created errors by comparing errors count before and after validation. To skip this check add option `errors` (can be `true` or `false`) to keyword definition:
 
 ```
 ajv.addKeyword('range', {
@@ -330,7 +337,7 @@ If custom keyword doesn't create errors, the default error will be created in ca
 
 ## Asynchronous compilation
 
-Starting from  version 1.3 ajv supports asynchronous compilation when remote references are loaded using supplied function. See `compileAsync` method and `loadSchema` option.
+During asynchronous compilation remote references are loaded using supplied function. See `compileAsync` method and `loadSchema` option.
 
 Example:
 
@@ -390,7 +397,7 @@ Asyncronous version of `compile` method that loads missing remote schemas using 
 
 The function compiles schema and loads the first missing schema multiple times, until all missing schemas are loaded.
 
-See example in Asynchronous compilation.
+See example in [Asynchronous compilation](#asynchronous-compilation).
 
 
 ##### .validate(Object schema|String key|String ref, data) -&gt; Boolean
@@ -471,7 +478,7 @@ Add custom validation keyword to ajv instance.
 
 Keyword should be a valid JavaScript identifier.
 
-Keyword should be different from all standard JSON schema keywords and different from previously defined keywords. There is no way to redefine keywords or remove keyword definition from the instance.
+Keyword should be different from all standard JSON schema keywords and different from previously defined keywords. There is no way to redefine keywords or to remove keyword definition from the instance.
 
 Keyword definition is an object with the following properties:
 
