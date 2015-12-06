@@ -21,7 +21,6 @@
         "valid": false
       },
       {
-        "skip": true,
         "description": "not array is valid",
         "data": {},
         "valid": true
