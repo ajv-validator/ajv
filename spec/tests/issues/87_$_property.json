@@ -1,0 +1,17 @@
+[
+  {
+    "description": "$ in properties (#87)",
+    "schema": {
+      "properties": {
+        "$": { "type": "string" }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid",
+        "data": { "$": "foo" },
+        "valid": true
+      }
+    ]
+  }
+]
