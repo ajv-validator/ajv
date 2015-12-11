@@ -111,6 +111,7 @@
     {{?}}
     {{? it.opts.verbose }}
       , schema: {{# def._errorSchemas[_rule] }}
+      , parentSchema: validate.schema{{=it.schemaPath}}
       , data: {{=$data}}
     {{?}}
   }

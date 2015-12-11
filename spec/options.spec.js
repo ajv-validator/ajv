@@ -249,4 +249,27 @@ describe('Ajv Options', function () {
       }
     });
   });
+
+
+  describe('verbose', function() {
+    it('should add schema, parentSchema and data to errors with verbose option == true', function() {
+      testVerbose(Ajv({ verbose: true }));
+      testVerbose(Ajv({ verbose: true, allErrors: true }));
+
+      function testVerbose(ajv) {
+        var schema = { properties: { foo: { minimum: 5 } } };
+        var validate = ajv.compile(schema);
+
+        var data = { foo: 3 };
+        validate(data) .should.equal(false);
+        validate.errors .should.have.length(1);
+        var err = validate.errors[0];
+
+        should.equal(err.schema, 5);
+        err.parentSchema .should.eql({ minimum: 5 });
+        err.parentSchema .should.equal(schema.properties.foo); // by reference
+        err.data .should.equal(3);
+      }
+    });
+  });
 });
