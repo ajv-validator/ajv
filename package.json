@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
   "files": [
@@ -50,7 +50,7 @@
     "istanbul": "^0.3.17",
     "js-beautify": "^1.5.6",
     "jshint": "^2.8.0",
-    "json-schema-test": "^0.1.5",
+    "json-schema-test": "^0.1.6",
     "karma": "^0.13.3",
     "karma-chrome-launcher": "^0.2.0",
     "karma-mocha": "^0.2.0",

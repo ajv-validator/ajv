@@ -1,4 +1,5 @@
 {{# def.definitions }}
+{{# def.errors }}
 {{# def.setup:'oneOf' }}
 {{# def.setupNextLevel }}
 
@@ -37,10 +38,5 @@ var {{=$valid}} = false;
 if (!{{=$valid}}) {
   {{# def.error:'oneOf' }}
 } else {
-  errors = {{=$errs}};
-  if (vErrors !== null) {
-    if ({{=$errs}}) vErrors.length = {{=$errs}};
-    else vErrors = null;
-  }
-
+  {{# def.resetErrors }}
 {{? it.opts.allErrors }} } {{?}}

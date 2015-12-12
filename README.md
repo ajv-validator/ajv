@@ -28,8 +28,9 @@ NB: [Upgrading to version 2.0.0](https://github.com/epoberezkin/ajv/releases/tag
 - [error messages with parameters](#validation-errors) describing error reasons to allow creating custom error messages
 - i18n error messages support with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package (version >= 1.0.0)
 - [filtering data](#filtering-data) from additional properties
-- NEW: [custom keywords](#defining-custom-keywords)
-- NEW: keywords `constant`, `contains`, `patternGroups`, `formatMaximum`/`formatMinimum` and `exclusiveFormatMaximum`/`exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
+- [custom keywords](#defining-custom-keywords)
+- NEW: keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum`/`formatMinimum` and `exclusiveFormatMaximum`/`exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
+- NEW: [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#) for schemas using v5 keywords.
 
 Currently ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
 
@@ -433,6 +434,8 @@ Adds meta schema that can be used to validate other schemas. That function shoul
 
 There is no need to explicitly add draft 4 meta schema (http://json-schema.org/draft-04/schema and http://json-schema.org/schema) - it is added by default, unless option `meta` is set to `false`. You only need to use it if you have a changed meta-schema that you want to use to validate your schemas. See `validateSchema`.
 
+With option `v5: true` meta-schema that includes v5 keywords also added. It is available at https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json
+
 
 ##### <a name="api-validateschema"></a>.validateSchema(Object schema) -&gt; Boolean
 
@@ -440,9 +443,9 @@ Validates schema. This method should be used to validate schemas rather than `va
 
 By default this method is called automatically when the schema is added, so you rarely need to use it directly.
 
-If schema doesn't have `$schema` property it is validated against draft 4 meta-schema (option `meta` should not be false).
+If schema doesn't have `$schema` property it is validated against draft 4 meta-schema (option `meta` should not be false) or against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#) if option `v5` is true.
 
-If schema has `$schema` property then the schema with this id (should be previously added) is used to validate passed schema.
+If schema has `$schema` property then the schema with this id (that should be previously added) is used to validate passed schema.
 
 Errors will be available at `ajv.errors`.
 
@@ -548,7 +551,7 @@ Defaults:
 - _errorDataPath_: set `dataPath` to point to 'object' (default) or to 'property' (default behavior in versions before 2.0) when validating keywords `required`, `additionalProperties` and `dependencies`.
 - _jsonPointers_: set `dataPath` propery of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
 - _messages_: Include human-readable messages in errors. `true` by default. `messages: false` can be added when custom messages are used (e.g. with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)).
-- _v5_: add keywords `constant`, `contains`, `patternGroups`, `formatMaximum`/`formatMinimum` and `exclusiveFormatMaximum`/`exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals)
+- _v5_: add keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum`/`formatMinimum` and `exclusiveFormatMaximum`/`exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals). With this option added schemas without `$schema` property are validated against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#).
 
 
 ## Validation errors

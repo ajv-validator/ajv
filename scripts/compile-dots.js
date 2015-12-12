@@ -7,10 +7,10 @@ var glob = require('glob')
   , beautify = require('js-beautify').js_beautify;
 
 var defs = {};
-['definitions', 'custom', 'missing'].forEach(function (name) {
+['definitions', 'errors', 'custom', 'missing'].forEach(function (name) {
   defs[name] = fs.readFileSync(path.join(__dirname, '../lib/dot/' + name + '.def'));
 });
-var files = glob.sync('../lib/dot/*.jst', { cwd: __dirname });
+var files = glob.sync('../lib/dot/**/*.jst', { cwd: __dirname });
 
 var dotjsPath = path.join(__dirname, '../lib/dotjs');
 try { fs.mkdirSync(dotjsPath); } catch(e) {}
@@ -19,6 +19,7 @@ console.log('\n\nCompiling:');
 
 var FUNCTION_NAME = /function\s+anonymous\s*\(it[^)]*\)\s*{/;
 var OUT_EMPTY_STRING = /out\s*\+=\s*'\s*';/g;
+var ISTANBUL = /\'(istanbul[^']+)\';/g;
 
 files.forEach(function (f) {
   var keyword = path.basename(f, '.jst');
@@ -27,7 +28,8 @@ files.forEach(function (f) {
   var code = doT.compile(template, defs);
   code = code.toString()
              .replace(OUT_EMPTY_STRING, '')
-             .replace(FUNCTION_NAME, 'function generate_' + keyword + '(it) {');
+             .replace(FUNCTION_NAME, 'function generate_' + keyword + '(it) {')
+             .replace(ISTANBUL, '/* $1 */');
   code = "'use strict';\nmodule.exports = " + code;
   code = beautify(code, { indent_size: 2 }) + '\n';
   fs.writeFileSync(targetPath, code);

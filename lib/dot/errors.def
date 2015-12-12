@@ -1,0 +1,141 @@
+{{## def._error:_rule:
+  {{ 'istanbul ignore else'; }}
+  {{? it.createErrors !== false }}
+    {
+      keyword: '{{=_rule}}'
+      , dataPath: (dataPath || '') + {{= it.errorPath }}
+      , schemaPath: "{{=$schemaPath}}"
+      , params: {{# def._errorParams[_rule] }}
+      {{? it.opts.messages !== false }}
+        , message: {{# def._errorMessages[_rule] }}
+      {{?}}
+      {{? it.opts.verbose }}
+        , schema: {{# def._errorSchemas[_rule] }}
+        , parentSchema: validate.schema{{=it.schemaPath}}
+        , data: {{=$data}}
+      {{?}}
+    }
+  {{??}}
+    '{{=_rule}}'
+  {{?}}
+#}}
+
+
+{{## def.addError:_rule:
+  var err = {{# def._error:_rule }};
+  if (vErrors === null) vErrors = [err];
+  else vErrors.push(err);
+  errors++;
+#}}
+
+
+{{## def.error:_rule:
+  {{? !it.compositeRule && $breakOnError }}
+    validate.errors = [{{# def._error:_rule }}];
+    return false;
+  {{??}}
+    {{# def.addError:_rule }}
+  {{?}}
+#}}
+
+
+{{## def.checkError:_rule:
+  if (!{{=$valid}}) {
+    {{# def.error:_rule }}
+  }
+#}}
+
+
+{{## def.resetErrors:
+  errors = {{=$errs}};
+  if (vErrors !== null) {
+    if ({{=$errs}}) vErrors.length = {{=$errs}};
+    else vErrors = null;
+  }
+#}}
+
+
+{{## def._errorMessages = {
+  $ref:            "'can\\\'t resolve reference {{=it.util.escapeQuotes($schema)}}'",
+  additionalItems: "'should NOT have more than {{=$schema.length}} items'",
+  additionalProperties: "'should NOT have additional properties'",
+  anyOf:           "'should match some schema in anyOf'",
+  dependencies:    "'should have {{? $deps.length == 1 }}property {{= it.util.escapeQuotes($deps[0]) }}{{??}}properties {{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}} when property {{= it.util.escapeQuotes($property) }} is present'",
+  enum:            "'should be equal to one of values'",
+  format:          "'should match format {{=it.util.escapeQuotes($schema)}}'",
+  maximum:         "'should be {{=$op}} {{=$schema}}'",
+  minimum:         "'should be {{=$op}} {{=$schema}}'",
+  maxItems:        "'should NOT have more than {{=$schema}} items'",
+  minItems:        "'should NOT have less than {{=$schema}} items'",
+  maxLength:       "'should NOT be longer than {{=$schema}} characters'",
+  minLength:       "'should NOT be shorter than {{=$schema}} characters'",
+  maxProperties:   "'should NOT have more than {{=$schema}} properties'",
+  minProperties:   "'should NOT have less than {{=$schema}} properties'",
+  multipleOf:      "'should be multiple of {{=$schema}}'",
+  not:             "'should NOT be valid'",
+  oneOf:           "'should match exactly one schema in oneOf'",
+  pattern:         "'should match pattern \"{{=it.util.escapeQuotes($schema)}}\"'",
+  required:        "'{{? it.opts._errorDataPathProperty }}is a required property{{??}}should have required property \\'{{=$missingProperty}}\\'{{?}}'",
+  type:            "'should be {{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}'",
+  uniqueItems:     "'should NOT have duplicate items (items ## ' + j + ' and ' + i + ' are identical)'",
+  custom:          "'should pass \"{{=$rule.keyword}}\" keyword validation'",
+  patternGroups:   "'should NOT have {{=$moreOrLess}} than {{=$limit}} properties matching pattern \"{{=it.util.escapeQuotes($pgProperty)}}\"'",
+  switch:          "'should pass \"switch\" keyword validation'"
+} #}}
+
+
+{{## def._errorSchemas = {
+  $ref:            "{{=it.util.toQuotedString($schema)}}",
+  additionalItems: "false",
+  additionalProperties: "false",
+  anyOf:           "validate.schema{{=$schemaPath}}",
+  dependencies:    "validate.schema{{=$schemaPath}}",
+  enum:            "validate.schema{{=$schemaPath}}",
+  format:          "{{=it.util.toQuotedString($schema)}}",
+  maximum:         "{{=$schema}}",
+  minimum:         "{{=$schema}}",
+  maxItems:        "{{=$schema}}",
+  minItems:        "{{=$schema}}",
+  maxLength:       "{{=$schema}}",
+  minLength:       "{{=$schema}}",
+  maxProperties:   "{{=$schema}}",
+  minProperties:   "{{=$schema}}",
+  multipleOf:      "{{=$schema}}",
+  not:             "validate.schema{{=$schemaPath}}",
+  oneOf:           "validate.schema{{=$schemaPath}}",
+  pattern:         "{{=it.util.toQuotedString($schema)}}",
+  required:        "validate.schema{{=$schemaPath}}",
+  type:            "{{? $isArray }}['{{= $typeSchema.join(\"','\") }}']{{??}}'{{=$typeSchema}}'{{?}}",
+  uniqueItems:     "{{=$schema}}",
+  custom:          "validate.schema{{=$schemaPath}}",
+  patternGroups:   "validate.schema{{=$schemaPath}}",
+  switch:          "validate.schema{{=$schemaPath}}"
+} #}}
+
+
+{{## def._errorParams = {
+  $ref:            "{ ref: '{{=it.util.escapeQuotes($schema)}}' }",
+  additionalItems: "{ limit: {{=$schema.length}} }",
+  additionalProperties: "{ additionalProperty: '{{=$additionalProperty}}' }",
+  anyOf:           "{}",
+  dependencies:    "{ property: '{{= it.util.escapeQuotes($property) }}', missingProperty: '{{=$missingProperty}}', depsCount: {{=$deps.length}}, deps: '{{? $deps.length==1 }}{{= it.util.escapeQuotes($deps[0]) }}{{??}}{{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}}' }",
+  format:          "{ format: '{{=it.util.escapeQuotes($schema)}}' }",
+  maximum:         "{ comparison: '{{=$op}}', limit: {{=$schema}}, exclusive: {{=$exclusive}} }",
+  minimum:         "{ comparison: '{{=$op}}', limit: {{=$schema}}, exclusive: {{=$exclusive}} }",
+  maxItems:        "{ limit: {{=$schema}} }",
+  minItems:        "{ limit: {{=$schema}} }",
+  maxLength:       "{ limit: {{=$schema}} }",
+  minLength:       "{ limit: {{=$schema}} }",
+  maxProperties:   "{ limit: {{=$schema}} }",
+  minProperties:   "{ limit: {{=$schema}} }",
+  multipleOf:      "{ multipleOf: {{=$schema}} }",
+  not:             "{}",
+  oneOf:           "{}",
+  pattern:         "{ pattern: '{{=it.util.escapeQuotes($schema)}}' }",
+  required:        "{ missingProperty: '{{=$missingProperty}}' }",
+  type:            "{ type: '{{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}' }",
+  uniqueItems:     "{ i: i, j: j }",
+  custom:          "{ keyword: '{{=$rule.keyword}}' }",
+  patternGroups:   "{ reason: '{{=$reason}}', limit: {{=$limit}}, pattern: '{{=it.util.escapeQuotes($pgProperty)}}' }",
+  switch:          "{ caseIndex: {{=$caseIndex}} }"
+} #}}

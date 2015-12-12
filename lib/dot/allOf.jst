@@ -1,4 +1,5 @@
 {{# def.definitions }}
+{{# def.errors }}
 {{# def.setup:'allOf' }}
 {{# def.setupNextLevel }}
 
@@ -11,10 +12,7 @@
 
     {{= it.validate($it) }}
 
-    {{? $breakOnError }}
-      if (valid{{=$it.level}}) {
-      {{ $closingBraces += '}'; }}
-    {{?}}
+    {{# def.ifResultValid }}
   {{?}}
 {{~}}
 
