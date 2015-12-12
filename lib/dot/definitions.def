@@ -8,7 +8,7 @@
 
     var $data = 'data' + ($dataLvl || '')
       , $valid = 'valid' + $lvl
-      , $errs = 'errs' + $lvl;
+      , $errs = 'errs__' + $lvl;
   }}
 #}}
 

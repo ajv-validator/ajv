@@ -55,11 +55,10 @@ var {{=$ifPassed}};
 {{~ $schema:$sch:$caseIndex }}
   {{? $caseIndex && !$shouldContinue }}
     if (!{{=$ifPassed}}) {
-      {{# def.switchCase }}
     {{ $closingBraces+= '}'; }}
-  {{??}}
-    {{# def.switchCase }}
   {{?}}
+
+  {{# def.switchCase }}
   {{ $shouldContinue = $sch.continue }}
 {{~}}
 
