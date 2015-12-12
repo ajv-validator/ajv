@@ -17,7 +17,7 @@
 {{~}}
 
 {{? $breakOnError }}
-  {{= $closingBraces.slice(1) }}
+  {{= $closingBraces.slice(0,-1) }}
 {{?}}
 
 {{# def.cleanUp }}

@@ -13,7 +13,9 @@
 
   {{# def.setCompositeRule }}
 
+  {{ $it.createErrors = false; }}
   {{= it.validate($it) }}
+  {{ $it.createErrors = true; }}
 
   {{# def.resetCompositeRule }}
 

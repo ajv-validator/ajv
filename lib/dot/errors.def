@@ -1,18 +1,23 @@
 {{## def._error:_rule:
-  {
-    keyword: '{{=_rule}}'
-    , dataPath: (dataPath || '') + {{= it.errorPath }}
-    , schemaPath: "{{=$schemaPath}}"
-    , params: {{# def._errorParams[_rule] }}
-    {{? it.opts.messages !== false }}
-      , message: {{# def._errorMessages[_rule] }}
-    {{?}}
-    {{? it.opts.verbose }}
-      , schema: {{# def._errorSchemas[_rule] }}
-      , parentSchema: validate.schema{{=it.schemaPath}}
-      , data: {{=$data}}
-    {{?}}
-  }
+  {{ /* istanbul ignore else */ }}
+  {{? it.createErrors !== false }}
+    {
+      keyword: '{{=_rule}}'
+      , dataPath: (dataPath || '') + {{= it.errorPath }}
+      , schemaPath: "{{=$schemaPath}}"
+      , params: {{# def._errorParams[_rule] }}
+      {{? it.opts.messages !== false }}
+        , message: {{# def._errorMessages[_rule] }}
+      {{?}}
+      {{? it.opts.verbose }}
+        , schema: {{# def._errorSchemas[_rule] }}
+        , parentSchema: validate.schema{{=it.schemaPath}}
+        , data: {{=$data}}
+      {{?}}
+    }
+  {{??}}
+    '{{=_rule}}'
+  {{?}}
 #}}
 
 

@@ -1,7 +1,6 @@
 [
   {
-    "description":
-      "patternGroups validates properties matching a regex (equivalent to the test from draft 4)",
+    "description": "patternGroups validates properties matching a regex (equivalent to the test from draft 4)",
     "schema": {
       "patternGroups": {
         "f.*o": {

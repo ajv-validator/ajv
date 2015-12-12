@@ -1,0 +1,117 @@
+[
+  {
+    "description": "switch keyword validation",
+    "schema": {
+      "switch": [
+        { "if": { "minimum": 10 }, "then": { "multipleOf": 2 } }
+      ]
+    },
+    "tests": [
+      {
+        "description": ">= 10 and even is valid",
+        "data": 12,
+        "valid": true
+      },
+      {
+        "description": ">= 10 and odd is invalid",
+        "data": 11,
+        "valid": false
+      },
+      {
+        "description": "< 10 is valid",
+        "data": 9,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "switch keyword validation with single then clause",
+    "schema": {
+      "description": "positive integer <=1000 with one non-zero digit",
+      "switch": [
+        { "if": { "not": { "minimum": 1 } }, "then": false },
+        { "if": { "maximum": 10 }, "then": true },
+        { "if": { "maximum": 100 }, "then": { "multipleOf": 10 } },
+        { "if": { "maximum": 1000 }, "then": { "multipleOf": 100 } },
+        { "then": false }
+      ]
+    },
+    "tests": [
+      {
+        "description": "1 is valid",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "0 is invalid (no positive)",
+        "data": 0,
+        "valid": false
+      },
+      {
+        "description": "-1 is invalid (negative)",
+        "data": -1,
+        "valid": false
+      },
+      {
+        "description": "8 is valid",
+        "data": 8,
+        "valid": true
+      },
+      {
+        "description": "9 is valid",
+        "data": 9,
+        "valid": true
+      },
+      {
+        "description": "10 is valid",
+        "data": 10,
+        "valid": true
+      },
+      {
+        "description": "80 is valid",
+        "data": 80,
+        "valid": true
+      },
+      {
+        "description": "90 is valid",
+        "data": 90,
+        "valid": true
+      },
+      {
+        "description": "100 is valid",
+        "data": 100,
+        "valid": true
+      },
+      {
+        "description": "85 is invalid (not multiple of 10)",
+        "data": 85,
+        "valid": false
+      },
+      {
+        "description": "800 is valid",
+        "data": 800,
+        "valid": true
+      },
+      {
+        "description": "900 is valid",
+        "data": 900,
+        "valid": true
+      },
+      {
+        "description": "1000 is valid",
+        "data": 1000,
+        "valid": true
+      },
+      {
+        "description": "850 is invalid (not multiple of 100)",
+        "data": 850,
+        "valid": false
+      },
+      {
+        "description": "> 1000 is invalid",
+        "data": 1001,
+        "valid": false
+      }
+    ]
+  }
+]

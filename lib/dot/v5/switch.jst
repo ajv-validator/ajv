@@ -1,33 +1,32 @@
 {{# def.definitions }}
-{{# def.setup:'allOf' }}
+{{# def.setup:'switch' }}
 {{# def.setupNextLevel }}
 
 
 {{## def.validateIf:
   {{# def.setCompositeRule }}
-  {{ $breakOnError = true; }}
-  {{# def._validateSwitchRule:if }} }
-  {{ $breakOnError = !it.opts.allErrors; }}
+  {{ $it.createErrors = false; }}
+  {{# def._validateSwitchRule:if }}
+  {{ $it.createErrors = true; }}
   {{# def.resetCompositeRule }}
   {{=$ifPassed}} = valid{{=$it.level}};
 #}}
 
 {{## def.validateThen:
-  {{? typeof sch.then == 'boolean' }}
-    {{? sch.then === false }}
+  {{? typeof $sch.then == 'boolean' }}
+    {{? $sch.then === false }}
       {{# def.error:'switch' }}
     {{?}}
-    var valid{{=$it.level}} = {{= sch.then }};
+    var valid{{=$it.level}} = {{= $sch.then }};
   {{??}}
     {{# def._validateSwitchRule:then }}
   {{?}}
-  {{# def.ifResultValid }}
 #}}
 
 {{## def._validateSwitchRule:_clause:
   {{
     $it.schema = $sch._clause;
-    $it.schemaPath = $schemaPath + '[' + $i + ']._clause';
+    $it.schemaPath = $schemaPath + '[' + $caseIndex + ']._clause';
   }}
   {{= it.validate($it) }}
 #}}
@@ -40,7 +39,7 @@
       {{# def.validateThen }}  
     } else {
       {{# def.resetErrors }}
-    {{ $closingBraces += '}'; }}
+    }
   {{??}}
     {{# def.validateThen }}
   {{?}}
@@ -54,18 +53,18 @@
 var {{=$ifPassed}};
 
 {{~ $schema:$sch:$caseIndex }}
-  {{? caseIndex || !$shouldContinue }}
+  {{? $caseIndex && !$shouldContinue }}
     if (!{{=$ifPassed}}) {
       {{# def.switchCase }}
-    }
+    {{ $closingBraces+= '}'; }}
   {{??}}
     {{# def.switchCase }}
   {{?}}
   {{ $shouldContinue = $sch.continue }}
 {{~}}
 
-{{? $breakOnError }}
-  {{= $closingBraces.slice(1) }}
-{{?}}
+{{= $closingBraces }}
+
+var {{=$valid}} = valid{{=$it.level}};
 
 {{# def.cleanUp }}
