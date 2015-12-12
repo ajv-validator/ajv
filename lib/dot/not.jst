@@ -1,4 +1,5 @@
 {{# def.definitions }}
+{{# def.errors }}
 {{# def.setup:'not' }}
 {{# def.setupNextLevel }}
 
@@ -19,12 +20,7 @@
   if (valid{{=$it.level}}) {
     {{# def.error:'not' }}
   } else {
-    errors = {{=$errs}};
-    if (vErrors !== null) {
-      if ({{=$errs}}) vErrors.length = {{=$errs}};
-      else vErrors = null;
-    }
-
+    {{# def.resetErrors }}
   {{? it.opts.allErrors }} } {{?}}
 {{??}}
   {{# def.addError:'not' }}

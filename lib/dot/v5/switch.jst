@@ -1,0 +1,71 @@
+{{# def.definitions }}
+{{# def.setup:'allOf' }}
+{{# def.setupNextLevel }}
+
+
+{{## def.validateIf:
+  {{# def.setCompositeRule }}
+  {{ $breakOnError = true; }}
+  {{# def._validateSwitchRule:if }} }
+  {{ $breakOnError = !it.opts.allErrors; }}
+  {{# def.resetCompositeRule }}
+  {{=$ifPassed}} = valid{{=$it.level}};
+#}}
+
+{{## def.validateThen:
+  {{? typeof sch.then == 'boolean' }}
+    {{? sch.then === false }}
+      {{# def.error:'switch' }}
+    {{?}}
+    var valid{{=$it.level}} = {{= sch.then }};
+  {{??}}
+    {{# def._validateSwitchRule:then }}
+  {{?}}
+  {{# def.ifResultValid }}
+#}}
+
+{{## def._validateSwitchRule:_clause:
+  {{
+    $it.schema = $sch._clause;
+    $it.schemaPath = $schemaPath + '[' + $i + ']._clause';
+  }}
+  {{= it.validate($it) }}
+#}}
+
+{{## def.switchCase:
+  {{? $sch.if && {{# def.nonEmptySchema:$sch.if }} }}
+    var {{=$errs}} = errors;
+    {{# def.validateIf }}
+    if ({{=$ifPassed}}) {
+      {{# def.validateThen }}  
+    } else {
+      {{# def.resetErrors }}
+    {{ $closingBraces += '}'; }}
+  {{??}}
+    {{# def.validateThen }}
+  {{?}}
+#}}
+
+
+{{
+  var $ifPassed = 'ifPassed' + it.level
+    , $shouldContinue;
+}}
+var {{=$ifPassed}};
+
+{{~ $schema:$sch:$caseIndex }}
+  {{? caseIndex || !$shouldContinue }}
+    if (!{{=$ifPassed}}) {
+      {{# def.switchCase }}
+    }
+  {{??}}
+    {{# def.switchCase }}
+  {{?}}
+  {{ $shouldContinue = $sch.continue }}
+{{~}}
+
+{{? $breakOnError }}
+  {{= $closingBraces.slice(1) }}
+{{?}}
+
+{{# def.cleanUp }}

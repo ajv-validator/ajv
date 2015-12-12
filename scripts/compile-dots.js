@@ -7,10 +7,10 @@ var glob = require('glob')
   , beautify = require('js-beautify').js_beautify;
 
 var defs = {};
-['definitions', 'custom', 'missing'].forEach(function (name) {
+['definitions', 'errors', 'custom', 'missing'].forEach(function (name) {
   defs[name] = fs.readFileSync(path.join(__dirname, '../lib/dot/' + name + '.def'));
 });
-var files = glob.sync('../lib/dot/*.jst', { cwd: __dirname });
+var files = glob.sync('../lib/dot/**/*.jst', { cwd: __dirname });
 
 var dotjsPath = path.join(__dirname, '../lib/dotjs');
 try { fs.mkdirSync(dotjsPath); } catch(e) {}
