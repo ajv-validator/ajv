@@ -129,6 +129,14 @@ describe('Ajv Options', function () {
       should.throw(function() { ajv.addSchema({ type: 123 }, 'integer') });
     });
 
+    it('should validate v5 schema', function() {
+      var ajv = Ajv({ v5: true });
+      ajv.validateSchema({ contains: { minimum: 2 } }) .should.equal(true);
+      ajv.validateSchema({ contains: 2 }). should.equal(false);
+
+      var ajv = Ajv();
+      ajv.validateSchema({ contains: 2 }). should.equal(true);
+    });
   });
 
 
