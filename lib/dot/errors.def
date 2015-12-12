@@ -1,5 +1,5 @@
 {{## def._error:_rule:
-  {{ /* istanbul ignore else */ }}
+  {{ 'istanbul ignore else'; }}
   {{? it.createErrors !== false }}
     {
       keyword: '{{=_rule}}'
