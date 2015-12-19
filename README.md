@@ -128,8 +128,9 @@ The following formats are supported for string validation with "format" keyword:
 - _regex_: tests whether a string is a valid regular expression by passing it to RegExp constructor.
 - _uuid_: Universally Unique IDentifier according to [RFC4122](http://tools.ietf.org/html/rfc4122).
 - _json-pointer_: JSON-pointer according to [RFC6901](https://tools.ietf.org/html/rfc6901).
+- _relative-json-pointer_: relative JSON-pointer according to [this draft](http://tools.ietf.org/html/draft-luff-relative-json-pointer-00).
 
-There are two modes of format validation: `fast` and `full` that affect all formats but `ipv4` and `ipv6`. See [Options](#options) for details.
+There are two modes of format validation: `fast` and `full`. This mode affects formats `date`, `time`, `date-time`, `uri`, `email`, and `hostname`. See [Options](#options) for details.
 
 You can add additional formats and replace any of the formats above using [addFormat](#api-addformat) method.
 

@@ -109,21 +109,21 @@
     ]
   },
   {
-    "description": "validation of json-pointer strings",
+    "description": "validation of JSON-pointer strings",
     "schema": {"format": "json-pointer"},
     "tests": [
       {
-        "description": "a valid json-pointer",
+        "description": "a valid JSON-pointer",
         "data": "/foo/bar~0/baz~1/%a",
         "valid": true
       },
       {
-        "description": "a valid json-pointer with terminating /",
+        "description": "a valid JSON-pointer with terminating /",
         "data": "/foo/bar~0/baz~1/%a/",
         "valid": true
       },
       {
-        "description": "a valid json-pointer as uri fragment",
+        "description": "a valid JSON-pointer as uri fragment",
         "data": "#/foo/%25a",
         "valid": true
       },
@@ -138,18 +138,69 @@
         "valid": true
       },
       {
-        "description": "not valid json-pointer",
+        "description": "not a valid JSON-pointer (~ not escaped)",
         "data": "/foo/bar~",
         "valid": false
       },
       {
-        "description": "not valid json-pointer",
+        "description": "not a valid JSON-pointer (/ not escaped)",
         "data": "/foo//",
         "valid": false
       },
       {
-        "description": "not valid json-pointer as uri fragment",
+        "description": "not a valid JSON-pointer as uri fragment (% not URL-encoded)",
         "data": "#/foo/%a",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "validation of relative JSON-pointer strings",
+    "schema": {"format": "relative-json-pointer"},
+    "tests": [
+      {
+        "description": "a valid relative JSON-pointer",
+        "data": "1/foo/bar~0/baz~1/%a",
+        "valid": true
+      },
+      {
+        "description": "a valid relative JSON-pointer with terminating /",
+        "data": "1/foo/bar~0/baz~1/%a/",
+        "valid": true
+      },
+      {
+        "description": "a valid relative JSON-pointer with #",
+        "data": "2#",
+        "valid": true
+      },
+      {
+        "description": "parent reference is valid",
+        "data": "1",
+        "valid": true
+      },
+      {
+        "description": "empty string is invalid",
+        "data": "",
+        "valid": false
+      },
+      {
+        "description": "not a valid relative JSON-pointer (~ not escaped)",
+        "data": "1/foo/bar~",
+        "valid": false
+      },
+      {
+        "description": "not a valid relative JSON-pointer (/ not escaped)",
+        "data": "1/foo//",
+        "valid": false
+      },
+      {
+        "description": "not a valid relative JSON-pointer (leading 0)",
+        "data": "01/foo",
+        "valid": false
+      },
+      {
+        "description": "not a valid relative JSON-pointer with # (leading 0)",
+        "data": "02#",
         "valid": false
       }
     ]
