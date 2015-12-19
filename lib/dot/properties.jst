@@ -262,9 +262,13 @@ var valid{{=$it.level}} = true;
       }}
       {{? $pgMin !== undefined || $pgMax !== undefined }}
         var {{=$valid}} = true;
+
+        {{ var $currErrSchemaPath = $errSchemaPath; }}
+
         {{? $pgMin !== undefined }}
           {{ var $limit = $pgMin, $reason = 'minimum', $moreOrLess = 'less'; }}
           {{=$valid}} = pgPropCount{{=$lvl}} >= {{=$pgMin}};
+          {{ $errSchemaPath = it.errSchemaPath + '/patternGroups/minimum'; }}
           {{# def.checkError:'patternGroups' }}
           {{? $pgMax !== undefined }}
             else
@@ -274,8 +278,11 @@ var valid{{=$it.level}} = true;
         {{? $pgMax !== undefined }}
           {{ var $limit = $pgMax, $reason = 'maximum', $moreOrLess = 'more'; }}
           {{=$valid}} = pgPropCount{{=$lvl}} <= {{=$pgMax}};
+          {{ $errSchemaPath = it.errSchemaPath + '/patternGroups/maximum'; }}
           {{# def.checkError:'patternGroups' }}
         {{?}}
+
+        {{ $errSchemaPath = $currErrSchemaPath; }}
 
         {{# def.ifValid }}
       {{?}}

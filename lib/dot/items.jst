@@ -33,7 +33,12 @@ var {{=$valid}};
   {{ var $additionalItems = it.schema.additionalItems; }}
   {{? $additionalItems === false }}
     {{=$valid}} = {{=$data}}.length <= {{= $schema.length }};
+    {{
+      var $currErrSchemaPath = $errSchemaPath;
+      $errSchemaPath = it.errSchemaPath + '/additionalItems';      
+    }}
     {{# def.checkError:'additionalItems' }}
+    {{ $errSchemaPath = $currErrSchemaPath; }}
     {{# def.elseIfValid}}
   {{?}}
 

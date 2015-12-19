@@ -19,22 +19,26 @@ describe('Validation errors', function () {
   }
 
   it('error should include dataPath', function() {
-    testSchema1({
+    var schema = {
       properties: {
         foo: { type: 'number' }
       }
-    });
+    };
+
+    testSchema1(schema);
   });
 
   it('"refs" error should include dataPath', function() {
-    testSchema1({
+    var schema = {
       definitions: {
         num: { type: 'number' }
       },
       properties: {
         foo: { $ref: '#/definitions/num' }
       }
-    });
+    };
+
+    testSchema1(schema, '#/definitions/num');
   });
 
 
@@ -373,21 +377,46 @@ describe('Validation errors', function () {
   });
 
 
-  function testSchema1(schema) {
-    _testSchema1(ajv, schema);
-    _testSchema1(ajvJP, schema);
-    _testSchema1(fullAjv, schema)
+  it('should has correct schema path for additionalItems', function() {
+    var schema = {
+      type: 'array',
+      items: [ { type: 'integer' }, { type: 'integer' } ],
+      additionalItems: false
+    };
+
+    var data = [ 1, 2 ]
+      , invalidData = [ 1, 2, 3 ];
+
+    test(ajv);
+    test(ajvJP);
+    test(fullAjv);
+
+    function test(ajv) {
+      var validate = ajv.compile(schema);
+      shouldBeValid(validate, data);
+      shouldBeInvalid(validate, invalidData);
+      shouldBeError(validate.errors[0], 'additionalItems', '#/additionalItems', '', 'should NOT have more than 2 items');
+    }
+  });
+
+
+  function testSchema1(schema, schemaPathPrefix) {
+    _testSchema1(ajv, schema, schemaPathPrefix);
+    _testSchema1(ajvJP, schema, schemaPathPrefix);
+    _testSchema1(fullAjv, schema, schemaPathPrefix)
   }
 
 
-  function _testSchema1(ajv, schema) {
+  function _testSchema1(ajv, schema, schemaPathPrefix) {
+    var schPath = (schemaPathPrefix || '#/properties/foo') + '/type';
+
     var data = { foo: 1 }
       , invalidData = { foo: 'bar' };
 
     var validate = ajv.compile(schema);
     shouldBeValid(validate, data);
     shouldBeInvalid(validate, invalidData);
-    shouldBeError(validate.errors[0], 'type', '#/properties/foo/type', ajv.opts.jsonPointers ? '/foo' : '.foo');
+    shouldBeError(validate.errors[0], 'type', schPath, ajv.opts.jsonPointers ? '/foo' : '.foo');
   }
 
 
