@@ -107,5 +107,51 @@
         "valid": false
       }
     ]
+  },
+  {
+    "description": "validation of json-pointer strings",
+    "schema": {"format": "json-pointer"},
+    "tests": [
+      {
+        "description": "a valid json-pointer",
+        "data": "/foo/bar~0/baz~1/%a",
+        "valid": true
+      },
+      {
+        "description": "a valid json-pointer with terminating /",
+        "data": "/foo/bar~0/baz~1/%a/",
+        "valid": true
+      },
+      {
+        "description": "a valid json-pointer as uri fragment",
+        "data": "#/foo/%25a",
+        "valid": true
+      },
+      {
+        "description": "empty string is valid",
+        "data": "",
+        "valid": true
+      },
+      {
+        "description": "/ is valid",
+        "data": "/",
+        "valid": true
+      },
+      {
+        "description": "not valid json-pointer",
+        "data": "/foo/bar~",
+        "valid": false
+      },
+      {
+        "description": "not valid json-pointer",
+        "data": "/foo//",
+        "valid": false
+      },
+      {
+        "description": "not valid json-pointer as uri fragment",
+        "data": "#/foo/%a",
+        "valid": false
+      }
+    ]
   }
 ]

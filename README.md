@@ -29,7 +29,7 @@ NB: [Upgrading to version 2.0.0](https://github.com/epoberezkin/ajv/releases/tag
 - i18n error messages support with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package (version >= 1.0.0)
 - [filtering data](#filtering-data) from additional properties
 - [custom keywords](#defining-custom-keywords)
-- NEW: keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum`/`formatMinimum` and `exclusiveFormatMaximum`/`exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
+- NEW: keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
 - NEW: [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#) for schemas using v5 keywords.
 
 Currently ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
@@ -117,15 +117,17 @@ Ajv was tested with these browsers:
 
 The following formats are supported for string validation with "format" keyword:
 
-- _date_: full-date from http://tools.ietf.org/html/rfc3339#section-5.6
+- _date_: full-date according to [RFC3339](http://tools.ietf.org/html/rfc3339#section-5.6).
 - _time_: time with optional time-zone.
 - _date-time_: date-time from the same source (time-zone is mandatory). `date`, `time` and `date-time` validate ranges in `full` mode and only regexp in `fast` mode (see [options](#options)).
 - _uri_: full uri with optional protocol.
 - _email_: email address.
-- _hostname_: host name acording to http://tools.ietf.org/html/rfc1034#section-3.5
+- _hostname_: host name acording to [RFC1034](http://tools.ietf.org/html/rfc1034#section-3.5).
 - _ipv4_: IP address v4.
 - _ipv6_: IP address v6.
 - _regex_: tests whether a string is a valid regular expression by passing it to RegExp constructor.
+- _uuid_: Universally Unique IDentifier according to [RFC4122](http://tools.ietf.org/html/rfc4122).
+- _json-pointer_: JSON-pointer according to [RFC6901](https://tools.ietf.org/html/rfc6901).
 
 There are two modes of format validation: `fast` and `full` that affect all formats but `ipv4` and `ipv6`. See [Options](#options) for details.
 
@@ -434,7 +436,7 @@ Adds meta schema that can be used to validate other schemas. That function shoul
 
 There is no need to explicitly add draft 4 meta schema (http://json-schema.org/draft-04/schema and http://json-schema.org/schema) - it is added by default, unless option `meta` is set to `false`. You only need to use it if you have a changed meta-schema that you want to use to validate your schemas. See `validateSchema`.
 
-With option `v5: true` meta-schema that includes v5 keywords also added. It is available at https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json
+With option `v5: true` [meta-schema that includes v5 keywords](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json) also added.
 
 
 ##### <a name="api-validateschema"></a>.validateSchema(Object schema) -&gt; Boolean
@@ -551,7 +553,7 @@ Defaults:
 - _errorDataPath_: set `dataPath` to point to 'object' (default) or to 'property' (default behavior in versions before 2.0) when validating keywords `required`, `additionalProperties` and `dependencies`.
 - _jsonPointers_: set `dataPath` propery of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
 - _messages_: Include human-readable messages in errors. `true` by default. `messages: false` can be added when custom messages are used (e.g. with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)).
-- _v5_: add keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum`/`formatMinimum` and `exclusiveFormatMaximum`/`exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals). With this option added schemas without `$schema` property are validated against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#).
+- _v5_: add keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals). With this option added schemas without `$schema` property are validated against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#).
 
 
 ## Validation errors
@@ -565,7 +567,7 @@ Each error is an object with the following properties:
 
 - _keyword_: validation keyword. For user defined validation keywords it is set to `"custom"` (with the exception of macro keywords and unless keyword definition defines its own errors).
 - _dataPath_: the path to the part of the data that was validated. By default `dataPath` uses JavaScript property access notation (e.g., `".prop[1].subProp"`). When the option `jsonPointers` is true (see [Options](#options)) `dataPath` will be set using JSON pointer standard (e.g., `"/prop/1/subProp"`).
-- _schemaPath_: the path (JSON pointer) to the schema of the keyword that failed validation.
+- _schemaPath_: the path (JSON-pointer as a URI fragment) to the schema of the keyword that failed validation.
 - _params_: the object with the additional information about error that can be used to create custom error messages (e.g., using [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package). See below for parameters set by all keywords.
 - _message_: the standard error message (can be excluded with option `messages` set to false).
 - _schema_: the schema of the keyword (added with `verbose` option).
