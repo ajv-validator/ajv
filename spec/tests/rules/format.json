@@ -60,5 +60,52 @@
         "valid": false
       }
     ]
+  },
+  {
+    "description": "validation of time strings",
+    "schema": {"format": "time"},
+    "tests": [
+      {
+        "description": "a valid time",
+        "data": "12:34:56",
+        "valid": true
+      },
+      {
+        "description": "a valid time with milliseconds",
+        "data": "12:34:56.789",
+        "valid": true
+      },
+      {
+        "description": "a valid time with timezone",
+        "data": "12:34:56+01:00",
+        "valid": true
+      },
+      {
+        "description": "not valid time",
+        "data": "12.34.56",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "validation of uuid strings",
+    "schema": {"format": "uuid"},
+    "tests": [
+      {
+        "description": "a valid uuid",
+        "data": "f81d4fae-7dec-11d0-a765-00a0c91e6bf6",
+        "valid": true
+      },
+      {
+        "description": "a valid uuid with uri prefix",
+        "data": "urn:uuid:f81d4fae-7dec-11d0-a765-00a0c91e6bf6",
+        "valid": true
+      },
+      {
+        "description": "not valid uuid",
+        "data": "f81d4fae7dec11d0a76500a0c91e6bf6",
+        "valid": false
+      }
+    ]
   }
 ]
