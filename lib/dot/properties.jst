@@ -8,6 +8,7 @@
   {{ /* additionalProperties is schema */
     $it.schema = $aProperties;
     $it.schemaPath = it.schemaPath + '.additionalProperties';
+    $it.errSchemaPath = it.errSchemaPath + '/additionalProperties';
     $it.errorPath = it.opts._errorDataPathProperty
                     ? it.errorPath
                     : it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
@@ -87,7 +88,12 @@ var valid{{=$it.level}} = true;
           delete {{=$data}}[key{{=$lvl}}];
         {{??}}
           valid{{=$it.level}} = false;
+          {{
+            var $currErrSchemaPath = $errSchemaPath;
+            $errSchemaPath = it.errSchemaPath + '/additionalProperties';
+          }}
           {{# def.error:'additionalProperties' }}
+          {{ $errSchemaPath = $currErrSchemaPath; }}
           {{? $breakOnError }} break; {{?}}
         {{?}}
       {{?? $additionalIsSchema }}
@@ -132,6 +138,7 @@ var valid{{=$it.level}} = true;
         var $prop = it.util.getProperty($propertyKey)
           , $passData = $data + $prop;
         $it.schemaPath = $schemaPath + $prop;
+        $it.errSchemaPath = $errSchemaPath + '/' + it.util.escapeFragment($propertyKey);
         $it.errorPath = it.util.getPath(it.errorPath, $propertyKey, it.opts.jsonPointers);
       }}
 
@@ -152,12 +159,15 @@ var valid{{=$it.level}} = true;
           valid{{=$it.level}} = false;
           {{
             var $currentErrorPath = it.errorPath
+              , $currErrSchemaPath = $errSchemaPath
               , $missingProperty = it.util.escapeQuotes($propertyKey);
             if (it.opts._errorDataPathProperty) {
               it.errorPath = it.util.getPath($currentErrorPath, $propertyKey, it.opts.jsonPointers);
             }
+            $errSchemaPath = it.errSchemaPath + '/required';
           }}
           {{# def.error:'required' }}
+          {{ $errSchemaPath = $currErrSchemaPath; }}
           {{ it.errorPath = $currentErrorPath; }}
         } else {
       {{??}}
@@ -185,6 +195,8 @@ var valid{{=$it.level}} = true;
     {{
       $it.schema = $sch;
       $it.schemaPath = it.schemaPath + '.patternProperties' + it.util.getProperty($pProperty);
+      $it.errSchemaPath = it.errSchemaPath + '/patternProperties/'
+                                           + it.util.escapeFragment($pProperty);
     }}
 
     for (var key{{=$lvl}} in {{=$data}}) {
@@ -217,7 +229,10 @@ var valid{{=$it.level}} = true;
     {{? {{# def.nonEmptySchema:$sch}} }}
       {{
         $it.schema = $sch;
-        $it.schemaPath = it.schemaPath + '.patternGroups' + it.util.getProperty($pgProperty);
+        $it.schemaPath = it.schemaPath + '.patternGroups' + it.util.getProperty($pgProperty) + '.schema';
+        $it.errSchemaPath = it.errSchemaPath + '/patternGroups/'
+                                             + it.util.escapeFragment($pgProperty)
+                                             + '/schema';
       }}
 
       var pgPropCount{{=$lvl}} = 0;
@@ -247,9 +262,13 @@ var valid{{=$it.level}} = true;
       }}
       {{? $pgMin !== undefined || $pgMax !== undefined }}
         var {{=$valid}} = true;
+
+        {{ var $currErrSchemaPath = $errSchemaPath; }}
+
         {{? $pgMin !== undefined }}
           {{ var $limit = $pgMin, $reason = 'minimum', $moreOrLess = 'less'; }}
           {{=$valid}} = pgPropCount{{=$lvl}} >= {{=$pgMin}};
+          {{ $errSchemaPath = it.errSchemaPath + '/patternGroups/minimum'; }}
           {{# def.checkError:'patternGroups' }}
           {{? $pgMax !== undefined }}
             else
@@ -259,8 +278,11 @@ var valid{{=$it.level}} = true;
         {{? $pgMax !== undefined }}
           {{ var $limit = $pgMax, $reason = 'maximum', $moreOrLess = 'more'; }}
           {{=$valid}} = pgPropCount{{=$lvl}} <= {{=$pgMax}};
+          {{ $errSchemaPath = it.errSchemaPath + '/patternGroups/maximum'; }}
           {{# def.checkError:'patternGroups' }}
         {{?}}
+
+        {{ $errSchemaPath = $currErrSchemaPath; }}
 
         {{# def.ifValid }}
       {{?}}

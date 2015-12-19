@@ -4,6 +4,7 @@
       , $dataLvl = it.dataLevel
       , $schema = it.schema[_keyword]
       , $schemaPath = it.schemaPath + '.' + _keyword
+      , $errSchemaPath = it.errSchemaPath + '/' + _keyword
       , $breakOnError = !it.opts.allErrors;
 
     var $data = 'data' + ($dataLvl || '')

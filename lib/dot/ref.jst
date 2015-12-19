@@ -44,6 +44,7 @@
     {{
       $it.schema = $refVal.schema;
       $it.schemaPath = '';
+      $it.errSchemaPath = $schema;
     }}
     {{ var $code = it.validate($it).replace(/validate\.schema/g, $refVal.code); }}
     {{= $code }}

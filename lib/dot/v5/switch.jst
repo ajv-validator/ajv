@@ -27,6 +27,7 @@
   {{
     $it.schema = $sch._clause;
     $it.schemaPath = $schemaPath + '[' + $caseIndex + ']._clause';
+    $it.errSchemaPath = $errSchemaPath + '/' + $caseIndex + '/_clause';
   }}
   {{= it.validate($it) }}
 #}}
