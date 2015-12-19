@@ -18,6 +18,7 @@
     {{
       $it.schema = $sch;
       $it.schemaPath = $schemaPath + '[' + $i + ']';
+      $it.errSchemaPath = $errSchemaPath + '/' + $i;
     }}
 
     {{= it.validate($it) }}

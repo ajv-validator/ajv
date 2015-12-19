@@ -45,6 +45,7 @@ var {{=$valid}};
         {{
           $it.schema = $sch;
           $it.schemaPath = $schemaPath + '[' + $i + ']';
+          $it.errSchemaPath = $errSchemaPath + '/' + $i;
           $it.errorPath = it.util.getPathExpr(it.errorPath, $i, it.opts.jsonPointers, true);
           var $passData = $data + '[' + $i + ']';
         }}
@@ -61,6 +62,7 @@ var {{=$valid}};
     {{
       $it.schema = $additionalItems;
       $it.schemaPath = it.schemaPath + '.additionalItems';
+      $it.errSchemaPath = it.errSchemaPath + '/additionalItems';
     }}
     valid{{=$it.level}} = true;
 
@@ -76,6 +78,7 @@ var {{=$valid}};
   {{
     $it.schema = $schema;
     $it.schemaPath = $schemaPath;
+    $it.errSchemaPath = $errSchemaPath;
   }}
   {{# def.validateItems: 0 }}
   {{# def.ifResultValid }}

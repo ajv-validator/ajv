@@ -3,6 +3,7 @@
     , $ruleValidate = it.useCustomRule($rule, $schema, it.schema, it)
     , $ruleErrs = $ruleValidate.code + '.errors'
     , $schemaPath = it.schemaPath + '.' + $rule.keyword
+    , $errSchemaPath = it.errSchemaPath + '/' + $rule.keyword
     , $errs = 'errs' + $lvl
     , $i = 'i' + $lvl
     , $ruleErr = 'ruleErr' + $lvl

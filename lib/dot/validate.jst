@@ -78,7 +78,10 @@
       {{? $typeSchema && $typeSchema === $rulesGroup.type }}
         {{ var $typeChecked = true; }}
         else {
-          {{ var $schemaPath = it.schemaPath + '.type'; }}
+          {{
+            var $schemaPath = it.schemaPath + '.type'
+              , $errSchemaPath = it.errSchemaPath + '/type';
+          }}
           {{# def.error:'type' }}
         }
       {{?}}
@@ -94,6 +97,7 @@
 {{? $typeSchema && !$typeChecked  }}
   {{
     var $schemaPath = it.schemaPath + '.type'
+      , $errSchemaPath = it.errSchemaPath + '/type'
       , $isArray = Array.isArray($typeSchema)
       , $method = $isArray ? 'checkDataTypes' : 'checkDataType';
   }}
