@@ -21,6 +21,8 @@
     it.rootId = it.resolve.fullPath(it.root.schema.id);
     it.baseId = it.baseId || it.rootId;
     delete it.isTop;
+
+    if (it.opts.v5) it.dataPathArr = [undefined];
   }}
 
   validate = function (data, dataPath) {

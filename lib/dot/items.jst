@@ -9,6 +9,7 @@
     {{
       $it.errorPath = it.util.getPathExpr(it.errorPath, 'i' + $lvl, it.opts.jsonPointers, true);
       var $passData = $data + '[i' + $lvl + ']';
+      if (it.opts.v5) $it.dataPathArr[$dataNxt] = 'i' + $lvl;
     }}
 
     {{ var $code = it.validate($it); }}
@@ -53,6 +54,7 @@ var {{=$valid}};
           $it.errSchemaPath = $errSchemaPath + '/' + $i;
           $it.errorPath = it.util.getPathExpr(it.errorPath, $i, it.opts.jsonPointers, true);
           var $passData = $data + '[' + $i + ']';
+          if (it.opts.v5) $it.dataPathArr[$dataNxt] = $i;
         }}
 
         {{ var $code = it.validate($it); }}

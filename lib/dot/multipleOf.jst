@@ -2,7 +2,15 @@
 {{# def.errors }}
 {{# def.setup:'multipleOf' }}
 
-var division{{=$lvl}} = {{=$data}} / {{=$schema}};
-if ({{=$data}} / {{=$schema}} !== parseInt(division{{=$lvl}})) {
+{{
+  var $isData = it.opts.v5 && $schema.$data;
+  var $divider = $isData
+                  ? it.util.getData($schema.$data, $dataLvl, it.dataPathArr)
+                  : $schema;
+}}
+
+var division{{=$lvl}};
+if ({{?$isData}} typeof {{=$divider}} != 'number' || {{?}}
+    (division{{=$lvl}} = {{=$data}} / {{=$divider}}) !== parseInt(division{{=$lvl}})) {
   {{# def.error:'multipleOf' }}
 } {{? $breakOnError }} else { {{?}}

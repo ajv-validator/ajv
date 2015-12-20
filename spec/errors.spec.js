@@ -95,6 +95,54 @@ describe('Validation errors', function () {
   });
 
 
+  describe('errors when "additionalProperties" is schema', function() {
+    it('should include property in dataPath with option errorDataPath="property"', function() {
+      createInstances('property');
+      testAdditionalIsSchema('property');
+    });
+
+    it('should NOT include property in dataPath WITHOUT option errorDataPath', function() {
+      testAdditionalIsSchema();
+    });
+
+    function testAdditionalIsSchema(errorDataPath) {
+      var schema = {
+        properties: {
+          foo: { type: 'integer' },
+          bar: { type: 'integer' }
+        },
+        additionalProperties: {
+          type: 'object',
+          properties: {
+            quux: { type: 'string' } 
+          }
+        }
+      };
+
+      var data = { foo: 1, bar: 2, baz: { quux: 'abc' } }
+        , invalidData = { foo: 1, bar: 2, baz: { quux: 3 }, boo: { quux: 4 } };
+
+      var schPath = '#/additionalProperties/properties/quux/type';
+
+      var validate = ajv.compile(schema);
+      shouldBeValid(validate, data);
+      shouldBeInvalid(validate, invalidData);
+      shouldBeError(validate.errors[0], 'type', schPath, "['baz'].quux", 'should be string', { type: 'string' });
+
+      var validateJP = ajvJP.compile(schema);
+      shouldBeValid(validateJP, data);
+      shouldBeInvalid(validateJP, invalidData);
+      shouldBeError(validateJP.errors[0], 'type', schPath, "/baz/quux", 'should be string', { type: 'string' });
+
+      var fullValidate = fullAjv.compile(schema);
+      shouldBeValid(fullValidate, data);
+      shouldBeInvalid(fullValidate, invalidData, 2);
+      shouldBeError(fullValidate.errors[0], 'type', schPath, '/baz/quux', 'should be string', { type: 'string' });
+      shouldBeError(fullValidate.errors[1], 'type', schPath, '/boo/quux', 'should be string', { type: 'string' });
+    }
+  });
+
+
   describe('"required" errors', function() {
     it('should include missing property in dataPath with option errorDataPath="property"', function() {
       createInstances('property');

@@ -1,0 +1,169 @@
+[
+  {
+    "description": "one property is multiple of another",
+    "schema": {
+      "properties": {
+        "divider": { "type": "number" },
+        "multiple": { "multipleOf": { "$data": "1/divider" } }
+      }
+    },
+    "tests": [
+      {
+        "description": "int by int valid",
+        "data": {
+          "divider": 3,
+          "multiple": 12
+        },
+        "valid": true
+      },
+      {
+        "description": "float by float valid",
+        "data": {
+          "divider": 2.5,
+          "multiple": 7.5
+        },
+        "valid": true
+      },
+      {
+        "description": "int by int invalid",
+        "data": {
+          "divider": 3,
+          "multiple": 10
+        },
+        "valid": false
+      },
+      {
+        "description": "float by float invalid",
+        "data": {
+          "divider": 2.5,
+          "multiple": 8
+        },
+        "valid": false
+      },
+      {
+        "description": "ignores non-numbers",
+        "data": {
+          "divider": 2.5,
+          "multiple": "not a number"
+        },
+        "valid": true
+      },
+      {
+        "description": "fails if schema for multipleOf is not a number",
+        "data": {
+          "divider": "2.5",
+          "multiple": 10
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "one property is multiple of another property with escaped characters",
+    "schema": {
+      "properties": {
+        "/divider~": { "type": "number" },
+        "/multiple~": { "multipleOf": { "$data": "1/~1divider~0" } }
+      }
+    },
+    "tests": [
+      {
+        "description": "int by int valid",
+        "data": {
+          "/divider~": 3,
+          "/multiple~": 12
+        },
+        "valid": true
+      },
+      {
+        "description": "int by int invalid",
+        "data": {
+          "/divider~": 3,
+          "/multiple~": 10
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "one subproperty is multiple of another",
+    "schema": {
+      "properties": {
+        "divider": {
+          "properties": {
+            "value": { "type": "number" }
+          }
+        },
+        "multiple": {
+          "properties": {
+            "value": { "multipleOf": { "$data": "2/divider/value" } }
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "int by int valid",
+        "data": {
+          "divider": { "value": 3 },
+          "multiple": { "value": 12 }
+        },
+        "valid": true
+      },
+      {
+        "description": "int by int invalid",
+        "data": {
+          "divider": { "value": 3 },
+          "multiple": { "value": 10 }
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "item is a multiple of its index",
+    "schema": {
+      "items": [ {} ],
+      "additionalItems": {
+        "multipleOf": { "$data": "0#" }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid array",
+        "data": ["anything", 1, 4, 12, 8, 10],
+        "valid": true
+      },
+      {
+        "description": "invalid array (3 is not a multiple of 2)",
+        "data": ["anything", 1, 3],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "item property is a multiple of item index",
+    "schema": {
+      "items": [ {} ],
+      "additionalItems": {
+        "properties": {
+          "value": {
+            "multipleOf": { "$data": "1#" }
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid array",
+        "data": ["anything", {"value": 1}, {"value": 4}, {"value": 12}],
+        "valid": true
+      },
+      {
+        "description": "invalid array (3 is not a multiple of 2)",
+        "data": ["anything", {"value": 1}, {"value": 3}],
+        "valid": false
+      }
+    ]
+  }
+]
