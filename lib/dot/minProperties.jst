@@ -2,6 +2,8 @@
 {{# def.errors }}
 {{# def.setup:'minProperties' }}
 
-if (Object.keys({{=$data}}).length < {{=$schema}}) {
+{{# def.$data }}
+
+if ({{# def.$dataNotType:'number' }} Object.keys({{=$data}}).length < {{=$schemaValue}}) {
   {{# def.error:'minProperties' }}
 } {{? $breakOnError }} else { {{?}}

@@ -1,0 +1,53 @@
+[
+  {
+    "description": "string length is <= than another property",
+    "schema": {
+      "properties": {
+        "maximumLength": {},
+        "string": { "maxLength": { "$data": "1/maximumLength" } }
+      }
+    },
+    "tests": [
+      {
+        "description": "shorter is valid",
+        "data": {
+          "maximumLength": 2,
+          "string": "f"
+        },
+        "valid": true
+      },
+      {
+        "description": "exact length is valid",
+        "data": {
+          "maximumLength": 2,
+          "string": "fo"
+        },
+        "valid": true
+      },
+      {
+        "description": "too long is invalid",
+        "data": {
+          "maximumLength": 2,
+          "string": "foo"
+        },
+        "valid": false
+      },
+      {
+        "description": "ignores non-strings",
+        "data": {
+          "maximumLength": 2,
+          "string": 100
+        },
+        "valid": true
+      },
+      {
+        "description": "fails if value of maxLength is not a number",
+        "data": {
+          "maximumLength": "2",
+          "string": "f"
+        },
+        "valid": false
+      }
+    ]
+  }
+]

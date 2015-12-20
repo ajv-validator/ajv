@@ -2,6 +2,8 @@
 {{# def.errors }}
 {{# def.setup:'maxProperties' }}
 
-if (Object.keys({{=$data}}).length > {{=$schema}}) {
+{{# def.$data }}
+
+if ({{# def.$dataNotType:'number' }} Object.keys({{=$data}}).length > {{=$schemaValue}}) {
   {{# def.error:'maxProperties' }}
 } {{? $breakOnError }} else { {{?}}

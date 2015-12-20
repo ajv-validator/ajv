@@ -2,6 +2,8 @@
 {{# def.errors }}
 {{# def.setup:'minLength' }}
 
-if ({{# def.strLength }} < {{=$schema}}) {
+{{# def.$data }}
+
+if ({{# def.$dataNotType:'number' }} {{# def.strLength }} < {{=$schemaValue}}) {
   {{# def.error:'minLength' }}
 } {{? $breakOnError }} else { {{?}}

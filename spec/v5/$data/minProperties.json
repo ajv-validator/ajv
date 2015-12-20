@@ -1,0 +1,53 @@
+[
+  {
+    "description": "number of object properties is >= than another property",
+    "schema": {
+      "properties": {
+        "minKeys": {},
+        "object": { "minProperties": { "$data": "1/minKeys" } }
+      }
+    },
+    "tests": [
+      {
+        "description": "longer is valid",
+        "data": {
+          "minKeys": 2,
+          "object": {"foo": 1, "bar": 2, "baz": 3}
+        },
+        "valid": true
+      },
+      {
+        "description": "exact length is valid",
+        "data": {
+          "minKeys": 2,
+          "object": {"foo": 1, "bar": 2}
+        },
+        "valid": true
+      },
+      {
+        "description": "too short is invalid",
+        "data": {
+          "minKeys": 2,
+          "object": {"foo": 1}
+        },
+        "valid": false
+      },
+      {
+        "description": "ignores non-objects",
+        "data": {
+          "minKeys": 2,
+          "object": "foobar"
+        },
+        "valid": true
+      },
+      {
+        "description": "fails if value of minProperties is not a number",
+        "data": {
+          "minKeys": "2",
+          "object": {"foo": 1, "bar": 2}
+        },
+        "valid": false
+      }
+    ]
+  }
+]

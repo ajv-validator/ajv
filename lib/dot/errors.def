@@ -55,6 +55,9 @@
 #}}
 
 
+{{## def.concatSchema: {{?$isData}}' + {{=$schemaValue}} + '{{??}}{{=$schema}}{{?}} #}}
+{{## def.appendSchema: {{?$isData}}' + {{=$schemaValue}}{{??}}{{=$schema}}'{{?}} #}}
+
 {{## def._errorMessages = {
   $ref:            "'can\\\'t resolve reference {{=it.util.escapeQuotes($schema)}}'",
   additionalItems: "'should NOT have more than {{=$schema.length}} items'",
@@ -65,13 +68,13 @@
   format:          "'should match format {{=it.util.escapeQuotes($schema)}}'",
   maximum:         "'should be {{=$op}} {{=$schema}}'",
   minimum:         "'should be {{=$op}} {{=$schema}}'",
-  maxItems:        "'should NOT have more than {{=$schema}} items'",
-  minItems:        "'should NOT have less than {{=$schema}} items'",
-  maxLength:       "'should NOT be longer than {{=$schema}} characters'",
-  minLength:       "'should NOT be shorter than {{=$schema}} characters'",
-  maxProperties:   "'should NOT have more than {{=$schema}} properties'",
-  minProperties:   "'should NOT have less than {{=$schema}} properties'",
-  multipleOf:      "'should be multiple of {{?$isData}}' + {{=$divider}}{{??}}{{=$divider}}'{{?}}",
+  maxItems:        "'should NOT have more than {{#def.concatSchema}} items'",
+  minItems:        "'should NOT have less than {{#def.concatSchema}} items'",
+  maxLength:       "'should NOT be longer than {{#def.concatSchema}} characters'",
+  minLength:       "'should NOT be shorter than {{#def.concatSchema}} characters'",
+  maxProperties:   "'should NOT have more than {{#def.concatSchema}} properties'",
+  minProperties:   "'should NOT have less than {{#def.concatSchema}} properties'",
+  multipleOf:      "'should be multiple of {{#def.appendSchema}}",
   not:             "'should NOT be valid'",
   oneOf:           "'should match exactly one schema in oneOf'",
   pattern:         "'should match pattern \"{{=it.util.escapeQuotes($schema)}}\"'",
@@ -84,6 +87,8 @@
 } #}}
 
 
+{{## def.schemaRefOrVal: {{?$isData}}validate.schema{{=$schemaPath}}{{??}}{{=$schema}}{{?}} #}}
+
 {{## def._errorSchemas = {
   $ref:            "{{=it.util.toQuotedString($schema)}}",
   additionalItems: "false",
@@ -94,13 +99,13 @@
   format:          "{{=it.util.toQuotedString($schema)}}",
   maximum:         "{{=$schema}}",
   minimum:         "{{=$schema}}",
-  maxItems:        "{{=$schema}}",
-  minItems:        "{{=$schema}}",
-  maxLength:       "{{=$schema}}",
-  minLength:       "{{=$schema}}",
-  maxProperties:   "{{=$schema}}",
-  minProperties:   "{{=$schema}}",
-  multipleOf:      "{{?$isData}}validate.schema{{=$schemaPath}}{{??}}{{=$schema}}{{?}}",
+  maxItems:        "{{#def.schemaRefOrVal}}",
+  minItems:        "{{#def.schemaRefOrVal}}",
+  maxLength:       "{{#def.schemaRefOrVal}}",
+  minLength:       "{{#def.schemaRefOrVal}}",
+  maxProperties:   "{{#def.schemaRefOrVal}}",
+  minProperties:   "{{#def.schemaRefOrVal}}",
+  multipleOf:      "{{#def.schemaRefOrVal}}",
   not:             "validate.schema{{=$schemaPath}}",
   oneOf:           "validate.schema{{=$schemaPath}}",
   pattern:         "{{=it.util.toQuotedString($schema)}}",
@@ -122,13 +127,13 @@
   format:          "{ format: '{{=it.util.escapeQuotes($schema)}}' }",
   maximum:         "{ comparison: '{{=$op}}', limit: {{=$schema}}, exclusive: {{=$exclusive}} }",
   minimum:         "{ comparison: '{{=$op}}', limit: {{=$schema}}, exclusive: {{=$exclusive}} }",
-  maxItems:        "{ limit: {{=$schema}} }",
-  minItems:        "{ limit: {{=$schema}} }",
-  maxLength:       "{ limit: {{=$schema}} }",
-  minLength:       "{ limit: {{=$schema}} }",
-  maxProperties:   "{ limit: {{=$schema}} }",
-  minProperties:   "{ limit: {{=$schema}} }",
-  multipleOf:      "{ multipleOf: {{=$divider}} }",
+  maxItems:        "{ limit: {{=$schemaValue}} }",
+  minItems:        "{ limit: {{=$schemaValue}} }",
+  maxLength:       "{ limit: {{=$schemaValue}} }",
+  minLength:       "{ limit: {{=$schemaValue}} }",
+  maxProperties:   "{ limit: {{=$schemaValue}} }",
+  minProperties:   "{ limit: {{=$schemaValue}} }",
+  multipleOf:      "{ multipleOf: {{=$schemaValue}} }",
   not:             "{}",
   oneOf:           "{}",
   pattern:         "{ pattern: '{{=it.util.escapeQuotes($schema)}}' }",

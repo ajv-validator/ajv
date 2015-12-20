@@ -1,0 +1,53 @@
+[
+  {
+    "description": "array length is <= than another property",
+    "schema": {
+      "properties": {
+        "maxArrayLength": {},
+        "array": { "maxItems": { "$data": "1/maxArrayLength" } }
+      }
+    },
+    "tests": [
+      {
+        "description": "shorter is valid",
+        "data": {
+          "maxArrayLength": 2,
+          "array": [1]
+        },
+        "valid": true
+      },
+      {
+        "description": "exact length is valid",
+        "data": {
+          "maxArrayLength": 2,
+          "array": [1, 2]
+        },
+        "valid": true
+      },
+      {
+        "description": "too long is invalid",
+        "data": {
+          "maxArrayLength": 2,
+          "array": [1, 2, 3]
+        },
+        "valid": false
+      },
+      {
+        "description": "ignores non-arrays",
+        "data": {
+          "maxArrayLength": 2,
+          "array": "foobar"
+        },
+        "valid": true
+      },
+      {
+        "description": "fails if value of maxItems is not a number",
+        "data": {
+          "maxArrayLength": "2",
+          "array": [1, 2]
+        },
+        "valid": false
+      }
+    ]
+  }
+]

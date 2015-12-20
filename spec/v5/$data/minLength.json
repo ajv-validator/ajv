@@ -1,0 +1,53 @@
+[
+  {
+    "description": "string length is >= than another property",
+    "schema": {
+      "properties": {
+        "minimumLength": {},
+        "string": { "minLength": { "$data": "1/minimumLength" } }
+      }
+    },
+    "tests": [
+      {
+        "description": "longer is valid",
+        "data": {
+          "minimumLength": 2,
+          "string": "foo"
+        },
+        "valid": true
+      },
+      {
+        "description": "exact length is valid",
+        "data": {
+          "minimumLength": 2,
+          "string": "fo"
+        },
+        "valid": true
+      },
+      {
+        "description": "too short is invalid",
+        "data": {
+          "minimumLength": 2,
+          "string": "f"
+        },
+        "valid": false
+      },
+      {
+        "description": "ignores non-strings",
+        "data": {
+          "minimumLength": 2,
+          "string": 100
+        },
+        "valid": true
+      },
+      {
+        "description": "fails if value of minLength is not a number",
+        "data": {
+          "minimumLength": "2",
+          "string": "foo"
+        },
+        "valid": false
+      }
+    ]
+  }
+]

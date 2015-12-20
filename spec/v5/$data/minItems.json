@@ -1,0 +1,53 @@
+[
+  {
+    "description": "array length is >= than another property",
+    "schema": {
+      "properties": {
+        "minArrayLength": {},
+        "array": { "minItems": { "$data": "1/minArrayLength" } }
+      }
+    },
+    "tests": [
+      {
+        "description": "longer is valid",
+        "data": {
+          "minArrayLength": 2,
+          "array": [1, 2, 3]
+        },
+        "valid": true
+      },
+      {
+        "description": "exact length is valid",
+        "data": {
+          "minArrayLength": 2,
+          "array": [1, 2]
+        },
+        "valid": true
+      },
+      {
+        "description": "too short is invalid",
+        "data": {
+          "minArrayLength": 2,
+          "array": [1]
+        },
+        "valid": false
+      },
+      {
+        "description": "ignores non-arrays",
+        "data": {
+          "minArrayLength": 2,
+          "array": "foobar"
+        },
+        "valid": true
+      },
+      {
+        "description": "fails if value of minItems is not a number",
+        "data": {
+          "minArrayLength": "2",
+          "array": [1, 2]
+        },
+        "valid": false
+      }
+    ]
+  }
+]

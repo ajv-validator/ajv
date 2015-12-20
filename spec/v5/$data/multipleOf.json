@@ -3,7 +3,7 @@
     "description": "one property is multiple of another",
     "schema": {
       "properties": {
-        "divider": { "type": "number" },
+        "divider": {},
         "multiple": { "multipleOf": { "$data": "1/divider" } }
       }
     },
@@ -49,7 +49,7 @@
         "valid": true
       },
       {
-        "description": "fails if schema for multipleOf is not a number",
+        "description": "fails if value of multipleOf is not a number",
         "data": {
           "divider": "2.5",
           "multiple": 10

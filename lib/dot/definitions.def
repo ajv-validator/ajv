@@ -98,3 +98,18 @@
 
 
 {{## def.cleanUpVarErrors: {{ out = it.util.cleanUpVarErrors(out); }} #}}
+
+
+{{## def.$data:
+  {{
+    var $isData = it.opts.v5 && $schema.$data;
+    var $schemaValue = $isData
+                       ? it.util.getData($schema.$data, $dataLvl, it.dataPathArr)
+                       : $schema;
+  }}
+#}}
+
+
+{{## def.$dataNotType:_type:
+  {{?$isData}} typeof {{=$schemaValue}} != _type || {{?}}
+#}}

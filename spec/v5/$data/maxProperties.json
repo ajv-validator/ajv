@@ -1,0 +1,53 @@
+[
+  {
+    "description": "number of object properties is <= than another property",
+    "schema": {
+      "properties": {
+        "maxKeys": {},
+        "object": { "maxProperties": { "$data": "1/maxKeys" } }
+      }
+    },
+    "tests": [
+      {
+        "description": "shorter is valid",
+        "data": {
+          "maxKeys": 2,
+          "object": {"foo": 1}
+        },
+        "valid": true
+      },
+      {
+        "description": "exact length is valid",
+        "data": {
+          "maxKeys": 2,
+          "object": {"foo": 1, "bar": 2}
+        },
+        "valid": true
+      },
+      {
+        "description": "too long is invalid",
+        "data": {
+          "maxKeys": 2,
+          "object": {"foo": 1, "bar": 2, "baz": 3}
+        },
+        "valid": false
+      },
+      {
+        "description": "ignores non-objects",
+        "data": {
+          "maxKeys": 2,
+          "object": "foobar"
+        },
+        "valid": true
+      },
+      {
+        "description": "fails if value of maxProperties is not a number",
+        "data": {
+          "maxKeys": "2",
+          "object": {"foo": 1, "bar": 2}
+        },
+        "valid": false
+      }
+    ]
+  }
+]
