@@ -2,15 +2,18 @@
 {{# def.errors }}
 {{# def.setup:'enum' }}
 
+{{# def.$data }}
+
 {{ var $i = 'i' + $lvl; }}
-var enumSchema{{=$lvl}} = validate.schema{{=$schemaPath}}
+var enumSchema{{=$lvl}} = {{= $isData ? $schemaValue : 'validate.schema' + $schemaPath }}
   , {{=$valid}} = false;
 
-for (var {{=$i}}=0; {{=$i}}<enumSchema{{=$lvl}}.length; {{=$i}}++)
-  if (equal({{=$data}}, enumSchema{{=$lvl}}[{{=$i}}])) {
-    {{=$valid}} = true;
-    break;
-  }
+{{?$isData}} if (Array.isArray(enumSchema{{=$lvl}})) {{?}}
+  for (var {{=$i}}=0; {{=$i}}<enumSchema{{=$lvl}}.length; {{=$i}}++)
+    if (equal({{=$data}}, enumSchema{{=$lvl}}[{{=$i}}])) {
+      {{=$valid}} = true;
+      break;
+    }
 
 {{# def.checkError:'enum' }}
 

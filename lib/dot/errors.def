@@ -57,6 +57,7 @@
 
 {{## def.concatSchema: {{?$isData}}' + {{=$schemaValue}} + '{{??}}{{=$schema}}{{?}} #}}
 {{## def.appendSchema: {{?$isData}}' + {{=$schemaValue}}{{??}}{{=$schema}}'{{?}} #}}
+{{## def.concatSchemaEQ: {{?$isData}}' + {{=$schemaValue}} + '{{??}}{{=it.util.escapeQuotes($schema)}}{{?}} #}}
 
 {{## def._errorMessages = {
   $ref:            "'can\\\'t resolve reference {{=it.util.escapeQuotes($schema)}}'",
@@ -65,7 +66,7 @@
   anyOf:           "'should match some schema in anyOf'",
   dependencies:    "'should have {{? $deps.length == 1 }}property {{= it.util.escapeQuotes($deps[0]) }}{{??}}properties {{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}} when property {{= it.util.escapeQuotes($property) }} is present'",
   enum:            "'should be equal to one of values'",
-  format:          "'should match format {{=it.util.escapeQuotes($schema)}}'",
+  format:          "'should match format \"{{=it.util.escapeQuotes($schema)}}\"'",
   maximum:         "'should be {{=$op}} {{=$schema}}'",
   minimum:         "'should be {{=$op}} {{=$schema}}'",
   maxItems:        "'should NOT have more than {{#def.concatSchema}} items'",
@@ -77,7 +78,7 @@
   multipleOf:      "'should be multiple of {{#def.appendSchema}}",
   not:             "'should NOT be valid'",
   oneOf:           "'should match exactly one schema in oneOf'",
-  pattern:         "'should match pattern \"{{=it.util.escapeQuotes($schema)}}\"'",
+  pattern:         "'should match pattern \"{{#def.concatSchemaEQ}}\"'",
   required:        "'{{? it.opts._errorDataPathProperty }}is a required property{{??}}should have required property \\'{{=$missingProperty}}\\'{{?}}'",
   type:            "'should be {{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}'",
   uniqueItems:     "'should NOT have duplicate items (items ## ' + j + ' and ' + i + ' are identical)'",
@@ -88,6 +89,7 @@
 
 
 {{## def.schemaRefOrVal: {{?$isData}}validate.schema{{=$schemaPath}}{{??}}{{=$schema}}{{?}} #}}
+{{## def.schemaRefOrQS: {{?$isData}}validate.schema{{=$schemaPath}}{{??}}{{=it.util.toQuotedString($schema)}}{{?}} #}}
 
 {{## def._errorSchemas = {
   $ref:            "{{=it.util.toQuotedString($schema)}}",
@@ -108,7 +110,7 @@
   multipleOf:      "{{#def.schemaRefOrVal}}",
   not:             "validate.schema{{=$schemaPath}}",
   oneOf:           "validate.schema{{=$schemaPath}}",
-  pattern:         "{{=it.util.toQuotedString($schema)}}",
+  pattern:         "{{#def.schemaRefOrQS}}",
   required:        "validate.schema{{=$schemaPath}}",
   type:            "{{? $isArray }}['{{= $typeSchema.join(\"','\") }}']{{??}}'{{=$typeSchema}}'{{?}}",
   uniqueItems:     "{{=$schema}}",
@@ -117,6 +119,8 @@
   switch:          "validate.schema{{=$schemaPath}}"
 } #}}
 
+
+{{## def.schemaValueQS: {{?$isData}}{{=$schemaValue}}{{??}}{{=it.util.toQuotedString($schema)}}{{?}} #}}
 
 {{## def._errorParams = {
   $ref:            "{ ref: '{{=it.util.escapeQuotes($schema)}}' }",
@@ -136,7 +140,7 @@
   multipleOf:      "{ multipleOf: {{=$schemaValue}} }",
   not:             "{}",
   oneOf:           "{}",
-  pattern:         "{ pattern: '{{=it.util.escapeQuotes($schema)}}' }",
+  pattern:         "{ pattern: {{#def.schemaValueQS}} }",
   required:        "{ missingProperty: '{{=$missingProperty}}' }",
   type:            "{ type: '{{? $isArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}' }",
   uniqueItems:     "{ i: i, j: j }",

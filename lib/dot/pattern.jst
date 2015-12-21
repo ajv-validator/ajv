@@ -2,7 +2,14 @@
 {{# def.errors }}
 {{# def.setup:'pattern' }}
 
-{{ new RegExp($schema); /* test if regexp is valid to fail at compile time rather than in eval */}}
-if (! {{= it.usePattern($schema) }}.test({{=$data}}) ) {
+{{# def.$data }}
+
+{{
+  var $regexp = $isData
+                ? '(new RegExp(' + $schemaValue + '))'
+                : it.usePattern($schema);
+}}
+
+if ({{# def.$dataNotType:'string' }} !{{=$regexp}}.test({{=$data}}) ) {
   {{# def.error:'pattern' }}
 } {{? $breakOnError }} else { {{?}}

@@ -1,0 +1,76 @@
+[
+  {
+    "description": "property is one of values in another property",
+    "schema": {
+      "properties": {
+        "allowedValues": {},
+        "value": { "enum": { "$data": "1/allowedValues" } }
+      }
+    },
+    "tests": [
+      {
+        "description": "one of the enum is valid",
+        "data": {
+          "allowedValues": [1, 2, 3],
+          "value": 1
+        },
+        "valid": true
+      },
+      {
+        "description": "something else is invalid",
+        "data": {
+          "allowedValues": [1, 2, 3],
+          "value": 4
+        },
+        "valid": false
+      },
+      {
+        "description": "heterogeneous enum validation",
+        "data": {
+          "allowedValues": [6, "foo", [], true, {"foo": 12}],
+          "value": {"foo": 12}
+        },
+        "valid": true
+      },
+      {
+        "description": "fail if value of enum is not an array",
+        "data": {
+          "allowedValues": "[1, 2, 3]",
+          "value": 1
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "enum in properties",
+    "schema": {
+      "properties": {
+        "allowedValues": {}
+      },
+      "additionalProperties": {
+        "enum": { "$data": "1/allowedValues" }
+      }
+    },
+    "tests": [
+      {
+        "description": "properties are valid",
+        "data": {
+          "allowedValues": ["foo", "bar"],
+          "a": "foo",
+          "b": "bar"
+        },
+        "valid": true
+      },
+      {
+        "description": "properties are invalid",
+        "data": {
+          "allowedValues": ["foo", "bar"],
+          "a": "foo",
+          "b": "baz"
+        },
+        "valid": false
+      }
+    ]
+  }
+]

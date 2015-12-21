@@ -1,0 +1,65 @@
+[
+  {
+    "description": "one property is pattern for another",
+    "schema": {
+      "properties": {
+        "shouldMatch": {},
+        "string": { "pattern": { "$data": "1/shouldMatch" } }
+      }
+    },
+    "tests": [
+      {
+        "description": "a matching pattern is valid",
+        "data": {
+          "shouldMatch": "^a*$",
+          "string": "aaa"
+        },
+        "valid": true
+      },
+      {
+        "description": "a non-matching pattern is invalid",
+        "data": {
+          "shouldMatch": "^a*$",
+          "string": "abc"
+        },
+        "valid": false
+      },
+      {
+        "description": "ignores non-strings",
+        "data": {
+          "shouldMatch": "^a*$",
+          "string": 123
+        },
+        "valid": true
+      },
+      {
+        "description": "fails if value of pattern is not a string",
+        "data": {
+          "shouldMatch": 123,
+          "string": "123"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "property values should contain their names",
+    "schema": {
+      "additionalProperties": {
+        "pattern": { "$data": "0#" }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid property values",
+        "data": { "foo": "1foo", "bar": "bar2", "baz": "3baz4" },
+        "valid": true
+      },
+      {
+        "description": "invalid property values",
+        "data": { "foo": "fo" },
+        "valid": false
+      }
+    ]
+  }
+]
