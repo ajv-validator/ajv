@@ -55,9 +55,9 @@
 #}}
 
 
-{{## def.concatSchema: {{?$isData}}' + {{=$schemaValue}} + '{{??}}{{=$schema}}{{?}} #}}
-{{## def.appendSchema: {{?$isData}}' + {{=$schemaValue}}{{??}}{{=$schema}}'{{?}} #}}
-{{## def.concatSchemaEQ: {{?$isData}}' + {{=$schemaValue}} + '{{??}}{{=it.util.escapeQuotes($schema)}}{{?}} #}}
+{{## def.concatSchema:{{?$isData}}' + {{=$schemaValue}} + '{{??}}{{=$schema}}{{?}}#}}
+{{## def.appendSchema:{{?$isData}}' + {{=$schemaValue}}{{??}}{{=$schema}}'{{?}}#}}
+{{## def.concatSchemaEQ:{{?$isData}}' + {{=$schemaValue}} + '{{??}}{{=it.util.escapeQuotes($schema)}}{{?}}#}}
 
 {{## def._errorMessages = {
   $ref:            "'can\\\'t resolve reference {{=it.util.escapeQuotes($schema)}}'",
@@ -67,8 +67,10 @@
   dependencies:    "'should have {{? $deps.length == 1 }}property {{= it.util.escapeQuotes($deps[0]) }}{{??}}properties {{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}} when property {{= it.util.escapeQuotes($property) }} is present'",
   enum:            "'should be equal to one of values'",
   format:          "'should match format \"{{=it.util.escapeQuotes($schema)}}\"'",
-  maximum:         "'should be {{=$op}} {{=$schema}}'",
-  minimum:         "'should be {{=$op}} {{=$schema}}'",
+  maximum:         "'should be {{=$opStr}} {{#def.appendSchema}}",
+  minimum:         "'should be {{=$opStr}} {{#def.appendSchema}}",
+  exclusiveMaximum:"'exclusiveMaximum should be boolean'",
+  exclusiveMinimum:"'exclusiveMinimum should be boolean'",
   maxItems:        "'should NOT have more than {{#def.concatSchema}} items'",
   minItems:        "'should NOT have less than {{#def.concatSchema}} items'",
   maxLength:       "'should NOT be longer than {{#def.concatSchema}} characters'",
@@ -99,8 +101,10 @@
   dependencies:    "validate.schema{{=$schemaPath}}",
   enum:            "validate.schema{{=$schemaPath}}",
   format:          "{{=it.util.toQuotedString($schema)}}",
-  maximum:         "{{=$schema}}",
-  minimum:         "{{=$schema}}",
+  maximum:         "{{#def.schemaRefOrVal}}",
+  minimum:         "{{#def.schemaRefOrVal}}",
+  exclusiveMaximum:"validate.schema{{=$schemaPath}}",
+  exclusiveMinimum:"validate.schema{{=$schemaPath}}",
   maxItems:        "{{#def.schemaRefOrVal}}",
   minItems:        "{{#def.schemaRefOrVal}}",
   maxLength:       "{{#def.schemaRefOrVal}}",
@@ -129,8 +133,10 @@
   anyOf:           "{}",
   dependencies:    "{ property: '{{= it.util.escapeQuotes($property) }}', missingProperty: '{{=$missingProperty}}', depsCount: {{=$deps.length}}, deps: '{{? $deps.length==1 }}{{= it.util.escapeQuotes($deps[0]) }}{{??}}{{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}}' }",
   format:          "{ format: '{{=it.util.escapeQuotes($schema)}}' }",
-  maximum:         "{ comparison: '{{=$op}}', limit: {{=$schema}}, exclusive: {{=$exclusive}} }",
-  minimum:         "{ comparison: '{{=$op}}', limit: {{=$schema}}, exclusive: {{=$exclusive}} }",
+  maximum:         "{ comparison: {{=$opExpr}}, limit: {{=$schemaValue}}, exclusive: {{=$exclusive}} }",
+  minimum:         "{ comparison: {{=$opExpr}}, limit: {{=$schemaValue}}, exclusive: {{=$exclusive}} }",
+  exclusiveMaximum:"{}",
+  exclusiveMinimum:"{}",
   maxItems:        "{ limit: {{=$schemaValue}} }",
   minItems:        "{ limit: {{=$schemaValue}} }",
   maxLength:       "{ limit: {{=$schemaValue}} }",

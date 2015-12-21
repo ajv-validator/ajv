@@ -1,0 +1,268 @@
+[
+  {
+    "description": "one property is minimum for another",
+    "schema": {
+      "properties": {
+        "smaller": {},
+        "largerOrEqual": {
+          "minimum": { "$data": "1/smaller" }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "above the minimum is valid",
+        "data": {
+          "smaller": 3,
+          "largerOrEqual": 4
+        },
+        "valid": true
+      },
+      {
+        "description": "equal to the minimum is valid",
+        "data": {
+          "smaller": 3,
+          "largerOrEqual": 3
+        },
+        "valid": true
+      },
+      {
+        "description": "below the minimum is invalid",
+        "data": {
+          "smaller": 3,
+          "largerOrEqual": 2
+        },
+        "valid": false
+      },
+      {
+        "description": "ignores non-numbers",
+        "data": {
+          "smaller": 3,
+          "largerOrEqual": "2"
+        },
+        "valid": true
+      },
+      {
+        "description": "fails if value of minimum is not number",
+        "data": {
+          "smaller": "3",
+          "largerOrEqual": 4
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "exclusiveMinimum is $data",
+    "schema": {
+      "properties": {
+        "number": {
+          "minimum": 3,
+          "exclusiveMinimum": { "$data": "1/minIsExclusive" }
+        },
+        "minIsExclusive": {}
+      }
+    },
+    "tests": [
+      {
+        "description": "above the minimum is valid when exclusiveMinimum is true",
+        "data": {
+          "number": 4,
+          "minIsExclusive": true
+        },
+        "valid": true
+      },
+      {
+        "description": "above the minimum is valid when exclusiveMinimum is false",
+        "data": {
+          "number": 4,
+          "minIsExclusive": false
+        },
+        "valid": true
+      },
+      {
+        "description": "above the minimum is valid when exclusiveMinimum is undefined",
+        "data": {
+          "number": 4
+        },
+        "valid": true
+      },
+      {
+        "description": "boundary point is invalid when exclusiveMinimum is true",
+        "data": {
+          "number": 3,
+          "minIsExclusive": true
+        },
+        "valid": false
+      },
+      {
+        "description": "boundary point is valid when exclusiveMinimum is false",
+        "data": {
+          "number": 3,
+          "minIsExclusive": false
+        },
+        "valid": true
+      },
+      {
+        "description": "boundary point is valid when exclusiveMinimum is undefined",
+        "data": {
+          "number": 3
+        },
+        "valid": true
+      },
+      {
+        "description": "below the minimum is invalid when exclusiveMinimum is true",
+        "data": {
+          "number": 2,
+          "minIsExclusive": true
+        },
+        "valid": false
+      },
+      {
+        "description": "below the minimum is invalid when exclusiveMinimum is false",
+        "data": {
+          "number": 2,
+          "minIsExclusive": false
+        },
+        "valid": false
+      },
+      {
+        "description": "below the minimum is invalid when exclusiveMinimum is undefined",
+        "data": {
+          "number": 2
+        },
+        "valid": false
+      },
+      {
+        "description": "fails if value of exclusiveMinimum is not boolean",
+        "data": {
+          "number": 4,
+          "minIsExclusive": "false"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "one property is minimum for another and exclusiveMinimum is $data",
+    "schema": {
+      "properties": {
+        "smaller": {},
+        "largerOrEqual": {
+          "minimum": { "$data": "1/smaller" },
+          "exclusiveMinimum": { "$data": "1/minIsExclusive" }
+        },
+        "minIsExclusive": {}
+      }
+    },
+    "tests": [
+      {
+        "description": "above the minimum is valid when exclusiveMinimum is true",
+        "data": {
+          "smaller": 3,
+          "largerOrEqual": 4,
+          "minIsExclusive": true
+        },
+        "valid": true
+      },
+      {
+        "description": "above the minimum is valid when exclusiveMinimum is false",
+        "data": {
+          "smaller": 3,
+          "largerOrEqual": 4,
+          "minIsExclusive": false
+        },
+        "valid": true
+      },
+      {
+        "description": "above the minimum is valid when exclusiveMinimum is undefined",
+        "data": {
+          "smaller": 3,
+          "largerOrEqual": 4
+        },
+        "valid": true
+      },
+      {
+        "description": "boundary point is invalid when exclusiveMinimum is true",
+        "data": {
+          "smaller": 3,
+          "largerOrEqual": 3,
+          "minIsExclusive": true
+        },
+        "valid": false
+      },
+      {
+        "description": "boundary point is valid when exclusiveMinimum is false",
+        "data": {
+          "smaller": 3,
+          "largerOrEqual": 3,
+          "minIsExclusive": false
+        },
+        "valid": true
+      },
+      {
+        "description": "boundary point is valid when exclusiveMinimum is undefined",
+        "data": {
+          "smaller": 3,
+          "largerOrEqual": 3
+        },
+        "valid": true
+      },
+      {
+        "description": "below the minimum is invalid when exclusiveMinimum is true",
+        "data": {
+          "smaller": 3,
+          "largerOrEqual": 2,
+          "minIsExclusive": true
+        },
+        "valid": false
+      },
+      {
+        "description": "below the minimum is invalid when exclusiveMinimum is false",
+        "data": {
+          "smaller": 3,
+          "largerOrEqual": 2,
+          "minIsExclusive": false
+        },
+        "valid": false
+      },
+      {
+        "description": "below the minimum is invalid when exclusiveMinimum is undefined",
+        "data": {
+          "smaller": 3,
+          "largerOrEqual": 2
+        },
+        "valid": false
+      },
+      {
+        "description": "fails if value of exclusiveMinimum is not boolean",
+        "data": {
+          "smaller": 3,
+          "largerOrEqual": 4,
+          "minIsExclusive": "false"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "items in array are >= than their indeces",
+    "schema": {
+      "items": {
+        "minimum": { "$data": "0#" }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid array",
+        "data": [1, 2, 2, 4, 5, 5],
+        "valid": true
+      },
+      {
+        "description": "invalid array (0.5<1)",
+        "data": [0, 0.5],
+        "valid": false
+      }
+    ]
+  }
+]

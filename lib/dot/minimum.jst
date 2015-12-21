@@ -2,12 +2,37 @@
 {{# def.errors }}
 {{# def.setup:'minimum' }}
 
+{{# def.$data }}
 {{
-  var $exclusive = it.schema.exclusiveMinimum === true
-    , $op = $exclusive ? '>' : '>=' /*used in error*/
-    , $notOp = $exclusive ? '<=' : '<';
+  var $schemaExcl = it.schema.exclusiveMinimum;
+  var $isDataExcl = it.opts.v5 && $schemaExcl && $schemaExcl.$data;
 }}
 
-if ({{=$data}} {{=$notOp}} {{=$schema}}) {
-  {{# def.error:'minimum' }}
-} {{? $breakOnError }} else { {{?}}
+{{? $isDataExcl }}
+  {{
+    var $schemaValueExcl = it.util.getData($schemaExcl.$data, $dataLvl, it.dataPathArr)
+      , $exclusive = 'exclusive' + $lvl
+      , $opExpr = 'op' + $lvl
+      , $opStr = '\' + ' + $opExpr + ' + \'';
+  }}
+
+  var exclusive{{=$lvl}};
+  if (typeof {{=$schemaValueExcl}} != 'boolean' && typeof {{=$schemaValueExcl}} != 'undefined') {
+    {{# def.error:'exclusiveMaximum' }}
+  } else if({{# def.$dataNotType:'number' }}
+            ((exclusive{{=$lvl}} = {{=$schemaValueExcl}} === true)
+              ? {{=$data}} <= {{=$schemaValue}}
+              : {{=$data}} < {{=$schemaValue}})) {
+    var op{{=$lvl}} = exclusive{{=$lvl}} ? '>' : '>=';
+{{??}}
+  {{
+    var $exclusive = $schemaExcl === true
+      , $opStr = $exclusive ? '>' : '>=' /*used in error*/
+      , $notOp = $exclusive ? '<=' : '<'
+      , $opExpr = '\'' + $opStr + '\''; /*used in error*/
+  }}
+
+  if ({{# def.$dataNotType:'number' }} {{=$data}} {{=$notOp}} {{=$schemaValue}}) {
+{{?}}
+    {{# def.error:'minimum' }}
+  } {{? $breakOnError }} else { {{?}}
