@@ -2,30 +2,55 @@
 {{# def.errors }}
 {{# def.setup:'format' }}
 
-{{
-  var $format = it.formats[$schema];
-  var $isObject = typeof $format == 'object'
-                  && !($format instanceof RegExp)
-                  && $format.validate;
-  if ($isObject) $format = $format.validate;
-}}
+{{## def.skipFormat:
+  {{? $breakOnError }} if (true) { {{?}}
+  {{ return out; }}
+#}}
 
-{{## def.format:
-  formats{{= it.util.getProperty($schema) }}{{? $isObject }}.validate{{?}}
+{{? it.opts.format === false }}{{# def.skipFormat }}{{?}}
+
+
+{{# def.$data }}
+
+
+{{## def.$dataCheckFormat:
+  {{# def.$dataNotType:'string' }}
+  ({{=$format}} && !(typeof {{=$format}} == 'function'
+                     ? {{=$format}}({{=$data}})
+                     : {{=$format}}.test({{=$data}})))
 #}}
 
 {{## def.checkFormat:
+  {{
+    var $formatRef = 'formats' + it.util.getProperty($schema);
+    if ($isObject) $formatRef += '.validate';
+  }}
   {{? typeof $format == 'function' }}
-    {{# def.format }}({{=$data}})
+    {{=$formatRef}}({{=$data}})
   {{??}}
-    {{# def.format }}.test({{=$data}})
+    {{=$formatRef}}.test({{=$data}})
   {{?}}
 #}}
 
-{{? it.opts.format !== false && $format }}
-  if (! {{# def.checkFormat }}) {
+
+{{? $isData }}
+  {{ var $format = 'format' + $lvl; }}
+  var {{=$format}} = formats[{{=$schemaValue}}];
+  var isObject{{=$lvl}} = typeof {{=$format}} == 'object'
+                          && !({{=$format}} instanceof RegExp)
+                          && {{=$format}}.validate;
+  if (isObject{{=$lvl}}) {{=$format}} = {{=$format}}.validate;    
+  if ({{# def.$dataCheckFormat }}) {
+{{??}}
+  {{ var $format = it.formats[$schema]; }}
+  {{? !$format }}{{# def.skipFormat }}{{?}}
+  {{
+    var $isObject = typeof $format == 'object'
+                    && !($format instanceof RegExp)
+                    && $format.validate;
+    if ($isObject) $format = $format.validate;
+  }}
+  if (!{{# def.checkFormat }}) {
+{{?}}
     {{# def.error:'format' }}
   } {{? $breakOnError }} else { {{?}}
-{{??}}
-  {{? $breakOnError }} if (true) { {{?}}
-{{?}}

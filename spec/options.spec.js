@@ -167,6 +167,20 @@ describe('Ajv Options', function () {
   });
 
 
+  describe('format', function() {
+    it('should not validate formats if option format == false', function() {
+      var ajv = Ajv()
+        , ajvFF = Ajv({ format: false });
+
+      var schema = { format: 'date-time' };
+      var invalideDateTime = '06/19/1963 08:30:06 PST';
+
+      ajv.validate(schema, invalideDateTime) .should.equal(false);
+      ajvFF.validate(schema, invalideDateTime) .should.equal(true);
+    });
+  });
+
+
   describe('formats', function() {
     it('should add formats from options', function() {
       var ajv = Ajv({ formats: {

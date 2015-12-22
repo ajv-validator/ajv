@@ -1,5 +1,18 @@
 [
   {
+    "description": "unknown format is always valid",
+    "schema": {
+      "format": "unknownformat"
+    },
+    "tests": [
+      {
+        "description": "anything is valid",
+        "data": "any value",
+        "valid": true
+      }
+    ]
+  },
+  {
     "description": "format: regex",
     "schema": {
       "format": "regex"
