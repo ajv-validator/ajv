@@ -64,7 +64,7 @@
           {{? $rule.custom }}
             {{# def.custom }}
           {{??}}
-            {{= $rule.code(it) }}
+            {{= $rule.code(it, $rule.keyword) }}
           {{?}}
           {{? $breakOnError }}
             {{ $closingBraces1 += '}'; }}

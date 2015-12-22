@@ -1,9 +1,0 @@
-{{# def.definitions }}
-{{# def.errors }}
-{{# def.setup:'maxItems' }}
-
-{{# def.$data }}
-
-if ({{# def.$dataNotType:'number' }} {{=$data}}.length > {{=$schemaValue}}) {
-  {{# def.error:'maxItems' }}
-} {{? $breakOnError }} else { {{?}}

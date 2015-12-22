@@ -28,7 +28,7 @@ files.forEach(function (f) {
   var code = doT.compile(template, defs);
   code = code.toString()
              .replace(OUT_EMPTY_STRING, '')
-             .replace(FUNCTION_NAME, 'function generate_' + keyword + '(it) {')
+             .replace(FUNCTION_NAME, 'function generate_' + keyword + '(it, $keyword) {')
              .replace(ISTANBUL, '/* $1 */');
   code = "'use strict';\nmodule.exports = " + code;
   code = beautify(code, { indent_size: 2 }) + '\n';

@@ -1,9 +1,0 @@
-{{# def.definitions }}
-{{# def.errors }}
-{{# def.setup:'minItems' }}
-
-{{# def.$data }}
-
-if ({{# def.$dataNotType:'number' }} {{=$data}}.length < {{=$schemaValue}}) {
-  {{# def.error:'minItems' }}
-} {{? $breakOnError }} else { {{?}}

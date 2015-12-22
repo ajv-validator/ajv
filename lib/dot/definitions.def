@@ -1,6 +1,7 @@
 {{## def.setup:_keyword:
   {{
-    var $lvl = it.level
+    var $keyword = _keyword
+      , $lvl = it.level
       , $dataLvl = it.dataLevel
       , $schema = it.schema[_keyword]
       , $schemaPath = it.schemaPath + '.' + _keyword
@@ -12,6 +13,23 @@
       , $errs = 'errs__' + $lvl;
   }}
 #}}
+
+
+{{## def.setupKeyword:
+  {{
+    var $lvl = it.level
+      , $dataLvl = it.dataLevel
+      , $schema = it.schema[$keyword]
+      , $schemaPath = it.schemaPath + '.' + $keyword
+      , $errSchemaPath = it.errSchemaPath + '/' + $keyword
+      , $breakOnError = !it.opts.allErrors;
+
+    var $data = 'data' + ($dataLvl || '')
+      , $valid = 'valid' + $lvl
+      , $errs = 'errs__' + $lvl;
+  }}
+#}}
+
 
 
 {{## def.setCompositeRule:
