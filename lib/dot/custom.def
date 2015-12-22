@@ -56,7 +56,9 @@ var {{=$errs}} = errors;
 if (!{{# def.callRuleValidate }}) {
   {{? $inline }}
     {{? $rDef.errors }}
-      {{# def.extendErrors:true }}
+      {{? $rDef.errors != 'full' }}
+        {{# def.extendErrors:true }}
+      {{?}}
     {{?? $rDef.errors === false}}
       {{# def.error:'custom' }}
     {{??}}

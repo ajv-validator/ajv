@@ -1,0 +1,9 @@
+{{# def.definitions }}
+{{# def.errors }}
+{{# def.setup:'constant' }}
+
+{{# def.$data }}
+
+var constantSchema{{=$lvl}} = {{= $isData ? $schemaValue : 'validate.schema' + $schemaPath }};
+var {{=$valid}} = equal({{=$data}}, constantSchema{{=$lvl}});
+{{# def.checkError:'constant' }}

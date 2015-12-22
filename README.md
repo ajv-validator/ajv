@@ -321,7 +321,7 @@ Validating and compiled keywords should define errors by assigning them to `.err
 
 Inline custom keyword should increase error counter `errors` and add error to `vErrors` array (it can be null). See [example range keyword](https://github.com/epoberezkin/ajv/blob/master/spec/custom_rules/range_with_errors.jst).
 
-When inline keyword performs validation Ajv checks whether it created errors by comparing errors count before and after validation. To skip this check add option `errors` (can be `true` or `false`) to keyword definition:
+When inline keyword performs validation Ajv checks whether it created errors by comparing errors count before and after validation. To skip this check add option `errors` (can be `"full"`, `true` or `false`) to keyword definition:
 
 ```
 ajv.addKeyword('range', {
@@ -329,12 +329,13 @@ ajv.addKeyword('range', {
   inline: inlineRangeTemplate,
   statements: true,
   errors: true // keyword should create custom errors when validation fails
+  // or errors: 'full' // created errors should have dataPath already set
 });
 ```
 
 Each error object should have properties `keyword`, `message` and `params`, other properties will be added.
 
-Inlined keywords can optionally define `dataPath` property in error objects.
+Inlined keywords can optionally define `dataPath` property in error objects, that will be added by ajv unless `errors` option of the keyword is `"full"`.
 
 If custom keyword doesn't create errors, the default error will be created in case the keyword fails validation (see [Validation errors](#validation-errors)).
 

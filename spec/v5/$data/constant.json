@@ -1,0 +1,85 @@
+[
+  {
+    "description": "property is equal to another property",
+    "schema": {
+      "properties": {
+        "sameAs": { "constant": { "$data": "1/thisOne" } },
+        "thisOne": {}
+      }
+    },
+    "tests": [
+      {
+        "description": "same value is valid",
+        "data": {
+          "sameAs": 5,
+          "thisOne": 5
+        },
+        "valid": true
+      },
+      {
+        "description": "same object is valid",
+        "data": {
+          "sameAs": { "foo": 1, "bar": 2 },
+          "thisOne": { "bar": 2, "foo": 1 }
+        },
+        "valid": true
+      },
+      {
+        "description": "another value is invalid",
+        "data": {
+          "sameAs": { "foo": 1 },
+          "thisOne": { "foo": 2 }
+        },
+        "valid": false
+      },
+      {
+        "description": "another type is invalid",
+        "data": {
+          "sameAs": 5,
+          "thisOne": "5"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "property values are equal to property names",
+    "schema": {
+      "additionalProperties": {
+        "constant": { "$data": "0#" }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid object",
+        "data": { "foo": "foo", "bar": "bar", "baz": "baz" },
+        "valid": true
+      },
+      {
+        "description": "invalid object",
+        "data": { "foo": "bar" },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "items are equal to their indeces",
+    "schema": {
+      "items": {
+        "constant": { "$data": "0#" }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid array",
+        "data": [ 0, 1, 2, 3 ],
+        "valid": true
+      },
+      {
+        "description": "invalid array",
+        "data": [ 0, 2 ],
+        "valid": false
+      }
+    ]
+  }
+]
