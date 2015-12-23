@@ -421,12 +421,12 @@ describe('Custom keywords', function () {
     });
 
 
-    function inlineEven(it, schema) {
+    function inlineEven(it, keyword, schema) {
       var op = schema ? '===' : '!==';
       return 'data' + (it.dataLevel || '') + ' % 2 ' + op + ' 0';
     }
 
-    function inlineRange(it, schema, parentSchema) {
+    function inlineRange(it, keyword, schema, parentSchema) {
       var min = schema[0]
         , max = schema[1]
         , data = 'data' + (it.dataLevel || '')

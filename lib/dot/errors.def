@@ -2,7 +2,7 @@
   {{ 'istanbul ignore else'; }}
   {{? it.createErrors !== false }}
     {
-      keyword: '{{= typeof $errorKeyword == "undefined" ? _rule : $errorKeyword }}'
+      keyword: '{{= $errorKeyword || _rule }}'
       , dataPath: (dataPath || '') + {{= it.errorPath }}
       , schemaPath: "{{=$errSchemaPath}}"
       , params: {{# def._errorParams[_rule] }}
@@ -21,21 +21,24 @@
 #}}
 
 
-{{## def.addError:_rule:
-  var err = {{# def._error:_rule }};
+{{## def._addError:_rule:
   if (vErrors === null) vErrors = [err];
   else vErrors.push(err);
   errors++;
 #}}
 
 
+{{## def.addError:_rule:
+  var err = {{# def._error:_rule }};
+  {{# def._addError:_rule }}
+#}}
+
+
 {{## def.error:_rule:
-  {{? !it.compositeRule && $breakOnError }}
-    validate.errors = [{{# def._error:_rule }}];
-    return false;
-  {{??}}
-    {{# def.addError:_rule }}
-  {{?}}
+  {{ var $returnErr = !it.compositeRule && $breakOnError; }}
+  {{?$returnErr}} validate.errors = [ {{??}} var err = {{?}}
+  {{# def._error:_rule }}
+  {{?$returnErr}} ]; return false; {{??}} ; {{# def._addError:_rule }}{{?}}
 #}}
 
 
@@ -107,7 +110,7 @@
   oneOf:           "validate.schema{{=$schemaPath}}",
   pattern:         "{{#def.schemaRefOrQS}}",
   required:        "validate.schema{{=$schemaPath}}",
-  type:            "{{? $isArray }}['{{= $typeSchema.join(\"','\") }}']{{??}}'{{=$typeSchema}}'{{?}}",
+  type:            "validate.schema{{=$schemaPath}}",
   uniqueItems:     "{{=$schema}}",
   custom:          "validate.schema{{=$schemaPath}}",
   patternGroups:   "validate.schema{{=$schemaPath}}",
@@ -123,7 +126,7 @@
   additionalItems: "{ limit: {{=$schema.length}} }",
   additionalProperties: "{ additionalProperty: '{{=$additionalProperty}}' }",
   anyOf:           "{}",
-  dependencies:    "{ property: '{{= it.util.escapeQuotes($property) }}', missingProperty: '{{=$missingProperty}}', depsCount: {{=$deps.length}}, deps: '{{? $deps.length==1 }}{{= it.util.escapeQuotes($deps[0]) }}{{??}}{{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}}' }",
+  dependencies:    "{ property: '{{= it.util.escapeQuotes($property) }}', missingProperty: '{{=$missingProperty}}', depsCount: {{=$deps.length}}, deps: '{{= it.util.escapeQuotes($deps.length==1 ? $deps[0] : $deps.join(\", \")) }}' }",
   enum:            "{}",
   format:          "{ format: {{#def.schemaValueQS}} }",
   _limit:          "{ comparison: {{=$opExpr}}, limit: {{=$schemaValue}}, exclusive: {{=$exclusive}} }",

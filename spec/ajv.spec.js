@@ -58,7 +58,7 @@ describe('Ajv', function () {
         var validate = ajv.compile(schema);
       });
 
-      function badEvenCode(it, schema) {
+      function badEvenCode(it, keyword, schema) {
         var op = schema ? '===' : '!==='; // invalid on purpose
         return 'data' + (it.dataLevel || '') + ' % 2 ' + op + ' 0';
       }
