@@ -1,3 +1,5 @@
+{{# def.definitions }}
+
 {{## def._error:_rule:
   {{ 'istanbul ignore else'; }}
   {{? it.createErrors !== false }}
@@ -35,10 +37,17 @@
 
 
 {{## def.error:_rule:
-  {{ var $returnErr = !it.compositeRule && $breakOnError; }}
-  {{?$returnErr}} validate.errors = [ {{??}} var err = {{?}}
-  {{# def._error:_rule }}
-  {{?$returnErr}} ]; return false; {{??}} ; {{# def._addError:_rule }}{{?}}
+  {{# def.beginDefOut}}
+    {{# def._error:_rule }}
+  {{# def.storeDefOut:__err }}
+
+  {{? !it.compositeRule && $breakOnError }}
+    validate.errors = [{{=__err}}];
+    return false;
+  {{??}}
+    var err = {{=__err}};
+    {{# def._addError:_rule }}
+  {{?}}
 #}}
 
 

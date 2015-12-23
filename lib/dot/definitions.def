@@ -114,3 +114,20 @@
 {{## def.$dataNotType:_type:
   {{?$isData}} typeof {{=$schemaValue}} != _type || {{?}}
 #}}
+
+
+{{## def.beginDefOut:
+  {{
+    var $$outStack = $$outStack || [];
+    $$outStack.push(out);
+    out = '';
+  }}
+#}}
+
+
+{{## def.storeDefOut:_variable:
+  {{
+    var _variable = out;
+    out = $$outStack.pop();
+  }}
+#}}

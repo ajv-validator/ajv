@@ -54,19 +54,25 @@ var {{=$errs}} = errors;
 {{?}}
 
 if (!{{# def.callRuleValidate }}) {
+  {{# def.beginDefOut}}
+    {{# def.error:'custom' }}
+  {{# def.storeDefOut:__customError }}
+
   {{? $inline }}
     {{? $rDef.errors }}
       {{? $rDef.errors != 'full' }}
         {{# def.extendErrors:true }}
       {{?}}
-    {{?? $rDef.errors === false}}
-      {{# def.error:'custom' }}
     {{??}}
-      if ({{=$errs}} == errors) {
-        {{# def.error:'custom' }}
-      } else {
-        {{# def.extendErrors:true }}
-      }
+      {{? $rDef.errors === false}}
+        {{= __customError }}
+      {{??}}
+        if ({{=$errs}} == errors) {
+          {{= __customError }}
+        } else {
+          {{# def.extendErrors:true }}
+        }
+      {{?}}
     {{?}}
   {{??}}
     if (Array.isArray({{=$ruleErrs}})) {
@@ -75,7 +81,7 @@ if (!{{# def.callRuleValidate }}) {
       errors = vErrors.length;
       {{# def.extendErrors:false }}
     } else {
-      {{# def.error:'custom' }}
+      {{= __customError }}
     }
   {{?}}
 } {{? $breakOnError }} else { {{?}}
