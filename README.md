@@ -264,14 +264,14 @@ See the example of defining recursive macro keyword `deepProperties` in the [tes
 
 ### Define keyword with "inline" compilation function
 
-Inline compilation function is called during schema compilation. It is passed three parameters: `it` (the current schema compilation context), `schema` and `parentSchema` and it should return the code (as a string) that will be inlined in the code of compiled schema. This code can be either an expression that evaluates to the validation result (boolean) or a set of statements that assign the validation result to a variable.
+Inline compilation function is called during schema compilation. It is passed four parameters: `it` (the current schema compilation context), `keyword` (added in v3.0 to allow compiling multiple keywords with a single function), `schema` and `parentSchema` and it should return the code (as a string) that will be inlined in the code of compiled schema. This code can be either an expression that evaluates to the validation result (boolean) or a set of statements that assigns the validation result to a variable.
 
 While it can be more difficult to define keywords with "inline" functions, it can have the best performance.
 
 Example `even` keyword:
 
 ```
-ajv.addKeyword('even', { type: 'number', inline: function (it, schema) {
+ajv.addKeyword('even', { type: 'number', inline: function (it, keyword, schema) {
   var op = schema ? '===' : '!==';
   return 'data' + (it.dataLevel || '') + ' % 2 ' + op + ' 0';
 } });
