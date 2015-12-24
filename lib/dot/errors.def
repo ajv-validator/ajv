@@ -122,7 +122,7 @@
   pattern:         "{{#def.schemaRefOrQS}}",
   required:        "validate.schema{{=$schemaPath}}",
   type:            "validate.schema{{=$schemaPath}}",
-  uniqueItems:     "{{=$schema}}",
+  uniqueItems:     "{{#def.schemaRefOrVal}}",
   custom:          "validate.schema{{=$schemaPath}}",
   patternGroups:   "validate.schema{{=$schemaPath}}",
   switch:          "validate.schema{{=$schemaPath}}",

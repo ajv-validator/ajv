@@ -1,0 +1,54 @@
+[
+  {
+    "description": "uniqueItems in property",
+    "schema": {
+      "properties": {
+        "list": {
+          "uniqueItems": { "$data": "1/unique" }
+        },
+        "unique": {}
+      }
+    },
+    "tests": [
+      {
+        "description": "unique array is valid",
+        "data": {
+          "list": [1, 2],
+          "unique": true
+        },
+        "valid": true
+      },
+      {
+        "description": "non-unique array of is invalid",
+        "data": {
+          "list": [1, 1],
+          "unique": true
+        },
+        "valid": false
+      },
+      {
+        "description": "non-unique array is valid if uniqueItems is false",
+        "data": {
+          "list": [1, 1],
+          "unique": false
+        },
+        "valid": true
+      },
+      {
+        "description": "non-unique array is valid if uniqueItems is undefined",
+        "data": {
+          "list": [1, 1]
+        },
+        "valid": true
+      },
+      {
+        "description": "fails if uniqueItems is not boolean",
+        "data": {
+          "list": [1, 2],
+          "unique": "true"
+        },
+        "valid": false
+      }
+    ]
+  }
+]
