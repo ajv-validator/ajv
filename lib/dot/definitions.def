@@ -111,6 +111,11 @@
 #}}
 
 
+{{## def.$dataType:_type:
+  {{?$isData}} typeof {{=$schemaValue}} == _type && {{?}}
+#}}
+
+
 {{## def.$dataNotType:_type:
   {{?$isData}} typeof {{=$schemaValue}} != _type || {{?}}
 #}}

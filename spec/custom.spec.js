@@ -399,6 +399,17 @@ describe('Custom keywords', function () {
       });
     });
 
+    it('should define "inline" keyword without errors', function() {
+      var inlineRangeTemplate = customRules.range;
+
+      testRangeKeyword({
+        type: 'number',
+        inline: inlineRangeTemplate,
+        statements: true,
+        errors: false
+      });
+    });
+
     it('should allow defining optional errors', function() {
       var inlineRangeTemplate = customRules.rangeWithErrors;
 

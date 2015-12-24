@@ -178,6 +178,20 @@ describe('Ajv Options', function () {
       ajv.validate(schema, invalideDateTime) .should.equal(false);
       ajvFF.validate(schema, invalideDateTime) .should.equal(true);
     });
+
+    it('should not validate formatMaximum/Minimum if option format == false', function() {
+      var ajv = Ajv({ v5: true, allErrors: true })
+        , ajvFF = Ajv({ v5: true, allErrors: true, format: false });
+
+      var schema = {
+        format: 'date',
+        formatMaximum: '2015-08-01'
+      };
+
+      var date = '2015-09-01';
+      ajv.validate(schema, date) .should.equal(false);
+      ajvFF.validate(schema, date) .should.equal(true);
+    });
   });
 
 

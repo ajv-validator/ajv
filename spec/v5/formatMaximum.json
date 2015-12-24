@@ -202,5 +202,19 @@
         "valid": true
       }
     ]
+  },
+  {
+    "description": "formatMaximum is valid with unknown format",
+    "schema": {
+      "format": "unknown",
+      "formatMaximum": "2015"
+    },
+    "tests": [
+      {
+        "description": "always valid",
+        "data": "2016",
+        "valid": true
+      }
+    ]
   }
 ]
