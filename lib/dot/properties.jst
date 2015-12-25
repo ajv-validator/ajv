@@ -34,8 +34,11 @@
     , $additionalIsSchema = typeof $aProperties == 'object'
                               && Object.keys($aProperties).length
     , $removeAdditional = it.opts.removeAdditional
-    , $checkAdditional = $noAdditional || $additionalIsSchema || $removeAdditional
-    , $requiredProperties = it.util.toHash(it.schema.required || []);
+    , $checkAdditional = $noAdditional || $additionalIsSchema || $removeAdditional;
+
+  var $required = it.schema.required;
+  if ($required && !(it.opts.v5 && $required.$data) && $required.length < it.opts.loopRequired)
+    var $requiredHash = it.util.toHash($required);
 
   if (it.opts.v5) {
     var $pgProperties = it.schema.patternGroups || {}
@@ -156,7 +159,7 @@ var valid{{=$it.level}} = true;
         var {{=$nextData}} = {{=$passData}};
       {{?}}
 
-      {{? $requiredProperties[$propertyKey] }}
+      {{? $requiredHash && $requiredHash[$propertyKey] }}
         if ({{=$useData}} === undefined) {
           valid{{=$it.level}} = false;
           {{

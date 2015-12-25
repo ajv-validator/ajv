@@ -573,6 +573,7 @@ Defaults:
   meta:             true,
   validateSchema:   true,
   inlineRefs:       true,
+  loopRequired:     Infinity,
   missingRefs:      true,
   loadSchema:       function(uri, cb) { /* ... */ cb(err, schema); },
   uniqueItems:      true,
@@ -595,6 +596,7 @@ Defaults:
 - _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default).
 - _validateSchema_: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can either be http://json-schema.org/schema or http://json-schema.org/draft-04/schema or absent (draft-4 meta-schema will be used) or can be a reference to the schema previously added with `addMetaSchema` method. If the validation fails, the exception is thrown. Pass "log" in this option to log error instead of throwing exception. Pass `false` to skip schema validation.
 - _inlineRefs_: by default the referenced schemas that don't have refs in them are inlined, regardless of their size - that substantially improves performance at the cost of the bigger size of compiled schema functions. Pass `false` to not inline referenced schemas (they will be compiled as separate functions). Pass integer number to limit the maximum number of keywords of the schema that will be inlined.
+- _loopRequired_: by default `required` keyword is compiled into a single expression (or a sequence of statements in `allErrors` mode). In case of a very large number of properties in this keyword it may result in a very big validation function. Pass integer to set the number of properties above which `required` keyword will be validated in a loop - smaller validation function size but also worse performance.
 - _missingRefs_: by default if the reference cannot be resolved during compilation the exception is thrown. The thrown error has properties `missingRef` (with hash fragment) and `missingSchema` (without it). Both properties are resolved relative to the current base id (usually schema id, unless it was substituted). Pass 'ignore' to log error during compilation and pass validation. Pass 'fail' to log error and successfully compile schema but fail validation if this rule is checked.
 - _loadSchema_: asynchronous function that will be used to load remote schemas when the method `compileAsync` is used and some reference is missing (option `missingRefs` should not be 'fail' or 'ignore'). This function should accept 2 parameters: remote schema uri and node-style callback. See example in Asynchronous compilation.
 - _uniqueItems_: validate `uniqueItems` keyword (true by default).

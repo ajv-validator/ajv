@@ -13,9 +13,9 @@ describe('Validation errors', function () {
   });
 
   function createInstances(errorDataPath) {
-    ajv = Ajv({ errorDataPath: errorDataPath });
-    ajvJP = Ajv({ errorDataPath: errorDataPath, jsonPointers: true });
-    fullAjv = Ajv({ errorDataPath: errorDataPath, allErrors: true, jsonPointers: true });
+    ajv = Ajv({ errorDataPath: errorDataPath, loopRequired: 21 });
+    ajvJP = Ajv({ errorDataPath: errorDataPath, jsonPointers: true, loopRequired: 21 });
+    fullAjv = Ajv({ errorDataPath: errorDataPath, allErrors: true, jsonPointers: true, loopRequired: 21 });
   }
 
   it('error should include dataPath', function() {
@@ -262,6 +262,42 @@ describe('Validation errors', function () {
 
       _testRequired(errorDataPath, schema, '#/anyOf/0', '.', 1);
     }
+
+
+    it('should not validate required twice in large schemas with loopRequired option', function() {
+      var ajv = Ajv({ loopRequired: 1, allErrors: true });
+
+      var schema = {
+        properties: {
+          foo: { type: 'integer' },
+          bar: { type: 'integer' }
+        },
+        required: ['foo', 'bar']
+      };
+
+      var validate = ajv.compile(schema);
+
+      validate({}) .should.equal(false);
+      validate.errors .should.have.length(2);
+    });
+
+
+    it('should not validate required twice with $data ref', function() {
+      var ajv = Ajv({ v5: true, allErrors: true });
+
+      var schema = {
+        properties: {
+          foo: { type: 'integer' },
+          bar: { type: 'integer' }
+        },
+        required: { $data: '0/requiredProperties' }
+      };
+
+      var validate = ajv.compile(schema);
+
+      validate({ requiredProperties: ['foo', 'bar'] }) .should.equal(false);
+      validate.errors .should.have.length(2);
+    });
   });
 
 

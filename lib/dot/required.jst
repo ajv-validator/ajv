@@ -22,7 +22,8 @@
 
 
 {{? !$isData }}
-  {{? it.schema.properties && Object.keys(it.schema.properties).length }}
+  {{? $schema.length < it.opts.loopRequired &&
+      it.schema.properties && Object.keys(it.schema.properties).length }}
     {{ var $required = []; }}
     {{~ $schema:$property }}
       {{ var $propertySch = it.schema.properties[$property]; }}
@@ -41,7 +42,7 @@
 
   {{? $breakOnError }}
     var missing{{=$lvl}};
-    {{? $isData || $required.length > 20 }}
+    {{? $isData || $required.length >= it.opts.loopRequired }}
       {{# def.setupLoop }}
       var {{=$valid}};
 
@@ -63,7 +64,7 @@
       } else {
     {{?}}
   {{??}}
-    {{? $isData || $required.length > 20 }}
+    {{? $isData || $required.length >= it.opts.loopRequired }}
       {{# def.setupLoop }}
       {{? $isData }}
         if (schema{{=$lvl}} && !Array.isArray(schema{{=$lvl}})) {
