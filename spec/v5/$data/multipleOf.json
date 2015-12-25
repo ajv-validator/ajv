@@ -55,6 +55,13 @@
           "multiple": 10
         },
         "valid": false
+      },
+      {
+        "description": "valid if value of multipleOf is undefined",
+        "data": {
+          "multiple": 10
+        },
+        "valid": true
       }
     ]
   },

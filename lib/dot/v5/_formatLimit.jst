@@ -11,7 +11,8 @@ var {{=$valid}} = undefined;
 
 {{## def.compareFormat:
   {{? $isData }}
-    if (typeof {{=$schemaValue}} != 'string') {{=$valid}} = false;
+    if ({{=$schemaValue}} === undefined) {{=$valid}} = true;
+    else if (typeof {{=$schemaValue}} != 'string') {{=$valid}} = false;
     else {
     {{ $closingBraces += '}'; }}
   {{?}}
@@ -73,7 +74,7 @@ var {{=$valid}} = undefined;
       , $opStr = '\' + ' + $opExpr + ' + \'';
   }}
 
-  if (typeof {{=$schemaValueExcl}} != 'boolean' && typeof {{=$schemaValueExcl}} != 'undefined') {
+  if (typeof {{=$schemaValueExcl}} != 'boolean' && {{=$schemaValueExcl}} !== undefined) {
     {{=$valid}} = false;
     {{ var $errorKeyword = $exclusiveKeyword; }}
     {{# def.error:'_exclusiveFormatLimit' }}

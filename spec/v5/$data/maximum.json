@@ -49,6 +49,13 @@
           "smallerOrEqual": 2
         },
         "valid": false
+      },
+      {
+        "description": "valid if value of maximum is undefined",
+        "data": {
+          "smallerOrEqual": 2
+        },
+        "valid": true
       }
     ]
   },

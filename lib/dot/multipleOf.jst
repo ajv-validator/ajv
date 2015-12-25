@@ -4,7 +4,11 @@
 {{# def.$data }}
 
 var division{{=$lvl}};
-if ({{# def.$dataNotType:'number' }}
-    (division{{=$lvl}} = {{=$data}} / {{=$schemaValue}}) !== parseInt(division{{=$lvl}})) {
+if ({{?$isData}}
+      {{=$schemaValue}} !== undefined && (
+      typeof {{=$schemaValue}} != 'number' ||
+    {{?}}
+      (division{{=$lvl}} = {{=$data}} / {{=$schemaValue}}) !== parseInt(division{{=$lvl}})
+    {{?$isData}}  )  {{?}} ) {
   {{# def.error:'multipleOf' }}
 } {{? $breakOnError }} else { {{?}}

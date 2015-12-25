@@ -39,6 +39,13 @@
           "string": "123"
         },
         "valid": false
+      },
+      {
+        "description": "valid if value of pattern is undefined",
+        "data": {
+          "string": "123"
+        },
+        "valid": true
       }
     ]
   },

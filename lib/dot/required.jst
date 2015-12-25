@@ -41,11 +41,8 @@
     {{? $isData || $required.length > 20 }}
       {{# def.setupLoop }}
       var {{=$valid}};
-      {{? $isData }}
-        if (schema{{=$lvl}} === undefined) {{=$valid}} = true;
-        else if (!Array.isArray(schema{{=$lvl}})) {{=$valid}} = false;
-        else {
-      {{?}}
+
+      {{?$isData}}{{# def.check$dataIsArray }}{{?}}
 
       for (var {{=$i}} = 0; {{=$i}} < schema{{=$lvl}}.length; {{=$i}}++) {
         {{=$valid}} = {{=$data}}[schema{{=$lvl}}[{{=$i}}]] !== undefined;

@@ -47,6 +47,13 @@
           "object": {"foo": 1, "bar": 2}
         },
         "valid": false
+      },
+      {
+        "description": "valid if value of maxProperties is undefined",
+        "data": {
+          "object": {"foo": 1, "bar": 2}
+        },
+        "valid": true
       }
     ]
   }

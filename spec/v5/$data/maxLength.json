@@ -47,6 +47,13 @@
           "string": "f"
         },
         "valid": false
+      },
+      {
+        "description": "valid if value of maxLength is undefined",
+        "data": {
+          "string": "f"
+        },
+        "valid": true
       }
     ]
   }

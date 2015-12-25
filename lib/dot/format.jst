@@ -39,7 +39,7 @@
   var isObject{{=$lvl}} = typeof {{=$format}} == 'object'
                           && !({{=$format}} instanceof RegExp)
                           && {{=$format}}.validate;
-  if (isObject{{=$lvl}}) {{=$format}} = {{=$format}}.validate;    
+  if (isObject{{=$lvl}}) {{=$format}} = {{=$format}}.validate;  
   if ({{# def.$dataCheckFormat }}) {
 {{??}}
   {{ var $format = it.formats[$schema]; }}

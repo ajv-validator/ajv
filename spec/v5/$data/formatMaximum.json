@@ -50,6 +50,13 @@
           "beforeThan": 2015
         },
         "valid": false
+      },
+      {
+        "description": "valid if value of formatMaximum is undefined",
+        "data": {
+          "finalDate": "2014-12-03"
+        },
+        "valid": true
       }
     ]
   },

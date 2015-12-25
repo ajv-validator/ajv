@@ -111,13 +111,15 @@
 #}}
 
 
-{{## def.$dataType:_type:
-  {{?$isData}} typeof {{=$schemaValue}} == _type && {{?}}
+{{## def.$dataNotType:_type:
+  {{?$isData}} ({{=$schemaValue}} !== undefined && typeof {{=$schemaValue}} != _type) || {{?}}
 #}}
 
 
-{{## def.$dataNotType:_type:
-  {{?$isData}} typeof {{=$schemaValue}} != _type || {{?}}
+{{## def.check$dataIsArray:
+  if (schema{{=$lvl}} === undefined) {{=$valid}} = true;
+  else if (!Array.isArray(schema{{=$lvl}})) {{=$valid}} = false;
+  else {
 #}}
 
 

@@ -47,6 +47,13 @@
           "array": [1, 2]
         },
         "valid": false
+      },
+      {
+        "description": "valid if value of maxItems is undefined",
+        "data": {
+          "array": [1, 2]
+        },
+        "valid": true
       }
     ]
   }

@@ -39,6 +39,13 @@
           "value": 1
         },
         "valid": false
+      },
+      {
+        "description": "valid if value of enum is undefined",
+        "data": {
+          "value": 1
+        },
+        "valid": true
       }
     ]
   },

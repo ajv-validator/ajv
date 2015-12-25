@@ -57,6 +57,13 @@
         "valid": true
       },
       {
+        "description": "valid if the format is undefined",
+        "data": {
+          "str": "any value"
+        },
+        "valid": true
+      },
+      {
         "description": "fails if value of format is not a string",
         "data": {
           "str": "1963-06-19T08:30:06.283185Z",
