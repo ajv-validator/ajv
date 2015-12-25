@@ -22,6 +22,9 @@ jsonSchemaTest(instances, {
   afterError: function (res) {
     console.log('ajv options:', res.validator.opts);
   },
+  // afterEach: function (res) {
+  //   console.log(res.errors);
+  // },
   cwd: __dirname,
   hideFolder: 'v5/',
   timeout: 90000

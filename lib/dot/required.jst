@@ -2,9 +2,11 @@
 {{# def.errors }}
 {{# def.missing }}
 {{# def.setupKeyword }}
+{{# def.$data }}
+
 
 {{## def.setupLoop:
-  var schema{{=$lvl}} = validate.schema{{=$schemaPath}};
+  var schema{{=$lvl}} = {{? $isData }}{{=$schemaValue}}{{??}}validate.schema{{=$schemaPath}}{{?}};
   {{
     var $i = 'i' + $lvl
       , $propertyPath = 'schema' + $lvl + '[' + $i + ']'
@@ -16,42 +18,67 @@
 #}}
 
 
-{{? it.schema.properties && Object.keys(it.schema.properties).length }}
-  {{ var $required = []; }}
-  {{~ $schema:$property }}
-    {{ var $propertySch = it.schema.properties[$property]; }}
-    {{? !($propertySch && {{# def.nonEmptySchema:$propertySch}}) }}
-      {{ $required[$required.length] = $property; }}
-    {{?}}
-  {{~}}
-{{??}}
-  {{ var $required = $schema; }}
+{{? !$isData }}
+  {{? it.schema.properties && Object.keys(it.schema.properties).length }}
+    {{ var $required = []; }}
+    {{~ $schema:$property }}
+      {{ var $propertySch = it.schema.properties[$property]; }}
+      {{? !($propertySch && {{# def.nonEmptySchema:$propertySch}}) }}
+        {{ $required[$required.length] = $property; }}
+      {{?}}
+    {{~}}
+  {{??}}
+    {{ var $required = $schema; }}
+  {{?}}
 {{?}}
 
 
-{{? $required.length }}
+{{? $isData || $required.length }}
   {{ var $currentErrorPath = it.errorPath; }}
 
   {{? $breakOnError }}
     var missing{{=$lvl}};
-    {{? $required.length <= 20 }}
+    {{? $isData || $required.length > 20 }}
+      {{# def.setupLoop }}
+      var {{=$valid}};
+      {{? $isData }}
+        if (schema{{=$lvl}} === undefined) {{=$valid}} = true;
+        else if (!Array.isArray(schema{{=$lvl}})) {{=$valid}} = false;
+        else {
+      {{?}}
+
+      for (var {{=$i}} = 0; {{=$i}} < schema{{=$lvl}}.length; {{=$i}}++) {
+        {{=$valid}} = {{=$data}}[schema{{=$lvl}}[{{=$i}}]] !== undefined;
+        if (!{{=$valid}}) break;
+      }
+
+      {{? $isData }}  }  {{?}}
+
+      {{# def.checkError:'required' }}
+      else {
+    {{??}}
       if ({{# def.checkMissingProperty:$required }}) {
         {{# def.errorMissingProperty }}
         {{# def.error:'required' }}
       } else {
-    {{??}}
-      {{# def.setupLoop }}
-
-      for (var {{=$i}} = 0; {{=$i}} < schema{{=$lvl}}.length; {{=$i}}++) {
-        var {{=$valid}} = {{=$data}}[schema{{=$lvl}}[{{=$i}}]] !== undefined;
-        if (!{{=$valid}}) break;
-      }
-
-      {{# def.checkError:'required' }}
-      else {
     {{?}}
   {{??}}
-    {{? $required.length <= 20 }}
+    {{? $isData || $required.length > 20 }}
+      {{# def.setupLoop }}
+      {{? $isData }}
+        if (schema{{=$lvl}} && !Array.isArray(schema{{=$lvl}})) {
+          {{# def.addError:'required' }}
+        } else if (schema{{=$lvl}} !== undefined) {
+      {{?}}
+
+      for (var {{=$i}} = 0; {{=$i}} < schema{{=$lvl}}.length; {{=$i}}++) {
+        if ({{=$data}}[schema{{=$lvl}}[{{=$i}}]] === undefined) {
+          {{# def.addError:'required' }}
+        }
+      }
+
+      {{? $isData }}  }  {{?}}
+    {{??}}
       {{~ $required:$property:$i }}
         {{
           var $prop = it.util.getProperty($property)
@@ -64,14 +91,6 @@
           {{# def.addError:'required' }}
         }
       {{~}}
-    {{??}}
-      {{# def.setupLoop }}
-
-      for (var {{=$i}} = 0; {{=$i}} < schema{{=$lvl}}.length; {{=$i}}++) {
-        if ({{=$data}}[schema{{=$lvl}}[{{=$i}}]] === undefined) {
-          {{# def.addError:'required' }}
-        }
-      }
     {{?}}
   {{?}}
 

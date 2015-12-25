@@ -1,0 +1,65 @@
+[
+  {
+    "description": "required schema in data property",
+    "schema": {
+      "properties": {
+        "foo": {},
+        "bar": {},
+        "requiredProperties": {}
+      },
+      "required": { "$data": "0/requiredProperties" }
+    },
+    "tests": [
+      {
+        "description": "present required property is valid",
+        "data": {
+          "foo": 1,
+          "requiredProperties": ["foo"]
+        },
+        "valid": true
+      },
+      {
+        "description": "non-present required property is invalid",
+        "data": {
+          "bar": 2,
+          "requiredProperties": ["foo"]
+        },
+        "valid": false
+      },
+      {
+        "description": "non-present second required property is invalid",
+        "data": {
+          "foo": 1,
+          "requiredProperties": ["foo", "bar"]
+        },
+        "valid": false
+      },
+      {
+        "description": "two present required properties is valid",
+        "data": {
+          "foo": 1,
+          "bar": 2,
+          "requiredProperties": ["foo", "bar"]
+        },
+        "valid": true
+      },
+      {
+        "description": "fails if value of required is not an array",
+        "data": {
+          "foo": 1,
+          "bar": 2,
+          "requiredProperties": true
+        },
+        "valid": false
+      },
+      {
+        "description": "valid if value of required is undefined",
+        "data": {
+          "foo": 1,
+          "bar": 2
+        },
+        "valid": true
+      }
+    ]
+  }
+]
