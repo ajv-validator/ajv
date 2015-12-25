@@ -29,8 +29,9 @@ NB: [Upgrading to version 2.0.0](https://github.com/epoberezkin/ajv/releases/tag
 - i18n error messages support with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package (version >= 1.0.0)
 - [filtering data](#filtering-data) from additional properties
 - [custom keywords](#defining-custom-keywords)
-- NEW: keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
-- NEW: [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#) for schemas using v5 keywords.
+- keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
+- [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#) for schemas using v5 keywords.
+- NEW: [v5 $data reference](v5-$data-reference) to use values from the validated data as values for the schema keywords.
 
 Currently ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
 
@@ -135,6 +136,52 @@ There are two modes of format validation: `fast` and `full`. This mode affects f
 You can add additional formats and replace any of the formats above using [addFormat](#api-addformat) method.
 
 You can find patterns used for format validation and the sources that were used in [formats.js](https://github.com/epoberezkin/ajv/blob/master/lib/compile/formats.js).
+
+
+## $data reference
+
+With `v5` option you can use values from the validated data as the values for the schema keywords. See [v5 proposal](https://github.com/json-schema/json-schema/wiki/$data-(v5-proposal)) for more information about how it works.
+
+`$data` reference is supported in the keywords: constant, enum, format, maximum/minimum, exclusiveMaximum / exclusiveMinimum, maxLength / minLength, maxItems / minItems, maxProperties / minProperties, formatMaximum / formatMinimum, exclusiveFormatMaximum / exclusiveFormatMinimum, multipleOf, pattern, required, uniqueItems.
+
+The value of "$data" should be a [relative JSON-pointer](http://tools.ietf.org/html/draft-luff-relative-json-pointer-00).
+
+Examples.
+
+This schema requires that the value in property `smaller` is less or equal than the value in the property larger:
+
+```
+var schema = {
+  "properties": {
+    "smaller": {
+      "type": number,
+      "maximum": { "$data": "1/larger" }
+    },
+    "larger": { "type": number }
+  }
+};
+
+var validData = {
+  smaller: 5,
+  larger: 7
+};
+```
+
+This schema requires that the properties have the same format as their field names:
+
+```
+var schema = {
+  "additionalProperties": {
+    "type": "string",
+    "format": { "$data": "0#" }
+  }
+};
+
+var validData = {
+  'date-time': '1963-06-19T08:30:06.283185Z',
+  email: 'joe.bloggs@example.com'
+}
+```
 
 
 ## Defining custom keywords
