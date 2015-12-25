@@ -6,7 +6,10 @@
 
 
 {{## def.setupLoop:
-  var schema{{=$lvl}} = {{? $isData }}{{=$schemaValue}}{{??}}validate.schema{{=$schemaPath}}{{?}};
+  {{? !$isData }}
+    var schema{{=$lvl}} = validate.schema{{=$schemaPath}};
+  {{?}}
+
   {{
     var $i = 'i' + $lvl
       , $propertyPath = 'schema' + $lvl + '[' + $i + ']'

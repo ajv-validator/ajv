@@ -73,6 +73,8 @@ var {{=$valid}} = undefined;
       , $opExpr = 'op' + $lvl
       , $opStr = '\' + ' + $opExpr + ' + \'';
   }}
+  var schemaExcl{{=$lvl}} = {{=$schemaValueExcl}};
+  {{ $schemaValueExcl = 'schemaExcl' + $lvl; }}
 
   if (typeof {{=$schemaValueExcl}} != 'boolean' && {{=$schemaValueExcl}} !== undefined) {
     {{=$valid}} = false;

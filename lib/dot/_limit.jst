@@ -19,6 +19,8 @@
       , $opExpr = 'op' + $lvl
       , $opStr = '\' + ' + $opExpr + ' + \'';
   }}
+  var schemaExcl{{=$lvl}} = {{=$schemaValueExcl}};
+  {{ $schemaValueExcl = 'schemaExcl' + $lvl; }}
 
   var exclusive{{=$lvl}};
   if (typeof {{=$schemaValueExcl}} != 'boolean' && typeof {{=$schemaValueExcl}} != 'undefined') {

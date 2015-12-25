@@ -4,8 +4,10 @@
 {{# def.$data }}
 
 {{ var $i = 'i' + $lvl; }}
-var schema{{=$lvl}} = {{= $isData ? $schemaValue : 'validate.schema' + $schemaPath }}
-  , {{=$valid}};
+{{? !$isData }}
+  var schema{{=$lvl}} = validate.schema{{=$schemaPath}};
+{{?}}
+var {{=$valid}};
 
 {{?$isData}}{{# def.check$dataIsArray }}{{?}}
 

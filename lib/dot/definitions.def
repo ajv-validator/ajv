@@ -108,6 +108,10 @@
                        ? it.util.getData($schema.$data, $dataLvl, it.dataPathArr)
                        : $schema;
   }}
+  {{? $isData }}
+    var schema{{=$lvl}} = {{=$schemaValue}};
+    {{ $schemaValue = 'schema' + $lvl; }}
+  {{?}}
 #}}
 
 

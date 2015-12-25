@@ -3,6 +3,8 @@
 {{# def.setupKeyword }}
 {{# def.$data }}
 
-var constantSchema{{=$lvl}} = {{= $isData ? $schemaValue : 'validate.schema' + $schemaPath }};
-var {{=$valid}} = equal({{=$data}}, constantSchema{{=$lvl}});
+{{? !$isData }}
+  var schema{{=$lvl}} = validate.schema{{=$schemaPath}};
+{{?}}
+var {{=$valid}} = equal({{=$data}}, schema{{=$lvl}});
 {{# def.checkError:'constant' }}

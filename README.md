@@ -183,6 +183,8 @@ var validData = {
 }
 ```
 
+`$data` reference is resolved safely - it won't throw even if some property is undefined. If `$data` resolves to `undefined` the validation succeeds (with the exclusion of `constant` keyword). If `$data` resolves to incorrect type (e.g. not "number" for maximum keyword) the validation fails.
+
 
 ## Defining custom keywords
 
