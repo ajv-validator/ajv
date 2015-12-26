@@ -8,10 +8,11 @@
     , $i = 'i' + $lvl
     , $ruleErr = 'ruleErr' + $lvl
     , $rDef = $rule.definition
-    , $inline = $rDef.inline;
+    , $inline = $rDef.inline
+    , $macro = $rDef.macro;
 }}
 
-{{? !$inline }}{{=$ruleErrs}} = null;{{?}}
+{{? !($inline || $macro) }}{{=$ruleErrs}} = null;{{?}}
 var {{=$errs}} = errors;
 
 {{## def.callRuleValidate:
@@ -21,6 +22,8 @@ var {{=$errs}} = errors;
     {{??}}
       ({{= $ruleValidate.validate }})
     {{?}}
+  {{?? $macro }}
+    valid{{=$it.level}}
   {{??}}
     {{=$ruleValidate.code}}.call(self
       {{? $rDef.compile }}
@@ -51,12 +54,22 @@ var {{=$errs}} = errors;
 
 {{? $inline && $rDef.statements }}
   {{= $ruleValidate.validate }}
+{{?? $macro }}
+  {{# def.setupNextLevel }}
+  {{
+    $it.schema = $ruleValidate.validate;
+    $it.schemaPath = '';
+  }}
+  {{# def.setCompositeRule }}
+  {{ var $code = it.validate($it).replace(/validate\.schema/g, $ruleValidate.code); }}
+  {{# def.resetCompositeRule }}
+  {{= $code }}
 {{?}}
 
 if (!{{# def.callRuleValidate }}) {
   {{# def.beginDefOut}}
     {{# def.error:'custom' }}
-  {{# def.storeDefOut:__customError }}
+  {{# def.storeDefOut:def_customError }}
 
   {{? $inline }}
     {{? $rDef.errors }}
@@ -65,15 +78,17 @@ if (!{{# def.callRuleValidate }}) {
       {{?}}
     {{??}}
       {{? $rDef.errors === false}}
-        {{= __customError }}
+        {{= def_customError }}
       {{??}}
         if ({{=$errs}} == errors) {
-          {{= __customError }}
+          {{= def_customError }}
         } else {
           {{# def.extendErrors:true }}
         }
       {{?}}
     {{?}}
+  {{?? $macro}}
+    {{# def.extraError:'custom' }}
   {{??}}
     if (Array.isArray({{=$ruleErrs}})) {
       if (vErrors === null) vErrors = {{=$ruleErrs}};
@@ -81,7 +96,7 @@ if (!{{# def.callRuleValidate }}) {
       errors = vErrors.length;
       {{# def.extendErrors:false }}
     } else {
-      {{= __customError }}
+      {{= def_customError }}
     }
   {{?}}
 } {{? $breakOnError }} else { {{?}}

@@ -129,23 +129,23 @@ describe('Custom keywords', function () {
 
   describe('macro rules', function() {
     it('should add and validate rule with "macro" keyword', function() {
-      testEvenKeyword({ macro: macroEven });
+      testEvenKeyword({ macro: macroEven }, 2);
     });
 
     it('should add and expand macro rule', function() {
-      testConstantKeyword({ macro: macroConstant });
+      testConstantKeyword({ macro: macroConstant }, 2);
     });
 
     it('should allow multiple schemas for the same macro keyword', function () {
-      testMultipleConstantKeyword({ macro: macroConstant });
+      testMultipleConstantKeyword({ macro: macroConstant }, 2);
     });
 
     it('should pass parent schema to "macro" keyword', function() {
-      testRangeKeyword({ macro: macroRange });
+      testRangeKeyword({ macro: macroRange }, undefined, 2);
     });
 
     it('should allow multiple parent schemas for the same macro keyword', function () {
-      testMultipleRangeKeyword({ macro: macroRange });
+      testMultipleRangeKeyword({ macro: macroRange }, 2);
     });
 
     it('should recursively expand macro keywords', function() {
@@ -215,17 +215,17 @@ describe('Custom keywords', function () {
         shouldBeInvalid(validate, {
           a: {b: {c: 5}}, // out of range
           d: {e: {f: {g: 'foo'}}}
-        });
+        }, 5);
 
         shouldBeInvalid(validate, {
           a: {b: {c: 'bar'}}, // not number
           d: {e: {f: {g: 'foo'}}}
-        });
+        }, 4);
 
         shouldBeInvalid(validate, {
           a: {b: {c: 3}},
           d: {e: {f: {g: 2}}} // not string
-        });
+        }, 5);
 
         function macroDeepProperties(schema) {
           if (typeof schema != 'object')
@@ -262,19 +262,19 @@ describe('Custom keywords', function () {
         };
 
         var validate = ajv.compile(schema);
-        var numErrors = ajv.opts.allErrors ? 2 : 1;
+        var numErrors = ajv.opts.allErrors ? 4 : 2;
 
-        shouldBeInvalid(validate, 2);
+        shouldBeInvalid(validate, 2, 2);
         shouldBeInvalid(validate, 3, numErrors);
         shouldBeValid(validate, 4);
-        shouldBeInvalid(validate, 5);
+        shouldBeInvalid(validate, 5, 2);
         shouldBeValid(validate, 6);
         shouldBeInvalid(validate, 7, numErrors);
-        shouldBeInvalid(validate, 8);
+        shouldBeInvalid(validate, 8, 2);
       });
     });
 
-    it('should use "allOf" keyword if macro schemas cannot be merged', function() {
+    it('should validate macro keyword when it resolves to the same keyword as exists', function() {
       instances.forEach(function (ajv) {
         ajv.addKeyword('range', { macro: macroRange });
 
@@ -284,8 +284,6 @@ describe('Custom keywords', function () {
         };
 
         var validate = ajv.compile(schema);
-        validate.schema.allOf .should.be.an('array');
-        validate.schema.allOf .should.have.length(2);
 
         shouldBeValid(validate, 3);
         shouldBeInvalid(validate, 2);
@@ -305,13 +303,13 @@ describe('Custom keywords', function () {
 
         var validate = ajv.compile(schema);
 
-        shouldBeInvalid(validate, 2);
-        shouldBeInvalid(validate, 3);
+        shouldBeInvalid(validate, 2, 2);
+        shouldBeInvalid(validate, 3, 2);
         shouldBeValid(validate, 4);
         shouldBeValid(validate, 5);
         shouldBeValid(validate, 6);
-        shouldBeInvalid(validate, 7);
-        shouldBeInvalid(validate, 8);
+        shouldBeInvalid(validate, 7, 2);
+        shouldBeInvalid(validate, 8, 2);
       });
     });
 
@@ -330,12 +328,12 @@ describe('Custom keywords', function () {
 
         var validate = ajv.compile(schema);
 
-        shouldBeInvalid(validate, [1,2,3]);
-        shouldBeInvalid(validate, [2,3,4]);
+        shouldBeInvalid(validate, [1,2,3], 2);
+        shouldBeInvalid(validate, [2,3,4], 2);
         shouldBeValid(validate, [3,4,5]); // only 5 is in range
         shouldBeValid(validate, [6,7,8]); // only 6 is in range
-        shouldBeInvalid(validate, [7,8,9]);
-        shouldBeInvalid(validate, [8,9,10]);
+        shouldBeInvalid(validate, [7,8,9], 2);
+        shouldBeInvalid(validate, [8,9,10], 2);
 
         function macroContains(schema) {
           return { "not": { "items": { "not": schema } } };
@@ -343,7 +341,7 @@ describe('Custom keywords', function () {
       });
     });
 
-    it('should throw exception is macro expansion is an invalid schema', function() {
+    it('should throw exception if macro expansion is an invalid schema', function() {
       ajv.addKeyword('invalid', { macro: macroInvalid });
       var schema = { "invalid": true };
 
@@ -448,7 +446,7 @@ describe('Custom keywords', function () {
   });
 
 
-  function testEvenKeyword(definition) {
+  function testEvenKeyword(definition, numErrors) {
     instances.forEach(function (ajv) {
       ajv.addKeyword('even', definition);
       var schema = { "even": true };
@@ -456,12 +454,12 @@ describe('Custom keywords', function () {
 
       shouldBeValid(validate, 2);
       shouldBeValid(validate, 'abc');
-      shouldBeInvalid(validate, 2.5);
-      shouldBeInvalid(validate, 3);
+      shouldBeInvalid(validate, 2.5, numErrors);
+      shouldBeInvalid(validate, 3, numErrors);
     });
   }
 
-  function testConstantKeyword(definition) {
+  function testConstantKeyword(definition, numErrors) {
     instances.forEach(function (ajv) {
       ajv.addKeyword('constant', definition);
 
@@ -469,12 +467,12 @@ describe('Custom keywords', function () {
       var validate = ajv.compile(schema);
 
       shouldBeValid(validate, 'abc');
-      shouldBeInvalid(validate, 2);
-      shouldBeInvalid(validate, {});
+      shouldBeInvalid(validate, 2, numErrors);
+      shouldBeInvalid(validate, {}, numErrors);
     });
   }
 
-  function testMultipleConstantKeyword(definition) {
+  function testMultipleConstantKeyword(definition, numErrors) {
     instances.forEach(function (ajv) {
       ajv.addKeyword('constant', definition);
 
@@ -489,19 +487,19 @@ describe('Custom keywords', function () {
       var validate = ajv.compile(schema);
 
       shouldBeValid(validate, {a:1, b:1});
-      shouldBeInvalid(validate, {a:2, b:1});
+      shouldBeInvalid(validate, {a:2, b:1}, numErrors);
 
       shouldBeValid(validate, {a:1, c: {foo: 'bar'}});
-      shouldBeInvalid(validate, {a:1, c: {foo: 'baz'}});
+      shouldBeInvalid(validate, {a:1, c: {foo: 'baz'}}, numErrors);
 
       shouldBeValid(validate, [{foo: 'bar'}]);
       shouldBeValid(validate, [{foo: 'bar'}, {foo: 'bar'}]);
 
-      shouldBeInvalid(validate, [1]);
+      shouldBeInvalid(validate, [1], numErrors);
     });
   }
 
-  function testRangeKeyword(definition, customErrors) {
+  function testRangeKeyword(definition, customErrors, numErrors) {
     instances.forEach(function (ajv) {
       ajv.addKeyword('range', definition);
 
@@ -513,9 +511,9 @@ describe('Custom keywords', function () {
       shouldBeValid(validate, 4);
       shouldBeValid(validate, 'abc');
 
-      shouldBeInvalid(validate, 1.99);
+      shouldBeInvalid(validate, 1.99, numErrors);
       if (customErrors) shouldBeRangeError(validate.errors[0], '', '>=', 2);
-      shouldBeInvalid(validate, 4.01);
+      shouldBeInvalid(validate, 4.01, numErrors);
       if (customErrors) shouldBeRangeError(validate.errors[0], '', '<=', 4);
 
       var schema = {
@@ -532,14 +530,14 @@ describe('Custom keywords', function () {
       shouldBeValid(validate, { foo: 3 });
       shouldBeValid(validate, { foo: 3.99 });
 
-      shouldBeInvalid(validate, { foo: 2 });
+      shouldBeInvalid(validate, { foo: 2 }, numErrors);
       if (customErrors) shouldBeRangeError(validate.errors[0], '.foo', '>', 2, true);
-      shouldBeInvalid(validate, { foo: 4 });
+      shouldBeInvalid(validate, { foo: 4 }, numErrors);
       if (customErrors) shouldBeRangeError(validate.errors[0], '.foo', '<', 4, true);
     });
   }
 
-  function testMultipleRangeKeyword(definition) {
+  function testMultipleRangeKeyword(definition, numErrors) {
     instances.forEach(function (ajv) {
       ajv.addKeyword('range', definition);
 
@@ -554,13 +552,13 @@ describe('Custom keywords', function () {
       var validate = ajv.compile(schema);
 
       shouldBeValid(validate, {a:3.99, b:4});
-      shouldBeInvalid(validate, {a:4, b:4});
+      shouldBeInvalid(validate, {a:4, b:4}, numErrors);
 
       shouldBeValid(validate, {a:2.01, c: 7});
-      shouldBeInvalid(validate, {a:2.01, c: 7.01});
+      shouldBeInvalid(validate, {a:2.01, c: 7.01}, numErrors);
 
       shouldBeValid(validate, [5, 6, 7]);
-      shouldBeInvalid(validate, [7.01]);
+      shouldBeInvalid(validate, [7.01], numErrors);
     });
   }
 

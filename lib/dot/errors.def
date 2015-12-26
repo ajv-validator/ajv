@@ -51,6 +51,15 @@
 #}}
 
 
+{{## def.extraError:_rule:
+  {{# def.addError:_rule}}
+  {{? !it.compositeRule && $breakOnError }}
+    validate.errors = vErrors;
+    return false
+  {{?}}
+#}}
+
+
 {{## def.checkError:_rule:
   if (!{{=$valid}}) {
     {{# def.error:_rule }}
