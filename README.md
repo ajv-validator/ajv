@@ -10,7 +10,7 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
 [![Test Coverage](https://codeclimate.com/github/epoberezkin/ajv/badges/coverage.svg)](https://codeclimate.com/github/epoberezkin/ajv/coverage)
 
 
-NB: [Upgrading to version 2.0.0](https://github.com/epoberezkin/ajv/releases/tag/2.0.0).
+NB: [Changes in version 3.0.0](https://github.com/epoberezkin/ajv/releases/tag/3.0.0).
 
 
 ## Features
@@ -265,17 +265,17 @@ console.log(validate(4)); // false
 
 ### Define keyword with "macro" function
 
-"Macro" function is called during schema compilation. It is passed schema and parent schema and it should return another schema that will be applied to the data in addition to the original schema (if schemas have different keys they are merged, otherwise `allOf` keyword is used).
+"Macro" function is called during schema compilation. It is passed schema and parent schema and it should return another schema that will be applied to the data in addition to the original schema.
 
 It is the most efficient approach (in cases when the keyword logic can be expressed with another JSON-schema) because it is usually easy to implement and there is no extra function call during validation.
 
-The disadvantage of macro keywords is that you won't receive any keyword related error message if it fails (and you can't define custom errors for them).
+In addition to the errors from the expanded schema macro keyword will add its own error in case validation fails.
 
 
 Example. `range` and `exclusiveRange` keywords from the previous example defined with macro:
 
 ```
-ajv.addKeyword('range', { macro: function (schema, parentSchema) {
+ajv.addKeyword('range', { type: 'number', macro: function (schema, parentSchema) {
   return {
     minimum: schema[0],
     maximum: schema[1],
@@ -288,7 +288,7 @@ ajv.addKeyword('range', { macro: function (schema, parentSchema) {
 Example. `contains` keyword from version 5 proposals that requires that the array has at least one item matching schema (see https://github.com/json-schema/json-schema/wiki/contains-(v5-proposal)):
 
 ```
-ajv.addKeyword('contains', { macro: function (schema) {
+ajv.addKeyword('contains', { type: 'array', macro: function (schema) {
   return { "not": { "items": { "not": schema } } };
 } });
 
@@ -313,7 +313,7 @@ See the example of defining recursive macro keyword `deepProperties` in the [tes
 
 ### Define keyword with "inline" compilation function
 
-Inline compilation function is called during schema compilation. It is passed four parameters: `it` (the current schema compilation context), `keyword` (added in v3.0 to allow compiling multiple keywords with a single function), `schema` and `parentSchema` and it should return the code (as a string) that will be inlined in the code of compiled schema. This code can be either an expression that evaluates to the validation result (boolean) or a set of statements that assigns the validation result to a variable.
+Inline compilation function is called during schema compilation. It is passed four parameters: `it` (the current schema compilation context), `keyword` (added in v3.0 to simplify compiling multiple keywords with a single function), `schema` and `parentSchema` and it should return the code (as a string) that will be inlined in the code of compiled schema. This code can be either an expression that evaluates to the validation result (boolean) or a set of statements that assigns the validation result to a variable.
 
 While it can be more difficult to define keywords with "inline" functions, it can have the best performance.
 
@@ -618,7 +618,7 @@ In case of validation failure Ajv assigns the array of errors to `.errors` prope
 
 Each error is an object with the following properties:
 
-- _keyword_: validation keyword. For user defined validation keywords it is set to `"custom"` (with the exception of macro keywords and unless keyword definition defines its own errors).
+- _keyword_: validation keyword.
 - _dataPath_: the path to the part of the data that was validated. By default `dataPath` uses JavaScript property access notation (e.g., `".prop[1].subProp"`). When the option `jsonPointers` is true (see [Options](#options)) `dataPath` will be set using JSON pointer standard (e.g., `"/prop/1/subProp"`).
 - _schemaPath_: the path (JSON-pointer as a URI fragment) to the schema of the keyword that failed validation.
 - _params_: the object with the additional information about error that can be used to create custom error messages (e.g., using [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package). See below for parameters set by all keywords.
