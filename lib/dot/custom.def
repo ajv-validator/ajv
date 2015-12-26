@@ -67,6 +67,7 @@ var {{=$errs}} = errors;
 {{?}}
 
 if (!{{# def.callRuleValidate }}) {
+  {{ $errorKeyword = $rule.keyword; }}
   {{# def.beginDefOut}}
     {{# def.error:'custom' }}
   {{# def.storeDefOut:def_customError }}
@@ -99,4 +100,6 @@ if (!{{# def.callRuleValidate }}) {
       {{= def_customError }}
     }
   {{?}}
-} {{? $breakOnError }} else { {{?}}
+  {{ $errorKeyword = undefined; }}
+
+ } {{? $breakOnError }} else { {{?}}
