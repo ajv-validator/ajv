@@ -129,7 +129,7 @@ describe('Custom keywords', function () {
 
   describe('macro rules', function() {
     it('should add and validate rule with "macro" keyword', function() {
-      testEvenKeyword({ macro: macroEven }, 2);
+      testEvenKeyword({ type: 'number', macro: macroEven }, 2);
     });
 
     it('should add and expand macro rule', function() {
@@ -141,17 +141,17 @@ describe('Custom keywords', function () {
     });
 
     it('should pass parent schema to "macro" keyword', function() {
-      testRangeKeyword({ macro: macroRange }, undefined, 2);
+      testRangeKeyword({ type: 'number', macro: macroRange }, undefined, 2);
     });
 
     it('should allow multiple parent schemas for the same macro keyword', function () {
-      testMultipleRangeKeyword({ macro: macroRange }, 2);
+      testMultipleRangeKeyword({ type: 'number', macro: macroRange }, 2);
     });
 
     it('should recursively expand macro keywords', function() {
       instances.forEach(function (ajv) {
-        ajv.addKeyword('deepProperties', { macro: macroDeepProperties });
-        ajv.addKeyword('range', { macro: macroRange });
+        ajv.addKeyword('deepProperties', { type: 'object', macro: macroDeepProperties });
+        ajv.addKeyword('range', { type: 'number', macro: macroRange });
 
         var schema = {
           "deepProperties": {
@@ -253,8 +253,8 @@ describe('Custom keywords', function () {
 
     it('should correctly expand multiple macros on the same level', function() {
       instances.forEach(function (ajv) {
-        ajv.addKeyword('range', { macro: macroRange });
-        ajv.addKeyword('even', { macro: macroEven });
+        ajv.addKeyword('range', { type: 'number', macro: macroRange });
+        ajv.addKeyword('even', { type: 'number', macro: macroEven });
 
         var schema = {
           "range": [4,6],
@@ -276,7 +276,7 @@ describe('Custom keywords', function () {
 
     it('should validate macro keyword when it resolves to the same keyword as exists', function() {
       instances.forEach(function (ajv) {
-        ajv.addKeyword('range', { macro: macroRange });
+        ajv.addKeyword('range', { type: 'number', macro: macroRange });
 
         var schema = {
           "range": [1,4],
@@ -292,7 +292,7 @@ describe('Custom keywords', function () {
 
     it('should correctly expand macros in subschemas', function() {
       instances.forEach(function (ajv) {
-        ajv.addKeyword('range', { macro: macroRange });
+        ajv.addKeyword('range', { type: 'number', macro: macroRange });
 
         var schema = {
           "allOf": [
@@ -315,8 +315,8 @@ describe('Custom keywords', function () {
 
     it('should correctly expand macros in macro expansions', function() {
       instances.forEach(function (ajv) {
-        ajv.addKeyword('range', { macro: macroRange });
-        ajv.addKeyword('contains', { macro: macroContains });
+        ajv.addKeyword('range', { type: 'number', macro: macroRange });
+        ajv.addKeyword('contains', { type: 'array', macro: macroContains });
 
         var schema = {
           "contains": {
@@ -628,6 +628,20 @@ describe('Custom keywords', function () {
       }
     });
 
+    it('should throw if keyword is not a valid identifier', function() {
+      should.not.throw(function() {
+        ajv.addKeyword('mykeyword', {
+          validate: function() { return true; }
+        });
+      });
+
+      should.throw(function() {
+        ajv.addKeyword('my-keyword', {
+          validate: function() { return true; }
+        });
+      });
+    });
+
     it('should throw if unknown type is passed', function() {
       should.throw(function() {
         addKeyword('custom1', 'wrongtype');
@@ -639,15 +653,6 @@ describe('Custom keywords', function () {
 
       should.throw(function() {
         addKeyword('custom3', ['number', undefined]);
-      });
-    });
-
-    it('should throw if type is passed to macro keyword', function() {
-      should.throw(function() {
-        ajv.addKeyword(keyword, {
-          type: 'number',
-          macro: function() {}
-        });
       });
     });
 
