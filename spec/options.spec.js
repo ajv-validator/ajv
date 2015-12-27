@@ -304,7 +304,7 @@ describe('Ajv Options', function () {
         should.equal(err.schema, 5);
         err.parentSchema .should.eql({ minimum: 5 });
         err.parentSchema .should.equal(schema.properties.foo); // by reference
-        err.data .should.equal(3);
+        should.equal(err.data, 3);
       }
     });
   });
