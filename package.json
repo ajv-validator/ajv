@@ -50,7 +50,7 @@
     "istanbul": "^0.3.17",
     "js-beautify": "^1.5.6",
     "jshint": "^2.8.0",
-    "json-schema-test": "^0.1.6",
+    "json-schema-test": "^1.0.0",
     "karma": "^0.13.3",
     "karma-chrome-launcher": "^0.2.0",
     "karma-mocha": "^0.2.0",
