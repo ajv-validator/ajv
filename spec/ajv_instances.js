@@ -1,7 +1,6 @@
 'use strict';
 
-var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
-  , util = require('../lib/compile/util');
+var Ajv = require('./ajv');
 
 module.exports = getAjvInstances;
 
@@ -13,8 +12,8 @@ function getAjvInstances(options, extraOpts) {
 function _getAjvInstances(opts, useOpts) {
   var optNames = Object.keys(opts);
   if (optNames.length) {
-    opts = util.copy(opts);
-    var useOpts1 = util.copy(useOpts)
+    opts = copy(opts);
+    var useOpts1 = copy(useOpts)
       , optName = optNames[0];
     useOpts1[optName] = opts[optName];
     delete opts[optName];
@@ -22,4 +21,11 @@ function _getAjvInstances(opts, useOpts) {
       , instances1 = _getAjvInstances(opts, useOpts1);
     return instances.concat(instances1);
   } else return [ Ajv(useOpts) ];
+}
+
+
+function copy(o, to) {
+  to = to || {};
+  for (var key in o) to[key] = o[key];
+  return to;
 }

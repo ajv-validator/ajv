@@ -14,9 +14,9 @@
     "test-fast": "AJV_FAST_TEST=true npm run test-spec",
     "test-debug": "mocha spec/*.spec.js --debug-brk -R spec",
     "test-cov": "istanbul cover -x '**/spec/**' node_modules/mocha/bin/_mocha -- spec/*.spec.js -R spec",
-    "bundle": "browserify -r ./lib/ajv.js:ajv -o ajv.bundle.js",
+    "bundle": "browserify -r ./lib/ajv.js:ajv -o ajv.bundle.js -s Ajv && uglifyjs ajv.bundle.js -o ajv.min.js -c pure_getters -m --source-map ajv.min.js.map -r Ajv --preamble '/* Ajv JSON-schema validator */'",
     "build": "node scripts/compile-dots.js",
-    "test-browser": "scripts/prepare-tests && karma start --single-run --browsers PhantomJS",
+    "test-browser": "npm run bundle && scripts/prepare-tests && karma start --single-run --browsers PhantomJS",
     "test": "npm run jshint && npm run build && npm run test-cov && npm run test-browser",
     "prepublish": "npm run build",
     "watch": "watch 'npm run build' ./lib/dot"
@@ -60,6 +60,7 @@
     "phantomjs": "^1.9.18",
     "pre-commit": "^1.1.1",
     "require-globify": "^1.3.0",
+    "uglify-js": "^2.6.1",
     "watch": "^0.16.0"
   }
 }

@@ -102,7 +102,8 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      '.browser/ajv.beautify.js',
+      'ajv.min.js',
+      'node_modules/chai/chai.js',
       '.browser/*.spec.js'
     ],
 

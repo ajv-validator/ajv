@@ -100,14 +100,14 @@ __Please note__: every time validation function or `ajv.validate` are called `er
 
 You can require ajv directly from the code you browserify - in this case ajv will be a part of your bundle.
 
-If you need to use ajv in several bundles you can create a separate browserified bundle using `npm run bundle` script (thanks to [siddo420](https://github.com/siddo420)).
+If you need to use ajv in several bundles you can create a separate UMD bundle using `npm run bundle` script (thanks to [siddo420](https://github.com/siddo420)).
 
 Then you need to load ajv in the browser:
 ```
-<script src="ajv.bundle.js"></script>
+<script src="ajv.min.js"></script>
 ```
 
-Now you can use it as shown above - `require` will be global and you can `require('ajv')`.
+This bundle can be used with different module systems or creates global `Ajv` if no module system is found.
 
 Ajv was tested with these browsers:
 

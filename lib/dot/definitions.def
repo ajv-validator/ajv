@@ -1,16 +1,16 @@
 {{## def.setupKeyword:
   {{
-    var $lvl = it.level
-      , $dataLvl = it.dataLevel
-      , $schema = it.schema[$keyword]
-      , $schemaPath = it.schemaPath + '.' + $keyword
-      , $errSchemaPath = it.errSchemaPath + '/' + $keyword
-      , $breakOnError = !it.opts.allErrors
-      , $errorKeyword;
+    var $lvl = it.level;
+    var $dataLvl = it.dataLevel;
+    var $schema = it.schema[$keyword];
+    var $schemaPath = it.schemaPath + '.' + $keyword;
+    var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
+    var $breakOnError = !it.opts.allErrors;
+    var $errorKeyword;
 
-    var $data = 'data' + ($dataLvl || '')
-      , $valid = 'valid' + $lvl
-      , $errs = 'errs__' + $lvl;
+    var $data = 'data' + ($dataLvl || '');
+    var $valid = 'valid' + $lvl;
+    var $errs = 'errs__' + $lvl;
   }}
 #}}
 
@@ -30,8 +30,8 @@
 
 {{## def.setupNextLevel:
   {{
-    var $it = it.util.copy(it)
-      , $closingBraces = '';
+    var $it = it.util.copy(it);
+    var $closingBraces = '';
     $it.level++;
   }}
 #}}

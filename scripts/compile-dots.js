@@ -20,6 +20,8 @@ console.log('\n\nCompiling:');
 var FUNCTION_NAME = /function\s+anonymous\s*\(it[^)]*\)\s*{/;
 var OUT_EMPTY_STRING = /out\s*\+=\s*'\s*';/g;
 var ISTANBUL = /\'(istanbul[^']+)\';/g;
+var VARS = ['$errs', '$valid', '$lvl', '$data', '$dataLvl',
+            '$errorKeyword', '$closingBraces', '$schemaPath'];
 
 files.forEach(function (f) {
   var keyword = path.basename(f, '.jst');
@@ -30,8 +32,19 @@ files.forEach(function (f) {
              .replace(OUT_EMPTY_STRING, '')
              .replace(FUNCTION_NAME, 'function generate_' + keyword + '(it, $keyword) {')
              .replace(ISTANBUL, '/* $1 */');
+  VARS.forEach(removeUnusedVar);
   code = "'use strict';\nmodule.exports = " + code;
   code = beautify(code, { indent_size: 2 }) + '\n';
   fs.writeFileSync(targetPath, code);
   console.log('compiled', keyword);
+
+  function removeUnusedVar(v) {
+    v = v.replace(/\$/g, '\\$$');
+    var regexp = new RegExp(v + '[^A-Za-z0-9_$]', 'g');
+    var count = (code.match(regexp) || []).length;
+    if (count == 1) {
+      regexp = new RegExp('var\\s+' + v + '\\s*=[^;]+;|var\\s+' + v + ';');
+      code = code.replace(regexp, '');
+    }
+  }
 });

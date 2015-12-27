@@ -1,9 +1,8 @@
 'use strict';
 
 
-var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
-  , should = require('chai').should()
-  , stableStringify = require('json-stable-stringify');
+var Ajv = require('./ajv')
+  , should = require('./chai').should();
 
 
 describe('compileAsync method', function() {

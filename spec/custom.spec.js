@@ -1,7 +1,7 @@
 'use strict';
 
 var getAjvInstances = require('./ajv_instances')
-  , should = require('chai').should()
+  , should = require('./chai').should()
   , equal = require('../lib/compile/equal')
   , customRules = require('./custom_rules');
 

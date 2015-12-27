@@ -1,8 +1,8 @@
 'use strict';
 
 
-var Ajv = require(typeof window == 'object' ? 'ajv' : '../lib/ajv')
-  , should = require('chai').should();
+var Ajv = require('./ajv')
+  , should = require('./chai').should()
 
 
 describe('Ajv Options', function () {

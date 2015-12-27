@@ -35,4 +35,5 @@ lib/dotjs/*.js
 .browser
 
 # Ajv bundle
-ajv.bundle.js
+ajv.bundle.*
+ajv.min.*

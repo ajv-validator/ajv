@@ -1,24 +1,16 @@
 'use strict';
 
 var jsonSchemaTest = require('json-schema-test')
-  , getAjvInstances = require('./ajv_instances');
+  , getAjvInstances = require('./ajv_instances')
+  , options = require('./ajv_options');
 
-var isBrowser = typeof window == 'object';
-
-var fullTest = isBrowser || !process.env.AJV_FAST_TEST;
-var instances = getAjvInstances(fullTest ? {
-  beautify:     true,
-  allErrors:    true,
-  verbose:      true,
-  format:       'full',
-  inlineRefs:   false,
-  jsonPointers: true,
-} : { allErrors: true }, { v5: true });
+var instances = getAjvInstances(options, { v5: true });
 
 
 jsonSchemaTest(instances, {
   description: 'v5 schemas tests of ' + instances.length + ' ajv instances with different options',
   suites: testSuites(),
+  assert: require('./chai').assert,
   afterError: function (res) {
     console.log('ajv options:', res.validator.opts);
   },

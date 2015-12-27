@@ -1,19 +1,10 @@
 'use strict';
 
 var jsonSchemaTest = require('json-schema-test')
-  , getAjvInstances = require('./ajv_instances');
+  , getAjvInstances = require('./ajv_instances')
+  , options = require('./ajv_options');
 
-var isBrowser = typeof window == 'object';
-
-var fullTest = isBrowser || !process.env.AJV_FAST_TEST;
-var instances = getAjvInstances(fullTest ? {
-  beautify:     true,
-  allErrors:    true,
-  verbose:      true,
-  format:       'full',
-  inlineRefs:   false,
-  jsonPointers: true,
-} : { allErrors: true });
+var instances = getAjvInstances(options);
 
 var remoteRefs = {
     // for JSON-Schema-Test-Suite
@@ -55,6 +46,7 @@ jsonSchemaTest(instances, {
   skip: [
     'optional/zeroTerminatedFloats'
   ],
+  assert: require('./chai').assert,
   afterError: function (res) {
     console.log('ajv options:', res.validator.opts);
   },
