@@ -31,7 +31,7 @@ NB: [Changes in version 3.0.0](https://github.com/epoberezkin/ajv/releases/tag/3
 - [custom keywords](#defining-custom-keywords)
 - keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
 - [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#) for schemas using v5 keywords.
-- NEW: [v5 $data reference](v5-$data-reference) to use values from the validated data as values for the schema keywords.
+- NEW: [v5 $data reference](#data-reference) to use values from the validated data as values for the schema keywords.
 
 Currently ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
 
