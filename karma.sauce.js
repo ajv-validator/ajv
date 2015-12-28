@@ -22,10 +22,9 @@ module.exports = function(config) {
       browserName: 'chrome',
       version: '27'
     },
-    'SL_Chrome_43': {
+    'SL_Chrome': {
       base: 'SauceLabs',
-      browserName: 'chrome',
-      version: '43'
+      browserName: 'chrome'
     },
     'SL_Chrome_beta': {
       base: 'SauceLabs',
@@ -45,7 +44,11 @@ module.exports = function(config) {
     'SL_InternetExplorer_11': {
       base: 'SauceLabs',
       browserName: 'internet explorer',
-      version: '11'
+      version: '11' // default
+    },
+    'SL_MicrosoftEdge': {
+      base: 'SauceLabs',
+      browserName: 'MicrosoftEdge'
     },
     'SL_FireFox_4': {
       base: 'SauceLabs',
@@ -69,22 +72,27 @@ module.exports = function(config) {
     'SL_Safari_5': {
       base: 'SauceLabs',
       browserName: 'safari',
-      version: '5'
-    },
-    'SL_Safari_6': {
-      base: 'SauceLabs',
-      browserName: 'safari',
-      version: '6'
+      version: '5' // default
     },
     'SL_Safari_7': {
       base: 'SauceLabs',
       browserName: 'safari',
       version: '7'
     },
+    'SL_Safari_9': {
+      base: 'SauceLabs',
+      browserName: 'safari',
+      version: '9'
+    },
     'SL_iPhone_8': {
       base: 'SauceLabs',
       browserName: 'iphone',
-      version: '8.1'
+      version: '8.4'
+    },
+    'SL_iPhone_9': {
+      base: 'SauceLabs',
+      browserName: 'iphone',
+      version: '9.2'
     }
   };
 
