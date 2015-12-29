@@ -1,10 +1,11 @@
 {
   "name": "ajv",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
   "files": [
     "lib/",
+    "dist/",
     "LICENSE",
     ".tonic_example.js"
   ],
@@ -18,7 +19,7 @@
     "build": "node scripts/compile-dots.js",
     "test-browser": "npm run bundle && scripts/prepare-tests && karma start --single-run --browsers PhantomJS",
     "test": "npm run jshint && npm run build && npm run test-cov && npm run test-browser",
-    "prepublish": "npm run build",
+    "prepublish": "npm run build && npm run bundle && mkdir -p dist && mv ajv.* dist",
     "watch": "watch 'npm run build' ./lib/dot"
   },
   "repository": {
