@@ -22,13 +22,12 @@ var {{=$errs}} = errors;
 
 var missing{{=$lvl}};
 {{ for (var $property in $propertyDeps) { }}
-  if ({{=$data}}{{= it.util.getProperty($property) }} !== undefined) {
-    {{ $deps = $propertyDeps[$property]; }}
-    if ({{# def.checkMissingProperty:$deps }}) {
-      {{# def.errorMissingProperty }}
-      {{# def.error:'dependencies' }}
-    } {{# def.elseIfValid }}
-  }
+  {{ $deps = $propertyDeps[$property]; }}
+  if ({{=$data}}{{= it.util.getProperty($property) }} !== undefined
+    && ({{# def.checkMissingProperty:$deps }})) {
+    {{# def.errorMissingProperty }}
+    {{# def.error:'dependencies' }}
+  } {{# def.elseIfValid }}
 {{ } }}
 
 {{ it.errorPath = $currentErrorPath; }}

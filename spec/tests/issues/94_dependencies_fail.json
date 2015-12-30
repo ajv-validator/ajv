@@ -1,0 +1,54 @@
+[
+  {
+    "description": "second dependency is not checked (#94)",
+    "schema": {
+      "dependencies": {
+        "bar" : ["baz"],
+        "foo" : ["bar"]
+      }
+    },
+    "tests": [
+      {
+        "description": "object with only foo is invalid (bar is missing)",
+        "data": { "foo": 1 },
+        "valid": false
+      },
+      {
+        "description": "object with foo and bar is invalid (baz is missing)",
+        "data": { "foo": 1, "bar": 2 },
+        "valid": false
+      },
+      {
+        "description": "object with foo, bar and baz is valid",
+        "data": { "foo": 1, "bar": 2, "baz": 3 },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "second dependency is checked when order is changed",
+    "schema": {
+      "dependencies": {
+        "foo" : ["bar"],
+        "bar" : ["baz"]
+      }
+    },
+    "tests": [
+      {
+        "description": "object with only foo is invalid (bar is missing)",
+        "data": { "foo": 1 },
+        "valid": false
+      },
+      {
+        "description": "object with foo and bar is invalid (baz is missing)",
+        "data": { "foo": 1, "bar": 2 },
+        "valid": false
+      },
+      {
+        "description": "object with foo, bar and baz is valid",
+        "data": { "foo": 1, "bar": 2, "baz": 3 },
+        "valid": true
+      }
+    ]
+  }
+]
