@@ -584,8 +584,8 @@ Defaults:
   cache:            new Cache,
   errorDataPath:    'object',
   jsonPointers:     false,
-  messages:         true
-  v5:               true
+  messages:         true,
+  v5:               false
 }
 ```
 
