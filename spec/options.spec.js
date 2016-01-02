@@ -308,4 +308,27 @@ describe('Ajv Options', function () {
       }
     });
   });
+
+
+  describe('multipleOfPrecision', function() {
+    it('should allow for some deviation from 0 when validating multipleOf with value < 1', function() {
+      test(Ajv({ multipleOfPrecision: 7 }));
+      test(Ajv({ multipleOfPrecision: 7, allErrors: true }));
+
+      function test(ajv) {
+        var schema = { multipleOf: 0.01 };
+        var validate = ajv.compile(schema);
+
+        validate(4.18) .should.equal(true);
+        validate(4.181) .should.equal(false);
+
+        var schema = { multipleOf: 0.0000001 };
+        var validate = ajv.compile(schema);
+
+        validate(53.198098) .should.equal(true);
+        validate(53.1980981) .should.equal(true);
+        validate(53.19809811) .should.equal(false);
+      }
+    });
+  });
 });
