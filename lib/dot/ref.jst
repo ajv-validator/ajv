@@ -3,7 +3,7 @@
 {{# def.setupKeyword }}
 
 {{## def.validateRef:_v:
-  if (!{{# def._validateRef:_v }}) {
+  if (!passRef && !{{# def._validateRef:_v }}) {
     if (vErrors === null) vErrors = {{=_v}}.errors;
     else vErrors = vErrors.concat({{=_v}}.errors);
     errors = vErrors.length;
