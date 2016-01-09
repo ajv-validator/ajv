@@ -7,7 +7,7 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
 [![Build Status](https://travis-ci.org/epoberezkin/ajv.svg)](https://travis-ci.org/epoberezkin/ajv)
 [![npm version](https://badge.fury.io/js/ajv.svg)](http://badge.fury.io/js/ajv)
 [![Code Climate](https://codeclimate.com/github/epoberezkin/ajv/badges/gpa.svg)](https://codeclimate.com/github/epoberezkin/ajv)
-[![Test Coverage](https://codeclimate.com/github/epoberezkin/ajv/badges/coverage.svg)](https://codeclimate.com/github/epoberezkin/ajv/coverage)
+[![Coverage Status](https://coveralls.io/repos/epoberezkin/ajv/badge.svg?branch=master&service=github)](https://coveralls.io/github/epoberezkin/ajv?branch=master)
 
 
 NB: [Changes in version 3.0.0](https://github.com/epoberezkin/ajv/releases/tag/3.0.0).
@@ -92,7 +92,7 @@ if (!valid) console.log(ajv.errorsText());
 
 See [API](#api) and [Options](#options) for more details.
 
-ajv compiles schemas to functions and caches them in all cases (using stringified schema as a key - using [json-stable-stringify](https://github.com/substack/json-stable-stringify)), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
+ajv compiles schemas to functions and caches them in all cases (using schema stringified with [json-stable-stringify](https://github.com/substack/json-stable-stringify) as a key), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
 
 The best performance is achieved when using compiled functions returned by `compile` or `getSchema` methods (there is no additional function call).
 
@@ -396,7 +396,7 @@ If custom keyword doesn't create errors, the default error will be created in ca
 
 ## Asynchronous compilation
 
-During asynchronous compilation remote references are loaded using supplied function. See `compileAsync` method and `loadSchema` option.
+During asynchronous compilation remote references are loaded using supplied function. See `compileAsync` method and `loadSchema` [option](#options).
 
 Example:
 
@@ -418,19 +418,58 @@ function loadSchema(uri, callback) {
 }
 ```
 
+__Please note__: [Option](#options) `missingRefs` should NOT be set to `"ignore"` or `"fail"` for asynchronous compilation to work.
+
 
 ## Filtering data
 
 With [option `removeAdditional`](#options) (added by [andyscott](https://github.com/andyscott)) you can filter data during the validation.
 
-This option modifies original object.
+This option modifies original data.
 
-TODO: example
+Example:
+
+```
+var ajv = Ajv({ removeAdditional: true });
+var schema = {
+  "additionalProperties": false,
+  "properties": {
+    "foo": { "type": "number" },
+    "bar": {
+      "additionalProperties": { "type": "number" },
+      "properties": {
+        "baz": { "type": "string" }
+      }
+    }
+  }
+}
+
+var data = {
+  "foo": 0,
+  "additional1": 1, // will be removed; `additionalProperties` == false
+  "bar": {
+    "baz": "abc",
+    "additional2": 2 // will NOT be removed; `additionalProperties` != false
+  },
+}
+
+var validate = ajv.compile(schema);
+
+console.log(validate(data)); // true
+console.log(data); // { "foo": 0, "bar": { "baz": "abc", "additional2": 2 }
+```
+
+If `removeAdditional` option in the example above were `"all"` then both `additional1` and `additional2` properties would have been removed.
+
+If the option were `"failing"` then property `additional1` would have been removed regardless of its value and property `additional2` would have been removed only if its value were failing the schema in the inner `additionalProperties` (so in the example above it would have stayed because it passes the schema, but any non-number would have been removed).
 
 
 ## Assigning defaults
 
 With [option `useDefaults`](#options) Ajv will assign values from `default` keyword in the schemas of `properties` and `items` (when it is the array of schemas) to the missing properties and items.
+
+This option modifies original data.
+
 
 Example 1 (`default` in `properties`):
 
@@ -647,27 +686,40 @@ Defaults:
 ```
 
 - _allErrors_: check all rules collecting all errors. Default is to return after the first error.
-- _removeAdditional_: remove additional properties. Default is not to remove. If the option is 'all', then all additional properties are removed, regardless of `additionalProperties` keyword in schema (and no validation is made for them). If the option is `true` (or truthy), only additional properties with `additionalProperties` keyword equal to `false` are removed. If the option is 'failing', then additional properties that fail schema validation will be removed too (where `additionalProperties` keyword is schema).
-- _useDefaults_: replace missing properties and items with the values from corresponding `defaults` keywords. Default behaviour is to ignore `default` keywords.
+- _removeAdditional_: remove additional properties - see example in [Filtering data](#filtering-data). This option is not used if schema is added with `addMetaSchema` method. Option values:
+  - `false` (default) - not to remove additional properties
+  - `"all"` - all additional properties are removed, regardless of `additionalProperties` keyword in schema (and no validation is made for them).
+  - `true` - only additional properties with `additionalProperties` keyword equal to `false` are removed.
+  - `"failing"` - additional properties that fail schema validation will be removed (where `additionalProperties` keyword is `false` or schema).
+- _useDefaults_: replace missing properties and items with the values from corresponding `defaults` keywords. Default behaviour is to ignore `default` keywords. This option is not used if schema is added with `addMetaSchema` method. See example in [Assigning defaults](#assigning-defaults).
 - _verbose_: include the reference to the part of the schema (`schema` and `parentSchema`) and validated data in errors (false by default).
 - _format_: formats validation mode ('fast' by default). Pass 'full' for more correct and slow validation or `false` not to validate formats at all. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
 - _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
 - _schemas_: an array or object of schemas that will be added to the instance. If the order is important, pass array. In this case schemas must have IDs in them. Otherwise the object can be passed - `addSchema(value, key)` will be called for each schema in this object.
 - _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default).
-- _validateSchema_: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can either be http://json-schema.org/schema or http://json-schema.org/draft-04/schema or absent (draft-4 meta-schema will be used) or can be a reference to the schema previously added with `addMetaSchema` method. If the validation fails, the exception is thrown. Pass "log" in this option to log error instead of throwing exception. Pass `false` to skip schema validation.
-- _inlineRefs_: by default the referenced schemas that don't have refs in them are inlined, regardless of their size - that substantially improves performance at the cost of the bigger size of compiled schema functions. Pass `false` to not inline referenced schemas (they will be compiled as separate functions). Pass integer number to limit the maximum number of keywords of the schema that will be inlined.
+- _validateSchema_: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can either be http://json-schema.org/schema or http://json-schema.org/draft-04/schema or absent (draft-4 meta-schema will be used) or can be a reference to the schema previously added with `addMetaSchema` method. Option values:
+  - `true` (default) -  if the validation fails, throw the exception.
+  - `"log"` - if the validation fails, log error.
+  - `false` - skip schema validation.
+- _inlineRefs_: Affects compilation of referenced schemas. Option values:
+  - `true` (default) - the referenced schemas that don't have refs in them are inlined, regardless of their size - that substantially improves performance at the cost of the bigger size of compiled schema functions.
+  - `false` - to not inline referenced schemas (they will be compiled as separate functions).
+  - integer number - to limit the maximum number of keywords of the schema that will be inlined.
 - _loopRequired_: by default `required` keyword is compiled into a single expression (or a sequence of statements in `allErrors` mode). In case of a very large number of properties in this keyword it may result in a very big validation function. Pass integer to set the number of properties above which `required` keyword will be validated in a loop - smaller validation function size but also worse performance.
 - _multipleOfPrecision_: by default `multipleOf` keyword is validated by comparing the result of division with parseInt() of that result. It works for dividers that are bigger than 1. For small dividers such as 0.01 the result of the division is usually not integer (even when it should be integer, see issue #84). If you need to use fractional dividers set this option to some positive integer N to have `multipleOf` validated using this formula: `Math.abs(Math.round(division) - division) < 1e-N` (it is slower but allows for float arithmetics deviations).
-- _missingRefs_: by default if the reference cannot be resolved during compilation the exception is thrown. The thrown error has properties `missingRef` (with hash fragment) and `missingSchema` (without it). Both properties are resolved relative to the current base id (usually schema id, unless it was substituted). Pass 'ignore' to log error during compilation and pass validation. Pass 'fail' to log error and successfully compile schema but fail validation if this rule is checked.
-- _loadSchema_: asynchronous function that will be used to load remote schemas when the method `compileAsync` is used and some reference is missing (option `missingRefs` should not be 'fail' or 'ignore'). This function should accept 2 parameters: remote schema uri and node-style callback. See example in Asynchronous compilation.
+- _missingRefs_: handling of missing referenced schemas. Option values:
+  - `true` (default) - if the reference cannot be resolved during compilation the exception is thrown. The thrown error has properties `missingRef` (with hash fragment) and `missingSchema` (without it). Both properties are resolved relative to the current base id (usually schema id, unless it was substituted).
+  - `"ignore"` - to log error during compilation and always pass validation.
+  - `"fail"` - to log error and successfully compile schema but fail validation if this rule is checked.
+- _loadSchema_: asynchronous function that will be used to load remote schemas when the method `compileAsync` is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept 2 parameters: remote schema uri and node-style callback. See example in [Asynchronous compilation](#asynchronous-compilation).
 - _uniqueItems_: validate `uniqueItems` keyword (true by default).
 - _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.
 - _beautify_: format the generated function with [js-beautify](https://github.com/beautify-web/js-beautify) (the validating function is generated without line-breaks). `npm install js-beautify` to use this option. `true` or js-beautify options can be passed.
 - _cache_: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache [sacjs](https://github.com/epoberezkin/sacjs) can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods `put(key, value)`, `get(key)` and `del(key)`.
 - _errorDataPath_: set `dataPath` to point to 'object' (default) or to 'property' (default behavior in versions before 2.0) when validating keywords `required`, `additionalProperties` and `dependencies`.
 - _jsonPointers_: set `dataPath` propery of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
-- _messages_: Include human-readable messages in errors. `true` by default. `messages: false` can be added when custom messages are used (e.g. with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)).
-- _v5_: add keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals). With this option added schemas without `$schema` property are validated against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#).
+- _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when custom messages are used (e.g. with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)).
+- _v5_: add keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals). With this option added schemas without `$schema` property are validated against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#). `false` by default.
 
 
 ## Validation errors
