@@ -43,21 +43,13 @@ var {{=$valid}};
     {{# def.elseIfValid}}
   {{?}}
 
-  {{ var $useDefaults = it.opts.useDefaults && !it.compositeRule; }}
-
   {{~ $schema:$sch:$i }}
-    {{ var $passData = $data + '[' + $i + ']'; }}
-
-    {{? $useDefaults && $sch.default !== undefined }}
-      if ({{=$passData}} === undefined)
-        {{=$passData}} = {{= it.useDefault($sch.default) }};
-    {{?}}
-
     {{? {{# def.nonEmptySchema:$sch }} }}
       valid{{=$it.level}} = true;
 
       if ({{=$data}}.length > {{=$i}}) {
         {{
+          var $passData = $data + '[' + $i + ']';
           $it.schema = $sch;
           $it.schemaPath = $schemaPath + '[' + $i + ']';
           $it.errSchemaPath = $errSchemaPath + '/' + $i;

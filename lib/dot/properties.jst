@@ -138,19 +138,11 @@ var valid{{=$it.level}} = true;
   {{~ $schemaKeys:$propertyKey }}
     {{ var $sch = $schema[$propertyKey]; }}
 
-    {{
-      var $prop = it.util.getProperty($propertyKey)
-        , $passData = $data + $prop
-        , $hasDefault = $useDefaults && $sch.default !== undefined;
-    }}
-
-    {{? $hasDefault }}
-      if ({{=$passData}} === undefined)
-        {{=$passData}} = {{= it.useDefault($sch.default) }};
-    {{?}}
-
     {{? {{# def.nonEmptySchema:$sch}} }}
       {{
+        var $prop = it.util.getProperty($propertyKey)
+          , $passData = $data + $prop
+          , $hasDefault = $useDefaults && $sch.default !== undefined;
         $it.schema = $sch;
         $it.schemaPath = $schemaPath + $prop;
         $it.errSchemaPath = $errSchemaPath + '/' + it.util.escapeFragment($propertyKey);

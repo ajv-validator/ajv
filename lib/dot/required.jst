@@ -6,18 +6,8 @@
 
 
 {{## def.setupLoop:
-  {{
-    var $useDefaults = it.opts.useDefaults && !it.compositeRule
-      , $hasProperties = it.schema.properties !== undefined
-      , $checkDefaults = $useDefaults && $hasProperties;
-  }}
-
   {{? !$isData }}
     var schema{{=$lvl}} = validate.schema{{=$schemaPath}};
-  {{?}}
-
-  {{? $checkDefaults }}
-    var propsSchema{{=$lvl}} = validate.schema{{=it.schemaPath}}.properties;
   {{?}}
 
   {{
@@ -30,14 +20,6 @@
   }}
 #}}
 
-
-{{## def.checkDefaults:
-  var property{{=$lvl}} = schema{{=$lvl}}[{{=$i}}];
-  {{? $checkDefaults }}
-    if (propsSchema{{=$lvl}}[property{{=$lvl}}].default !== undefined)
-      continue;
-  {{?}}
-#}}
 
 {{? !$isData }}
   {{? $schema.length < it.opts.loopRequired &&
@@ -70,8 +52,7 @@
       {{?$isData}}{{# def.check$dataIsArray }}{{?}}
 
       for (var {{=$i}} = 0; {{=$i}} < schema{{=$lvl}}.length; {{=$i}}++) {
-        {{# def.checkDefaults }}
-        {{=$valid}} = {{=$data}}[property{{=$lvl}}] !== undefined;
+        {{=$valid}} = {{=$data}}[schema{{=$lvl}}[{{=$i}}]] !== undefined;
         if (!{{=$valid}}) break;
       }
 
@@ -95,7 +76,6 @@
       {{?}}
 
       for (var {{=$i}} = 0; {{=$i}} < schema{{=$lvl}}.length; {{=$i}}++) {
-        {{# def.checkDefaults }}
         if ({{=$data}}[schema{{=$lvl}}[{{=$i}}]] === undefined) {
           {{# def.addError:'required' }}
         }

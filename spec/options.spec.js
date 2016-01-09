@@ -354,7 +354,8 @@ describe('Ajv Options', function () {
             obj: { type: 'object', default: {} },
             arr: { type: 'array', default: [] }
           },
-          required: ['foo', 'bar', 'baz', 'nil', 'obj', 'arr']
+          required: ['foo', 'bar', 'baz', 'nil', 'obj', 'arr'],
+          minProperties: 6
         };
 
         var validate = ajv.compile(schema);
@@ -380,6 +381,7 @@ describe('Ajv Options', function () {
             { type: 'number', default: 1 },
             { type: 'boolean', default: false }
           ],
+          minItems: 3
         };
 
         var validate = ajv.compile(schema);

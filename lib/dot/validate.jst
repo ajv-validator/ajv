@@ -1,5 +1,6 @@
 {{# def.definitions }}
 {{# def.errors }}
+{{# def.defaults }}
 
 {{ /**
     * schema compilation (render) time:
@@ -56,6 +57,13 @@
     {{? $rulesGroup.type }}
       if ({{= it.util.checkDataType($rulesGroup.type, $data) }}) {
     {{?}}
+      {{? it.opts.useDefaults && !it.compositeRule }}
+        {{? $rulesGroup.type == 'object' && it.schema.properties }}
+          {{# def.defaultProperties }}
+        {{?? $rulesGroup.type == 'array' && Array.isArray(it.schema.items) }}
+          {{# def.defaultItems }}
+        {{?}}
+      {{?}}
       {{~ $rulesGroup.rules:$rule }}
         {{? $shouldUseRule($rule) }}
           {{? $rule.custom }}
