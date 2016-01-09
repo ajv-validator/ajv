@@ -378,24 +378,24 @@ describe('Ajv Options', function () {
           items: [
             { type: 'string', default: 'abc' },
             { type: 'number', default: 1 },
-            { type: 'boolean' }
-          ]
+            { type: 'boolean', default: false }
+          ],
         };
 
         var validate = ajv.compile(schema);
 
         var data = [];
         validate(data) .should.equal(true);
-        data. should.eql([ 'abc', 1 ]);
+        data. should.eql([ 'abc', 1, false ]);
 
-        var data = [,,true];
+        var data = [ 'foo' ];
         validate(data) .should.equal(true);
-        data. should.eql([ 'abc', 1, true ]);
+        data. should.eql([ 'foo', 1, false ]);
 
-        var data = ['foo',,'false'];
+        var data = ['foo', 2,'false'];
         validate(data) .should.equal(false);
         validate.errors .should.have.length(1);
-        data. should.eql([ 'foo', 1, 'false' ]);
+        data. should.eql([ 'foo', 2, 'false' ]);
       }
     });
   });
