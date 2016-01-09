@@ -132,15 +132,18 @@ var valid{{=$it.level}} = true;
   {{# def.ifResultValid }}
 {{?}}
 
+{{ var $useDefaults = it.opts.useDefaults && !it.compositeRule; }}
+
 {{? $schemaKeys.length }}
   {{~ $schemaKeys:$propertyKey }}
     {{ var $sch = $schema[$propertyKey]; }}
 
     {{? {{# def.nonEmptySchema:$sch}} }}
       {{
-        $it.schema = $sch;
         var $prop = it.util.getProperty($propertyKey)
-          , $passData = $data + $prop;
+          , $passData = $data + $prop
+          , $hasDefault = $useDefaults && $sch.default !== undefined;
+        $it.schema = $sch;
         $it.schemaPath = $schemaPath + $prop;
         $it.errSchemaPath = $errSchemaPath + '/' + it.util.escapeFragment($propertyKey);
         $it.errorPath = it.util.getPath(it.errorPath, $propertyKey, it.opts.jsonPointers);
@@ -159,34 +162,38 @@ var valid{{=$it.level}} = true;
         var {{=$nextData}} = {{=$passData}};
       {{?}}
 
-      {{? $requiredHash && $requiredHash[$propertyKey] }}
-        if ({{=$useData}} === undefined) {
-          valid{{=$it.level}} = false;
-          {{
-            var $currentErrorPath = it.errorPath
-              , $currErrSchemaPath = $errSchemaPath
-              , $missingProperty = it.util.escapeQuotes($propertyKey);
-            if (it.opts._errorDataPathProperty) {
-              it.errorPath = it.util.getPath($currentErrorPath, $propertyKey, it.opts.jsonPointers);
-            }
-            $errSchemaPath = it.errSchemaPath + '/required';
-          }}
-          {{# def.error:'required' }}
-          {{ $errSchemaPath = $currErrSchemaPath; }}
-          {{ it.errorPath = $currentErrorPath; }}
-        } else {
+      {{? $hasDefault }}
+        {{= $code }}
       {{??}}
-        {{? $breakOnError }}
+        {{? $requiredHash && $requiredHash[$propertyKey] }}
           if ({{=$useData}} === undefined) {
-            valid{{=$it.level}} = true;
+            valid{{=$it.level}} = false;
+            {{
+              var $currentErrorPath = it.errorPath
+                , $currErrSchemaPath = $errSchemaPath
+                , $missingProperty = it.util.escapeQuotes($propertyKey);
+              if (it.opts._errorDataPathProperty) {
+                it.errorPath = it.util.getPath($currentErrorPath, $propertyKey, it.opts.jsonPointers);
+              }
+              $errSchemaPath = it.errSchemaPath + '/required';
+            }}
+            {{# def.error:'required' }}
+            {{ $errSchemaPath = $currErrSchemaPath; }}
+            {{ it.errorPath = $currentErrorPath; }}
           } else {
         {{??}}
-          if ({{=$useData}} !== undefined) {
+          {{? $breakOnError }}
+            if ({{=$useData}} === undefined) {
+              valid{{=$it.level}} = true;
+            } else {
+          {{??}}
+            if ({{=$useData}} !== undefined) {
+          {{?}}
         {{?}}
-      {{?}}
 
-        {{= $code }}
-      }
+          {{= $code }}
+        }
+      {{?}}  {{ /* $hasDefault */ }}
     {{?}} {{ /* def.nonEmptySchema */ }}
 
     {{# def.ifResultValid }}

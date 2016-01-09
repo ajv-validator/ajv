@@ -38,13 +38,16 @@
 
 
 {{? $isData || $required.length }}
-  {{ var $currentErrorPath = it.errorPath; }}
+  {{
+    var $currentErrorPath = it.errorPath
+      , $loopRequired = $isData || $required.length >= it.opts.loopRequired;
+  }}
 
   {{? $breakOnError }}
     var missing{{=$lvl}};
-    {{? $isData || $required.length >= it.opts.loopRequired }}
+    {{? $loopRequired }}
       {{# def.setupLoop }}
-      var {{=$valid}};
+      var {{=$valid}} = true;
 
       {{?$isData}}{{# def.check$dataIsArray }}{{?}}
 
@@ -64,7 +67,7 @@
       } else {
     {{?}}
   {{??}}
-    {{? $isData || $required.length >= it.opts.loopRequired }}
+    {{? $loopRequired }}
       {{# def.setupLoop }}
       {{? $isData }}
         if (schema{{=$lvl}} && !Array.isArray(schema{{=$lvl}})) {

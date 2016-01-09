@@ -9,7 +9,7 @@ var options = fullTest
                   verbose:      true,
                   format:       'full',
                   inlineRefs:   false,
-                  jsonPointers: true,
+                  jsonPointers: true
                 }
               : { allErrors: true };
 
