@@ -360,17 +360,42 @@ describe('Ajv Options', function () {
         var validate = ajv.compile(schema);
 
         var data = {};
-        try {
         validate(data) .should.equal(true);
-        } catch(e) {
-          console.log('failed with:', ajv.opts);
-          throw e;
-        }
         data. should.eql({ foo: 'abc', bar: 1, baz: false, nil: null, obj: {}, arr:[] });
 
         var data = { foo: 'foo', bar: 2, obj: { test: true } };
         validate(data) .should.equal(true);
         data. should.eql({ foo: 'foo', bar: 2, baz: false, nil: null, obj: { test: true }, arr:[] });
+      }
+    });
+
+    it('should replace undefined item with default value', function() {
+      test(Ajv({ useDefaults: true }));
+      test(Ajv({ useDefaults: true, allErrors: true }));
+
+      function test(ajv) {
+        var schema = {
+          items: [
+            { type: 'string', default: 'abc' },
+            { type: 'number', default: 1 },
+            { type: 'boolean' }
+          ]
+        };
+
+        var validate = ajv.compile(schema);
+
+        var data = [];
+        validate(data) .should.equal(true);
+        data. should.eql([ 'abc', 1 ]);
+
+        var data = [,,true];
+        validate(data) .should.equal(true);
+        data. should.eql([ 'abc', 1, true ]);
+
+        var data = ['foo',,'false'];
+        validate(data) .should.equal(false);
+        validate.errors .should.have.length(1);
+        data. should.eql([ 'foo', 1, 'false' ]);
       }
     });
   });
