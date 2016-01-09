@@ -2,6 +2,7 @@
 
 
 var Ajv = require('./ajv')
+  , getAjvInstances = require('./ajv_instances')
   , should = require('./chai').should()
 
 
@@ -328,6 +329,48 @@ describe('Ajv Options', function () {
         validate(53.198098) .should.equal(true);
         validate(53.1980981) .should.equal(true);
         validate(53.19809811) .should.equal(false);
+      }
+    });
+  });
+
+
+  describe('useDefaults', function() {
+    it('should replace undefined property with default value', function() {
+      var instances = getAjvInstances({
+        allErrors: true,
+        loopRequired: 3
+      }, { useDefaults: true });
+
+      instances.forEach(test);
+
+
+      function test(ajv) {
+        var schema = {
+          properties: {
+            foo: { type: 'string', default: 'abc' },
+            bar: { type: 'number', default: 1 },
+            baz: { type: 'boolean', default: false },
+            nil: { type: 'null', default: null },
+            obj: { type: 'object', default: {} },
+            arr: { type: 'array', default: [] }
+          },
+          required: ['foo', 'bar', 'baz', 'nil', 'obj', 'arr']
+        };
+
+        var validate = ajv.compile(schema);
+
+        var data = {};
+        try {
+        validate(data) .should.equal(true);
+        } catch(e) {
+          console.log('failed with:', ajv.opts);
+          throw e;
+        }
+        data. should.eql({ foo: 'abc', bar: 1, baz: false, nil: null, obj: {}, arr:[] });
+
+        var data = { foo: 'foo', bar: 2, obj: { test: true } };
+        validate(data) .should.equal(true);
+        data. should.eql({ foo: 'foo', bar: 2, baz: false, nil: null, obj: { test: true }, arr:[] });
       }
     });
   });
