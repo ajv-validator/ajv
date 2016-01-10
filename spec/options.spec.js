@@ -2,6 +2,7 @@
 
 
 var Ajv = require('./ajv')
+  , getAjvInstances = require('./ajv_instances')
   , should = require('./chai').should()
 
 
@@ -328,6 +329,75 @@ describe('Ajv Options', function () {
         validate(53.198098) .should.equal(true);
         validate(53.1980981) .should.equal(true);
         validate(53.19809811) .should.equal(false);
+      }
+    });
+  });
+
+
+  describe('useDefaults', function() {
+    it('should replace undefined property with default value', function() {
+      var instances = getAjvInstances({
+        allErrors: true,
+        loopRequired: 3
+      }, { useDefaults: true });
+
+      instances.forEach(test);
+
+
+      function test(ajv) {
+        var schema = {
+          properties: {
+            foo: { type: 'string', default: 'abc' },
+            bar: { type: 'number', default: 1 },
+            baz: { type: 'boolean', default: false },
+            nil: { type: 'null', default: null },
+            obj: { type: 'object', default: {} },
+            arr: { type: 'array', default: [] }
+          },
+          required: ['foo', 'bar', 'baz', 'nil', 'obj', 'arr'],
+          minProperties: 6
+        };
+
+        var validate = ajv.compile(schema);
+
+        var data = {};
+        validate(data) .should.equal(true);
+        data. should.eql({ foo: 'abc', bar: 1, baz: false, nil: null, obj: {}, arr:[] });
+
+        var data = { foo: 'foo', bar: 2, obj: { test: true } };
+        validate(data) .should.equal(true);
+        data. should.eql({ foo: 'foo', bar: 2, baz: false, nil: null, obj: { test: true }, arr:[] });
+      }
+    });
+
+    it('should replace undefined item with default value', function() {
+      test(Ajv({ useDefaults: true }));
+      test(Ajv({ useDefaults: true, allErrors: true }));
+
+      function test(ajv) {
+        var schema = {
+          items: [
+            { type: 'string', default: 'abc' },
+            { type: 'number', default: 1 },
+            { type: 'boolean', default: false }
+          ],
+          minItems: 3
+        };
+
+        var validate = ajv.compile(schema);
+
+        var data = [];
+        validate(data) .should.equal(true);
+        data. should.eql([ 'abc', 1, false ]);
+
+        var data = [ 'foo' ];
+        validate(data) .should.equal(true);
+        data. should.eql([ 'foo', 1, false ]);
+
+        var data = ['foo', 2,'false'];
+        validate(data) .should.equal(false);
+        validate.errors .should.have.length(1);
+        data. should.eql([ 'foo', 2, 'false' ]);
       }
     });
   });
