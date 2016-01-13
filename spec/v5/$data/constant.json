@@ -81,5 +81,42 @@
         "valid": false
       }
     ]
+  },
+  {
+    "description": "items in one array are equal to items in another (limited length)",
+    "schema": {
+      "properties": {
+        "arr": {
+          "items": [{},{},{}],
+          "additionalItems": false
+        },
+        "sameArr": {
+          "items": [
+            { "constant": { "$data": "2/arr/0" } },
+            { "constant": { "$data": "2/arr/1" } },
+            { "constant": { "$data": "2/arr/2" } }
+          ],
+          "additionalItems": false
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "equal arrays are valid",
+        "data": {
+          "arr": [ 1, "abc", {"foo": "bar"} ],
+          "sameArr": [ 1, "abc", {"foo": "bar"} ]
+        },
+        "valid": true
+      },
+      {
+        "description": "different arrays are invalid",
+        "data": {
+          "arr": [ 1, "abc", {"foo": "bar"} ],
+          "sameArr": [ 1, "abc", {"foo": "foo"} ]
+        },
+        "valid": false
+      }
+    ]
   }
 ]
