@@ -118,5 +118,33 @@
         "valid": false
       }
     ]
+  },
+  {
+    "description": "any data is equal to itself",
+    "schema": {
+      "constant": { "$data": "0" }
+    },
+    "tests": [
+      {
+        "description": "number is equal to itself",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "string is equal to itself",
+        "data": "foo",
+        "valid": true
+      },
+      {
+        "description": "object is equal to itself",
+        "data": { "foo": "bar" },
+        "valid": true
+      },
+      {
+        "description": "array is equal to itself",
+        "data": [ 1, 2, 3 ],
+        "valid": true
+      }
+    ]
   }
 ]
