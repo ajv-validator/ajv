@@ -669,6 +669,7 @@ Defaults:
   schemas:          {},
   meta:             true,
   validateSchema:   true,
+  addUsedSchema:    true,
   inlineRefs:       true,
   loopRequired:     Infinity,
   multipleOfPrecision: false,
@@ -701,6 +702,7 @@ Defaults:
   - `true` (default) -  if the validation fails, throw the exception.
   - `"log"` - if the validation fails, log error.
   - `false` - skip schema validation.
+- _addUsedSchema_: by default methods `compile` and `validate` add schemas to the instance if they have `id` property that doesn't start with "#". If `id` is present and it is not unique the exception will be thrown. Set this option to `false` to skip adding schemas to the instance and the `id` uniqueness check when these methods are used. This option does not affect `addSchema` method.
 - _inlineRefs_: Affects compilation of referenced schemas. Option values:
   - `true` (default) - the referenced schemas that don't have refs in them are inlined, regardless of their size - that substantially improves performance at the cost of the bigger size of compiled schema functions.
   - `false` - to not inline referenced schemas (they will be compiled as separate functions).

@@ -401,4 +401,84 @@ describe('Ajv Options', function () {
       }
     });
   });
+
+
+  describe('addUsedSchema', function() {
+    [true, undefined].forEach(function (optionValue) {
+      describe('= ' + optionValue, function() {
+        var ajv;
+
+        beforeEach(function() {
+          ajv = Ajv({ addUsedSchema: optionValue });
+        });
+
+        describe('compile and validate', function() {
+          it('should add schema', function() {
+            var schema = { id: 'str', type: 'string' };
+            var validate = ajv.compile(schema);
+            validate('abc') .should.equal(true);
+            validate(1) .should.equal(false);
+            ajv.getSchema('str') .should.equal(validate);
+
+            var schema = { id: 'int', type: 'integer' };
+            ajv.validate(schema, 1) .should.equal(true);
+            ajv.validate(schema, 'abc') .should.equal(false);
+            ajv.getSchema('int') .should.be.a('function');
+          });
+
+          it('should throw with duplicate ID', function() {
+            ajv.compile({ id: 'str', type: 'string' });
+            should.throw(function() {
+              ajv.compile({ id: 'str', minLength: 2 });
+            });
+
+            var schema = { id: 'int', type: 'integer' };
+            var schema2 = { id: 'int', minimum: 0 };
+            ajv.validate(schema, 1) .should.equal(true);
+            should.throw(function() {
+              ajv.validate(schema2, 1);
+            });
+          });
+        });
+      });
+    });
+
+    describe('= false', function() {
+      var ajv;
+
+      beforeEach(function() {
+        ajv = Ajv({ addUsedSchema: false });
+      });
+
+
+      describe('compile and validate', function() {
+        it('should NOT add schema', function() {
+          var schema = { id: 'str', type: 'string' };
+          var validate = ajv.compile(schema);
+          validate('abc') .should.equal(true);
+          validate(1) .should.equal(false);
+          should.equal(ajv.getSchema('str'), undefined);
+
+          var schema = { id: 'int', type: 'integer' };
+          ajv.validate(schema, 1) .should.equal(true);
+          ajv.validate(schema, 'abc') .should.equal(false);
+          should.equal(ajv.getSchema('int'), undefined);
+        });
+
+        it('should NOT throw with duplicate ID', function() {
+          ajv.compile({ id: 'str', type: 'string' });
+          should.not.throw(function() {
+            ajv.compile({ id: 'str', minLength: 2 });
+          });
+
+          var schema = { id: 'int', type: 'integer' };
+          var schema2 = { id: 'int', minimum: 0 };
+          ajv.validate(schema, 1) .should.equal(true);
+          should.not.throw(function() {
+            ajv.validate(schema2, 1) .should.equal(true);
+          });
+        });
+      });
+    });
+  });
 });
