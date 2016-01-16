@@ -6,32 +6,6 @@ var Ajv = require('./ajv')
   , getAjvInstances = require('./ajv_instances');
 
 
-// Example from http://json-schema.org/latest/json-schema-core.html#anchor29
-var schema = {
-  "id": "http://x.y.z/rootschema.json#",
-  "schema1": {
-    "id": "#foo",
-    "description": "schema1"
-  },
-  "schema2": {
-    "id": "otherschema.json",
-    "description": "schema2",
-    "nested": {
-      "id": "#bar",
-      "description": "nested"
-    },
-    "alsonested": {
-      "id": "t/inner.json#a",
-      "description": "alsonested"
-    }
-  },
-  "schema3": {
-    "id": "some://where.else/completely#",
-    "description": "schema3"
-  }
-};
-
-
 describe('resolve', function () {
   var instances;
 
@@ -45,9 +19,46 @@ describe('resolve', function () {
 
   describe('resolve.ids method', function() {
     it('should resolve ids in schema', function() {
+      // Example from http://json-schema.org/latest/json-schema-core.html#anchor29
+      var schema = {
+        "id": "http://x.y.z/rootschema.json#",
+        "schema1": {
+          "id": "#foo",
+          "description": "schema1",
+          "type": "integer"
+        },
+        "schema2": {
+          "id": "otherschema.json",
+          "description": "schema2",
+          "nested": {
+            "id": "#bar",
+            "description": "nested",
+            "type": "string"
+          },
+          "alsonested": {
+            "id": "t/inner.json#a",
+            "description": "alsonested",
+            "type": "boolean"
+          }
+        },
+        "schema3": {
+          "id": "some://where.else/completely#",
+          "description": "schema3",
+          "type": "null"
+        },
+        "properties": {
+          "foo": { "$ref": "#foo" },
+          "bar": { "$ref": "otherschema.json#bar" },
+          "baz": { "$ref": "t/inner.json#a" },
+          "bax": { "$ref": "some://where.else/completely#" }
+        },
+        "required": [ "foo", "bar", "baz", "bax" ]
+      };
+
       instances.forEach(function (ajv) {
         var validate = ajv.compile(schema);
-        // console.log(ajv._refs);
+        var data = { foo: 1, bar: 'abc', baz: true, bax: null };
+        validate(data) .should.equal(true);
       });
     });
 
