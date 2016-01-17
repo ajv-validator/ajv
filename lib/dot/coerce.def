@@ -1,40 +1,41 @@
-{{## def.coerceType: 
-  var dataType{{=$lvl}} = typeof {{=$data}};
-  var coerced{{=$lvl}};
-
+{{## def.coerceType:
   {{
-    var $bracesCoercion = ''
-      , $typesArray = $typeIsArray ? $typeSchema : [$typeSchema];
+    var $dataType = 'dataType' + $lvl
+      , $coerced = 'coerced' + $lvl;
   }}
-  {{~ $typesArray:$type:$i }}
+  var {{=$dataType}} = typeof {{=$data}};
+  var {{=$coerced}};
+
+  {{ var $bracesCoercion = ''; }}
+  {{~ $coerceToTypes:$type:$i }}
     {{? $i }}
-      if (coerced{{=$lvl}} === undefined) {
+      if ({{=$coerced}} === undefined) {
       {{ $bracesCoercion += '}'; }}
     {{?}}
 
     {{? $type == 'string' }}
-      if (dataType{{=$lvl}} == 'number' || dataType{{=$lvl}} == 'boolean')
-        coerced{{=$lvl}} = '' + {{=$data}};
-      else if ({{=$data}} === null) coerced{{=$lvl}} = '';
+      if ({{=$dataType}} == 'number' || {{=$dataType}} == 'boolean')
+        {{=$coerced}} = '' + {{=$data}};
+      else if ({{=$data}} === null) {{=$coerced}} = '';
     {{?? $type == 'number' || $type == 'integer' }}
-      if (dataType{{=$lvl}} == 'boolean' || {{=$data}} === null
-          || (dataType{{=$lvl}} == 'string' && {{=$data}} && {{=$data}} == +{{=$data}}
+      if ({{=$dataType}} == 'boolean' || {{=$data}} === null
+          || ({{=$dataType}} == 'string' && {{=$data}} && {{=$data}} == +{{=$data}}
           {{? $type == 'integer' }} && !({{=$data}} % 1){{?}}))
-        coerced{{=$lvl}} = +{{=$data}};
+        {{=$coerced}} = +{{=$data}};
     {{?? $type == 'boolean' }}
-      if ({{=$data}} == 'false' || {{=$data}} === 0 || {{=$data}} === null)
-        coerced{{=$lvl}} = false;
-      else if ({{=$data}} == 'true' || {{=$data}} === 1)
-        coerced{{=$lvl}} = true;
+      if ({{=$data}} === 'false' || {{=$data}} === 0 || {{=$data}} === null)
+        {{=$coerced}} = false;
+      else if ({{=$data}} === 'true' || {{=$data}} === 1)
+        {{=$coerced}} = true;
     {{?? $type == 'null' }}
-      if ({{=$data}} == '' || {{=$data}} === 0 || {{=$data}} === false)
-        coerced{{=$lvl}} = null;
+      if ({{=$data}} === '' || {{=$data}} === 0 || {{=$data}} === false)
+        {{=$coerced}} = null;
     {{?}}
   {{~}}
 
   {{= $bracesCoercion }}
 
-  if (coerced{{=$lvl}} === undefined) {
+  if ({{=$coerced}} === undefined) {
     {{# def.error:'type' }}
   } else {
     {{? $dataLvl }}
@@ -42,9 +43,9 @@
         var $parentData = 'data' + (($dataLvl-1)||'')
           , $dataProperty = it.dataPathArr[it.dataPathArr.length-1];
       }}
-      {{=$data}} = {{=$parentData}}[{{=$dataProperty}}] = coerced{{=$lvl}};
+      {{=$data}} = {{=$parentData}}[{{=$dataProperty}}] = {{=$coerced}};
     {{??}}
-      data = coerced{{=$lvl}};
+      data = {{=$coerced}};
     {{?}}
   }
 #}}

@@ -64,10 +64,13 @@
   if ({{= it.util[$method]($typeSchema, $data, true) }}) {
 #}}
 
-{{? it.opts.coerceTypes && $typeSchema }}
-  {{# def.checkType }}
-    {{# def.coerceType }}
-  }
+{{? $typeSchema && it.opts.coerceTypes }}
+  {{ var $coerceToTypes = it.util.coerceToTypes($typeSchema); }}
+  {{? $coerceToTypes }}
+    {{# def.checkType }}
+      {{# def.coerceType }}
+    }
+  {{?}}
 {{?}}
 
 {{~ it.RULES:$rulesGroup }}
@@ -119,7 +122,7 @@
   {{?}}
 {{~}}
 
-{{? $typeSchema && !$typeChecked && !it.opts.coerceTypes }}
+{{? $typeSchema && !$typeChecked && !(it.opts.coerceTypes && $coerceToTypes) }}
   {{# def.checkType }}
     {{# def.error:'type' }}
   }
