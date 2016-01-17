@@ -150,7 +150,7 @@ describe('Type coercion', function () {
     testRules(function (test, schema, canCoerce, toType, fromType) {
       instances.forEach(function (ajv) {
         var valid = ajv.validate(schema, test.from);
-        if (valid !== canCoerce) console.log(toType, fromType, test, ajv.errors);
+        // if (valid !== canCoerce) console.log(toType, fromType, test, ajv.errors);
         valid. should.equal(canCoerce);
       });
     })
@@ -194,15 +194,16 @@ describe('Type coercion', function () {
 
 
   it('should coerce to multiple types in order', function() {
-      var schema = {
-        type: 'object',
-        properties: {
-          foo: {
-            type: [ 'number', 'boolean', 'null' ]
-          }
+    var schema = {
+      type: 'object',
+      properties: {
+        foo: {
+          type: [ 'number', 'boolean', 'null' ]
         }
-      };
+      }
+    };
 
+    instances.forEach(function (ajv) {
       var data;
 
       ajv.validate(schema, data = { foo: '1' }) .should.equal(true);
@@ -231,6 +232,59 @@ describe('Type coercion', function () {
 
       ajv.validate(schema, data = { foo: [] }) .should.equal(false);
       data .should.eql({ foo: [] }); // can't coerce
+    });
+  });
+
+
+  it('should update data if the schema is in ref that is not inlined', function () {
+    instances.push(Ajv({ coerceTypes: true, inlineRefs: false }));
+
+    var schema = {
+      type: 'object',
+      definitions: {
+        foo: { type: 'number' }
+      },
+      properties: {
+        foo: { $ref: '#/definitions/foo' }
+      }
+    };
+
+    var schemaRecursive = {
+      type: [ 'object', 'number' ],
+      properties: {
+        foo: { $ref: '#' }
+      }
+    }
+
+    var schemaRecursive2 = {
+      id: 'http://e.com/schema.json#',
+      definitions: {
+        foo: {
+          id: 'http://e.com/foo.json#',
+          type: [ 'object', 'number' ],
+          properties: {
+            foo: { $ref: '#' }
+          }
+        }
+      },
+      properties: {
+        foo: { $ref: 'http://e.com/foo.json#' }
+      }
+    }
+
+    instances.forEach(function (ajv) {
+      testCoercion(schema, { foo: '1' }, { foo: 1 });
+      testCoercion(schemaRecursive, { foo: { foo: '1' } }, { foo: { foo: 1 } });
+      testCoercion(schemaRecursive2, { foo: { foo: { foo: '1' } } },
+                                     { foo: { foo: { foo: 1 } } });
+    });
+
+    function testCoercion(schema, fromData, toData) {
+      var valid = ajv.validate(schema, fromData);
+      // if (!valid) console.log(schema, fromData, toData);
+      valid. should.equal(true);
+      fromData .should.eql(toData);
+    }
   });
 
 

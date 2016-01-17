@@ -10,7 +10,14 @@
   } {{? $breakOnError }} else { {{?}}
 #}}
 
-{{## def._validateRef:_v: {{=_v}}({{=$data}}, (dataPath || ''){{? it.errorPath != '""'}} + {{= it.errorPath }}{{?}}) #}}
+{{## def._validateRef:_v:
+  {{=_v}}({{=$data}}
+          , (dataPath || ''){{? it.errorPath != '""'}} + {{= it.errorPath }}{{?}}
+          {{? it.opts.coerceTypes && $dataLvl }}
+            , data{{= ($dataLvl-1)||'' }}
+            , {{= it.dataPathArr[$dataLvl] }}
+          {{?}})
+#}}
 
 {{? $schema == '#' || $schema == '#/' }}
   {{? it.isRoot }}
