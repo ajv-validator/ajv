@@ -9,6 +9,15 @@ Type coercion only happens if there is `type` keyword and if without coercion th
 
 If there are multiple types allowed in `type` keyword the coercion will only happen if none of the types match the data and some of the scalar types are present (coercion to/from `object`/`array` is not possible). In this case the validating function will try coercing the data to each type in order until some of them succeeds.
 
+The table below summarises possible type coercions.
+
+|from&nbsp;type&nbsp;&rarr;<br>to&nbsp;type&nbsp;&darr;|string|number|bolean|null|
+|---|:-:|:-:|:-:|:-:|
+|string      |-|`x`&rarr;`""+x`|`false`&rarr;`"false"`<br>`true`&rarr;`"true"`|`null`&rarr;`""`|
+|number /<br>integer|Valid number /<br>integer: `x`&rarr;`+x`<br>|-|`false`&rarr;`0`<br>`true`&rarr;`1`|`null`&rarr;`0`|
+|boolean     |`"false"`&rarr;`false`<br>`"true"`&rarr;`true`<br>`"abc"`&nrarr;<br>`""`&nrarr;|`0`&rarr;`false`<br>`1`&rarr;`true`<br>`x`&nrarr;|-|`null`&rarr;`false`|
+|null        |`""`&rarr;`null`<br>`"null"`&nrarr;<br>`"abc"`&nrarr;|`0`&rarr;`null`<br>`x`&nrarr;|`false`&rarr;`null`<br>`true`&nrarr;|-|
+
 
 ## Coersion from string values
 
@@ -44,8 +53,8 @@ Always possible, `'' + data` is used
 #### To boolean type
 
 Unlike JavaScript, only these numbers can be coerced to `boolean`:
-- 1 -> `true`
-- 0 -> `false`
+- `1` -> `true`
+- `0` -> `false`
 
 
 #### To null type
@@ -63,8 +72,8 @@ Unlike JavaScript, only these numbers can be coerced to `boolean`:
 
 #### To number/integer types
 
-- `true` -> 1
-- `false` -> 0
+- `true` -> `1`
+- `false` -> `0`
 
 
 #### To null type
