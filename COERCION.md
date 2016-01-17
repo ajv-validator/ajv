@@ -1,15 +1,17 @@
 # Ajv type coercion rules
 
+To enable type coercion pass option `coerceTypes` to ajv (it is `false` by default). See [example](https://github.com/epoberezkin/ajv#coerce-data-types).
+
 The coercion rules are different from JavaScript:
 - to validate user input as expected
 - to have the coercion reversible
-- to correctly validate cases where different types are required in subschemas.
+- to correctly validate cases where different types are required in subschemas (e.g., in `anyOf`).
 
 Type coercion only happens if there is `type` keyword and if without coercion the validation would have failed. If coercion to the required type succeeds then the validation continues to other keywords, otherwise the validation fails.
 
 If there are multiple types allowed in `type` keyword the coercion will only happen if none of the types match the data and some of the scalar types are present (coercion to/from `object`/`array` is not possible). In this case the validating function will try coercing the data to each type in order until some of them succeeds.
 
-The table below summarises possible type coercions.
+Possible type coercions:
 
 |from&nbsp;type&nbsp;&rarr;<br>to&nbsp;type&nbsp;&darr;|string|number|bolean|null|
 |---|:-:|:-:|:-:|:-:|
