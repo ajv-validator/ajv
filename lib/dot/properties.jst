@@ -13,7 +13,7 @@
                     ? it.errorPath
                     : it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
     var $passData = $data + '[key' + $lvl + ']';
-    if (it.opts.v5) $it.dataPathArr[$dataNxt] = 'key' + $lvl;
+    $it.dataPathArr[$dataNxt] = 'key' + $lvl;
   }}
 
   {{ var $code = it.validate($it); }}
@@ -147,7 +147,7 @@ var valid{{=$it.level}} = true;
         $it.schemaPath = $schemaPath + $prop;
         $it.errSchemaPath = $errSchemaPath + '/' + it.util.escapeFragment($propertyKey);
         $it.errorPath = it.util.getPath(it.errorPath, $propertyKey, it.opts.jsonPointers);
-        if (it.opts.v5) $it.dataPathArr[$dataNxt] = it.util.toQuotedString($propertyKey);
+        $it.dataPathArr[$dataNxt] = it.util.toQuotedString($propertyKey);
       }}
 
       {{ var $code = it.validate($it); }}
@@ -216,7 +216,7 @@ var valid{{=$it.level}} = true;
         {{
           $it.errorPath = it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
           var $passData = $data + '[key' + $lvl + ']';
-          if (it.opts.v5) $it.dataPathArr[$dataNxt] = 'key' + $lvl;
+          $it.dataPathArr[$dataNxt] = 'key' + $lvl;
         }}
 
         {{ var $code = it.validate($it); }}
@@ -257,7 +257,7 @@ var valid{{=$it.level}} = true;
           {{
             $it.errorPath = it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
             var $passData = $data + '[key' + $lvl + ']';
-            if (it.opts.v5) $it.dataPathArr[$dataNxt] = 'key' + $lvl;
+            $it.dataPathArr[$dataNxt] = 'key' + $lvl;
           }}
 
           {{ var $code = it.validate($it); }}

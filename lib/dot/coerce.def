@@ -1,0 +1,50 @@
+{{## def.coerceType: 
+  var dataType{{=$lvl}} = typeof {{=$data}};
+  var coerced{{=$lvl}};
+
+  {{
+    var $bracesCoercion = ''
+      , $typesArray = $typeIsArray ? $typeSchema : [$typeSchema];
+  }}
+  {{~ $typesArray:$type:$i }}
+    {{? $i }}
+      if (coerced{{=$lvl}} === undefined) {
+      {{ $bracesCoercion += '}'; }}
+    {{?}}
+
+    {{? $type == 'string' }}
+      if (dataType{{=$lvl}} == 'number' || dataType{{=$lvl}} == 'boolean')
+        coerced{{=$lvl}} = '' + {{=$data}};
+      else if ({{=$data}} === null) coerced{{=$lvl}} = '';
+    {{?? $type == 'number' || $type == 'integer' }}
+      if (dataType{{=$lvl}} == 'boolean' || {{=$data}} === null
+          || (dataType{{=$lvl}} == 'string' && {{=$data}} && {{=$data}} == +{{=$data}}
+          {{? $type == 'integer' }} && !({{=$data}} % 1){{?}}))
+        coerced{{=$lvl}} = +{{=$data}};
+    {{?? $type == 'boolean' }}
+      if ({{=$data}} == 'false' || {{=$data}} === 0 || {{=$data}} === null)
+        coerced{{=$lvl}} = false;
+      else if ({{=$data}} == 'true' || {{=$data}} === 1)
+        coerced{{=$lvl}} = true;
+    {{?? $type == 'null' }}
+      if ({{=$data}} == '' || {{=$data}} === 0 || {{=$data}} === false)
+        coerced{{=$lvl}} = null;
+    {{?}}
+  {{~}}
+
+  {{= $bracesCoercion }}
+
+  if (coerced{{=$lvl}} === undefined) {
+    {{# def.error:'type' }}
+  } else {
+    {{? $dataLvl }}
+      {{
+        var $parentData = 'data' + (($dataLvl-1)||'')
+          , $dataProperty = it.dataPathArr[it.dataPathArr.length-1];
+      }}
+      {{=$data}} = {{=$parentData}}[{{=$dataProperty}}] = coerced{{=$lvl}};
+    {{??}}
+      data = coerced{{=$lvl}};
+    {{?}}
+  }
+#}}

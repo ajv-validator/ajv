@@ -1,6 +1,7 @@
 {{# def.definitions }}
 {{# def.errors }}
 {{# def.defaults }}
+{{# def.coerce }}
 
 {{ /**
     * schema compilation (render) time:
@@ -23,7 +24,7 @@
     it.baseId = it.baseId || it.rootId;
     delete it.isTop;
 
-    if (it.opts.v5) it.dataPathArr = [undefined];
+    it.dataPathArr = [undefined];
   }}
 
   validate = function (data, dataPath) {
@@ -49,8 +50,25 @@
     , $closingBraces2 = ''
     , $errorKeyword;
 
-  var $typeSchema = it.schema.type;
+  var $typeSchema = it.schema.type
+    , $typeIsArray = Array.isArray($typeSchema);
 }}
+
+{{##def.checkType:
+  {{
+    var $schemaPath = it.schemaPath + '.type'
+      , $errSchemaPath = it.errSchemaPath + '/type'
+      , $method = $typeIsArray ? 'checkDataTypes' : 'checkDataType';
+  }}
+
+  if ({{= it.util[$method]($typeSchema, $data, true) }}) {
+#}}
+
+{{? it.opts.coerceTypes && $typeSchema }}
+  {{# def.checkType }}
+    {{# def.coerceType }}
+  }
+{{?}}
 
 {{~ it.RULES:$rulesGroup }}
   {{? $shouldUseGroup($rulesGroup) }}
@@ -101,15 +119,8 @@
   {{?}}
 {{~}}
 
-{{? $typeSchema && !$typeChecked  }}
-  {{
-    var $schemaPath = it.schemaPath + '.type'
-      , $errSchemaPath = it.errSchemaPath + '/type'
-      , $isArray = Array.isArray($typeSchema)
-      , $method = $isArray ? 'checkDataTypes' : 'checkDataType';
-  }}
-
-  if ({{= it.util[$method]($typeSchema, $data, true) }}) {
+{{? $typeSchema && !$typeChecked && !it.opts.coerceTypes }}
+  {{# def.checkType }}
     {{# def.error:'type' }}
   }
 {{?}}
