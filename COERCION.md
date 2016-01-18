@@ -13,7 +13,7 @@ If there are multiple types allowed in `type` keyword the coercion will only hap
 
 Possible type coercions:
 
-|from&nbsp;type&nbsp;&rarr;<br>to&nbsp;type&nbsp;&darr;|string|number|bolean|null|
+|from&nbsp;type&nbsp;&rarr;<br>to&nbsp;type&nbsp;&darr;|string|number|boolean|null|
 |---|:-:|:-:|:-:|:-:|
 |string      |-|`x`&rarr;`""+x`|`false`&rarr;`"false"`<br>`true`&rarr;`"true"`|`null`&rarr;`""`|
 |number /<br>integer|Valid number /<br>integer: `x`&rarr;`+x`<br>|-|`false`&rarr;`0`<br>`true`&rarr;`1`|`null`&rarr;`0`|
