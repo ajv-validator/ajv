@@ -670,7 +670,7 @@ Keyword should be different from all standard JSON schema keywords and different
 
 Keyword definition is an object with the following properties:
 
-- _type_: optional string or array of strings with data type(s) that the keyword will apply to. If keyword is validating another type the validation function will not be called, so there is no need to check for data type inside validation function if `type` property is used.
+- _type_: optional string or array of strings with data type(s) that the keyword applies to. If not present, the keyword will apply to all types.
 - _validate_: validating function
 - _compile_: compiling function
 - _macro_: macro function
@@ -678,7 +678,7 @@ Keyword definition is an object with the following properties:
 
 _validate_, _compile_, _macro_ and _inline_ are mutually exclusive, only one should be used at a time.
 
-With _macro_ function _type_ must not be specified, the types that the keyword will be applied for will be determined by the final schema.
+_Please note_: If the keyword is validating data type that is different from the type(s) in its definition, the validation function will not be called (and expanded macro will not be used), so there is no need to check for data type inside validation function or inside schema returned by macro function (unless you want to enforce a specific type and for some reason do not want to use a separate `type` keyword for that). In the same way as standard keywords work, if the keyword does not apply to the data type being validated, the validation of this keyword will succeed.
 
 See [Defining custom keywords](#defining-custom-keywords) for more details.
 
