@@ -48,7 +48,7 @@ jsonSchemaTest(instances, {
   ],
   assert: require('./chai').assert,
   afterError: function (res) {
-    console.log('ajv options:', res.validator.opts);
+    console.log('ajv options:', res.validator._opts);
   },
   // afterEach: function (res) {
   //   console.log(res.errors);
