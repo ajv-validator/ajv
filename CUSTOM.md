@@ -3,14 +3,14 @@
 ## Contents
 
 - Define keyword with:
-  - validation function (NOT RECOMMENDED)
-  - compilation function
-  - macro function
-  - inline compilation function
-- Schema compilation context
-- Validation time variables
-- Ajv utilities
-- Reporting errors in custom keywords
+  - [validation function](https://github.com/epoberezkin/ajv/blob/master/CUSTOM.md#define-keyword-with-validation-function-not-recommended) (NOT RECOMMENDED)
+  - [compilation function](https://github.com/epoberezkin/ajv/blob/master/CUSTOM.md#define-keyword-with-compilation-function)
+  - [macro function](https://github.com/epoberezkin/ajv/blob/master/CUSTOM.md#define-keyword-with-macro-function)
+  - [inline compilation function](https://github.com/epoberezkin/ajv/blob/master/CUSTOM.md#define-keyword-with-inline-compilation-function)
+- [Schema compilation context](https://github.com/epoberezkin/ajv/blob/master/CUSTOM.md#schema-compilation-context)
+- [Validation time variables](https://github.com/epoberezkin/ajv/blob/master/CUSTOM.md#validation-time-variables)
+- [Ajv utilities](https://github.com/epoberezkin/ajv/blob/master/CUSTOM.md#ajv-utilities)
+- [Reporting errors in custom keywords](https://github.com/epoberezkin/ajv/blob/master/CUSTOM.md#reporting-errors-in-custom-keywords)
 
 
 ### Define keyword with validation function (NOT RECOMMENDED)
