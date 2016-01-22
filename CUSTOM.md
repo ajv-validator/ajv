@@ -176,16 +176,16 @@ Property `statements` in the keyword definition should be set to `true` if the v
 
 The main challenge of defining inline keywords is that you have to write both the code that will execute during schema compilation (compile-time) and the code that will execute during data validation (validation-time - this code can be generated either using strings concatenation or using templates, see the examples below).
 
-Ajv uses [doT templates](https://github.com/olado/doT) to generate the code of validation functions that makes it easier to separate compile-time and validation-time code because of the different syntax used. Ajv code also usually uses different variable names for compile-time and validation-time variables to make it easier to differentiate - compile-time variable names start from $ character.
+Ajv uses [doT templates](https://github.com/olado/doT) to generate the code of validation functions that makes it easier to separate compile-time and validation-time code because of the different syntax used in templates and in the code. Ajv also uses different variable names for compile-time and validation-time variables to make it easier to differentiate - compile-time variable names start with $ character.
 
-Also you have to bear in mind that while compile-time variables exist in the scope of the function you wrote to compile the keyword so they are isolated, validation-time variables share the scope with all the variables in the scope of a single validation function. So if your keyword has subschemas you have to append the schema level (`it.level`) to the variable names.
+Also you have to bear in mind that while compile-time variables exist in the scope of the function you wrote to compile the keyword, so they are isolated, validation-time variables share the scope with all the variables in the scope of a single validation function. So if your keyword has subschemas you have to append the schema level (`it.level`) to the variable names.
 
 See [schema compilation context](#schema-compilation-context) for more information on which properties and utilities from the schema compilation context you can use.
 
 
 ## Schema compilation context
 
-The first parameter passed to inline compilation keywords is `it`, the schema compilation context. All the properties and functions documented here are safe to use in your keywords, they won't be renamed or change their meaning without major version change.
+The first parameter passed to inline keyword compilation function is `it`, the schema compilation context. All the properties and functions documented here are safe to use in your keywords, they won't be renamed or change their meaning without major version change.
 
 `it` object has the following properties:
 
@@ -195,7 +195,7 @@ The first parameter passed to inline compilation keywords is `it`, the schema co
 - _schemaPath_ - the validation time expression that evaluates to the property name of the current schema.
 - _opts_ - Ajv instance option. You should not be changing them.
 - _formats_ - all formats available in Ajv instance, including the custom ones.
-- _compositeRule_ - boolean indicating that the current schema is inside the compound keyword where failing some rule doesn't mean validation failure (`anyOf`, `oneOf`, `not`, `if` in `switch`).
+- _compositeRule_ - boolean indicating that the current schema is inside the compound keyword where failing some rule doesn't mean validation failure (`anyOf`, `oneOf`, `not`, `if` in `switch`). This flag is used to determine whether you can return validation result immediately after any error in case the option `allErrors` is not `true. You only need to do it if you have many steps in your keywords and potentially can define multiple errors.
 - _validate_ - the function you need to use to compile subschemas in your keywords (see the [implementation](https://github.com/epoberezkin/ajv/blob/master/lib/dot/v5/switch.jst) of `switch` keyword for example).
 - _util_ - [Ajv utilities](#ajv-utilities) you can use in your inline compilation functions.
 - _self_ - Ajv instance.
