@@ -48,9 +48,17 @@
     var $isObject = typeof $format == 'object'
                     && !($format instanceof RegExp)
                     && $format.validate;
-    if ($isObject) $format = $format.validate;
+    if ($isObject) {
+      var $async = $format.async === true;
+      $format = $format.validate;
+    }
   }}
-  if (!{{# def.checkFormat }}) {
+  {{? $async }}
+    {{ var $formatRef = 'formats' + it.util.getProperty($schema) + '.validate'; }}
+    if (!(yield {{=$formatRef}}({{=$data}}))) {
+  {{??}}
+    if (!{{# def.checkFormat }}) {
+  {{?}}
 {{?}}
     {{# def.error:'format' }}
   } {{? $breakOnError }} else { {{?}}

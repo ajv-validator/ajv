@@ -42,8 +42,12 @@
   {{# def.storeDefOut:__err }}
 
   {{? !it.compositeRule && $breakOnError }}
-    validate.errors = [{{=__err}}];
-    return false;
+    {{? it.async }}
+      throwErrors([{{=__err}}]);
+    {{??}}
+      validate.errors = [{{=__err}}];
+      return false;
+    {{?}}
   {{??}}
     var err = {{=__err}};
     {{# def._addError:_rule }}
@@ -54,8 +58,12 @@
 {{## def.extraError:_rule:
   {{# def.addError:_rule}}
   {{? !it.compositeRule && $breakOnError }}
-    validate.errors = vErrors;
-    return false
+    {{? it.async }}
+      throwErrors(vErrors);
+    {{??}}
+      validate.errors = vErrors;
+      return false
+    {{?}}
   {{?}}
 #}}
 
