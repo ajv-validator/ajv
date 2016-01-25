@@ -42,6 +42,7 @@
   {{# def.storeDefOut:__err }}
 
   {{? !it.compositeRule && $breakOnError }}
+    {{ 'istanbul ignore if'; }}
     {{? it.async }}
       throwErrors([{{=__err}}]);
     {{??}}
@@ -58,6 +59,7 @@
 {{## def.extraError:_rule:
   {{# def.addError:_rule}}
   {{? !it.compositeRule && $breakOnError }}
+    {{ 'istanbul ignore if'; }}
     {{? it.async }}
       throwErrors(vErrors);
     {{??}}
