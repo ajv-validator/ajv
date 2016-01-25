@@ -61,8 +61,11 @@
     }
   }}
   {{? $async }}
-    {{ if (!(it.async && it.async.current)) throw new Error('async format in sync schema'); }}
-    {{ var $formatRef = 'formats' + it.util.getProperty($schema) + '.validate'; }}
+    {{
+      if (!(it.async && it.async.current))
+        throw new Error('async format in sync schema');
+      var $formatRef = 'formats' + it.util.getProperty($schema) + '.validate';
+    }}
     if (!(yield {{=$formatRef}}({{=$data}}))) {
   {{??}}
     if (!{{# def.checkFormat }}) {

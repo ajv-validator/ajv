@@ -139,8 +139,8 @@ var Ajv = require('./ajv')
 
 
     it('should support async formats when $data ref resolves to async format name', function() {
-      ajv = Ajv({ v5: true, beautify: true });
-      fullAjv = Ajv({ v5: true, allErrors: true, beautify: true });
+      ajv = Ajv({ v5: true });
+      fullAjv = Ajv({ v5: true, allErrors: true });
       addFormatEnglishWord();
 
       var schema = {
@@ -157,7 +157,6 @@ var Ajv = require('./ajv')
       ]);
 
       function test(ajv) {
-        debugger;
         var validate = ajv.compile(schema);
 
         return Promise.all([
@@ -178,6 +177,115 @@ var Ajv = require('./ajv')
       return str == 'tomorrow' ? Promise.resolve(true)
               : str == 'manana' ? Promise.resolve(false)
               : Promise.reject(new Error('unknown word'));
+    }
+  });
+
+
+  describe('async custom keywords', function() {
+    beforeEach(function() {
+      [ajv, fullAjv].forEach(function (ajv) {
+        ajv.addKeyword('idExists', {
+          async: true,
+          type: 'number',
+          validate: checkIdExists
+        });
+
+        ajv.addKeyword('idExistsCompiled', {
+          async: true,
+          type: 'number',
+          compile: compileCheckIdExists
+        });
+      });
+    });
+
+
+    it('should validate custom keyword that returns promise', function() {
+      var schema1 = {
+        $async: true,
+        properties: {
+          userId: {
+            $async: true,
+            type: 'integer',
+            idExists: { table: 'users' }
+          },
+          postId: {
+            $async: true,
+            type: 'integer',
+            idExists: { table: 'posts' }
+          },
+          categoryId: {
+            $async: true,
+            description: 'will throw if present, no such table',
+            type: 'integer',
+            idExists: { table: 'categories' }
+          }
+        }
+      };
+
+      var schema2 = {
+        $async: true,
+        properties: {
+          userId: {
+            $async: true,
+            type: 'integer',
+            idExistsCompiled: { table: 'users' }
+          },
+          postId: {
+            $async: true,
+            type: 'integer',
+            idExistsCompiled: { table: 'posts' }
+          }
+        }
+      };
+
+      return Promise.all([
+        test(ajv, schema1, true),
+        test(ajv, schema2),
+        test(fullAjv, schema1, true),
+        test(fullAjv, schema2)
+      ]);
+
+      function test(ajv, schema, checkThrow) {
+        var validate = ajv.compile(schema);
+
+        return Promise.all([
+          shouldBeValid(   co(validate({ userId: 1, postId: 21 })) ),
+          shouldBeValid(   co(validate({ userId: 5, postId: 25 })) ),
+          shouldBeInvalid( co(validate({ userId: 5, postId: 10 })) ), // no post
+          shouldBeInvalid( co(validate({ userId: 9, postId: 25 })) ), // no user
+          checkThrow
+            ? shouldThrow(     co(validate({ postId: 25, categoryId: 1  })), 'no such table' )
+            : undefined
+        ]);
+      }
+    });
+
+
+    function checkIdExists(schema, data) {
+      switch (schema.table) {
+        case 'users': return check([1, 5, 8]);
+        case 'posts': return check([21, 25, 28]);
+        default: throw new Error('no such table');
+      }
+
+      function check(IDs) {
+        return Promise.resolve(IDs.indexOf(data) >= 0);
+      }
+    }
+
+
+    function compileCheckIdExists(schema) {
+      switch (schema.table) {
+        case 'users': return compileCheck([1, 5, 8]);
+        case 'posts': return compileCheck([21, 25, 28]);
+        default: throw new Error('no such table');
+      }
+
+      function compileCheck(IDs) {
+        return function (data) {
+          return Promise.resolve(IDs.indexOf(data) >= 0);
+        };
+      }
     }
   });
 });
