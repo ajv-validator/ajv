@@ -1,20 +1,49 @@
 'use strict';
 
-try { eval("(function*(){})()"); var hasGenerators = true; } catch(e){}
-
 var Ajv = require('./ajv')
   , should = require('./chai').should()
-  , co = require('co');
+  , co = require('co')
+  , Promise = require('bluebird')
+  , util = require('../lib/compile/util');
+
+Promise.config({ warnings: false });
+
+var g = typeof global == 'object' ? global :
+        typeof window == 'object' ? window : this;
+
+g.Promise = g.Promise || Promise;
 
 
-(hasGenerators ? describe : describe.skip)
-('async schemas, formats and keywords', function() {
-  var ajv, fullAjv;
+describe('async schemas, formats and keywords', function() {
+  var ajv, instances;
 
   beforeEach(function () {
-    ajv = Ajv();
-    fullAjv = Ajv({ allErrors: true });
+    getInstances();
+    ajv = instances[0];
   });
+
+  function getInstances(opts) {
+    opts = opts || {};
+    var firstTime = instances === undefined;
+    instances = [];
+    [
+      {},
+      { allErrors: true },
+      { async: 'generators' },
+      { async: 'generators', allErrors: true },
+      { async: 'regenerator' },
+      { async: 'regenerator', allErrors: true }
+    ].forEach(function (_opts) {
+      util.copy(opts, _opts);
+      var ajv = getAjv(_opts);
+      if (ajv) instances.push(ajv);
+    });
+    if (firstTime) console.log('Testing', instances.length, 'ajv instances');
+  }
+
+  function getAjv(opts){
+    try { return Ajv(opts); } catch(e) {}
+  }
 
   describe('async schemas without async elements', function() {
     it('should pass result via callback in setTimeout', function() {
@@ -24,10 +53,7 @@ var Ajv = require('./ajv')
         maxLength: 3
       };
 
-      return Promise.all([
-        test(ajv),
-        test(fullAjv)
-      ]);
+      return Promise.map(instances, test);
 
       function test(ajv) {
         var validate = ajv.compile(schema);
@@ -66,7 +92,7 @@ var Ajv = require('./ajv')
     beforeEach(addFormatEnglishWord);
 
     function addFormatEnglishWord() {
-      [ajv, fullAjv].forEach(function (ajv) {
+      instances.forEach(function (ajv) {
         ajv.addFormat('english_word', {
           async: true,
           validate: checkWordOnServer
@@ -82,10 +108,7 @@ var Ajv = require('./ajv')
         minimum: 5
       };
 
-      return Promise.all([
-        test(ajv),
-        test(fullAjv)
-      ]);
+      return Promise.map(instances, test);
 
       function test(ajv) {
         var validate = ajv.compile(schema);
@@ -101,8 +124,7 @@ var Ajv = require('./ajv')
 
 
     it('should fail compilation if async format is inside sync schema or subschema', function() {
-      test(ajv);
-      test(fullAjv);
+      instances.forEach(test);
 
       function test(ajv) {
         var schema1 = {
@@ -139,8 +161,7 @@ var Ajv = require('./ajv')
 
 
     it('should support async formats when $data ref resolves to async format name', function() {
-      ajv = Ajv({ v5: true });
-      fullAjv = Ajv({ v5: true, allErrors: true });
+      getInstances({ v5: true });
       addFormatEnglishWord();
 
       var schema = {
@@ -151,10 +172,7 @@ var Ajv = require('./ajv')
         }
       };
 
-      return Promise.all([
-        test(ajv),
-        test(fullAjv)
-      ]);
+      return Promise.map(instances, test);
 
       function test(ajv) {
         var validate = ajv.compile(schema);
@@ -183,7 +201,7 @@ var Ajv = require('./ajv')
 
   describe('async custom keywords', function() {
     beforeEach(function() {
-      [ajv, fullAjv].forEach(function (ajv) {
+      instances.forEach(function (ajv) {
         ajv.addKeyword('idExists', {
           async: true,
           type: 'number',
@@ -239,24 +257,24 @@ var Ajv = require('./ajv')
       };
 
       return Promise.all([
-        test(ajv, schema1, true),
-        test(ajv, schema2),
-        test(fullAjv, schema1, true),
-        test(fullAjv, schema2)
+        test(instances, schema1, true),
+        test(instances, schema2)
       ]);
 
-      function test(ajv, schema, checkThrow) {
-        var validate = ajv.compile(schema);
+      function test(instances, schema, checkThrow) {
+        return Promise.map(instances, function (ajv) {
+          var validate = ajv.compile(schema);
 
-        return Promise.all([
-          shouldBeValid(   co(validate({ userId: 1, postId: 21 })) ),
-          shouldBeValid(   co(validate({ userId: 5, postId: 25 })) ),
-          shouldBeInvalid( co(validate({ userId: 5, postId: 10 })) ), // no post
-          shouldBeInvalid( co(validate({ userId: 9, postId: 25 })) ), // no user
-          checkThrow
-            ? shouldThrow(     co(validate({ postId: 25, categoryId: 1  })), 'no such table' )
-            : undefined
-        ]);
+          return Promise.all([
+            shouldBeValid(   co(validate({ userId: 1, postId: 21 })) ),
+            shouldBeValid(   co(validate({ userId: 5, postId: 25 })) ),
+            shouldBeInvalid( co(validate({ userId: 5, postId: 10 })) ), // no post
+            shouldBeInvalid( co(validate({ userId: 9, postId: 25 })) ), // no user
+            checkThrow
+              ? shouldThrow(     co(validate({ postId: 25, categoryId: 1  })), 'no such table' )
+              : undefined
+          ]);
+        });
       }
     });
 

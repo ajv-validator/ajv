@@ -37,3 +37,7 @@ lib/dotjs/*.js
 # Ajv bundle
 ajv.bundle.*
 ajv.min.*
+
+# regenerator bundle
+regenerator.bundle.*
+regenerator.min.*
