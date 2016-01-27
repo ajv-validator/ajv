@@ -91,21 +91,11 @@ describe('async schemas, formats and keywords', function() {
   describe('async formats', function() {
     beforeEach(addFormatEnglishWord);
 
-    function addFormatEnglishWord() {
-      instances.forEach(function (ajv) {
-        ajv.addFormat('english_word', {
-          async: true,
-          validate: checkWordOnServer
-        });
-      });
-    }
-
     it('should return promise that resolves as true or rejects with array of errors', function() {
       var schema = {
         $async: true,
         type: 'string',
-        format: 'english_word',
-        minimum: 5
+        format: 'english_word'
       };
 
       return Promise.map(instances, test);
@@ -123,7 +113,7 @@ describe('async schemas, formats and keywords', function() {
     });
 
 
-    it('should fail compilation if async format is inside sync schema or subschema', function() {
+    it('should fail compilation if async format is inside sync schema', function() {
       instances.forEach(test);
 
       function test(ajv) {
@@ -138,24 +128,6 @@ describe('async schemas, formats and keywords', function() {
         })
         schema1.$async = true;
         ajv.compile(schema1);
-
-
-        var schema2 = {
-          $async: true,
-          properties: {
-            foo: {
-              type: 'string',
-              format: 'english_word',
-              minimum: 5
-            }
-          }
-        };
-
-        shouldThrowFunc('async format in sync schema', function() {
-          ajv.compile(schema2);
-        })
-        schema2.properties.foo.$async = true;
-        ajv.compile(schema2);
       }
     });
 
@@ -189,13 +161,6 @@ describe('async schemas, formats and keywords', function() {
         ]);
       }
     });
-
-
-    function checkWordOnServer(str) {
-      return str == 'tomorrow' ? Promise.resolve(true)
-              : str == 'manana' ? Promise.resolve(false)
-              : Promise.reject(new Error('unknown word'));
-    }
   });
 
 
@@ -222,17 +187,14 @@ describe('async schemas, formats and keywords', function() {
         $async: true,
         properties: {
           userId: {
-            $async: true,
             type: 'integer',
             idExists: { table: 'users' }
           },
           postId: {
-            $async: true,
             type: 'integer',
             idExists: { table: 'posts' }
           },
           categoryId: {
-            $async: true,
             description: 'will throw if present, no such table',
             type: 'integer',
             idExists: { table: 'categories' }
@@ -244,12 +206,10 @@ describe('async schemas, formats and keywords', function() {
         $async: true,
         properties: {
           userId: {
-            $async: true,
             type: 'integer',
             idExistsCompiled: { table: 'users' }
           },
           postId: {
-            $async: true,
             type: 'integer',
             idExistsCompiled: { table: 'posts' }
           }
@@ -306,7 +266,186 @@ describe('async schemas, formats and keywords', function() {
       }
     }
   });
+
+
+  describe('async referenced schemas', function() {
+    beforeEach(function() {
+      getInstances({ inlineRefs: false });
+      addFormatEnglishWord();
+    });
+
+    it('should validate referenced async schema', function() {
+      var schema = {
+        $async: true,
+        definitions: {
+          english_word: {
+            $async: true,
+            type: 'string',
+            format: 'english_word'
+          }
+        },
+        properties: {
+          word: { $ref: '#/definitions/english_word' }
+        }
+      };
+
+      return Promise.map(instances, function (ajv) {
+        var validate = ajv.compile(schema);
+
+        return Promise.all([
+          shouldBeValid(   co(validate({ word: 'tomorrow' })) ),
+          shouldBeInvalid( co(validate({ word: 'manana' })) ),
+          shouldBeInvalid( co(validate({ word: 1 })) ),
+          shouldThrow(     co(validate({ word: 'today' })), 'unknown word' )
+        ]);
+      });
+    });
+
+    it('should validate recursive async schema', function() {
+      var schema = {
+        $async: true,
+        definitions: {
+          english_word: {
+            $async: true,
+            type: 'string',
+            format: 'english_word'
+          }
+        },
+        type: 'object',
+        properties: {
+          foo: {
+            anyOf: [
+              { $ref: '#/definitions/english_word' },
+              { $ref: '#' }
+            ]
+          }
+        }
+      };
+
+      return recursiveTest(schema);
+    });
+
+    it('should validate ref from referenced async schema to root schema', function() {
+      var schema = {
+        $async: true,
+        definitions: {
+          wordOrRoot: {
+            $async: true,
+            anyOf: [
+              {
+                type: 'string',
+                format: 'english_word'
+              },
+              { $ref: '#' }
+            ]
+          }
+        },
+        type: 'object',
+        properties: {
+          foo: { $ref: '#/definitions/wordOrRoot' }
+        }
+      };
+
+      return recursiveTest(schema);
+    });
+
+    it('should validate refs between two async schemas', function() {
+      var schemaObj = {
+        id: 'http://e.com/obj.json#',
+        $async: true,
+        type: 'object',
+        properties: {
+          foo: { $ref: 'http://e.com/word.json#' }
+        }
+      };
+
+      var schemaWord = {
+        id: 'http://e.com/word.json#',
+        $async: true,
+        anyOf: [
+          {
+            type: 'string',
+            format: 'english_word'
+          },
+          { $ref: 'http://e.com/obj.json#' }
+        ]
+      };
+
+      return recursiveTest(schemaObj, schemaWord);
+    });
+
+    it('should fail compilation if sync schema references async schema', function() {
+      var schema = {
+        id: 'http://e.com/obj.json#',
+        type: 'object',
+        properties: {
+          foo: { $ref: 'http://e.com/word.json#' }
+        }
+      };
+
+      var schemaWord = {
+        id: 'http://e.com/word.json#',
+        $async: true,
+        anyOf: [
+          {
+            type: 'string',
+            format: 'english_word'
+          },
+          { $ref: 'http://e.com/obj.json#' }
+        ]
+      };
+
+      ajv.addSchema(schemaWord);
+      shouldThrowFunc('async schema referenced by sync schema', function() {
+        ajv.compile(schema);
+      });
+
+      schema.id = 'http://e.com/obj2.json#';
+      schema.$async = true;
+
+      ajv.compile(schema);
+    });
+
+    function recursiveTest(schema, refSchema) {
+      return Promise.map(instances, function (ajv) {
+        if (refSchema) ajv.addSchema(refSchema);
+        var validate = ajv.compile(schema);
+
+        return Promise.all([
+          shouldBeValid(   co(validate({ foo: 'tomorrow' })) ),
+          shouldBeInvalid( co(validate({ foo: 'manana' })) ),
+          shouldBeInvalid( co(validate({ foo: 1 })) ),
+          shouldThrow(     co(validate({ foo: 'today' })), 'unknown word' ),
+          shouldBeValid(   co(validate({ foo: { foo: 'tomorrow' }})) ),
+          shouldBeInvalid( co(validate({ foo: { foo: 'manana' }})) ),
+          shouldBeInvalid( co(validate({ foo: { foo: 1 }})) ),
+          shouldThrow(     co(validate({ foo: { foo: 'today' }})), 'unknown word' ),
+          shouldBeValid(   co(validate({ foo: { foo: { foo: 'tomorrow' }}})) ),
+          shouldBeInvalid( co(validate({ foo: { foo: { foo: 'manana' }}})) ),
+          shouldBeInvalid( co(validate({ foo: { foo: { foo: 1 }}})) ),
+          shouldThrow(     co(validate({ foo: { foo: { foo: 'today' }}})), 'unknown word' )
+        ]);
+      });
+    }
+  });
+
+
+  function addFormatEnglishWord() {
+    instances.forEach(function (ajv) {
+      ajv.addFormat('english_word', {
+        async: true,
+        validate: checkWordOnServer
+      });
+    });
+  }
 });
+
+
+function checkWordOnServer(str) {
+  return str == 'tomorrow' ? Promise.resolve(true)
+          : str == 'manana' ? Promise.resolve(false)
+          : Promise.reject(new Error('unknown word'));
+}
 
 
 function shouldThrowFunc(message, func) {

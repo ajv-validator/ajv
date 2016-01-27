@@ -12,7 +12,7 @@
     , $inline = $rDef.inline
     , $macro = $rDef.macro;
 
-  if ($async && !(it.async && it.async.current))
+  if ($async && !it.async)
     throw new Error('async keyword in sync schema');
 }}
 

@@ -24,7 +24,7 @@
       , $data = 'data';
     it.rootId = it.resolve.fullPath(it.root.schema.id);
     it.baseId = it.baseId || it.rootId;
-    if ($async) it.async = { current: true };
+    if ($async) it.async = true;
     delete it.isTop;
 
     it.dataPathArr = [undefined];
@@ -42,8 +42,7 @@
 
     if (it.schema.id) it.baseId = it.resolve.url(it.baseId, it.schema.id);
 
-    if (it.async) it.async.current = $async;
-    else if ($async) throw new Error('async schema in sync schema');
+    if ($async && !it.async) throw new Error('async schema in sync schema');
   }}
 
   var errs_{{=$lvl}} = errors;
@@ -138,8 +137,8 @@
 
 {{? $top }}
     {{? $async }}
-      if (errors === 0) return true; {{ /* don't edit, used in replace */ }}
-      else throwErrors(vErrors);     {{ /* don't edit, used in replace */ }}
+      if (errors === 0) return true;           {{ /* don't edit, used in replace */ }}
+      else throw new ValidationError(vErrors); {{ /* don't edit, used in replace */ }}
     {{??}}
       validate.errors = vErrors; {{ /* don't edit, used in replace */ }}
       return errors === 0;       {{ /* don't edit, used in replace */ }}
