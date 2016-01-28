@@ -31,6 +31,8 @@ describe('async schemas, formats and keywords', function() {
       { allErrors: true },
       { async: 'generators' },
       { async: 'generators', allErrors: true },
+      // { async: 'es7' }
+      // , { async: 'es7', allErrors: true },
       { async: 'regenerator' },
       { async: 'regenerator', allErrors: true }
     ].forEach(function (_opts) {
@@ -46,7 +48,7 @@ describe('async schemas, formats and keywords', function() {
   }
 
   describe('async schemas without async elements', function() {
-    it('should pass result via callback in setTimeout', function() {
+    it('should return result as promise', function() {
       var schema = {
         $async: true,
         type: 'string',

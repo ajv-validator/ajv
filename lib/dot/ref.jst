@@ -68,7 +68,7 @@
 
   {{? $async }}
     {{ if (!it.async) throw new Error('async schema referenced by sync schema'); }}
-    try { {{? $breakOnError }}var {{=$valid}} ={{?}} yield {{=__callValidate}}; }
+    try { {{? $breakOnError }}var {{=$valid}} ={{?}} {{=it.yieldAwait}} {{=__callValidate}}; }
     catch (e) {
       if (!(e instanceof ValidationError)) throw e;
       if (vErrors === null) vErrors = e.errors;
