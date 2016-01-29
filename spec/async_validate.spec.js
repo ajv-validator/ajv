@@ -14,7 +14,7 @@ var g = typeof global == 'object' ? global :
 g.Promise = g.Promise || Promise;
 
 
-describe.only('async schemas, formats and keywords', function() {
+describe('async schemas, formats and keywords', function() {
   var ajv, instances;
 
   beforeEach(function () {
