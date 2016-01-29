@@ -15,6 +15,7 @@ g.Promise = g.Promise || Promise;
 
 
 describe('async schemas, formats and keywords', function() {
+  this.timeout(5000);
   var ajv, instances;
 
   beforeEach(function () {
