@@ -28,8 +28,8 @@ describe('async schemas, formats and keywords', function() {
     var firstTime = instances === undefined;
     instances = [];
     var options = [
-      {},
-      { allErrors: true },
+      { async: true },
+      { async: true, allErrors: true },
       { async: 'generators' },
       { async: 'generators', allErrors: true },
       { async: 'es7.nodent' },
@@ -45,7 +45,14 @@ describe('async schemas, formats and keywords', function() {
     });
 
 
-    if (firstTime) console.log('Testing', instances.length, 'ajv instances');
+    if (firstTime) {
+      var asyncModes = [];
+      instances.forEach(function (ajv) {
+        var mode = ajv._opts.async;
+        if (asyncModes.indexOf(mode) == -1) asyncModes.push(mode);
+      });
+      console.log('Testing', instances.length, 'ajv instances:', asyncModes.join(','));
+    }
   }
 
   function getAjv(opts){
