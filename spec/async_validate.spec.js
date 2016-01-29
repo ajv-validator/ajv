@@ -14,7 +14,7 @@ var g = typeof global == 'object' ? global :
 g.Promise = g.Promise || Promise;
 
 
-describe('async schemas, formats and keywords', function() {
+describe.only('async schemas, formats and keywords', function() {
   var ajv, instances;
 
   beforeEach(function () {
@@ -51,6 +51,12 @@ describe('async schemas, formats and keywords', function() {
     try { return Ajv(opts); } catch(e) {}
   }
 
+  function useCo(ajv) {
+    return ajv._opts.async == 'es7.nodent' ? identity : co;
+  }
+
+  function identity(x) { return x; }
+
   describe('async schemas without async elements', function() {
     it('should return result as promise', function() {
       var schema = {
@@ -63,11 +69,12 @@ describe('async schemas, formats and keywords', function() {
 
       function test(ajv) {
         var validate = ajv.compile(schema);
+        var _co = useCo(ajv);
 
         return Promise.all([
-          shouldBeValid(   co(validate('abc')) ),
-          shouldBeInvalid( co(validate('abcd')) ),
-          shouldBeInvalid( co(validate(1)) )
+          shouldBeValid(   _co(validate('abc')) ),
+          shouldBeInvalid( _co(validate('abcd')) ),
+          shouldBeInvalid( _co(validate(1)) )
         ]);
       }
     });
@@ -108,12 +115,13 @@ describe('async schemas, formats and keywords', function() {
 
       function test(ajv) {
         var validate = ajv.compile(schema);
+        var _co = useCo(ajv);
 
         return Promise.all([
-          shouldBeValid(   co(validate('tomorrow')) ),
-          shouldBeInvalid( co(validate('manana')) ),
-          shouldBeInvalid( co(validate(1)) ),
-          shouldThrow(     co(validate('today')), 'unknown word' )
+          shouldBeValid(   _co(validate('tomorrow')) ),
+          shouldBeInvalid( _co(validate('manana')) ),
+          shouldBeInvalid( _co(validate(1)) ),
+          shouldThrow(     _co(validate('today')), 'unknown word' )
         ]);
       }
     });
@@ -155,16 +163,17 @@ describe('async schemas, formats and keywords', function() {
 
       function test(ajv) {
         var validate = ajv.compile(schema);
+        var _co = useCo(ajv);
 
         return Promise.all([
-          shouldBeValid(   co(validate({ english_word: 'tomorrow' })) ),
-          shouldBeInvalid( co(validate({ english_word: 'manana' })) ),
-          shouldBeInvalid( co(validate({ english_word: 1 })) ),
-          shouldThrow(     co(validate({ english_word: 'today' })), 'unknown word' ),
+          shouldBeValid(   _co(validate({ english_word: 'tomorrow' })) ),
+          shouldBeInvalid( _co(validate({ english_word: 'manana' })) ),
+          shouldBeInvalid( _co(validate({ english_word: 1 })) ),
+          shouldThrow(     _co(validate({ english_word: 'today' })), 'unknown word' ),
 
-          shouldBeValid(   co(validate({ date: '2016-01-25' })) ),
-          shouldBeInvalid( co(validate({ date: '01/25/2016' })) ),
-          shouldBeInvalid( co(validate({ date: 1 })) ),
+          shouldBeValid(   _co(validate({ date: '2016-01-25' })) ),
+          shouldBeInvalid( _co(validate({ date: '01/25/2016' })) ),
+          shouldBeInvalid( _co(validate({ date: 1 })) ),
         ]);
       }
     });
@@ -231,14 +240,15 @@ describe('async schemas, formats and keywords', function() {
       function test(instances, schema, checkThrow) {
         return Promise.map(instances, function (ajv) {
           var validate = ajv.compile(schema);
+          var _co = useCo(ajv);
 
           return Promise.all([
-            shouldBeValid(   co(validate({ userId: 1, postId: 21 })) ),
-            shouldBeValid(   co(validate({ userId: 5, postId: 25 })) ),
-            shouldBeInvalid( co(validate({ userId: 5, postId: 10 })) ), // no post
-            shouldBeInvalid( co(validate({ userId: 9, postId: 25 })) ), // no user
+            shouldBeValid(   _co(validate({ userId: 1, postId: 21 })) ),
+            shouldBeValid(   _co(validate({ userId: 5, postId: 25 })) ),
+            shouldBeInvalid( _co(validate({ userId: 5, postId: 10 })) ), // no post
+            shouldBeInvalid( _co(validate({ userId: 9, postId: 25 })) ), // no user
             checkThrow
-              ? shouldThrow(     co(validate({ postId: 25, categoryId: 1  })), 'no such table' )
+              ? shouldThrow(     _co(validate({ postId: 25, categoryId: 1  })), 'no such table' )
               : undefined
           ]);
         });
@@ -320,12 +330,13 @@ describe('async schemas, formats and keywords', function() {
 
       return Promise.map(instances, function (ajv) {
         var validate = ajv.compile(schema);
+        var _co = useCo(ajv);
 
         return Promise.all([
-          shouldBeValid(   co(validate({ word: 'tomorrow' })) ),
-          shouldBeInvalid( co(validate({ word: 'manana' })) ),
-          shouldBeInvalid( co(validate({ word: 1 })) ),
-          shouldThrow(     co(validate({ word: 'today' })), 'unknown word' )
+          shouldBeValid(   _co(validate({ word: 'tomorrow' })) ),
+          shouldBeInvalid( _co(validate({ word: 'manana' })) ),
+          shouldBeInvalid( _co(validate({ word: 1 })) ),
+          shouldThrow(     _co(validate({ word: 'today' })), 'unknown word' )
         ]);
       });
     });
@@ -439,20 +450,21 @@ describe('async schemas, formats and keywords', function() {
       return Promise.map(instances, function (ajv) {
         if (refSchema) ajv.addSchema(refSchema);
         var validate = ajv.compile(schema);
+        var _co = useCo(ajv);
 
         return Promise.all([
-          shouldBeValid(   co(validate({ foo: 'tomorrow' })) ),
-          shouldBeInvalid( co(validate({ foo: 'manana' })) ),
-          shouldBeInvalid( co(validate({ foo: 1 })) ),
-          shouldThrow(     co(validate({ foo: 'today' })), 'unknown word' ),
-          shouldBeValid(   co(validate({ foo: { foo: 'tomorrow' }})) ),
-          shouldBeInvalid( co(validate({ foo: { foo: 'manana' }})) ),
-          shouldBeInvalid( co(validate({ foo: { foo: 1 }})) ),
-          shouldThrow(     co(validate({ foo: { foo: 'today' }})), 'unknown word' ),
-          shouldBeValid(   co(validate({ foo: { foo: { foo: 'tomorrow' }}})) ),
-          shouldBeInvalid( co(validate({ foo: { foo: { foo: 'manana' }}})) ),
-          shouldBeInvalid( co(validate({ foo: { foo: { foo: 1 }}})) ),
-          shouldThrow(     co(validate({ foo: { foo: { foo: 'today' }}})), 'unknown word' )
+          shouldBeValid(   _co(validate({ foo: 'tomorrow' })) ),
+          shouldBeInvalid( _co(validate({ foo: 'manana' })) ),
+          shouldBeInvalid( _co(validate({ foo: 1 })) ),
+          shouldThrow(     _co(validate({ foo: 'today' })), 'unknown word' ),
+          shouldBeValid(   _co(validate({ foo: { foo: 'tomorrow' }})) ),
+          shouldBeInvalid( _co(validate({ foo: { foo: 'manana' }})) ),
+          shouldBeInvalid( _co(validate({ foo: { foo: 1 }})) ),
+          shouldThrow(     _co(validate({ foo: { foo: 'today' }})), 'unknown word' ),
+          shouldBeValid(   _co(validate({ foo: { foo: { foo: 'tomorrow' }}})) ),
+          shouldBeInvalid( _co(validate({ foo: { foo: { foo: 'manana' }}})) ),
+          shouldBeInvalid( _co(validate({ foo: { foo: { foo: 1 }}})) ),
+          shouldThrow(     _co(validate({ foo: { foo: { foo: 'today' }}})), 'unknown word' )
         ]);
       });
     }

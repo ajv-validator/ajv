@@ -28,13 +28,13 @@ NB: [Changes in version 3.0.0](https://github.com/epoberezkin/ajv/releases/tag/3
 - [error messages with parameters](#validation-errors) describing error reasons to allow creating custom error messages
 - i18n error messages support with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package (version >= 1.0.0)
 - [filtering data](#filtering-data) from additional properties
-- NEW: [assigning defaults](#assigning-defaults) to missing properties and items
+- [assigning defaults](#assigning-defaults) to missing properties and items
 - NEW: [coercing data](#coercing-data-types) to the types specified in `type` keywords
 - [custom keywords](#defining-custom-keywords)
 - keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
 - [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#) for schemas using v5 keywords
 - NEW: [v5 $data reference](#data-reference) to use values from the validated data as values for the schema keywords
-- BETA: [asynchronous validation](#asynchronous-validation) of custom formats and keywords
+- NEW: [asynchronous validation](#asynchronous-validation) of custom formats and keywords
 
 Currently ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
 
@@ -266,8 +266,120 @@ __Please note__: [Option](#options) `missingRefs` should NOT be set to `"ignore"
 
 ## Asynchronous validation
 
-TODO
+You can define custom format and keywords that perform validation asyncronously by accessing database or some service. You should add `async: true` in keyword or format defnition (see [addFormat]() / [addKeyword]()).
 
+If your schema uses asynchronous formats/keywords or refers to some schema that contains them it should have `"$async": true` keyword so that ajv can compile it correctly. If asynchronous format/keyword or reference to asynchronous schema is used in the schema without `$async` keyword Ajv will throw an exception during schema compilation.
+
+Validation function for an asynchronous custom format/keyword should return a promise that resolves to `true` or `false`. Ajv compiles asynchronous schemas to either [generator function]() (default) that can be optionally transpiled with [regenerator]() or to [es7 async function]() that can be transpiled with [nodent](). You can also supply any other transpiler as a function. See [Options](#options).
+
+If you are using generators, the compiled validation function can be used with [co](https://github.com/tj/co) or directly, e.g. in [koa](http://koajs.com/) 1.0. Generator functions are currently supported in Chrome, Firefox and node.js (0.11+); if you are using Ajv in other browsers or in older versions of node.js you should use one of available transpiling options.
+
+Validation result will be a promise that resolves to `true` or rejects with an exception `Ajv.ValidationError` that has the array of validation errors in `errors` property.
+
+
+Example:
+
+```
+// without "async" option ajv will choose the first available option in this order:
+// 1. native generators
+// 2. es7 async functions transpiled with nodent
+// 3. generator functions transpiled with regenerator
+
+var ajv = Ajv();
+
+ajv.addKeyword('idExists', {
+  async: true,
+  type: 'number',
+  validate: checkIdExists
+});
+
+
+function checkIdExists(schema, data) {
+  return knex(schema.table)
+  .select('id')
+  .where('id', data)
+  .then(function (rows) {
+    return !!rows/length; // true if record is found
+  });
+}
+
+var schema = {
+  "$async": true,
+  "properties": {
+    "userId": {
+      "type": "integer",
+      "idExists": { "table": "users" }
+    },
+    "postId": {
+      "type": "integer",
+      "idExists": { "table": "posts" }
+    }
+  }
+};
+
+var validate = ajv.compile(schema);
+
+var co = require('co');
+co(validate({ userId: 1, postId: 19 }))
+.then(function (valid) {
+  // "valid" is always true here
+  console.log('Data is valid');
+})
+.catch(function (err) {
+  if (!(err instanceof Ajv.ValidationError)) throw err;
+  // data is invalid
+  console.log('Validation errors:', err.errors);
+});
+
+```
+
+### Using transpilers with asyncronous validation functions.
+
+To use a transpiler you should separately install it (or load its bundle in the browser).
+
+Ajv npm package includes minified browser bundles of regenerator and nodent in [dist folder]().
+
+
+#### Using nodent
+
+```
+var ajv = Ajv({ async: 'es7.nodent' });
+var validate = ajv.compile(schema); // transpiled es7 async function
+validate(data).then(successFunc).catch(errorFunc);
+```
+
+- node.js: `npm install nodent`
+- browser: `<script src="node_modules/ajv/dist/nodent.min.js">
+
+
+#### Using regenerator
+
+```
+var ajv = Ajv({ async: 'regenerator' });
+var validate = ajv.compile(schema); // transpiled generator function
+co(validate(data)).then(successFunc).catch(errorFunc);
+```
+
+- node.js: `npm install regenerator`
+- browser: `<script src="node_modules/ajv/dist/regenerator.min.js">
+
+
+#### Using other transpilers
+
+Transpiling from async functions:
+```
+var ajv = Ajv({ async: 'es7', transpile: transpileFunc });
+var validate = ajv.compile(schema); // transpiled es7 async function
+validate(data).then(successFunc).catch(errorFunc);
+```
+
+Transpiling from generator functions:
+
+```
+var ajv = Ajv({ transpile: transpileFunc });
+var validate = ajv.compile(schema); // transpiled generator function
+co(validate(data)).then(successFunc).catch(errorFunc);
+```
 
 ## Filtering data
 
