@@ -26,20 +26,24 @@ describe('async schemas, formats and keywords', function() {
     opts = opts || {};
     var firstTime = instances === undefined;
     instances = [];
-    [
+    var options = [
       {},
       { allErrors: true },
       { async: 'generators' },
       { async: 'generators', allErrors: true },
-      // { async: 'es7' }
-      // , { async: 'es7', allErrors: true },
+      { async: 'es7.nodent' },
+      { async: 'es7.nodent', allErrors: true },
       { async: 'regenerator' },
       { async: 'regenerator', allErrors: true }
-    ].forEach(function (_opts) {
+    ];
+
+    options.forEach(function (_opts) {
       util.copy(opts, _opts);
       var ajv = getAjv(_opts);
       if (ajv) instances.push(ajv);
     });
+
+
     if (firstTime) console.log('Testing', instances.length, 'ajv instances');
   }
 
@@ -116,26 +120,27 @@ describe('async schemas, formats and keywords', function() {
 
 
     it('should fail compilation if async format is inside sync schema', function() {
-      instances.forEach(test);
-
-      function test(ajv) {
-        var schema1 = {
+      instances.forEach(function (ajv) {
+        var schema = {
           type: 'string',
-          format: 'english_word',
-          minimum: 5
+          format: 'english_word'
         };
 
         shouldThrowFunc('async format in sync schema', function() {
-          ajv.compile(schema1);
+          ajv.compile(schema);
         })
-        schema1.$async = true;
-        ajv.compile(schema1);
-      }
+        schema.$async = true;
+        ajv.compile(schema);
+      });
     });
 
 
     it('should support async formats when $data ref resolves to async format name', function() {
       getInstances({ v5: true });
+      console.warn('Skipping this test for opts.async = "es7.nodent"');
+      instances = instances.filter(function (ajv) {
+        return ajv._opts.async != 'es7.nodent';
+      });
       addFormatEnglishWord();
 
       var schema = {
@@ -238,6 +243,28 @@ describe('async schemas, formats and keywords', function() {
           ]);
         });
       }
+    });
+
+
+    it('should fail compilation if async keyword is inside sync schema', function() {
+      instances.forEach(function (ajv) {
+        var schema = {
+          type: 'object',
+          properties: {
+            userId: {
+              type: 'integer',
+              idExists: { table: 'users' }
+            }
+          }
+        };
+
+        shouldThrowFunc('async keyword in sync schema', function() {
+          ajv.compile(schema);
+        })
+
+        schema.$async = true;
+        ajv.compile(schema);
+      });
     });
 
 

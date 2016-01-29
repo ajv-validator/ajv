@@ -26,7 +26,7 @@
     it.baseId = it.baseId || it.rootId;
     if ($async) {
       it.async = true;
-      var $es7 = it.opts.async == 'es7';
+      var $es7 = it.opts.async.slice(0, 3) == 'es7';
       it.yieldAwait = $es7 ? 'await' : 'yield';
     }
     delete it.isTop;

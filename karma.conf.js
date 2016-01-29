@@ -18,6 +18,7 @@ module.exports = function(config) {
       'ajv.min.js',
       'node_modules/chai/chai.js',
       'regenerator.min.js',
+      'nodent.min.js',
       '.browser/*.spec.js'
     ],
 

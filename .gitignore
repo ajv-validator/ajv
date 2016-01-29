@@ -41,3 +41,7 @@ ajv.min.*
 # regenerator bundle
 regenerator.bundle.*
 regenerator.min.*
+
+# nodent bundle
+nodent.bundle.*
+nodent.min.*
