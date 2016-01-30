@@ -354,7 +354,7 @@ validate(data).then(successFunc).catch(errorFunc);
 ```
 
 - node.js: `npm install nodent`
-- browser: `<script src="node_modules/ajv/dist/nodent.min.js">
+- browser: `<script src="node_modules/ajv/dist/nodent.min.js"></script>`
 
 
 #### Using regenerator
@@ -366,7 +366,7 @@ validate(data).then(successFunc).catch(errorFunc);
 ```
 
 - node.js: `npm install regenerator`
-- browser: `<script src="node_modules/ajv/dist/regenerator.min.js">
+- browser: `<script src="node_modules/ajv/dist/regenerator.min.js"></script>`
 
 
 #### Using other transpilers
@@ -391,14 +391,14 @@ See [Options](#options).
 
 #### Comparison of async modes
 
-|mode|source code|returns|transpile<br>performance*|run-time<br>performance*|bundle size|
+|mode|transpile<br>perf*|run-time<br>perf*|bundle<br>size|
 |---|:-:|:-:|:-:|:-:|:-:|
-|generators (native)|generator<br>function|generator object,<br>promise if co.wrap'ped|-|1.0|-|
-|es7.nodent|es7 async<br>function|promise|1.69|1.1|183Kb|
-|es7.regenerator|es7 async<br>function|promise|1.0|2.7|322Kb|
-|regenerator|generator<br>function|generator object|1.0|3.2|322Kb|
+|generators<br>(native)|-|1.0|-|
+|es7.nodent|1.69|1.1|183Kb|
+|es7.regenerator|1.0|2.7|322Kb|
+|regenerator|1.0|3.2|322Kb|
 
-* Relative performance, smaller is better
+\* Relative performance, smaller is better
 
 [nodent](https://github.com/MatAtBread/nodent) is a substantially smaller library that generates the code with almost the same performance as native generators. [regenerator](https://github.com/facebook/regenerator) option is provided as a more widely known alternative that in some cases may work better for you. If you are using regenerator then transpiling from es7 async function generates faster code.
 
