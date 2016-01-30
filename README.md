@@ -272,9 +272,13 @@ If your schema uses asynchronous formats/keywords or refers to some schema that 
 
 __Please note__: all asynchronous subschemas that are referenced from the current or other schemas should have `"$async": true` keyword as well, otherwise the schema compilation will fail.
 
-Validation function for an asynchronous custom format/keyword should return a promise that resolves to `true` or `false`. Ajv compiles asynchronous schemas to either [generator function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*) (default) that can be optionally transpiled with [regenerator](https://github.com/facebook/regenerator) or to [es7 async function](http://tc39.github.io/ecmascript-asyncawait/) that can be transpiled with [nodent](https://github.com/MatAtBread/nodent). You can also supply any other transpiler as a function. See [Options](#options).
+Validation function for an asynchronous custom format/keyword should return a promise that resolves to `true` or `false`. Ajv compiles asynchronous schemas to either [generator function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*) (default) that can be optionally transpiled with [regenerator](https://github.com/facebook/regenerator) or to [es7 async function](http://tc39.github.io/ecmascript-asyncawait/) that can be transpiled with [nodent](https://github.com/MatAtBread/nodent) or with regenerator as well. You can also supply any other transpiler as a function. See [Options](#options).
 
-If you are using generators, the compiled validation function can be used with [co](https://github.com/tj/co) or directly, e.g. in [koa](http://koajs.com/) 1.0. Generator functions are currently supported in Chrome, Firefox and node.js (0.11+); if you are using Ajv in other browsers or in older versions of node.js you should use one of available transpiling options. All provided async modes use global Promise class. If your platform does not have Promise you should use a polyfill that defines it.
+The compiled validation function has `async: true` property (if the schema is asynchronous), so you can differentiate these functions if you are using both syncronous and asynchronous schemas.
+
+If you are using generators, the compiled validation function can be either wrapped with [co](https://github.com/tj/co) (default) or returned as generator function, that can be used directly, e.g. in [koa](http://koajs.com/) 1.0. `co` is a very small library, it is included in Ajv (both as npm dependency and in the browser bundle).
+
+Generator functions are currently supported in Chrome, Firefox and node.js (0.11+); if you are using Ajv in other browsers or in older versions of node.js you should use one of available transpiling options. All provided async modes use global Promise class. If your platform does not have Promise you should use a polyfill that defines it.
 
 Validation result will be a promise that resolves to `true` or rejects with an exception `Ajv.ValidationError` that has the array of validation errors in `errors` property.
 
@@ -283,9 +287,9 @@ Example:
 
 ```
 // without "async" option Ajv will choose the first supported/installed option in this order:
-// 1. native generators
+// 1. native generator function wrapped with co
 // 2. es7 async functions transpiled with nodent
-// 3. generator functions transpiled with regenerator
+// 3. es7 async functions transpiled with regenerator
 
 var ajv = Ajv();
 
@@ -321,8 +325,7 @@ var schema = {
 
 var validate = ajv.compile(schema);
 
-var co = require('co');
-co(validate({ userId: 1, postId: 19 }))
+validate({ userId: 1, postId: 19 }))
 .then(function (valid) {
   // "valid" is always true here
   console.log('Data is valid');
@@ -331,7 +334,7 @@ co(validate({ userId: 1, postId: 19 }))
   if (!(err instanceof Ajv.ValidationError)) throw err;
   // data is invalid
   console.log('Validation errors:', err.errors);
-});
+};
 
 ```
 
@@ -357,9 +360,9 @@ validate(data).then(successFunc).catch(errorFunc);
 #### Using regenerator
 
 ```
-var ajv = Ajv({ async: 'regenerator' });
-var validate = ajv.compile(schema); // transpiled generator function
-co(validate(data)).then(successFunc).catch(errorFunc);
+var ajv = Ajv({ async: 'es7.regenerator' });
+var validate = ajv.compile(schema); // transpiled es7 async function
+validate(data).then(successFunc).catch(errorFunc);
 ```
 
 - node.js: `npm install regenerator`
@@ -384,6 +387,20 @@ co(validate(data)).then(successFunc).catch(errorFunc);
 ```
 
 See [Options](#options).
+
+
+#### Comparison of async modes
+
+|mode|source code|returns|transpile<br>performance*|run-time<br>performance*|bundle size|
+|---|:-:|:-:|:-:|:-:|:-:|
+|generators (native)|generator<br>function|generator object,<br>promise if co.wrap'ped|-|1.0|-|
+|es7.nodent|es7 async<br>function|promise|1.69|1.1|183Kb|
+|es7.regenerator|es7 async<br>function|promise|1.0|2.7|322Kb|
+|regenerator|generator<br>function|generator object|1.0|3.2|322Kb|
+
+* Relative performance, smaller is better
+
+[nodent](https://github.com/MatAtBread/nodent) is a substantially smaller library that generates the code with almost the same performance as native generators. [regenerator](https://github.com/facebook/regenerator) option is provided as a more widely known alternative that in some cases may work better for you. If you are using regenerator then transpiling from es7 async function generates faster code.
 
 
 ## Filtering data
@@ -731,18 +748,19 @@ Defaults:
 - _jsonPointers_: set `dataPath` propery of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
 - _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when custom messages are used (e.g. with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)).
 - _v5_: add keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals). With this option added schemas without `$schema` property are validated against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#). `false` by default.
-- _async_: determines how Ajv compiles asynchronous schemas (see [Asynchronous validation](#asynchronous-validation)) to functions. In all modes Option values:
-  - `"generators"` - compile to generators function. If generators are not supported, the exception will be thrown when Ajv instance is created.
+- _async_: determines how Ajv compiles asynchronous schemas (see [Asynchronous validation](#asynchronous-validation)) to functions. Option values:
+  - `"generators"` / `"co.generators"` - compile to generators function (`"co.generators"` - wrapped with `co.wrap`). If generators are not supported and you don't sprovide `transpile` option, the exception will be thrown when Ajv instance is created.
   - `"es7.nodent"` - compile to es7 async function and transpile with [nodent](https://github.com/MatAtBread/nodent). If nodent is not installed, the exception will be thrown.
-  - `"regenerator"` - compile to generators function and transpile with [regenerator](https://github.com/facebook/regenerator). If regenerator is not installed, the exception will be thrown.
-  - `true` - Ajv will choose the first supported/installed async mode (in the order of values above) during creation of the instance. If none of the options is available the exception will be thrown.
-  - `undefined`- Ajv will choose the first available async mode when the first asynchronous schema is compiled.
-- _transpile_: an optional function to transpile the code of validation function. This option allows you to use any other transpiler you prefer. In case if `async` option is "es7" Ajv will compile asynchronous schemas to es7 async functions, otherwise to generator functions. This function should accept the code of validation function as a string and return transpiled code.
+  - `"es7.regenerator"` / `"regenerator"` - compile to es7 async or generator function and transpile with [regenerator](https://github.com/facebook/regenerator). If regenerator is not installed, the exception will be thrown.
+  - `"es7"` - compile to es7 async function. Unless your platform supports them (currently only MS Edge 13 with flag does according to [compatibility table](http://kangax.github.io/compat-table/es7/)) you need to provide `transpile` option.
+  - `true` - Ajv will choose the first supported/installed async mode in this order: "co.generators" (native with co.wrap), "es7.nodent", "es7.regenerator" during the creation of the Ajv instance. If none of the options is available the exception will be thrown.
+  - `undefined`- Ajv will choose the first available async mode in the same way as with `true` option but when the first asynchronous schema is compiled.
+- _transpile_: an optional function to transpile the code of asynchronous validation function. This option allows you to use any other transpiler you prefer. In case if `async` option is "es7" Ajv will compile asynchronous schemas to es7 async functions, otherwise to generator functions. This function should accept the code of validation function as a string and return transpiled code.
 
 
 ## Validation errors
 
-In case of validation failure Ajv assigns the array of errors to `.errors` property of validation function (or to `.errors` property of ajv instance in case `validate` or `validateSchema` methods were called).
+In case of validation failure Ajv assigns the array of errors to `.errors` property of validation function (or to `.errors` property of ajv instance in case `validate` or `validateSchema` methods were called). In case of [asynchronous validation](#asynchronous-validation) the returned promise is rejected with the exception of the class `Ajv.ValidationError` that has `.errors` poperty.
 
 
 ### Error objects

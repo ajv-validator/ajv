@@ -15,7 +15,7 @@ g.Promise = g.Promise || Promise;
 
 
 describe('async schemas, formats and keywords', function() {
-  this.timeout(5000);
+  this.timeout(10000);
   var ajv, instances;
 
   beforeEach(function () {
@@ -32,10 +32,16 @@ describe('async schemas, formats and keywords', function() {
       { async: true, allErrors: true },
       { async: 'generators' },
       { async: 'generators', allErrors: true },
+      { async: 'co.generators' },
+      { async: 'co.generators', allErrors: true },
       { async: 'es7.nodent' },
       { async: 'es7.nodent', allErrors: true },
       { async: 'regenerator' },
-      { async: 'regenerator', allErrors: true }
+      { async: 'regenerator', allErrors: true },
+      { async: 'co.regenerator' },
+      { async: 'co.regenerator', allErrors: true },
+      { async: 'es7.regenerator' },
+      { async: 'es7.regenerator', allErrors: true }
     ];
 
     options.forEach(function (_opts) {
@@ -55,12 +61,17 @@ describe('async schemas, formats and keywords', function() {
     }
   }
 
+  function regeneratorTranspile(code) {
+    return regenerator.compile(code).code;
+  }
+
   function getAjv(opts){
     try { return Ajv(opts); } catch(e) {}
   }
 
   function useCo(ajv) {
-    return ajv._opts.async == 'es7.nodent' ? identity : co;
+    var str = ajv._opts.async.slice(0, 3);
+    return str == 'es7' || str == 'co.' ? identity : co;
   }
 
   function identity(x) { return x; }
@@ -73,7 +84,7 @@ describe('async schemas, formats and keywords', function() {
         maxLength: 3
       };
 
-      return Promise.map(instances, test);
+      return repeat(function() { Promise.map(instances, test); });
 
       function test(ajv) {
         var validate = ajv.compile(schema);
@@ -119,7 +130,7 @@ describe('async schemas, formats and keywords', function() {
         format: 'english_word'
       };
 
-      return Promise.map(instances, test);
+      return repeat(function() { Promise.map(instances, test); });
 
       function test(ajv) {
         var validate = ajv.compile(schema);
@@ -167,7 +178,7 @@ describe('async schemas, formats and keywords', function() {
         }
       };
 
-      return Promise.map(instances, test);
+      return repeat(function() { Promise.map(instances, test); });
 
       function test(ajv) {
         var validate = ajv.compile(schema);
@@ -240,10 +251,10 @@ describe('async schemas, formats and keywords', function() {
         }
       };
 
-      return Promise.all([
+      return repeat(function() { Promise.all([
         test(instances, schema1, true),
         test(instances, schema2)
-      ]);
+      ]); });
 
       function test(instances, schema, checkThrow) {
         return Promise.map(instances, function (ajv) {
@@ -336,7 +347,7 @@ describe('async schemas, formats and keywords', function() {
         }
       };
 
-      return Promise.map(instances, function (ajv) {
+      return repeat(function() { Promise.map(instances, function (ajv) {
         var validate = ajv.compile(schema);
         var _co = useCo(ajv);
 
@@ -346,7 +357,7 @@ describe('async schemas, formats and keywords', function() {
           shouldBeInvalid( _co(validate({ word: 1 })) ),
           shouldThrow(     _co(validate({ word: 'today' })), 'unknown word' )
         ]);
-      });
+      }); });
     });
 
     it('should validate recursive async schema', function() {
@@ -455,8 +466,8 @@ describe('async schemas, formats and keywords', function() {
     });
 
     function recursiveTest(schema, refSchema) {
-      return Promise.map(instances, function (ajv) {
-        if (refSchema) ajv.addSchema(refSchema);
+      return repeat(function() { Promise.map(instances, function (ajv) {
+        if (refSchema) try { ajv.addSchema(refSchema); } catch(e) {};
         var validate = ajv.compile(schema);
         var _co = useCo(ajv);
 
@@ -474,7 +485,7 @@ describe('async schemas, formats and keywords', function() {
           shouldBeInvalid( _co(validate({ foo: { foo: { foo: 1 }}})) ),
           shouldThrow(     _co(validate({ foo: { foo: { foo: 'today' }}})), 'unknown word' )
         ]);
-      });
+      }); });
     }
   });
 
@@ -519,6 +530,7 @@ var SHOULD_BE_INVALID = 'test: should be invalid';
 function shouldBeInvalid(p) {
   return checkNotValid(p)
   .then(function (err) {
+    err .should.be.instanceof(Ajv.ValidationError);
     err.errors .should.be.an('array');
     err.validation .should.equal(true);
   });
@@ -542,4 +554,12 @@ function checkNotValid(p) {
     if (err.message == SHOULD_BE_INVALID) throw err;
     return err;
   });  
+}
+
+
+function repeat(func) {
+  return func();
+  // var promises = [];
+  // for (var i=0; i<1000; i++) promises.push(func());
+  // return Promise.all(promises);
 }

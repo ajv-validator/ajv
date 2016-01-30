@@ -15,14 +15,14 @@
     "test-fast": "AJV_FAST_TEST=true npm run test-spec",
     "test-debug": "mocha spec/*.spec.js --debug-brk -R spec",
     "test-cov": "istanbul cover -x '**/spec/**' node_modules/mocha/bin/_mocha -- spec/*.spec.js -R spec",
-    "bundle": "browserify -r ./lib/ajv.js:ajv -o ajv.bundle.js -s Ajv && uglifyjs ajv.bundle.js -o ajv.min.js -c pure_getters -m --source-map ajv.min.js.map -r Ajv --preamble '/* Ajv JSON-schema validator */'",
-    "bundle-regenerator": "browserify -r ./node_modules/regenerator/main.js:regenerator -o regenerator.bundle.js && uglifyjs regenerator.bundle.js -o regenerator.min.js -c -m --source-map regenerator.min.js.map",
-    "bundle-nodent": "browserify -r ./node_modules/nodent/nodent.js:nodent -t brfs -o nodent.bundle.js && uglifyjs nodent.bundle.js -o nodent.min.js -c -m --source-map nodent.min.js.map",
+    "bundle": "mkdir -p dist && browserify -r ./lib/ajv.js:ajv -o dist/ajv.bundle.js -s Ajv && uglifyjs dist/ajv.bundle.js -o dist/ajv.min.js -c pure_getters -m --source-map dist/ajv.min.js.map -r Ajv --preamble '/* Ajv JSON-schema validator */'",
+    "bundle-regenerator": "mkdir -p dist && browserify -r ./node_modules/regenerator/main.js:regenerator -o dist/regenerator.bundle.js && uglifyjs dist/regenerator.bundle.js -o dist/regenerator.min.js -c -m --source-map dist/regenerator.min.js.map",
+    "bundle-nodent": "mkdir -p dist && browserify -r ./node_modules/nodent/nodent.js:nodent -t brfs -o dist/nodent.bundle.js && uglifyjs dist/nodent.bundle.js -o dist/nodent.min.js -c -m --source-map dist/nodent.min.js.map",
     "bundle-all": "npm run bundle && npm run bundle-regenerator && npm run bundle-nodent",
     "build": "node scripts/compile-dots.js",
     "test-browser": "npm run bundle-all && scripts/prepare-tests && karma start --single-run --browsers PhantomJS",
     "test": "npm run jshint && npm run build && npm run test-cov && npm run test-browser",
-    "prepublish": "npm run build && npm run bundle-all && mkdir -p dist && mv ajv.* dist && mv regenerator.* dist && mv nodent.* dist",
+    "prepublish": "npm run build && npm run bundle-all",
     "watch": "watch 'npm run build' ./lib/dot"
   },
   "repository": {
@@ -42,6 +42,7 @@
   "homepage": "https://github.com/epoberezkin/ajv",
   "tonicExampleFilename": ".tonic_example.js",
   "dependencies": {
+    "co": "^4.6.0",
     "json-stable-stringify": "^1.0.0"
   },
   "devDependencies": {
@@ -49,7 +50,6 @@
     "brfs": "^1.4.3",
     "browserify": "^13.0.0",
     "chai": "^3.0.0",
-    "co": "^4.6.0",
     "coveralls": "^2.11.4",
     "dot": "^1.0.3",
     "glob": "^6.0.4",

@@ -26,7 +26,9 @@
     it.baseId = it.baseId || it.rootId;
     if ($async) {
       it.async = true;
-      var $es7 = it.opts.async.slice(0, 3) == 'es7';
+      var $asyncPrefix = typeof it.opts.async == 'string' && it.opts.async.slice(0, 3);
+      if ($asyncPrefix == 'co.') var $coWrap = true;
+      else if ($asyncPrefix == 'es7') var $es7 = true;
       it.yieldAwait = $es7 ? 'await' : 'yield';
     }
     delete it.isTop;
@@ -37,12 +39,12 @@
   validate =
   {{? $async }}
     {{? $es7 }}
-      async function
+      (async function
     {{??}}
-      function *
+      {{?$coWrap}}co.wrap{{?}}(function*
     {{?}}
   {{??}}
-    function
+    (function
   {{?}}
     (data, dataPath{{? it.opts.coerceTypes }}, parentData, parentDataProperty{{?}}) {
     'use strict';
@@ -157,7 +159,7 @@
       validate.errors = vErrors; {{ /* don't edit, used in replace */ }}
       return errors === 0;       {{ /* don't edit, used in replace */ }}
     {{?}}
-  };
+  });
 {{??}}
   var {{=$valid}} = errors === errs_{{=$lvl}};
 {{?}}
