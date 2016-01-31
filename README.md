@@ -348,7 +348,7 @@ Ajv npm package includes minified browser bundles of regenerator and nodent in d
 #### Using nodent
 
 ```
-var ajv = Ajv({ async: 'es7.nodent' });
+var ajv = Ajv({ /* async: 'es7', */ transpile: 'nodent' });
 var validate = ajv.compile(schema); // transpiled es7 async function
 validate(data).then(successFunc).catch(errorFunc);
 ```
@@ -360,7 +360,7 @@ validate(data).then(successFunc).catch(errorFunc);
 #### Using regenerator
 
 ```
-var ajv = Ajv({ async: 'es7.regenerator' });
+var ajv = Ajv({ /* async: 'es7', */ transpile: 'regenerator' });
 var validate = ajv.compile(schema); // transpiled es7 async function
 validate(data).then(successFunc).catch(errorFunc);
 ```
@@ -381,7 +381,7 @@ validate(data).then(successFunc).catch(errorFunc);
 Transpiling from generator functions:
 
 ```
-var ajv = Ajv({ transpile: transpileFunc });
+var ajv = Ajv({ async: '*', transpile: transpileFunc });
 var validate = ajv.compile(schema); // transpiled generator function
 co(validate(data)).then(successFunc).catch(errorFunc);
 ```
@@ -391,8 +391,8 @@ See [Options](#options).
 
 #### Comparison of async modes
 
-|mode|transpile<br>perf*|run-time<br>perf*|bundle<br>size|
-|---|:-:|:-:|:-:|:-:|:-:|
+|mode|transpile<br>speed*|run-time<br>speed*|bundle<br>size|
+|---|:-:|:-:|:-:|
 |generators<br>(native)|-|1.0|-|
 |es7.nodent|1.69|1.1|183Kb|
 |es7.regenerator|1.0|2.7|322Kb|
@@ -400,7 +400,7 @@ See [Options](#options).
 
 \* Relative performance, smaller is better
 
-[nodent](https://github.com/MatAtBread/nodent) is a substantially smaller library that generates the code with almost the same performance as native generators. [regenerator](https://github.com/facebook/regenerator) option is provided as a more widely known alternative that in some cases may work better for you. If you are using regenerator then transpiling from es7 async function generates faster code.
+[nodent](https://github.com/MatAtBread/nodent) is a substantially smaller library that generates the code with almost the same performance as native generators. [regenerator](https://github.com/facebook/regenerator) option is provided as a more widely known alternative. If you are using regenerator then transpiling from es7 async function generates faster code.
 
 
 ## Filtering data
@@ -749,13 +749,14 @@ Defaults:
 - _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when custom messages are used (e.g. with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)).
 - _v5_: add keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals). With this option added schemas without `$schema` property are validated against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#). `false` by default.
 - _async_: determines how Ajv compiles asynchronous schemas (see [Asynchronous validation](#asynchronous-validation)) to functions. Option values:
-  - `"generators"` / `"co.generators"` - compile to generators function (`"co.generators"` - wrapped with `co.wrap`). If generators are not supported and you don't sprovide `transpile` option, the exception will be thrown when Ajv instance is created.
-  - `"es7.nodent"` - compile to es7 async function and transpile with [nodent](https://github.com/MatAtBread/nodent). If nodent is not installed, the exception will be thrown.
-  - `"es7.regenerator"` / `"regenerator"` - compile to es7 async or generator function and transpile with [regenerator](https://github.com/facebook/regenerator). If regenerator is not installed, the exception will be thrown.
-  - `"es7"` - compile to es7 async function. Unless your platform supports them (currently only MS Edge 13 with flag does according to [compatibility table](http://kangax.github.io/compat-table/es7/)) you need to provide `transpile` option.
-  - `true` - Ajv will choose the first supported/installed async mode in this order: "co.generators" (native with co.wrap), "es7.nodent", "es7.regenerator" during the creation of the Ajv instance. If none of the options is available the exception will be thrown.
+  - `"*"` / `"co*"` - compile to generator function ("co*" - wrapped with `co.wrap`). If generators are not supported and you don't provide `transpile` option, the exception will be thrown when Ajv instance is created.
+  - `"es7"` - compile to es7 async function. Unless your platform supports them you need to provide `transpile` option. Currently only MS Edge 13 with flag supports es7 async functions according to [compatibility table](http://kangax.github.io/compat-table/es7/)).
+  - `true` - if transpile option is not available Ajv will choose the first supported/installed async/transpile modes in this order: "co*" (native generator with co.wrap), "es7"/"nodent", "es7"/"regenerator" during the creation of the Ajv instance. If none of the options is available the exception will be thrown.
   - `undefined`- Ajv will choose the first available async mode in the same way as with `true` option but when the first asynchronous schema is compiled.
-- _transpile_: an optional function to transpile the code of asynchronous validation function. This option allows you to use any other transpiler you prefer. In case if `async` option is "es7" Ajv will compile asynchronous schemas to es7 async functions, otherwise to generator functions. This function should accept the code of validation function as a string and return transpiled code.
+- _transpile_: determines whether Ajv transpiles compiled asynchronous validation function. Option values:
+  - `"nodent"` - transpile with [nodent](https://github.com/MatAtBread/nodent). If nodent is not installed, the exception will be thrown. nodent can oonly transpile es7 async functions.
+  - `"regenerator"` - transpile with [regenerator](https://github.com/facebook/regenerator). If regenerator is not installed, the exception will be thrown.
+  - a function - this function should accept the code of validation function as a string and return transpiled code. This option allows you to use any other transpiler you prefer.
 
 
 ## Validation errors

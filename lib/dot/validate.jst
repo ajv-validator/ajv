@@ -26,9 +26,7 @@
     it.baseId = it.baseId || it.rootId;
     if ($async) {
       it.async = true;
-      var $asyncPrefix = typeof it.opts.async == 'string' && it.opts.async.slice(0, 3);
-      if ($asyncPrefix == 'co.') var $coWrap = true;
-      else if ($asyncPrefix == 'es7') var $es7 = true;
+      var $es7 = it.opts.async == 'es7';
       it.yieldAwait = $es7 ? 'await' : 'yield';
     }
     delete it.isTop;
@@ -41,7 +39,7 @@
     {{? $es7 }}
       (async function
     {{??}}
-      {{?$coWrap}}co.wrap{{?}}(function*
+      {{? it.opts.async == 'co*'}}co.wrap{{?}}(function*
     {{?}}
   {{??}}
     (function

@@ -28,20 +28,28 @@ describe('async schemas, formats and keywords', function() {
     var firstTime = instances === undefined;
     instances = [];
     var options = [
+      {},
       { async: true },
+      { async: '*' },
+      { async: 'co*' },
+      { async: 'es7' },
+      { async: 'es7', transpile: 'nodent' },
+      { transpile: 'regenerator' },
+      { async: true, transpile: 'regenerator' },
+      { async: '*', transpile: 'regenerator' },
+      { async: 'co*', transpile: 'regenerator' },
+      { async: 'es7', transpile: 'regenerator' },
+      { allErrors: true },
       { async: true, allErrors: true },
-      { async: 'generators' },
-      { async: 'generators', allErrors: true },
-      { async: 'co.generators' },
-      { async: 'co.generators', allErrors: true },
-      { async: 'es7.nodent' },
-      { async: 'es7.nodent', allErrors: true },
-      { async: 'regenerator' },
-      { async: 'regenerator', allErrors: true },
-      { async: 'co.regenerator' },
-      { async: 'co.regenerator', allErrors: true },
-      { async: 'es7.regenerator' },
-      { async: 'es7.regenerator', allErrors: true }
+      { async: '*', allErrors: true },
+      { async: 'co*', allErrors: true },
+      { async: 'es7', allErrors: true },
+      { async: 'es7', transpile: 'nodent', allErrors: true },
+      { transpile: 'regenerator', allErrors: true },
+      { async: true, transpile: 'regenerator', allErrors: true },
+      { async: '*', transpile: 'regenerator', allErrors: true },
+      { async: 'co*', transpile: 'regenerator', allErrors: true },
+      { async: 'es7', transpile: 'regenerator', allErrors: true }
     ];
 
     options.forEach(function (_opts) {
@@ -54,7 +62,9 @@ describe('async schemas, formats and keywords', function() {
     if (firstTime) {
       var asyncModes = [];
       instances.forEach(function (ajv) {
-        var mode = ajv._opts.async;
+        if (!ajv._opts.async) return;
+        var t = ajv._opts.transpile;
+        var mode = ajv._opts.async + (t === true ? '' : '.' + t);
         if (asyncModes.indexOf(mode) == -1) asyncModes.push(mode);
       });
       console.log('Testing', instances.length, 'ajv instances:', asyncModes.join(','));
@@ -70,8 +80,8 @@ describe('async schemas, formats and keywords', function() {
   }
 
   function useCo(ajv) {
-    var str = ajv._opts.async.slice(0, 3);
-    return str == 'es7' || str == 'co.' ? identity : co;
+    var async = ajv._opts.async;
+    return async == 'es7' || async == 'co*' ? identity : co;
   }
 
   function identity(x) { return x; }
@@ -84,7 +94,7 @@ describe('async schemas, formats and keywords', function() {
         maxLength: 3
       };
 
-      return repeat(function() { Promise.map(instances, test); });
+      return repeat(function() { return Promise.map(instances, test); });
 
       function test(ajv) {
         var validate = ajv.compile(schema);
@@ -130,7 +140,7 @@ describe('async schemas, formats and keywords', function() {
         format: 'english_word'
       };
 
-      return repeat(function() { Promise.map(instances, test); });
+      return repeat(function() { return Promise.map(instances, test); });
 
       function test(ajv) {
         var validate = ajv.compile(schema);
@@ -164,9 +174,9 @@ describe('async schemas, formats and keywords', function() {
 
     it('should support async formats when $data ref resolves to async format name', function() {
       getInstances({ v5: true });
-      console.warn('Skipping this test for opts.async = "es7.nodent"');
+      console.warn('Skipping this test for opts.async == "es7", opts.transpile == "nodent"');
       instances = instances.filter(function (ajv) {
-        return ajv._opts.async != 'es7.nodent';
+        return !(ajv._opts.async == 'es7' && ajv._opts.transpile == 'nodent');
       });
       addFormatEnglishWord();
 
@@ -178,9 +188,9 @@ describe('async schemas, formats and keywords', function() {
         }
       };
 
-      return repeat(function() { Promise.map(instances, test); });
+      return repeat(function() { return Promise.map(instances, test); });
 
-      function test(ajv) {
+      function test(ajv, index) {
         var validate = ajv.compile(schema);
         var _co = useCo(ajv);
 
@@ -251,7 +261,7 @@ describe('async schemas, formats and keywords', function() {
         }
       };
 
-      return repeat(function() { Promise.all([
+      return repeat(function() { return Promise.all([
         test(instances, schema1, true),
         test(instances, schema2)
       ]); });
@@ -347,7 +357,7 @@ describe('async schemas, formats and keywords', function() {
         }
       };
 
-      return repeat(function() { Promise.map(instances, function (ajv) {
+      return repeat(function() { return Promise.map(instances, function (ajv) {
         var validate = ajv.compile(schema);
         var _co = useCo(ajv);
 
@@ -466,7 +476,7 @@ describe('async schemas, formats and keywords', function() {
     });
 
     function recursiveTest(schema, refSchema) {
-      return repeat(function() { Promise.map(instances, function (ajv) {
+      return repeat(function() { return Promise.map(instances, function (ajv) {
         if (refSchema) try { ajv.addSchema(refSchema); } catch(e) {};
         var validate = ajv.compile(schema);
         var _co = useCo(ajv);
@@ -498,6 +508,35 @@ describe('async schemas, formats and keywords', function() {
       });
     });
   }
+});
+
+
+describe('async/transpile option', function() {
+  it('should throw error with unknown async option', function() {
+    shouldThrowFunc('bad async mode: es8', function() {
+      Ajv({ async: 'es8' });
+    });
+  });
+
+
+  it('should throw error with unknown transpile option', function() {
+    shouldThrowFunc('bad transpiler: babel', function() {
+      Ajv({ transpile: 'babel' });
+    });
+
+    shouldThrowFunc('bad transpiler: [object Object]', function() {
+      Ajv({ transpile: {} });
+    });
+  });
+
+
+  it.skip('should set async option to es7 if tranpiler is nodent', function() {
+    var ajv1 = Ajv({ transpile: 'nodent' });
+    ajv1._opts.async .should.equal('es7');
+
+    var ajv2 = Ajv({ async: '*', transpile: 'nodent' });
+    ajv2._opts.async .should.equal('es7');
+  });
 });
 
 
