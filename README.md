@@ -266,6 +266,8 @@ __Please note__: [Option](#options) `missingRefs` should NOT be set to `"ignore"
 
 ## Asynchronous validation
 
+Example in node REPL: https://tonicdev.com/esp/ajv-asynchronous-validation
+
 Starting from version 3.5.0 you can define custom formats and keywords that perform validation asyncronously by accessing database or some service. You should add `async: true` in the keyword or format defnition (see [addFormat](#api-addformat) and [addKeyword](#api-addkeyword)).
 
 If your schema uses asynchronous formats/keywords or refers to some schema that contains them it should have `"$async": true` keyword so that Ajv can compile it correctly. If asynchronous format/keyword or reference to asynchronous schema is used in the schema without `$async` keyword Ajv will throw an exception during schema compilation.
