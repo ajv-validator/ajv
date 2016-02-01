@@ -358,8 +358,7 @@ var validate = ajv.compile(schema); // transpiled es7 async function
 validate(data).then(successFunc).catch(errorFunc);
 ```
 
-- node.js: `npm install nodent`
-- browser: `<script src="node_modules/ajv/dist/nodent.min.js"></script>`
+`npm install nodent` or use `nodent.min.js` from dist folder of npm package.
 
 
 #### Using regenerator
@@ -370,8 +369,7 @@ var validate = ajv.compile(schema); // transpiled es7 async function
 validate(data).then(successFunc).catch(errorFunc);
 ```
 
-- node.js: `npm install regenerator`
-- browser: `<script src="node_modules/ajv/dist/regenerator.min.js"></script>`
+`npm install regenerator` or use `regenerator.min.js` from dist folder of npm package.
 
 
 #### Using other transpilers
