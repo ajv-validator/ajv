@@ -15,11 +15,14 @@
     "test-fast": "AJV_FAST_TEST=true npm run test-spec",
     "test-debug": "mocha spec/*.spec.js --debug-brk -R spec",
     "test-cov": "istanbul cover -x '**/spec/**' node_modules/mocha/bin/_mocha -- spec/*.spec.js -R spec",
-    "bundle": "browserify -r ./lib/ajv.js:ajv -o ajv.bundle.js -s Ajv && uglifyjs ajv.bundle.js -o ajv.min.js -c pure_getters -m --source-map ajv.min.js.map -r Ajv --preamble '/* Ajv JSON-schema validator */'",
+    "bundle": "mkdir -p dist && browserify -r ./lib/ajv.js:ajv -o dist/ajv.bundle.js -s Ajv && uglifyjs dist/ajv.bundle.js -o dist/ajv.min.js -c pure_getters -m --source-map dist/ajv.min.js.map -r Ajv --preamble '/* Ajv JSON-schema validator */'",
+    "bundle-regenerator": "mkdir -p dist && browserify -r ./node_modules/regenerator/main.js:regenerator -o dist/regenerator.bundle.js && uglifyjs dist/regenerator.bundle.js -o dist/regenerator.min.js -c -m --source-map dist/regenerator.min.js.map",
+    "bundle-nodent": "mkdir -p dist && browserify -r ./node_modules/nodent/nodent.js:nodent -t brfs -o dist/nodent.bundle.js && uglifyjs dist/nodent.bundle.js -o dist/nodent.min.js -c -m --source-map dist/nodent.min.js.map",
+    "bundle-all": "npm run bundle && npm run bundle-regenerator && npm run bundle-nodent",
     "build": "node scripts/compile-dots.js",
-    "test-browser": "npm run bundle && scripts/prepare-tests && karma start --single-run --browsers PhantomJS",
+    "test-browser": "npm run bundle-all && scripts/prepare-tests && karma start --single-run --browsers PhantomJS",
     "test": "npm run jshint && npm run build && npm run test-cov && npm run test-browser",
-    "prepublish": "npm run build && npm run bundle && mkdir -p dist && mv ajv.* dist",
+    "prepublish": "npm run build && npm run bundle-all",
     "watch": "watch 'npm run build' ./lib/dot"
   },
   "repository": {
@@ -39,9 +42,11 @@
   "homepage": "https://github.com/epoberezkin/ajv",
   "tonicExampleFilename": ".tonic_example.js",
   "dependencies": {
+    "co": "^4.6.0",
     "json-stable-stringify": "^1.0.0"
   },
   "devDependencies": {
+    "bluebird": "^3.1.5",
     "brfs": "^1.4.3",
     "browserify": "^13.0.0",
     "chai": "^3.0.0",
@@ -58,8 +63,10 @@
     "karma-phantomjs-launcher": "^0.2.1",
     "karma-sauce-launcher": "^0.3.0",
     "mocha": "^2.2.5",
+    "nodent": "^2.3.11",
     "phantomjs": "^2.1.2",
     "pre-commit": "^1.1.1",
+    "regenerator": "^0.8.42",
     "require-globify": "^1.3.0",
     "uglify-js": "^2.6.1",
     "watch": "^0.17.1"

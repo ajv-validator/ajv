@@ -262,7 +262,7 @@ describe('Custom keywords', function () {
         };
 
         var validate = ajv.compile(schema);
-        var numErrors = ajv.opts.allErrors ? 4 : 2;
+        var numErrors = ajv._opts.allErrors ? 4 : 2;
 
         shouldBeInvalid(validate, 2, 2);
         shouldBeInvalid(validate, 3, numErrors);

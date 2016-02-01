@@ -2,14 +2,6 @@
 {{# def.errors }}
 {{# def.setupKeyword }}
 
-{{## def.validateRef:_v:
-  if (!{{# def._validateRef:_v }}) {
-    if (vErrors === null) vErrors = {{=_v}}.errors;
-    else vErrors = vErrors.concat({{=_v}}.errors);
-    errors = vErrors.length;
-  } {{? $breakOnError }} else { {{?}}
-#}}
-
 {{## def._validateRef:_v:
   {{=_v}}({{=$data}}
           , (dataPath || ''){{? it.errorPath != '""'}} + {{= it.errorPath }}{{?}}
@@ -19,12 +11,17 @@
           {{?}})
 #}}
 
+{{ var $async, $refCode; }}
 {{? $schema == '#' || $schema == '#/' }}
-  {{? it.isRoot }}
-    {{# def.validateRef:'validate' }}
-  {{??}}
-    {{# def.validateRef:'root.refVal[0]' }}
-  {{?}}
+  {{
+    if (it.isRoot) {
+      $async = it.async;
+      $refCode = 'validate';
+    } else {
+      $async = it.root.schema.$async === true;
+      $refCode = 'root.refVal[0]';
+    }
+  }}
 {{??}}
   {{ var $refVal = it.resolveRef(it.baseId, $schema, it.isRoot); }}
   {{? $refVal === undefined }}
@@ -44,9 +41,7 @@
         throw $error;
       }}
     {{?}}
-  {{?? typeof $refVal == 'string' }}
-    {{# def.validateRef:$refVal }}
-  {{??}}
+  {{?? $refVal.inline }}
     {{# def.setupNextLevel }}
     {{
       $it.schema = $refVal.schema;
@@ -58,5 +53,34 @@
     {{? $breakOnError}}
       if (valid{{=$it.level}}) {
     {{?}}
+  {{??}}
+    {{
+      $async = $refVal.async;
+      $refCode = $refVal.code;
+    }}
+  {{?}}
+{{?}}
+
+{{? $refCode }}
+  {{# def.beginDefOut}}
+    {{# def._validateRef:$refCode }}
+  {{# def.storeDefOut:__callValidate }}
+
+  {{? $async }}
+    {{ if (!it.async) throw new Error('async schema referenced by sync schema'); }}
+    try { {{? $breakOnError }}var {{=$valid}} ={{?}} {{=it.yieldAwait}} {{=__callValidate}}; }
+    catch (e) {
+      if (!(e instanceof ValidationError)) throw e;
+      if (vErrors === null) vErrors = e.errors;
+      else vErrors = vErrors.concat(e.errors);
+      errors = vErrors.length;
+    }
+    {{? $breakOnError }} if ({{=$valid}}) { {{?}}
+  {{??}}
+    if (!{{=__callValidate}}) {
+      if (vErrors === null) vErrors = {{=$refCode}}.errors;
+      else vErrors = vErrors.concat({{=$refCode}}.errors);
+      errors = vErrors.length;
+    } {{? $breakOnError }} else { {{?}}
   {{?}}
 {{?}}

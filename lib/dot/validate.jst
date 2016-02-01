@@ -14,6 +14,8 @@
     * validateRef etc. are defined in the parent scope in index.js
     */ }}
 
+{{ var $async = it.schema.$async === true; }}
+
 {{? it.isTop}}
   {{
     var $top = it.isTop
@@ -22,12 +24,27 @@
       , $data = 'data';
     it.rootId = it.resolve.fullPath(it.root.schema.id);
     it.baseId = it.baseId || it.rootId;
+    if ($async) {
+      it.async = true;
+      var $es7 = it.opts.async == 'es7';
+      it.yieldAwait = $es7 ? 'await' : 'yield';
+    }
     delete it.isTop;
 
     it.dataPathArr = [undefined];
   }}
 
-  validate = function (data, dataPath{{? it.opts.coerceTypes }}, parentData, parentDataProperty{{?}}) {
+  validate =
+  {{? $async }}
+    {{? $es7 }}
+      (async function
+    {{??}}
+      {{? it.opts.async == 'co*'}}co.wrap{{?}}(function*
+    {{?}}
+  {{??}}
+    (function
+  {{?}}
+    (data, dataPath{{? it.opts.coerceTypes }}, parentData, parentDataProperty{{?}}) {
     'use strict';
     var vErrors = null; {{ /* don't edit, used in replace */ }}
     var errors = 0;     {{ /* don't edit, used in replace */ }}
@@ -38,6 +55,8 @@
       , $data = 'data' + ($dataLvl || '');
 
     if (it.schema.id) it.baseId = it.resolve.url(it.baseId, it.schema.id);
+
+    if ($async && !it.async) throw new Error('async schema in sync schema');
   }}
 
   var errs_{{=$lvl}} = errors;
@@ -131,11 +150,16 @@
 {{? $breakOnError }} {{= $closingBraces2 }} {{?}}
 
 {{? $top }}
-    validate.errors = vErrors; {{ /* don't edit, used in replace */ }}
-    return errors === 0;       {{ /* don't edit, used in replace */ }}
-  }
+    {{? $async }}
+      if (errors === 0) return true;           {{ /* don't edit, used in replace */ }}
+      else throw new ValidationError(vErrors); {{ /* don't edit, used in replace */ }}
+    {{??}}
+      validate.errors = vErrors; {{ /* don't edit, used in replace */ }}
+      return errors === 0;       {{ /* don't edit, used in replace */ }}
+    {{?}}
+  });
 {{??}}
-    var {{=$valid}} = errors === errs_{{=$lvl}};
+  var {{=$valid}} = errors === errs_{{=$lvl}};
 {{?}}
 
 {{# def.cleanUp }}

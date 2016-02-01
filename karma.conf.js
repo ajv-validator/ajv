@@ -15,8 +15,10 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'ajv.min.js',
+      'dist/ajv.min.js',
       'node_modules/chai/chai.js',
+      'dist/regenerator.min.js',
+      'dist/nodent.min.js',
       '.browser/*.spec.js'
     ],
 

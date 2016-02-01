@@ -28,12 +28,13 @@ NB: [Changes in version 3.0.0](https://github.com/epoberezkin/ajv/releases/tag/3
 - [error messages with parameters](#validation-errors) describing error reasons to allow creating custom error messages
 - i18n error messages support with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package (version >= 1.0.0)
 - [filtering data](#filtering-data) from additional properties
-- NEW: [assigning defaults](#assigning-defaults) to missing properties and items
+- [assigning defaults](#assigning-defaults) to missing properties and items
 - NEW: [coercing data](#coercing-data-types) to the types specified in `type` keywords
 - [custom keywords](#defining-custom-keywords)
 - keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
 - [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#) for schemas using v5 keywords
 - NEW: [v5 $data reference](#data-reference) to use values from the validated data as values for the schema keywords
+- NEW: [asynchronous validation](#asynchronous-validation) of custom formats and keywords
 
 Currently ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
 
@@ -263,6 +264,145 @@ function loadSchema(uri, callback) {
 __Please note__: [Option](#options) `missingRefs` should NOT be set to `"ignore"` or `"fail"` for asynchronous compilation to work.
 
 
+## Asynchronous validation
+
+You can define custom formats and keywords that perform validation asyncronously by accessing database or some service. You should add `async: true` in the keyword or format defnition (see [addFormat](#api-addformat) and [addKeyword](#api-addkeyword)).
+
+If your schema uses asynchronous formats/keywords or refers to some schema that contains them it should have `"$async": true` keyword so that Ajv can compile it correctly. If asynchronous format/keyword or reference to asynchronous schema is used in the schema without `$async` keyword Ajv will throw an exception during schema compilation.
+
+__Please note__: all asynchronous subschemas that are referenced from the current or other schemas should have `"$async": true` keyword as well, otherwise the schema compilation will fail.
+
+Validation function for an asynchronous custom format/keyword should return a promise that resolves to `true` or `false`. Ajv compiles asynchronous schemas to either [generator function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*) (default) that can be optionally transpiled with [regenerator](https://github.com/facebook/regenerator) or to [es7 async function](http://tc39.github.io/ecmascript-asyncawait/) that can be transpiled with [nodent](https://github.com/MatAtBread/nodent) or with regenerator as well. You can also supply any other transpiler as a function. See [Options](#options).
+
+The compiled validation function has `async: true` property (if the schema is asynchronous), so you can differentiate these functions if you are using both syncronous and asynchronous schemas.
+
+If you are using generators, the compiled validation function can be either wrapped with [co](https://github.com/tj/co) (default) or returned as generator function, that can be used directly, e.g. in [koa](http://koajs.com/) 1.0. `co` is a small library, it is included in Ajv (both as npm dependency and in the browser bundle).
+
+Generator functions are currently supported in Chrome, Firefox and node.js (0.11+); if you are using Ajv in other browsers or in older versions of node.js you should use one of available transpiling options. All provided async modes use global Promise class. If your platform does not have Promise you should use a polyfill that defines it.
+
+Validation result will be a promise that resolves to `true` or rejects with an exception `Ajv.ValidationError` that has the array of validation errors in `errors` property.
+
+
+Example:
+
+```
+/**
+ * without "async" and "transpile" options (or with option {async: true})
+ * Ajv will choose the first supported/installed option in this order:
+ * 1. native generator function wrapped with co
+ * 2. es7 async functions transpiled with nodent
+ * 3. es7 async functions transpiled with regenerator
+ */
+
+var ajv = Ajv();
+
+ajv.addKeyword('idExists', {
+  async: true,
+  type: 'number',
+  validate: checkIdExists
+});
+
+
+function checkIdExists(schema, data) {
+  return knex(schema.table)
+  .select('id')
+  .where('id', data)
+  .then(function (rows) {
+    return !!rows/length; // true if record is found
+  });
+}
+
+var schema = {
+  "$async": true,
+  "properties": {
+    "userId": {
+      "type": "integer",
+      "idExists": { "table": "users" }
+    },
+    "postId": {
+      "type": "integer",
+      "idExists": { "table": "posts" }
+    }
+  }
+};
+
+var validate = ajv.compile(schema);
+
+validate({ userId: 1, postId: 19 }))
+.then(function (valid) {
+  // "valid" is always true here
+  console.log('Data is valid');
+})
+.catch(function (err) {
+  if (!(err instanceof Ajv.ValidationError)) throw err;
+  // data is invalid
+  console.log('Validation errors:', err.errors);
+};
+
+```
+
+### Using transpilers with asyncronous validation functions.
+
+To use a transpiler you should separately install it (or load its bundle in the browser).
+
+Ajv npm package includes minified browser bundles of regenerator and nodent in dist folder.
+
+
+#### Using nodent
+
+```
+var ajv = Ajv({ /* async: 'es7', */ transpile: 'nodent' });
+var validate = ajv.compile(schema); // transpiled es7 async function
+validate(data).then(successFunc).catch(errorFunc);
+```
+
+- node.js: `npm install nodent`
+- browser: `<script src="node_modules/ajv/dist/nodent.min.js"></script>`
+
+
+#### Using regenerator
+
+```
+var ajv = Ajv({ /* async: 'es7', */ transpile: 'regenerator' });
+var validate = ajv.compile(schema); // transpiled es7 async function
+validate(data).then(successFunc).catch(errorFunc);
+```
+
+- node.js: `npm install regenerator`
+- browser: `<script src="node_modules/ajv/dist/regenerator.min.js"></script>`
+
+
+#### Using other transpilers
+
+```
+var ajv = Ajv({ async: 'es7', transpile: transpileFunc });
+var validate = ajv.compile(schema); // transpiled es7 async function
+validate(data).then(successFunc).catch(errorFunc);
+```
+
+See [Options](#options).
+
+
+#### Comparison of async modes
+
+|mode|transpile<br>speed*|run-time<br>speed*|bundle<br>size|
+|---|:-:|:-:|:-:|
+|generators<br>(native)|-|1.0|-|
+|es7.nodent|1.69|1.1|183Kb|
+|es7.regenerator|1.0|2.7|322Kb|
+|regenerator|1.0|3.2|322Kb|
+
+\* Relative performance in node v.4, smaller is better.
+
+[nodent](https://github.com/MatAtBread/nodent) has several advantages:
+
+- much smaller browser bundle than regenerator
+- almost the same performance of generated code as native generators in nodejs and the latest Chrome
+- much better performace than native generators in other browsers
+
+[regenerator](https://github.com/facebook/regenerator) is a more widely adopted alternative.
+
+
 ## Filtering data
 
 With [option `removeAdditional`](#options) (added by [andyscott](https://github.com/andyscott)) you can filter data during the validation.
@@ -367,7 +507,7 @@ When you are validating user inputs all your data properties are usually strings
 
 This option modifies original data.
 
-Please note, that if you pass a scalar value to the validating function its type will be coerced and it will pass the validation, but the value of the variable you pass won't be updated because scalars are passed by value.
+__Please note__: if you pass a scalar value to the validating function its type will be coerced and it will pass the validation, but the value of the variable you pass won't be updated because scalars are passed by value.
 
 
 Example:
@@ -496,7 +636,11 @@ Strings are converted to RegExp.
 
 Function should return validation result as `true` or `false`.
 
-If object is passed it should have properties `validate` and `compare`. `validate` can be a string, RegExp or a function as described above. `compare` is a comparison function that accepts two strings and compares them according to the format meaning. This function is used with keywords `formatMaximum`/`formatMinimum` (from [v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) - `v5` option should be used). It should return `1` if the first value is bigger than the second value, `-1` if it is smaller and `0` if it is equal.
+If object is passed it should have properties `validate`, `compare` and `async`:
+
+- _validate_: a string, RegExp or a function as described above.
+- _compare_: an optional comparison function that accepts two strings and compares them according to the format meaning. This function is used with keywords `formatMaximum`/`formatMinimum` (from [v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) - `v5` option should be used). It should return `1` if the first value is bigger than the second value, `-1` if it is smaller and `0` if it is equal.
+- _async_: an optional `true` value if `validate` is an asynchronous function; in this case it should return a promise that resolves with a value `true` or `false`.
 
 Custom formats can be also added via `formats` option.
 
@@ -516,10 +660,11 @@ Keyword definition is an object with the following properties:
 - _compile_: compiling function
 - _macro_: macro function
 - _inline_: compiling function that returns code (as string)
+- _async_: an optional `true` value if the validation function is asynchronous (whether it is compiled or passed in _validate_ property); in this case it should return a promise that resolves with a value `true` or `false`. This option is ignored in case of "macro" and "inline" keywords.
 
 _validate_, _compile_, _macro_ and _inline_ are mutually exclusive, only one should be used at a time.
 
-_Please note_: If the keyword is validating data type that is different from the type(s) in its definition, the validation function will not be called (and expanded macro will not be used), so there is no need to check for data type inside validation function or inside schema returned by macro function (unless you want to enforce a specific type and for some reason do not want to use a separate `type` keyword for that). In the same way as standard keywords work, if the keyword does not apply to the data type being validated, the validation of this keyword will succeed.
+__Please note__: If the keyword is validating data type that is different from the type(s) in its definition, the validation function will not be called (and expanded macro will not be used), so there is no need to check for data type inside validation function or inside schema returned by macro function (unless you want to enforce a specific type and for some reason do not want to use a separate `type` keyword for that). In the same way as standard keywords work, if the keyword does not apply to the data type being validated, the validation of this keyword will succeed.
 
 See [Defining custom keywords](#defining-custom-keywords) for more details.
 
@@ -560,7 +705,9 @@ Defaults:
   errorDataPath:    'object',
   jsonPointers:     false,
   messages:         true,
-  v5:               false
+  v5:               false,
+  async:            undefined,
+  transpile:        undefined
 }
 ```
 
@@ -601,11 +748,20 @@ Defaults:
 - _jsonPointers_: set `dataPath` propery of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
 - _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when custom messages are used (e.g. with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)).
 - _v5_: add keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals). With this option added schemas without `$schema` property are validated against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#). `false` by default.
+- _async_: determines how Ajv compiles asynchronous schemas (see [Asynchronous validation](#asynchronous-validation)) to functions. Option values:
+  - `"*"` / `"co*"` - compile to generator function ("co*" - wrapped with `co.wrap`). If generators are not supported and you don't provide `transpile` option, the exception will be thrown when Ajv instance is created.
+  - `"es7"` - compile to es7 async function. Unless your platform supports them you need to provide `transpile` option. Currently only MS Edge 13 with flag supports es7 async functions according to [compatibility table](http://kangax.github.io/compat-table/es7/)).
+  - `true` - if transpile option is not available Ajv will choose the first supported/installed async/transpile modes in this order: "co*" (native generator with co.wrap), "es7"/"nodent", "es7"/"regenerator" during the creation of the Ajv instance. If none of the options is available the exception will be thrown.
+  - `undefined`- Ajv will choose the first available async mode in the same way as with `true` option but when the first asynchronous schema is compiled.
+- _transpile_: determines whether Ajv transpiles compiled asynchronous validation function. Option values:
+  - `"nodent"` - transpile with [nodent](https://github.com/MatAtBread/nodent). If nodent is not installed, the exception will be thrown. nodent can only transpile es7 async functions; it will enforce this mode.
+  - `"regenerator"` - transpile with [regenerator](https://github.com/facebook/regenerator). If regenerator is not installed, the exception will be thrown.
+  - a function - this function should accept the code of validation function as a string and return transpiled code. This option allows you to use any other transpiler you prefer.
 
 
 ## Validation errors
 
-In case of validation failure Ajv assigns the array of errors to `.errors` property of validation function (or to `.errors` property of ajv instance in case `validate` or `validateSchema` methods were called).
+In case of validation failure Ajv assigns the array of errors to `.errors` property of validation function (or to `.errors` property of ajv instance in case `validate` or `validateSchema` methods were called). In case of [asynchronous validation](#asynchronous-validation) the returned promise is rejected with the exception of the class `Ajv.ValidationError` that has `.errors` poperty.
 
 
 ### Error objects

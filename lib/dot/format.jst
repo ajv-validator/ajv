@@ -16,7 +16,11 @@
 {{## def.$dataCheckFormat:
   {{# def.$dataNotType:'string' }}
   ({{=$format}} && !(typeof {{=$format}} == 'function'
-                     ? {{=$format}}({{=$data}})
+                     ? {{? it.async}}
+                        (async{{=$lvl}} ? {{=it.yieldAwait}} {{=$format}}({{=$data}}) : {{=$format}}({{=$data}}))
+                       {{??}}
+                        {{=$format}}({{=$data}})
+                       {{?}}
                      : {{=$format}}.test({{=$data}})))
 #}}
 
@@ -39,7 +43,10 @@
   var isObject{{=$lvl}} = typeof {{=$format}} == 'object'
                           && !({{=$format}} instanceof RegExp)
                           && {{=$format}}.validate;
-  if (isObject{{=$lvl}}) {{=$format}} = {{=$format}}.validate;  
+  if (isObject{{=$lvl}}) {
+    var async{{=$lvl}} = {{=$format}}.async;
+    {{=$format}} = {{=$format}}.validate;
+  }
   if ({{# def.$dataCheckFormat }}) {
 {{??}}
   {{ var $format = it.formats[$schema]; }}
@@ -48,9 +55,20 @@
     var $isObject = typeof $format == 'object'
                     && !($format instanceof RegExp)
                     && $format.validate;
-    if ($isObject) $format = $format.validate;
+    if ($isObject) {
+      var $async = $format.async === true;
+      $format = $format.validate;
+    }
   }}
-  if (!{{# def.checkFormat }}) {
+  {{? $async }}
+    {{
+      if (!it.async) throw new Error('async format in sync schema');
+      var $formatRef = 'formats' + it.util.getProperty($schema) + '.validate';
+    }}
+    if (!({{=it.yieldAwait}} {{=$formatRef}}({{=$data}}))) {
+  {{??}}
+    if (!{{# def.checkFormat }}) {
+  {{?}}
 {{?}}
     {{# def.error:'format' }}
   } {{? $breakOnError }} else { {{?}}

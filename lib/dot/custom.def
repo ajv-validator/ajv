@@ -8,8 +8,12 @@
     , $i = 'i' + $lvl
     , $ruleErr = 'ruleErr' + $lvl
     , $rDef = $rule.definition
+    , $async = $rDef.async
     , $inline = $rDef.inline
     , $macro = $rDef.macro;
+
+  if ($async && !it.async)
+    throw new Error('async keyword in sync schema');
 }}
 
 {{? !($inline || $macro) }}{{=$ruleErrs}} = null;{{?}}
@@ -25,7 +29,7 @@ var {{=$errs}} = errors;
   {{?? $macro }}
     valid{{=$it.level}}
   {{??}}
-    {{=$ruleValidate.code}}.call(self
+    {{?$async}}{{=it.yieldAwait}} {{?}}{{=$ruleValidate.code}}.call(self
       {{? $rDef.compile }}
         , {{=$data}}
       {{??}}
@@ -66,7 +70,7 @@ var {{=$errs}} = errors;
   {{= $code }}
 {{?}}
 
-if (!{{# def.callRuleValidate }}) {
+if (!({{# def.callRuleValidate }})) {
   {{ $errorKeyword = $rule.keyword; }}
   {{# def.beginDefOut}}
     {{# def.error:'custom' }}

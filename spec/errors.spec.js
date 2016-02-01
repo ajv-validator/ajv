@@ -86,7 +86,7 @@ describe('Validation errors', function () {
       if (errorDataPath == 'property') {
         fullValidate.errors
         .filter(function(err) { return err.keyword == 'additionalProperties'; })
-        .map(function(err) { return fullAjv.opts.jsonPointers ? err.dataPath.substr(1) : err.dataPath.slice(2,-2); })
+        .map(function(err) { return fullAjv._opts.jsonPointers ? err.dataPath.substr(1) : err.dataPath.slice(2,-2); })
         .forEach(function(p) { delete invalidData[p]; });
 
         invalidData .should.eql({ foo: 1, bar: 2 });
@@ -500,7 +500,7 @@ describe('Validation errors', function () {
     var validate = ajv.compile(schema);
     shouldBeValid(validate, data);
     shouldBeInvalid(validate, invalidData);
-    shouldBeError(validate.errors[0], 'type', schPath, ajv.opts.jsonPointers ? '/foo' : '.foo');
+    shouldBeError(validate.errors[0], 'type', schPath, ajv._opts.jsonPointers ? '/foo' : '.foo');
   }
 
 

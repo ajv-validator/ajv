@@ -98,7 +98,7 @@
 {{## def.cleanUp: {{ out = it.util.cleanUpCode(out); }} #}}
 
 
-{{## def.cleanUpVarErrors: {{ out = it.util.cleanUpVarErrors(out); }} #}}
+{{## def.cleanUpVarErrors: {{ out = it.util.cleanUpVarErrors(out, $async); }} #}}
 
 
 {{## def.$data:

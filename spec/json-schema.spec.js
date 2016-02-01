@@ -2,7 +2,8 @@
 
 var jsonSchemaTest = require('json-schema-test')
   , getAjvInstances = require('./ajv_instances')
-  , options = require('./ajv_options');
+  , options = require('./ajv_options')
+  , should = require('./chai').should();
 
 var instances = getAjvInstances(options);
 
@@ -48,11 +49,18 @@ jsonSchemaTest(instances, {
   ],
   assert: require('./chai').assert,
   afterError: function (res) {
-    console.log('ajv options:', res.validator.opts);
+    console.log('ajv options:', res.validator._opts);
   },
-  // afterEach: function (res) {
-  //   console.log(res.errors);
-  // },
+  afterEach: function (res) {
+    // console.log(res.errors);
+    res.valid .should.be.a('boolean');
+    if (res.valid === true ) should.equal(res.errors, null);
+    else {
+      res.errors .should.be.an('array');
+      for (var i=0; i<res.errors.length; i++)
+        res.errors[i] .should.be.an('object');
+    }
+  },
   cwd: __dirname,
   hideFolder: 'draft4/',
   timeout: 90000
