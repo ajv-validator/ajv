@@ -10,7 +10,29 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
 [![Coverage Status](https://coveralls.io/repos/epoberezkin/ajv/badge.svg?branch=master&service=github)](https://coveralls.io/github/epoberezkin/ajv?branch=master)
 
 
-NB: [Changes in version 3.0.0](https://github.com/epoberezkin/ajv/releases/tag/3.0.0).
+## Contents
+
+- [Features](#features)
+- [Performance](#performance)
+- [Getting started](#getting-started)
+- [Using in browser](#using-in-browser)
+- Validation
+  - [Keywords](#validation-keywords)
+  - [Formats](#formats)
+  - [$data reference](#data-reference)
+  - [Defining custom keywords](#defining-custom-keywords)
+  - [Asynchronous schema compilation](#asynchronous-compilation)
+  - [Asynchronous validation](#asynchronous-validation)
+- Modifying data during validation
+  - [Filtering data](#filtering-data)
+  - [Assigning defaults](#assigning-defaults)
+  - [Coercing data types](#coercing-data-types)
+- API
+  - [Methods](#api)
+  - [Options](#options)
+  - [Validation errors](#validation-errors)
+- [Packages using Ajv](#some-packages-using-ajv)
+- [CLI, Tests, Contributing, History, License](#command-line-interface)
 
 
 ## Features
@@ -18,7 +40,7 @@ NB: [Changes in version 3.0.0](https://github.com/epoberezkin/ajv/releases/tag/3
 - ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
   - all validation keywords (see [JSON-Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md))
   - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
-  - support of circular dependencies between schemas
+  - support of circular references between schemas
   - correct string lengths for strings with unicode pairs (can be turned off)
   - [formats](#formats) defined by JSON Schema draft 4 standard and custom formats (can be turned off)
   - [validates schemas against meta-schema](#api-validateschema)
@@ -58,7 +80,7 @@ npm install ajv
 ```
 
 
-## Usage
+## <a name="usage"></a>Getting started
 
 Try it in the node REPL: https://tonicdev.com/npm/ajv
 
@@ -119,6 +141,28 @@ The browser bundle is available on [cdnjs](https://cdnjs.com/libraries/ajv).
 Ajv was tested with these browsers:
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/epoberezkin.svg)](https://saucelabs.com/u/epoberezkin)
+
+
+## Validation keywords
+
+Ajv supports all validation keywords from draft 4 of JSON-schema standard:
+
+- [type](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#type)
+- [for numbers](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-numbers) - maximum, minimum, exclusiveMaximum, exclusiveMinimum, multipleOf
+- [for strings](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-strings) - maxLength, minLength, pattern, format
+- [for arrays](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-arrays) - maxItems, minItems, uniqueItems, items, additionalItems
+- [for objects](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-objects) - maxProperties, minproperties, required, properties, patternProperties, additionalProperties, dependencies
+- [compound keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-all-types) - enum, not, oneOf, anyOf, allOf
+
+With option `v5: true` Ajv also supports all validation keywords and [$data reference](#data-reference) from [v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) for JSON-schema standard:
+
+- switch - conditional validation with a sequence of if/then clauses
+- contains - check that array contains a valid item
+- constant - check that data is equal to some value
+- patternGroups - a more powerful alternative to patternProperties
+- formatMaximum, formatMinimum, exclusiveFormatMaximum, exclusiveFormatMinimum - setting limits for date, time, etc.
+
+See [JSON-Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md) for more details.
 
 
 ## Formats
@@ -808,6 +852,19 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - custom keywords (in case keyword definition doesn't create errors) - property `keyword` (the keyword name).
 
 
+## Some packages using Ajv
+
+- [osprey-method-handler](https://github.com/mulesoft-labs/osprey-method-handler) - Express middleware for validating requests and responses based on a RAML method object, used in [osprey](https://github.com/mulesoft/osprey) - validating API proxy generated from a RAML definition
+- [jsoneditor](https://github.com/josdejong/jsoneditor) - A web-based tool to view, edit, format, and validate JSON http://jsoneditoronline.org
+- [ripple-lib](https://github.com/ripple/ripple-lib) - A JavaScript API for interacting with [Ripple](https://ripple.com) in Node.js and the browser
+- [restbase](https://github.com/wikimedia/restbase) - Distributed storage with REST API & dispatcher for backend services built to provide a low-latency & high-throughput API for Wikipedia / Wikimedia content
+- [hippie-swagger](https://github.com/CacheControl/hippie-swagger) - [Hippie](https://github.com/vesln/hippie) wrapper that provides end to end API testing with swagger validation
+- [react-form-controlled](https://github.com/seeden/react-form-controlled) - React controlled form components with validation
+- [rabbitmq-schema](https://github.com/tjmehta/rabbitmq-schema) - A schema definition module for RabbitMQ graphs and messages
+- [@query/schema](https://www.npmjs.com/package/@query/schema) - stream filtering with a URI-safe query syntax parsing to JSON Schema
+- [grunt-jsonschema-ajv](https://github.com/SignpostMarv/grunt-jsonschema-ajv) - Grunt plugin for validating files against JSON-Schema
+
+
 ## Command line interface
 
 Simple JSON-schema validation can be done from command line using [ajv-cli](https://github.com/jessedc/ajv-cli) package. At the moment it does not support referenced schemas.
@@ -833,6 +890,8 @@ All validation functions are generated using doT templates in [dot](https://gith
 ## Changes history
 
 See https://github.com/epoberezkin/ajv/releases
+
+__Please note__: [Changes in version 3.0.0](https://github.com/epoberezkin/ajv/releases/tag/3.0.0).
 
 
 ## License
