@@ -13,6 +13,9 @@ var g = typeof global == 'object' ? global :
 
 g.Promise = g.Promise || Promise;
 
+var isBrowser = typeof window == 'object';
+var fullTest = isBrowser || !process.env.AJV_FAST_TEST;
+
 
 describe('async schemas, formats and keywords', function() {
   this.timeout(10000);
@@ -30,27 +33,30 @@ describe('async schemas, formats and keywords', function() {
     var options = [
       {},
       { async: true },
-      { async: '*' },
       { async: 'co*' },
       { async: 'es7' },
       { async: 'es7', transpile: 'nodent' },
+      { async: '*', transpile: 'regenerator' },
+      { async: 'co*', allErrors: true },
+      { async: 'es7', allErrors: true },
+      { async: 'es7', transpile: 'nodent', allErrors: true },
+      { async: '*', transpile: 'regenerator', allErrors: true },
+    ];
+
+    if (fullTest) options.concat([
+      { async: '*' },
       { transpile: 'regenerator' },
       { async: true, transpile: 'regenerator' },
-      { async: '*', transpile: 'regenerator' },
       { async: 'co*', transpile: 'regenerator' },
       { async: 'es7', transpile: 'regenerator' },
       { allErrors: true },
       { async: true, allErrors: true },
       { async: '*', allErrors: true },
-      { async: 'co*', allErrors: true },
-      { async: 'es7', allErrors: true },
-      { async: 'es7', transpile: 'nodent', allErrors: true },
       { transpile: 'regenerator', allErrors: true },
       { async: true, transpile: 'regenerator', allErrors: true },
-      { async: '*', transpile: 'regenerator', allErrors: true },
       { async: 'co*', transpile: 'regenerator', allErrors: true },
       { async: 'es7', transpile: 'regenerator', allErrors: true }
-    ];
+    ]);
 
     options.forEach(function (_opts) {
       util.copy(opts, _opts);
@@ -174,10 +180,6 @@ describe('async schemas, formats and keywords', function() {
 
     it('should support async formats when $data ref resolves to async format name', function() {
       getInstances({ v5: true });
-      console.warn('Skipping this test for opts.async == "es7", opts.transpile == "nodent"');
-      instances = instances.filter(function (ajv) {
-        return !(ajv._opts.async == 'es7' && ajv._opts.transpile == 'nodent');
-      });
       addFormatEnglishWord();
 
       var schema = {
@@ -530,7 +532,7 @@ describe('async/transpile option', function() {
   });
 
 
-  it.skip('should set async option to es7 if tranpiler is nodent', function() {
+  it('should set async option to es7 if tranpiler is nodent', function() {
     var ajv1 = Ajv({ transpile: 'nodent' });
     ajv1._opts.async .should.equal('es7');
 
