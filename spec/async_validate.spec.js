@@ -58,6 +58,14 @@ describe('async schemas, formats and keywords', function() {
       { async: 'es7', transpile: 'regenerator', allErrors: true }
     ]);
 
+    // options = options.filter(function (_opts) {
+    //   return _opts.transpile == 'nodent';
+    // });
+
+    // var i = 10, repeatOptions = [];
+    // while (i--) repeatOptions = repeatOptions.concat(options);
+    // options = repeatOptions;
+
     options.forEach(function (_opts) {
       util.copy(opts, _opts);
       var ajv = getAjv(_opts);

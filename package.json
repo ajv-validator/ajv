@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "3.5.1",
+  "version": "3.5.2",
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
   "files": [
@@ -44,7 +44,7 @@
   "tonicExampleFilename": ".tonic_example.js",
   "dependencies": {
     "co": "^4.6.0",
-    "json-stable-stringify": "^1.0.0"
+    "json-stable-stringify": "^1.0.1"
   },
   "devDependencies": {
     "bluebird": "^3.1.5",
@@ -65,7 +65,7 @@
     "karma-phantomjs-launcher": "^0.2.1",
     "karma-sauce-launcher": "^0.3.0",
     "mocha": "^2.2.5",
-    "nodent": "^2.3.11",
+    "nodent": "^2.3.13",
     "phantomjs": "^2.1.2",
     "pre-commit": "^1.1.1",
     "regenerator": "^0.8.42",

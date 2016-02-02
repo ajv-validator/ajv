@@ -432,7 +432,7 @@ See [Options](#options).
 |mode|transpile<br>speed*|run-time<br>speed*|bundle<br>size|
 |---|:-:|:-:|:-:|
 |generators<br>(native)|-|1.0|-|
-|es7.nodent|1.69|1.1|183Kb|
+|es7.nodent|1.35|1.1|183Kb|
 |es7.regenerator|1.0|2.7|322Kb|
 |regenerator|1.0|3.2|322Kb|
 
