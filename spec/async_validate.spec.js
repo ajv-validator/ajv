@@ -1,10 +1,10 @@
 'use strict';
 
 var Ajv = require('./ajv')
+  , getAjvInstances = require('./ajv_async_instances')
   , should = require('./chai').should()
   , co = require('co')
-  , Promise = require('bluebird')
-  , util = require('../lib/compile/util');
+  , Promise = require('bluebird');
 
 Promise.config({ warnings: false });
 
@@ -13,85 +13,15 @@ var g = typeof global == 'object' ? global :
 
 g.Promise = g.Promise || Promise;
 
-var isBrowser = typeof window == 'object';
-var fullTest = isBrowser || !process.env.AJV_FAST_TEST;
-
 
 describe('async schemas, formats and keywords', function() {
   this.timeout(10000);
   var ajv, instances;
 
   beforeEach(function () {
-    getInstances();
+    instances = getAjvInstances();
     ajv = instances[0];
   });
-
-  function getInstances(opts) {
-    opts = opts || {};
-    var firstTime = instances === undefined;
-    instances = [];
-    var options = [
-      {},
-      { async: true },
-      { async: 'co*' },
-      { async: 'es7' },
-      { async: 'es7', transpile: 'nodent' },
-      { async: '*', transpile: 'regenerator' },
-      { async: 'co*', allErrors: true },
-      { async: 'es7', allErrors: true },
-      { async: 'es7', transpile: 'nodent', allErrors: true },
-      { async: '*', transpile: 'regenerator', allErrors: true },
-    ];
-
-    if (fullTest) options.concat([
-      { async: '*' },
-      { transpile: 'regenerator' },
-      { async: true, transpile: 'regenerator' },
-      { async: 'co*', transpile: 'regenerator' },
-      { async: 'es7', transpile: 'regenerator' },
-      { allErrors: true },
-      { async: true, allErrors: true },
-      { async: '*', allErrors: true },
-      { transpile: 'regenerator', allErrors: true },
-      { async: true, transpile: 'regenerator', allErrors: true },
-      { async: 'co*', transpile: 'regenerator', allErrors: true },
-      { async: 'es7', transpile: 'regenerator', allErrors: true }
-    ]);
-
-    // options = options.filter(function (_opts) {
-    //   return _opts.transpile == 'nodent';
-    // });
-
-    // var i = 10, repeatOptions = [];
-    // while (i--) repeatOptions = repeatOptions.concat(options);
-    // options = repeatOptions;
-
-    options.forEach(function (_opts) {
-      util.copy(opts, _opts);
-      var ajv = getAjv(_opts);
-      if (ajv) instances.push(ajv);
-    });
-
-
-    if (firstTime) {
-      var asyncModes = [];
-      instances.forEach(function (ajv) {
-        if (!ajv._opts.async) return;
-        var t = ajv._opts.transpile;
-        var mode = ajv._opts.async + (t === true ? '' : '.' + t);
-        if (asyncModes.indexOf(mode) == -1) asyncModes.push(mode);
-      });
-      console.log('Testing', instances.length, 'ajv instances:', asyncModes.join(','));
-    }
-  }
-
-  function regeneratorTranspile(code) {
-    return regenerator.compile(code).code;
-  }
-
-  function getAjv(opts){
-    try { return Ajv(opts); } catch(e) {}
-  }
 
   function useCo(ajv) {
     var async = ajv._opts.async;
@@ -117,7 +47,10 @@ describe('async schemas, formats and keywords', function() {
         return Promise.all([
           shouldBeValid(   _co(validate('abc')) ),
           shouldBeInvalid( _co(validate('abcd')) ),
-          shouldBeInvalid( _co(validate(1)) )
+          shouldBeInvalid( _co(validate(1)) ),
+          shouldBeValid(   ajv.validate(schema, 'abc') ),
+          shouldBeInvalid( ajv.validate(schema, 'abcd') ),
+          shouldBeInvalid( ajv.validate(schema, 1) )
         ]);
       }
     });
@@ -187,7 +120,7 @@ describe('async schemas, formats and keywords', function() {
 
 
     it('should support async formats when $data ref resolves to async format name', function() {
-      getInstances({ v5: true });
+      instances = getAjvInstances({ v5: true });
       addFormatEnglishWord();
 
       var schema = {
@@ -348,7 +281,7 @@ describe('async schemas, formats and keywords', function() {
 
   describe('async referenced schemas', function() {
     beforeEach(function() {
-      getInstances({ inlineRefs: false });
+      instances = getAjvInstances({ inlineRefs: false });
       addFormatEnglishWord();
     });
 

@@ -621,6 +621,8 @@ Validation errors will be available in the `errors` property of ajv instance (`n
 
 __Please note__: every time this method is called the errors are overwritten so you need to copy them to another variable if you want to use them later.
 
+If the schema is asynchronous (has `$async` keyword on the top level) this method returns a Promise. See [Asynchronous validation](#asynchronous-validation).
+
 
 ##### .addSchema(Array&lt;Object&gt;|Object schema [, String key])
 
