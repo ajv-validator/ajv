@@ -1,0 +1,28 @@
+{
+    "rules": {
+        "indent": [ 2, 2, {"SwitchCase": 1} ],
+        "quotes": [ 2, "single", "avoid-escape" ],
+        "linebreak-style": [ 2, "unix" ],
+        "semi": [ 2, "always" ],
+        "valid-jsdoc": [ 2, { "requireReturn": false } ],
+        "no-console": 0,
+        "block-scoped-var": 2,
+        "complexity": [2, 13],
+        "curly": [2, "multi-or-nest", "consistent"],
+        "dot-location": [2, "property"],
+        "dot-notation": 2,
+        "no-else-return": 2,
+        "no-eq-null": 2,
+        "no-fallthrough": 2,
+        "no-return-assign": 2,
+        "strict": [2, "global"],
+        "no-shadow": 0,
+        "no-use-before-define": [2, "nofunc"],
+        "callback-return": 2
+    },
+    "env": {
+        "node": true,
+        "browser": true
+    },
+    "extends": "eslint:recommended"
+}

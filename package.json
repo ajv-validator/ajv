@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "jshint": "jshint lib/*.js lib/**/*.js --exclude lib/dotjs/**/*",
+    "eslint": "eslint lib/*.js lib/compile/*.js",
     "test-spec": "mocha spec/*.spec.js -R spec",
     "test-fast": "AJV_FAST_TEST=true npm run test-spec",
     "test-debug": "mocha spec/*.spec.js --debug-brk -R spec",
@@ -21,7 +22,7 @@
     "bundle-all": "npm run bundle && npm run bundle-regenerator && npm run bundle-nodent",
     "build": "node scripts/compile-dots.js",
     "test-browser": "npm run bundle-all && scripts/prepare-tests && karma start --single-run --browsers PhantomJS",
-    "test": "npm run jshint && npm run build && npm run test-cov && npm run test-browser",
+    "test": "npm run jshint && npm run eslint && npm run build && npm run test-cov && npm run test-browser",
     "prepublish": "npm run build && npm run bundle-all",
     "watch": "watch 'npm run build' ./lib/dot"
   },
@@ -52,6 +53,7 @@
     "chai": "^3.0.0",
     "coveralls": "^2.11.4",
     "dot": "^1.0.3",
+    "eslint": "^1.10.3",
     "glob": "^6.0.4",
     "istanbul": "^0.4.2",
     "js-beautify": "^1.5.6",
