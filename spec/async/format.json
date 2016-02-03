@@ -1,0 +1,79 @@
+[
+  {
+    "description": "async custom formats",
+    "schema": {
+      "$async": true,
+      "type": "string",
+      "format": "english_word"
+    },
+    "tests": [
+      {
+        "description": "'tomorrow' is a valid english word",
+        "data": "tomorrow",
+        "valid": true
+      },
+      {
+        "description": "'manana' is an invalid english word",
+        "data": "manana",
+        "valid": false
+      },
+      {
+        "description": "number is invalid",
+        "data": 1,
+        "valid": false
+      },
+      {
+        "description": "'today' throws an exception, not in the dictionary",
+        "data": "today",
+        "error": "unknown word"
+      }
+    ]
+  },
+  {
+    "description": "async formats when $data ref resolves to async format name",
+    "schema": {
+      "$async": true,
+      "additionalProperties": {
+        "type": "string",
+        "format": { "$data": "0#" }
+      }
+    },
+    "tests": [
+      {
+        "description": "'tomorrow' is a valid english word",
+        "data": { "english_word": "tomorrow" },
+        "valid": true
+      },
+      {
+        "description": "'manana' is an invalid english word",
+        "data": { "english_word": "manana" },
+        "valid": false
+      },
+      {
+        "description": "number is invalid",
+        "data": { "english_word": 1 },
+        "valid": false
+      },
+      {
+        "description": "'today' throws an exception, not in the dictionary",
+        "data": { "english_word": "today" },
+        "error": "unknown word"
+      },
+      {
+        "description": "valid date",
+        "data": { "date": "2016-01-25" },
+        "valid": true
+      },
+      {
+        "description": "invalid date",
+        "data": { "date": "01/25/2016" },
+        "valid": false
+      },
+      {
+        "description": "number is invalid",
+        "data": { "date": 1 },
+        "valid": false
+      }
+    ]
+  }
+]

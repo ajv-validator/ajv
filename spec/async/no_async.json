@@ -1,0 +1,27 @@
+[
+  {
+    "description": "async schema without async elements",
+    "schema": {
+      "$async": true,
+      "type": "string",
+      "maxLength": 3
+    },
+    "tests": [
+      {
+        "description": "string <= 3 chars is valid",
+        "data": "abc",
+        "valid": true
+      },
+      {
+        "description": "string > 3 chars is invalid",
+        "data": "abcd",
+        "valid": false
+      },
+      {
+        "description": "number is invalid",
+        "data": 1,
+        "valid": false
+      }
+    ]
+  }
+]

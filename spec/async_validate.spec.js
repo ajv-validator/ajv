@@ -1,17 +1,10 @@
 'use strict';
 
 var Ajv = require('./ajv')
+  , Promise = require('./promise')
   , getAjvInstances = require('./ajv_async_instances')
   , should = require('./chai').should()
-  , co = require('co')
-  , Promise = require('bluebird');
-
-Promise.config({ warnings: false });
-
-var g = typeof global == 'object' ? global :
-        typeof window == 'object' ? window : this;
-
-g.Promise = g.Promise || Promise;
+  , co = require('co');
 
 
 describe('async schemas, formats and keywords', function() {
@@ -48,9 +41,6 @@ describe('async schemas, formats and keywords', function() {
           shouldBeValid(   _co(validate('abc')) ),
           shouldBeInvalid( _co(validate('abcd')) ),
           shouldBeInvalid( _co(validate(1)) ),
-          shouldBeValid(   ajv.validate(schema, 'abc') ),
-          shouldBeInvalid( ajv.validate(schema, 'abcd') ),
-          shouldBeInvalid( ajv.validate(schema, 1) )
         ]);
       }
     });
@@ -80,28 +70,6 @@ describe('async schemas, formats and keywords', function() {
   describe('async formats', function() {
     beforeEach(addFormatEnglishWord);
 
-    it('should return promise that resolves as true or rejects with array of errors', function() {
-      var schema = {
-        $async: true,
-        type: 'string',
-        format: 'english_word'
-      };
-
-      return repeat(function() { return Promise.map(instances, test); });
-
-      function test(ajv) {
-        var validate = ajv.compile(schema);
-        var _co = useCo(ajv);
-
-        return Promise.all([
-          shouldBeValid(   _co(validate('tomorrow')) ),
-          shouldBeInvalid( _co(validate('manana')) ),
-          shouldBeInvalid( _co(validate(1)) ),
-          shouldThrow(     _co(validate('today')), 'unknown word' )
-        ]);
-      }
-    });
-
 
     it('should fail compilation if async format is inside sync schema', function() {
       instances.forEach(function (ajv) {
@@ -117,38 +85,6 @@ describe('async schemas, formats and keywords', function() {
         ajv.compile(schema);
       });
     });
-
-
-    it('should support async formats when $data ref resolves to async format name', function() {
-      instances = getAjvInstances({ v5: true });
-      addFormatEnglishWord();
-
-      var schema = {
-        $async: true,
-        additionalProperties: {
-          type: 'string',
-          format: { $data: '0#' }
-        }
-      };
-
-      return repeat(function() { return Promise.map(instances, test); });
-
-      function test(ajv, index) {
-        var validate = ajv.compile(schema);
-        var _co = useCo(ajv);
-
-        return Promise.all([
-          shouldBeValid(   _co(validate({ english_word: 'tomorrow' })) ),
-          shouldBeInvalid( _co(validate({ english_word: 'manana' })) ),
-          shouldBeInvalid( _co(validate({ english_word: 1 })) ),
-          shouldThrow(     _co(validate({ english_word: 'today' })), 'unknown word' ),
-
-          shouldBeValid(   _co(validate({ date: '2016-01-25' })) ),
-          shouldBeInvalid( _co(validate({ date: '01/25/2016' })) ),
-          shouldBeInvalid( _co(validate({ date: 1 })) ),
-        ]);
-      }
-    });
   });
 
 
@@ -160,71 +96,7 @@ describe('async schemas, formats and keywords', function() {
           type: 'number',
           validate: checkIdExists
         });
-
-        ajv.addKeyword('idExistsCompiled', {
-          async: true,
-          type: 'number',
-          compile: compileCheckIdExists
-        });
       });
-    });
-
-
-    it('should validate custom keyword that returns promise', function() {
-      var schema1 = {
-        $async: true,
-        properties: {
-          userId: {
-            type: 'integer',
-            idExists: { table: 'users' }
-          },
-          postId: {
-            type: 'integer',
-            idExists: { table: 'posts' }
-          },
-          categoryId: {
-            description: 'will throw if present, no such table',
-            type: 'integer',
-            idExists: { table: 'categories' }
-          }
-        }
-      };
-
-      var schema2 = {
-        $async: true,
-        properties: {
-          userId: {
-            type: 'integer',
-            idExistsCompiled: { table: 'users' }
-          },
-          postId: {
-            type: 'integer',
-            idExistsCompiled: { table: 'posts' }
-          }
-        }
-      };
-
-      return repeat(function() { return Promise.all([
-        test(instances, schema1, true),
-        test(instances, schema2)
-      ]); });
-
-      function test(instances, schema, checkThrow) {
-        return Promise.map(instances, function (ajv) {
-          var validate = ajv.compile(schema);
-          var _co = useCo(ajv);
-
-          return Promise.all([
-            shouldBeValid(   _co(validate({ userId: 1, postId: 21 })) ),
-            shouldBeValid(   _co(validate({ userId: 5, postId: 25 })) ),
-            shouldBeInvalid( _co(validate({ userId: 5, postId: 10 })) ), // no post
-            shouldBeInvalid( _co(validate({ userId: 9, postId: 25 })) ), // no user
-            checkThrow
-              ? shouldThrow(     _co(validate({ postId: 25, categoryId: 1  })), 'no such table' )
-              : undefined
-          ]);
-        });
-      }
     });
 
 
@@ -259,21 +131,6 @@ describe('async schemas, formats and keywords', function() {
 
       function check(IDs) {
         return Promise.resolve(IDs.indexOf(data) >= 0);
-      }
-    }
-
-
-    function compileCheckIdExists(schema) {
-      switch (schema.table) {
-        case 'users': return compileCheck([1, 5, 8]);
-        case 'posts': return compileCheck([21, 25, 28]);
-        default: throw new Error('no such table');
-      }
-
-      function compileCheck(IDs) {
-        return function (data) {
-          return Promise.resolve(IDs.indexOf(data) >= 0);
-        };
       }
     }
   });

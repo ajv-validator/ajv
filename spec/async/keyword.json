@@ -1,0 +1,88 @@
+[
+  {
+    "description": "async custom keywords (validated)",
+    "schema": {
+      "$async": true,
+      "properties": {
+        "userId": {
+          "type": "integer",
+          "idExists": { "table": "users" }
+        },
+        "postId": {
+          "type": "integer",
+          "idExists": { "table": "posts" }
+        },
+        "categoryId": {
+          "description": "will throw if present, no such table",
+          "type": "integer",
+          "idExists": { "table": "categories" }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid object",
+        "data": { "userId": 1, "postId": 21 },
+        "valid": true
+      },
+      {
+        "description": "another valid object",
+        "data": { "userId": 5, "postId": 25 },
+        "valid": true
+      },
+      {
+        "description": "invalid - no such post",
+        "data": { "userId": 5, "postId": 10 },
+        "valid": false
+      },
+      {
+        "description": "invalid - no such user",
+        "data": { "userId": 9, "postId": 25 },
+        "valid": false
+      },
+      {
+        "description": "should throw exception during validation - no such table",
+        "data": { "postId": 25, "categoryId": 1 },
+        "error": "no such table"
+      }
+    ]
+  },
+  {
+    "description": "async custom keywords (compiled)",
+    "schema": {
+      "$async": true,
+      "properties": {
+        "userId": {
+          "type": "integer",
+          "idExistsCompiled": { "table": "users" }
+        },
+        "postId": {
+          "type": "integer",
+          "idExistsCompiled": { "table": "posts" }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid object",
+        "data": { "userId": 1, "postId": 21 },
+        "valid": true
+      },
+      {
+        "description": "another valid object",
+        "data": { "userId": 5, "postId": 25 },
+        "valid": true
+      },
+      {
+        "description": "invalid - no such post",
+        "data": { "userId": 5, "postId": 10 },
+        "valid": false
+      },
+      {
+        "description": "invalid - no such user",
+        "data": { "userId": 9, "postId": 25 },
+        "valid": false
+      }
+    ]
+  }
+]
