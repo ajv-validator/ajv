@@ -8,11 +8,11 @@
     , $i = 'i' + $lvl
     , $ruleErr = 'ruleErr' + $lvl
     , $rDef = $rule.definition
-    , $async = $rDef.async
+    , $asyncKeyword = $rDef.async
     , $inline = $rDef.inline
     , $macro = $rDef.macro;
 
-  if ($async && !it.async)
+  if ($asyncKeyword && !it.async)
     throw new Error('async keyword in sync schema');
 }}
 
@@ -29,7 +29,7 @@ var {{=$errs}} = errors;
   {{?? $macro }}
     valid{{=$it.level}}
   {{??}}
-    {{?$async}}{{=it.yieldAwait}} {{?}}{{=$ruleValidate.code}}.call(self
+    {{?$asyncKeyword}}{{=it.yieldAwait}} {{?}}{{=$ruleValidate.code}}.call(self
       {{? $rDef.compile }}
         , {{=$data}}
       {{??}}

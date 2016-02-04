@@ -1,0 +1,39 @@
+[
+  {
+    "description": "properties: async + sync",
+    "schema": {
+      "$async": true,
+      "properties": {
+        "foo": {
+          "type": "integer",
+          "idExists": { "table": "users" }
+        },
+        "bar": {
+          "type": "integer"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid object",
+        "data": { "foo": 1, "bar": 2 },
+        "valid": true
+      },
+      {
+        "description": "another valid object",
+        "data": { "foo": 5, "bar": 2 },
+        "valid": true
+      },
+      {
+        "description": "invalid sync property",
+        "data": { "foo": 1, "bar": "abc" },
+        "valid": false
+      },
+      {
+        "description": "invalid async property",
+        "data": { "foo": 9, "bar": 2 },
+        "valid": false
+      }
+    ]
+  }
+]

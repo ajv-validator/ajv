@@ -1,0 +1,48 @@
+[
+  {
+    "description": "items: async + sync",
+    "schema": {
+      "$async": true,
+      "items": [
+        {
+          "type": "integer",
+          "idExists": { "table": "users" }
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer",
+          "idExists": { "table": "users" }
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "valid array",
+        "data": [ 1, 2, 5 ],
+        "valid": true
+      },
+      {
+        "description": "another valid array",
+        "data": [ 5, 2, 8 ],
+        "valid": true
+      },
+      {
+        "description": "invalid 1st async item",
+        "data": [ 9, 2, 8 ],
+        "valid": false
+      },
+      {
+        "description": "invalid 2nd async item",
+        "data": [ 1, 2, 9 ],
+        "valid": false
+      },
+      {
+        "description": "invalid sync item",
+        "data": [ 1, "abc", 5 ],
+        "valid": false
+      }
+    ]
+  }
+]

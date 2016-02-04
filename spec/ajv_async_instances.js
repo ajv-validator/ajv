@@ -25,7 +25,7 @@ function getAjvInstances(opts) {
     { async: 'co*', allErrors: true },
     { async: 'es7', allErrors: true },
     { async: 'es7', transpile: 'nodent', allErrors: true },
-    { async: '*', transpile: 'regenerator', allErrors: true },
+    { async: '*', transpile: 'regenerator', allErrors: true }
   ];
 
   if (fullTest) options = options.concat([

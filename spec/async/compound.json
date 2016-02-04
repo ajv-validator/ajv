@@ -1,0 +1,134 @@
+[
+  {
+    "description": "allOf: async + sync",
+    "schema": {
+      "$async": true,
+      "allOf": [
+        {
+          "idExists": { "table": "users" }
+        },
+        {
+          "type": "integer",
+          "minimum": 3
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "valid id",
+        "data": 5,
+        "valid": true
+      },
+      {
+        "description": "another valid id",
+        "data": 8,
+        "valid": true
+      },
+      {
+        "description": "invalid async - not user id",
+        "data": 9,
+        "valid": false
+      },
+      {
+        "description": "invalid sync - valid id but too small",
+        "data": 1,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "anyOf: async + sync",
+    "schema": {
+      "$async": true,
+      "anyOf": [
+        {
+          "idExists": { "table": "users" }
+        },
+        {
+          "type": "integer",
+          "minimum": 3
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "valid id",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "valid - not id but big enough",
+        "data": 4,
+        "valid": true
+      },
+      {
+        "description": "valid - id and big enough",
+        "data": 5,
+        "valid": true
+      },
+      {
+        "description": "invalid both",
+        "data": 2,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "oneOf: async + sync",
+    "schema": {
+      "$async": true,
+      "oneOf": [
+        {
+          "idExists": { "table": "users" }
+        },
+        {
+          "type": "integer",
+          "minimum": 3
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "valid id",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "valid - not id but big enough",
+        "data": 4,
+        "valid": true
+      },
+      {
+        "description": "invalid - id and big enough",
+        "data": 5,
+        "valid": false
+      },
+      {
+        "description": "invalid both",
+        "data": 2,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "not with async",
+    "schema": {
+      "$async": true,
+      "not": {
+        "idExists": { "table": "users" }
+      }
+    },
+    "tests": [
+      {
+        "description": "invalid because valid id",
+        "data": 1,
+        "valid": false
+      },
+      {
+        "description": "valid because not a valid id",
+        "data": 4,
+        "valid": true
+      }
+    ]
+  }
+]
