@@ -5,6 +5,7 @@
         "linebreak-style": [ 2, "unix" ],
         "semi": [ 2, "always" ],
         "valid-jsdoc": [ 2, { "requireReturn": false } ],
+        "no-invalid-this": 2,
         "no-console": 0,
         "block-scoped-var": 2,
         "complexity": [2, 13],
@@ -16,7 +17,7 @@
         "no-fallthrough": 2,
         "no-return-assign": 2,
         "strict": [2, "global"],
-        "no-shadow": 0,
+        "no-shadow": 1,
         "no-use-before-define": [2, "nofunc"],
         "callback-return": 2
     },
