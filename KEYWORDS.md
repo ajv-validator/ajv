@@ -751,16 +751,16 @@ The value of the keyword is the array of if/then clauses. Each clause is the obj
 The validation process is dynamic; all clauses are executed sequentially in the following way:
 
 1. `if`:
-    1)  `if` property is JSON-schema according to which the data is:
-        a)  valid => go to step 2.
-        b)  invalid => go to the NEXT clause, if this was the last clause the validation of `switch` SUCCEEDS.
-    2)  `if` property is absent => go to step 2.
+    1.  `if` property is JSON-schema according to which the data is:
+        1.  valid => go to step 2.
+        2.  invalid => go to the NEXT clause, if this was the last clause the validation of `switch` SUCCEEDS.
+    2.  `if` property is absent => go to step 2.
 2. `then`:
-    1)  `then` property is `true` or it is JSON-schema according to which the data is valid => go to step 3.
-    2)  `then` property is `false` or it is JSON-schema according to which the data is invalid => the validation of `switch` FAILS.
+    1.  `then` property is `true` or it is JSON-schema according to which the data is valid => go to step 3.
+    2.  `then` property is `false` or it is JSON-schema according to which the data is invalid => the validation of `switch` FAILS.
 3. `continue`:
-    1)  `continue` property is `true` => go to the NEXT clause, if this was the last clause the validation of `switch` SUCCEEDS.
-    2)  `continue` property is `false` or absent => validation of `switch` SUCCEEDS.
+    1.  `continue` property is `true` => go to the NEXT clause, if this was the last clause the validation of `switch` SUCCEEDS.
+    2.  `continue` property is `false` or absent => validation of `switch` SUCCEEDS.
 
 
 __Examples__
@@ -781,11 +781,13 @@ __Examples__
     ```
 
     _valid_:
+    
         - `{ "power": 9000, "disbelief": true, "confidence": true }`
         - `{ "confidence": true }`
         - `{ "power": 1000, "confidence": true }`
 
     _invalid_:
+    
         - `{ "power": 9000 }` (`disbelief` & `confidence` are required)
         - `{ "power": 9000, "disbelief": true }` (`confidence` is always required)
         - `{ "power": 1000 }`
@@ -807,10 +809,11 @@ __Examples__
     }
     ```
 
-    _valid_: 1, 5, 10, 20, 50, 100, 200, 500, 1000
+    _valid_: `1`, `5`, `10`, `20`, `50`, `100`, `200`, `500`, `1000`
 
     _invalid_:
-        - -1, 0 (<1)
-        - 2000 (>1000)
-        - 11, 57, 123 (any number with more than one non-zero digit)
+    
+        - `-1`, `0` (<1)
+        - `2000` (>1000)
+        - `11`, `57`, `123` (any number with more than one non-zero digit)
         - non-integers
