@@ -34,14 +34,5 @@ lib/dotjs/*.js
 # Browserified tests
 .browser
 
-# Ajv bundle
-ajv.bundle.*
-ajv.min.*
-
-# regenerator bundle
-regenerator.bundle.*
-regenerator.min.*
-
-# nodent bundle
-nodent.bundle.*
-nodent.min.*
+# bundles
+dist/

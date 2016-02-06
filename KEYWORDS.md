@@ -10,17 +10,19 @@ The keywords and their values define what rules the data should satisfy to be va
 
 - [type](#type)
 - [Keywords for numbers](#keywords-for-numbers)
-    - [maximum/minimum and exclusiveMaximum/exclusiveMinimum](#maximum--minimum-and-exclusivemaximum--exclusiveminimum)
+    - [maximum / minimum and exclusiveMaximum / exclusiveMinimum](#maximum--minimum-and-exclusivemaximum--exclusiveminimum)
     - [multipleOf](#multipleof)
 - [Keywords for strings](#keywords-for-strings)
     - [maxLength/minLength](#maxlength--minlength)
     - [pattern](#pattern)
     - [format](#format)
+    - [formatMaximum / formatMinimum and exclusiveFormatMaximum / exclusiveFormatMinimum](#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum) (v5)
 - [Keywords for arrays](#keywords-for-arrays)
     - [maxItems/minItems](#maxitems--minitems)
     - [uniqueItems](#uniqueitems)
     - [items](#items)
     - [additionalItems](#additionalitems)
+    - [contains](#contains) (v5)
 - [Keywords for objects](#keywords-for-objects)
     - [maxProperties/minProperties](#maxproperties--minproperties)
     - [required](#required)
@@ -28,12 +30,15 @@ The keywords and their values define what rules the data should satisfy to be va
     - [patternProperties](#patternproperties)
     - [additionalProperties](#additionalproperties)
     - [dependencies](#dependencies)
+    - [patternGroups](#patternGroups) (v5)
 - [Keywords for all types](#keywords-for-all-types)
     - [enum](#enum)
+    - [constant](#constant) (v5)
     - [not](#not)
     - [oneOf](#oneof)
     - [anyOf](#anyof)
     - [allOf](#allof)
+    - [switch](#switch) (v5)
 
 
 
@@ -187,6 +192,33 @@ _invalid_: `"abc"`
 
 
 
+### `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` (v5 proposal)
+
+The value of keyword `formatMaximum` (`formatMinimum`) should be a string. This value is the maximum (minimum) allowed value for the data to be valid as determined by `format` keyword.
+
+Ajv defines comparison rules for formats `"date"`, `"time"` and `"date-time".
+
+The value of keyword `exclusiveFormatMaximum` (`exclusiveFormatMinimum`) should be a boolean value. These keyword cannot be used without `formatMaximum` (`formatMinimum`). If this keyword value is equal to `true`, the data to be valid should not be equal to the value in `formatMaximum` (`formatMinimum`) keyword.
+
+
+__Example__
+
+_schema_:
+
+```json
+{
+    "format": "date",
+    "formatMaximum": "2016-02-06",
+    "exclusiveFormatMaximum": true
+}
+```
+
+_valid_: `2015-12-31`, `"2016-02-05"`, any non-string
+
+_invalid_: `"2016-02-06"`, `"2016-02-07"`, `"abc"`
+
+
+
 ## Keywords for arrays
 
 ### `maxItems` / `minItems`
@@ -320,6 +352,32 @@ __Examples__
     _invalid_: `["abc"]`, `[1, 2, 3]`
 
 
+### `contains` (v5 proposal)
+
+The value of the keyword is a JSON-schema. The array is valid if it contains at least one item that is valid according to this schema.
+
+__Example__
+
+_schema_: `{ "contains": { "type": "integer" } }`
+
+_valid_: `[1]`, `[1, "foo"]`, any array with at least one integer, any non-array
+
+_invalid_: `[]`, `["foo", "bar"]`, any array without integers
+
+
+The same can be expressed using only draft 4 keywords but it is quite verbose. The schema from the example above is equivalent to:
+
+```json
+{
+    "not": {
+        "type": array,
+        "items": {
+            "not": { "type": "integer" }
+        }
+    }
+}
+```
+
 
 ## Keywords for objects
 
@@ -361,7 +419,7 @@ The value of the keyword should be a map with keys equal to data object properti
 __Example__
 
 _schema_:
-```
+```json
 {
     "properties": {
         "foo": { "type": "string" },
@@ -389,7 +447,7 @@ When the value in data object property matches multiple regular expressions it s
 __Example__
 
 _schema_:
-```
+```json
 {
     "patternProperties": {
         "^fo.*$": { "type": "string" },
@@ -497,6 +555,39 @@ __Examples__
 
 
 
+### patternGroups (v5 proposal)
+
+The value of this keyword should be a map where keys should be regular expressions and the values should be objects with the following properties:
+
+- `schema` (required) - should be a JSON schema. For data object to be valid the values in data object properties that match regular expression(s) should be valid according to the corresponding `schema`(s).
+- `maximum` / `minimum` (optional) - should be integers. For data object to be valid the number of properties that match regular expression(s) should be within limits set by `minimum`(s) and `maximum`(s).
+
+
+__Example__
+
+_schema_:
+
+```json
+{
+    "patternGroups": {
+        "^[a-z]+$": {
+            "minimum": 1,
+            "schema": { "type": "string" }
+        },
+        "^[0-9]+$": {
+            "minimum": 1,
+            "schema": { "type": "integer" }
+        }
+    }
+}
+```
+
+_valid_: `{ "foo": "bar", "1": "2" }`, any non-object
+
+_invalid_: `{}`, `{ "foo": "bar" }`, `{ "1": "2" }`
+
+
+
 ## Keywords for all types
 
 ### `enum`
@@ -511,6 +602,41 @@ _schema_: `{ "enum": [ 2, "foo", {"foo": "bar" }, [1, 2, 3] ] }`
 _valid_: `2`, `"foo"`, `{"foo": "bar"}`, `[1, 2, 3]`
 
 _invalid_: `1`, `"bar"`, `{"foo": "baz"}`, `[1, 2, 3, 4]`, any value not in the array
+
+
+
+### `constant` (v5 proposal)
+
+The value of this keyword can be anything. The data is valid if it is deeply equal to the value of the keyword.
+
+__Example__
+
+_schema_: `{ "constant": "foo" }`
+
+_valid_: `"foo"`
+
+_invalid_: any other value
+
+
+The same can be achieved with `enum` keyword using the array with one item. But `constant` keyword is more that just a syntax sugar for `enum`. In combination with the [$data reference](https://github.com/epoberezkin/ajv#data-reference) it allows to define equality relations between different parts of the data. This cannot be achieved with `enum` keyword even with `$data` reference because `$data` cannot be used in place of one item - it can only be used in place of the whole array in `enum` keyword.
+
+
+__Example__
+
+_schema_:
+
+```json
+{
+    "properties": {
+        "foo": { "type": "number" },
+        "bar": { "constant": { "$data": "1/foo" } }
+    }
+}
+```
+
+_valid_: `{ "foo": 1, "bar": 1 }`, `{}`
+
+_invalid_: `{ "foo": 1 }`, `{ "bar": 1 }`, `{ "foo": 1, "bar": 2 }`
 
 
 
@@ -544,6 +670,7 @@ __Examples__
     _invalid_: `[]`, `[1]`, any non-array, any array not containing strings
 
 
+
 ### `oneOf`
 
 The value of the keyword should be an array of JSON schemas. The data is valid if it matches exactly one JSON schema from this array. Validators have to validate data against all schemas to establish validity according to this keyword.
@@ -552,7 +679,7 @@ The value of the keyword should be an array of JSON schemas. The data is valid i
 __Example__
 
 _schema_:
-```
+```json
 {
     "oneOf": [
         { "maximum": 3 },
@@ -575,7 +702,7 @@ The value of the keyword should be an array of JSON schemas. The data is valid i
 __Example__
 
 _schema_:
-```
+```json
 {
     "anyOf": [
         { "maximum": 3 },
@@ -598,7 +725,7 @@ The value of the keyword should be an array of JSON schemas. The data is valid i
 __Example__
 
 _schema_:
-```
+```json
 {
     "allOf": [
         { "maximum": 3 },
@@ -610,3 +737,80 @@ _schema_:
 _valid_: `2`, `3`
 
 _invalid_: `1.5`, `2.5`, `4`, `4.5`, `5`, `5.5`, any non-number
+
+
+
+### `switch` (v5 proposal)
+
+The value of the keyword is the array of if/then clauses. Each clause is the object with the following properties:
+
+- `if` (optional) - the value is JSON-schema
+- `then` (required) - the value is JSON-schema or boolean
+- `continue` (optional) - the value is boolean
+
+The validation process is dynamic; all clauses are executed sequentially in the following way:
+
+1. `if`:
+    1)  `if` property is JSON-schema according to which the data is:
+        a)  valid => go to step 2.
+        b)  invalid => go to the NEXT clause, if this was the last clause the validation of `switch` SUCCEEDS.
+    2)  `if` property is absent => go to step 2.
+2. `then`:
+    1)  `then` property is `true` or it is JSON-schema according to which the data is valid => go to step 3.
+    2)  `then` property is `false` or it is JSON-schema according to which the data is invalid => the validation of `switch` FAILS.
+3. `continue`:
+    1)  `continue` property is `true` => go to the NEXT clause, if this was the last clause the validation of `switch` SUCCEEDS.
+    2)  `continue` property is `false` or absent => validation of `switch` SUCCEEDS.
+
+
+__Examples__
+
+1.  _schema_:
+
+    ```json
+    {
+        "switch": [
+            {
+                "if": { "properties": { "power": { "minimum": 9000 } } },
+                "then": { "required": [ "disbelief" ] },
+                "continue": true
+            },
+            { "then": { "required": [ "confidence" ] } }
+        ]
+    }
+    ```
+
+    _valid_:
+        - `{ "power": 9000, "disbelief": true, "confidence": true }`
+        - `{ "confidence": true }`
+        - `{ "power": 1000, "confidence": true }`
+
+    _invalid_:
+        - `{ "power": 9000 }` (`disbelief` & `confidence` are required)
+        - `{ "power": 9000, "disbelief": true }` (`confidence` is always required)
+        - `{ "power": 1000 }`
+        - `{}`
+
+
+2.  _schema_:
+
+    ```json
+    {
+        "type": "integer",
+        "switch": [
+            { "if": { "not": { "minimum": 1 } }, "then": false },
+            { "if": { "maximum": 10 }, "then": true },
+            { "if": { "maximum": 100 }, "then": { "multipleOf": 10 } },
+            { "if": { "maximum": 1000 }, "then": { "multipleOf": 100 } },
+            { "then": false }
+        ]
+    }
+    ```
+
+    _valid_: 1, 5, 10, 20, 50, 100, 200, 500, 1000
+
+    _invalid_:
+        - -1, 0 (<1)
+        - 2000 (>1000)
+        - 11, 57, 123 (any number with more than one non-zero digit)
+        - non-integers
