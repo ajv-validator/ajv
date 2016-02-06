@@ -782,16 +782,16 @@ __Examples__
 
     _valid_:
     
-        - `{ "power": 9000, "disbelief": true, "confidence": true }`
-        - `{ "confidence": true }`
-        - `{ "power": 1000, "confidence": true }`
+    - `{ "power": 9000, "disbelief": true, "confidence": true }`
+    - `{ "confidence": true }`
+    - `{ "power": 1000, "confidence": true }`
 
     _invalid_:
     
-        - `{ "power": 9000 }` (`disbelief` & `confidence` are required)
-        - `{ "power": 9000, "disbelief": true }` (`confidence` is always required)
-        - `{ "power": 1000 }`
-        - `{}`
+    - `{ "power": 9000 }` (`disbelief` & `confidence` are required)
+    - `{ "power": 9000, "disbelief": true }` (`confidence` is always required)
+    - `{ "power": 1000 }`
+    - `{}`
 
 
 2.  _schema_:
@@ -813,7 +813,7 @@ __Examples__
 
     _invalid_:
     
-        - `-1`, `0` (<1)
-        - `2000` (>1000)
-        - `11`, `57`, `123` (any number with more than one non-zero digit)
-        - non-integers
+    - `-1`, `0` (<1)
+    - `2000` (>1000)
+    - `11`, `57`, `123` (any number with more than one non-zero digit)
+    - non-integers
