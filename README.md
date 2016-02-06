@@ -156,11 +156,11 @@ Ajv supports all validation keywords from draft 4 of JSON-schema standard:
 
 With option `v5: true` Ajv also supports all validation keywords and [$data reference](#data-reference) from [v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) for JSON-schema standard:
 
-- switch - conditional validation with a sequence of if/then clauses
-- contains - check that array contains a valid item
-- constant - check that data is equal to some value
-- patternGroups - a more powerful alternative to patternProperties
-- formatMaximum, formatMinimum, exclusiveFormatMaximum, exclusiveFormatMinimum - setting limits for date, time, etc.
+- [switch](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#switch-v5-proposal) - conditional validation with a sequence of if/then clauses
+- [contains](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#contains-v5-proposal) - check that array contains a valid item
+- [constant](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#constant-v5-proposal) - check that data is equal to some value
+- [patternGroups](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#patterngroups-v5-proposal) - a more powerful alternative to patternProperties
+- [formatMaximum, formatMinimum, exclusiveFormatMaximum, exclusiveFormatMinimum](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-v5-proposal) - setting limits for date, time, etc.
 
 See [JSON-Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md) for more details.
 

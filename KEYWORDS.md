@@ -16,13 +16,13 @@ The keywords and their values define what rules the data should satisfy to be va
     - [maxLength/minLength](#maxlength--minlength)
     - [pattern](#pattern)
     - [format](#format)
-    - [formatMaximum / formatMinimum and exclusiveFormatMaximum / exclusiveFormatMinimum](#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum) (v5)
+    - [formatMaximum / formatMinimum and exclusiveFormatMaximum / exclusiveFormatMinimum](#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-v5-proposal) (v5)
 - [Keywords for arrays](#keywords-for-arrays)
     - [maxItems/minItems](#maxitems--minitems)
     - [uniqueItems](#uniqueitems)
     - [items](#items)
     - [additionalItems](#additionalitems)
-    - [contains](#contains) (v5)
+    - [contains](#contains-v5-proposal) (v5)
 - [Keywords for objects](#keywords-for-objects)
     - [maxProperties/minProperties](#maxproperties--minproperties)
     - [required](#required)
@@ -30,15 +30,15 @@ The keywords and their values define what rules the data should satisfy to be va
     - [patternProperties](#patternproperties)
     - [additionalProperties](#additionalproperties)
     - [dependencies](#dependencies)
-    - [patternGroups](#patternGroups) (v5)
+    - [patternGroups](#patterngroups-v5-proposal) (v5)
 - [Keywords for all types](#keywords-for-all-types)
     - [enum](#enum)
-    - [constant](#constant) (v5)
+    - [constant](#constant-v5-proposal) (v5)
     - [not](#not)
     - [oneOf](#oneof)
     - [anyOf](#anyof)
     - [allOf](#allof)
-    - [switch](#switch) (v5)
+    - [switch](#switch-v5-proposal) (v5)
 
 
 
@@ -370,7 +370,7 @@ The same can be expressed using only draft 4 keywords but it is quite verbose. T
 ```json
 {
     "not": {
-        "type": array,
+        "type": "array",
         "items": {
             "not": { "type": "integer" }
         }
