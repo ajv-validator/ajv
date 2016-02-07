@@ -96,7 +96,7 @@
   additionalProperties: "'should NOT have additional properties'",
   anyOf:           "'should match some schema in anyOf'",
   dependencies:    "'should have {{? $deps.length == 1 }}property {{= it.util.escapeQuotes($deps[0]) }}{{??}}properties {{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}} when property {{= it.util.escapeQuotes($property) }} is present'",
-  enum:            "'should be equal to one of values'",
+  enum:            "'should be equal to one of the allowed values'",
   format:          "'should match format \"{{#def.concatSchemaEQ}}\"'",
   _limit:          "'should be {{=$opStr}} {{#def.appendSchema}}",
   _exclusiveLimit: "'{{=$exclusiveKeyword}} should be boolean'",
