@@ -1,9 +1,0 @@
-#!/usr/bin/env node
-
-'use strict';
-
-var fs = require('fs');
-var name = process.argv[2];
-name = name ? 'node_modules/' + name : '.';
-var json = JSON.parse(fs.readFileSync(name + '/package.json', 'utf8'));
-console.log(json.version);
