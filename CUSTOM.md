@@ -23,7 +23,7 @@ This way to define keywords is added as a way to quickly test your keyword and i
 
 Example. `constant` keyword from version 5 proposals (that is equivalent to `enum` keyword with one item):
 
-```
+```javascript
 ajv.addKeyword('constant', { validate: function (schema, data) {
   return typeof schema == 'object && schema !== null'
           ? deepEqual(schema, data)
@@ -52,7 +52,7 @@ In some cases it is the best approach to define keywords, but it has the perform
 
 Example. `range` and `exclusiveRange` keywords using compiled schema:
 
-```
+```javascript
 ajv.addKeyword('range', { type: 'number', compile: function (sch, parentSchema) {
   var min = sch[0];
   var max = sch[1];
@@ -82,7 +82,7 @@ In addition to the errors from the expanded schema macro keyword will add its ow
 
 Example. `range` and `exclusiveRange` keywords from the previous example defined with macro:
 
-```
+```javascript
 ajv.addKeyword('range', { type: 'number', macro: function (schema, parentSchema) {
   return {
     minimum: schema[0],
@@ -95,7 +95,7 @@ ajv.addKeyword('range', { type: 'number', macro: function (schema, parentSchema)
 
 Example. `contains` keyword from version 5 proposals that requires that the array has at least one item matching schema (see https://github.com/json-schema/json-schema/wiki/contains-(v5-proposal)):
 
-```
+```javascript
 ajv.addKeyword('contains', { type: 'array', macro: function (schema) {
   return { "not": { "items": { "not": schema } } };
 } });
@@ -133,7 +133,7 @@ While it can be more challenging to define keywords with "inline" functions, it 
 
 Example `even` keyword:
 
-```
+```javascript
 ajv.addKeyword('even', { type: 'number', inline: function (it, keyword, schema) {
   var op = schema ? '===' : '!==';
   return 'data' + (it.dataLevel || '') + ' % 2 ' + op + ' 0';
@@ -151,7 +151,7 @@ console.log(validate(3)); // false
 
 Example `range` keyword defined using [doT template](https://github.com/olado/doT):
 
-```
+```javascript
 var doT = require('dot');
 var inlineRangeTemplate = doT.compile("\
 {{ \
@@ -231,7 +231,7 @@ Clone or extend the object. If one object is passed, it is cloned. If two object
 
 Converts the array of strings to the object where each string becomes the key with the value of `true`.
 
-```
+```javascript
 it.util.toHash(['a', 'b', 'c']) // { a: true, b: true, c: true }
 ```
 
@@ -240,7 +240,7 @@ it.util.toHash(['a', 'b', 'c']) // { a: true, b: true, c: true }
 
 Converts the string that is the key/index to access the property/item to the JavaScript syntax to access the property (either "." notation or "[...]" notation).
 
-```
+```javascript
 it.util.toHash('a')   // ".a"
 it.util.toHash('1')   // "['1']"
 it.util.toHash("a'b") // "['a\\'b']"
@@ -252,7 +252,7 @@ it.util.toHash(1)     // "[1]"
 
 Determines whether the passed schema has rules that should be validated. This function should be used before calling `it.validate` to compile subschemas.
 
-```
+```javascript
 it.util.schemaHasRules(schema, it.RULES.all) // true or false
 ```
 
@@ -266,7 +266,7 @@ Escapes single quotes in the string, so it can be inserted in the generated code
 
 Converts the string to the JavaScript string constant in single quotes (using the escaped string).
 
-```
+```javascript
 it.util.toQuotedString("a'b") // "'a\\'b'"
 ```
 
@@ -275,7 +275,7 @@ it.util.toQuotedString("a'b") // "'a\\'b'"
 
 Returns the validation-time expression to safely access data based on the passed [relative json pointer](https://tools.ietf.org/html/draft-luff-relative-json-pointer-00) (See [examples](https://gist.github.com/geraintluff/5911303)).
 
-```
+```javascript
 it.getData('2/test/1', it.dataLevel, it.dataPathArr)
 // The result depends on the current level
 // if it.dataLevel is 3 the result is "data1 && data1.test && data1.test[1]"
@@ -312,7 +312,7 @@ Inline custom keyword should increase error counter `errors` and add error to `v
 
 When inline keyword performs validation Ajv checks whether it created errors by comparing errors count before and after validation. To skip this check add option `errors` (can be `"full"`, `true` or `false`) to keyword definition:
 
-```
+```javascript
 ajv.addKeyword('range', {
   type: 'number',
   inline: inlineRangeTemplate,
@@ -341,7 +341,7 @@ Two conditions should be checked before keyword can return the result:
 
 If these conditions are met your keyword can immediately return result. In case the current schema is synchronous (`it.async` is not `true`) you can add this to keyword's generated code when it encounters error `err`:
 
-```
+```javascript
 if (vErrors === null) vErrors = [err];
 else vErrors.push(err);
 validate.errors = vErrors;
@@ -350,7 +350,7 @@ return false;
 
 In case the current schema is asynchronous (it.async is truthy) to return result you need:
 
-```
+```javascript
 if (vErrors === null) vErrors = [err];
 else vErrors.push(err);
 throw new ValidationError(vErrors); // ValidationError is in the scope
