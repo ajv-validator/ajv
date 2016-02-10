@@ -87,7 +87,7 @@ Try it in the node REPL: https://tonicdev.com/npm/ajv
 
 The fastest validation call:
 
-```
+```javascript
 var Ajv = require('ajv');
 var ajv = Ajv(); // options can be passed, e.g. {allErrors: true}
 var validate = ajv.compile(schema);
@@ -97,7 +97,7 @@ if (!valid) console.log(validate.errors);
 
 or with less code
 
-```
+```javascript
 // ...
 var valid = ajv.validate(schema, data);
 if (!valid) console.log(ajv.errors);
@@ -106,7 +106,7 @@ if (!valid) console.log(ajv.errors);
 
 or
 
-```
+```javascript
 // ...
 ajv.addSchema(schema, 'mySchema');
 var valid = ajv.validate('mySchema', data);
@@ -130,7 +130,7 @@ You can require ajv directly from the code you browserify - in this case ajv wil
 If you need to use ajv in several bundles you can create a separate UMD bundle using `npm run bundle` script (thanks to [siddo420](https://github.com/siddo420)).
 
 Then you need to load ajv in the browser:
-```
+```html
 <script src="ajv.min.js"></script>
 ```
 
@@ -201,7 +201,7 @@ Examples.
 
 This schema requires that the value in property `smaller` is less or equal than the value in the property larger:
 
-```
+```javascript
 var schema = {
   "properties": {
     "smaller": {
@@ -220,7 +220,7 @@ var validData = {
 
 This schema requires that the properties have the same format as their field names:
 
-```
+```javascript
 var schema = {
   "additionalProperties": {
     "type": "string",
@@ -260,7 +260,7 @@ Ajv allows defining keywords with:
 
 Example. `range` and `exclusiveRange` keywords using compiled schema:
 
-```
+```javascript
 ajv.addKeyword('range', { type: 'number', compile: function (sch, parentSchema) {
   var min = sch[0];
   var max = sch[1];
@@ -287,7 +287,7 @@ During asynchronous compilation remote references are loaded using supplied func
 
 Example:
 
-```
+```javascript
 var ajv = Ajv({ loadSchema: loadSchema });
 
 ajv.compileAsync(schema, function (err, validate) {
@@ -331,7 +331,7 @@ Validation result will be a promise that resolves to `true` or rejects with an e
 
 Example:
 
-```
+```javascript
 /**
  * without "async" and "transpile" options (or with option {async: true})
  * Ajv will choose the first supported/installed option in this order:
@@ -396,7 +396,7 @@ Ajv npm package includes minified browser bundles of regenerator and nodent in d
 
 #### Using nodent
 
-```
+```javascript
 var ajv = Ajv({ /* async: 'es7', */ transpile: 'nodent' });
 var validate = ajv.compile(schema); // transpiled es7 async function
 validate(data).then(successFunc).catch(errorFunc);
@@ -407,7 +407,7 @@ validate(data).then(successFunc).catch(errorFunc);
 
 #### Using regenerator
 
-```
+```javascript
 var ajv = Ajv({ /* async: 'es7', */ transpile: 'regenerator' });
 var validate = ajv.compile(schema); // transpiled es7 async function
 validate(data).then(successFunc).catch(errorFunc);
@@ -418,7 +418,7 @@ validate(data).then(successFunc).catch(errorFunc);
 
 #### Using other transpilers
 
-```
+```javascript
 var ajv = Ajv({ async: 'es7', transpile: transpileFunc });
 var validate = ajv.compile(schema); // transpiled es7 async function
 validate(data).then(successFunc).catch(errorFunc);
@@ -455,7 +455,7 @@ This option modifies original data.
 
 Example:
 
-```
+```javascript
 var ajv = Ajv({ removeAdditional: true });
 var schema = {
   "additionalProperties": false,
@@ -499,7 +499,7 @@ This option modifies original data.
 
 Example 1 (`default` in `properties`):
 
-```
+```javascript
 var ajv = Ajv({ useDefaults: true });
 var schema = {
   "type": "object",
@@ -520,7 +520,7 @@ console.log(data); // { "foo": 1, "bar": "baz" }
 
 Example 2 (`default` in `items`):
 
-```
+```javascript
 var schema = {
   "type": "array",
   "items": [
@@ -556,7 +556,7 @@ __Please note__: if you pass a scalar value to the validating function its type 
 
 Example:
 
-```
+```javascript
 var ajv = Ajv({ coerceTypes: true });
 var schema = {
   "type": "object",
@@ -726,7 +726,7 @@ Options can have properties `separator` (string used to separate errors, ", " by
 
 Defaults:
 
-```
+```javascript
 {
   allErrors:        false,
   removeAdditional: false,
