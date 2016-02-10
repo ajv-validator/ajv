@@ -55,7 +55,7 @@
     "coveralls": "^2.11.4",
     "dot": "^1.0.3",
     "eslint": "^2.0.0-rc.0",
-    "glob": "^6.0.4",
+    "glob": "^7.0.0",
     "istanbul": "^0.4.2",
     "js-beautify": "^1.5.6",
     "jshint": "^2.8.0",
