@@ -82,7 +82,7 @@ function testSuites() {
     var suites = {
       'JSON-Schema tests draft4': './JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json',
       'Advanced schema tests': './tests/{**/,}*.json'
-    }
+    };
   }
   return suites;
 }
