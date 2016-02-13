@@ -25,6 +25,9 @@ uglifyjs dist/$name.bundle.js \
          -o dist/$name.min.js \
          -c $compress \
          -m \
-         --source-map dist/$name.min.js.map \
-         $([ -n "$standalone" ] && echo "-r $standalone") \
+         $([ -n "$standalone" ] && echo "--source-map dist/$name.min.js.map -r $standalone") \
          --preamble "/* $name $version: $description */"
+
+if [ -z "$standalone" ]; then
+    rm dist/$name.bundle.js
+fi
