@@ -261,6 +261,13 @@ describe('Ajv', function () {
       // should.not.exist(ajv.getSchema('//e.com/int.json'));
       should.not.exist(ajv._cache.get(str));
     });
+
+    it('should not throw if there is no schema with passed id', function() {
+      should.not.exist(ajv.getSchema('//e.com/int.json'));
+      should.not.throw(function() {
+        ajv.removeSchema('//e.com/int.json');
+      });
+    });
   });
 
 

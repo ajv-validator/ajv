@@ -146,5 +146,51 @@
         "valid": true
       }
     ]
+  },
+  {
+    "description": "property value is contained in array",
+    "schema": {
+      "properties": {
+        "name": { "type": "string" },
+        "list": {
+          "type": "array",
+          "contains": { "constant": { "$data": "2/name" } }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "1 item array containing property is valid",
+        "data": {
+          "name": "foo",
+          "list": [ "foo" ]
+        },
+        "valid": true
+      },
+      {
+        "description": "2 item array containing property is valid",
+        "data": {
+          "name": "foo",
+          "list": [ "foo", "bar" ]
+        },
+        "valid": true
+      },
+      {
+        "description": "array not containing property is invalid",
+        "data": {
+          "name": "foo",
+          "list": [ "bar" ]
+        },
+        "valid": false
+      },
+      {
+        "description": "empty array is invalid",
+        "data": {
+          "name": "foo",
+          "list": []
+        },
+        "valid": false
+      }
+    ]
   }
 ]
