@@ -3,7 +3,13 @@
 {{# def.setupKeyword }}
 
 {{## def._validateRef:_v:
-  {{=_v}}({{=$data}}
+  {{ 'istanbul ignore if'; }}
+  {{? it.opts.passContext }}
+    {{=_v}}.call(this,
+  {{??}}
+    {{=_v}}(
+  {{?}}
+      {{=$data}}
           , (dataPath || ''){{? it.errorPath != '""'}} + {{= it.errorPath }}{{?}}
           {{? $dataLvl }}
             , data{{= ($dataLvl-1)||'' }}
