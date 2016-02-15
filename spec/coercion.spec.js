@@ -249,12 +249,27 @@ describe('Type coercion', function () {
       }
     };
 
+    var schema2 = {
+      type: 'object',
+      definitions: {
+        foo: {
+          // allOf is needed to make sure that "foo" is compiled to a separate function
+          // and not simply passed through (as it would be if it were only $ref)
+          allOf: [{ $ref: '#/definitions/bar' }]
+        },
+        bar: { type: 'number' }
+      },
+      properties: {
+        foo: { $ref: '#/definitions/foo' }
+      }
+    };
+
     var schemaRecursive = {
       type: [ 'object', 'number' ],
       properties: {
         foo: { $ref: '#' }
       }
-    }
+    };
 
     var schemaRecursive2 = {
       id: 'http://e.com/schema.json#',
@@ -270,21 +285,22 @@ describe('Type coercion', function () {
       properties: {
         foo: { $ref: 'http://e.com/foo.json#' }
       }
-    }
+    };
 
-    instances.forEach(function (ajv) {
+    instances.forEach(function (_ajv) {
       testCoercion(schema, { foo: '1' }, { foo: 1 });
+      testCoercion(schema2, { foo: '1' }, { foo: 1 });
       testCoercion(schemaRecursive, { foo: { foo: '1' } }, { foo: { foo: 1 } });
       testCoercion(schemaRecursive2, { foo: { foo: { foo: '1' } } },
                                      { foo: { foo: { foo: 1 } } });
-    });
 
-    function testCoercion(schema, fromData, toData) {
-      var valid = ajv.validate(schema, fromData);
-      // if (!valid) console.log(schema, fromData, toData);
-      valid. should.equal(true);
-      fromData .should.eql(toData);
-    }
+      function testCoercion(schema, fromData, toData) {
+        var valid = _ajv.validate(schema, fromData);
+        // if (!valid) console.log(schema, fromData, toData);
+        valid. should.equal(true);
+        fromData .should.eql(toData);
+      }
+    });
   });
 
 
