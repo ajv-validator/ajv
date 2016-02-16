@@ -481,4 +481,70 @@ describe('Ajv Options', function () {
       });
     });
   });
+
+
+  describe('passContext', function() {
+    var ajv, contexts;
+
+    beforeEach(function() {
+      contexts = [];
+    })
+
+    describe('= true', function() {
+      it('should pass this value as context to custom keyword validation function', function() {
+        var validate = getValidate(true);
+        var self = {};
+        validate.call(self, {});
+        contexts .should.have.length(4);
+        contexts.forEach(function(ctx) {
+          ctx .should.equal(self);
+        });
+      });
+    });
+
+    describe('= false', function() {
+      it('should pass ajv instance as context to custom keyword validation function', function() {
+        var validate = getValidate(false);
+        var self = {};
+        validate.call(self, {});
+        contexts .should.have.length(4);
+        contexts.forEach(function(ctx) {
+          ctx .should.equal(ajv);
+        });
+      });
+    })
+
+    function getValidate(passContext) {
+      ajv = Ajv({ passContext: passContext, inlineRefs: false });
+      ajv.addKeyword('testValidate', { validate: storeContext });
+      ajv.addKeyword('testCompile', { compile: compileTestValidate });
+
+      var schema = {
+        definitions: {
+          test1: {
+            testValidate: true,
+            testCompile: true,
+          },
+          test2: {
+            allOf: [ { $ref: '#/definitions/test1' } ]
+          }
+        },
+        allOf: [
+          { $ref: '#/definitions/test1' },
+          { $ref: '#/definitions/test2' }
+        ]
+      };
+
+      return ajv.compile(schema);
+    }
+
+    function storeContext() {
+      contexts.push(this);
+      return true;
+    }
+
+    function compileTestValidate() {
+      return storeContext;
+    }
+  });
 });

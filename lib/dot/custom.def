@@ -30,7 +30,6 @@ var {{=$errs}} = errors;
     valid{{=$it.level}}
   {{??}}
     {{?$asyncKeyword}}{{=it.yieldAwait}} {{?}}{{=$ruleValidate.code}}.call(
-      {{ 'istanbul ignore if'; }}
       {{? it.opts.passContext }}this{{??}}self{{?}}
       {{ var $validateArgs = $ruleValidate.validate.length; }}
       {{? $rDef.compile }}
