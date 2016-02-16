@@ -29,16 +29,19 @@ var {{=$errs}} = errors;
   {{?? $macro }}
     valid{{=$it.level}}
   {{??}}
-    {{?$asyncKeyword}}{{=it.yieldAwait}} {{?}}{{=$ruleValidate.code}}.call(self
+    {{?$asyncKeyword}}{{=it.yieldAwait}} {{?}}{{=$ruleValidate.code}}.call(
+      {{ 'istanbul ignore if'; }}
+      {{? it.opts.passContext }}this{{??}}self{{?}}
+      {{ var $validateArgs = $ruleValidate.validate.length; }}
       {{? $rDef.compile }}
         , {{=$data}}
       {{??}}
         , validate.schema{{=$schemaPath}}
         , {{=$data}}
-        {{? $ruleValidate.validate.length > 2 }}
-          , validate.schema{{=it.schemaPath}}
-        {{?}}
+        , validate.schema{{=it.schemaPath}}
       {{?}}
+      , {{# def.dataPath }}
+      {{# def.passParentData }}
     )
   {{?}}
 #}}

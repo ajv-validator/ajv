@@ -246,7 +246,8 @@ The advantages of using custom keywords are:
 - allow creating validation scenarios that cannot be expressed using JSON-Schema
 - simplify your schemas
 - help bringing a bigger part of the validation logic to your schemas
-- make your schemas more expressive, less verbose and closer to your application domain.
+- make your schemas more expressive, less verbose and closer to your application domain
+- implement custom data processors that modify your data and/or create side effects while the data is being validated
 
 The concerns you have to be aware of when extending JSON-schema standard with custom keywords are the portability and understanding of your schemas. You will have to support these custom keywords on other platforms and to properly document these keywords so that everybody can understand them in your schemas.
 
@@ -728,36 +729,65 @@ Defaults:
 
 ```javascript
 {
+  // validation and reporting options:
+  v5:               false,
   allErrors:        false,
-  removeAdditional: false,
-  useDefaults:      false,
-  coerceTypes:      false,
   verbose:          false,
+  jsonPointers:     false,
+  uniqueItems:      true,
+  unicode:          true,
   format:           'fast',
   formats:          {},
   schemas:          {},
+  // referenced schema options:
+  missingRefs:      true,
+  loadSchema:       undefined, // function(uri, cb) { /* ... */ cb(err, schema); },
+  // options to modify validated data:
+  removeAdditional: false,
+  useDefaults:      false,
+  coerceTypes:      false,
+  // asynchronous validation options:
+  async:            undefined,
+  transpile:        undefined,
+  // advanced options:
   meta:             true,
   validateSchema:   true,
   addUsedSchema:    true,
   inlineRefs:       true,
+  passContext:      false,
   loopRequired:     Infinity,
   multipleOfPrecision: false,
-  missingRefs:      true,
-  loadSchema:       undefined, // function(uri, cb) { /* ... */ cb(err, schema); },
-  uniqueItems:      true,
-  unicode:          true,
-  beautify:         false,
-  cache:            new Cache,
   errorDataPath:    'object',
-  jsonPointers:     false,
   messages:         true,
-  v5:               false,
-  async:            undefined,
-  transpile:        undefined
+  beautify:         false,
+  cache:            new Cache
 }
 ```
 
+##### Validation and reporting options
+
+- _v5_: add keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals). With this option added schemas without `$schema` property are validated against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#). `false` by default.
 - _allErrors_: check all rules collecting all errors. Default is to return after the first error.
+- _verbose_: include the reference to the part of the schema (`schema` and `parentSchema`) and validated data in errors (false by default).
+- _jsonPointers_: set `dataPath` propery of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
+- _uniqueItems_: validate `uniqueItems` keyword (true by default).
+- _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.
+- _format_: formats validation mode ('fast' by default). Pass 'full' for more correct and slow validation or `false` not to validate formats at all. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
+- _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
+- _schemas_: an array or object of schemas that will be added to the instance. If the order is important, pass array. In this case schemas must have IDs in them. Otherwise the object can be passed - `addSchema(value, key)` will be called for each schema in this object.
+
+
+##### Referenced schema options
+
+- _missingRefs_: handling of missing referenced schemas. Option values:
+  - `true` (default) - if the reference cannot be resolved during compilation the exception is thrown. The thrown error has properties `missingRef` (with hash fragment) and `missingSchema` (without it). Both properties are resolved relative to the current base id (usually schema id, unless it was substituted).
+  - `"ignore"` - to log error during compilation and always pass validation.
+  - `"fail"` - to log error and successfully compile schema but fail validation if this rule is checked.
+- _loadSchema_: asynchronous function that will be used to load remote schemas when the method `compileAsync` is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept 2 parameters: remote schema uri and node-style callback. See example in [Asynchronous compilation](#asynchronous-compilation).
+
+
+##### Options to modify validated data
+
 - _removeAdditional_: remove additional properties - see example in [Filtering data](#filtering-data). This option is not used if schema is added with `addMetaSchema` method. Option values:
   - `false` (default) - not to remove additional properties
   - `"all"` - all additional properties are removed, regardless of `additionalProperties` keyword in schema (and no validation is made for them).
@@ -765,10 +795,23 @@ Defaults:
   - `"failing"` - additional properties that fail schema validation will be removed (where `additionalProperties` keyword is `false` or schema).
 - _useDefaults_: replace missing properties and items with the values from corresponding `defaults` keywords. Default behaviour is to ignore `default` keywords. This option is not used if schema is added with `addMetaSchema` method. See example in [Assigning defaults](#assigning-defaults).
 - _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](#coercing-data-types) and [coercion rules](https://github.com/epoberezkin/ajv/blob/master/COERCION.md).
-- _verbose_: include the reference to the part of the schema (`schema` and `parentSchema`) and validated data in errors (false by default).
-- _format_: formats validation mode ('fast' by default). Pass 'full' for more correct and slow validation or `false` not to validate formats at all. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
-- _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
-- _schemas_: an array or object of schemas that will be added to the instance. If the order is important, pass array. In this case schemas must have IDs in them. Otherwise the object can be passed - `addSchema(value, key)` will be called for each schema in this object.
+
+
+##### Asynchronous validation options
+
+- _async_: determines how Ajv compiles asynchronous schemas (see [Asynchronous validation](#asynchronous-validation)) to functions. Option values:
+  - `"*"` / `"co*"` - compile to generator function ("co*" - wrapped with `co.wrap`). If generators are not supported and you don't provide `transpile` option, the exception will be thrown when Ajv instance is created.
+  - `"es7"` - compile to es7 async function. Unless your platform supports them you need to provide `transpile` option. Currently only MS Edge 13 with flag supports es7 async functions according to [compatibility table](http://kangax.github.io/compat-table/es7/)).
+  - `true` - if transpile option is not available Ajv will choose the first supported/installed async/transpile modes in this order: "co*" (native generator with co.wrap), "es7"/"nodent", "es7"/"regenerator" during the creation of the Ajv instance. If none of the options is available the exception will be thrown.
+  - `undefined`- Ajv will choose the first available async mode in the same way as with `true` option but when the first asynchronous schema is compiled.
+- _transpile_: determines whether Ajv transpiles compiled asynchronous validation function. Option values:
+  - `"nodent"` - transpile with [nodent](https://github.com/MatAtBread/nodent). If nodent is not installed, the exception will be thrown. nodent can only transpile es7 async functions; it will enforce this mode.
+  - `"regenerator"` - transpile with [regenerator](https://github.com/facebook/regenerator). If regenerator is not installed, the exception will be thrown.
+  - a function - this function should accept the code of validation function as a string and return transpiled code. This option allows you to use any other transpiler you prefer.
+
+
+##### Advanced options
+
 - _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default).
 - _validateSchema_: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can either be http://json-schema.org/schema or http://json-schema.org/draft-04/schema or absent (draft-4 meta-schema will be used) or can be a reference to the schema previously added with `addMetaSchema` method. Option values:
   - `true` (default) -  if the validation fails, throw the exception.
@@ -779,30 +822,13 @@ Defaults:
   - `true` (default) - the referenced schemas that don't have refs in them are inlined, regardless of their size - that substantially improves performance at the cost of the bigger size of compiled schema functions.
   - `false` - to not inline referenced schemas (they will be compiled as separate functions).
   - integer number - to limit the maximum number of keywords of the schema that will be inlined.
+- _passContext_: pass validation context to custom keyword functions. If this option is `true` and you pass some context to the compiled validation function with `validate.call(context, data)`, the `context` will be available as `this` in your custom keywords. By default `this` is Ajv instance.
 - _loopRequired_: by default `required` keyword is compiled into a single expression (or a sequence of statements in `allErrors` mode). In case of a very large number of properties in this keyword it may result in a very big validation function. Pass integer to set the number of properties above which `required` keyword will be validated in a loop - smaller validation function size but also worse performance.
 - _multipleOfPrecision_: by default `multipleOf` keyword is validated by comparing the result of division with parseInt() of that result. It works for dividers that are bigger than 1. For small dividers such as 0.01 the result of the division is usually not integer (even when it should be integer, see issue #84). If you need to use fractional dividers set this option to some positive integer N to have `multipleOf` validated using this formula: `Math.abs(Math.round(division) - division) < 1e-N` (it is slower but allows for float arithmetics deviations).
-- _missingRefs_: handling of missing referenced schemas. Option values:
-  - `true` (default) - if the reference cannot be resolved during compilation the exception is thrown. The thrown error has properties `missingRef` (with hash fragment) and `missingSchema` (without it). Both properties are resolved relative to the current base id (usually schema id, unless it was substituted).
-  - `"ignore"` - to log error during compilation and always pass validation.
-  - `"fail"` - to log error and successfully compile schema but fail validation if this rule is checked.
-- _loadSchema_: asynchronous function that will be used to load remote schemas when the method `compileAsync` is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept 2 parameters: remote schema uri and node-style callback. See example in [Asynchronous compilation](#asynchronous-compilation).
-- _uniqueItems_: validate `uniqueItems` keyword (true by default).
-- _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.
+- _errorDataPath_: set `dataPath` to point to 'object' (default) or to 'property' (default behavior in versions before 2.0) when validating keywords `required`, `additionalProperties` and `dependencies`.
+- _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when custom messages are used (e.g. with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)).
 - _beautify_: format the generated function with [js-beautify](https://github.com/beautify-web/js-beautify) (the validating function is generated without line-breaks). `npm install js-beautify` to use this option. `true` or js-beautify options can be passed.
 - _cache_: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache [sacjs](https://github.com/epoberezkin/sacjs) can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods `put(key, value)`, `get(key)` and `del(key)`.
-- _errorDataPath_: set `dataPath` to point to 'object' (default) or to 'property' (default behavior in versions before 2.0) when validating keywords `required`, `additionalProperties` and `dependencies`.
-- _jsonPointers_: set `dataPath` propery of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
-- _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when custom messages are used (e.g. with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)).
-- _v5_: add keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals). With this option added schemas without `$schema` property are validated against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#). `false` by default.
-- _async_: determines how Ajv compiles asynchronous schemas (see [Asynchronous validation](#asynchronous-validation)) to functions. Option values:
-  - `"*"` / `"co*"` - compile to generator function ("co*" - wrapped with `co.wrap`). If generators are not supported and you don't provide `transpile` option, the exception will be thrown when Ajv instance is created.
-  - `"es7"` - compile to es7 async function. Unless your platform supports them you need to provide `transpile` option. Currently only MS Edge 13 with flag supports es7 async functions according to [compatibility table](http://kangax.github.io/compat-table/es7/)).
-  - `true` - if transpile option is not available Ajv will choose the first supported/installed async/transpile modes in this order: "co*" (native generator with co.wrap), "es7"/"nodent", "es7"/"regenerator" during the creation of the Ajv instance. If none of the options is available the exception will be thrown.
-  - `undefined`- Ajv will choose the first available async mode in the same way as with `true` option but when the first asynchronous schema is compiled.
-- _transpile_: determines whether Ajv transpiles compiled asynchronous validation function. Option values:
-  - `"nodent"` - transpile with [nodent](https://github.com/MatAtBread/nodent). If nodent is not installed, the exception will be thrown. nodent can only transpile es7 async functions; it will enforce this mode.
-  - `"regenerator"` - transpile with [regenerator](https://github.com/facebook/regenerator). If regenerator is not installed, the exception will be thrown.
-  - a function - this function should accept the code of validation function as a string and return transpiled code. This option allows you to use any other transpiler you prefer.
 
 
 ## Validation errors

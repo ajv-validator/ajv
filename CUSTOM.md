@@ -14,11 +14,17 @@
 - [Short-circuit validation](#short-circuit-validation)
 
 
-### Define keyword with validation function (NOT RECOMMENDED)
+### Define keyword with validation function (USUALLY NOT RECOMMENDED)
 
-Validation function will be called during data validation. It will be passed schema, data and parentSchema (if it has 3 arguments) at validation time and it should return validation result as boolean. It can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
+Validation function will be called during data validation. During data validation it will be passed schema and data (and also parent schema, data path, parent object and the property name in the parent object - it allows to create keywords that modify the validated data); it should return validation result as boolean. It can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
 
-This way to define keywords is added as a way to quickly test your keyword and is not recommended because of worse performance than compiling schemas.
+This way to define keywords is useful for:
+
+- testing your keywords before converting them to compiled/inlined keywords
+- defining keywords that do not depend on the schema value (e.g., when the value is always `true`)
+- defining keywords where the schema is a value used in some expression.
+
+In cases when validation flow is different depending on the schema and you have to use `if`s this way to define keywords will have worse performance than compiled keyword returning different functions.
 
 
 Example. `constant` keyword from version 5 proposals (that is equivalent to `enum` keyword with one item):
@@ -46,7 +52,7 @@ console.log(validate({foo: 'baz'})); // false
 
 ### Define keyword with "compilation" function
 
-Compilation function will be called during schema compilation. It will be passed schema and parent schema and it should return a validation function. This validation function will be passed data during validation; it should return validation result as boolean and it can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
+Compilation function will be called during schema compilation. It will be passed schema and parent schema and it should return a validation function. This validation function will be passed data during validation (and also data path, parent object and the property name in the parent object - it allows to create keywords that modify the validated data); it should return validation result as boolean and it can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
 
 In some cases it is the best approach to define keywords, but it has the performance cost of an extra function call during validation. If keyword logic can be expressed via some other JSON-schema then `macro` keyword definition is more efficient (see below).
 

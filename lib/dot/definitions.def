@@ -142,3 +142,17 @@
     out = $$outStack.pop();
   }}
 #}}
+
+
+{{## def.dataPath:(dataPath || ''){{? it.errorPath != '""'}} + {{= it.errorPath }}{{?}}#}}
+
+
+{{## def.passParentData:
+  {{? $dataLvl }}
+    , data{{= ($dataLvl-1)||'' }}
+    , {{= it.dataPathArr[$dataLvl] }}
+  {{??}}
+    , parentData
+    , parentDataProperty
+  {{?}}
+#}}

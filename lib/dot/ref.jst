@@ -9,15 +9,7 @@
   {{??}}
     {{=_v}}(
   {{?}}
-      {{=$data}}
-          , (dataPath || ''){{? it.errorPath != '""'}} + {{= it.errorPath }}{{?}}
-          {{? $dataLvl }}
-            , data{{= ($dataLvl-1)||'' }}
-            , {{= it.dataPathArr[$dataLvl] }}
-          {{??}}
-            , parentData
-            , parentDataProperty
-          {{?}})
+    {{=$data}}, {{# def.dataPath }}{{# def.passParentData }})
 #}}
 
 {{ var $async, $refCode; }}
