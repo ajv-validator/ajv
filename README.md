@@ -384,7 +384,7 @@ validate({ userId: 1, postId: 19 }))
   if (!(err instanceof Ajv.ValidationError)) throw err;
   // data is invalid
   console.log('Validation errors:', err.errors);
-};
+});
 
 ```
 
