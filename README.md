@@ -652,7 +652,7 @@ With option `v5: true` [meta-schema that includes v5 keywords](https://raw.githu
 
 ##### <a name="api-validateschema"></a>.validateSchema(Object schema) -&gt; Boolean
 
-Validates schema. This method should be used to validate schemas rather than `validate` due to the inconsistency of `uri` format in JSON-Schema standart.
+Validates schema. This method should be used to validate schemas rather than `validate` due to the inconsistency of `uri` format in JSON-Schema standard.
 
 By default this method is called automatically when the schema is added, so you rarely need to use it directly.
 
