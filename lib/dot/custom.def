@@ -32,7 +32,7 @@ var {{=$errs}} = errors;
     {{?$asyncKeyword}}{{=it.yieldAwait}} {{?}}{{=$ruleValidate.code}}.call(
       {{? it.opts.passContext }}this{{??}}self{{?}}
       {{ var $validateArgs = $ruleValidate.validate.length; }}
-      {{? $rDef.compile }}
+      {{? $rDef.compile || $rDef.schema === false }}
         , {{=$data}}
       {{??}}
         , validate.schema{{=$schemaPath}}

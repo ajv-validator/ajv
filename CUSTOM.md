@@ -3,7 +3,7 @@
 ## Contents
 
 - Define keyword with:
-  - [validation function](#define-keyword-with-validation-function-not-recommended) (NOT RECOMMENDED)
+  - [validation function](#define-keyword-with-validation-function-not-recommended)
   - [compilation function](#define-keyword-with-compilation-function)
   - [macro function](#define-keyword-with-macro-function)
   - [inline compilation function](#define-keyword-with-inline-compilation-function)
@@ -14,17 +14,17 @@
 - [Short-circuit validation](#short-circuit-validation)
 
 
-### Define keyword with validation function (USUALLY NOT RECOMMENDED)
+### Define keyword with validation function
 
 Validation function will be called during data validation. During data validation it will be passed schema and data (and also parent schema, data path, parent object and the property name in the parent object - it allows to create keywords that modify the validated data); it should return validation result as boolean. It can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
 
 This way to define keywords is useful for:
 
 - testing your keywords before converting them to compiled/inlined keywords
-- defining keywords that do not depend on the schema value (e.g., when the value is always `true`)
+- defining keywords that do not depend on the schema value (e.g., when the value is always `true`). In this case you can add option `schema: false` to the keyword definition and the schemas won't be passed to the validation function, it will only receive the same 4 parameters as compiled validation function (see the next section).
 - defining keywords where the schema is a value used in some expression.
 
-In cases when validation flow is different depending on the schema and you have to use `if`s this way to define keywords will have worse performance than compiled keyword returning different functions.
+__Please note__: In cases when validation flow is different depending on the schema and you have to use `if`s, this way to define keywords will have worse performance than compiled keyword returning different validation functions depending on the schema.
 
 
 Example. `constant` keyword from version 5 proposals (that is equivalent to `enum` keyword with one item):
@@ -127,7 +127,7 @@ See the example of defining recursive macro keyword `deepProperties` in the [tes
 
 ### Define keyword with "inline" compilation function
 
-Inline compilation function is called during schema compilation. It is passed four parameters: `it` (the current schema compilation context), `keyword` (added in v3.0 to simplify compiling multiple keywords with a single function), `schema` and `parentSchema` and it should return the code (as a string) that will be inlined in the code of compiled schema. This code can be either an expression that evaluates to the validation result (boolean) or a set of statements that assigns the validation result to a variable.
+Inline compilation function is called during schema compilation. It is passed four parameters: `it` (the current schema compilation context), `keyword` (added in v3.0 to allow defining multiple keywords with a single function), `schema` and `parentSchema` and it should return the code (as a string) that will be inlined in the code of compiled schema. This code can be either an expression that evaluates to the validation result (boolean) or a set of statements that assigns the validation result to a variable.
 
 While it can be more challenging to define keywords with "inline" functions, it has several advantages:
 
