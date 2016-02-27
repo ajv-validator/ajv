@@ -53,7 +53,7 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
 - [assigning defaults](#assigning-defaults) to missing properties and items
 - NEW: [coercing data](#coercing-data-types) to the types specified in `type` keywords
 - [custom keywords](#defining-custom-keywords)
-- keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
+- keywords `switch`, `constant`, `contains`, `patternGroups`, `patternRequired`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
 - [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#) for schemas using v5 keywords
 - NEW: [v5 $data reference](#data-reference) to use values from the validated data as values for the schema keywords
 - NEW: [asynchronous validation](#asynchronous-validation) of custom formats and keywords
@@ -160,6 +160,7 @@ With option `v5: true` Ajv also supports all validation keywords and [$data refe
 - [contains](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#contains-v5-proposal) - check that array contains a valid item
 - [constant](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#constant-v5-proposal) - check that data is equal to some value
 - [patternGroups](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#patterngroups-v5-proposal) - a more powerful alternative to patternProperties
+- [patternRequired](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#patternrequired-v5-proposal) - like `required` but with patterns that some property should match.
 - [formatMaximum, formatMinimum, exclusiveFormatMaximum, exclusiveFormatMinimum](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-v5-proposal) - setting limits for date, time, etc.
 
 See [JSON-Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md) for more details.
@@ -766,7 +767,7 @@ Defaults:
 
 ##### Validation and reporting options
 
-- _v5_: add keywords `switch`, `constant`, `contains`, `patternGroups`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals). With this option added schemas without `$schema` property are validated against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#). `false` by default.
+- _v5_: add keywords `switch`, `constant`, `contains`, `patternGroups`, `patternRequired`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals). With this option added schemas without `$schema` property are validated against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#). `false` by default.
 - _allErrors_: check all rules collecting all errors. Default is to return after the first error.
 - _verbose_: include the reference to the part of the schema (`schema` and `parentSchema`) and validated data in errors (false by default).
 - _jsonPointers_: set `dataPath` propery of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
@@ -874,6 +875,7 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - `multipleOf` - property `multipleOf` (the schema of the keyword)
 - `pattern` - property `pattern` (the schema of the keyword)
 - `required` - property `missingProperty` (required property that is missing).
+- `patternRequired` (with v5 option) - property `missingPattern` (required pattern that did not match any property).
 - `type` - property `type` (required type(s), a string, can be a comma-separated list)
 - `uniqueItems` - properties `i` and `j` (indices of duplicate items).
 - `$ref` - property `ref` with the referenced schema URI.

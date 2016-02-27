@@ -31,6 +31,7 @@ The keywords and their values define what rules the data should satisfy to be va
     - [additionalProperties](#additionalproperties)
     - [dependencies](#dependencies)
     - [patternGroups](#patterngroups-v5-proposal) (v5)
+    - [patternRequired](#patternrequired-v5-proposal) (v5)
 - [Keywords for all types](#keywords-for-all-types)
     - [enum](#enum)
     - [constant](#constant-v5-proposal) (v5)
@@ -270,7 +271,7 @@ __Examples__
 
 
 2.  _schema_: 
-    ```
+    ```json
     {
         "items": [
             { "type": "integer" },
@@ -308,7 +309,7 @@ __Examples__
 
 
 2.  _schema_:
-    ```
+    ```json
     {
         "items": { "type": "integer" },
         "additionalItems": { "type": "string" }
@@ -321,7 +322,7 @@ __Examples__
 
 
 3.  _schema_:
-    ```
+    ```json
     {
         "items": [
             { "type": "integer" },
@@ -337,7 +338,7 @@ __Examples__
 
 
 4.  _schema_:
-    ```
+    ```json
     {
         "items": [
             { "type": "integer" },
@@ -476,7 +477,7 @@ If the value is a schema for the data object to be valid the values in all "addi
 __Examples__
 
 1.  _schema_:
-    ```
+    ```json
     {
         "properties": {
             "foo": { "type": "number" }
@@ -493,7 +494,7 @@ __Examples__
     _invalid_: `{"a": 3}`, `{"foo": 1, "baz": 3}`
     
 2. _schema_:
-    ```
+    ```json
     {
         "properties": {
             "foo": { "type": "number" }
@@ -523,7 +524,7 @@ For schema dependency, if the data object contains a property that is a key in t
 __Examples__
 
 1.  _schema (property dependency)_:
-    ```
+    ```json
     {
         "dependencies": {
             "foo": ["bar", "baz"]
@@ -537,7 +538,7 @@ __Examples__
 
 
 2.  _schema (schema dependency)_:
-    ```
+    ```json
     {
         "dependencies": {
             "foo": {
@@ -585,6 +586,28 @@ _schema_:
 _valid_: `{ "foo": "bar", "1": "2" }`, any non-object
 
 _invalid_: `{}`, `{ "foo": "bar" }`, `{ "1": "2" }`
+
+
+
+### patternRequired (v5 proposal)
+
+The value of this keyword should be an array of strings, each string being a regular expression. For data object to be valid each regular expression in this array should match at least one property name in the data object.
+
+If the array contains multiple regular expressions, more than one expression can match the same property name.
+
+__Examples__
+
+1.  _schema_: `{ "patternRequired": [ "f.*o" ] }`
+
+    _valid_: `{ "foo": 1 }`, `{ "-fo-": 1 }`, { "foo": 1, "bar": 2 }`, any non-object
+
+    _invalid_: `{}`, `{ "bar": 2 }`, `{ "Foo": 1 }`,
+
+2.  _schema_: `{ "patternRequired": [ "f.*o", "b.*r" ] }`
+
+    _valid_: { "foo": 1, "bar": 2 }`, `{ "foobar": 3 }`, any non-object
+
+    _invalid_: `{}`, `{ "foo": 1 }`, `{ "bar": 2 }`
 
 
 
@@ -655,7 +678,7 @@ __Examples__
 
 2.  _schema_:
 
-    ```
+    ```json
     {
         "not": {
             "items": {

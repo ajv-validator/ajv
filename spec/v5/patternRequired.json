@@ -1,0 +1,86 @@
+[
+  {
+    "description": "patternRequired requires that some property matching pattern is present",
+    "schema": {
+      "patternRequired": [ "f.*o" ]
+    },
+    "tests": [
+      {
+        "description": "property matching required pattern is valid",
+        "data": { "foo": 1 },
+        "valid": true
+      },
+      {
+        "description": "one of properties matching required pattern is valid",
+        "data": { "foo": 1, "bar": 2 },
+        "valid": true
+      },
+      {
+        "description": "non-present property matching required pattern is invalid",
+        "data": { "bar": 1 },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "multiple patterns in patternRequired",
+    "schema": {
+      "patternRequired": [ "a+", "b+" ]
+    },
+    "tests": [
+      {
+        "description": "both patterns matched with one property is valid",
+        "data": { "ab": 2 },
+        "valid": true
+      },
+      {
+        "description": "both patterns matched with separate properties is valid",
+        "data": { "aa": 1, "bb": 2 },
+        "valid": true
+      },
+      {
+        "description": "both patterns matched with multiple properties is valid",
+        "data": { "a": 1, "aa": 2, "ab": 3, "b": 4, "bb": 5 },
+        "valid": true
+      },
+      {
+        "description": "one pattern not matched is invalid",
+        "data": { "aa": 1 },
+        "valid": false
+      },
+      {
+        "description": "another pattern not matched is invalid",
+        "data": { "bb": 2 },
+        "valid": false
+      },
+      {
+        "description": "both patterns not matched is invalid",
+        "data": { "c": 3 },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "regexes in patternRequired are not anchored by default and are case sensitive",
+    "schema": {
+      "patternRequired": [ "X_[0-9]{2,}" ]
+    },
+    "tests": [
+      {
+        "description": "regexes are not anchored",
+        "data": { "aX_25b": 1 },
+        "valid": true
+      },
+      {
+        "description": "regexes are case sensitive",
+        "data": { "X_25": 2 },
+        "valid": true
+      },
+      {
+        "description": "regexes are case sensitive, 2",
+        "data": { "x_25": 3 },
+        "valid": false
+      }
+    ]
+  }
+]

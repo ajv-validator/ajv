@@ -1,0 +1,26 @@
+{{# def.definitions }}
+{{# def.errors }}
+{{# def.setupKeyword }}
+
+{{
+  var $key = 'key' + $lvl
+    , $matched = 'patternMatched' + $lvl
+    , $closingBraces = '';
+}}
+
+var {{=$valid}} = true;
+{{~ $schema:$pProperty }}
+  var {{=$matched}} = false;
+  for (var {{=$key}} in {{=$data}}) {
+    {{=$matched}} = {{= it.usePattern($pProperty) }}.test({{=$key}});
+    if ({{=$matched}}) break;
+  }
+
+  {{ var $missingPattern = it.util.escapeQuotes($pProperty); }}
+  if (!{{=$matched}}) {
+    {{=$valid}} = false;
+    {{# def.addError:'patternRequired' }}
+  } {{# def.elseIfValid }}
+{{~}}
+
+{{= $closingBraces }}
