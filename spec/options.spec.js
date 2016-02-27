@@ -547,4 +547,49 @@ describe('Ajv Options', function () {
       return storeContext;
     }
   });
+
+
+  describe('allErrors', function() {
+    it('should be disabled inside "not" keyword', function() {
+      test(Ajv(), false);
+      test(Ajv({ allErrors: true }), true);
+
+      function test(ajv, allErrors) {
+        var format1called = false
+          , format2called = false;
+
+        ajv.addFormat('format1', function() {
+          format1called = true;
+          return false;
+        });
+
+        ajv.addFormat('format2', function() {
+          format2called = true;
+          return false;
+        });
+
+        var schema1 = {
+          allOf: [
+            { format: 'format1' },
+            { format: 'format2' }
+          ]
+        };
+
+        ajv.validate(schema1, 'abc') .should.equal(false);
+        ajv.errors .should.have.length(allErrors ? 2 : 1);
+        format1called .should.equal(true);
+        format2called .should.equal(allErrors);
+
+        var schema2 = {
+          not: schema1
+        };
+
+        format1called = format2called = false;
+        ajv.validate(schema2, 'abc') .should.equal(true);
+        should.equal(ajv.errors, null);
+        format1called .should.equal(true);
+        format2called .should.equal(false);
+      }
+    });
+  });
 });

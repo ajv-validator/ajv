@@ -14,9 +14,19 @@
 
   {{# def.setCompositeRule }}
 
-  {{ $it.createErrors = false; }}
+  {{
+    $it.createErrors = false;
+    var $allErrorsOption;
+    if ($it.opts.allErrors) {
+      $allErrorsOption = $it.opts.allErrors;
+      $it.opts.allErrors = false;
+    }
+  }}
   {{= it.validate($it) }}
-  {{ $it.createErrors = true; }}
+  {{
+    $it.createErrors = true;
+    if ($allErrorsOption) $it.opts.allErrors = $allErrorsOption;
+  }}
 
   {{# def.resetCompositeRule }}
 
