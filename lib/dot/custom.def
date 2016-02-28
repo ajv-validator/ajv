@@ -18,8 +18,25 @@
 
 {{? !($inline || $macro) }}{{=$ruleErrs}} = null;{{?}}
 var {{=$errs}} = errors;
+var valid{{=$lvl}};
 
 {{## def.callRuleValidate:
+  {{=$ruleValidate.code}}.call(
+    {{? it.opts.passContext }}this{{??}}self{{?}}
+    {{ var $validateArgs = $ruleValidate.validate.length; }}
+    {{? $rDef.compile || $rDef.schema === false }}
+      , {{=$data}}
+    {{??}}
+      , validate.schema{{=$schemaPath}}
+      , {{=$data}}
+      , validate.schema{{=it.schemaPath}}
+    {{?}}
+    , {{# def.dataPath }}
+    {{# def.passParentData }}
+  )
+#}}
+
+{{## def.ruleValidationResult:
   {{? $inline }}
     {{? $rDef.statements }}
       valid{{=$lvl}}
@@ -29,19 +46,15 @@ var {{=$errs}} = errors;
   {{?? $macro }}
     valid{{=$it.level}}
   {{??}}
-    {{?$asyncKeyword}}{{=it.yieldAwait}} {{?}}{{=$ruleValidate.code}}.call(
-      {{? it.opts.passContext }}this{{??}}self{{?}}
-      {{ var $validateArgs = $ruleValidate.validate.length; }}
-      {{? $rDef.compile || $rDef.schema === false }}
-        , {{=$data}}
+    {{? $asyncKeyword }}
+      {{? $rDef.errors === false }}
+        ({{=it.yieldAwait}}{{= def_callRuleValidate }})
       {{??}}
-        , validate.schema{{=$schemaPath}}
-        , {{=$data}}
-        , validate.schema{{=it.schemaPath}}
+        valid{{=$lvl}}
       {{?}}
-      , {{# def.dataPath }}
-      {{# def.passParentData }}
-    )
+    {{??}}
+      {{= def_callRuleValidate }}
+    {{?}}
   {{?}}
 #}}
 
@@ -50,6 +63,9 @@ var {{=$errs}} = errors;
     var {{=$ruleErr}} = vErrors[{{=$i}}];
     {{# _inline ? 'if (\{\{=$ruleErr\}\}.dataPath === undefined) {' : '' }}
       {{=$ruleErr}}.dataPath = (dataPath || '') + {{= it.errorPath }};
+    {{# _inline ? '}' : '' }}
+    {{# _inline ? 'if (\{\{=$ruleErr\}\}.schemaPath === undefined) {' : '' }}
+      {{=$ruleErr}}.schemaPath = "{{=$errSchemaPath}}";
     {{# _inline ? '}' : '' }}
     {{? it.opts.verbose }}
       {{=$ruleErr}}.schema = validate.schema{{=$schemaPath}};
@@ -70,9 +86,30 @@ var {{=$errs}} = errors;
   {{ var $code = it.validate($it).replace(/validate\.schema/g, $ruleValidate.code); }}
   {{# def.resetCompositeRule }}
   {{= $code }}
+{{?? $rDef.compile || $rDef.validate }}
+  {{# def.beginDefOut}}
+    {{# def.callRuleValidate }}
+  {{# def.storeDefOut:def_callRuleValidate }}
+
+  {{? $rDef.errors !== false }}
+    {{? $asyncKeyword }}
+      {{ $ruleErrs = 'customErrors' + $lvl; }}
+      var {{=$ruleErrs}} = null;
+      try {
+        valid{{=$lvl}} = {{=it.yieldAwait}}{{= def_callRuleValidate }};
+      } catch (e) {
+        valid{{=$lvl}} = false;
+        if (e instanceof ValidationError) {{=$ruleErrs}} = e.errors;
+        else throw e;
+      }
+    {{??}}
+      {{=$ruleValidate.code}}.errors = null;
+    {{?}}
+  {{?}}
 {{?}}
 
-if (!({{# def.callRuleValidate }})) {
+
+if (!{{# def.ruleValidationResult }}) {
   {{ $errorKeyword = $rule.keyword; }}
   {{# def.beginDefOut}}
     {{# def.error:'custom' }}
@@ -97,14 +134,18 @@ if (!({{# def.callRuleValidate }})) {
   {{?? $macro}}
     {{# def.extraError:'custom' }}
   {{??}}
-    if (Array.isArray({{=$ruleErrs}})) {
-      if (vErrors === null) vErrors = {{=$ruleErrs}};
-      else vErrors.concat({{=$ruleErrs}});
-      errors = vErrors.length;
-      {{# def.extendErrors:false }}
-    } else {
+    {{? $rDef.errors === false}}
       {{= def_customError }}
-    }
+    {{??}}
+      if (Array.isArray({{=$ruleErrs}})) {
+        if (vErrors === null) vErrors = {{=$ruleErrs}};
+        else vErrors.concat({{=$ruleErrs}});
+        errors = vErrors.length;
+        {{# def.extendErrors:false }}
+      } else {
+        {{= def_customError }}
+      }
+    {{?}}
   {{?}}
   {{ $errorKeyword = undefined; }}
 

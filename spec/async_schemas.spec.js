@@ -3,10 +3,12 @@
 var jsonSchemaTest = require('json-schema-test')
   , Promise = require('./promise')
   , getAjvInstances = require('./ajv_async_instances')
-  , assert = require('./chai').assert;
+  , assert = require('./chai').assert
+  , Ajv = require('./ajv');
 
 
 var instances = getAjvInstances({ v5: true });
+
 
 instances.forEach(addAsyncFormatsAndKeywords);
 
@@ -57,7 +59,15 @@ function addAsyncFormatsAndKeywords (ajv) {
   ajv.addKeyword('idExists', {
     async: true,
     type: 'number',
-    validate: checkIdExists
+    validate: checkIdExists,
+    errors: false
+  });
+
+  ajv.addKeyword('idExistsWithError', {
+    async: true,
+    type: 'number',
+    validate: checkIdExistsWithError,
+    errors: true
   });
 
   ajv.addKeyword('idExistsCompiled', {
@@ -84,6 +94,28 @@ function checkIdExists(schema, data) {
 
   function check(IDs) {
     return Promise.resolve(IDs.indexOf(data) >= 0);
+  }
+}
+
+
+function checkIdExistsWithError(schema, data) {
+  var table = schema.table;
+  switch (table) {
+    case 'users': return check(table, [1, 5, 8]);
+    case 'posts': return check(table, [21, 25, 28]);
+    default: throw new Error('no such table');
+  }
+
+  function check(table, IDs) {
+    if (IDs.indexOf(data) >= 0) {
+      return Promise.resolve(true);
+    } else {
+      var error = {
+        keyword: 'idExistsWithError',
+        message: 'id not found in table ' + table
+      };
+      return Promise.reject(new Ajv.ValidationError([error]));
+    }
   }
 }
 

@@ -34,7 +34,7 @@ ajv.addKeyword('constant', { validate: function (schema, data) {
   return typeof schema == 'object && schema !== null'
           ? deepEqual(schema, data)
           : schema === data;
-} });
+}, errors: false });
 
 var schema = { "constant": 2 };
 var validate = ajv.compile(schema);
@@ -48,6 +48,10 @@ console.log(validate({foo: 'baz'})); // false
 ```
 
 `constant` keyword is already available in Ajv with option `v5: true`.
+
+__Please note:__ If the keyword does not define custom errors (see [Reporting errors in custom keywords](#reporting-errors-in-custom-keywords)) pass `errors: false` in its definition; it will make generated code more efficient.
+
+To add asynchronous keyword pass `async: true` in its definition.
 
 
 ### Define keyword with "compilation" function
@@ -66,7 +70,7 @@ ajv.addKeyword('range', { type: 'number', compile: function (sch, parentSchema) 
   return parentSchema.exclusiveRange === true
           ? function (data) { return data > min && data < max; }
           : function (data) { return data >= min && data <= max; }
-} });
+}, errors: false });
 
 var schema = { "range": [2, 4], "exclusiveRange": true };
 var validate = ajv.compile(schema);
@@ -75,6 +79,8 @@ console.log(validate(3.99)); // true
 console.log(validate(2)); // false
 console.log(validate(4)); // false
 ```
+
+See note on custom errors and asynchronous keywords in the previous section.
 
 
 ### Define keyword with "macro" function
@@ -310,9 +316,9 @@ Converts the JSON-Pointer fragment from URI to the property name.
 
 ## Reporting errors in custom keywords
 
-All custom keywords but macro keywords can create custom error messages.
+All custom keywords but macro keywords can optionally create custom error messages.
 
-Validating and compiled keywords should define errors by assigning them to `.errors` property of the validation function. It should not be done for asynchronous keywords (see #118).
+Synchronous validating and compiled keywords should define errors by assigning them to `.errors` property of the validation function. Asynchronous keywords can return promise that rejects with `new Ajv.ValidationError(errors)`, where `errors` is an array of custom validation errors (if you don't want to define custom errors in asynchronous keyword, its validation function can return the promise that resolves with `false`).
 
 Inline custom keyword should increase error counter `errors` and add error to `vErrors` array (it can be null). This can be done for both synchronous and asynchronous keywords. See [example range keyword](https://github.com/epoberezkin/ajv/blob/master/spec/custom_rules/range_with_errors.jst).
 
@@ -331,7 +337,7 @@ ajv.addKeyword('range', {
 
 Each error object should at least have properties `keyword`, `message` and `params`, other properties will be added.
 
-Inlined keywords can optionally define `dataPath` property in error objects, that will be added by ajv unless `errors` option of the keyword is `"full"`.
+Inlined keywords can optionally define `dataPath` and `schemaPath` properties in error objects, that will be assigned by Ajv unless `errors` option of the keyword is `"full"`.
 
 If custom keyword doesn't create errors, the default error will be created in case the keyword fails validation (see [Validation errors](#validation-errors)).
 

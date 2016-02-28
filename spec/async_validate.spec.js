@@ -94,7 +94,15 @@ describe('async schemas, formats and keywords', function() {
         ajv.addKeyword('idExists', {
           async: true,
           type: 'number',
-          validate: checkIdExists
+          validate: checkIdExists,
+          errors: false
+        });
+
+        ajv.addKeyword('idExistsWithError', {
+          async: true,
+          type: 'number',
+          validate: checkIdExistsWithError,
+          errors: true
         });
       });
     });
@@ -122,6 +130,34 @@ describe('async schemas, formats and keywords', function() {
     });
 
 
+    it('should return custom error', function() {
+      return Promise.all(instances.map(function (ajv) {
+        var schema = {
+          $async: true,
+          type: 'object',
+          properties: {
+            userId: {
+              type: 'integer',
+              idExistsWithError: { table: 'users' }
+            },
+            postId: {
+              type: 'integer',
+              idExistsWithError: { table: 'posts' }
+            }
+          }
+        };
+
+        var validate = ajv.compile(schema);
+        var _co = useCo(ajv);
+
+        return Promise.all([
+          shouldBeInvalid(_co(validate({ userId: 5, postId: 10 })), [ 'id not found in table posts' ]),
+          shouldBeInvalid(_co(validate({ userId: 9, postId: 25 })), [ 'id not found in table users' ])
+        ]);
+      }));
+    });
+
+
     function checkIdExists(schema, data) {
       switch (schema.table) {
         case 'users': return check([1, 5, 8]);
@@ -131,6 +167,27 @@ describe('async schemas, formats and keywords', function() {
 
       function check(IDs) {
         return Promise.resolve(IDs.indexOf(data) >= 0);
+      }
+    }
+
+    function checkIdExistsWithError(schema, data) {
+      var table = schema.table;
+      switch (table) {
+        case 'users': return check(table, [1, 5, 8]);
+        case 'posts': return check(table, [21, 25, 28]);
+        default: throw new Error('no such table');
+      }
+
+      function check(table, IDs) {
+        if (IDs.indexOf(data) >= 0) {
+          return Promise.resolve(true);
+        } else {
+          var error = {
+            keyword: 'idExistsWithError',
+            message: 'id not found in table ' + table
+          };
+          return Promise.reject(new Ajv.ValidationError([error]));
+        }
       }
     }
   });
@@ -366,12 +423,18 @@ function shouldBeValid(p) {
 
 
 var SHOULD_BE_INVALID = 'test: should be invalid';
-function shouldBeInvalid(p) {
+function shouldBeInvalid(p, expectedMessages) {
   return checkNotValid(p)
   .then(function (err) {
     err .should.be.instanceof(Ajv.ValidationError);
     err.errors .should.be.an('array');
     err.validation .should.equal(true);
+    if (expectedMessages) {
+      var messages = err.errors.map(function (e) {
+        return e.message;
+      });
+      messages .should.eql(expectedMessages);
+    }
   });
 }
 

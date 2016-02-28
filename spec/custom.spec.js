@@ -512,9 +512,9 @@ describe('Custom keywords', function () {
       shouldBeValid(validate, 'abc');
 
       shouldBeInvalid(validate, 1.99, numErrors);
-      if (customErrors) shouldBeRangeError(validate.errors[0], '', '>=', 2);
+      if (customErrors) shouldBeRangeError(validate.errors[0], '', '#/range', '>=', 2);
       shouldBeInvalid(validate, 4.01, numErrors);
-      if (customErrors) shouldBeRangeError(validate.errors[0], '', '<=', 4);
+      if (customErrors) shouldBeRangeError(validate.errors[0], '', '#/range','<=', 4);
 
       var schema = {
         "properties": {
@@ -531,9 +531,9 @@ describe('Custom keywords', function () {
       shouldBeValid(validate, { foo: 3.99 });
 
       shouldBeInvalid(validate, { foo: 2 }, numErrors);
-      if (customErrors) shouldBeRangeError(validate.errors[0], '.foo', '>', 2, true);
+      if (customErrors) shouldBeRangeError(validate.errors[0], '.foo', '#/properties/foo/range', '>', 2, true);
       shouldBeInvalid(validate, { foo: 4 }, numErrors);
-      if (customErrors) shouldBeRangeError(validate.errors[0], '.foo', '<', 4, true);
+      if (customErrors) shouldBeRangeError(validate.errors[0], '.foo', '#/properties/foo/range', '<', 4, true);
     });
   }
 
@@ -562,12 +562,13 @@ describe('Custom keywords', function () {
     });
   }
 
-  function shouldBeRangeError(error, dataPath, comparison, limit, exclusive) {
+  function shouldBeRangeError(error, dataPath, schemaPath, comparison, limit, exclusive) {
     delete error.schema;
     delete error.data;
     error .should.eql({
       keyword: 'range',
       dataPath: dataPath,
+      schemaPath: schemaPath,
       message: 'should be ' + comparison + ' ' + limit,
       params: {
         comparison: comparison,

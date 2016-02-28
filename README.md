@@ -314,13 +314,13 @@ __Please note__: [Option](#options) `missingRefs` should NOT be set to `"ignore"
 
 Example in node REPL: https://tonicdev.com/esp/ajv-asynchronous-validation
 
-Starting from version 3.5.0 you can define custom formats and keywords that perform validation asyncronously by accessing database or some service. You should add `async: true` in the keyword or format defnition (see [addFormat](#api-addformat) and [addKeyword](#api-addkeyword)).
+Starting from version 3.5.0 you can define custom formats and keywords that perform validation asyncronously by accessing database or some service. You should add `async: true` in the keyword or format defnition (see [addFormat](#api-addformat), [addKeyword](#api-addkeyword) and [Defining custom keywords](#defining-custom-keywords)).
 
 If your schema uses asynchronous formats/keywords or refers to some schema that contains them it should have `"$async": true` keyword so that Ajv can compile it correctly. If asynchronous format/keyword or reference to asynchronous schema is used in the schema without `$async` keyword Ajv will throw an exception during schema compilation.
 
 __Please note__: all asynchronous subschemas that are referenced from the current or other schemas should have `"$async": true` keyword as well, otherwise the schema compilation will fail.
 
-Validation function for an asynchronous custom format/keyword should return a promise that resolves to `true` or `false`. Ajv compiles asynchronous schemas to either [generator function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*) (default) that can be optionally transpiled with [regenerator](https://github.com/facebook/regenerator) or to [es7 async function](http://tc39.github.io/ecmascript-asyncawait/) that can be transpiled with [nodent](https://github.com/MatAtBread/nodent) or with regenerator as well. You can also supply any other transpiler as a function. See [Options](#options).
+Validation function for an asynchronous custom format/keyword should return a promise that resolves to `true` or `false` (or rejects with `new Ajv.ValidationError(errors)` if you want to return custom errors from the keyword function). Ajv compiles asynchronous schemas to either [generator function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*) (default) that can be optionally transpiled with [regenerator](https://github.com/facebook/regenerator) or to [es7 async function](http://tc39.github.io/ecmascript-asyncawait/) that can be transpiled with [nodent](https://github.com/MatAtBread/nodent) or with regenerator as well. You can also supply any other transpiler as a function. See [Options](#options).
 
 The compiled validation function has `async: true` property (if the schema is asynchronous), so you can differentiate these functions if you are using both syncronous and asynchronous schemas.
 
