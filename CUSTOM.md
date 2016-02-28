@@ -3,7 +3,7 @@
 ## Contents
 
 - Define keyword with:
-  - [validation function](#define-keyword-with-validation-function-not-recommended)
+  - [validation function](#define-keyword-with-validation-function)
   - [compilation function](#define-keyword-with-compilation-function)
   - [macro function](#define-keyword-with-macro-function)
   - [inline compilation function](#define-keyword-with-inline-compilation-function)
