@@ -599,13 +599,13 @@ __Examples__
 
 1.  _schema_: `{ "patternRequired": [ "f.*o" ] }`
 
-    _valid_: `{ "foo": 1 }`, `{ "-fo-": 1 }`, { "foo": 1, "bar": 2 }`, any non-object
+    _valid_: `{ "foo": 1 }`, `{ "-fo-": 1 }`, `{ "foo": 1, "bar": 2 }`, any non-object
 
     _invalid_: `{}`, `{ "bar": 2 }`, `{ "Foo": 1 }`,
 
 2.  _schema_: `{ "patternRequired": [ "f.*o", "b.*r" ] }`
 
-    _valid_: { "foo": 1, "bar": 2 }`, `{ "foobar": 3 }`, any non-object
+    _valid_: `{ "foo": 1, "bar": 2 }`, `{ "foobar": 3 }`, any non-object
 
     _invalid_: `{}`, `{ "foo": 1 }`, `{ "bar": 2 }`
 

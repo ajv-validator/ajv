@@ -268,6 +268,44 @@ describe('Ajv', function () {
         ajv.removeSchema('//e.com/int.json');
       });
     });
+
+    it('should remove all schemas but meta-schemas if called without an arguments', function() {
+      var schema1 = { id: '//e.com/int.json', type: 'integer' }
+        , str1 = stableStringify(schema1);
+      ajv.addSchema(schema1);
+      ajv._cache.get(str1) .should.be.an('object');
+
+      var schema2 = { type: 'integer' }
+        , str2 = stableStringify(schema2);
+      ajv.addSchema(schema2);
+      ajv._cache.get(str2) .should.be.an('object');
+
+      ajv.removeSchema();
+      should.not.exist(ajv._cache.get(str1));
+      should.not.exist(ajv._cache.get(str2));
+    });
+
+    it('should remove all schemas but meta-schemas with key/id matching pattern', function() {
+      var schema1 = { id: '//e.com/int.json', type: 'integer' }
+        , str1 = stableStringify(schema1);
+      ajv.addSchema(schema1);
+      ajv._cache.get(str1) .should.be.an('object');
+
+      var schema2 = { id: 'str.json', type: 'string' }
+        , str2 = stableStringify(schema2);
+      ajv.addSchema(schema2, '//e.com/str.json');
+      ajv._cache.get(str2) .should.be.an('object');
+
+      var schema3 = { type: 'integer' }
+        , str3 = stableStringify(schema3);
+      ajv.addSchema(schema3);
+      ajv._cache.get(str3) .should.be.an('object');
+
+      ajv.removeSchema(/e\.com/);
+      should.not.exist(ajv._cache.get(str1));
+      should.not.exist(ajv._cache.get(str2));
+      ajv._cache.get(str3) .should.be.an('object');
+    });
   });
 
 

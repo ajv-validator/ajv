@@ -669,11 +669,17 @@ Errors will be available at `ajv.errors`.
 Retrieve compiled schema previously added with `addSchema` by the key passed to `addSchema` or by its full reference (id). Returned validating function has `schema` property with the reference to the original schema.
 
 
-##### .removeSchema(Object schema|String key|String ref)
+##### .removeSchema([Object schema|String key|String ref|RegExp pattern])
 
 Remove added/cached schema. Even if schema is referenced by other schemas it can be safely removed as dependent schemas have local references.
 
-Schema can be removed using key passed to `addSchema`, it's full reference (id) or using actual schema object that will be stable-stringified to remove schema from cache.
+Schema can be removed using:
+- key passed to `addSchema`
+- it's full reference (id)
+- RegExp that should match schema id or key (meta-schemas won't be removed)
+- actual schema object that will be stable-stringified to remove schema from cache
+
+If no parameter is passed all schemas but meta-schemas will be removed and the cache will be cleared.
 
 
 ##### <a name="api-addformat"></a>.addFormat(String name, String|RegExp|Function|Object format)
@@ -829,7 +835,7 @@ Defaults:
 - _errorDataPath_: set `dataPath` to point to 'object' (default) or to 'property' (default behavior in versions before 2.0) when validating keywords `required`, `additionalProperties` and `dependencies`.
 - _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when custom messages are used (e.g. with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)).
 - _beautify_: format the generated function with [js-beautify](https://github.com/beautify-web/js-beautify) (the validating function is generated without line-breaks). `npm install js-beautify` to use this option. `true` or js-beautify options can be passed.
-- _cache_: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache [sacjs](https://github.com/epoberezkin/sacjs) can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods `put(key, value)`, `get(key)` and `del(key)`.
+- _cache_: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache [sacjs](https://github.com/epoberezkin/sacjs) can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods `put(key, value)`, `get(key)`, `del(key)` and `clear()`.
 
 
 ## Validation errors
