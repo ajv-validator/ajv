@@ -26,11 +26,6 @@ module.exports = function(config) {
       base: 'SauceLabs',
       browserName: 'chrome'
     },
-    'SL_Chrome_beta': {
-      base: 'SauceLabs',
-      browserName: 'chrome',
-      version: 'beta'
-    },
     'SL_InternetExplorer_9': {
       base: 'SauceLabs',
       browserName: 'internet explorer',
@@ -110,8 +105,10 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'ajv.min.js',
+      'dist/ajv.min.js',
       'node_modules/chai/chai.js',
+      'dist/regenerator.min.js',
+      'dist/nodent.min.js',
       '.browser/*.spec.js'
     ],
 
@@ -134,8 +131,8 @@ module.exports = function(config) {
     sauceLabs: {
       testName: 'Ajv'
     },
-    captureTimeout: 600000,
-    browserNoActivityTimeout: 300000,
+    captureTimeout: 900000,
+    browserNoActivityTimeout: 500000,
 
     customLaunchers: customLaunchers,
 

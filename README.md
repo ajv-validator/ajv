@@ -138,10 +138,6 @@ This bundle can be used with different module systems or creates global `Ajv` if
 
 The browser bundle is available on [cdnjs](https://cdnjs.com/libraries/ajv).
 
-Ajv was tested with these browsers:
-
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/epoberezkin.svg)](https://saucelabs.com/u/epoberezkin)
-
 
 ## Validation keywords
 

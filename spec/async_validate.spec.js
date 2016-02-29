@@ -8,7 +8,7 @@ var Ajv = require('./ajv')
 
 
 describe('async schemas, formats and keywords', function() {
-  this.timeout(10000);
+  this.timeout(30000);
   var ajv, instances;
 
   beforeEach(function () {
