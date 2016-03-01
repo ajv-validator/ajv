@@ -28,20 +28,32 @@ function getAjvInstances(opts) {
     { async: '*', transpile: 'regenerator', allErrors: true }
   ];
 
-  if (fullTest) options = options.concat([
-    { async: '*' },
-    { transpile: 'regenerator' },
-    { async: true, transpile: 'regenerator' },
-    { async: 'co*', transpile: 'regenerator' },
-    { async: 'es7', transpile: 'regenerator' },
-    { allErrors: true },
-    { async: true, allErrors: true },
-    { async: '*', allErrors: true },
-    { transpile: 'regenerator', allErrors: true },
-    { async: true, transpile: 'regenerator', allErrors: true },
-    { async: 'co*', transpile: 'regenerator', allErrors: true },
-    { async: 'es7', transpile: 'regenerator', allErrors: true }
-  ]);
+  if (fullTest) {
+    options = options.concat([
+      { async: '*' },
+      { async: 'co*', transpile: 'regenerator' },
+      { allErrors: true },
+      { async: true, allErrors: true },
+      { async: '*', allErrors: true },
+      { async: 'co*', transpile: 'regenerator', allErrors: true }
+    ]);
+
+    var ua;
+    try { ua = window.navigator.userAgent.toLowerCase(); } catch(e) {}
+
+    // es7 functions transpiled with regenerator are excluded from test in Safari.
+    // They emit multiple 'uncaught exception' warnings in Safari anc cause remote tests to disconnect.
+    if (ua && (!/safari/.test(ua) || /chrome/.test(ua))) {
+      options = options.concat([
+        { transpile: 'regenerator' },
+        { async: true, transpile: 'regenerator' },
+        { async: 'es7', transpile: 'regenerator' },
+        { transpile: 'regenerator', allErrors: true },
+        { async: true, transpile: 'regenerator', allErrors: true },
+        { async: 'es7', transpile: 'regenerator', allErrors: true }
+      ]);
+    }
+  }
 
   // options = options.filter(function (_opts) {
   //   return _opts.transpile == 'nodent';
