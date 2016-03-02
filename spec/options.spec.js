@@ -400,6 +400,35 @@ describe('Ajv Options', function () {
         data. should.eql([ 'foo', 2, 'false' ]);
       }
     });
+
+    it('should not modify underlying defaults when modifying validated data', function() {
+      test(Ajv({ useDefaults: true }));
+      test(Ajv({ useDefaults: true, allErrors: true }));
+
+      function test(ajv) {
+        var schema = {
+          properties: {
+            items: {
+              type: 'array',
+              default: ['a-default']
+            }
+          }
+        };
+
+        var validate = ajv.compile(schema);
+
+        var data = {};
+        validate(data) .should.equal(true);
+        data.items. should.eql([ 'a-default' ]);
+
+        data.items. push('another-value');
+        data.items. should.eql([ 'a-default', 'another-value' ]);
+
+        var data2 = {};
+        validate(data2) .should.equal(true);
+        data2.items. should.eql([ 'a-default' ]);
+      }
+    });
   });
 
 
