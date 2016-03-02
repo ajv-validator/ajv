@@ -445,6 +445,7 @@ See [Options](#options).
 - much smaller browser bundle than regenerator
 - almost the same performance of generated code as native generators in nodejs and the latest Chrome
 - much better performace than native generators in other browsers
+- works in IE 9 (regenerator does not)
 
 [regenerator](https://github.com/facebook/regenerator) is a more widely adopted alternative.
 
@@ -809,7 +810,7 @@ Defaults:
 - _async_: determines how Ajv compiles asynchronous schemas (see [Asynchronous validation](#asynchronous-validation)) to functions. Option values:
   - `"*"` / `"co*"` - compile to generator function ("co*" - wrapped with `co.wrap`). If generators are not supported and you don't provide `transpile` option, the exception will be thrown when Ajv instance is created.
   - `"es7"` - compile to es7 async function. Unless your platform supports them you need to provide `transpile` option. Currently only MS Edge 13 with flag supports es7 async functions according to [compatibility table](http://kangax.github.io/compat-table/es7/)).
-  - `true` - if transpile option is not available Ajv will choose the first supported/installed async/transpile modes in this order: "co*" (native generator with co.wrap), "es7"/"nodent", "es7"/"regenerator" during the creation of the Ajv instance. If none of the options is available the exception will be thrown.
+  - `true` - if transpile option is not passed Ajv will choose the first supported/installed async/transpile modes in this order: "co*" (native generator with co.wrap), "es7"/"nodent", "co*"/"regenerator" during the creation of the Ajv instance. If none of the options is available the exception will be thrown.
   - `undefined`- Ajv will choose the first available async mode in the same way as with `true` option but when the first asynchronous schema is compiled.
 - _transpile_: determines whether Ajv transpiles compiled asynchronous validation function. Option values:
   - `"nodent"` - transpile with [nodent](https://github.com/MatAtBread/nodent). If nodent is not installed, the exception will be thrown. nodent can only transpile es7 async functions; it will enforce this mode.

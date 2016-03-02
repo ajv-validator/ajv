@@ -30,7 +30,7 @@ function getAjvInstances(opts) {
   try { ua = window.navigator.userAgent.toLowerCase(); } catch(e) {}
 
   // regenerator does not work in IE9
-  if (!/msie\s9/.test(ua)) {
+  if (!(ua && /msie\s9/.test(ua))) {
     options = options.concat([
       { async: '*', transpile: 'regenerator' },
       { async: '*', transpile: 'regenerator', allErrors: true }
@@ -45,7 +45,7 @@ function getAjvInstances(opts) {
       { async: '*', allErrors: true }
     ]);
 
-    if (!/msie\s9/.test(ua)) {
+    if (!(ua && /msie\s9/.test(ua))) {
       options = options.concat([
         { async: 'co*', transpile: 'regenerator' },
         { async: 'co*', transpile: 'regenerator', allErrors: true }
@@ -54,7 +54,7 @@ function getAjvInstances(opts) {
 
     // es7 functions transpiled with regenerator are excluded from test in Safari/Firefox/Edge/IE9.
     // They fail in IE9 and emit multiple 'uncaught exception' warnings in Safari/Firefox/Edge anc cause remote tests to disconnect.
-    if (ua && (!/safari/.test(ua) || /chrome|phantomjs/.test(ua)) && (!/firefox|edge|msie\s9/.test(ua))) {
+    if (!(ua && !((!/safari/.test(ua) || /chrome|phantomjs/.test(ua)) && (!/firefox|edge|msie\s9/.test(ua))))) {
       options = options.concat([
         { transpile: 'regenerator' },
         { async: true, transpile: 'regenerator' },
