@@ -22,6 +22,11 @@ module.exports = function(config) {
       browserName: 'chrome',
       version: '27'
     },
+    'SL_Chrome_37': {
+      base: 'SauceLabs',
+      browserName: 'chrome',
+      version: '37'
+    },
     'SL_Chrome': {
       base: 'SauceLabs',
       browserName: 'chrome'
@@ -44,11 +49,6 @@ module.exports = function(config) {
     'SL_MicrosoftEdge': {
       base: 'SauceLabs',
       browserName: 'MicrosoftEdge'
-    },
-    'SL_FireFox_4': {
-      base: 'SauceLabs',
-      browserName: 'firefox',
-      version: '4'
     },
     'SL_FireFox_17': {
       base: 'SauceLabs',
@@ -132,7 +132,7 @@ module.exports = function(config) {
       testName: 'Ajv'
     },
     captureTimeout: 900000,
-    browserNoActivityTimeout: 500000,
+    browserNoActivityTimeout: 300000,
 
     customLaunchers: customLaunchers,
 
