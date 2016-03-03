@@ -402,8 +402,8 @@ describe('Ajv Options', function () {
     });
 
     it('should not modify underlying defaults when modifying validated data', function() {
-      test(Ajv({ useDefaults: true }));
-      test(Ajv({ useDefaults: true, allErrors: true }));
+      test(Ajv({ useDefaults: 'clone' }));
+      test(Ajv({ useDefaults: 'clone', allErrors: true }));
 
       function test(ajv) {
         var schema = {
