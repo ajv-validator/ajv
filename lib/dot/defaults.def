@@ -1,6 +1,10 @@
 {{## def.assignDefault:
   if ({{=$passData}} === undefined)
-    {{=$passData}} = {{= it.useDefault($sch.default) }};
+    {{=$passData}} = {{? it.opts.useDefaults == 'clone' }}
+                       {{= JSON.stringify($sch.default) }}
+                     {{??}}
+                       {{= it.useDefault($sch.default) }}
+                     {{?}};
 #}}
 
 

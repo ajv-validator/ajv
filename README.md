@@ -544,7 +544,7 @@ The schema above is also more efficient - it will compile into a faster function
 
 With [option `useDefaults`](#options) Ajv will assign values from `default` keyword in the schemas of `properties` and `items` (when it is the array of schemas) to the missing properties and items.
 
-This option modifies original data.
+This option modifies original data. If not using the `clone` version of this option, modifying objects that are inserted as defaults into the original data will also modify the default object in the template. This can result in subtle bugs but is faster than creating a new object every time. Example 3 below shows this behavior in action.
 
 
 Example 1 (`default` in `properties`):
@@ -585,6 +585,33 @@ var validate = ajv.compile(schema);
 
 console.log(validate(data)); // true
 console.log(data); // [ 1, "foo" ]
+```
+
+Example 3 (non-`clone` behavior):
+
+```javascript
+var schema = {
+  properties: {
+    items: {
+      type: "array",
+      default: ["a-default"]
+    }
+  }
+}
+
+var data = { };
+var data2 = { };
+
+var validate = ajv.compile(schema);
+
+console.log(validate(data)); // true
+console.log(data); // [ "a-default" ]
+
+data.items.push("another-value");
+console.log(data); // [ "a-default", "another-value" ]
+
+console.log(validate(data2)); // true
+console.log(data2); // [ "a-default", "another-value" ]
 ```
 
 `default` keywords in other cases are ignored:
@@ -848,7 +875,10 @@ Defaults:
   - `"all"` - all additional properties are removed, regardless of `additionalProperties` keyword in schema (and no validation is made for them).
   - `true` - only additional properties with `additionalProperties` keyword equal to `false` are removed.
   - `"failing"` - additional properties that fail schema validation will be removed (where `additionalProperties` keyword is `false` or schema).
-- _useDefaults_: replace missing properties and items with the values from corresponding `defaults` keywords. Default behaviour is to ignore `default` keywords. This option is not used if schema is added with `addMetaSchema` method. See example in [Assigning defaults](#assigning-defaults).
+- _useDefaults_: replace missing properties and items with the values from corresponding `defaults` keywords. Default behaviour is to ignore `default` keywords. This option is not used if schema is added with `addMetaSchema` method. See example in [Assigning defaults](#assigning-defaults). Optional values:
+  - `false` (default) - do not use defaults
+  - `true` - subsitute defaults but do not clone objects that are defaults. If the default is an object, and you modify the result of validation, you will modify it on the original schema as well. This option is fast, but can result in surprises.
+  - `"clone"` - subsitute defaults and clone objects so that they're not shared between instances of validated data. This option is slower but generally does what you expect it to do.
 - _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](#coercing-data-types) and [coercion rules](https://github.com/epoberezkin/ajv/blob/master/COERCION.md).
 
 
