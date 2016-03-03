@@ -492,6 +492,53 @@ If `removeAdditional` option in the example above were `"all"` then both `additi
 
 If the option were `"failing"` then property `additional1` would have been removed regardless of its value and property `additional2` would have been removed only if its value were failing the schema in the inner `additionalProperties` (so in the example above it would have stayed because it passes the schema, but any non-number would have been removed).
 
+__Please note__: If you use `removeAdditional` option with `additionalProperties` keyword inside `anyOf`/`oneOf` keywords your validation can fail with this schema, for example:
+
+```JSON
+{
+  "type": "object",
+  "oneOf": [
+    {
+      "properties": {
+        "foo": { "type": "string" }
+      },
+      "required": [ "foo" ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "bar": { "type": "integer" }
+      },
+      "required": [ "bar" ],
+      "additionalProperties": false
+    }
+  ]
+}
+```
+
+The intention of the schema above is to allow objects with either the string property "foo" or the integer property "bar", but not with both and not with any other properties.
+
+With the option `removeAdditional: true` the validation will pass for the object `{ "foo": "abc"}` but will fail for the object `{"bar": 1}`. It happens because while the first subschema in `oneOf` is validated, the property `bar` is removed because it is an additional property according to the standard (because it is not included in `properties` keyword in the same schema).
+
+While this behaviour is unexpected (issues #129, #134), it is correct. To have the expected behaviour (both objects are allowed and additional properties are removed) the schema has to be refactored in this way:
+
+```JSON
+{
+  "type": "object",
+  "properties": {
+    "foo": { "type": "string" },
+    "bar": { "type": "integer" }
+  },
+  "additionalProperties": false,
+  "oneOf": [
+    { "required": [ "foo" ] },
+    { "required": [ "bar" ] }
+  ]
+}
+```
+
+The schema above is also more efficient - it will compile into a faster function.
+
 
 ## Assigning defaults
 
