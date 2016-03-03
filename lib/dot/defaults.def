@@ -1,6 +1,6 @@
 {{## def.assignDefault:
   if ({{=$passData}} === undefined)
-    {{=$passData}} = {{= it.useDefault($sch.default) }};
+    {{=$passData}} = util.clone({{= it.useDefault($sch.default) }});
 #}}
 
 
