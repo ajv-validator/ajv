@@ -1,11 +1,32 @@
 machine:
   node:
     version: 4
-checkout:
-  post:
-    - git submodule sync
-    - git submodule update --init
+
 general:
   branches:
     ignore:
       - gh-pages
+
+checkout:
+  post:
+    - git submodule sync
+    - git submodule update --init
+
+dependencies:
+  post:
+    - wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz
+    - tar -xzf sc-latest-linux.tar.gz
+
+test:
+  pre:
+    - cd sc-*-linux && ./bin/sc --user $SAUCE_USERNAME --api-key $SAUCE_ACCESS_KEY --readyfile ~/sauce_is_ready:
+        background: truescripts/prepare-tests
+    # Wait for tunnel to be ready
+    - while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
+
+  override:
+    - scripts/prepare-tests
+    - karma start karma.sauce.js
+
+  post:
+    - killall --wait sc  # wait for Sauce Connect to close the tunnel
