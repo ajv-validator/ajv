@@ -18,13 +18,12 @@ dependencies:
     - tar -xzf sc-latest-linux.tar.gz
 
 test:
-  pre:
+  override:
     - cd sc-*-linux && ./bin/sc --user $SAUCE_USERNAME --api-key $SAUCE_ACCESS_KEY --readyfile ~/sauce_is_ready:
-        background: truescripts/prepare-tests
-    # Wait for tunnel to be ready
+        background: true
+
     - while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
 
-  override:
     - scripts/prepare-tests
     - karma start karma.sauce.js
 
