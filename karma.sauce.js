@@ -22,11 +22,11 @@ module.exports = function(config) {
       browserName: 'chrome',
       version: '27'
     },
-    'SL_Chrome_37': {
-      base: 'SauceLabs',
-      browserName: 'chrome',
-      version: '37'
-    },
+    // 'SL_Chrome_37': {
+    //   base: 'SauceLabs',
+    //   browserName: 'chrome',
+    //   version: '37'
+    // },
     'SL_Chrome': {
       base: 'SauceLabs',
       browserName: 'chrome'
@@ -55,11 +55,11 @@ module.exports = function(config) {
       browserName: 'firefox',
       version: '17'
     },
-    'SL_FireFox_24': {
-      base: 'SauceLabs',
-      browserName: 'firefox',
-      version: '24'
-    },
+    // 'SL_FireFox_24': {
+    //   base: 'SauceLabs',
+    //   browserName: 'firefox',
+    //   version: '24'
+    // },
     'SL_FireFox': {
       base: 'SauceLabs',
       browserName: 'firefox'
@@ -69,11 +69,11 @@ module.exports = function(config) {
       browserName: 'safari',
       version: '5' // default
     },
-    'SL_Safari_7': {
-      base: 'SauceLabs',
-      browserName: 'safari',
-      version: '7'
-    },
+    // 'SL_Safari_7': {
+    //   base: 'SauceLabs',
+    //   browserName: 'safari',
+    //   version: '7'
+    // },
     'SL_Safari_9': {
       base: 'SauceLabs',
       browserName: 'safari',
@@ -131,8 +131,8 @@ module.exports = function(config) {
     sauceLabs: {
       testName: 'Ajv'
     },
-    captureTimeout: 900000,
-    browserNoActivityTimeout: 300000,
+    captureTimeout: 1200000,
+    browserNoActivityTimeout: 600000,
 
     customLaunchers: customLaunchers,
 
