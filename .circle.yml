@@ -1,0 +1,10 @@
+machine:
+  node:
+    version: 4
+checkout:
+  post:
+    - git submodule update --init
+general:
+  branches:
+    ignore:
+      - gh-pages
