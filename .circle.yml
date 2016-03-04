@@ -3,6 +3,7 @@ machine:
     version: 4
 checkout:
   post:
+    - git submodule sync
     - git submodule update --init
 general:
   branches:
