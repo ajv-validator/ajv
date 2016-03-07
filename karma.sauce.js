@@ -46,10 +46,10 @@ module.exports = function(config) {
       browserName: 'internet explorer',
       version: '11' // default
     },
-    'SL_MicrosoftEdge': {
-      base: 'SauceLabs',
-      browserName: 'MicrosoftEdge'
-    },
+    // 'SL_MicrosoftEdge': {
+    //   base: 'SauceLabs',
+    //   browserName: 'MicrosoftEdge'
+    // },
     'SL_FireFox_17': {
       base: 'SauceLabs',
       browserName: 'firefox',
@@ -107,7 +107,6 @@ module.exports = function(config) {
     files: [
       'dist/ajv.min.js',
       'node_modules/chai/chai.js',
-      'dist/regenerator.min.js',
       'dist/nodent.min.js',
       '.browser/*.spec.js'
     ],
@@ -129,7 +128,8 @@ module.exports = function(config) {
     logLevel: config.LOG_INFO,
 
     sauceLabs: {
-      testName: 'Ajv'
+      testName: 'Ajv',
+      'idleTimeout': 900
     },
     captureTimeout: 1200000,
     browserNoActivityTimeout: 600000,

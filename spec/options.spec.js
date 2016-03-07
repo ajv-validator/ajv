@@ -362,11 +362,11 @@ describe('Ajv Options', function () {
 
         var data = {};
         validate(data) .should.equal(true);
-        data. should.eql({ foo: 'abc', bar: 1, baz: false, nil: null, obj: {}, arr:[] });
+        data .should.eql({ foo: 'abc', bar: 1, baz: false, nil: null, obj: {}, arr:[] });
 
         var data = { foo: 'foo', bar: 2, obj: { test: true } };
         validate(data) .should.equal(true);
-        data. should.eql({ foo: 'foo', bar: 2, baz: false, nil: null, obj: { test: true }, arr:[] });
+        data .should.eql({ foo: 'foo', bar: 2, baz: false, nil: null, obj: { test: true }, arr:[] });
       }
     });
 
@@ -388,46 +388,48 @@ describe('Ajv Options', function () {
 
         var data = [];
         validate(data) .should.equal(true);
-        data. should.eql([ 'abc', 1, false ]);
+        data .should.eql([ 'abc', 1, false ]);
 
         var data = [ 'foo' ];
         validate(data) .should.equal(true);
-        data. should.eql([ 'foo', 1, false ]);
+        data .should.eql([ 'foo', 1, false ]);
 
         var data = ['foo', 2,'false'];
         validate(data) .should.equal(false);
         validate.errors .should.have.length(1);
-        data. should.eql([ 'foo', 2, 'false' ]);
+        data .should.eql([ 'foo', 2, 'false' ]);
       }
     });
 
-    it('should not modify underlying defaults when modifying validated data', function() {
-      test(Ajv({ useDefaults: 'clone' }));
-      test(Ajv({ useDefaults: 'clone', allErrors: true }));
+    describe('useDefaults: clone', function() {
+      it('should not modify underlying defaults when modifying validated data', function() {
+        test(Ajv({ useDefaults: 'clone' }));
+        test(Ajv({ useDefaults: 'clone', allErrors: true }));
 
-      function test(ajv) {
-        var schema = {
-          properties: {
-            items: {
-              type: 'array',
-              default: ['a-default']
+        function test(ajv) {
+          var schema = {
+            properties: {
+              items: {
+                type: 'array',
+                default: ['a-default']
+              }
             }
-          }
-        };
+          };
 
-        var validate = ajv.compile(schema);
+          var validate = ajv.compile(schema);
 
-        var data = {};
-        validate(data) .should.equal(true);
-        data.items. should.eql([ 'a-default' ]);
+          var data = {};
+          validate(data) .should.equal(true);
+          data.items .should.eql([ 'a-default' ]);
 
-        data.items. push('another-value');
-        data.items. should.eql([ 'a-default', 'another-value' ]);
+          data.items.push('another-value');
+          data.items .should.eql([ 'a-default', 'another-value' ]);
 
-        var data2 = {};
-        validate(data2) .should.equal(true);
-        data2.items. should.eql([ 'a-default' ]);
-      }
+          var data2 = {};
+          validate(data2) .should.equal(true);
+          data2.items .should.eql([ 'a-default' ]);
+        }
+      });
     });
   });
 

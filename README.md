@@ -544,7 +544,11 @@ The schema above is also more efficient - it will compile into a faster function
 
 With [option `useDefaults`](#options) Ajv will assign values from `default` keyword in the schemas of `properties` and `items` (when it is the array of schemas) to the missing properties and items.
 
-This option modifies original data. If not using the `clone` version of this option, modifying objects that are inserted as defaults into the original data will also modify the default object in the template. This can result in subtle bugs but is faster than creating a new object every time. Example 3 below shows this behavior in action.
+This option modifies original data.
+
+__Please note__: if the default value is an object or an array it will be inserted in the data by reference unless the option `useDefaults: "clone"` is passed.
+
+The default behaviour is faster and it allows to have dynamic values in defaults, e.g. timestamp, without recompiling the schema. The side effect is that modifying the default value in any validated data instance will change the default in the schema and in other validated data instances. See example 3 below.
 
 
 Example 1 (`default` in `properties`):
@@ -587,31 +591,28 @@ console.log(validate(data)); // true
 console.log(data); // [ 1, "foo" ]
 ```
 
-Example 3 (non-`clone` behavior):
+Example 3 (leaking "defaults"):
 
 ```javascript
 var schema = {
   properties: {
-    items: {
-      type: "array",
-      default: ["a-default"]
+    foo: {
+      default: { bar: 1 }
     }
   }
 }
 
-var data = { };
-var data2 = { };
-
 var validate = ajv.compile(schema);
 
+var data = {};
 console.log(validate(data)); // true
-console.log(data); // [ "a-default" ]
+console.log(data); // { foo: { bar: 1 } }
 
-data.items.push("another-value");
-console.log(data); // [ "a-default", "another-value" ]
+data.foo.bar = 2;
 
+var data2 = {};
 console.log(validate(data2)); // true
-console.log(data2); // [ "a-default", "another-value" ]
+console.log(data2); // { foo: { bar: 2 } }
 ```
 
 `default` keywords in other cases are ignored:
@@ -875,10 +876,10 @@ Defaults:
   - `"all"` - all additional properties are removed, regardless of `additionalProperties` keyword in schema (and no validation is made for them).
   - `true` - only additional properties with `additionalProperties` keyword equal to `false` are removed.
   - `"failing"` - additional properties that fail schema validation will be removed (where `additionalProperties` keyword is `false` or schema).
-- _useDefaults_: replace missing properties and items with the values from corresponding `defaults` keywords. Default behaviour is to ignore `default` keywords. This option is not used if schema is added with `addMetaSchema` method. See example in [Assigning defaults](#assigning-defaults). Optional values:
+- _useDefaults_: replace missing properties and items with the values from corresponding `default` keywords. Default behaviour is to ignore `default` keywords. This option is not used if schema is added with `addMetaSchema` method. See examples in [Assigning defaults](#assigning-defaults). Option values:
   - `false` (default) - do not use defaults
-  - `true` - subsitute defaults but do not clone objects that are defaults. If the default is an object, and you modify the result of validation, you will modify it on the original schema as well. This option is fast, but can result in surprises.
-  - `"clone"` - subsitute defaults and clone objects so that they're not shared between instances of validated data. This option is slower but generally does what you expect it to do.
+  - `true` - insert defaults by reference (faster). If the default is an object, it will be shared by all instances of validated data. If you modify the inserted default in the validated data, it will be modified in the schema as well.
+  - `"clone"` - insert defaults by value (slower, object literal is used).
 - _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](#coercing-data-types) and [coercion rules](https://github.com/epoberezkin/ajv/blob/master/COERCION.md).
 
 
@@ -981,7 +982,7 @@ Properties of `params` object in errors depend on the keyword that failed valida
 
 ## Command line interface
 
-Simple JSON-schema validation can be done from command line using [ajv-cli](https://github.com/jessedc/ajv-cli) package. At the moment it does not support referenced schemas.
+Simple JSON-schema validation can be done from command line using [ajv-cli](https://github.com/jessedc/ajv-cli) package.
 
 
 ## Tests
