@@ -718,9 +718,9 @@ Although `addSchema` does not compile schemas, explicit compilation is not requi
 By default the schema is validated against meta-schema before it is added, and if the schema does not pass validation the exception is thrown. This behaviour is controlled by `validateSchema` option.
 
 
-##### .addMetaSchema(Object schema [, String key])
+##### .addMetaSchema(Array&lt;Object&gt;Object schema [, String key])
 
-Adds meta schema that can be used to validate other schemas. That function should be used instead of `addSchema` because there may be instance options that would compile a meta schema incorrectly (at the moment it is `removeAdditional` option).
+Adds meta schema(s) that can be used to validate other schemas. That function should be used instead of `addSchema` because there may be instance options that would compile a meta schema incorrectly (at the moment it is `removeAdditional` option).
 
 There is no need to explicitly add draft 4 meta schema (http://json-schema.org/draft-04/schema and http://json-schema.org/schema) - it is added by default, unless option `meta` is set to `false`. You only need to use it if you have a changed meta-schema that you want to use to validate your schemas. See `validateSchema`.
 
@@ -982,7 +982,7 @@ Properties of `params` object in errors depend on the keyword that failed valida
 
 ## Command line interface
 
-Simple JSON-schema validation can be done from command line using [ajv-cli](https://github.com/jessedc/ajv-cli) package.
+JSON-schema validation using schemas and data in files can be done from command line using [ajv-cli](https://github.com/jessedc/ajv-cli) package.
 
 
 ## Tests
