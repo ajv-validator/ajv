@@ -138,6 +138,26 @@ describe('Ajv Options', function () {
       var ajv = Ajv();
       ajv.validateSchema({ contains: 2 }). should.equal(true);
     });
+
+    it('should use option meta as default meta schema', function() {
+      var meta = {
+        $schema: 'http://json-schema.org/draft-04/schema',
+        properties: {
+          myKeyword: { type: 'boolean' }
+        }
+      };
+      var ajv = Ajv({ meta: meta });
+      ajv.validateSchema({ myKeyword: true }) .should.equal(true);
+      ajv.validateSchema({ myKeyword: 2 }) .should.equal(false);
+      ajv.validateSchema({
+        $schema: 'http://json-schema.org/draft-04/schema',
+        myKeyword: 2
+      }) .should.equal(true);
+
+      var ajv = Ajv();
+      ajv.validateSchema({ myKeyword: true }) .should.equal(true);
+      ajv.validateSchema({ myKeyword: 2 }) .should.equal(true);
+    });
   });
 
 

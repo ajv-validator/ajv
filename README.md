@@ -898,7 +898,7 @@ Defaults:
 
 ##### Advanced options
 
-- _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default).
+- _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default). With option `v5: true` [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#) will be added as well. If an object is passed, it will be used as the default meta-schema for schemas that have no `$schema` keyword. This default meta-schema MUST have `$schema` keyword.
 - _validateSchema_: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can either be http://json-schema.org/schema or http://json-schema.org/draft-04/schema or absent (draft-4 meta-schema will be used) or can be a reference to the schema previously added with `addMetaSchema` method. Option values:
   - `true` (default) -  if the validation fails, throw the exception.
   - `"log"` - if the validation fails, log error.
