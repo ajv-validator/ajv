@@ -16,6 +16,7 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
 - [Performance](#performance)
 - [Getting started](#getting-started)
 - [Using in browser](#using-in-browser)
+- [Command line interface](#command-line-interface)
 - Validation
   - [Keywords](#validation-keywords)
   - [Formats](#formats)
@@ -32,7 +33,7 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
   - [Options](#options)
   - [Validation errors](#validation-errors)
 - [Packages using Ajv](#some-packages-using-ajv)
-- [CLI, Tests, Contributing, History, License](#command-line-interface)
+- [Tests, Contributing, History, License](#tests)
 
 
 ## Features
@@ -141,6 +142,19 @@ The browser bundle is available on [cdnjs](https://cdnjs.com/libraries/ajv).
 Ajv is tested with these browsers:
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/epoberezkin.svg)](https://saucelabs.com/u/epoberezkin)
+
+
+## Command line interface
+
+CLI is available as a separate npm package [ajv-cli](https://github.com/jessedc/ajv-cli). It supports:
+
+- compiling JSON-schemas to test their validity
+- validating data file(s) against JSON-schema
+- referenced schemas
+- custom meta-schemas
+- files in JSON and JavaScript format
+- all Ajv options
+- reporting changes in data after validation in [JSON-patch](https://tools.ietf.org/html/rfc6902) format
 
 
 ## Validation keywords
@@ -978,11 +992,6 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - [rabbitmq-schema](https://github.com/tjmehta/rabbitmq-schema) - A schema definition module for RabbitMQ graphs and messages
 - [@query/schema](https://www.npmjs.com/package/@query/schema) - stream filtering with a URI-safe query syntax parsing to JSON Schema
 - [grunt-jsonschema-ajv](https://github.com/SignpostMarv/grunt-jsonschema-ajv) - Grunt plugin for validating files against JSON-Schema
-
-
-## Command line interface
-
-JSON-schema validation using schemas and data in files can be done from command line using [ajv-cli](https://github.com/jessedc/ajv-cli) package.
 
 
 ## Tests
