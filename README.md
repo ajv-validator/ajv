@@ -150,6 +150,7 @@ CLI is available as a separate npm package [ajv-cli](https://github.com/jessedc/
 
 - compiling JSON-schemas to test their validity
 - validating data file(s) against JSON-schema
+- testing expected validity of data against JSON-schema
 - referenced schemas
 - custom meta-schemas
 - files in JSON and JavaScript format
