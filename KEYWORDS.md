@@ -16,7 +16,7 @@ The keywords and their values define what rules the data should satisfy to be va
     - [maxLength/minLength](#maxlength--minlength)
     - [pattern](#pattern)
     - [format](#format)
-    - [formatMaximum / formatMinimum and exclusiveFormatMaximum / exclusiveFormatMinimum](#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-v5-proposal) (v5)
+    - [formatMaximum / formatMinimum and formatExclusiveMaximum / formatExclusiveMinimum](#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-v5-proposal) (v5)
 - [Keywords for arrays](#keywords-for-arrays)
     - [maxItems/minItems](#maxitems--minitems)
     - [uniqueItems](#uniqueitems)
@@ -193,13 +193,13 @@ _invalid_: `"abc"`
 
 
 
-### `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` (v5 proposal)
+### `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` (v5 proposal)
 
 The value of keyword `formatMaximum` (`formatMinimum`) should be a string. This value is the maximum (minimum) allowed value for the data to be valid as determined by `format` keyword.
 
 Ajv defines comparison rules for formats `"date"`, `"time"` and `"date-time".
 
-The value of keyword `exclusiveFormatMaximum` (`exclusiveFormatMinimum`) should be a boolean value. These keyword cannot be used without `formatMaximum` (`formatMinimum`). If this keyword value is equal to `true`, the data to be valid should not be equal to the value in `formatMaximum` (`formatMinimum`) keyword.
+The value of keyword `formatExclusiveMaximum` (`formatExclusiveMinimum`) should be a boolean value. These keyword cannot be used without `formatMaximum` (`formatMinimum`). If this keyword value is equal to `true`, the data to be valid should not be equal to the value in `formatMaximum` (`formatMinimum`) keyword.
 
 
 __Example__
@@ -210,7 +210,7 @@ _schema_:
 {
     "format": "date",
     "formatMaximum": "2016-02-06",
-    "exclusiveFormatMaximum": true
+    "formatExclusiveMaximum": true
 }
 ```
 

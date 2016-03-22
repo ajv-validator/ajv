@@ -243,7 +243,7 @@
                 { "$ref": "#/definitions/$data" }
             ]
         },
-        "exclusiveFormatMaximum": {
+        "formatExclusiveMaximum": {
             "anyOf": [
                 {
                     "type": "boolean",
@@ -252,7 +252,7 @@
                 { "$ref": "#/definitions/$data" }
             ]
         },
-        "exclusiveFormatMinimum": {
+        "formatExclusiveMinimum": {
             "anyOf": [
                 {
                     "type": "boolean",
@@ -318,8 +318,8 @@
         "exclusiveMinimum": [ "minimum" ],
         "formatMaximum": [ "format" ],
         "formatMinimum": [ "format" ],
-        "exclusiveFormatMaximum": [ "formatMaximum" ],
-        "exclusiveFormatMinimum": [ "formatMinimum" ]
+        "formatExclusiveMaximum": [ "formatMaximum" ],
+        "formatExclusiveMinimum": [ "formatMinimum" ]
     },
     "default": {}
 }
