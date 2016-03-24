@@ -561,9 +561,11 @@ With [option `useDefaults`](#options) Ajv will assign values from `default` keyw
 
 This option modifies original data.
 
-__Please note__: if the default value is an object or an array it will be inserted in the data by reference unless the option `useDefaults: "clone"` is passed.
+__Please note__: by default the default value is inserted in the generated validation code as a literal (starting from v4.0), so the value inserted in the data will be the deep clone of the default in the schema.
 
-The default behaviour is faster and it allows to have dynamic values in defaults, e.g. timestamp, without recompiling the schema. The side effect is that modifying the default value in any validated data instance will change the default in the schema and in other validated data instances. See example 3 below.
+If you need to insert the default value in the data by reference pass the option `useDefaults: "shared"`.
+
+Inserting defaults by reference can be faster (in case you have an object in `default`) and it allows to have dynamic values in defaults, e.g. timestamp, without recompiling the schema. The side effect is that modifying the default value in any validated data instance will change the default in the schema and in other validated data instances. See example 3 below.
 
 
 Example 1 (`default` in `properties`):
@@ -606,9 +608,11 @@ console.log(validate(data)); // true
 console.log(data); // [ 1, "foo" ]
 ```
 
-Example 3 (leaking "defaults"):
+Example 3 (inserting "defaults" by reference):
 
 ```javascript
+var ajv = Ajv({ useDefaults: 'shared' });
+
 var schema = {
   properties: {
     foo: {
