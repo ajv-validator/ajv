@@ -245,10 +245,19 @@ describe('Type coercion', function () {
       }
     };
 
+    var schema2 = {
+      type: 'array',
+      items: { type: 'number' }
+    }
+
     instances.forEach(function (ajv)  {
       var data = { foo: '123', bar: 'bar' };
       ajv.validate(schema, data) .should.equal(false);
       data .should.eql({ foo: 123, bar: 'bar' });
+
+      var data2 = [ '123', 'bar' ];
+      ajv.validate(schema2, data2) .should.equal(false);
+      data2 .should.eql([ 123, 'bar' ]);
     });
   });
 
