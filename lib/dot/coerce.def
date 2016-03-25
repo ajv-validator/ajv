@@ -4,7 +4,7 @@
       , $coerced = 'coerced' + $lvl;
   }}
   var {{=$dataType}} = typeof {{=$data}};
-  var {{=$coerced}};
+  var {{=$coerced}} = undefined;
 
   {{ var $bracesCoercion = ''; }}
   {{~ $coerceToTypes:$type:$i }}

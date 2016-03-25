@@ -236,6 +236,23 @@ describe('Type coercion', function () {
   });
 
 
+  it('should fail to coerce non-number if multiple properties/items are coerced (issue #152)', function() {
+    var schema = {
+      type: 'object',
+      properties: {
+        foo: { type: 'number' },
+        bar: { type: 'number' }
+      }
+    };
+
+    instances.forEach(function (ajv)  {
+      var data = { foo: '123', bar: 'bar' };
+      ajv.validate(schema, data) .should.equal(false);
+      data .should.eql({ foo: 123, bar: 'bar' });
+    });
+  });
+
+
   it('should update data if the schema is in ref that is not inlined', function () {
     instances.push(Ajv({ coerceTypes: true, inlineRefs: false }));
 
