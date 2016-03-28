@@ -28,8 +28,8 @@ function replaceLinks() {
 function replaceRootLink() {
     local file=$1
     local path="https:\/\/github\.com\/epoberezkin\/ajv"
-    sed -i bak "s/$path#/\/#/g" $file
-    sed -i bak "s/$path\/#/\/#/g" $file
+    sed -i bak "s/$path#/\/ajv#/g" $file
+    sed -i bak "s/$path\/#/\/ajv#/g" $file
     rm "${file}bak"    
 }
 
