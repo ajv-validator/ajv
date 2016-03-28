@@ -344,7 +344,7 @@ Each error object should at least have properties `keyword`, `message` and `para
 
 Inlined keywords can optionally define `dataPath` and `schemaPath` properties in error objects, that will be assigned by Ajv unless `errors` option of the keyword is `"full"`.
 
-If custom keyword doesn't create errors, the default error will be created in case the keyword fails validation (see [Validation errors](/#validation-errors)).
+If custom keyword doesn't create errors, the default error will be created in case the keyword fails validation (see [Validation errors](/ajv#validation-errors)).
 
 
 ## Short-circuit validation
