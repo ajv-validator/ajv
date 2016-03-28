@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -e
+
+function prepareFile()
+{
+    local source=$1
+    local target=$2
+    local output="$target.md"
+    local title=$3
+    echo "---" > $output
+    echo "page_name: $target" >> $output
+    echo "title: $title" >> $output
+    echo "layout: main" >> $output
+    echo "---" >> $output
+    cat $source >> $output
+}
+
+function replaceLinks() {
+    local file=$1
+    local source=$2
+    local target=$3
+    local path="https:\/\/github\.com\/epoberezkin\/ajv\/blob\/master\/"
+    sed -i bak "s/$path$source/$target/g" $file
+    rm "${file}bak"
+}
+
+function replaceRootLink() {
+    local file=$1
+    local path="https:\/\/github\.com\/epoberezkin\/ajv"
+    sed -i bak "s/$path#/\/#/g" $file
+    sed -i bak "s/$path\/#/\/#/g" $file
+    rm "${file}bak"    
+}
+
+prepareFile _source/README.md    index     "Ajv - Another JSON Schema Validator"
+prepareFile _source/COERCION.md  coercion  "Ajv - Types Coercion"
+prepareFile _source/CUSTOM.md    custom    "Ajv - Custom Keywords"
+prepareFile _source/KEYWORDS.md  keywords  "Ajv - Validation Keywords"
+prepareFile _source/LICENSE      license   "Ajv - License"
+
+for file in index coercion custom keywords license
+do
+    replaceLinks "$file.md"  "README\.md"    "index\.html"
+    replaceLinks "$file.md"  "COERCION\.md"  "coercion\.html"
+    replaceLinks "$file.md"  "CUSTOM\.md"    "custom\.html"
+    replaceLinks "$file.md"  "KEYWORDS\.md"  "keywords\.html"
+    replaceLinks "$file.md"  "LICENSE"       "license\.html"
+    replaceRootLink "$file.md"
+done

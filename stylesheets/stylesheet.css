@@ -368,6 +368,33 @@ Full-Width Styles
   background: #212121;
 }
 
+#page_links {
+  padding: 0;
+}
+
+#page_links li {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+#page_links li a {
+  color: #fff;
+}
+
+#page_links li a::after {
+    display: block;
+    content: attr(title);
+    font-weight: bold;
+    height: 0px;
+    overflow: hidden;
+    visibility: hidden;
+    margin-bottom: -1px;
+}
+
+#page_links li span.current_page {
+  color: #fff;
+  font-weight: bold;
+}
 
 
 /*******************************************************************************
