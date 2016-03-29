@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 if [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" && $TRAVIS_JOB_NUMBER =~ ".3" ]]; then
   git diff --name-only $TRAVIS_COMMIT_RANGE | grep -qE '\.md$|^LICENSE$' && {
