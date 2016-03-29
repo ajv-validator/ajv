@@ -2,7 +2,7 @@
 
 set -e
 
-if [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" ]]; then
+if [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" && $TRAVIS_JOB_NUMBER =~ ".3" ]]; then
   git diff --name-only $TRAVIS_COMMIT_RANGE | grep -qE '\.md$|^LICENSE$' && {
     rm -rf ../gh-pages
     git clone -b gh-pages --single-branch https://${GITHUB_TOKEN}@github.com/epoberezkin/ajv.git ../gh-pages
