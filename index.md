@@ -3,7 +3,7 @@ page_name: index
 title: Ajv - Another JSON Schema Validator
 layout: main
 ---
-# ajv - Another JSON Schema Validator
+# Ajv: Another JSON Schema Validator
 
 Currently the fastest JSON Schema validator for node.js and browser.
 
