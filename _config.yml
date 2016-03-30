@@ -1,4 +1,3 @@
 markdown: kramdown
 kramdown:
   auto_ids: true
-  entity_output: "symbolic"

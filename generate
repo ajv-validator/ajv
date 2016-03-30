@@ -7,7 +7,7 @@ function prepareFile()
     local source=$1
     local target=$2
     local output="$target.md"
-    local title=$3
+    local title="$3"
     echo "---" > $output
     echo "page_name: $target" >> $output
     echo "title: $title" >> $output
@@ -21,16 +21,23 @@ function replaceLinks() {
     local source=$2
     local target=$3
     local path="https:\/\/github\.com\/epoberezkin\/ajv\/blob\/master\/"
-    sed -i bak "s/$path$source/$target/g" $file
-    rm "${file}bak"
+    replace "s/$path$source/$target/g" $file
 }
 
 function replaceRootLink() {
     local file=$1
     local path="https:\/\/github\.com\/epoberezkin\/ajv"
-    sed -i bak "s/$path#/\/ajv#/g" $file
-    sed -i bak "s/$path\/#/\/ajv#/g" $file
-    rm "${file}bak"    
+    replace "s/$path#/\/ajv#/g" $file
+    replace "s/$path\/#/\/ajv#/g" $file
+}
+
+function replace() {
+    local pattern="$1"
+    local file=$2
+    local bak="${file}.bak"
+    mv $file $bak
+    sed "$pattern" $bak > $file
+    rm $bak
 }
 
 prepareFile _source/README.md    index     "Ajv - Another JSON Schema Validator"
