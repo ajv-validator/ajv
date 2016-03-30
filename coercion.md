@@ -5,7 +5,7 @@ layout: main
 ---
 # Ajv type coercion rules
 
-To enable type coercion pass option `coerceTypes` to ajv (it is `false` by default). See [example](/ajv#coercing-data-types).
+To enable type coercion pass option `coerceTypes` to Ajv (it is `false` by default). See [example](/ajv#coercing-data-types).
 
 The coercion rules are different from JavaScript:
 - to validate user input as expected

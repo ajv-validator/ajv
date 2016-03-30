@@ -43,7 +43,7 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
 
 ## Features
 
-- ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
+- Ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
   - all validation keywords (see [JSON-Schema validation keywords](keywords.html))
   - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
   - support of circular references between schemas
@@ -64,14 +64,14 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
 - NEW: [v5 $data reference](#data-reference) to use values from the validated data as values for the schema keywords
 - NEW: [asynchronous validation](#asynchronous-validation) of custom formats and keywords
 
-Currently ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
+Currently Ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
 
 
 ## Performance
 
-ajv generates code to turn JSON schemas into javascript functions that are efficient for v8 optimization.
+Ajv generates code to turn JSON schemas into javascript functions that are efficient for v8 optimization.
 
-Currently ajv is the fastest validator according to these benchmarks:
+Currently Ajv is the fastest validator according to these benchmarks:
 
 - [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark) - 70% faster than the second place
 - [jsck benchmark](https://github.com/pandastrike/jsck#benchmarks) - 20-190% faster
@@ -122,7 +122,7 @@ if (!valid) console.log(ajv.errorsText());
 
 See [API](#api) and [Options](#options) for more details.
 
-ajv compiles schemas to functions and caches them in all cases (using schema stringified with [json-stable-stringify](https://github.com/substack/json-stable-stringify) as a key), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
+Ajv compiles schemas to functions and caches them in all cases (using schema stringified with [json-stable-stringify](https://github.com/substack/json-stable-stringify) as a key), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
 
 The best performance is achieved when using compiled functions returned by `compile` or `getSchema` methods (there is no additional function call).
 
