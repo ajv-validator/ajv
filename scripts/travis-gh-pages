@@ -10,6 +10,8 @@ if [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" && $TRAV
     cp LICENSE ../gh-pages/_source
     cd ../gh-pages
     ./generate
+    git config user.email "e.poberezkin@me.com"
+    git config user.name "Evgeny Poberezkin"
     git add .
     git commit -am "updated by travis build #$TRAVIS_BUILD_NUMBER"
     git push origin gh-pages
