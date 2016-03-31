@@ -34,7 +34,12 @@
   "keywords": [
     "JSON",
     "schema",
-    "validator"
+    "validator",
+    "validation",
+    "jsonschema",
+    "json-schema",
+    "json-schema-validator",
+    "json-schema-validation"
   ],
   "author": "Evgeny Poberezkin",
   "license": "MIT",
