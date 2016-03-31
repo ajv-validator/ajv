@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "3.8.7",
+  "version": "3.8.8",
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
   "files": [
