@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "3.8.6",
+  "version": "3.8.9",
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
   "files": [
@@ -34,7 +34,12 @@
   "keywords": [
     "JSON",
     "schema",
-    "validator"
+    "validator",
+    "validation",
+    "jsonschema",
+    "json-schema",
+    "json-schema-validator",
+    "json-schema-validation"
   ],
   "author": "Evgeny Poberezkin",
   "license": "MIT",
@@ -54,7 +59,7 @@
     "chai": "^3.0.0",
     "coveralls": "^2.11.4",
     "dot": "^1.0.3",
-    "eslint": "^2.0.0-rc.0",
+    "eslint": "^2.5.1",
     "glob": "^7.0.0",
     "istanbul": "^0.4.2",
     "js-beautify": "^1.5.6",

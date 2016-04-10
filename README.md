@@ -1,4 +1,4 @@
-# ajv - Another JSON Schema Validator
+# Ajv: Another JSON Schema Validator
 
 Currently the fastest JSON Schema validator for node.js and browser.
 
@@ -38,7 +38,7 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
 
 ## Features
 
-- ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
+- Ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
   - all validation keywords (see [JSON-Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md))
   - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
   - support of circular references between schemas
@@ -59,14 +59,14 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
 - NEW: [v5 $data reference](#data-reference) to use values from the validated data as values for the schema keywords
 - NEW: [asynchronous validation](#asynchronous-validation) of custom formats and keywords
 
-Currently ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
+Currently Ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
 
 
 ## Performance
 
-ajv generates code to turn JSON schemas into javascript functions that are efficient for v8 optimization.
+Ajv generates code to turn JSON schemas into javascript functions that are efficient for v8 optimization.
 
-Currently ajv is the fastest validator according to these benchmarks:
+Currently Ajv is the fastest validator according to these benchmarks:
 
 - [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark) - 70% faster than the second place
 - [jsck benchmark](https://github.com/pandastrike/jsck#benchmarks) - 20-190% faster
@@ -117,7 +117,7 @@ if (!valid) console.log(ajv.errorsText());
 
 See [API](#api) and [Options](#options) for more details.
 
-ajv compiles schemas to functions and caches them in all cases (using schema stringified with [json-stable-stringify](https://github.com/substack/json-stable-stringify) as a key), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
+Ajv compiles schemas to functions and caches them in all cases (using schema stringified with [json-stable-stringify](https://github.com/substack/json-stable-stringify) as a key), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
 
 The best performance is achieved when using compiled functions returned by `compile` or `getSchema` methods (there is no additional function call).
 
@@ -126,11 +126,11 @@ __Please note__: every time validation function or `ajv.validate` are called `er
 
 ## Using in browser
 
-You can require ajv directly from the code you browserify - in this case ajv will be a part of your bundle.
+You can require Ajv directly from the code you browserify - in this case Ajv will be a part of your bundle.
 
-If you need to use ajv in several bundles you can create a separate UMD bundle using `npm run bundle` script (thanks to [siddo420](https://github.com/siddo420)).
+If you need to use Ajv in several bundles you can create a separate UMD bundle using `npm run bundle` script (thanks to [siddo420](https://github.com/siddo420)).
 
-Then you need to load ajv in the browser:
+Then you need to load Ajv in the browser:
 ```html
 <script src="ajv.min.js"></script>
 ```

@@ -1,6 +1,6 @@
 # Ajv type coercion rules
 
-To enable type coercion pass option `coerceTypes` to ajv (it is `false` by default). See [example](https://github.com/epoberezkin/ajv#coercing-data-types).
+To enable type coercion pass option `coerceTypes` to Ajv (it is `false` by default). See [example](https://github.com/epoberezkin/ajv#coercing-data-types).
 
 The coercion rules are different from JavaScript:
 - to validate user input as expected
@@ -17,8 +17,8 @@ Possible type coercions:
 |---|:-:|:-:|:-:|:-:|
 |string      |-|`x`&rarr;`""+x`|`false`&rarr;`"false"`<br>`true`&rarr;`"true"`|`null`&rarr;`""`|
 |number /<br>integer|Valid number /<br>integer: `x`&rarr;`+x`<br>|-|`false`&rarr;`0`<br>`true`&rarr;`1`|`null`&rarr;`0`|
-|boolean     |`"false"`&rarr;`false`<br>`"true"`&rarr;`true`<br>`"abc"`&nrarr;<br>`""`&nrarr;|`0`&rarr;`false`<br>`1`&rarr;`true`<br>`x`&nrarr;|-|`null`&rarr;`false`|
-|null        |`""`&rarr;`null`<br>`"null"`&nrarr;<br>`"abc"`&nrarr;|`0`&rarr;`null`<br>`x`&nrarr;|`false`&rarr;`null`<br>`true`&nrarr;|-|
+|boolean     |`"false"`&rarr;`false`<br>`"true"`&rarr;`true`<br>`"abc"`&#8696;<br>`""`&#8696;|`0`&rarr;`false`<br>`1`&rarr;`true`<br>`x`&#8696;|-|`null`&rarr;`false`|
+|null        |`""`&rarr;`null`<br>`"null"`&#8696;<br>`"abc"`&#8696;|`0`&rarr;`null`<br>`x`&#8696;|`false`&rarr;`null`<br>`true`&#8696;|-|
 
 
 ## Coersion from string values

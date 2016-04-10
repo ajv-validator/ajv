@@ -416,6 +416,7 @@ _invalid_: `{}`, `{"a": 1}`, `{"c": 3, "d":4}`
 
 The value of the keyword should be a map with keys equal to data object properties. Each value in the map should be a JSON schema. For data object to be valid the corresponding values in data object properties should be valid according to these schemas.
 
+__Please note__: `properties` keyword does not require that the properties mentioned in it are present in the object (see examples).
 
 __Example__
 
@@ -443,6 +444,8 @@ _invalid_: `{"foo": 1}`, `{"foo": "a", "bar": 1}`
 The value of this keyword should be a map where keys should be regular expressions and the values should be JSON schemas. For data object to be valid the values in data object properties that match regular expression(s) should be valid according to the corresponding schema(s).
 
 When the value in data object property matches multiple regular expressions it should be valid according to all the schemas for all matched regular expressions.
+
+__Please note__: `patternProperties` keyword does not require that properties matching patterns are present in the object (see examples).
 
 
 __Example__
