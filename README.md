@@ -337,7 +337,7 @@ __Please note__: all asynchronous subschemas that are referenced from the curren
 
 Validation function for an asynchronous custom format/keyword should return a promise that resolves to `true` or `false` (or rejects with `new Ajv.ValidationError(errors)` if you want to return custom errors from the keyword function). Ajv compiles asynchronous schemas to either [generator function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*) (default) that can be optionally transpiled with [regenerator](https://github.com/facebook/regenerator) or to [es7 async function](http://tc39.github.io/ecmascript-asyncawait/) that can be transpiled with [nodent](https://github.com/MatAtBread/nodent) or with regenerator as well. You can also supply any other transpiler as a function. See [Options](#options).
 
-The compiled validation function has `async: true` property (if the schema is asynchronous), so you can differentiate these functions if you are using both syncronous and asynchronous schemas.
+The compiled validation function has `$async: true` property (if the schema is asynchronous), so you can differentiate these functions if you are using both syncronous and asynchronous schemas.
 
 If you are using generators, the compiled validation function can be either wrapped with [co](https://github.com/tj/co) (default) or returned as generator function, that can be used directly, e.g. in [koa](http://koajs.com/) 1.0. `co` is a small library, it is included in Ajv (both as npm dependency and in the browser bundle).
 
@@ -561,9 +561,11 @@ With [option `useDefaults`](#options) Ajv will assign values from `default` keyw
 
 This option modifies original data.
 
-__Please note__: if the default value is an object or an array it will be inserted in the data by reference unless the option `useDefaults: "clone"` is passed.
+__Please note__: by default the default value is inserted in the generated validation code as a literal (starting from v4.0), so the value inserted in the data will be the deep clone of the default in the schema.
 
-The default behaviour is faster and it allows to have dynamic values in defaults, e.g. timestamp, without recompiling the schema. The side effect is that modifying the default value in any validated data instance will change the default in the schema and in other validated data instances. See example 3 below.
+If you need to insert the default value in the data by reference pass the option `useDefaults: "shared"`.
+
+Inserting defaults by reference can be faster (in case you have an object in `default`) and it allows to have dynamic values in defaults, e.g. timestamp, without recompiling the schema. The side effect is that modifying the default value in any validated data instance will change the default in the schema and in other validated data instances. See example 3 below.
 
 
 Example 1 (`default` in `properties`):
@@ -606,9 +608,11 @@ console.log(validate(data)); // true
 console.log(data); // [ 1, "foo" ]
 ```
 
-Example 3 (leaking "defaults"):
+Example 3 (inserting "defaults" by reference):
 
 ```javascript
+var ajv = Ajv({ useDefaults: 'shared' });
+
 var schema = {
   properties: {
     foo: {

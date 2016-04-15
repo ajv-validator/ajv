@@ -85,15 +85,15 @@ var {{=$valid}} = undefined;
   {{# def.elseIfValid }}
 
   {{# def.compareFormat }}
-  var exclusive{{=$lvl}} = {{=$schemaValueExcl}} === true;
+  var {{=$exclusive}} = {{=$schemaValueExcl}} === true;
 
   if ({{=$valid}} === undefined) {
-    {{=$valid}} = exclusive{{=$lvl}}
+    {{=$valid}} = {{=$exclusive}}
                   ? {{=$result}} {{=$op}} 0
                   : {{=$result}} {{=$op}}= 0;
   }
 
-  if (!{{=$valid}}) var op{{=$lvl}} = exclusive{{=$lvl}} ? '{{=$op}}' : '{{=$op}}=';
+  if (!{{=$valid}}) var op{{=$lvl}} = {{=$exclusive}} ? '{{=$op}}' : '{{=$op}}=';
 {{??}}
   {{
     var $exclusive = $schemaExcl === true
