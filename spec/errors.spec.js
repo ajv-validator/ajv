@@ -343,9 +343,9 @@ describe('Validation errors', function () {
       shouldBeValid(fullValidate, data);
       shouldBeInvalid(fullValidate, invalidData1);
       shouldBeError(fullValidate.errors[0], 'dependencies', '#/dependencies', path('/bar'), msg, params('bar'));
-      shouldBeInvalid(fullValidate, invalidData2/*, 2*/);
+      shouldBeInvalid(fullValidate, invalidData2, 2);
       shouldBeError(fullValidate.errors[0], 'dependencies', '#/dependencies', path('/foo'), msg, params('foo'));
-      // shouldBeError(fullValidate.errors[1], 'dependencies', path('/baz'), msg, params('baz'));
+      shouldBeError(fullValidate.errors[1], 'dependencies', '#/dependencies', path('/baz'), msg, params('baz'));
 
       function params(missing) {
         var p = {

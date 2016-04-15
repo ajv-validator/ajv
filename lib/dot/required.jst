@@ -62,8 +62,7 @@
       else {
     {{??}}
       if ({{# def.checkMissingProperty:$required }}) {
-        {{# def.errorMissingProperty }}
-        {{# def.error:'required' }}
+        {{# def.errorMissingProperty:'required' }}
       } else {
     {{?}}
   {{??}}
@@ -83,17 +82,8 @@
 
       {{? $isData }}  }  {{?}}
     {{??}}
-      {{~ $required:$property:$i }}
-        {{
-          var $prop = it.util.getProperty($property)
-            , $missingProperty = it.util.escapeQuotes($property);
-          if (it.opts._errorDataPathProperty) {
-            it.errorPath = it.util.getPath($currentErrorPath, $property, it.opts.jsonPointers);
-          }
-        }}
-        if ({{=$data}}{{=$prop}} === undefined) {
-          {{# def.addError:'required' }}
-        }
+      {{~ $required:$reqProperty }}
+        {{# def.allErrorsMissingProperty:'required' }}
       {{~}}
     {{?}}
   {{?}}
