@@ -96,6 +96,8 @@ describe('resolve', function () {
 
 
   describe('missing schema error', function() {
+    this.timeout(4000);
+
     it('should contain missingRef and missingSchema', function() {
       testMissingSchemaError({
         baseId: 'http://example.com/1.json',
