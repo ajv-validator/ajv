@@ -54,13 +54,13 @@
     ]
   },
   {
-    "description": "formatMinimum in the property with exclusiveFormatMinimum",
+    "description": "formatMinimum in the property with formatExclusiveMinimum",
     "schema": {
       "properties": {
         "finalDate": {
           "format": "date",
           "formatMinimum": { "$data": "1/laterThan" },
-          "exclusiveFormatMinimum": true
+          "formatExclusiveMinimum": true
         },
         "laterThan": {}
       }
@@ -140,13 +140,13 @@
     ]
   },
   {
-    "description": "formatMinimum with format in the property and with exclusiveFormatMinimum",
+    "description": "formatMinimum with format in the property and with formatExclusiveMinimum",
     "schema": {
       "properties": {
         "when": {
           "format": { "$data": "1/whenFormat" },
           "formatMinimum": "2015-08-17",
-          "exclusiveFormatMinimum": true
+          "formatExclusiveMinimum": true
         },
         "whenFormat": {}
       }
@@ -222,13 +222,13 @@
     ]
   },
   {
-    "description": "formatMinimum and format in the properties with exclusiveFormatMinimum",
+    "description": "formatMinimum and format in the properties with formatExclusiveMinimum",
     "schema": {
       "properties": {
         "when": {
           "format": { "$data": "1/whenFormat" },
           "formatMinimum": { "$data": "1/laterThan" },
-          "exclusiveFormatMinimum": true
+          "formatExclusiveMinimum": true
         },
         "whenFormat": {},
         "laterThan": {}
@@ -266,13 +266,13 @@
   },
 
   {
-    "description": "exclusiveFormatMinimum in the property",
+    "description": "formatExclusiveMinimum in the property",
     "schema": {
       "properties": {
         "finalDate": {
           "format": "date",
           "formatMinimum": "2015-08-17",
-          "exclusiveFormatMinimum": { "$data": "1/minIsExclusive" }
+          "formatExclusiveMinimum": { "$data": "1/minIsExclusive" }
         },
         "minIsExclusive": {}
       }
@@ -325,7 +325,7 @@
         "valid": true
       },
       {
-        "description": "fails if value of exclusiveFormatMinimum is not boolean",
+        "description": "fails if value of formatExclusiveMinimum is not boolean",
         "data": {
           "finalDate": "2015-11-09",
           "minIsExclusive": "false"
@@ -336,13 +336,13 @@
   },
 
   {
-    "description": "formatMinimum and exclusiveFormatMinimum in the properties",
+    "description": "formatMinimum and formatExclusiveMinimum in the properties",
     "schema": {
       "properties": {
         "finalDate": {
           "format": "date",
           "formatMinimum": { "$data": "1/laterThan" },
-          "exclusiveFormatMinimum": { "$data": "1/minIsExclusive" }
+          "formatExclusiveMinimum": { "$data": "1/minIsExclusive" }
         },
         "laterThan": {},
         "minIsExclusive": {}
@@ -402,7 +402,7 @@
         "valid": true
       },
       {
-        "description": "fails if value of exclusiveFormatMinimum is not boolean",
+        "description": "fails if value of formatExclusiveMinimum is not boolean",
         "data": {
           "finalDate": "2015-11-09",
           "laterThan": "2015-08-17",
@@ -423,13 +423,13 @@
   },
 
   {
-    "description": "formatMinimum with format and exclusiveFormatMinimum in the properties",
+    "description": "formatMinimum with format and formatExclusiveMinimum in the properties",
     "schema": {
       "properties": {
         "when": {
           "format": { "$data": "1/whenFormat" },
           "formatMinimum": "2015-08-17",
-          "exclusiveFormatMinimum": { "$data": "1/minIsExclusive" }
+          "formatExclusiveMinimum": { "$data": "1/minIsExclusive" }
         },
         "whenFormat": {},
         "minIsExclusive": {}
@@ -489,7 +489,7 @@
         "valid": true
       },
       {
-        "description": "fails if value of exclusiveFormatMinimum is not boolean",
+        "description": "fails if value of formatExclusiveMinimum is not boolean",
         "data": {
           "when": "2015-11-09",
           "whenFormat": "date",
@@ -501,13 +501,13 @@
   },
 
   {
-    "description": "formatMinimum, format and exclusiveFormatMinimum in the properties",
+    "description": "formatMinimum, format and formatExclusiveMinimum in the properties",
     "schema": {
       "properties": {
         "when": {
           "format": { "$data": "1/whenFormat" },
           "formatMinimum": { "$data": "1/laterThan" },
-          "exclusiveFormatMinimum": { "$data": "1/minIsExclusive" }
+          "formatExclusiveMinimum": { "$data": "1/minIsExclusive" }
         },
         "laterThan": {},
         "whenFormat": {},
@@ -574,7 +574,7 @@
         "valid": true
       },
       {
-        "description": "fails if value of exclusiveFormatMinimum is not boolean",
+        "description": "fails if value of formatExclusiveMinimum is not boolean",
         "data": {
           "when": "2015-11-09",
           "whenFormat": "date",

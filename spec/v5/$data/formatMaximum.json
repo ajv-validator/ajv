@@ -61,13 +61,13 @@
     ]
   },
   {
-    "description": "formatMaximum in the property with exclusiveFormatMaximum",
+    "description": "formatMaximum in the property with formatExclusiveMaximum",
     "schema": {
       "properties": {
         "finalDate": {
           "format": "date",
           "formatMaximum": { "$data": "1/beforeThan" },
-          "exclusiveFormatMaximum": true
+          "formatExclusiveMaximum": true
         },
         "beforeThan": {}
       }
@@ -147,13 +147,13 @@
     ]
   },
   {
-    "description": "formatMaximum with format in the property and with exclusiveFormatMaximum",
+    "description": "formatMaximum with format in the property and with formatExclusiveMaximum",
     "schema": {
       "properties": {
         "when": {
           "format": { "$data": "1/whenFormat" },
           "formatMaximum": "2015-08-17",
-          "exclusiveFormatMaximum": true
+          "formatExclusiveMaximum": true
         },
         "whenFormat": {}
       }
@@ -229,13 +229,13 @@
     ]
   },
   {
-    "description": "formatMaximum and format in the properties with exclusiveFormatMaximum",
+    "description": "formatMaximum and format in the properties with formatExclusiveMaximum",
     "schema": {
       "properties": {
         "when": {
           "format": { "$data": "1/whenFormat" },
           "formatMaximum": { "$data": "1/beforeThan" },
-          "exclusiveFormatMaximum": true
+          "formatExclusiveMaximum": true
         },
         "whenFormat": {},
         "beforeThan": {}
@@ -273,13 +273,13 @@
   },
 
   {
-    "description": "exclusiveFormatMaximum in the property",
+    "description": "formatExclusiveMaximum in the property",
     "schema": {
       "properties": {
         "finalDate": {
           "format": "date",
           "formatMaximum": "2015-08-17",
-          "exclusiveFormatMaximum": { "$data": "1/maxIsExclusive" }
+          "formatExclusiveMaximum": { "$data": "1/maxIsExclusive" }
         },
         "maxIsExclusive": {}
       }
@@ -332,7 +332,7 @@
         "valid": true
       },
       {
-        "description": "fails if value of exclusiveFormatMaximum is not boolean",
+        "description": "fails if value of formatExclusiveMaximum is not boolean",
         "data": {
           "finalDate": "2014-12-03",
           "maxIsExclusive": "false"
@@ -343,13 +343,13 @@
   },
 
   {
-    "description": "formatMaximum and exclusiveFormatMaximum in the properties",
+    "description": "formatMaximum and formatExclusiveMaximum in the properties",
     "schema": {
       "properties": {
         "finalDate": {
           "format": "date",
           "formatMaximum": { "$data": "1/beforeThan" },
-          "exclusiveFormatMaximum": { "$data": "1/maxIsExclusive" }
+          "formatExclusiveMaximum": { "$data": "1/maxIsExclusive" }
         },
         "beforeThan": {},
         "maxIsExclusive": {}
@@ -409,7 +409,7 @@
         "valid": true
       },
       {
-        "description": "fails if value of exclusiveFormatMaximum is not boolean",
+        "description": "fails if value of formatExclusiveMaximum is not boolean",
         "data": {
           "finalDate": "2014-12-03",
           "beforeThan": "2015-08-17",
@@ -430,13 +430,13 @@
   },
 
   {
-    "description": "formatMaximum with format and exclusiveFormatMaximum in the properties",
+    "description": "formatMaximum with format and formatExclusiveMaximum in the properties",
     "schema": {
       "properties": {
         "when": {
           "format": { "$data": "1/whenFormat" },
           "formatMaximum": "2015-08-17",
-          "exclusiveFormatMaximum": { "$data": "1/maxIsExclusive" }
+          "formatExclusiveMaximum": { "$data": "1/maxIsExclusive" }
         },
         "whenFormat": {},
         "maxIsExclusive": {}
@@ -496,7 +496,7 @@
         "valid": true
       },
       {
-        "description": "fails if value of exclusiveFormatMaximum is not boolean",
+        "description": "fails if value of formatExclusiveMaximum is not boolean",
         "data": {
           "when": "2014-12-03",
           "whenFormat": "date",
@@ -508,13 +508,13 @@
   },
 
   {
-    "description": "formatMaximum, format and exclusiveFormatMaximum in the properties",
+    "description": "formatMaximum, format and formatExclusiveMaximum in the properties",
     "schema": {
       "properties": {
         "when": {
           "format": { "$data": "1/whenFormat" },
           "formatMaximum": { "$data": "1/beforeThan" },
-          "exclusiveFormatMaximum": { "$data": "1/maxIsExclusive" }
+          "formatExclusiveMaximum": { "$data": "1/maxIsExclusive" }
         },
         "beforeThan": {},
         "whenFormat": {},
@@ -581,7 +581,7 @@
         "valid": true
       },
       {
-        "description": "fails if value of exclusiveFormatMaximum is not boolean",
+        "description": "fails if value of formatExclusiveMaximum is not boolean",
         "data": {
           "when": "2014-12-03",
           "whenFormat": "date",
