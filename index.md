@@ -59,7 +59,7 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
 - [assigning defaults](#assigning-defaults) to missing properties and items
 - NEW: [coercing data](#coercing-data-types) to the types specified in `type` keywords
 - [custom keywords](#defining-custom-keywords)
-- keywords `switch`, `constant`, `contains`, `patternGroups`, `patternRequired`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
+- keywords `switch`, `constant`, `contains`, `patternGroups`, `patternRequired`, `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
 - [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#) for schemas using v5 keywords
 - NEW: [v5 $data reference](#data-reference) to use values from the validated data as values for the schema keywords
 - NEW: [asynchronous validation](#asynchronous-validation) of custom formats and keywords
@@ -181,7 +181,7 @@ With option `v5: true` Ajv also supports all validation keywords and [$data refe
 - [constant](keywords.html#constant-v5-proposal) - check that data is equal to some value
 - [patternGroups](keywords.html#patterngroups-v5-proposal) - a more powerful alternative to patternProperties
 - [patternRequired](keywords.html#patternrequired-v5-proposal) - like `required` but with patterns that some property should match.
-- [formatMaximum, formatMinimum, exclusiveFormatMaximum, exclusiveFormatMinimum](keywords.html#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-v5-proposal) - setting limits for date, time, etc.
+- [formatMaximum, formatMinimum, formatExclusiveMaximum, formatExclusiveMinimum](keywords.html#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-v5-proposal) - setting limits for date, time, etc.
 
 See [JSON-Schema validation keywords](keywords.html) for more details.
 
@@ -214,7 +214,7 @@ You can find patterns used for format validation and the sources that were used 
 
 With `v5` option you can use values from the validated data as the values for the schema keywords. See [v5 proposal](https://github.com/json-schema/json-schema/wiki/$data-(v5-proposal)) for more information about how it works.
 
-`$data` reference is supported in the keywords: constant, enum, format, maximum/minimum, exclusiveMaximum / exclusiveMinimum, maxLength / minLength, maxItems / minItems, maxProperties / minProperties, formatMaximum / formatMinimum, exclusiveFormatMaximum / exclusiveFormatMinimum, multipleOf, pattern, required, uniqueItems.
+`$data` reference is supported in the keywords: constant, enum, format, maximum/minimum, exclusiveMaximum / exclusiveMinimum, maxLength / minLength, maxItems / minItems, maxProperties / minProperties, formatMaximum / formatMinimum, formatExclusiveMaximum / formatExclusiveMinimum, multipleOf, pattern, required, uniqueItems.
 
 The value of "$data" should be a [relative JSON-pointer](http://tools.ietf.org/html/draft-luff-relative-json-pointer-00).
 
@@ -869,7 +869,7 @@ Defaults:
 
 ##### Validation and reporting options
 
-- _v5_: add keywords `switch`, `constant`, `contains`, `patternGroups`, `patternRequired`, `formatMaximum` / `formatMinimum` and `exclusiveFormatMaximum` / `exclusiveFormatMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals). With this option added schemas without `$schema` property are validated against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#). `false` by default.
+- _v5_: add keywords `switch`, `constant`, `contains`, `patternGroups`, `patternRequired`, `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals). With this option added schemas without `$schema` property are validated against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#). `false` by default.
 - _allErrors_: check all rules collecting all errors. Default is to return after the first error.
 - _verbose_: include the reference to the part of the schema (`schema` and `parentSchema`) and validated data in errors (false by default).
 - _jsonPointers_: set `dataPath` propery of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
