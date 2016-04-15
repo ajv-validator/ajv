@@ -1020,7 +1020,9 @@ All validation functions are generated using doT templates in [dot](https://gith
 
 See https://github.com/epoberezkin/ajv/releases
 
-__Please note__: [Changes in version 3.0.0](https://github.com/epoberezkin/ajv/releases/tag/3.0.0).
+__Please note__: [Changes in version 4.0.0](https://github.com/epoberezkin/ajv/releases/tag/4.0.0).
+
+[Changes in version 3.0.0](https://github.com/epoberezkin/ajv/releases/tag/3.0.0).
 
 
 ## License
