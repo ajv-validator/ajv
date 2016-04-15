@@ -116,7 +116,7 @@
   switch:          "'should pass \"switch\" keyword validation'",
   constant:        "'should be equal to constant'",
   _formatLimit:    "'should be {{=$opStr}} \"{{#def.concatSchemaEQ}}\"'",
-  _exclusiveFormatLimit: "'{{=$exclusiveKeyword}} should be boolean'"
+  _formatExclusiveLimit: "'{{=$exclusiveKeyword}} should be boolean'"
 } #}}
 
 
@@ -149,7 +149,7 @@
   switch:          "validate.schema{{=$schemaPath}}",
   constant:        "validate.schema{{=$schemaPath}}",
   _formatLimit:    "{{#def.schemaRefOrQS}}",
-  _exclusiveFormatLimit: "validate.schema{{=$schemaPath}}"
+  _formatExclusiveLimit: "validate.schema{{=$schemaPath}}"
 } #}}
 
 
@@ -181,5 +181,5 @@
   switch:          "{ caseIndex: {{=$caseIndex}} }",
   constant:        "{}",
   _formatLimit:    "{ comparison: {{=$opExpr}}, limit: {{#def.schemaValueQS}}, exclusive: {{=$exclusive}} }",
-  _exclusiveFormatLimit: "{}"
+  _formatExclusiveLimit: "{}"
 } #}}

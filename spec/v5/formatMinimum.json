@@ -29,11 +29,11 @@
     ]
   },
   {
-    "description": "exclusiveFormatMinimum validation with date format",
+    "description": "formatExclusiveMinimum validation with date format",
     "schema": {
       "format": "date",
       "formatMinimum": "2015-08-17",
-      "exclusiveFormatMinimum": true
+      "formatExclusiveMinimum": true
     },
     "tests": [
       {
@@ -94,11 +94,11 @@
     ]
   },
   {
-    "description": "exclusiveFormatMinimum validation with time format",
+    "description": "formatExclusiveMinimum validation with time format",
     "schema": {
       "format": "time",
       "formatMinimum": "13:15:17.000Z",
-      "exclusiveFormatMinimum": true
+      "formatExclusiveMinimum": true
     },
     "tests": [
       {
@@ -169,11 +169,11 @@
     ]
   },
   {
-    "description": "exclusiveFormatMinimum validation with date-time format",
+    "description": "formatExclusiveMinimum validation with date-time format",
     "schema": {
       "format": "date-time",
       "formatMinimum": "2015-08-17T13:15:17.000Z",
-      "exclusiveFormatMinimum": true
+      "formatExclusiveMinimum": true
     },
     "tests": [
       {

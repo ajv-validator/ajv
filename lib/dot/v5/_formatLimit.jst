@@ -56,7 +56,7 @@ var {{=$valid}} = undefined;
 
 {{
   var $isMax = $keyword == 'formatMaximum'
-    , $exclusiveKeyword = 'exclusiveFormat' + ($isMax ? 'Maximum' : 'Minimum')
+    , $exclusiveKeyword = 'formatExclusive' + ($isMax ? 'Maximum' : 'Minimum')
     , $schemaExcl = it.schema[$exclusiveKeyword]
     , $isDataExcl = it.opts.v5 && $schemaExcl && $schemaExcl.$data
     , $op = $isMax ? '<' : '>'
@@ -79,7 +79,7 @@ var {{=$valid}} = undefined;
   if (typeof {{=$schemaValueExcl}} != 'boolean' && {{=$schemaValueExcl}} !== undefined) {
     {{=$valid}} = false;
     {{ var $errorKeyword = $exclusiveKeyword; }}
-    {{# def.error:'_exclusiveFormatLimit' }}
+    {{# def.error:'_formatExclusiveLimit' }}
   }
 
   {{# def.elseIfValid }}
