@@ -61,7 +61,7 @@
     "coveralls": "^2.11.4",
     "dot": "^1.0.3",
     "eslint": "^2.5.1",
-    "gh-pages-generator": "^0.1.0",
+    "gh-pages-generator": "^0.2.0",
     "glob": "^7.0.0",
     "istanbul": "^0.4.2",
     "js-beautify": "^1.5.6",
