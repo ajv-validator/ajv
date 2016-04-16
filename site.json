@@ -1,0 +1,51 @@
+{
+  "repository": "https://github.com/epoberezkin/ajv",
+  "folders": {
+    "source": "_source",
+    "target": ".",
+    "site": "ajv"
+  },
+  "layout": "main",
+  "navigation": [
+    {
+      "page": "index",
+      "linkText": "Home",
+      "home": true
+    },
+    {
+      "page": "keywords",
+      "linkText": "JSON-Schema keywords"
+    },
+    {
+      "page": "custom",
+      "linkText": "Custom keywords"
+    }
+  ],
+  "pages": [
+    {
+      "file": "README.md",
+      "page": "index",
+      "title": "Ajv - Another JSON Schema Validator"
+    },
+    {
+      "file": "COERCION.md",
+      "page": "coercion",
+      "title": "Ajv - Types Coercion"
+    },
+    {
+      "file": "CUSTOM.md",
+      "page": "custom",
+      "title": "Ajv - Custom Keywords"
+    },
+    {
+      "file": "KEYWORDS.md",
+      "page": "keywords",
+      "title": "Ajv - Validation Keywords"
+    },
+    {
+      "file": "LICENSE",
+      "page": "license",
+      "title": "Ajv - License"
+    }
+  ]
+}

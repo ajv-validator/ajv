@@ -1,0 +1,23 @@
+<ul id="page_links">
+  <li>
+    {% if page.page_name == 'index' %}
+      <span class="current_page">Home</span>
+    {% else %}
+      <a href="/ajv" title="Home">Home</a>
+    {% endif %}
+  </li>
+  <li>
+    {% if page.page_name == 'keywords' %}
+      <span class="current_page">JSON-Schema keywords</span>
+    {% else %}
+      <a href="/ajv/keywords.html" title="JSON-Schema keywords">JSON-Schema keywords</a>
+    {% endif %}
+  </li>
+  <li>
+    {% if page.page_name == 'custom' %}
+      <span class="current_page">Custom keywords</span>
+    {% else %}
+      <a href="/ajv/custom.html" title="Custom keywords">Custom keywords</a>
+    {% endif %}
+  </li>
+</ul>
