@@ -681,7 +681,7 @@ See [Coercion rules](https://github.com/epoberezkin/ajv/blob/master/COERCION.md)
 
 ##### Ajv(Object options) -&gt; Object
 
-Create ajv instance.
+Create Ajv instance.
 
 All the instance methods below are bound to the instance, so they can be used without the instance.
 
@@ -714,7 +714,7 @@ Validate data using passed schema (it will be compiled and cached).
 
 Instead of the schema you can use the key that was previously passed to `addSchema`, the schema id if it was present in the schema or any previously resolved reference.
 
-Validation errors will be available in the `errors` property of ajv instance (`null` if there were no errors).
+Validation errors will be available in the `errors` property of Ajv instance (`null` if there were no errors).
 
 __Please note__: every time this method is called the errors are overwritten so you need to copy them to another variable if you want to use them later.
 
@@ -779,7 +779,7 @@ If no parameter is passed all schemas but meta-schemas will be removed and the c
 
 ##### <a name="api-addformat"></a>.addFormat(String name, String|RegExp|Function|Object format)
 
-Add custom format to validate strings. It can also be used to replace pre-defined formats for ajv instance.
+Add custom format to validate strings. It can also be used to replace pre-defined formats for Ajv instance.
 
 Strings are converted to RegExp.
 
@@ -796,7 +796,7 @@ Custom formats can be also added via `formats` option.
 
 ##### <a name="api-addkeyword"></a>.addKeyword(String keyword, Object definition)
 
-Add custom validation keyword to ajv instance.
+Add custom validation keyword to Ajv instance.
 
 Keyword should be a valid JavaScript identifier.
 
@@ -938,7 +938,7 @@ Defaults:
 
 ## Validation errors
 
-In case of validation failure Ajv assigns the array of errors to `.errors` property of validation function (or to `.errors` property of ajv instance in case `validate` or `validateSchema` methods were called). In case of [asynchronous validation](#asynchronous-validation) the returned promise is rejected with the exception of the class `Ajv.ValidationError` that has `.errors` poperty.
+In case of validation failure Ajv assigns the array of errors to `.errors` property of validation function (or to `.errors` property of Ajv instance in case `validate` or `validateSchema` methods were called). In case of [asynchronous validation](#asynchronous-validation) the returned promise is rejected with the exception of the class `Ajv.ValidationError` that has `.errors` poperty.
 
 
 ### Error objects
