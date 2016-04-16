@@ -9,8 +9,9 @@ if [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" && $TRAV
     mkdir -p ../gh-pages/_source
     cp *.md ../gh-pages/_source
     cp LICENSE ../gh-pages/_source
+    currentDir=$(pwd)
     cd ../gh-pages
-    ./node_modules/.bin/gh-pages-generator
+    $currentDir/node_modules/.bin/gh-pages-generator
     git config user.email "$GIT_USER_EMAIL"
     git config user.name "$GIT_USER_NAME"
     git add .

@@ -140,7 +140,7 @@ While it can be more challenging to define keywords with "inline" functions, it 
 - the best performance
 - the precise control over validation process
 - access to the parent data and the path to the currently validated data
-- access to ajv utilities via `it.util`
+- access to Ajv utilities via `it.util`
 
 
 Example `even` keyword:
@@ -331,7 +331,7 @@ ajv.addKeyword('range', {
   statements: true,
   errors: true // keyword should create custom errors when validation fails
   // errors: 'full' // created errors should have dataPath already set
-  // errors: false // keyword never creates errors, ajv will add a default error
+  // errors: false // keyword never creates errors, Ajv will add a default error
 });
 ```
 
