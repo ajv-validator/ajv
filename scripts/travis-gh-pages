@@ -10,7 +10,7 @@ if [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" && $TRAV
     cp *.md ../gh-pages/_source
     cp LICENSE ../gh-pages/_source
     cd ../gh-pages
-    ./generate
+    ./node_modules/.bin/gh-pages-generator
     git config user.email "e.poberezkin@me.com"
     git config user.name "Evgeny Poberezkin"
     git add .
