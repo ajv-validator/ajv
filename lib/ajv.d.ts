@@ -9,10 +9,10 @@ declare namespace ajv {
     addMetaSchema(schema: Object, key?: string): void;
     validateSchema(schema: Object): boolean;
     getSchema(key: string): ValidateFunction;
-    removeSchema(schema: Object|string);
-    addFormat(name: string, format: RegExp|Function|Object|string): void;
+    removeSchema(schema: Object|string|RegExp);
+    addFormat(name: string, format: string|RegExp|Function|Object): void;
     addKeyword(keyword: string, definition: Object): void;
-    errorsText(errors?: Array<Object>, options?: Object);
+    errorsText(errors?: Array<ErrorObject>, options?: ErrorsTextOptions);
   }
 
   interface ValidateFunction {
@@ -21,33 +21,36 @@ declare namespace ajv {
   }
 
   interface Options {
+    v5?: boolean;
     allErrors?: boolean;
-    removeAdditional?: boolean;
-    useDefaults?: boolean;
-    coerceTypes?: boolean;
     verbose?: boolean;
-    format?: string;
-    formats?: Object;
-    schemas?: Object;
-    meta?: boolean;
-    validateSchema?: boolean;
-    addUsedSchema?: boolean;
-    inlineRefs?: boolean;
-    loopRequired?: number;
-    multipleOfPrecision?: boolean;
-    missingRefs?: boolean;
-    loadSchema?: (uri, cb: (err, schema) => any) => any;
+    jsonPointers?: boolean;
     uniqueItems?: boolean;
     unicode?: boolean;
-    beautify?: boolean;
-    cache?: any;
+    format?: string;
+    formats?: Object;
+    schemas?: Array<Object> | Object;
+    missingRefs?: boolean | string;
+    loadSchema?: (uri, cb: (err, schema) => any) => any;
+    removeAdditional?: boolean | string;
+    useDefaults?: boolean | string;
+    coerceTypes?: boolean;
+    async?: boolean | string;
+    transpile?: string | (code: string) => string;
+    meta?: boolean | Object;
+    validateSchema?: boolean | string;
+    addUsedSchema?: boolean;
+    inlineRefs?: boolean | number;
+    passContext?: boolean;
+    loopRequired?: number;
+    multipleOfPrecision?: number;
     errorDataPath?: string;
-    jsonPointers?: boolean;
     messages?: boolean;
-    v5?: boolean;
+    beautify?: boolean | Object;
+    cache?: Object;
   }
 
-  interface ErrorsOptions {
+  interface ErrorsTextOptions {
     separator?: string;
     dataVar?: string;
   }
@@ -62,7 +65,7 @@ declare namespace ajv {
     // These are added with the `verbose` option.
     schema?: Object;
     parentSchema?: Object;
-    data?: Object;
+    data?: any;
   }
 
   interface ErrorParameters {

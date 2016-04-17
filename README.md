@@ -737,7 +737,7 @@ Although `addSchema` does not compile schemas, explicit compilation is not requi
 By default the schema is validated against meta-schema before it is added, and if the schema does not pass validation the exception is thrown. This behaviour is controlled by `validateSchema` option.
 
 
-##### .addMetaSchema(Array&lt;Object&gt;Object schema [, String key])
+##### .addMetaSchema(Array&lt;Object&gt;|Object schema [, String key])
 
 Adds meta schema(s) that can be used to validate other schemas. That function should be used instead of `addSchema` because there may be instance options that would compile a meta schema incorrectly (at the moment it is `removeAdditional` option).
 
