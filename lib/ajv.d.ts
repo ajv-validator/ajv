@@ -3,20 +3,25 @@ declare function ajv (options?: ajv.Options): ajv.Ajv;
 declare namespace ajv {
   interface Ajv {
     compile(schema: Object): ValidateFunction;
-    compileAsync(schema: Object, cb: (err: any, validate: ValidateFunction) => any): void;
+    compileAsync(schema: Object, cb: (err: Error, validate: ValidateFunction) => any): void;
     validate(schema: Object | string, data: any): boolean;
     addSchema(schema: Array<Object> | Object, key?: string): void;
     addMetaSchema(schema: Object, key?: string): void;
     validateSchema(schema: Object): boolean;
     getSchema(key: string): ValidateFunction;
-    removeSchema(schema: Object|string|RegExp);
-    addFormat(name: string, format: string|RegExp|Function|Object): void;
-    addKeyword(keyword: string, definition: Object): void;
+    removeSchema(schema: Object | string | RegExp);
+    addFormat(name: string, format: string | RegExp | (data: string) => boolean | FormatDefinition): void;
+    addKeyword(keyword: string, definition: KeywordDefinition): void;
     errorsText(errors?: Array<ErrorObject>, options?: ErrorsTextOptions);
   }
 
   interface ValidateFunction {
-    (data: Object | string): boolean;
+    (
+      data: any,
+      dataPath?: string,
+      parentData?: Object | Array,
+      parentDataProperty?: string | number
+    ): boolean;
     errors?: Array<ErrorObject>;
   }
 
@@ -31,7 +36,7 @@ declare namespace ajv {
     formats?: Object;
     schemas?: Array<Object> | Object;
     missingRefs?: boolean | string;
-    loadSchema?: (uri, cb: (err, schema) => any) => any;
+    loadSchema?: (uri: string, cb: (err, schema) => any) => any;
     removeAdditional?: boolean | string;
     useDefaults?: boolean | string;
     coerceTypes?: boolean;
@@ -48,6 +53,37 @@ declare namespace ajv {
     messages?: boolean;
     beautify?: boolean | Object;
     cache?: Object;
+  }
+
+  interface FormatDefinition {
+    validate: string | RegExp | (data: string) => boolean;
+    compare: (data1: string, data2: string) => number;
+    async?: boolean;
+  }
+
+  interface KeywordDefinition {
+    type?: string | Array<string>;
+    async?: boolean;
+    errors?: boolean | string;
+    // schema: false makes validate not to expect schema (ValidateFunction)
+    schema?: boolean;
+    // one and only one of the following properties should be present
+    validate?: ValidateFunction | SchemaValidateFunction;
+    compile?: (schema: Object, parentSchema: Object) => ValidateFunction;
+    macro?: (schema: Object, parentSchema: Object) => Object;
+    inline?: (it: Object, keyword: string, schema: Object, parentSchema: Object) => string;
+  }
+
+  interface SchemaValidateFunction {
+    (
+      schema: Object,
+      data: any,
+      parentSchema?: Object,
+      dataPath?: string,
+      parentData?: Object | Array,
+      parentDataProperty?: string | number
+    ): boolean;
+    errors?: Array<ErrorObject>;
   }
 
   interface ErrorsTextOptions {
