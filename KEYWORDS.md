@@ -559,7 +559,7 @@ __Examples__
 
 
 
-### patternGroups (v5 proposal)
+### `patternGroups` (v5 proposal)
 
 The value of this keyword should be a map where keys should be regular expressions and the values should be objects with the following properties:
 
@@ -592,7 +592,7 @@ _invalid_: `{}`, `{ "foo": "bar" }`, `{ "1": "2" }`
 
 
 
-### patternRequired (v5 proposal)
+### `patternRequired` (v5 proposal)
 
 The value of this keyword should be an array of strings, each string being a regular expression. For data object to be valid each regular expression in this array should match at least one property name in the data object.
 
