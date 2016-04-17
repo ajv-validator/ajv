@@ -71,26 +71,50 @@ h1 {
   font-weight: 700;
 }
 
+h1 code {
+  font-size: 34px;
+}
+
 h2 {
   padding-bottom: 10px;
   font-size: 32px;
   background: url('../images/bg_hr.png') repeat-x bottom;
 }
 
+h2 code {
+  font-size: 30px;
+}
+
 h3 {
   font-size: 24px;
+}
+
+h3 code {
+  font-size: 22.5px;
 }
 
 h4 {
   font-size: 21px;
 }
 
+h4 code {
+  font-size: 19.5px;
+}
+
 h5 {
   font-size: 18px;
 }
 
+h5 code {
+  font-size: 16.5px;
+}
+
 h6 {
   font-size: 16px;
+}
+
+h6 code {
+  font-size: 15px;
 }
 
 p {
@@ -403,24 +427,48 @@ Small Device Styles
     font-size: 28px;
   }
 
+  h1 code {
+    font-size: 26px;
+  }
+
   h2 {
     font-size: 24px;
+  }
+
+  h2 code {
+    font-size: 22.5px;
   }
 
   h3 {
     font-size: 21px;
   }
 
+  h3 code {
+    font-size: 19.5px;
+  }
+
   h4 {
     font-size: 18px;
+  }
+
+  h4 code {
+    font-size: 16.5px;
   }
 
   h5 {
     font-size: 14px;
   }
 
+  h5 code {
+    font-size: 13px;
+  }
+
   h6 {
     font-size: 12px;
+  }
+
+  h6 code {
+    font-size: 11px;
   }
 
   code, pre {
