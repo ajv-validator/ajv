@@ -21,7 +21,7 @@ declare namespace ajv {
       dataPath?: string,
       parentData?: Object | Array,
       parentDataProperty?: string | number
-    ): boolean;
+    ): boolean | Promise;
     errors?: Array<ErrorObject>;
   }
 
@@ -82,7 +82,7 @@ declare namespace ajv {
       dataPath?: string,
       parentData?: Object | Array,
       parentDataProperty?: string | number
-    ): boolean;
+    ): boolean | Promise;
     errors?: Array<ErrorObject>;
   }
 
