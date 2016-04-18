@@ -337,7 +337,7 @@ describe('Type coercion', function () {
         tests.forEach(function (test) {
           var canCoerce = test.to !== undefined;
           var schema = canCoerce
-                         ? { type: toType, enum: [ test.to ] }
+                         ? { type: toType, "enum": [ test.to ] }
                          : { type: toType };
           cb(test, schema, canCoerce, toType, fromType);
         });

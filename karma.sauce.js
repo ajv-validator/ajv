@@ -46,10 +46,10 @@ module.exports = function(config) {
       browserName: 'internet explorer',
       version: '11' // default
     },
-    // 'SL_MicrosoftEdge': {
-    //   base: 'SauceLabs',
-    //   browserName: 'MicrosoftEdge'
-    // },
+    'SL_MicrosoftEdge': {
+      base: 'SauceLabs',
+      browserName: 'MicrosoftEdge'
+    },
     'SL_FireFox_17': {
       base: 'SauceLabs',
       browserName: 'firefox',
@@ -89,6 +89,11 @@ module.exports = function(config) {
       browserName: 'iphone',
       version: '9.2'
     }
+    // 'SL_Android_4': {
+    //   base: 'SauceLabs',
+    //   browserName: 'android',
+    //   version: '4'
+    // }
   };
 
 
