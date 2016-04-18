@@ -2,15 +2,15 @@ declare function ajv (options?: ajv.Options): ajv.Ajv;
 
 declare namespace ajv {
   interface Ajv {
+    validate(schemaKeyRef: Object | string, data: any): boolean;
     compile(schema: Object): ValidateFunction;
-    compileAsync(schema: Object, cb: (err: Error, validate: ValidateFunction) => any): void;
-    validate(schema: Object | string, data: any): boolean;
+    compileAsync(schema: Object, callback: (err: Error, validate: ValidateFunction) => any): void;
     addSchema(schema: Array<Object> | Object, key?: string): void;
     addMetaSchema(schema: Object, key?: string): void;
     validateSchema(schema: Object): boolean;
-    getSchema(key: string): ValidateFunction;
-    removeSchema(schema: Object | string | RegExp);
-    addFormat(name: string, format: string | RegExp | (data: string) => boolean | FormatDefinition): void;
+    getSchema(keyRef: string): ValidateFunction;
+    removeSchema(schemaKeyRef?: Object | string | RegExp);
+    addFormat(name: string, format: FormatValidator | FormatDefinition): void;
     addKeyword(keyword: string, definition: KeywordDefinition): void;
     errorsText(errors?: Array<ErrorObject>, options?: ErrorsTextOptions);
   }
@@ -55,8 +55,10 @@ declare namespace ajv {
     cache?: Object;
   }
 
+  type FormatValidator = string | RegExp | (data: string) => boolean;
+
   interface FormatDefinition {
-    validate: string | RegExp | (data: string) => boolean;
+    validate: FormatValidator;
     compare: (data1: string, data2: string) => number;
     async?: boolean;
   }
@@ -104,78 +106,82 @@ declare namespace ajv {
     data?: any;
   }
 
-  interface ErrorParameters {
-    maxItems?: MinMaxParam;
-    minItems?: MinMaxParam;
-    maxLength?: MinMaxParam;
-    minLength?: MinMaxParam;
-    maxProperties?: MinMaxParam;
-    minProperties?: MinMaxParam;
-    additionalItems?: MinMaxParam;
-    additionalProperties?: AdditionalPropertyParam;
-    patternGroups?: PatternGroup[];
-    dependencies?: Dependency[];
-    format?: Object;
-    maximum?: MaximumMinimumParam;
-    minimum?: MaximumMinimumParam;
-    multipleOf?: MultipleOfParam;
-    pattern?: PatternParam;
-    required?: RequiredParam;
-    type?: TypeParam;
-    uniqueItems?: UniqueItemsParam;
-    $ref?: RefParam;
+  type ErrorParameters = RefParams | LimitParams | AdditionalPropertiesParams |
+                          DependenciesParams | FormatParams | ComparisonParams |
+                          MultipleOfParams | PatternParams | RequiredParams |
+                          TypeParams | UniqueItemsParams | CustomParams |
+                          PatternGroupsParams | PatternRequiredParams |
+                          SwitchParams | NoParams;
+
+  interface RefParams {
+    ref: string;
   }
 
-  interface MinMaxParam {
+  interface LimitParams {
     limit: number;
   }
 
-  interface AdditionalPropertyParam {
+  interface AdditionalPropertiesParams {
     additionalProperty: string;
   }
 
-  interface PatternGroup {
-    pattern: string;
-    reason: string;
-    limit: number;
-  }
-
-  interface Dependency {
+  interface DependenciesParams {
     property: string;
     missingProperty: string;
-    deps: string;
     depsCount: number;
+    deps: string;
   }
 
-  interface MaximumMinimumParam {
-    limit: number;
-    exclusive: boolean;
+  interface FormatParams {
+    format: string
+  }
+
+  interface ComparisonParams {
     comparison: string;
+    limit: number | string;
+    exclusive: boolean;
   }
 
-  interface MultipleOfParam {
-    multipleOf: Object;
+  interface MultipleOfParams {
+    multipleOf: number;
   }
 
-  interface PatternParam {
-    pattern: Object;
+  interface PatternParams {
+    pattern: string;
   }
 
-  interface RequiredParam {
+  interface RequiredParams {
     missingProperty: string;
   }
 
-  interface TypeParam {
+  interface TypeParams {
     type: string;
   }
 
-  interface UniqueItemsParam {
+  interface UniqueItemsParams {
     i: number;
     j: number;
   }
-  interface RefParam {
-    ref: string;
+
+  interface CustomParams {
+    keyword: string;
   }
+
+  interface PatternGroupsParams {
+    reason: string;
+    limit: number;
+    pattern: string;
+  }
+
+  interface PatternRequiredParams {
+    missingPattern: string;
+  }
+
+  interface SwitchParams {
+    caseIndex: number;
+  }
+
+  interface NoParams {}
 }
 
 export = ajv;
