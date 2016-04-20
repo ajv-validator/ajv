@@ -138,6 +138,7 @@ module.exports = function(config) {
     },
     captureTimeout: 1200000,
     browserNoActivityTimeout: 600000,
+    browserDisconnectTimeout: 60000,
 
     customLaunchers: customLaunchers,
 
