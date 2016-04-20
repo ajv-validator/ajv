@@ -19,7 +19,7 @@ declare namespace ajv {
     (
       data: any,
       dataPath?: string,
-      parentData?: Object | Array,
+      parentData?: Object | Array<any>,
       parentDataProperty?: string | number
     ): boolean | Promise;
     errors?: Array<ErrorObject>;
@@ -41,7 +41,7 @@ declare namespace ajv {
     useDefaults?: boolean | string;
     coerceTypes?: boolean;
     async?: boolean | string;
-    transpile?: string | (code: string) => string;
+    transpile?: string | ((code: string) => string);
     meta?: boolean | Object;
     validateSchema?: boolean | string;
     addUsedSchema?: boolean;
@@ -55,7 +55,7 @@ declare namespace ajv {
     cache?: Object;
   }
 
-  type FormatValidator = string | RegExp | (data: string) => boolean;
+  type FormatValidator = string | RegExp | ((data: string) => boolean);
 
   interface FormatDefinition {
     validate: FormatValidator;
@@ -82,7 +82,7 @@ declare namespace ajv {
       data: any,
       parentSchema?: Object,
       dataPath?: string,
-      parentData?: Object | Array,
+      parentData?: Object | Array<any>,
       parentDataProperty?: string | number
     ): boolean | Promise;
     errors?: Array<ErrorObject>;
@@ -92,6 +92,8 @@ declare namespace ajv {
     separator?: string;
     dataVar?: string;
   }
+
+  type Promise = Object;
 
   interface ErrorObject {
     keyword: string;
