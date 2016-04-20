@@ -23,7 +23,6 @@ var valid{{=$lvl}};
 {{## def.callRuleValidate:
   {{=$ruleValidate.code}}.call(
     {{? it.opts.passContext }}this{{??}}self{{?}}
-    {{ var $validateArgs = $ruleValidate.validate.length; }}
     {{? $rDef.compile || $rDef.schema === false }}
       , {{=$data}}
     {{??}}
