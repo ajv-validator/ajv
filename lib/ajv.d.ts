@@ -21,7 +21,7 @@ declare namespace ajv {
       dataPath?: string,
       parentData?: Object | Array<any>,
       parentDataProperty?: string | number
-    ): boolean | Promise;
+    ): boolean | Promise<boolean>;
     errors?: Array<ErrorObject>;
   }
 
@@ -84,7 +84,7 @@ declare namespace ajv {
       dataPath?: string,
       parentData?: Object | Array<any>,
       parentDataProperty?: string | number
-    ): boolean | Promise;
+    ): boolean | Promise<boolean>;
     errors?: Array<ErrorObject>;
   }
 
@@ -92,8 +92,6 @@ declare namespace ajv {
     separator?: string;
     dataVar?: string;
   }
-
-  type Promise = Object;
 
   interface ErrorObject {
     keyword: string;
