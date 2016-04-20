@@ -2,52 +2,93 @@ declare function ajv (options?: ajv.Options): ajv.Ajv;
 
 declare namespace ajv {
   interface Ajv {
+    validate(schemaKeyRef: Object | string, data: any): boolean;
     compile(schema: Object): ValidateFunction;
-    compileAsync(schema: Object, cb: (err: any, validate: ValidateFunction) => any): void;
-    validate(schema: Object | string, data: any): boolean;
+    compileAsync(schema: Object, callback: (err: Error, validate: ValidateFunction) => any): void;
     addSchema(schema: Array<Object> | Object, key?: string): void;
     addMetaSchema(schema: Object, key?: string): void;
     validateSchema(schema: Object): boolean;
-    getSchema(key: string): ValidateFunction;
-    removeSchema(schema: Object|string);
-    addFormat(name: string, format: RegExp|Function|Object|string): void;
-    addKeyword(keyword: string, definition: Object): void;
-    errorsText(errors?: Array<Object>, options?: Object);
+    getSchema(keyRef: string): ValidateFunction;
+    removeSchema(schemaKeyRef?: Object | string | RegExp);
+    addFormat(name: string, format: FormatValidator | FormatDefinition): void;
+    addKeyword(keyword: string, definition: KeywordDefinition): void;
+    errorsText(errors?: Array<ErrorObject>, options?: ErrorsTextOptions);
   }
 
   interface ValidateFunction {
-    (data: Object | string): boolean;
+    (
+      data: any,
+      dataPath?: string,
+      parentData?: Object | Array<any>,
+      parentDataProperty?: string | number
+    ): boolean | Promise<boolean>;
     errors?: Array<ErrorObject>;
   }
 
   interface Options {
+    v5?: boolean;
     allErrors?: boolean;
-    removeAdditional?: boolean;
-    useDefaults?: boolean;
-    coerceTypes?: boolean;
     verbose?: boolean;
-    format?: string;
-    formats?: Object;
-    schemas?: Object;
-    meta?: boolean;
-    validateSchema?: boolean;
-    addUsedSchema?: boolean;
-    inlineRefs?: boolean;
-    loopRequired?: number;
-    multipleOfPrecision?: boolean;
-    missingRefs?: boolean;
-    loadSchema?: (uri, cb: (err, schema) => any) => any;
+    jsonPointers?: boolean;
     uniqueItems?: boolean;
     unicode?: boolean;
-    beautify?: boolean;
-    cache?: any;
+    format?: string;
+    formats?: Object;
+    schemas?: Array<Object> | Object;
+    missingRefs?: boolean | string;
+    loadSchema?: (uri: string, cb: (err, schema) => any) => any;
+    removeAdditional?: boolean | string;
+    useDefaults?: boolean | string;
+    coerceTypes?: boolean;
+    async?: boolean | string;
+    transpile?: string | ((code: string) => string);
+    meta?: boolean | Object;
+    validateSchema?: boolean | string;
+    addUsedSchema?: boolean;
+    inlineRefs?: boolean | number;
+    passContext?: boolean;
+    loopRequired?: number;
+    multipleOfPrecision?: number;
     errorDataPath?: string;
-    jsonPointers?: boolean;
     messages?: boolean;
-    v5?: boolean;
+    beautify?: boolean | Object;
+    cache?: Object;
   }
 
-  interface ErrorsOptions {
+  type FormatValidator = string | RegExp | ((data: string) => boolean);
+
+  interface FormatDefinition {
+    validate: FormatValidator;
+    compare: (data1: string, data2: string) => number;
+    async?: boolean;
+  }
+
+  interface KeywordDefinition {
+    type?: string | Array<string>;
+    async?: boolean;
+    errors?: boolean | string;
+    // schema: false makes validate not to expect schema (ValidateFunction)
+    schema?: boolean;
+    // one and only one of the following properties should be present
+    validate?: ValidateFunction | SchemaValidateFunction;
+    compile?: (schema: Object, parentSchema: Object) => ValidateFunction;
+    macro?: (schema: Object, parentSchema: Object) => Object;
+    inline?: (it: Object, keyword: string, schema: Object, parentSchema: Object) => string;
+  }
+
+  interface SchemaValidateFunction {
+    (
+      schema: Object,
+      data: any,
+      parentSchema?: Object,
+      dataPath?: string,
+      parentData?: Object | Array<any>,
+      parentDataProperty?: string | number
+    ): boolean | Promise<boolean>;
+    errors?: Array<ErrorObject>;
+  }
+
+  interface ErrorsTextOptions {
     separator?: string;
     dataVar?: string;
   }
@@ -62,81 +103,85 @@ declare namespace ajv {
     // These are added with the `verbose` option.
     schema?: Object;
     parentSchema?: Object;
-    data?: Object;
+    data?: any;
   }
 
-  interface ErrorParameters {
-    maxItems?: MinMaxParam;
-    minItems?: MinMaxParam;
-    maxLength?: MinMaxParam;
-    minLength?: MinMaxParam;
-    maxProperties?: MinMaxParam;
-    minProperties?: MinMaxParam;
-    additionalItems?: MinMaxParam;
-    additionalProperties?: AdditionalPropertyParam;
-    patternGroups?: PatternGroup[];
-    dependencies?: Dependency[];
-    format?: Object;
-    maximum?: MaximumMinimumParam;
-    minimum?: MaximumMinimumParam;
-    multipleOf?: MultipleOfParam;
-    pattern?: PatternParam;
-    required?: RequiredParam;
-    type?: TypeParam;
-    uniqueItems?: UniqueItemsParam;
-    $ref?: RefParam;
+  type ErrorParameters = RefParams | LimitParams | AdditionalPropertiesParams |
+                          DependenciesParams | FormatParams | ComparisonParams |
+                          MultipleOfParams | PatternParams | RequiredParams |
+                          TypeParams | UniqueItemsParams | CustomParams |
+                          PatternGroupsParams | PatternRequiredParams |
+                          SwitchParams | NoParams;
+
+  interface RefParams {
+    ref: string;
   }
 
-  interface MinMaxParam {
+  interface LimitParams {
     limit: number;
   }
 
-  interface AdditionalPropertyParam {
+  interface AdditionalPropertiesParams {
     additionalProperty: string;
   }
 
-  interface PatternGroup {
-    pattern: string;
-    reason: string;
-    limit: number;
-  }
-
-  interface Dependency {
+  interface DependenciesParams {
     property: string;
     missingProperty: string;
-    deps: string;
     depsCount: number;
+    deps: string;
   }
 
-  interface MaximumMinimumParam {
-    limit: number;
-    exclusive: boolean;
+  interface FormatParams {
+    format: string
+  }
+
+  interface ComparisonParams {
     comparison: string;
+    limit: number | string;
+    exclusive: boolean;
   }
 
-  interface MultipleOfParam {
-    multipleOf: Object;
+  interface MultipleOfParams {
+    multipleOf: number;
   }
 
-  interface PatternParam {
-    pattern: Object;
+  interface PatternParams {
+    pattern: string;
   }
 
-  interface RequiredParam {
+  interface RequiredParams {
     missingProperty: string;
   }
 
-  interface TypeParam {
+  interface TypeParams {
     type: string;
   }
 
-  interface UniqueItemsParam {
+  interface UniqueItemsParams {
     i: number;
     j: number;
   }
-  interface RefParam {
-    ref: string;
+
+  interface CustomParams {
+    keyword: string;
   }
+
+  interface PatternGroupsParams {
+    reason: string;
+    limit: number;
+    pattern: string;
+  }
+
+  interface PatternRequiredParams {
+    missingPattern: string;
+  }
+
+  interface SwitchParams {
+    caseIndex: number;
+  }
+
+  interface NoParams {}
 }
 
 export = ajv;

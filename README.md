@@ -737,7 +737,7 @@ Although `addSchema` does not compile schemas, explicit compilation is not requi
 By default the schema is validated against meta-schema before it is added, and if the schema does not pass validation the exception is thrown. This behaviour is controlled by `validateSchema` option.
 
 
-##### .addMetaSchema(Array&lt;Object&gt;Object schema [, String key])
+##### .addMetaSchema(Array&lt;Object&gt;|Object schema [, String key])
 
 Adds meta schema(s) that can be used to validate other schemas. That function should be used instead of `addSchema` because there may be instance options that would compile a meta schema incorrectly (at the moment it is `removeAdditional` option).
 
@@ -810,6 +810,7 @@ Keyword definition is an object with the following properties:
 - _macro_: macro function
 - _inline_: compiling function that returns code (as string)
 - _async_: an optional `true` value if the validation function is asynchronous (whether it is compiled or passed in _validate_ property); in this case it should return a promise that resolves with a value `true` or `false`. This option is ignored in case of "macro" and "inline" keywords.
+- _errors_: an optional boolean indicating whether keyword returns errors. If this property is not set Ajv will determine if the errors were set in case of failed validation.
 
 _validate_, _compile_, _macro_ and _inline_ are mutually exclusive, only one should be used at a time.
 
