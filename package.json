@@ -17,7 +17,7 @@
     "test-fast": "AJV_FAST_TEST=true npm run test-spec",
     "test-debug": "mocha spec/*.spec.js --debug-brk -R spec",
     "test-cov": "istanbul cover -x '**/spec/**' node_modules/mocha/bin/_mocha -- spec/*.spec.js -R spec",
-    "test-ts": "tsc --target ES2015 lib/ajv.d.ts",
+    "test-ts": "tsc --target ES5 --noImplicitAny lib/ajv.d.ts",
     "bundle": "./scripts/bundle . Ajv pure_getters",
     "bundle-regenerator": "./scripts/bundle regenerator",
     "bundle-nodent": "./scripts/bundle nodent",
