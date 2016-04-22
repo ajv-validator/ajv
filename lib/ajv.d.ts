@@ -9,10 +9,14 @@ declare namespace ajv {
     addMetaSchema(schema: Object, key?: string): void;
     validateSchema(schema: Object): boolean;
     getSchema(keyRef: string): ValidateFunction;
-    removeSchema(schemaKeyRef?: Object | string | RegExp);
+    removeSchema(schemaKeyRef?: Object | string | RegExp): void;
     addFormat(name: string, format: FormatValidator | FormatDefinition): void;
     addKeyword(keyword: string, definition: KeywordDefinition): void;
-    errorsText(errors?: Array<ErrorObject>, options?: ErrorsTextOptions);
+    errorsText(errors?: Array<ErrorObject>, options?: ErrorsTextOptions): string;
+  }
+
+  interface Thenable <R> {
+    then <U> (onFulfilled?: (value: R) => U | Thenable<U>, onRejected?: (error: any) => U | Thenable<U>): Thenable<U>;
   }
 
   interface ValidateFunction {
@@ -21,7 +25,7 @@ declare namespace ajv {
       dataPath?: string,
       parentData?: Object | Array<any>,
       parentDataProperty?: string | number
-    ): boolean | Promise<boolean>;
+    ): boolean | Thenable<boolean>;
     errors?: Array<ErrorObject>;
   }
 
@@ -36,7 +40,7 @@ declare namespace ajv {
     formats?: Object;
     schemas?: Array<Object> | Object;
     missingRefs?: boolean | string;
-    loadSchema?: (uri: string, cb: (err, schema) => any) => any;
+    loadSchema?: (uri: string, cb: (err: Error, schema: Object) => any) => any;
     removeAdditional?: boolean | string;
     useDefaults?: boolean | string;
     coerceTypes?: boolean;
@@ -84,7 +88,7 @@ declare namespace ajv {
       dataPath?: string,
       parentData?: Object | Array<any>,
       parentDataProperty?: string | number
-    ): boolean | Promise<boolean>;
+    ): boolean | Thenable<boolean>;
     errors?: Array<ErrorObject>;
   }
 
