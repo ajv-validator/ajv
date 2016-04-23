@@ -1,10 +1,9 @@
 [
   {
-    "skip": true,
-    "description": "ref resolution when sibling has id (#170)",
+    "description": "ref resolution when sibling property has id (#170)",
     "schema": {
       "$schema": "http://json-schema.org/draft-04/schema#",
-      "id": "http://example.com/base",
+      "id": "http://example.com/base_object",
       "type": "object",
       "properties": {
         "title": {
@@ -29,6 +28,48 @@
           "file": "bar"
         },
         "valid": true
+      },
+      {
+        "description": "valid object",
+        "data": {
+          "title": "foo",
+          "file": 2
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "ref resolution when sibling item has id",
+    "schema": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "id": "http://example.com/base_array",
+      "type": "array",
+      "items": [
+        {
+          "id": "http://example.com/title",
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/file-entry"
+        }
+      ],
+      "definitions": {
+        "file-entry": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid array",
+        "data": [ "foo", "bar" ],
+        "valid": true
+      },
+      {
+        "description": "valid array",
+        "data": [ "foo", 2 ],
+        "valid": false
       }
     ]
   }

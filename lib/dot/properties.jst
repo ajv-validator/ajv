@@ -16,10 +16,9 @@
     $it.dataPathArr[$dataNxt] = 'key' + $lvl;
   }}
 
-  {{ var $code = it.validate($it); }}
+  {{# def.generateSubschemaCode }}
   {{# def.optimizeValidate }}
 #}}
-
 
 {{
   var $dataNxt = $it.dataLevel = it.dataLevel + 1
@@ -34,7 +33,8 @@
     , $additionalIsSchema = typeof $aProperties == 'object'
                               && Object.keys($aProperties).length
     , $removeAdditional = it.opts.removeAdditional
-    , $checkAdditional = $noAdditional || $additionalIsSchema || $removeAdditional;
+    , $checkAdditional = $noAdditional || $additionalIsSchema || $removeAdditional
+    , $currentBaseId = it.baseId;
 
   var $required = it.schema.required;
   if ($required && !(it.opts.v5 && $required.$data) && $required.length < it.opts.loopRequired)
@@ -150,7 +150,7 @@ var valid{{=$it.level}} = true;
         $it.dataPathArr[$dataNxt] = it.util.toQuotedString($propertyKey);
       }}
 
-      {{ var $code = it.validate($it); }}
+      {{# def.generateSubschemaCode }}
 
       {{? {{# def.willOptimize }} }}
         {{
@@ -219,7 +219,7 @@ var valid{{=$it.level}} = true;
           $it.dataPathArr[$dataNxt] = 'key' + $lvl;
         }}
 
-        {{ var $code = it.validate($it); }}
+        {{# def.generateSubschemaCode }}
         {{# def.optimizeValidate }}
 
         {{? $breakOnError }} if (!valid{{=$it.level}}) break; {{?}}
@@ -260,7 +260,7 @@ var valid{{=$it.level}} = true;
             $it.dataPathArr[$dataNxt] = 'key' + $lvl;
           }}
 
-          {{ var $code = it.validate($it); }}
+          {{# def.generateSubschemaCode }}
           {{# def.optimizeValidate }}
 
           {{? $breakOnError }} if (!valid{{=$it.level}}) break; {{?}}

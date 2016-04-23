@@ -12,7 +12,7 @@
       $it.dataPathArr[$dataNxt] = 'i' + $lvl;
     }}
 
-    {{ var $code = it.validate($it); }}
+    {{# def.generateSubschemaCode }}
     {{# def.optimizeValidate }}
 
     {{? $breakOnError }}
@@ -23,7 +23,8 @@
 
 {{
   var $dataNxt = $it.dataLevel = it.dataLevel + 1
-    , $nextData = 'data' + $dataNxt;
+    , $nextData = 'data' + $dataNxt
+    , $currentBaseId = it.baseId;
 }}
 
 var {{=$errs}} = errors;
@@ -57,7 +58,7 @@ var {{=$valid}};
           $it.dataPathArr[$dataNxt] = $i;
         }}
 
-        {{ var $code = it.validate($it); }}
+        {{# def.generateSubschemaCode }}
         {{# def.optimizeValidate }}
       }
 
