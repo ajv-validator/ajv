@@ -1,0 +1,35 @@
+[
+  {
+    "skip": true,
+    "description": "ref resolution when sibling has id (#170)",
+    "schema": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "id": "http://example.com/base",
+      "type": "object",
+      "properties": {
+        "title": {
+          "id": "http://example.com/title",
+          "type": "string"
+        },
+        "file": {
+          "$ref": "#/definitions/file-entry"
+        }
+      },
+      "definitions": {
+        "file-entry": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid object",
+        "data": {
+          "title": "foo",
+          "file": "bar"
+        },
+        "valid": true
+      }
+    ]
+  }
+]
