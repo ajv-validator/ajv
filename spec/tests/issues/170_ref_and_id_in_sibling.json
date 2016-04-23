@@ -10,14 +10,10 @@
           "id": "http://example.com/title",
           "type": "string"
         },
-        "file": {
-          "$ref": "#/definitions/file-entry"
-        }
+        "file": { "$ref": "#/definitions/file-entry" }
       },
       "definitions": {
-        "file-entry": {
-          "type": "string"
-        }
+        "file-entry": { "type": "string" }
       }
     },
     "tests": [
@@ -50,14 +46,10 @@
           "id": "http://example.com/0",
           "type": "string"
         },
-        {
-          "$ref": "#/definitions/file-entry"
-        }
+        { "$ref": "#/definitions/file-entry" }
       ],
       "definitions": {
-        "file-entry": {
-          "type": "string"
-        }
+        "file-entry": { "type": "string" }
       }
     },
     "tests": [
@@ -83,14 +75,10 @@
           "id": "http://example.com/0",
           "type": "number"
         },
-        {
-          "$ref": "#/definitions/def"
-        }
+        { "$ref": "#/definitions/def" }
       ],
       "definitions": {
-        "def": {
-          "type": "string"
-        }
+        "def": { "type": "string" }
       }
     },
     "tests": [
@@ -121,14 +109,10 @@
           "id": "http://example.com/0",
           "type": "number"
         },
-        {
-          "$ref": "#/definitions/def"
-        }
+        { "$ref": "#/definitions/def" }
       ],
       "definitions": {
-        "def": {
-          "type": "string"
-        }
+        "def": { "type": "string" }
       }
     },
     "tests": [
@@ -160,14 +144,10 @@
           "type": "string",
           "maxLength": 3
         },
-        {
-          "$ref": "#/definitions/def"
-        }
+        { "$ref": "#/definitions/def" }
       ],
       "definitions": {
-        "def": {
-          "type": "string"
-        }
+        "def": { "type": "string" }
       }
     },
     "tests": [
@@ -194,14 +174,10 @@
           "id": "http://example.com/foo",
           "required": [ "bar" ]
         },
-        "bar": {
-          "$ref": "#/definitions/def"
-        }
+        "bar": { "$ref": "#/definitions/def" }
       },
       "definitions": {
-        "def": {
-          "required": [ "baz" ]
-        }
+        "def": { "required": [ "baz" ] }
       }
     },
     "tests": [

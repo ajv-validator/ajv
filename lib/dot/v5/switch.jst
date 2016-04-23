@@ -30,7 +30,7 @@
     $it.schemaPath = $schemaPath + '[' + $caseIndex + ']._clause';
     $it.errSchemaPath = $errSchemaPath + '/' + $caseIndex + '/_clause';
   }}
-  {{= it.validate($it) }}
+  {{# def.insertSubschemaCode }}
 #}}
 
 {{## def.switchCase:
@@ -51,6 +51,7 @@
 
 {{
   var $ifPassed = 'ifPassed' + it.level
+    , $currentBaseId = $it.baseId
     , $shouldContinue;
 }}
 var {{=$ifPassed}};

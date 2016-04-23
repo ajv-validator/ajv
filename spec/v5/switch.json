@@ -216,5 +216,40 @@
         "valid": false
       }
     ]
+  },
+  {
+    "description": "switch keyword with id in sibling subschema",
+    "schema": {
+      "id": "http://example.com/base_switch",
+      "switch": [
+        {
+          "if": {
+            "id": "http://example.com/if",
+            "minimum": 10
+          },
+          "then": { "$ref": "#/definitions/def" }
+        }
+      ],
+      "definitions": {
+        "def": { "multipleOf": 2 }
+      }
+    },
+    "tests": [
+      {
+        "description": ">= 10 and even is valid",
+        "data": 12,
+        "valid": true
+      },
+      {
+        "description": ">= 10 and odd is invalid",
+        "data": 11,
+        "valid": false
+      },
+      {
+        "description": "< 10 is valid",
+        "data": 9,
+        "valid": true
+      }
+    ]
   }
 ]
