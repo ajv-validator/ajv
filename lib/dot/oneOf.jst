@@ -7,6 +7,7 @@ var {{=$errs}} = errors;
 var prevValid{{=$lvl}} = false;
 var {{=$valid}} = false;
 
+{{ var $currentBaseId = $it.baseId; }}
 {{# def.setCompositeRule }}
 
 {{~ $schema:$sch:$i }}
@@ -17,7 +18,7 @@ var {{=$valid}} = false;
       $it.errSchemaPath = $errSchemaPath + '/' + $i;
     }}
 
-    {{= it.validate($it) }}
+    {{# def.insertSubschemaCode }}
   {{??}}
     var valid{{=$it.level}} = true;
   {{?}}

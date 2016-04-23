@@ -9,6 +9,7 @@
   });
 }}
 {{? $noEmptySchema }}
+  {{ var $currentBaseId = $it.baseId; }}
   var {{=$errs}} = errors;
   var {{=$valid}} = false;
 
@@ -21,7 +22,7 @@
       $it.errSchemaPath = $errSchemaPath + '/' + $i;
     }}
 
-    {{= it.validate($it) }}
+    {{# def.insertSubschemaCode }}
 
     {{=$valid}} = {{=$valid}} || valid{{=$it.level}};
 

@@ -1,6 +1,6 @@
 [
   {
-    "description": "ref resolution when sibling property has id (#170)",
+    "description": "sibling property has id (#170)",
     "schema": {
       "$schema": "http://json-schema.org/draft-04/schema#",
       "id": "http://example.com/base_object",
@@ -30,7 +30,7 @@
         "valid": true
       },
       {
-        "description": "valid object",
+        "description": "invalid object",
         "data": {
           "title": "foo",
           "file": 2
@@ -40,14 +40,14 @@
     ]
   },
   {
-    "description": "ref resolution when sibling item has id",
+    "description": "sibling item has id",
     "schema": {
       "$schema": "http://json-schema.org/draft-04/schema#",
       "id": "http://example.com/base_array",
       "type": "array",
       "items": [
         {
-          "id": "http://example.com/title",
+          "id": "http://example.com/0",
           "type": "string"
         },
         {
@@ -67,8 +67,157 @@
         "valid": true
       },
       {
-        "description": "valid array",
+        "description": "invalid array",
         "data": [ "foo", 2 ],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "sibling schema in anyOf has id",
+    "schema": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "id": "http://example.com/base_anyof",
+      "anyOf": [
+        {
+          "id": "http://example.com/0",
+          "type": "number"
+        },
+        {
+          "$ref": "#/definitions/def"
+        }
+      ],
+      "definitions": {
+        "def": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid string",
+        "data": "foo",
+        "valid": true
+      },
+      {
+        "description": "valid number",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "invalid object",
+        "data": {},
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "sibling schema in oneOf has id",
+    "schema": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "id": "http://example.com/base_oneof",
+      "oneOf": [
+        {
+          "id": "http://example.com/0",
+          "type": "number"
+        },
+        {
+          "$ref": "#/definitions/def"
+        }
+      ],
+      "definitions": {
+        "def": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid string",
+        "data": "foo",
+        "valid": true
+      },
+      {
+        "description": "valid number",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "invalid object",
+        "data": {},
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "sibling schema in allOf has id",
+    "schema": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "id": "http://example.com/base_allof",
+      "allOf": [
+        {
+          "id": "http://example.com/0",
+          "type": "string",
+          "maxLength": 3
+        },
+        {
+          "$ref": "#/definitions/def"
+        }
+      ],
+      "definitions": {
+        "def": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid string",
+        "data": "foo",
+        "valid": true
+      },
+      {
+        "description": "invalid string",
+        "data": "quux",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "sibling schema in dependencies has id",
+    "schema": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "id": "http://example.com/base_dependencies",
+      "type": "object",
+      "dependencies": {
+        "foo": {
+          "id": "http://example.com/foo",
+          "required": [ "bar" ]
+        },
+        "bar": {
+          "$ref": "#/definitions/def"
+        }
+      },
+      "definitions": {
+        "def": {
+          "required": [ "baz" ]
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid object",
+        "data": { "foo": 1, "bar": 2, "baz": 3 },
+        "valid": true
+      },
+      {
+        "description": "invalid object 2",
+        "data": { "foo": 1 },
+        "valid": false
+      },
+      {
+        "description": "invalid object 2",
+        "data": { "foo": 1, "bar": 2 },
         "valid": false
       }
     ]

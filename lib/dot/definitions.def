@@ -88,6 +88,12 @@
 #}}
 
 
+{{## def.insertSubschemaCode:
+  {{= it.validate($it) }}
+  {{ $it.baseId = $currentBaseId; }}
+#}}
+
+
 {{## def._optimizeValidate:
   it.util.varReplace($code, $nextData, $passData)
 #}}

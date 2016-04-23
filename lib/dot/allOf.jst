@@ -3,6 +3,8 @@
 {{# def.setupKeyword }}
 {{# def.setupNextLevel }}
 
+{{ var $currentBaseId = $it.baseId; }}
+
 {{~ $schema:$sch:$i }}
   {{? {{# def.nonEmptySchema:$sch }} }}
     {{
@@ -11,7 +13,7 @@
       $it.errSchemaPath = $errSchemaPath + '/' + $i;
     }}
 
-    {{= it.validate($it) }}
+    {{# def.insertSubschemaCode }}
 
     {{# def.ifResultValid }}
   {{?}}

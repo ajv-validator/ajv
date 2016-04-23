@@ -36,7 +36,10 @@ var missing{{=$lvl}};
   } {{# def.elseIfValid }}
 {{ } }}
 
-{{ it.errorPath = $currentErrorPath; }}
+{{
+  it.errorPath = $currentErrorPath;
+  var $currentBaseId = $it.baseId;
+}}
 
 
 {{ for (var $property in $schemaDeps) { }}
@@ -51,7 +54,7 @@ var missing{{=$lvl}};
         $it.errSchemaPath = $errSchemaPath + '/' + it.util.escapeFragment($property);
       }}
 
-      {{= it.validate($it) }}
+      {{# def.insertSubschemaCode }}
     }
 
     {{# def.ifResultValid }}
