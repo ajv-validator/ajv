@@ -28,8 +28,6 @@ declare namespace ajv {
     * Adds schema to the instance.
     * @param {Object|Array} schema schema or array of schemas. If array is passed, `key` and other parameters will be ignored.
     * @param {String} key Optional schema key. Can be passed to `validate` method instead of schema object or id/ref. One schema per instance can have empty `id` and `key`.
-    * @param {Boolean} _skipValidation true to skip schema validation. Used internally, option validateSchema should be used instead.
-    * @param {Boolean} _meta true if schema is a meta-schema. Used internally, addMetaSchema should be used instead.
     */
     addSchema(schema: Array<Object> | Object, key?: string): void;
     /**
@@ -37,13 +35,11 @@ declare namespace ajv {
     * options in META_IGNORE_OPTIONS are alway set to false
     * @param {Object} schema schema object
     * @param {String} key optional schema key
-    * @param {Boolean} skipValidation true to skip schema validation, can be used to override validateSchema option for meta-schema
     */
     addMetaSchema(schema: Object, key?: string): void;
     /**
     * Validate schema
     * @param {Object} schema schema to validate
-    * @param {Boolean} throwOrLogError pass true to throw (or log) an error if invalid
     * @return {Boolean} true if schema is valid
     */
     validateSchema(schema: Object): boolean;
@@ -81,6 +77,7 @@ declare namespace ajv {
     * @return {String} human readable string with all errors descriptions
     */
     errorsText(errors?: Array<ErrorObject>, options?: ErrorsTextOptions): string;
+    errors?: Array<ErrorObject>;
   }
 
   interface Thenable <R> {
