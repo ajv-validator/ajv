@@ -7,7 +7,7 @@ var Ajv = require('./ajv')
 describe('issue #8: schema with shared references', function() {
   it('should be supported by addSchema', spec('addSchema'));
 
-  it('should be supported by compile', spec('addSchema'));
+  it('should be supported by compile', spec('compile'));
 
   function spec(method) {
     return function() {
@@ -80,5 +80,32 @@ describe('issue #50: references with "definitions"', function () {
       result. should.equal(true);
       should.equal(ajv.errors, null);
     };
+  }
+});
+
+
+describe('issue #182, NaN validation', function() {
+  var ajv;
+
+  before(function(){
+    ajv = Ajv();
+  });
+
+  it('should not pass minimum/maximum validation', function() {
+    testNaN({ minimum: 1 }, false);
+    testNaN({ maximum: 1 }, false);
+  });
+
+  it('should pass type: number validation', function() {
+    testNaN({ type: 'number' }, true);
+  });
+
+  it('should not pass type: integer validation', function() {
+    testNaN({ type: 'integer' }, false);
+  });
+
+  function testNaN(schema, NaNisValid) {
+    var validate = Ajv().compile(schema);
+    validate(NaN) .should.equal(NaNisValid);
   }
 });

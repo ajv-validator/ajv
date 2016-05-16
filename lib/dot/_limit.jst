@@ -29,7 +29,8 @@
   } else if({{# def.$dataNotType:'number' }}
             ((exclusive{{=$lvl}} = {{=$schemaValueExcl}} === true)
               ? {{=$data}} {{=$notOp}}= {{=$schemaValue}}
-              : {{=$data}} {{=$notOp}} {{=$schemaValue}})) {
+              : {{=$data}} {{=$notOp}} {{=$schemaValue}})
+            || {{=$data}} !== {{=$data}}) {
     var op{{=$lvl}} = exclusive{{=$lvl}} ? '{{=$op}}' : '{{=$op}}=';
 {{??}}
   {{
@@ -39,7 +40,9 @@
     var $opExpr = '\'' + $opStr + '\''; /*used in error*/
   }}
 
-  if ({{# def.$dataNotType:'number' }} {{=$data}} {{=$notOp}}{{?$exclusive}}={{?}} {{=$schemaValue}}) {
+  if ({{# def.$dataNotType:'number' }}
+      {{=$data}} {{=$notOp}}{{?$exclusive}}={{?}} {{=$schemaValue}}
+      || {{=$data}} !== {{=$data}}) {
 {{?}}
     {{ var $errorKeyword = $keyword; }}
     {{# def.error:'_limit' }}
