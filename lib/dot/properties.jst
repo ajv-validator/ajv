@@ -133,6 +133,7 @@ var valid{{=$it.level}} = true;
 {{?}}
 
 {{ var $useDefaults = it.opts.useDefaults && !it.compositeRule; }}
+var matchedProps = {};
 
 {{? $schemaKeys.length }}
   {{~ $schemaKeys:$propertyKey }}
@@ -197,6 +198,10 @@ var valid{{=$it.level}} = true;
     {{?}} {{ /* def.nonEmptySchema */ }}
 
     {{# def.ifResultValid }}
+
+    if (valid{{=$it.level}}) {
+      matchedProps["{{=$propertyKey}}"] = true;
+    }
   {{~}}
 {{?}}
 
@@ -212,6 +217,11 @@ var valid{{=$it.level}} = true;
     }}
 
     for (var key{{=$lvl}} in {{=$data}}) {
+      if (matchedProps[key{{=$lvl}}]) {
+        valid{{=$it.level}} = true;
+        continue;
+      }
+
       if ({{= it.usePattern($pProperty) }}.test(key{{=$lvl}})) {
         {{
           $it.errorPath = it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
