@@ -842,6 +842,7 @@ Defaults:
   format:           'fast',
   formats:          {},
   schemas:          {},
+  ownProperties:    false,
   // referenced schema options:
   missingRefs:      true,
   loadSchema:       undefined, // function(uri, cb) { /* ... */ cb(err, schema); },
@@ -878,7 +879,7 @@ Defaults:
 - _format_: formats validation mode ('fast' by default). Pass 'full' for more correct and slow validation or `false` not to validate formats at all. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
 - _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
 - _schemas_: an array or object of schemas that will be added to the instance. If the order is important, pass array. In this case schemas must have IDs in them. Otherwise the object can be passed - `addSchema(value, key)` will be called for each schema in this object.
-
+- _ownProperties_: indicates that when iterating properties of data to be validated, only properties found directly upon the object are used (rather than all enumerable properties)
 
 ##### Referenced schema options
 
