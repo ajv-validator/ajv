@@ -5,13 +5,17 @@
 {{
   var $key = 'key' + $lvl
     , $matched = 'patternMatched' + $lvl
-    , $closingBraces = '';
+    , $closingBraces = ''
+    , $ownProperties = it.opts.ownProperties;
 }}
 
 var {{=$valid}} = true;
 {{~ $schema:$pProperty }}
   var {{=$matched}} = false;
   for (var {{=$key}} in {{=$data}}) {
+    {{? $ownProperties }}
+    if (!{{=$data}}.hasOwnProperty({{=$key}})) continue;
+    {{?}}
     {{=$matched}} = {{= it.usePattern($pProperty) }}.test({{=$key}});
     if ({{=$matched}}) break;
   }

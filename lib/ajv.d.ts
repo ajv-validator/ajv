@@ -104,6 +104,7 @@ declare namespace ajv {
     format?: string;
     formats?: Object;
     schemas?: Array<Object> | Object;
+    ownProperties?: boolean;
     missingRefs?: boolean | string;
     loadSchema?: (uri: string, cb: (err: Error, schema: Object) => any) => any;
     removeAdditional?: boolean | string;

@@ -34,6 +34,7 @@
                               && Object.keys($aProperties).length
     , $removeAdditional = it.opts.removeAdditional
     , $checkAdditional = $noAdditional || $additionalIsSchema || $removeAdditional
+    , $ownProperties = it.opts.ownProperties
     , $currentBaseId = it.baseId;
 
   var $required = it.schema.required;
@@ -52,6 +53,10 @@ var valid{{=$it.level}} = true;
 
 {{? $checkAdditional }}
   for (var key{{=$lvl}} in {{=$data}}) {
+    {{? $ownProperties }}
+    if (!{{=$data}}.hasOwnProperty(key{{=$lvl}})) continue;
+    {{?}}
+
     {{? $someProperties }}
       var isAdditional{{=$lvl}} = !(false
         {{? $schemaKeys.length }}
@@ -212,6 +217,10 @@ var valid{{=$it.level}} = true;
     }}
 
     for (var key{{=$lvl}} in {{=$data}}) {
+      {{? $ownProperties }}
+      if (!{{=$data}}.hasOwnProperty(key{{=$lvl}})) continue;
+      {{?}}
+
       if ({{= it.usePattern($pProperty) }}.test(key{{=$lvl}})) {
         {{
           $it.errorPath = it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
@@ -251,6 +260,10 @@ var valid{{=$it.level}} = true;
       var pgPropCount{{=$lvl}} = 0;
 
       for (var key{{=$lvl}} in {{=$data}}) {
+        {{? $ownProperties }}
+        if (!{{=$data}}.hasOwnProperty(key{{=$lvl}})) continue;
+        {{?}}
+
         if ({{= it.usePattern($pgProperty) }}.test(key{{=$lvl}})) {
           pgPropCount{{=$lvl}}++;
 

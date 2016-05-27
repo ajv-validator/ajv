@@ -85,6 +85,71 @@ describe('Ajv Options', function () {
   });
 
 
+  describe('ownProperties', function() {
+    it('should only validate against own properties of data if specified', function() {
+      var ajv = Ajv({ ownProperties: true });
+      var validate = ajv.compile({
+        properties: { c: { type: 'number' } },
+        additionalProperties: false
+      });
+
+      var triangle = { a: 1, b: 2 };
+      function ColoredTriangle() { this.c = 3; }
+      ColoredTriangle.prototype = triangle;
+      var object = new ColoredTriangle();
+
+      validate(object).should.equal(true);
+      should.equal(validate.errors, null);
+    });
+
+    it('should only validate against own properties when using patternProperties', function() {
+      var ajv = Ajv({ allErrors: true, ownProperties: true });
+      var validate = ajv.compile({
+        patternProperties: { 'f.*o': { type: 'integer' } },
+      });
+
+      var baz = { foooo: false, fooooooo: 42.31 };
+      function FooThing() { this.foo = 'not a number'; }
+      FooThing.prototype = baz;
+      var object = new FooThing();
+
+      validate(object).should.equal(false);
+      validate.errors.should.have.length(1);
+    });
+
+    it('should only validate against own properties when using patternGroups', function() {
+      var ajv = Ajv({ v5: true, allErrors: true, ownProperties: true });
+      var validate = ajv.compile({
+        patternGroups: {
+          'f.*o': { schema: { type: 'integer' } }
+        }
+      });
+
+      var baz = { foooo: false, fooooooo: 42.31 };
+      function FooThing() { this.foo = 'not a number'; }
+      FooThing.prototype = baz;
+      var object = new FooThing();
+
+      validate(object).should.equal(false);
+      validate.errors.should.have.length(1);
+    });
+
+    it('should only validate against own properties when using patternRequired', function() {
+      var ajv = Ajv({ v5: true, allErrors: true, ownProperties: true });
+      var validate = ajv.compile({
+        patternRequired: [ 'f.*o' ]
+      });
+
+      var baz = { foooo: false, fooooooo: 42.31 };
+      function FooThing() { this.bar = 123; }
+      FooThing.prototype = baz;
+      var object = new FooThing();
+
+      validate(object).should.equal(false);
+      validate.errors.should.have.length(1);
+    });
+  });
+
   describe('meta and validateSchema', function() {
     it('should add draft-4 meta schema by default', function() {
       testOptionMeta(Ajv());
@@ -296,13 +361,13 @@ describe('Ajv Options', function () {
         var validate = ajv.compile({ minLength: 2 });
 
         validateWithUnicode('😀') .should.equal(false);
-        validate('😀') .should.equal(true);        
+        validate('😀') .should.equal(true);
 
         var validateWithUnicode = ajvUnicode.compile({ maxLength: 1 });
         var validate = ajv.compile({ maxLength: 1 });
 
         validateWithUnicode('😀') .should.equal(true);
-        validate('😀') .should.equal(false);        
+        validate('😀') .should.equal(false);
       }
     });
   });
