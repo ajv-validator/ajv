@@ -20,8 +20,10 @@
   {{# def.optimizeValidate }}
 #}}
 
+
 {{
-  var $dataNxt = $it.dataLevel = it.dataLevel + 1
+  var $key = 'key' + $lvl
+    , $dataNxt = $it.dataLevel = it.dataLevel + 1
     , $nextData = 'data' + $dataNxt;
 
   var $schemaKeys = Object.keys($schema || {})
@@ -52,30 +54,27 @@ var {{=$errs}} = errors;
 var valid{{=$it.level}} = true;
 
 {{? $checkAdditional }}
-  for (var key{{=$lvl}} in {{=$data}}) {
-    {{? $ownProperties }}
-    if (!{{=$data}}.hasOwnProperty(key{{=$lvl}})) continue;
-    {{?}}
-
+  for (var {{=$key}} in {{=$data}}) {
+    {{# def.checkOwnProperty }}
     {{? $someProperties }}
       var isAdditional{{=$lvl}} = !(false
         {{? $schemaKeys.length }}
           {{? $schemaKeys.length > 5 }}
-            || validate.schema{{=$schemaPath}}[key{{=$lvl}}]
+            || validate.schema{{=$schemaPath}}[{{=$key}}]
           {{??}}
             {{~ $schemaKeys:$propertyKey }}
-              || key{{=$lvl}} == {{= it.util.toQuotedString($propertyKey) }}
+              || {{=$key}} == {{= it.util.toQuotedString($propertyKey) }}
             {{~}}
           {{?}}
         {{?}}
         {{? $pPropertyKeys.length }}
           {{~ $pPropertyKeys:$pProperty:$i }}
-            || {{= it.usePattern($pProperty) }}.test(key{{=$lvl}})
+            || {{= it.usePattern($pProperty) }}.test({{=$key}})
           {{~}}
         {{?}}
         {{? it.opts.v5 && $pgPropertyKeys && $pgPropertyKeys.length }}
           {{~ $pgPropertyKeys:$pgProperty:$i }}
-            || {{= it.usePattern($pgProperty) }}.test(key{{=$lvl}})
+            || {{= it.usePattern($pgProperty) }}.test({{=$key}})
           {{~}}
         {{?}}
       );
@@ -83,7 +82,7 @@ var valid{{=$it.level}} = true;
       if (isAdditional{{=$lvl}}) {
     {{?}}
     {{? $removeAdditional == 'all' }}
-      delete {{=$data}}[key{{=$lvl}}];
+      delete {{=$data}}[{{=$key}}];
     {{??}}
       {{
         var $currentErrorPath = it.errorPath;
@@ -94,7 +93,7 @@ var valid{{=$it.level}} = true;
       }}
       {{? $noAdditional }}
         {{? $removeAdditional }}
-          delete {{=$data}}[key{{=$lvl}}];
+          delete {{=$data}}[{{=$key}}];
         {{??}}
           valid{{=$it.level}} = false;
           {{
@@ -118,7 +117,7 @@ var valid{{=$it.level}} = true;
               if (errors) validate.errors.length = errors;
               else validate.errors = null;
             }
-            delete {{=$data}}[key{{=$lvl}}];
+            delete {{=$data}}[{{=$key}}];
           }
 
           {{# def.resetCompositeRule }}
@@ -216,12 +215,9 @@ var valid{{=$it.level}} = true;
                                            + it.util.escapeFragment($pProperty);
     }}
 
-    for (var key{{=$lvl}} in {{=$data}}) {
-      {{? $ownProperties }}
-      if (!{{=$data}}.hasOwnProperty(key{{=$lvl}})) continue;
-      {{?}}
-
-      if ({{= it.usePattern($pProperty) }}.test(key{{=$lvl}})) {
+    for (var {{=$key}} in {{=$data}}) {
+      {{# def.checkOwnProperty }}
+      if ({{= it.usePattern($pProperty) }}.test({{=$key}})) {
         {{
           $it.errorPath = it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
           var $passData = $data + '[key' + $lvl + ']';
@@ -259,12 +255,9 @@ var valid{{=$it.level}} = true;
 
       var pgPropCount{{=$lvl}} = 0;
 
-      for (var key{{=$lvl}} in {{=$data}}) {
-        {{? $ownProperties }}
-        if (!{{=$data}}.hasOwnProperty(key{{=$lvl}})) continue;
-        {{?}}
-
-        if ({{= it.usePattern($pgProperty) }}.test(key{{=$lvl}})) {
+      for (var {{=$key}} in {{=$data}}) {
+        {{# def.checkOwnProperty }}
+        if ({{= it.usePattern($pgProperty) }}.test({{=$key}})) {
           pgPropCount{{=$lvl}}++;
 
           {{

@@ -170,3 +170,10 @@
     , parentDataProperty
   {{?}}
 #}}
+
+
+{{## def.checkOwnProperty:
+  {{? $ownProperties }}
+    if (!Object.prototype.hasOwnProperty.call({{=$data}}, {{=$key}})) continue;
+  {{?}}
+#}}

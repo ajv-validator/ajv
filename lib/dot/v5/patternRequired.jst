@@ -13,9 +13,7 @@ var {{=$valid}} = true;
 {{~ $schema:$pProperty }}
   var {{=$matched}} = false;
   for (var {{=$key}} in {{=$data}}) {
-    {{? $ownProperties }}
-    if (!{{=$data}}.hasOwnProperty({{=$key}})) continue;
-    {{?}}
+    {{# def.checkOwnProperty }}
     {{=$matched}} = {{= it.usePattern($pProperty) }}.test({{=$key}});
     if ({{=$matched}}) break;
   }
