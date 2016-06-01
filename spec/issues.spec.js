@@ -109,3 +109,22 @@ describe('issue #182, NaN validation', function() {
     validate(NaN) .should.equal(NaNisValid);
   }
 });
+
+
+describe('issue #204, options schemas and v5 used together', function() {
+  it('should use v5 metaschemas by default', function() {
+    var ajv = Ajv({
+      v5: true,
+      schemas: [{id: 'str', type: 'string'}],
+    });
+
+    var schema = { constant: 42 };
+    var validate = ajv.compile(schema);
+
+    validate(42) .should.equal(true);
+    validate(43) .should.equal(false);
+
+    ajv.validate('str', 'foo') .should.equal(true);
+    ajv.validate('str', 42) .should.equal(false);
+  });
+});
