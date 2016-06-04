@@ -1,8 +1,9 @@
 # Ajv: Another JSON Schema Validator
 
-Currently the fastest JSON Schema validator for node.js and browser.
+The fastest JSON Schema validator for node.js and browser.
 
-It uses [doT templates](https://github.com/olado/doT) to generate super-fast validating functions.
+Supports [v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals).
+
 
 [![Build Status](https://travis-ci.org/epoberezkin/ajv.svg?branch=master)](https://travis-ci.org/epoberezkin/ajv)
 [![npm version](https://badge.fury.io/js/ajv.svg)](https://www.npmjs.com/package/ajv)
@@ -12,8 +13,8 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
 
 ## Contents
 
-- [Features](#features)
 - [Performance](#performance)
+- [Features](#features)
 - [Getting started](#getting-started)
 - [Using in browser](#using-in-browser)
 - [Command line interface](#command-line-interface)
@@ -34,6 +35,28 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
   - [Validation errors](#validation-errors)
 - [Packages using Ajv](#some-packages-using-ajv)
 - [Tests, Contributing, History, License](#tests)
+
+
+## Performance
+
+Ajv generates code using [doT templates](https://github.com/olado/doT) to turn JSON schemas into super-fast validation functions that are efficient for v8 optimization.
+
+Currently Ajv is the fastest and the most standard compliant validator according to these benchmarks:
+
+- [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark) - 70% faster than the second place
+- [jsck benchmark](https://github.com/pandastrike/jsck#benchmarks) - 20-190% faster
+- [z-schema benchmark](https://rawgit.com/zaggino/z-schema/master/benchmark/results.html)
+- [themis benchmark](https://cdn.rawgit.com/playlyfe/themis/master/benchmark/results.html)
+
+
+Performace of different validators by [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark):
+
+[![performance](https://chart.googleapis.com/chart?chxt=x,y&cht=bhs&chco=76A4FB&chls=2.0&chbh=32,4,1&chs=600x416&chxl=-1:|ajv|is-my-json-valid|jsen|schemasaurus|themis|z-schema|jsck|jsonschema|skeemas|tv4|jayschema&chd=t:100,68,61,22.8,17.6,6.6,2.7,0.9,0.7,0.4,0.1)](https://github.com/ebdrup/json-schema-benchmark/blob/master/README.md#performance)
+
+
+Number of errors in the [official JSON-schema test suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (smaller is better):
+
+[![failing tests](https://chart.googleapis.com/chart?chxt=x,y&cht=bhs&chco=76A4FB&chls=2.0&chbh=18,4,1&chs=600x416&chxl=-1:|ajv|skeemas|z-schema|jsonschema|jjv|is-my-json-valid|jayschema|jsen|themis|schemasaurus|jsck|tv4|request-validator|jassi|json-model|JSV|json-gate|revalidator&chd=t:1,2,3,4,7,10,10,11,14,16,18,24,29,31,40,57,71,138&chxr=0,0,138&chds=0,138)](https://github.com/ebdrup/json-schema-benchmark/blob/master/README.md#test-failure-summary)
 
 
 ## Features
@@ -60,18 +83,6 @@ It uses [doT templates](https://github.com/olado/doT) to generate super-fast val
 - NEW: [asynchronous validation](#asynchronous-validation) of custom formats and keywords
 
 Currently Ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
-
-
-## Performance
-
-Ajv generates code to turn JSON schemas into javascript functions that are efficient for v8 optimization.
-
-Currently Ajv is the fastest validator according to these benchmarks:
-
-- [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark) - 70% faster than the second place
-- [jsck benchmark](https://github.com/pandastrike/jsck#benchmarks) - 20-190% faster
-- [z-schema benchmark](https://rawgit.com/zaggino/z-schema/master/benchmark/results.html)
-- [themis benchmark](https://cdn.rawgit.com/playlyfe/themis/master/benchmark/results.html)
 
 
 ## Install
