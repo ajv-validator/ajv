@@ -52,11 +52,6 @@ Performace of different validators by [json-schema-benchmark](https://github.com
 [![performance](https://chart.googleapis.com/chart?chxt=x,y&cht=bhs&chco=76A4FB&chls=2.0&chbh=32,4,1&chs=600x416&chxl=-1:%7Cajv%7Cis-my-json-valid%7Cjsen%7Cschemasaurus%7Cthemis%7Cz-schema%7Cjsck%7Cjsonschema%7Cskeemas%7Ctv4%7Cjayschema&chd=t:100,68,61,22.8,17.6,6.6,2.7,0.9,0.7,0.4,0.1)](https://github.com/ebdrup/json-schema-benchmark/blob/master/README.md#performance)
 
 
-Number of errors in the [official JSON-schema test suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (fewer is better):
-
-[![failing tests](https://chart.googleapis.com/chart?chxt=x,y&cht=bhs&chco=76A4FB&chls=2.0&chbh=18,4,1&chs=600x416&chxl=-1:%7Cajv%7Cskeemas%7Cz-schema%7Cjsonschema%7Cjjv%7Cis-my-json-valid%7Cjayschema%7Cjsen%7Cthemis%7Cschemasaurus%7Cjsck%7Ctv4%7Crequest-validator%7Cjassi%7Cjson-model%7CJSV%7Cjson-gate%7Crevalidator&chd=t:1,2,3,4,7,10,10,11,14,16,18,24,29,31,40,57,71,138&chxr=0,0,138&chds=0,138)](https://github.com/ebdrup/json-schema-benchmark/blob/master/README.md#test-failure-summary)
-
-
 ## Features
 
 - Ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
