@@ -46,7 +46,7 @@ Ajv generates code using [doT templates](https://github.com/olado/doT) to turn J
 
 Currently Ajv is the fastest and the most standard compliant validator according to these benchmarks:
 
-- [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark) - 70% faster than the second place
+- [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark) - 50% faster than the second place
 - [jsck benchmark](https://github.com/pandastrike/jsck#benchmarks) - 20-190% faster
 - [z-schema benchmark](https://rawgit.com/zaggino/z-schema/master/benchmark/results.html)
 - [themis benchmark](https://cdn.rawgit.com/playlyfe/themis/master/benchmark/results.html)
