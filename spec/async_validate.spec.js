@@ -371,27 +371,27 @@ describe('async schemas, formats and keywords', function() {
 describe('async/transpile option', function() {
   it('should throw error with unknown async option', function() {
     shouldThrowFunc('bad async mode: es8', function() {
-      Ajv({ async: 'es8' });
+      new Ajv({ async: 'es8' });
     });
   });
 
 
   it('should throw error with unknown transpile option', function() {
     shouldThrowFunc('bad transpiler: babel', function() {
-      Ajv({ transpile: 'babel' });
+      new Ajv({ transpile: 'babel' });
     });
 
     shouldThrowFunc('bad transpiler: [object Object]', function() {
-      Ajv({ transpile: {} });
+      new Ajv({ transpile: {} });
     });
   });
 
 
   it('should set async option to es7 if tranpiler is nodent', function() {
-    var ajv1 = Ajv({ transpile: 'nodent' });
+    var ajv1 = new Ajv({ transpile: 'nodent' });
     ajv1._opts.async .should.equal('es7');
 
-    var ajv2 = Ajv({ async: '*', transpile: 'nodent' });
+    var ajv2 = new Ajv({ async: '*', transpile: 'nodent' });
     ajv2._opts.async .should.equal('es7');
   });
 });

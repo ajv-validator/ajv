@@ -11,7 +11,7 @@ describe('issue #8: schema with shared references', function() {
 
   function spec(method) {
     return function() {
-      var ajv = Ajv();
+      var ajv = new Ajv();
 
       var propertySchema = {
         type: 'string',
@@ -48,7 +48,7 @@ describe('issue #50: references with "definitions"', function () {
     return function() {
       var result;
 
-      var ajv = Ajv();
+      var ajv = new Ajv();
 
       ajv[method]({
         id: 'http://example.com/test/person.json#',
@@ -88,7 +88,7 @@ describe('issue #182, NaN validation', function() {
   var ajv;
 
   before(function(){
-    ajv = Ajv();
+    ajv = new Ajv();
   });
 
   it('should not pass minimum/maximum validation', function() {
@@ -105,7 +105,7 @@ describe('issue #182, NaN validation', function() {
   });
 
   function testNaN(schema, NaNisValid) {
-    var validate = Ajv().compile(schema);
+    var validate = new Ajv().compile(schema);
     validate(NaN) .should.equal(NaNisValid);
   }
 });
@@ -113,7 +113,7 @@ describe('issue #182, NaN validation', function() {
 
 describe('issue #204, options schemas and v5 used together', function() {
   it('should use v5 metaschemas by default', function() {
-    var ajv = Ajv({
+    var ajv = new Ajv({
       v5: true,
       schemas: [{id: 'str', type: 'string'}],
     });

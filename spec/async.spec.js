@@ -50,7 +50,7 @@ describe('compileAsync method', function() {
 
   beforeEach(function() {
     loadCallCount = 0;
-    ajv = Ajv({ loadSchema: loadSchema });
+    ajv = new Ajv({ loadSchema: loadSchema });
   });
 
 
@@ -201,7 +201,7 @@ describe('compileAsync method', function() {
       "type": "integer",
       "minimum": 2
     };
-    var ajv = Ajv();
+    var ajv = new Ajv();
     should.throw(function() {
       ajv.compileAsync(schema, function() {
         done(new Error('it should have thrown exception'));
@@ -263,7 +263,7 @@ describe('compileAsync method', function() {
           "a": { "$ref": "object.json" }
         }
       };
-      var ajv = Ajv({ loadSchema: badLoadSchema });
+      var ajv = new Ajv({ loadSchema: badLoadSchema });
       ajv.compileAsync(schema, function (err, validate) {
         should.exist(err);
         should.not.exist(validate);

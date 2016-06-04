@@ -9,7 +9,7 @@ var Ajv = require('./ajv')
 describe('Ajv Options', function () {
   describe('removeAdditional', function() {
     it('should remove all additional properties', function() {
-      var ajv = Ajv({ removeAdditional: 'all' });
+      var ajv = new Ajv({ removeAdditional: 'all' });
 
       ajv.addSchema({
         id: '//test/fooBar',
@@ -28,7 +28,7 @@ describe('Ajv Options', function () {
 
 
     it('should remove properties that would error when `additionalProperties = false`', function() {
-      var ajv = Ajv({ removeAdditional: true });
+      var ajv = new Ajv({ removeAdditional: true });
 
       ajv.addSchema({
         id: '//test/fooBar',
@@ -48,7 +48,7 @@ describe('Ajv Options', function () {
 
 
     it('should remove properties that would error when `additionalProperties` is a schema', function() {
-      var ajv = Ajv({ removeAdditional: 'failing' });
+      var ajv = new Ajv({ removeAdditional: 'failing' });
 
       ajv.addSchema({
         id: '//test/fooBar',
@@ -87,7 +87,7 @@ describe('Ajv Options', function () {
 
   describe('ownProperties', function() {
     it('should only validate against own properties of data if specified', function() {
-      var ajv = Ajv({ ownProperties: true });
+      var ajv = new Ajv({ ownProperties: true });
       var validate = ajv.compile({
         properties: { c: { type: 'number' } },
         additionalProperties: false
@@ -103,7 +103,7 @@ describe('Ajv Options', function () {
     });
 
     it('should only validate against own properties when using patternProperties', function() {
-      var ajv = Ajv({ allErrors: true, ownProperties: true });
+      var ajv = new Ajv({ allErrors: true, ownProperties: true });
       var validate = ajv.compile({
         patternProperties: { 'f.*o': { type: 'integer' } },
       });
@@ -118,7 +118,7 @@ describe('Ajv Options', function () {
     });
 
     it('should only validate against own properties when using patternGroups', function() {
-      var ajv = Ajv({ v5: true, allErrors: true, ownProperties: true });
+      var ajv = new Ajv({ v5: true, allErrors: true, ownProperties: true });
       var validate = ajv.compile({
         patternGroups: {
           'f.*o': { schema: { type: 'integer' } }
@@ -135,7 +135,7 @@ describe('Ajv Options', function () {
     });
 
     it('should only validate against own properties when using patternRequired', function() {
-      var ajv = Ajv({ v5: true, allErrors: true, ownProperties: true });
+      var ajv = new Ajv({ v5: true, allErrors: true, ownProperties: true });
       var validate = ajv.compile({
         patternRequired: [ 'f.*o' ]
       });
@@ -152,8 +152,8 @@ describe('Ajv Options', function () {
 
   describe('meta and validateSchema', function() {
     it('should add draft-4 meta schema by default', function() {
-      testOptionMeta(Ajv());
-      testOptionMeta(Ajv({ meta: true }));
+      testOptionMeta(new Ajv());
+      testOptionMeta(new Ajv({ meta: true }));
 
       function testOptionMeta(ajv) {
         ajv.getSchema('http://json-schema.org/draft-04/schema') .should.be.a('function');
@@ -165,19 +165,19 @@ describe('Ajv Options', function () {
     });
 
     it('should throw if meta: false and validateSchema: true', function() {
-      var ajv = Ajv({ meta: false });
+      var ajv = new Ajv({ meta: false });
       should.not.exist(ajv.getSchema('http://json-schema.org/draft-04/schema'));
       should.throw(function() { ajv.addSchema({ type: 'integer' }, 'integer') });
     });
 
     it('should skip schema validation with validateSchema: false', function() {
-      var ajv = Ajv();
+      var ajv = new Ajv();
       should.throw(function() { ajv.addSchema({ type: 123 }, 'integer') });
 
-      var ajv = Ajv({ validateSchema: false });
+      var ajv = new Ajv({ validateSchema: false });
       should.not.throw(function() { ajv.addSchema({ type: 123 }, 'integer') });
 
-      var ajv = Ajv({ validateSchema: false, meta: false });
+      var ajv = new Ajv({ validateSchema: false, meta: false });
       should.not.throw(function() { ajv.addSchema({ type: 123 }, 'integer') });
     });
 
@@ -186,21 +186,21 @@ describe('Ajv Options', function () {
       var loggedError = false;
       console.error = function() { loggedError = true; logError.apply(console, arguments); }
 
-      var ajv = Ajv({ validateSchema: 'log' });
+      var ajv = new Ajv({ validateSchema: 'log' });
       should.not.throw(function() { ajv.addSchema({ type: 123 }, 'integer') });
       loggedError .should.equal(true);
       console.error = logError;
 
-      var ajv = Ajv({ validateSchema: 'log', meta: false });
+      var ajv = new Ajv({ validateSchema: 'log', meta: false });
       should.throw(function() { ajv.addSchema({ type: 123 }, 'integer') });
     });
 
     it('should validate v5 schema', function() {
-      var ajv = Ajv({ v5: true });
+      var ajv = new Ajv({ v5: true });
       ajv.validateSchema({ contains: { minimum: 2 } }) .should.equal(true);
       ajv.validateSchema({ contains: 2 }). should.equal(false);
 
-      var ajv = Ajv();
+      var ajv = new Ajv();
       ajv.validateSchema({ contains: 2 }). should.equal(true);
     });
 
@@ -211,7 +211,7 @@ describe('Ajv Options', function () {
           myKeyword: { type: 'boolean' }
         }
       };
-      var ajv = Ajv({ meta: meta });
+      var ajv = new Ajv({ meta: meta });
       ajv.validateSchema({ myKeyword: true }) .should.equal(true);
       ajv.validateSchema({ myKeyword: 2 }) .should.equal(false);
       ajv.validateSchema({
@@ -219,7 +219,7 @@ describe('Ajv Options', function () {
         myKeyword: 2
       }) .should.equal(true);
 
-      var ajv = Ajv();
+      var ajv = new Ajv();
       ajv.validateSchema({ myKeyword: true }) .should.equal(true);
       ajv.validateSchema({ myKeyword: 2 }) .should.equal(true);
     });
@@ -228,7 +228,7 @@ describe('Ajv Options', function () {
 
   describe('schemas', function() {
     it('should add schemas from object', function() {
-      var ajv = Ajv({ schemas: {
+      var ajv = new Ajv({ schemas: {
         int: { type: 'integer' },
         str: { type: 'string' }
       }});
@@ -240,7 +240,7 @@ describe('Ajv Options', function () {
     });
 
     it('should add schemas from array', function() {
-      var ajv = Ajv({ schemas: [
+      var ajv = new Ajv({ schemas: [
         { id: 'int', type: 'integer' },
         { id: 'str', type: 'string' },
         { id: 'obj', properties: { int: { $ref: 'int' }, str: { $ref: 'str' } } }
@@ -255,8 +255,8 @@ describe('Ajv Options', function () {
 
   describe('format', function() {
     it('should not validate formats if option format == false', function() {
-      var ajv = Ajv()
-        , ajvFF = Ajv({ format: false });
+      var ajv = new Ajv()
+        , ajvFF = new Ajv({ format: false });
 
       var schema = { format: 'date-time' };
       var invalideDateTime = '06/19/1963 08:30:06 PST';
@@ -266,8 +266,8 @@ describe('Ajv Options', function () {
     });
 
     it('should not validate formatMaximum/Minimum if option format == false', function() {
-      var ajv = Ajv({ v5: true, allErrors: true })
-        , ajvFF = Ajv({ v5: true, allErrors: true, format: false });
+      var ajv = new Ajv({ v5: true, allErrors: true })
+        , ajvFF = new Ajv({ v5: true, allErrors: true, format: false });
 
       var schema = {
         format: 'date',
@@ -283,7 +283,7 @@ describe('Ajv Options', function () {
 
   describe('formats', function() {
     it('should add formats from options', function() {
-      var ajv = Ajv({ formats: {
+      var ajv = new Ajv({ formats: {
         identifier: /^[a-z_$][a-z0-9_$]*$/i
       }});
 
@@ -297,15 +297,15 @@ describe('Ajv Options', function () {
 
   describe('missingRefs', function() {
     it('should throw if ref is missing without this option', function() {
-      var ajv = Ajv();
+      var ajv = new Ajv();
       should.throw(function() {
         ajv.compile({ $ref: 'missing_reference' });
       });
     });
 
     it('should not throw and pass validation with missingRef == "ignore"', function() {
-      testMissingRefsIgnore(Ajv({ missingRefs: 'ignore' }));
-      testMissingRefsIgnore(Ajv({ missingRefs: 'ignore', allErrors: true }));
+      testMissingRefsIgnore(new Ajv({ missingRefs: 'ignore' }));
+      testMissingRefsIgnore(new Ajv({ missingRefs: 'ignore', allErrors: true }));
 
       function testMissingRefsIgnore(ajv) {
         var validate = ajv.compile({ $ref: 'missing_reference' });
@@ -314,10 +314,10 @@ describe('Ajv Options', function () {
     });
 
     it('should not throw and fail validation with missingRef == "fail" if the ref is used', function() {
-      testMissingRefsFail(Ajv({ missingRefs: 'fail' }));
-      testMissingRefsFail(Ajv({ missingRefs: 'fail', verbose: true }));
-      testMissingRefsFail(Ajv({ missingRefs: 'fail', allErrors: true }));
-      testMissingRefsFail(Ajv({ missingRefs: 'fail', allErrors: true, verbose: true }));
+      testMissingRefsFail(new Ajv({ missingRefs: 'fail' }));
+      testMissingRefsFail(new Ajv({ missingRefs: 'fail', verbose: true }));
+      testMissingRefsFail(new Ajv({ missingRefs: 'fail', allErrors: true }));
+      testMissingRefsFail(new Ajv({ missingRefs: 'fail', allErrors: true, verbose: true }));
 
       function testMissingRefsFail(ajv) {
         var validate = ajv.compile({
@@ -338,8 +338,8 @@ describe('Ajv Options', function () {
 
   describe('uniqueItems', function() {
     it('should not validate uniqueItems with uniqueItems option == false', function() {
-      testUniqueItems(Ajv({ uniqueItems: false }));
-      testUniqueItems(Ajv({ uniqueItems: false, allErrors: true }));
+      testUniqueItems(new Ajv({ uniqueItems: false }));
+      testUniqueItems(new Ajv({ uniqueItems: false, allErrors: true }));
 
       function testUniqueItems(ajv) {
         var validate = ajv.compile({ uniqueItems: true });
@@ -352,9 +352,9 @@ describe('Ajv Options', function () {
 
   describe('unicode', function() {
     it('should use String.prototype.length with unicode option == false', function() {
-      var ajvUnicode = Ajv();
-      testUnicode(Ajv({ unicode: false }));
-      testUnicode(Ajv({ unicode: false, allErrors: true }));
+      var ajvUnicode = new Ajv();
+      testUnicode(new Ajv({ unicode: false }));
+      testUnicode(new Ajv({ unicode: false, allErrors: true }));
 
       function testUnicode(ajv) {
         var validateWithUnicode = ajvUnicode.compile({ minLength: 2 });
@@ -375,8 +375,8 @@ describe('Ajv Options', function () {
 
   describe('verbose', function() {
     it('should add schema, parentSchema and data to errors with verbose option == true', function() {
-      testVerbose(Ajv({ verbose: true }));
-      testVerbose(Ajv({ verbose: true, allErrors: true }));
+      testVerbose(new Ajv({ verbose: true }));
+      testVerbose(new Ajv({ verbose: true, allErrors: true }));
 
       function testVerbose(ajv) {
         var schema = { properties: { foo: { minimum: 5 } } };
@@ -398,8 +398,8 @@ describe('Ajv Options', function () {
 
   describe('multipleOfPrecision', function() {
     it('should allow for some deviation from 0 when validating multipleOf with value < 1', function() {
-      test(Ajv({ multipleOfPrecision: 7 }));
-      test(Ajv({ multipleOfPrecision: 7, allErrors: true }));
+      test(new Ajv({ multipleOfPrecision: 7 }));
+      test(new Ajv({ multipleOfPrecision: 7, allErrors: true }));
 
       function test(ajv) {
         var schema = { multipleOf: 0.01 };
@@ -456,8 +456,8 @@ describe('Ajv Options', function () {
     });
 
     it('should replace undefined item with default value', function() {
-      test(Ajv({ useDefaults: true }));
-      test(Ajv({ useDefaults: true, allErrors: true }));
+      test(new Ajv({ useDefaults: true }));
+      test(new Ajv({ useDefaults: true, allErrors: true }));
 
       function test(ajv) {
         var schema = {
@@ -490,15 +490,15 @@ describe('Ajv Options', function () {
     describe('useDefaults: by value / by reference', function() {
       describe('using by value', function() {
         it('should NOT modify underlying defaults when modifying validated data', function() {
-          test('value', Ajv({ useDefaults: true }));
-          test('value', Ajv({ useDefaults: true, allErrors: true }));
+          test('value', new Ajv({ useDefaults: true }));
+          test('value', new Ajv({ useDefaults: true, allErrors: true }));
         });
       });
 
       describe('using by reference', function() {
         it('should modify underlying defaults when modifying validated data', function() {
-          test('reference', Ajv({ useDefaults: 'shared' }));
-          test('reference', Ajv({ useDefaults: 'shared', allErrors: true }));
+          test('reference', new Ajv({ useDefaults: 'shared' }));
+          test('reference', new Ajv({ useDefaults: 'shared', allErrors: true }));
         });
       });
 
@@ -541,7 +541,7 @@ describe('Ajv Options', function () {
         var ajv;
 
         beforeEach(function() {
-          ajv = Ajv({ addUsedSchema: optionValue });
+          ajv = new Ajv({ addUsedSchema: optionValue });
         });
 
         describe('compile and validate', function() {
@@ -579,7 +579,7 @@ describe('Ajv Options', function () {
       var ajv;
 
       beforeEach(function() {
-        ajv = Ajv({ addUsedSchema: false });
+        ajv = new Ajv({ addUsedSchema: false });
       });
 
 
@@ -647,7 +647,7 @@ describe('Ajv Options', function () {
     })
 
     function getValidate(passContext) {
-      ajv = Ajv({ passContext: passContext, inlineRefs: false });
+      ajv = new Ajv({ passContext: passContext, inlineRefs: false });
       ajv.addKeyword('testValidate', { validate: storeContext });
       ajv.addKeyword('testCompile', { compile: compileTestValidate });
 
@@ -683,8 +683,8 @@ describe('Ajv Options', function () {
 
   describe('allErrors', function() {
     it('should be disabled inside "not" keyword', function() {
-      test(Ajv(), false);
-      test(Ajv({ allErrors: true }), true);
+      test(new Ajv(), false);
+      test(new Ajv({ allErrors: true }), true);
 
       function test(ajv, allErrors) {
         var format1called = false

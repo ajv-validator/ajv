@@ -1,8 +1,6 @@
 # Ajv: Another JSON Schema Validator
 
-The fastest JSON Schema validator for node.js and browser.
-
-Supports [v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals).
+The fastest JSON Schema validator for node.js and browser. Supports [v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals).
 
 
 [![Build Status](https://travis-ci.org/epoberezkin/ajv.svg?branch=master)](https://travis-ci.org/epoberezkin/ajv)
@@ -101,7 +99,7 @@ The fastest validation call:
 
 ```javascript
 var Ajv = require('ajv');
-var ajv = Ajv(); // options can be passed, e.g. {allErrors: true}
+var ajv = new Ajv(); // options can be passed, e.g. {allErrors: true}
 var validate = ajv.compile(schema);
 var valid = validate(data);
 if (!valid) console.log(validate.errors);
@@ -316,7 +314,7 @@ During asynchronous compilation remote references are loaded using supplied func
 Example:
 
 ```javascript
-var ajv = Ajv({ loadSchema: loadSchema });
+var ajv = new Ajv({ loadSchema: loadSchema });
 
 ajv.compileAsync(schema, function (err, validate) {
 	if (err) return;
@@ -368,7 +366,7 @@ Example:
  * 3. es7 async functions transpiled with regenerator
  */
 
-var ajv = Ajv();
+var ajv = new Ajv();
 
 ajv.addKeyword('idExists', {
   async: true,
@@ -425,7 +423,7 @@ Ajv npm package includes minified browser bundles of regenerator and nodent in d
 #### Using nodent
 
 ```javascript
-var ajv = Ajv({ /* async: 'es7', */ transpile: 'nodent' });
+var ajv = new Ajv({ /* async: 'es7', */ transpile: 'nodent' });
 var validate = ajv.compile(schema); // transpiled es7 async function
 validate(data).then(successFunc).catch(errorFunc);
 ```
@@ -436,7 +434,7 @@ validate(data).then(successFunc).catch(errorFunc);
 #### Using regenerator
 
 ```javascript
-var ajv = Ajv({ /* async: 'es7', */ transpile: 'regenerator' });
+var ajv = new Ajv({ /* async: 'es7', */ transpile: 'regenerator' });
 var validate = ajv.compile(schema); // transpiled es7 async function
 validate(data).then(successFunc).catch(errorFunc);
 ```
@@ -447,7 +445,7 @@ validate(data).then(successFunc).catch(errorFunc);
 #### Using other transpilers
 
 ```javascript
-var ajv = Ajv({ async: 'es7', transpile: transpileFunc });
+var ajv = new Ajv({ async: 'es7', transpile: transpileFunc });
 var validate = ajv.compile(schema); // transpiled es7 async function
 validate(data).then(successFunc).catch(errorFunc);
 ```
@@ -485,7 +483,7 @@ This option modifies original data.
 Example:
 
 ```javascript
-var ajv = Ajv({ removeAdditional: true });
+var ajv = new Ajv({ removeAdditional: true });
 var schema = {
   "additionalProperties": false,
   "properties": {
@@ -582,7 +580,7 @@ Inserting defaults by reference can be faster (in case you have an object in `de
 Example 1 (`default` in `properties`):
 
 ```javascript
-var ajv = Ajv({ useDefaults: true });
+var ajv = new Ajv({ useDefaults: true });
 var schema = {
   "type": "object",
   "properties": {
@@ -622,7 +620,7 @@ console.log(data); // [ 1, "foo" ]
 Example 3 (inserting "defaults" by reference):
 
 ```javascript
-var ajv = Ajv({ useDefaults: 'shared' });
+var ajv = new Ajv({ useDefaults: 'shared' });
 
 var schema = {
   properties: {
@@ -665,7 +663,7 @@ __Please note__: if you pass a scalar value to the validating function its type 
 Example:
 
 ```javascript
-var ajv = Ajv({ coerceTypes: true });
+var ajv = new Ajv({ coerceTypes: true });
 var schema = {
   "type": "object",
   "properties": {
@@ -690,7 +688,7 @@ See [Coercion rules](https://github.com/epoberezkin/ajv/blob/master/COERCION.md)
 
 ## API
 
-##### Ajv(Object options) -&gt; Object
+##### new Ajv(Object options) -&gt; Object
 
 Create Ajv instance.
 

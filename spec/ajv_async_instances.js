@@ -98,5 +98,5 @@ function getAjvInstances(opts) {
 
 
 function getAjv(opts){
-  try { return Ajv(opts); } catch(e) {}
+  try { return new Ajv(opts); } catch(e) {}
 }

@@ -140,8 +140,8 @@ describe('Type coercion', function () {
   var ajv, fullAjv, instances;
 
   beforeEach(function() {
-    ajv = Ajv({ coerceTypes: true, verbose: true });
-    fullAjv = Ajv({ coerceTypes: true, verbose: true, allErrors: true });
+    ajv = new Ajv({ coerceTypes: true, verbose: true });
+    fullAjv = new Ajv({ coerceTypes: true, verbose: true, allErrors: true });
     instances = [ ajv, fullAjv ];
   });
 
@@ -263,7 +263,7 @@ describe('Type coercion', function () {
 
 
   it('should update data if the schema is in ref that is not inlined', function () {
-    instances.push(Ajv({ coerceTypes: true, inlineRefs: false }));
+    instances.push(new Ajv({ coerceTypes: true, inlineRefs: false }));
 
     var schema = {
       type: 'object',

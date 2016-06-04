@@ -165,31 +165,31 @@ describe('resolve', function () {
     ];
 
     it('by default should inline schema if it doesn\'t contain refs', function() {
-      var ajv = Ajv({ schemas: schemas });
+      var ajv = new Ajv({ schemas: schemas });
       testSchemas(ajv, true);
     });
 
 
     it('should NOT inline schema if option inlineRefs == false', function() {
-      var ajv = Ajv({ schemas: schemas, inlineRefs: false });
+      var ajv = new Ajv({ schemas: schemas, inlineRefs: false });
       testSchemas(ajv, false);
     });
 
 
     it('should inline schema if option inlineRefs is bigger than number of keys in referenced schema', function() {
-      var ajv = Ajv({ schemas: schemas, inlineRefs: 3 });
+      var ajv = new Ajv({ schemas: schemas, inlineRefs: 3 });
       testSchemas(ajv, true);
     });
 
 
     it('should NOT inline schema if option inlineRefs is less than number of keys in referenced schema', function() {
-      var ajv = Ajv({ schemas: schemas, inlineRefs: 2 });
+      var ajv = new Ajv({ schemas: schemas, inlineRefs: 2 });
       testSchemas(ajv, false);
     });
 
 
     it('should avoid schema substitution when refs are inlined (issue #77)', function() {
-      var ajv = Ajv({ verbose: true });
+      var ajv = new Ajv({ verbose: true });
 
       var schemaMessage = {
         $schema: "http://json-schema.org/draft-04/schema#",

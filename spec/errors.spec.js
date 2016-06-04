@@ -13,9 +13,9 @@ describe('Validation errors', function () {
   });
 
   function createInstances(errorDataPath) {
-    ajv = Ajv({ errorDataPath: errorDataPath, loopRequired: 21 });
-    ajvJP = Ajv({ errorDataPath: errorDataPath, jsonPointers: true, loopRequired: 21 });
-    fullAjv = Ajv({ errorDataPath: errorDataPath, allErrors: true, jsonPointers: true, loopRequired: 21 });
+    ajv = new Ajv({ errorDataPath: errorDataPath, loopRequired: 21 });
+    ajvJP = new Ajv({ errorDataPath: errorDataPath, jsonPointers: true, loopRequired: 21 });
+    fullAjv = new Ajv({ errorDataPath: errorDataPath, allErrors: true, jsonPointers: true, loopRequired: 21 });
   }
 
   it('error should include dataPath', function() {
@@ -265,7 +265,7 @@ describe('Validation errors', function () {
 
 
     it('should not validate required twice in large schemas with loopRequired option', function() {
-      var ajv = Ajv({ loopRequired: 1, allErrors: true });
+      var ajv = new Ajv({ loopRequired: 1, allErrors: true });
 
       var schema = {
         properties: {
@@ -283,7 +283,7 @@ describe('Validation errors', function () {
 
 
     it('should not validate required twice with $data ref', function() {
-      var ajv = Ajv({ v5: true, allErrors: true });
+      var ajv = new Ajv({ v5: true, allErrors: true });
 
       var schema = {
         properties: {
