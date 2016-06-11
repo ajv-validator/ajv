@@ -138,7 +138,7 @@ if (!{{# def.ruleValidationResult }}) {
     {{??}}
       if (Array.isArray({{=$ruleErrs}})) {
         if (vErrors === null) vErrors = {{=$ruleErrs}};
-        else vErrors.concat({{=$ruleErrs}});
+        else vErrors = vErrors.concat({{=$ruleErrs}});
         errors = vErrors.length;
         {{# def.extendErrors:false }}
       } else {
