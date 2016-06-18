@@ -182,3 +182,78 @@ describe('issue #181, custom keyword is not validated in allErrors mode if there
     validate.errors[1].keyword .should.equal('alwaysFails');
   }
 });
+
+
+describe('issue #210, mutual recursive $refs that are schema fragments', function() {
+  it('should compile and validate schema when one ref is fragment', function() {
+    var ajv = new Ajv();
+
+    ajv.addSchema({
+      "id" : "foo",
+      "definitions": {
+        "bar": {
+          "properties": {
+            "baz": {
+              "anyOf": [
+                { "enum": [42] },
+                { "$ref": "boo" }
+              ]
+            }
+          }
+        }
+      }
+    });
+
+    ajv.addSchema({
+      "id" : "boo",
+      "type": "object",
+      "required": ["quux"],
+      "properties": {
+        "quux": { "$ref": "foo#/definitions/bar" }
+      }
+    });
+
+    var validate = ajv.compile({ "$ref": "foo#/definitions/bar" });
+
+    validate({ baz: { quux: { baz: 42 } } }) .should.equal(true);
+    validate({ baz: { quux: { baz: "foo" } } }) .should.equal(false);
+  });
+
+  it.skip('should compile and validate schema when both refs are fragments', function() {
+    var ajv = new Ajv();
+
+    ajv.addSchema({
+      "id" : "foo",
+      "definitions": {
+        "bar": {
+          "properties": {
+            "baz": {
+              "anyOf": [
+                { "enum": [42] },
+                { "$ref": "boo#/definitions/buu" }
+              ]
+            }
+          }
+        }
+      }
+    });
+
+    ajv.addSchema({
+      "id" : "boo",
+      "definitions": {
+        "buu": {
+          "type": "object",
+          "required": ["quux"],
+          "properties": {
+            "quux": { "$ref": "foo#/definitions/bar" }
+          }
+        }
+      }
+    });
+
+    var validate = ajv.compile({ "$ref": "foo#/definitions/bar" });
+
+    validate({ baz: { quux: { baz: 42 } } }) .should.equal(true);
+    validate({ baz: { quux: { baz: "foo" } } }) .should.equal(false);
+  });
+});
