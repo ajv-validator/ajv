@@ -92,6 +92,7 @@ declare namespace ajv {
       parentDataProperty?: string | number
     ): boolean | Thenable<boolean>;
     errors?: Array<ErrorObject>;
+    schema?: Object;
   }
 
   interface Options {
