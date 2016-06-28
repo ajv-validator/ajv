@@ -135,7 +135,7 @@ describe('compileAsync method', function() {
   });
 
 
-  it.skip('should resolve reference containing "properties" segment with the same property (issue #220)', function (done) {
+  it('should resolve reference containing "properties" segment with the same property (issue #220)', function (done) {
     var schema = {
       "id": "http://example.com/parent.json",
       "properties": {
