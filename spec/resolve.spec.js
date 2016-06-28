@@ -134,6 +134,15 @@ describe('resolve', function () {
       });
     });
 
+    it.skip('should throw missing schema error if same path exist in the current schema but id is different (issue #220)', function() {
+      testMissingSchemaError({
+        baseId: 'http://example.com/parent.json',
+        ref: 'object.json#/properties/a',
+        expectedMissingRef: 'http://example.com/object.json#/properties/a',
+        expectedMissingSchema: 'http://example.com/object.json'
+      });
+    });
+
 
     function testMissingSchemaError(opts) {
       instances.forEach(function (ajv) {
