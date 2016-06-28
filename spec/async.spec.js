@@ -12,6 +12,7 @@ describe('compileAsync method', function() {
     "http://example.com/object.json": {
       "id": "http://example.com/object.json",
       "properties": {
+        "a": { "type": "string" },
         "b": { "$ref": "int2plus.json" }
       }
     },
@@ -129,6 +130,26 @@ describe('compileAsync method', function() {
       var invalidData = { a: { b: { a: {} } } };
       validate(validData) .should.equal(true);
       validate(invalidData) .should.equal(false);
+      done();
+    });
+  });
+
+
+  it.skip('should resolve reference containing "properties" segment with the same property (issue #220)', function (done) {
+    var schema = {
+      "id": "http://example.com/parent.json",
+      "properties": {
+        "a": {
+          "$ref": "object.json#/properties/a"
+        }
+      }
+    };
+    ajv.compileAsync(schema, function (err, validate) {
+      should.not.exist(err);
+      should.equal(loadCallCount, 2);
+      validate .should.be.a('function');
+      validate({ a: 'foo' }) .should.equal(true);
+      validate({ a: 42 }) .should.equal(false);
       done();
     });
   });
