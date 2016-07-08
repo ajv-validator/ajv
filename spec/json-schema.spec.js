@@ -45,7 +45,8 @@ jsonSchemaTest(instances, {
     // 'schemas/complex', 'schemas/basic', 'schemas/advanced',
   ],
   skip: [
-    'optional/zeroTerminatedFloats'
+    'optional/zeroTerminatedFloats',
+    'issues/226_json_with_control_chars'
   ],
   assert: require('./chai').assert,
   afterError: function (res) {

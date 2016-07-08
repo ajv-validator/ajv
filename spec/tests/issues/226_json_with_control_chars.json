@@ -1,0 +1,83 @@
+[
+  {
+    "description": "JSON with control character - 'properties' (#226)",
+    "schema": {
+      "properties": {
+        "foo\nbar": { "type": "number" },
+        "foo\"bar": { "type": "number" },
+        "foo\\bar": { "type": "number" },
+        "foo\rbar": { "type": "number" },
+        "foo\tbar": { "type": "number" },
+        "foo\bbar": { "type": "number" },
+        "foo\fbar": { "type": "number" }
+      }
+    },
+    "tests": [
+      {
+        "description": "object with all numbers is valid",
+        "data": {
+          "foo\nbar": 1,
+          "foo\"bar": 1,
+          "foo\\bar": 1,
+          "foo\rbar": 1,
+          "foo\tbar": 1,
+          "foo\bbar": 1,
+          "foo\fbar": 1
+        },
+        "valid": true
+      },
+      {
+        "description": "object with strings is invalid",
+        "data": {
+          "foo\nbar": "1",
+          "foo\"bar": "1",
+          "foo\\bar": "1",
+          "foo\rbar": "1",
+          "foo\tbar": "1",
+          "foo\bbar": "1",
+          "foo\fbar": "1"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "JSON with control character - 'required' (#226)",
+    "schema": {
+      "required": [
+        "foo\nbar",
+        "foo\"bar",
+        "foo\\bar",
+        "foo\rbar",
+        "foo\tbar",
+        "foo\bbar",
+        "foo\fbar"
+      ]
+    },
+    "tests": [
+      {
+        "description": "object with all properties present is valid",
+        "data": {
+          "foo\nbar": 1,
+          "foo\"bar": 1,
+          "foo\\bar": 1,
+          "foo\rbar": 1,
+          "foo\tbar": 1,
+          "foo\bbar": 1,
+          "foo\fbar": 1
+        },
+        "valid": true
+      },
+      {
+        "description": "object with some properties missing is invalid",
+        "data": {
+          "foo\nbar": "1",
+          "foo\"bar": "1",
+          "foo\bbar": "1",
+          "foo\fbar": "1"
+        },
+        "valid": false
+      }
+    ]
+  }
+]
