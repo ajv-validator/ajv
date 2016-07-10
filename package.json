@@ -74,7 +74,7 @@
     "karma-phantomjs-launcher": "^1.0.0",
     "karma-sauce-launcher": "^0.3.0",
     "mocha": "^2.5.0",
-    "nodent": "^2.5.3",
+    "nodent": "^2.5.8",
     "phantomjs-prebuilt": "^2.1.4",
     "pre-commit": "^1.1.1",
     "regenerator": "0.8.42",
