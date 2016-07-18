@@ -818,8 +818,6 @@ Keyword definition is an object with the following properties:
 - _compile_: compiling function
 - _macro_: macro function
 - _inline_: compiling function that returns code (as string)
-- _schema_: an optional `false` value used with "validate" keyword to not pass schema
-- _metaSchema_: an optional meta-schema for keyword schema
 - _async_: an optional `true` value if the validation function is asynchronous (whether it is compiled or passed in _validate_ property); in this case it should return a promise that resolves with a value `true` or `false`. This option is ignored in case of "macro" and "inline" keywords.
 - _errors_: an optional boolean indicating whether keyword returns errors. If this property is not set Ajv will determine if the errors were set in case of failed validation.
 
