@@ -1,10 +1,11 @@
+{{# def.definitions }}
+{{# def.errors }}
+{{# def.setupKeyword }}
+
 {{
-  var $schema = it.schema[$rule.keyword]
+  var $rule = this
     , $ruleValidate = it.useCustomRule($rule, $schema, it.schema, it)
     , $ruleErrs = $ruleValidate.code + '.errors'
-    , $schemaPath = it.schemaPath + '.' + $rule.keyword
-    , $errSchemaPath = it.errSchemaPath + '/' + $rule.keyword
-    , $errs = 'errs' + $lvl
     , $i = 'i' + $lvl
     , $ruleErr = 'ruleErr' + $lvl
     , $rDef = $rule.definition
@@ -15,6 +16,7 @@
   if ($asyncKeyword && !it.async)
     throw new Error('async keyword in sync schema');
 }}
+
 
 {{? !($inline || $macro) }}{{=$ruleErrs}} = null;{{?}}
 var {{=$errs}} = errors;
@@ -146,6 +148,5 @@ if (!{{# def.ruleValidationResult }}) {
       }
     {{?}}
   {{?}}
-  {{ $errorKeyword = undefined; }}
 
  } {{? $breakOnError }} else { {{?}}

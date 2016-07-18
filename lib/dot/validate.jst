@@ -106,11 +106,7 @@
       {{?}}
       {{~ $rulesGroup.rules:$rule }}
         {{? $shouldUseRule($rule) }}
-          {{? $rule.custom }}
-            {{# def.custom }}
-          {{??}}
-            {{= $rule.code(it, $rule.keyword) }}
-          {{?}}
+          {{= $rule.code(it, $rule.keyword) }}
           {{? $breakOnError }}
             {{ $closingBraces1 += '}'; }}
           {{?}}
