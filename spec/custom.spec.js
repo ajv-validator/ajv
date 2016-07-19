@@ -507,6 +507,72 @@ describe('Custom keywords', function () {
   });
 
 
+  describe('$data reference support with custom keywords (v5 only)', function() {
+    beforeEach(function() {
+      instances = getAjvInstances({
+        allErrors:    true,
+        verbose:      true,
+        inlineRefs:   false
+      }, { v5: true });
+      ajv = instances[0];
+    });
+
+    it('should validate "interpreted" rule', function() {
+      testEvenKeyword$data({
+        type: 'number',
+        $data: true,
+        validate: validateEven
+      });
+
+      function validateEven(schema, data) {
+        if (typeof schema != 'boolean') return false;
+        return data % 2 ? !schema : schema;
+      }
+    });
+
+    it('should validate "compiled" rule', function() {
+      testEvenKeyword$data({
+        type: 'number',
+        $data: true,
+        compile: compileEven
+      });
+      shouldBeInvalidSchema({ "even": "false" });
+
+      function compileEven(schema) {
+        if (typeof schema != 'boolean') throw new Error('The value of "even" keyword must be boolean');
+        return schema ? isEven : isOdd;
+      }
+
+      function isEven(data) { return data % 2 === 0; }
+      function isOdd(data) { return data % 2 !== 0; }
+    });
+
+    it('should validate "interpreted" rule with meta-schema', function() {
+      testEvenKeyword$data({
+        type: 'number',
+        $data: true,
+        validate: validateEven,
+        metaSchema: { "type": "boolean" }
+      });
+      shouldBeInvalidSchema({ "even": "false" });
+
+      function validateEven(schema, data) {
+        return data % 2 ? !schema : schema;
+      }
+    });
+
+    it('should fail if keyword definition has "$data" but no "validate" or "compile"', function() {
+      should.throw(function() {
+        ajv.addKeyword('even', {
+          type: 'number',
+          $data: true,
+          macro: function() { return {}; }
+        });
+      });
+    });
+  });
+
+
   function testEvenKeyword(definition, numErrors) {
     instances.forEach(function (ajv) {
       ajv.addKeyword('even', definition);
@@ -517,6 +583,30 @@ describe('Custom keywords', function () {
       shouldBeValid(validate, 'abc');
       shouldBeInvalid(validate, 2.5, numErrors);
       shouldBeInvalid(validate, 3, numErrors);
+    });
+  }
+
+  function testEvenKeyword$data(definition, numErrors) {
+    instances.forEach(function (ajv) {
+      var schema = {
+        "properties": {
+          "data": { "even": { "$data": "1/evenValue" } },
+          "evenValue": {}
+        }
+      };
+      ajv.addKeyword('even', definition);
+      var validate = ajv.compile(schema);
+
+      shouldBeValid(validate, { data: 2, evenValue: true });
+      shouldBeInvalid(validate, { data: 2, evenValue: false });
+      shouldBeValid(validate, { data: 'abc', evenValue: true });
+      shouldBeValid(validate, { data: 'abc', evenValue: false });
+      shouldBeInvalid(validate, { data: 2.5, evenValue: true }, numErrors);
+      shouldBeValid(validate, { data: 2.5, evenValue: false });
+      shouldBeInvalid(validate, { data: 3, evenValue: true }, numErrors);
+      shouldBeValid(validate, { data: 3, evenValue: false });
+
+      // shouldBeInvalid(validate, { data: 2, evenValue: "true" });
     });
   }
 
