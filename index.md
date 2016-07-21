@@ -232,10 +232,10 @@ This schema requires that the value in property `smaller` is less or equal than 
 var schema = {
   "properties": {
     "smaller": {
-      "type": number,
+      "type": "number",
       "maximum": { "$data": "1/larger" }
     },
-    "larger": { "type": number }
+    "larger": { "type": "number" }
   }
 };
 
