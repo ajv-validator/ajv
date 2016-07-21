@@ -382,7 +382,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     testSchema(validate);
   });
 
-  it.skip('should compile and validate schema when both refs are fragments', function() {
+  it('should compile and validate schema when both refs are fragments', function() {
     var ajv = new Ajv;
 
     var librarySchema = {
