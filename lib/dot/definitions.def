@@ -117,14 +117,14 @@
 
 {{## def.$data:
   {{
-    var $isData = it.opts.v5 && $schema.$data;
-    var $schemaValue = $isData
-                       ? it.util.getData($schema.$data, $dataLvl, it.dataPathArr)
-                       : $schema;
+    var $isData = it.opts.v5 && $schema.$data
+      , $schemaValue;
   }}
   {{? $isData }}
-    var schema{{=$lvl}} = {{=$schemaValue}};
+    var schema{{=$lvl}} = {{= it.util.getData($schema.$data, $dataLvl, it.dataPathArr) }};
     {{ $schemaValue = 'schema' + $lvl; }}
+  {{??}}
+    {{ $schemaValue = $schema; }}
   {{?}}
 #}}
 

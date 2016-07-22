@@ -1,32 +1,60 @@
+{{# def.definitions }}
+{{# def.errors }}
+{{# def.setupKeyword }}
+{{# def.$data }}
+
 {{
-  var $schema = it.schema[$rule.keyword]
-    , $ruleValidate = it.useCustomRule($rule, $schema, it.schema, it)
-    , $ruleErrs = $ruleValidate.code + '.errors'
-    , $schemaPath = it.schemaPath + '.' + $rule.keyword
-    , $errSchemaPath = it.errSchemaPath + '/' + $rule.keyword
-    , $errs = 'errs' + $lvl
+  var $rule = this
+    , $definition = 'definition' + $lvl
+    , $rDef = $rule.definition
+    , $validate = $rDef.validate
+    , $compile
+    , $inline
+    , $macro
+    , $ruleValidate
+    , $validateCode;
+}}
+
+{{? $isData && $rDef.$data }}
+  {{
+    $validateCode = 'keywordValidate' + $lvl;
+    var $validateSchema = $rDef.validateSchema;
+  }}
+  var {{=$definition}} = RULES.custom['{{=$keyword}}'].definition;
+  var {{=$validateCode}} = {{=$definition}}.validate;
+{{??}}
+  {{
+    $ruleValidate = it.useCustomRule($rule, $schema, it.schema, it);
+    $schemaValue = 'validate.schema' + $schemaPath;
+    $validateCode = $ruleValidate.code;
+    $compile = $rDef.compile;
+    $inline = $rDef.inline;
+    $macro = $rDef.macro;
+  }}
+{{?}}
+
+{{
+  var $ruleErrs = $validateCode + '.errors'
     , $i = 'i' + $lvl
     , $ruleErr = 'ruleErr' + $lvl
-    , $rDef = $rule.definition
-    , $asyncKeyword = $rDef.async
-    , $inline = $rDef.inline
-    , $macro = $rDef.macro;
+    , $asyncKeyword = $rDef.async;
 
   if ($asyncKeyword && !it.async)
     throw new Error('async keyword in sync schema');
 }}
+
 
 {{? !($inline || $macro) }}{{=$ruleErrs}} = null;{{?}}
 var {{=$errs}} = errors;
 var valid{{=$lvl}};
 
 {{## def.callRuleValidate:
-  {{=$ruleValidate.code}}.call(
+  {{=$validateCode}}.call(
     {{? it.opts.passContext }}this{{??}}self{{?}}
-    {{? $rDef.compile || $rDef.schema === false }}
+    {{? $compile || $rDef.schema === false }}
       , {{=$data}}
     {{??}}
-      , validate.schema{{=$schemaPath}}
+      , {{=$schemaValue}}
       , {{=$data}}
       , validate.schema{{=it.schemaPath}}
     {{?}}
@@ -67,7 +95,7 @@ var valid{{=$lvl}};
       {{=$ruleErr}}.schemaPath = "{{=$errSchemaPath}}";
     {{# _inline ? '}' : '' }}
     {{? it.opts.verbose }}
-      {{=$ruleErr}}.schema = validate.schema{{=$schemaPath}};
+      {{=$ruleErr}}.schema = {{=$schemaValue}};
       {{=$ruleErr}}.data = {{=$data}};
     {{?}}
   }
@@ -82,10 +110,10 @@ var valid{{=$lvl}};
     $it.schemaPath = '';
   }}
   {{# def.setCompositeRule }}
-  {{ var $code = it.validate($it).replace(/validate\.schema/g, $ruleValidate.code); }}
+  {{ var $code = it.validate($it).replace(/validate\.schema/g, $validateCode); }}
   {{# def.resetCompositeRule }}
   {{= $code }}
-{{?? $rDef.compile || $rDef.validate }}
+{{?? !$inline }}
   {{# def.beginDefOut}}
     {{# def.callRuleValidate }}
   {{# def.storeDefOut:def_callRuleValidate }}
@@ -102,13 +130,16 @@ var valid{{=$lvl}};
         else throw e;
       }
     {{??}}
-      {{=$ruleValidate.code}}.errors = null;
+      {{=$validateCode}}.errors = null;
     {{?}}
   {{?}}
 {{?}}
 
 
-if (!{{# def.ruleValidationResult }}) {
+if ({{? $validateSchema }}
+      !{{=$definition}}.validateSchema({{=$schemaValue}}) ||
+    {{?}}
+    !{{# def.ruleValidationResult }}) {
   {{ $errorKeyword = $rule.keyword; }}
   {{# def.beginDefOut}}
     {{# def.error:'custom' }}
@@ -130,7 +161,7 @@ if (!{{# def.ruleValidationResult }}) {
         }
       {{?}}
     {{?}}
-  {{?? $macro}}
+  {{?? $macro }}
     {{# def.extraError:'custom' }}
   {{??}}
     {{? $rDef.errors === false}}
@@ -146,6 +177,5 @@ if (!{{# def.ruleValidationResult }}) {
       }
     {{?}}
   {{?}}
-  {{ $errorKeyword = undefined; }}
 
  } {{? $breakOnError }} else { {{?}}
