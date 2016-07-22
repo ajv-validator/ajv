@@ -28,6 +28,7 @@ This way to define keywords is useful for:
 - testing your keywords before converting them to compiled/inlined keywords
 - defining keywords that do not depend on the schema value (e.g., when the value is always `true`). In this case you can add option `schema: false` to the keyword definition and the schemas won't be passed to the validation function, it will only receive the same 4 parameters as compiled validation function (see the next section).
 - defining keywords where the schema is a value used in some expression.
+- defining keywords that support [$data reference](/ajv#data-reference) - in this case validation function is required, either as the only option or in addition to compile, macro or inline function (see below).
 
 __Please note__: In cases when validation flow is different depending on the schema and you have to use `if`s, this way to define keywords will have worse performance than compiled keyword returning different validation functions depending on the schema.
 
