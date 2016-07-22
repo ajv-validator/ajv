@@ -5,9 +5,10 @@
 
 {{
   var $rule = this
+    , $definition = 'definition' + $lvl
     , $rDef = $rule.definition
     , $validate = $rDef.validate
-    , $compile = $rDef.compile
+    , $compile
     , $inline
     , $macro
     , $ruleValidate
@@ -15,14 +16,18 @@
 }}
 
 {{? $isData && $rDef.$data }}
-  {{ $validateCode = 'keywordValidate' + $lvl; }}
-  var {{=$validateCode}} = RULES.custom['{{=$keyword}}'].definition
-        {{? $validate }}.validate{{??}}.compile({{=$schemaValue}}, validate.schema{{=it.schemaPath}}){{?}};
+  {{
+    $validateCode = 'keywordValidate' + $lvl;
+    var $validateSchema = $rDef.validateSchema;
+  }}
+  var {{=$definition}} = RULES.custom['{{=$keyword}}'].definition;
+  var {{=$validateCode}} = {{=$definition}}.validate;
 {{??}}
   {{
     $ruleValidate = it.useCustomRule($rule, $schema, it.schema, it);
     $schemaValue = 'validate.schema' + $schemaPath;
     $validateCode = $ruleValidate.code;
+    $compile = $rDef.compile;
     $inline = $rDef.inline;
     $macro = $rDef.macro;
   }}
@@ -108,7 +113,7 @@ var valid{{=$lvl}};
   {{ var $code = it.validate($it).replace(/validate\.schema/g, $validateCode); }}
   {{# def.resetCompositeRule }}
   {{= $code }}
-{{?? $compile || $validate }}
+{{?? !$inline }}
   {{# def.beginDefOut}}
     {{# def.callRuleValidate }}
   {{# def.storeDefOut:def_callRuleValidate }}
@@ -131,7 +136,10 @@ var valid{{=$lvl}};
 {{?}}
 
 
-if (!{{# def.ruleValidationResult }}) {
+if ({{? $validateSchema }}
+      !{{=$definition}}.validateSchema({{=$schemaValue}}) ||
+    {{?}}
+    !{{# def.ruleValidationResult }}) {
   {{ $errorKeyword = $rule.keyword; }}
   {{# def.beginDefOut}}
     {{# def.error:'custom' }}
@@ -153,7 +161,7 @@ if (!{{# def.ruleValidationResult }}) {
         }
       {{?}}
     {{?}}
-  {{?? $macro}}
+  {{?? $macro }}
     {{# def.extraError:'custom' }}
   {{??}}
     {{? $rDef.errors === false}}

@@ -530,15 +530,23 @@ describe('Custom keywords', function () {
       }
     });
 
-    it('should validate "compiled" rule', function() {
+    it('should validate rule with "compile" and "validate" funcs', function() {
+      var compileCalled;
       testEvenKeyword$data({
         type: 'number',
         $data: true,
-        compile: compileEven
+        compile: compileEven,
+        validate: validateEven
       });
-      shouldBeInvalidSchema({ "even": "false" });
+      compileCalled .should.equal(true);
+
+      function validateEven(schema, data) {
+        if (typeof schema != 'boolean') return false;
+        return data % 2 ? !schema : schema;
+      }
 
       function compileEven(schema) {
+        compileCalled = true;
         if (typeof schema != 'boolean') throw new Error('The value of "even" keyword must be boolean');
         return schema ? isEven : isOdd;
       }
@@ -547,21 +555,123 @@ describe('Custom keywords', function () {
       function isOdd(data) { return data % 2 !== 0; }
     });
 
-    it('should validate "interpreted" rule with meta-schema', function() {
+    it('should validate with "compile" and "validate" funcs with meta-schema', function() {
+      var compileCalled;
       testEvenKeyword$data({
         type: 'number',
         $data: true,
+        compile: compileEven,
         validate: validateEven,
         metaSchema: { "type": "boolean" }
       });
+      compileCalled .should.equal(true);
       shouldBeInvalidSchema({ "even": "false" });
 
       function validateEven(schema, data) {
         return data % 2 ? !schema : schema;
       }
+
+      function compileEven(schema) {
+        compileCalled = true;
+        return schema ? isEven : isOdd;
+      }
+
+      function isEven(data) { return data % 2 === 0; }
+      function isOdd(data) { return data % 2 !== 0; }
     });
 
-    it('should fail if keyword definition has "$data" but no "validate" or "compile"', function() {
+    it('should validate rule with "macro" and "validate" funcs', function() {
+      var macroCalled;
+      testEvenKeyword$data({
+        type: 'number',
+        $data: true,
+        macro: macroEven,
+        validate: validateEven
+      }, 2);
+      macroCalled .should.equal(true);
+
+      function validateEven(schema, data) {
+        if (typeof schema != 'boolean') return false;
+        return data % 2 ? !schema : schema;
+      }
+
+      function macroEven(schema) {
+        macroCalled = true;
+        if (schema === true) return { "multipleOf": 2 };
+        if (schema === false) return { "not": { "multipleOf": 2 } };
+        throw new Error('Schema for "even" keyword should be boolean');
+      }
+    });
+
+    it('should validate with "macro" and "validate" funcs with meta-schema', function() {
+      var macroCalled;
+      testEvenKeyword$data({
+        type: 'number',
+        $data: true,
+        macro: macroEven,
+        validate: validateEven,
+        metaSchema: { "type": "boolean" }
+      }, 2);
+      macroCalled .should.equal(true);
+      shouldBeInvalidSchema({ "even": "false" });
+
+      function validateEven(schema, data) {
+        return data % 2 ? !schema : schema;
+      }
+
+      function macroEven(schema) {
+        macroCalled = true;
+        if (schema === true) return { "multipleOf": 2 };
+        if (schema === false) return { "not": { "multipleOf": 2 } };
+      }
+    });
+
+    it('should validate rule with "inline" and "validate" funcs', function() {
+      var inlineCalled;
+      testEvenKeyword$data({
+        type: 'number',
+        $data: true,
+        inline: inlineEven,
+        validate: validateEven
+      });
+      inlineCalled .should.equal(true);
+
+      function validateEven(schema, data) {
+        if (typeof schema != 'boolean') return false;
+        return data % 2 ? !schema : schema;
+      }
+
+      function inlineEven(it, keyword, schema) {
+        inlineCalled = true;
+        var op = schema ? '===' : '!==';
+        return 'data' + (it.dataLevel || '') + ' % 2 ' + op + ' 0';
+      }
+    });
+
+    it('should validate with "inline" and "validate" funcs with meta-schema', function() {
+      var inlineCalled;
+      testEvenKeyword$data({
+        type: 'number',
+        $data: true,
+        inline: inlineEven,
+        validate: validateEven,
+        metaSchema: { "type": "boolean" }
+      });
+      inlineCalled .should.equal(true);
+      shouldBeInvalidSchema({ "even": "false" });
+
+      function validateEven(schema, data) {
+        return data % 2 ? !schema : schema;
+      }
+
+      function inlineEven(it, keyword, schema) {
+        inlineCalled = true;
+        var op = schema ? '===' : '!==';
+        return 'data' + (it.dataLevel || '') + ' % 2 ' + op + ' 0';
+      }
+    });
+
+    it('should fail if keyword definition has "$data" but no "validate"', function() {
       should.throw(function() {
         ajv.addKeyword('even', {
           type: 'number',
@@ -588,25 +698,34 @@ describe('Custom keywords', function () {
 
   function testEvenKeyword$data(definition, numErrors) {
     instances.forEach(function (ajv) {
-      var schema = {
+      ajv.addKeyword('even', definition);
+
+      var schema = { "even": true };
+      var validate = ajv.compile(schema);
+
+      shouldBeValid(validate, 2);
+      shouldBeValid(validate, 'abc');
+      shouldBeInvalid(validate, 2.5, numErrors);
+      shouldBeInvalid(validate, 3, numErrors);
+
+      schema = {
         "properties": {
           "data": { "even": { "$data": "1/evenValue" } },
           "evenValue": {}
         }
       };
-      ajv.addKeyword('even', definition);
-      var validate = ajv.compile(schema);
+      validate = ajv.compile(schema);
 
       shouldBeValid(validate, { data: 2, evenValue: true });
       shouldBeInvalid(validate, { data: 2, evenValue: false });
       shouldBeValid(validate, { data: 'abc', evenValue: true });
       shouldBeValid(validate, { data: 'abc', evenValue: false });
-      shouldBeInvalid(validate, { data: 2.5, evenValue: true }, numErrors);
+      shouldBeInvalid(validate, { data: 2.5, evenValue: true });
       shouldBeValid(validate, { data: 2.5, evenValue: false });
-      shouldBeInvalid(validate, { data: 3, evenValue: true }, numErrors);
+      shouldBeInvalid(validate, { data: 3, evenValue: true });
       shouldBeValid(validate, { data: 3, evenValue: false });
 
-      // shouldBeInvalid(validate, { data: 2, evenValue: "true" });
+      shouldBeInvalid(validate, { data: 2, evenValue: "true" });
     });
   }
 
