@@ -147,6 +147,8 @@ Ajv is tested with these browsers:
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/epoberezkin.svg)](https://saucelabs.com/u/epoberezkin)
 
+__Please note__: some frameworks, e.g. Dojo, may redifine global require in such way that is not compatible with CommonJS module format. In such case Ajv bundle has to be loaded before the framework and then you can use global Ajv (see issue #234).
+
 
 ## Command line interface
 
@@ -225,10 +227,10 @@ This schema requires that the value in property `smaller` is less or equal than 
 var schema = {
   "properties": {
     "smaller": {
-      "type": number,
+      "type": "number",
       "maximum": { "$data": "1/larger" }
     },
-    "larger": { "type": number }
+    "larger": { "type": "number" }
   }
 };
 

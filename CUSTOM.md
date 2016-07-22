@@ -269,10 +269,10 @@ it.util.toHash(['a', 'b', 'c']) // { a: true, b: true, c: true }
 Converts the string that is the key/index to access the property/item to the JavaScript syntax to access the property (either "." notation or "[...]" notation).
 
 ```javascript
-it.util.toHash('a')   // ".a"
-it.util.toHash('1')   // "['1']"
-it.util.toHash("a'b") // "['a\\'b']"
-it.util.toHash(1)     // "[1]"
+it.util.getProperty('a')   // ".a"
+it.util.getProperty('1')   // "['1']"
+it.util.getProperty("a'b") // "['a\\'b']"
+it.util.getProperty(1)     // "[1]"
 ```
 
 
@@ -304,7 +304,7 @@ it.util.toQuotedString("a'b") // "'a\\'b'"
 Returns the validation-time expression to safely access data based on the passed [relative json pointer](https://tools.ietf.org/html/draft-luff-relative-json-pointer-00) (See [examples](https://gist.github.com/geraintluff/5911303)).
 
 ```javascript
-it.getData('2/test/1', it.dataLevel, it.dataPathArr)
+it.util.getData('2/test/1', it.dataLevel, it.dataPathArr)
 // The result depends on the current level
 // if it.dataLevel is 3 the result is "data1 && data1.test && data1.test[1]"
 ```
