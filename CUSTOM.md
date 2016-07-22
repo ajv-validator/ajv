@@ -60,6 +60,8 @@ Compilation function will be called during schema compilation. It will be passed
 
 In some cases it is the best approach to define keywords, but it has the performance cost of an extra function call during validation. If keyword logic can be expressed via some other JSON-schema then `macro` keyword definition is more efficient (see below).
 
+All custom keywords types can have an optional `metaSchema` property in their definitions. It is a schema against which the value of keyword will be validated during schema compilation.
+
 Example. `range` and `exclusiveRange` keywords using compiled schema:
 
 ```javascript
@@ -70,7 +72,11 @@ ajv.addKeyword('range', { type: 'number', compile: function (sch, parentSchema) 
   return parentSchema.exclusiveRange === true
           ? function (data) { return data > min && data < max; }
           : function (data) { return data >= min && data <= max; }
-}, errors: false });
+}, errors: false, metaSchema: {
+  type: 'array',
+  items: [ { type: 'number' }, { type: 'number' } ],
+  additionalItems: false
+} });
 
 var schema = { "range": [2, 4], "exclusiveRange": true };
 var validate = ajv.compile(schema);
@@ -102,6 +108,10 @@ ajv.addKeyword('range', { type: 'number', macro: function (schema, parentSchema)
     exclusiveMinimum: !!parentSchema.exclusiveRange,
     exclusiveMaximum: !!parentSchema.exclusiveRange
   };
+}, metaSchema: {
+  type: 'array',
+  items: [ { type: 'number' }, { type: 'number' } ],
+  additionalItems: false
 } });
 ```
 
@@ -149,7 +159,7 @@ Example `even` keyword:
 ajv.addKeyword('even', { type: 'number', inline: function (it, keyword, schema) {
   var op = schema ? '===' : '!==';
   return 'data' + (it.dataLevel || '') + ' % 2 ' + op + ' 0';
-} });
+}, metaSchema: { type: 'boolean' } });
 
 var schema = { "even": true };
 
@@ -179,7 +189,12 @@ var valid{{=it.level}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{
 ajv.addKeyword('range', {
   type: 'number',
   inline: inlineRangeTemplate,
-  statements: true
+  statements: true,
+  metaSchema: {
+    type: 'array',
+    items: [ { type: 'number' }, { type: 'number' } ],
+    additionalItems: false
+  }
 });
 ```
 

@@ -20,90 +20,151 @@ describe('Custom keywords', function () {
 
 
   describe('custom rules', function() {
-    it('should add and validate rule with "interpreted" keyword validation', function() {
-      testEvenKeyword({ type: 'number', validate: validateEven });
+    describe('rule with "interpreted" keyword validation', function() {
+      it('should add and validate rule', function() {
+        testEvenKeyword({ type: 'number', validate: validateEven });
 
-      function validateEven(schema, data) {
-        if (typeof schema != 'boolean') throw new Error('The value of "even" keyword must be boolean');
-        return data % 2 ? !schema : schema;
-      }
-    });
+        function validateEven(schema, data) {
+          if (typeof schema != 'boolean') throw new Error('The value of "even" keyword must be boolean');
+          return data % 2 ? !schema : schema;
+        }
+      });
 
-    it('should add and validate rule with "compiled" keyword validation', function() {
-      testEvenKeyword({ type: 'number', compile: compileEven });
+      it('should add, validate keyword schema and validate rule', function() {
+        testEvenKeyword({
+          type: 'number',
+          validate: validateEven,
+          metaSchema: { "type": "boolean" }
+        });
 
-      function compileEven(schema) {
-        if (typeof schema != 'boolean') throw new Error('The value of "even" keyword must be boolean');
-        return schema ? isEven : isOdd;
-      }
+        shouldBeInvalidSchema({ "even": "not_boolean" });
 
-      function isEven(data) { return data % 2 === 0; }
-      function isOdd(data) { return data % 2 !== 0; }
-    });
+        function validateEven(schema, data) {
+          return data % 2 ? !schema : schema;
+        }
+      });
 
-    it('should compile keyword validating function only once per schema', function () {
-      testConstantKeyword({ compile: compileConstant });
-    });
+      it('should pass parent schema to "interpreted" keyword validation', function() {
+        testRangeKeyword({
+          type: 'number',
+          validate: validateRange
+        });
 
-    it('should allow multiple schemas for the same keyword', function () {
-      testMultipleConstantKeyword({ compile: compileConstant });
-    });
+        function validateRange(schema, data, parentSchema) {
+          validateRangeSchema(schema, parentSchema);
 
-    it('should pass parent schema to "interpreted" keyword validation', function() {
-      testRangeKeyword({ type: 'number', validate: validateRange });
+          return parentSchema.exclusiveRange === true
+                  ? data > schema[0] && data < schema[1]
+                  : data >= schema[0] && data <= schema[1];
+        }
+      });
 
-      function validateRange(schema, data, parentSchema) {
-        validateRangeSchema(schema, parentSchema);
-
-        return parentSchema.exclusiveRange === true
-                ? data > schema[0] && data < schema[1]
-                : data >= schema[0] && data <= schema[1];
-      }
-    });
-
-    it('should allow defining custom errors for "interpreted" keyword', function() {
-      testRangeKeyword({ type: 'number', validate: validateRange }, true);
-
-      function validateRange(schema, data, parentSchema) {
-        validateRangeSchema(schema, parentSchema);
-        var min = schema[0]
-          , max = schema[1]
-          , exclusive = parentSchema.exclusiveRange === true;
-
-        var minOk = exclusive ? data > min : data >= min;
-        var maxOk = exclusive ? data < max : data <= max;
-        var valid = minOk && maxOk;
-
-        if (!valid) {
-          var err = { keyword: 'range' };
-          validateRange.errors = [err];
-          var comparison, limit;
-          if (minOk) {
-            comparison = exclusive ? '<' : '<=';
-            limit = max;
-          } else {
-            comparison = exclusive ? '>' : '>=';
-            limit = min;
+      it('should validate meta schema and pass parent schema to "interpreted" keyword validation', function() {
+        testRangeKeyword({
+          type: 'number',
+          validate: validateRange,
+          metaSchema: {
+            "type": "array",
+            "items": [ { "type": "number" }, { "type": "number" } ],
+            "additionalItems": false
           }
-          err.message = 'should be ' + comparison + ' ' + limit;
-          err.params = {
-            comparison: comparison,
-            limit: limit,
-            exclusive: exclusive
-          };
+        });
+        shouldBeInvalidSchema({ range: [ "1", 2 ] });
+        shouldBeInvalidSchema({ range: {} });
+        shouldBeInvalidSchema({ range: [ 1, 2, 3 ] });
+
+        function validateRange(schema, data, parentSchema) {
+          return parentSchema.exclusiveRange === true
+                  ? data > schema[0] && data < schema[1]
+                  : data >= schema[0] && data <= schema[1];
+        }
+      });
+
+      it('should allow defining custom errors for "interpreted" keyword', function() {
+        testRangeKeyword({ type: 'number', validate: validateRange }, true);
+
+        function validateRange(schema, data, parentSchema) {
+          validateRangeSchema(schema, parentSchema);
+          var min = schema[0]
+            , max = schema[1]
+            , exclusive = parentSchema.exclusiveRange === true;
+
+          var minOk = exclusive ? data > min : data >= min;
+          var maxOk = exclusive ? data < max : data <= max;
+          var valid = minOk && maxOk;
+
+          if (!valid) {
+            var err = { keyword: 'range' };
+            validateRange.errors = [err];
+            var comparison, limit;
+            if (minOk) {
+              comparison = exclusive ? '<' : '<=';
+              limit = max;
+            } else {
+              comparison = exclusive ? '>' : '>=';
+              limit = min;
+            }
+            err.message = 'should be ' + comparison + ' ' + limit;
+            err.params = {
+              comparison: comparison,
+              limit: limit,
+              exclusive: exclusive
+            };
+          }
+
+          return valid;
+        }
+      });
+    });
+
+
+    describe('rule with "compiled" keyword validation', function() {
+      it('should add and validate rule', function() {
+        testEvenKeyword({ type: 'number', compile: compileEven });
+        shouldBeInvalidSchema({ "even": "not_boolean" });
+
+        function compileEven(schema) {
+          if (typeof schema != 'boolean') throw new Error('The value of "even" keyword must be boolean');
+          return schema ? isEven : isOdd;
         }
 
-        return valid;
-      }
+        function isEven(data) { return data % 2 === 0; }
+        function isOdd(data) { return data % 2 !== 0; }
+      });
+
+      it('should add, validate keyword schema and validate rule', function() {
+        testEvenKeyword({
+          type: 'number',
+          compile: compileEven,
+          metaSchema: { "type": "boolean" }
+        });
+        shouldBeInvalidSchema({ "even": "not_boolean" });
+
+        function compileEven(schema) {
+          return schema ? isEven : isOdd;
+        }
+
+        function isEven(data) { return data % 2 === 0; }
+        function isOdd(data) { return data % 2 !== 0; }
+      });
+
+      it('should compile keyword validating function only once per schema', function () {
+        testConstantKeyword({ compile: compileConstant });
+      });
+
+      it('should allow multiple schemas for the same keyword', function () {
+        testMultipleConstantKeyword({ compile: compileConstant });
+      });
+
+      it('should pass parent schema to "compiled" keyword validation', function() {
+        testRangeKeyword({ type: 'number', compile: compileRange });
+      });
+
+      it('should allow multiple parent schemas for the same keyword', function () {
+        testMultipleRangeKeyword({ type: 'number', compile: compileRange });
+      });
     });
 
-    it('should pass parent schema to "compiled" keyword validation', function() {
-      testRangeKeyword({ type: 'number', compile: compileRange });
-    });
-
-    it('should allow multiple parent schemas for the same keyword', function () {
-      testMultipleRangeKeyword({ type: 'number', compile: compileRange });
-    });
 
     function compileConstant(schema) {
       return typeof schema == 'object' && schema !== null
@@ -599,6 +660,13 @@ describe('Custom keywords', function () {
     validate.errors .should.have.length(numErrors || 1);
   }
 
+  function shouldBeInvalidSchema(schema) {
+    instances.forEach(function (ajv) {
+      should.throw(function() {
+        ajv.compile(schema);
+      });
+    });
+  }
 
   describe('addKeyword method', function() {
     var TEST_TYPES = [ undefined, 'number', 'string', 'boolean', ['number', 'string']];
