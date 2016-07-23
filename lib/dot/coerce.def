@@ -13,6 +13,7 @@
       {{ $bracesCoercion += '}'; }}
     {{?}}
 
+
     {{? $type == 'string' }}
       if ({{=$dataType}} == 'number' || {{=$dataType}} == 'boolean')
         {{=$coerced}} = '' + {{=$data}};
@@ -30,6 +31,9 @@
     {{?? $type == 'null' }}
       if ({{=$data}} === '' || {{=$data}} === 0 || {{=$data}} === false)
         {{=$coerced}} = null;
+    {{?? $type === 'array' }}
+          if ({{=$dataType}} !== 'array')
+            {{=$coerced}} = [{{=$data}}];
     {{?}}
   {{~}}
 

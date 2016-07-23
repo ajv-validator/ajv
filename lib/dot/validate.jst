@@ -84,7 +84,7 @@
 #}}
 
 {{? $typeSchema && it.opts.coerceTypes }}
-  {{ var $coerceToTypes = it.util.coerceToTypes($typeSchema); }}
+  {{ var $coerceToTypes = it.util.coerceToTypes(it.opts.coerceTypes, $typeSchema); }}
   {{? $coerceToTypes }}
     {{# def.checkType }}
       {{# def.coerceType }}

@@ -1,6 +1,6 @@
 # Ajv type coercion rules
 
-To enable type coercion pass option `coerceTypes` to Ajv (it is `false` by default). See [example](https://github.com/epoberezkin/ajv#coercing-data-types).
+To enable type coercion pass option `coerceTypes` to Ajv with `true` or `array` (it is `false` by default). See [example](https://github.com/epoberezkin/ajv#coercing-data-types).
 
 The coercion rules are different from JavaScript:
 - to validate user input as expected
@@ -10,6 +10,8 @@ The coercion rules are different from JavaScript:
 Type coercion only happens if there is `type` keyword and if without coercion the validation would have failed. If coercion to the required type succeeds then the validation continues to other keywords, otherwise the validation fails.
 
 If there are multiple types allowed in `type` keyword the coercion will only happen if none of the types match the data and some of the scalar types are present (coercion to/from `object`/`array` is not possible). In this case the validating function will try coercing the data to each type in order until some of them succeeds.
+
+If `coerceTypes` is set to `array`
 
 Possible type coercions:
 
@@ -98,3 +100,9 @@ Unlike JavaScript, only these numbers can be coerced to `boolean`:
 #### To boolean type
 
 `null` coerces to `false`
+
+## Coersion from array
+
+Wraps and non-array input in an array.
+
+- `"foo"` -> `[ "foo" ]`
