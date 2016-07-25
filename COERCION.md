@@ -11,8 +11,6 @@ Type coercion only happens if there is `type` keyword and if without coercion th
 
 If there are multiple types allowed in `type` keyword the coercion will only happen if none of the types match the data and some of the scalar types are present (coercion to/from `object`/`array` is not possible). In this case the validating function will try coercing the data to each type in order until some of them succeeds.
 
-If `coerceTypes` is set to `array`
-
 Possible type coercions:
 
 |from&nbsp;type&nbsp;&rarr;<br>to&nbsp;type&nbsp;&darr;|string|number|boolean|null|

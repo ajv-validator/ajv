@@ -22,7 +22,8 @@ var coercionRules = {
       { from: {}, to: undefined }
     ],
     'array': [
-      { from: [], to: undefined }
+      { from: [], to: undefined },
+      { from: [1], to: undefined }
     ]
   },
   'number': {
@@ -45,7 +46,8 @@ var coercionRules = {
       { from: {}, to: undefined }
     ],
     'array': [
-      { from: [], to: undefined }
+      { from: [], to: undefined },
+      { from: [true], to: undefined }
     ]
   },
   'integer': {
@@ -68,32 +70,34 @@ var coercionRules = {
       { from: {}, to: undefined }
     ],
     'array': [
-      { from: [], to: undefined }
+      { from: [], to: undefined },
+      { from: ['1'], to: undefined }
     ]
   },
-	'boolean': {
-		'string': [
-			{ from: 'false', to: false },
-			{ from: 'true', to: true },
-			{ from: '', to: undefined },
-			{ from: 'abc', to: undefined },
-		],
-		'number': [
-			{ from: 0, to: false },
-			{ from: 1, to: true },
-			{ from: 2, to: undefined },
-			{ from: 2.5, to: undefined }
-		],
-		'null': [
-			{ from: null, to: false }
-		],
-		'object': [
-			{ from: {}, to: undefined }
-		],
-		'array': [
-			{ from: [], to: undefined }
-		]
-	},
+  'boolean': {
+    'string': [
+      { from: 'false', to: false },
+      { from: 'true', to: true },
+      { from: '', to: undefined },
+      { from: 'abc', to: undefined }
+    ],
+    'number': [
+      { from: 0, to: false },
+      { from: 1, to: true },
+      { from: 2, to: undefined },
+      { from: 2.5, to: undefined }
+    ],
+    'null': [
+      { from: null, to: false }
+    ],
+    'object': [
+      { from: {}, to: undefined }
+    ],
+    'array': [
+      { from: [], to: undefined },
+      { from: [0], to: undefined }
+    ]
+  },
   'null': {
     'string': [
       { from: '',     to: null },
@@ -112,17 +116,18 @@ var coercionRules = {
       { from: {}, to: undefined }
     ],
     'array': [
-      { from: [], to: undefined }
+      { from: [], to: undefined },
+      { from: [null], to: undefined }
     ]
   },
   'array': {
-	  'all': [
-		  { type: 'string',  from: 'abc', to: undefined },
-		  { type: 'number',  from: 1,     to: undefined },
-		  { type: 'boolean', from: true,  to: undefined },
-		  { type: 'null',    from: null,  to: undefined },
-		  { type: 'object',  from: {},    to: undefined }
-		  ]
+    'all': [
+      { type: 'string',  from: 'abc', to: undefined },
+      { type: 'number',  from: 1,     to: undefined },
+      { type: 'boolean', from: true,  to: undefined },
+      { type: 'null',    from: null,  to: undefined },
+      { type: 'object',  from: {},    to: undefined }
+    ]
   },
   'object': {
     'all': [
@@ -135,24 +140,42 @@ var coercionRules = {
   }
 };
 
-var coercionArrayRules = {
-	'array': {
-		'string': [
-			{ from: 'abc', to: ['abc'] }
-		],
-		'number': [
-			{ from: 1,     to: [1] }
-		],
-		'boolean': [
-			{ from: true,  to: [true] }
-		],
-		'null': [
-			{ from: null,  to: [null] }
-		],
-		'object': [
-			{ from: {},    to: [{}] }
-		]
-	}
+var coercionArrayRules = JSON.parse(JSON.stringify(coercionRules));
+coercionArrayRules.string.array = [
+  { from: ['abc'], to: 'abc' }
+];
+coercionArrayRules.number.array = [
+  { from: [1.5], to: 1.5 }
+];
+coercionArrayRules.integer.array =  [
+  { from: [1], to: 1 }
+];
+coercionArrayRules.boolean.array =  [
+  { from: [true], to: true }
+];
+coercionArrayRules.null.array =  [
+  { from: [null], to: null }
+];
+/*coercionArrayRules.object.array =  [
+  {  from: [{}], to: {} }
+];*/
+
+coercionArrayRules.array = {
+  'string':  [
+    {from: 'abc', to: ['abc']}
+  ],
+  'number':  [
+    {from: 1, to: [1]}
+  ],
+  'boolean': [
+    {from: true, to: [true]}
+  ],
+  'null':    [
+    {from: null, to: [null]}
+  ],
+  'object':  [
+    {from: {}, to: [{}]}
+  ]
 };
 
 describe('Type coercion', function () {
@@ -175,19 +198,19 @@ describe('Type coercion', function () {
     });
   });
 
-	it('should coerce scalar values in array', function() {
-		ajv = new Ajv({ coerceTypes: 'array', verbose: true });
-		fullAjv = new Ajv({ coerceTypes: 'array', verbose: true, allErrors: true });
-		instances = [ ajv, fullAjv ];
+  it('should coerce scalar values (coerceTypes = array)', function() {
+    ajv = new Ajv({ coerceTypes: 'array', verbose: true });
+    fullAjv = new Ajv({ coerceTypes: 'array', verbose: true, allErrors: true });
+    instances = [ ajv, fullAjv ];
 
-		testRules(coercionArrayRules, function (test, schema, canCoerce, toType, fromType) {
-			instances.forEach(function (ajv) {
-				var valid = ajv.validate(schema, test.from);
-				//if (valid !== canCoerce) console.log('array', toType, fromType, test, ajv.errors);
-				valid. should.equal(canCoerce);
-			});
-		});
-	});
+    testRules(coercionArrayRules, function (test, schema, canCoerce, toType, fromType) {
+      instances.forEach(function (ajv) {
+        var valid = ajv.validate(schema, test.from);
+        //if (valid !== canCoerce) console.log(toType, '.', fromType, test, schema, ajv.errors);
+        valid. should.equal(canCoerce);
+      });
+    });
+  });
 
   it('should coerce values in objects/arrays and update properties/items', function() {
     testRules(coercionRules, function (test, schema, canCoerce, toType, fromType) {
@@ -217,7 +240,7 @@ describe('Type coercion', function () {
 
       function testCoercion(schema, fromData, toData) {
         var valid = ajv.validate(schema, fromData);
-        // if (valid !== canCoerce) console.log(schema, fromData, toData);
+        //if (valid !== canCoerce) console.log(schema, fromData, toData);
         valid. should.equal(canCoerce);
         if (valid) fromData.should.eql(toData);
       }
@@ -366,19 +389,18 @@ describe('Type coercion', function () {
     for (var toType in rules) {
       for (var fromType in rules[toType]) {
         var tests = rules[toType][fromType];
-		//if (toType === 'array') { console.log(toType, fromType, tests); }
         tests.forEach(function (test) {
           var canCoerce = test.to !== undefined;
           var schema;
-			if (canCoerce) {
-				if (Array.isArray(test.to)) {
-					schema = {type: toType, "items": { "type": fromType, "enum":[test.from] }};
-				} else {
-					schema = {type: toType, "enum": [test.to]};
-				}
-			} else {
-				schema = { type: toType };
-			}
+      if (canCoerce) {
+        if (Array.isArray(test.to)) {
+          schema = {type: toType, "items": { "type": fromType, "enum":[test.from] }};
+        } else {
+          schema = {type: toType, "enum": [test.to]};
+        }
+      } else {
+        schema = { type: toType };
+      }
           cb(test, schema, canCoerce, toType, fromType);
         });
       }
