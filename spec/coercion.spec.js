@@ -156,9 +156,9 @@ coercionArrayRules.boolean.array =  [
 coercionArrayRules.null.array =  [
   { from: [null], to: null }
 ];
-/*coercionArrayRules.object.array =  [
-  {  from: [{}], to: {} }
-];*/
+coercionArrayRules.object.array =  [
+  {  from: [{}], to: undefined }
+];
 
 coercionArrayRules.array = {
   'string':  [
@@ -174,7 +174,7 @@ coercionArrayRules.array = {
     {from: null, to: [null]}
   ],
   'object':  [
-    {from: {}, to: [{}]}
+    {from: {}, to: undefined}
   ]
 };
 
@@ -206,7 +206,7 @@ describe('Type coercion', function () {
     testRules(coercionArrayRules, function (test, schema, canCoerce, toType, fromType) {
       instances.forEach(function (ajv) {
         var valid = ajv.validate(schema, test.from);
-        //if (valid !== canCoerce) console.log(toType, '.', fromType, test, schema, ajv.errors);
+        if (valid !== canCoerce) console.log(toType, '.', fromType, test, schema, ajv.errors);
         valid. should.equal(canCoerce);
       });
     });
