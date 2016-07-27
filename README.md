@@ -657,7 +657,7 @@ This option modifies original data.
 __Please note__: if you pass a scalar value to the validating function its type will be coerced and it will pass the validation, but the value of the variable you pass won't be updated because scalars are passed by value.
 
 
-Example:
+Example 1:
 
 ```javascript
 var ajv = new Ajv({ coerceTypes: true });
@@ -676,6 +676,25 @@ var validate = ajv.compile(schema);
 
 console.log(validate(data)); // true
 console.log(data); // { "foo": 1, "bar": false }
+```
+
+Example 2 (array coercions):
+
+```javascript
+var ajv = new Ajv({ coerceTypes: 'array' });
+var schema = {
+  "properties": {
+    "foo": { "type": "array", "items": { "type": "number" } },
+    "bar": { "type": "boolean" }
+  }
+};
+
+var data = { "foo": "1", "bar": ["false"] };
+
+var validate = ajv.compile(schema);
+
+console.log(validate(data)); // true
+console.log(data); // { "foo": [1], "bar": false }
 ```
 
 The coercion rules, as you can see from the example, are different from JavaScript both to validate user input as expected and to have the coercion reversible (to correctly validate cases where different types are defined in subschemas of "anyOf" and other compound keywords).
@@ -910,7 +929,10 @@ Defaults:
   - `false` (default) - do not use defaults
   - `true` - insert defaults by value (safer and slower, object literal is used).
   - `"shared"` - insert defaults by reference (faster). If the default is an object, it will be shared by all instances of validated data. If you modify the inserted default in the validated data, it will be modified in the schema as well.
-- _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](#coercing-data-types) and [coercion rules](https://github.com/epoberezkin/ajv/blob/master/COERCION.md).
+- _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](#coercing-data-types) and [coercion rules](https://github.com/epoberezkin/ajv/blob/master/COERCION.md). Option values:
+  - `false` (default) - no type coercion.
+  - `true` - coerce scalar data types.
+  - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
 
 ##### Asynchronous validation options
