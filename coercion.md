@@ -18,13 +18,15 @@ If there are multiple types allowed in `type` keyword the coercion will only hap
 
 Possible type coercions:
 
-|from&nbsp;type&nbsp;&rarr;<br>to&nbsp;type&nbsp;&darr;|string|number|boolean|null|array|
+|from&nbsp;type&nbsp;&rarr;<br>to&nbsp;type&nbsp;&darr;|string|number|boolean|null|array*|
 |---|:-:|:-:|:-:|:-:|:-:|
 |string      |-|`x`&rarr;`""+x`|`false`&rarr;`"false"`<br>`true`&rarr;`"true"`|`null`&rarr;`""`|`[x]`&rarr;`x`|
 |number /<br>integer|Valid number /<br>integer: `x`&rarr;`+x`<br>|-|`false`&rarr;`0`<br>`true`&rarr;`1`|`null`&rarr;`0`|`[x]`&rarr;`x`|
 |boolean     |`"false"`&rarr;`false`<br>`"true"`&rarr;`true`<br>`"abc"`&#8696;<br>`""`&#8696;|`0`&rarr;`false`<br>`1`&rarr;`true`<br>`x`&#8696;|-|`null`&rarr;`false`|`[false]`&rarr;`false`<br>`[true]`&rarr;`true`|
 |null        |`""`&rarr;`null`<br>`"null"`&#8696;<br>`"abc"`&#8696;|`0`&rarr;`null`<br>`x`&#8696;|`false`&rarr;`null`<br>`true`&#8696;|-|`[null]`&rarr;`null`|
-|array       |`x`&rarr;`[x]`|`x`&rarr;`[x]`|`false`&rarr;`[false]`<br>`true`&rarr;`[true]`|`null`&rarr;`[null]`|-|
+|array*      |`x`&rarr;`[x]`|`x`&rarr;`[x]`|`false`&rarr;`[false]`<br>`true`&rarr;`[true]`|`null`&rarr;`[null]`|-|
+
+* Requires option `{coerceTypes: 'array'}`
 
 
 ## Coersion from string values
@@ -112,8 +114,7 @@ These coercions require the the option `coerceTypes` is `"array"`.
 
 If a scalar data is present and array is required, Ajv wraps scalar data in an array.
 
-- `"foo"` -> `[ "foo" ]`
-
 If an array with one item is present and a scalar is required, Ajv coerces array into its item.
 
+- `"foo"` -> `[ "foo" ]`
 - `[ "foo" ]` -> `"foo"`
