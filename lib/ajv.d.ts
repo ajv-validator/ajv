@@ -110,7 +110,7 @@ declare namespace ajv {
     loadSchema?: (uri: string, cb: (err: Error, schema: Object) => any) => any;
     removeAdditional?: boolean | string;
     useDefaults?: boolean | string;
-    coerceTypes?: boolean;
+    coerceTypes?: boolean | string;
     async?: boolean | string;
     transpile?: string | ((code: string) => string);
     meta?: boolean | Object;

@@ -4,6 +4,10 @@
       , $coerced = 'coerced' + $lvl;
   }}
   var {{=$dataType}} = typeof {{=$data}};
+  {{? it.opts.coerceTypes == 'array'}}
+    if ({{=$dataType}} == 'object' && Array.isArray({{=$data}})) {{=$dataType}} = 'array';
+  {{?}}
+
   var {{=$coerced}} = undefined;
 
   {{ var $bracesCoercion = ''; }}
@@ -11,6 +15,14 @@
     {{? $i }}
       if ({{=$coerced}} === undefined) {
       {{ $bracesCoercion += '}'; }}
+    {{?}}
+
+    {{? it.opts.coerceTypes == 'array' && $type != 'array' }}
+      if ({{=$dataType}} == 'array' && {{=$data}}.length == 1) {
+        {{=$coerced}} = {{=$data}} = {{=$data}}[0];
+        {{=$dataType}} = typeof {{=$data}};
+        /*if ({{=$dataType}} == 'object' && Array.isArray({{=$data}})) {{=$dataType}} = 'array';*/
+      }
     {{?}}
 
     {{? $type == 'string' }}
@@ -30,6 +42,9 @@
     {{?? $type == 'null' }}
       if ({{=$data}} === '' || {{=$data}} === 0 || {{=$data}} === false)
         {{=$coerced}} = null;
+    {{?? it.opts.coerceTypes == 'array' && $type == 'array' }}
+      if ({{=$dataType}} == 'string' || {{=$dataType}} == 'number' || {{=$dataType}} == 'boolean' || {{=$data}} == null)
+        {{=$coerced}} = [{{=$data}}];
     {{?}}
   {{~}}
 
