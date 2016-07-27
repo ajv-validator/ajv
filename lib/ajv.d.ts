@@ -1,7 +1,9 @@
-declare function ajv (options?: ajv.Options): ajv.Ajv;
-
-declare namespace ajv {
-  interface Ajv {
+  export default class Ajv {
+    /**
+     * Constructor
+     * @param  {Object} Options
+     */
+    constructor(options?)
     /**
     * Validate data using schema
     * Schema will be compiled and cached (using serialized JSON as key. [json-stable-stringify](https://github.com/substack/json-stable-stringify) is used to serialize.
@@ -77,7 +79,7 @@ declare namespace ajv {
     * @return {String} human readable string with all errors descriptions
     */
     errorsText(errors?: Array<ErrorObject>, options?: ErrorsTextOptions): string;
-    errors?: Array<ErrorObject>;
+    errors: Array<ErrorObject>;
   }
 
   interface Thenable <R> {
@@ -95,7 +97,7 @@ declare namespace ajv {
     schema?: Object;
   }
 
-  interface Options {
+  export interface Options {
     v5?: boolean;
     allErrors?: boolean;
     verbose?: boolean;
@@ -253,6 +255,4 @@ declare namespace ajv {
   }
 
   interface NoParams {}
-}
-
-export = ajv;
+  
