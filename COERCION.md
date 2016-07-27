@@ -21,7 +21,7 @@ Possible type coercions:
 |null        |`""`&rarr;`null`<br>`"null"`&#8696;<br>`"abc"`&#8696;|`0`&rarr;`null`<br>`x`&#8696;|`false`&rarr;`null`<br>`true`&#8696;|-|`[null]`&rarr;`null`|
 |array*      |`x`&rarr;`[x]`|`x`&rarr;`[x]`|`false`&rarr;`[false]`<br>`true`&rarr;`[true]`|`null`&rarr;`[null]`|-|
 
-* Requires option `{coerceTypes: 'array'}`
+`* Requires option `{coerceTypes: 'array'}`
 
 
 ## Coersion from string values
