@@ -142,7 +142,9 @@ var coercionRules = {
 
 var coercionArrayRules = JSON.parse(JSON.stringify(coercionRules));
 coercionArrayRules.string.array = [
-  { from: ['abc'], to: 'abc' }
+  { from: ['abc'], to: 'abc' },
+  { from: ['abc', 'def'], to: undefined },
+  { from: [], to: undefined }
 ];
 coercionArrayRules.number.array = [
   { from: [1.5], to: 1.5 }
