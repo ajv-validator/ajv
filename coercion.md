@@ -29,7 +29,7 @@ Possible type coercions:
 \* Requires option `{coerceTypes: 'array'}`
 
 
-## Coersion from string values
+## Coercion from string values
 
 #### To number type
 
@@ -108,7 +108,7 @@ Unlike JavaScript, only these numbers can be coerced to `boolean`:
 `null` coerces to `false`
 
 
-## Coersion to and from from array
+## Coercion to and from from array
 
 These coercions require the the option `coerceTypes` is `"array"`.
 
