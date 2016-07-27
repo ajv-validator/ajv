@@ -1,7 +1,7 @@
 'use strict';
 
-var equal = require('../lib/compile/equal')
-  , should = require('./chai').should();
+var equal = require('../lib/compile/equal');
+require('./chai').should();
 
 
 describe('equal', function() {

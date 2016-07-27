@@ -1,12 +1,11 @@
 'use strict';
 
-
 var Ajv = require('./ajv')
   , should = require('./chai').should();
 
 
 describe('compileAsync method', function() {
-	var ajv, loadCallCount;
+  var ajv, loadCallCount;
 
   var SCHEMAS = {
     "http://example.com/object.json": {
@@ -22,32 +21,32 @@ describe('compileAsync method', function() {
       "minimum": 2
     },
     "http://example.com/tree.json": {
-    	"id": "http://example.com/tree.json",
-    	"type": "array",
+      "id": "http://example.com/tree.json",
+      "type": "array",
       "items": { "$ref": "leaf.json" }
     },
     "http://example.com/leaf.json": {
-    	"id": "http://example.com/leaf.json",
-    	"properties": {
-	      "name": { "type": "string" },
-	      "subtree": { "$ref": "tree.json" }
-	     }
+      "id": "http://example.com/leaf.json",
+      "properties": {
+        "name": { "type": "string" },
+        "subtree": { "$ref": "tree.json" }
+      }
     },
     "http://example.com/recursive.json": {
-    	"id": "http://example.com/recursive.json",
-    	"properties": {
-	      "b": { "$ref": "parent.json" }
-	     },
-	     "required": ["b"]
+      "id": "http://example.com/recursive.json",
+      "properties": {
+        "b": { "$ref": "parent.json" }
+      },
+      "required": ["b"]
     },
     "http://example.com/invalid.json": {
       "id": "http://example.com/recursive.json",
       "properties": {
         "invalid": { "type": "number" }
-       },
-       "required": "invalid"
+      },
+      "required": "invalid"
     }
-  }
+  };
 
   beforeEach(function() {
     loadCallCount = 0;
@@ -102,12 +101,12 @@ describe('compileAsync method', function() {
       should.not.exist(err);
       validate .should.be.a('function');
       var validData = { tree: [
-				{ name: 'a', subtree: [ { name: 'a.a' } ] },
-				{ name: 'b' }
-			] };
-			var invalidData = { tree: [
-				{ name: 'a', subtree: [ { name: 1 } ] }
-			] };
+        { name: 'a', subtree: [ { name: 'a.a' } ] },
+        { name: 'b' }
+      ] };
+      var invalidData = { tree: [
+        { name: 'a', subtree: [ { name: 1 } ] }
+      ] };
       validate(validData) .should.equal(true);
       validate(invalidData) .should.equal(false);
       done();
@@ -161,17 +160,19 @@ describe('compileAsync method', function() {
       "type": "integer",
       "minimum": 2
     };
+    var beforeCallback1;
     ajv.compileAsync(schema, function (err, validate) {
       beforeCallback1 .should.equal(true);
       spec(err, validate);
-      ajv.compileAsync(schema, function (err, validate) {
+      var beforeCallback2;
+      ajv.compileAsync(schema, function (_err, _validate) {
         beforeCallback2 .should.equal(true);
-        spec(err, validate);
+        spec(_err, _validate);
         done();
       });
-      var beforeCallback2 = true;
+      beforeCallback2 = true;
     });
-    var beforeCallback1 = true;
+    beforeCallback1 = true;
 
     function spec(err, validate) {
       should.not.exist(err);
@@ -222,7 +223,7 @@ describe('compileAsync method', function() {
       "type": "integer",
       "minimum": 2
     };
-    var ajv = new Ajv();
+    ajv = new Ajv;
     should.throw(function() {
       ajv.compileAsync(schema, function() {
         done(new Error('it should have thrown exception'));
@@ -284,7 +285,7 @@ describe('compileAsync method', function() {
           "a": { "$ref": "object.json" }
         }
       };
-      var ajv = new Ajv({ loadSchema: badLoadSchema });
+      ajv = new Ajv({ loadSchema: badLoadSchema });
       ajv.compileAsync(schema, function (err, validate) {
         should.exist(err);
         should.not.exist(validate);
@@ -305,7 +306,7 @@ describe('compileAsync method', function() {
         done();
       });
 
-      function badCompile(schema) {
+      function badCompile(/* schema */) {
         throw new Error('cant compile keyword schema');
       }
     });
@@ -315,8 +316,8 @@ describe('compileAsync method', function() {
   function loadSchema(uri, callback) {
     loadCallCount++;
     setTimeout(function() {
-      if (SCHEMAS[uri]) callback(null, SCHEMAS[uri]);
-      else callback(new Error('404'));
+      if (SCHEMAS[uri]) return callback(null, SCHEMAS[uri]);
+      callback(new Error('404'));
     }, 10);
   }
 });

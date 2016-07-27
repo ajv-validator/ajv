@@ -1,6 +1,5 @@
 'use strict';
 
-
 var Ajv = require('./ajv')
   , should = require('./chai').should()
   , getAjvInstances = require('./ajv_instances');

@@ -20,7 +20,8 @@ function _getAjvInstances(opts, useOpts) {
     var instances = _getAjvInstances(opts, useOpts)
       , instances1 = _getAjvInstances(opts, useOpts1);
     return instances.concat(instances1);
-  } else return [ new Ajv(useOpts) ];
+  }
+  return [ new Ajv(useOpts) ];
 }
 
 

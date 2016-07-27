@@ -3,7 +3,6 @@
 var jsonSchemaTest = require('json-schema-test')
   , Promise = require('./promise')
   , getAjvInstances = require('./ajv_async_instances')
-  , assert = require('./chai').assert
   , Ajv = require('./ajv');
 
 
@@ -32,8 +31,9 @@ jsonSchemaTest(instances, {
 
 
 function testSuites() {
+  var suites;
   if (typeof window == 'object') {
-    var suites = {
+    suites = {
       'async schemas': require('./async/{**/,}*.json', {mode: 'list'})
     };
     for (var suiteName in suites) {
@@ -42,9 +42,9 @@ function testSuites() {
       });
     }
   } else {
-    var suites = {
+    suites = {
       'async schemas': './async/{**/,}*.json'
-    }
+    };
   }
   return suites;
 }
@@ -106,16 +106,15 @@ function checkIdExistsWithError(schema, data) {
     default: throw new Error('no such table');
   }
 
-  function check(table, IDs) {
-    if (IDs.indexOf(data) >= 0) {
+  function check(_table, IDs) {
+    if (IDs.indexOf(data) >= 0)
       return Promise.resolve(true);
-    } else {
-      var error = {
-        keyword: 'idExistsWithError',
-        message: 'id not found in table ' + table
-      };
-      return Promise.reject(new Ajv.ValidationError([error]));
-    }
+
+    var error = {
+      keyword: 'idExistsWithError',
+      message: 'id not found in table ' + _table
+    };
+    return Promise.reject(new Ajv.ValidationError([error]));
   }
 }
 

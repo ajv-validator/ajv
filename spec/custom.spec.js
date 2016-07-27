@@ -183,7 +183,7 @@ describe('Custom keywords', function () {
 
       return parentSchema.exclusiveRange === true
               ? function (data) { return data > min && data < max; }
-              : function (data) { return data >= min && data <= max; }
+              : function (data) { return data >= min && data <= max; };
     }
   });
 
@@ -210,9 +210,9 @@ describe('Custom keywords', function () {
     });
 
     it('should recursively expand macro keywords', function() {
-      instances.forEach(function (ajv) {
-        ajv.addKeyword('deepProperties', { type: 'object', macro: macroDeepProperties });
-        ajv.addKeyword('range', { type: 'number', macro: macroRange });
+      instances.forEach(function (_ajv) {
+        _ajv.addKeyword('deepProperties', { type: 'object', macro: macroDeepProperties });
+        _ajv.addKeyword('range', { type: 'number', macro: macroRange });
 
         var schema = {
           "deepProperties": {
@@ -266,7 +266,7 @@ describe('Custom keywords', function () {
         }
         */
 
-        var validate = ajv.compile(schema);
+        var validate = _ajv.compile(schema);
 
         shouldBeValid(validate, {
           a: {b: {c: 3}},
@@ -288,20 +288,20 @@ describe('Custom keywords', function () {
           d: {e: {f: {g: 2}}} // not string
         }, 5);
 
-        function macroDeepProperties(schema) {
-          if (typeof schema != 'object')
+        function macroDeepProperties(_schema) {
+          if (typeof _schema != 'object')
             throw new Error('schema of deepProperty should be an object');
 
           var expanded = [];
 
-          for (var prop in schema) {
+          for (var prop in _schema) {
             var path = prop.split('.');
             var properties = {};
             if (path.length == 1) {
-              properties[prop] = schema[prop];
+              properties[prop] = _schema[prop];
             } else {
               var deepProperties = {};
-              deepProperties[path.slice(1).join('.')] = schema[prop];
+              deepProperties[path.slice(1).join('.')] = _schema[prop];
               properties[path[0]] = { "deepProperties": deepProperties };
             }
             expanded.push({ "properties": properties });
@@ -313,17 +313,17 @@ describe('Custom keywords', function () {
     });
 
     it('should correctly expand multiple macros on the same level', function() {
-      instances.forEach(function (ajv) {
-        ajv.addKeyword('range', { type: 'number', macro: macroRange });
-        ajv.addKeyword('even', { type: 'number', macro: macroEven });
+      instances.forEach(function (_ajv) {
+        _ajv.addKeyword('range', { type: 'number', macro: macroRange });
+        _ajv.addKeyword('even', { type: 'number', macro: macroEven });
 
         var schema = {
           "range": [4,6],
           "even": true
         };
 
-        var validate = ajv.compile(schema);
-        var numErrors = ajv._opts.allErrors ? 4 : 2;
+        var validate = _ajv.compile(schema);
+        var numErrors = _ajv._opts.allErrors ? 4 : 2;
 
         shouldBeInvalid(validate, 2, 2);
         shouldBeInvalid(validate, 3, numErrors);
@@ -336,15 +336,15 @@ describe('Custom keywords', function () {
     });
 
     it('should validate macro keyword when it resolves to the same keyword as exists', function() {
-      instances.forEach(function (ajv) {
-        ajv.addKeyword('range', { type: 'number', macro: macroRange });
+      instances.forEach(function (_ajv) {
+        _ajv.addKeyword('range', { type: 'number', macro: macroRange });
 
         var schema = {
           "range": [1,4],
           "minimum": 2.5
         };
 
-        var validate = ajv.compile(schema);
+        var validate = _ajv.compile(schema);
 
         shouldBeValid(validate, 3);
         shouldBeInvalid(validate, 2);
@@ -352,17 +352,17 @@ describe('Custom keywords', function () {
     });
 
     it('should correctly expand macros in subschemas', function() {
-      instances.forEach(function (ajv) {
-        ajv.addKeyword('range', { type: 'number', macro: macroRange });
+      instances.forEach(function (_ajv) {
+        _ajv.addKeyword('range', { type: 'number', macro: macroRange });
 
         var schema = {
           "allOf": [
             { "range": [4,8] },
             { "range": [2,6] }
           ]
-        }
+        };
 
-        var validate = ajv.compile(schema);
+        var validate = _ajv.compile(schema);
 
         shouldBeInvalid(validate, 2, 2);
         shouldBeInvalid(validate, 3, 2);
@@ -375,9 +375,9 @@ describe('Custom keywords', function () {
     });
 
     it('should correctly expand macros in macro expansions', function() {
-      instances.forEach(function (ajv) {
-        ajv.addKeyword('range', { type: 'number', macro: macroRange });
-        ajv.addKeyword('contains', { type: 'array', macro: macroContains });
+      instances.forEach(function (_ajv) {
+        _ajv.addKeyword('range', { type: 'number', macro: macroRange });
+        _ajv.addKeyword('contains', { type: 'array', macro: macroContains });
 
         var schema = {
           "contains": {
@@ -387,7 +387,7 @@ describe('Custom keywords', function () {
           }
         };
 
-        var validate = ajv.compile(schema);
+        var validate = _ajv.compile(schema);
 
         shouldBeInvalid(validate, [1,2,3], 2);
         shouldBeInvalid(validate, [2,3,4], 2);
@@ -396,8 +396,8 @@ describe('Custom keywords', function () {
         shouldBeInvalid(validate, [7,8,9], 2);
         shouldBeInvalid(validate, [8,9,10], 2);
 
-        function macroContains(schema) {
-          return { "not": { "items": { "not": schema } } };
+        function macroContains(_schema) {
+          return { "not": { "items": { "not": _schema } } };
         }
       });
     });
@@ -407,10 +407,10 @@ describe('Custom keywords', function () {
       var schema = { "invalid": true };
 
       should.throw(function() {
-        var validate = ajv.compile(schema);
+        ajv.compile(schema);
       });
 
-      function macroInvalid(schema) {
+      function macroInvalid(/* schema */) {
         return { "type": "invalid" };
       }
     });
@@ -421,7 +421,7 @@ describe('Custom keywords', function () {
       throw new Error('Schema for "even" keyword should be boolean');
     }
 
-    function macroConstant(schema, parentSchema) {
+    function macroConstant(schema/*, parentSchema */) {
       return { "enum": [schema] };
     }
 
@@ -684,10 +684,10 @@ describe('Custom keywords', function () {
 
 
   function testEvenKeyword(definition, numErrors) {
-    instances.forEach(function (ajv) {
-      ajv.addKeyword('even', definition);
+    instances.forEach(function (_ajv) {
+      _ajv.addKeyword('even', definition);
       var schema = { "even": true };
-      var validate = ajv.compile(schema);
+      var validate = _ajv.compile(schema);
 
       shouldBeValid(validate, 2);
       shouldBeValid(validate, 'abc');
@@ -697,11 +697,11 @@ describe('Custom keywords', function () {
   }
 
   function testEvenKeyword$data(definition, numErrors) {
-    instances.forEach(function (ajv) {
-      ajv.addKeyword('even', definition);
+    instances.forEach(function (_ajv) {
+      _ajv.addKeyword('even', definition);
 
       var schema = { "even": true };
-      var validate = ajv.compile(schema);
+      var validate = _ajv.compile(schema);
 
       shouldBeValid(validate, 2);
       shouldBeValid(validate, 'abc');
@@ -714,7 +714,7 @@ describe('Custom keywords', function () {
           "evenValue": {}
         }
       };
-      validate = ajv.compile(schema);
+      validate = _ajv.compile(schema);
 
       shouldBeValid(validate, { data: 2, evenValue: true });
       shouldBeInvalid(validate, { data: 2, evenValue: false });
@@ -730,11 +730,11 @@ describe('Custom keywords', function () {
   }
 
   function testConstantKeyword(definition, numErrors) {
-    instances.forEach(function (ajv) {
-      ajv.addKeyword('constant', definition);
+    instances.forEach(function (_ajv) {
+      _ajv.addKeyword('constant', definition);
 
       var schema = { "constant": "abc" };
-      var validate = ajv.compile(schema);
+      var validate = _ajv.compile(schema);
 
       shouldBeValid(validate, 'abc');
       shouldBeInvalid(validate, 2, numErrors);
@@ -743,8 +743,8 @@ describe('Custom keywords', function () {
   }
 
   function testMultipleConstantKeyword(definition, numErrors) {
-    instances.forEach(function (ajv) {
-      ajv.addKeyword('constant', definition);
+    instances.forEach(function (_ajv) {
+      _ajv.addKeyword('constant', definition);
 
       var schema = {
         "properties": {
@@ -754,7 +754,7 @@ describe('Custom keywords', function () {
         "additionalProperties": { "constant": { "foo": "bar" } },
         "items": { "constant": { "foo": "bar" } }
       };
-      var validate = ajv.compile(schema);
+      var validate = _ajv.compile(schema);
 
       shouldBeValid(validate, {a:1, b:1});
       shouldBeInvalid(validate, {a:2, b:1}, numErrors);
@@ -770,11 +770,11 @@ describe('Custom keywords', function () {
   }
 
   function testRangeKeyword(definition, customErrors, numErrors) {
-    instances.forEach(function (ajv) {
-      ajv.addKeyword('range', definition);
+    instances.forEach(function (_ajv) {
+      _ajv.addKeyword('range', definition);
 
       var schema = { "range": [2, 4] };
-      var validate = ajv.compile(schema);
+      var validate = _ajv.compile(schema);
 
       shouldBeValid(validate, 2);
       shouldBeValid(validate, 3);
@@ -786,7 +786,7 @@ describe('Custom keywords', function () {
       shouldBeInvalid(validate, 4.01, numErrors);
       if (customErrors) shouldBeRangeError(validate.errors[0], '', '#/range','<=', 4);
 
-      var schema = {
+      schema = {
         "properties": {
           "foo": {
             "range": [2, 4],
@@ -794,7 +794,7 @@ describe('Custom keywords', function () {
           }
         }
       };
-      var validate = ajv.compile(schema);
+      validate = _ajv.compile(schema);
 
       shouldBeValid(validate, { foo: 2.01 });
       shouldBeValid(validate, { foo: 3 });
@@ -808,8 +808,8 @@ describe('Custom keywords', function () {
   }
 
   function testMultipleRangeKeyword(definition, numErrors) {
-    instances.forEach(function (ajv) {
-      ajv.addKeyword('range', definition);
+    instances.forEach(function (_ajv) {
+      _ajv.addKeyword('range', definition);
 
       var schema = {
         "properties": {
@@ -819,7 +819,7 @@ describe('Custom keywords', function () {
         "additionalProperties": { "range": [5, 7] },
         "items": { "range": [5, 7] }
       };
-      var validate = ajv.compile(schema);
+      var validate = _ajv.compile(schema);
 
       shouldBeValid(validate, {a:3.99, b:4});
       shouldBeInvalid(validate, {a:4, b:4}, numErrors);
@@ -870,9 +870,9 @@ describe('Custom keywords', function () {
   }
 
   function shouldBeInvalidSchema(schema) {
-    instances.forEach(function (ajv) {
+    instances.forEach(function (_ajv) {
       should.throw(function() {
-        ajv.compile(schema);
+        _ajv.compile(schema);
       });
     });
   }

@@ -24,8 +24,9 @@ jsonSchemaTest(instances, {
 
 
 function testSuites() {
+  var suites;
   if (typeof window == 'object') {
-    var suites = {
+    suites = {
       'v5 proposals': require('./v5/{**/,}*.json', {mode: 'list'})
     };
     for (var suiteName in suites) {
@@ -34,9 +35,9 @@ function testSuites() {
       });
     }
   } else {
-    var suites = {
+    suites = {
       'v5 proposals': './v5/{**/,}*.json'
-    }
+    };
   }
   return suites;
 }

@@ -1,9 +1,8 @@
 'use strict';
 
-
 var Ajv = require('./ajv')
   , getAjvInstances = require('./ajv_instances')
-  , should = require('./chai').should()
+  , should = require('./chai').should();
 
 
 describe('Ajv Options', function () {
@@ -61,10 +60,10 @@ describe('Ajv Options', function () {
       };
 
       ajv.validate('//test/fooBar', object).should.equal(true);
-        object.should.have.property('foo');
-        object.should.have.property('bar');
-        object.should.have.property('baz');
-        object.should.not.have.property('fizz');
+      object.should.have.property('foo');
+      object.should.have.property('bar');
+      object.should.have.property('baz');
+      object.should.not.have.property('fizz');
 
       ajv.addSchema({
         id: '//test/fooBar2',
@@ -72,15 +71,15 @@ describe('Ajv Options', function () {
         additionalProperties: { type: 'string', pattern: '^to-be-', maxLength: 10 }
       });
 
-      var object = {
+      object = {
         foo: 'foo', bar: 'bar', baz: 'to-be-kept', quux: 'to-be-removed', fizz: 1000
       };
 
       ajv.validate('//test/fooBar2', object).should.equal(true);
-        object.should.have.property('foo');
-        object.should.have.property('bar');
-        object.should.have.property('baz');
-        object.should.not.have.property('fizz');
+      object.should.have.property('foo');
+      object.should.have.property('bar');
+      object.should.have.property('baz');
+      object.should.not.have.property('fizz');
     });
   });
 
@@ -167,32 +166,32 @@ describe('Ajv Options', function () {
     it('should throw if meta: false and validateSchema: true', function() {
       var ajv = new Ajv({ meta: false });
       should.not.exist(ajv.getSchema('http://json-schema.org/draft-04/schema'));
-      should.throw(function() { ajv.addSchema({ type: 'integer' }, 'integer') });
+      should.throw(function() { ajv.addSchema({ type: 'integer' }, 'integer'); });
     });
 
     it('should skip schema validation with validateSchema: false', function() {
       var ajv = new Ajv();
-      should.throw(function() { ajv.addSchema({ type: 123 }, 'integer') });
+      should.throw(function() { ajv.addSchema({ type: 123 }, 'integer'); });
 
-      var ajv = new Ajv({ validateSchema: false });
-      should.not.throw(function() { ajv.addSchema({ type: 123 }, 'integer') });
+      ajv = new Ajv({ validateSchema: false });
+      should.not.throw(function() { ajv.addSchema({ type: 123 }, 'integer'); });
 
-      var ajv = new Ajv({ validateSchema: false, meta: false });
-      should.not.throw(function() { ajv.addSchema({ type: 123 }, 'integer') });
+      ajv = new Ajv({ validateSchema: false, meta: false });
+      should.not.throw(function() { ajv.addSchema({ type: 123 }, 'integer'); });
     });
 
     it('should not throw on invalid schema with validateSchema: "log"', function() {
       var logError = console.error;
       var loggedError = false;
-      console.error = function() { loggedError = true; logError.apply(console, arguments); }
+      console.error = function() { loggedError = true; logError.apply(console, arguments); };
 
       var ajv = new Ajv({ validateSchema: 'log' });
-      should.not.throw(function() { ajv.addSchema({ type: 123 }, 'integer') });
+      should.not.throw(function() { ajv.addSchema({ type: 123 }, 'integer'); });
       loggedError .should.equal(true);
       console.error = logError;
 
-      var ajv = new Ajv({ validateSchema: 'log', meta: false });
-      should.throw(function() { ajv.addSchema({ type: 123 }, 'integer') });
+      ajv = new Ajv({ validateSchema: 'log', meta: false });
+      should.throw(function() { ajv.addSchema({ type: 123 }, 'integer'); });
     });
 
     it('should validate v5 schema', function() {
@@ -200,7 +199,7 @@ describe('Ajv Options', function () {
       ajv.validateSchema({ contains: { minimum: 2 } }) .should.equal(true);
       ajv.validateSchema({ contains: 2 }). should.equal(false);
 
-      var ajv = new Ajv();
+      ajv = new Ajv();
       ajv.validateSchema({ contains: 2 }). should.equal(true);
     });
 
@@ -219,7 +218,7 @@ describe('Ajv Options', function () {
         myKeyword: 2
       }) .should.equal(true);
 
-      var ajv = new Ajv();
+      ajv = new Ajv();
       ajv.validateSchema({ myKeyword: true }) .should.equal(true);
       ajv.validateSchema({ myKeyword: 2 }) .should.equal(true);
     });
@@ -363,8 +362,8 @@ describe('Ajv Options', function () {
         validateWithUnicode('😀') .should.equal(false);
         validate('😀') .should.equal(true);
 
-        var validateWithUnicode = ajvUnicode.compile({ maxLength: 1 });
-        var validate = ajv.compile({ maxLength: 1 });
+        validateWithUnicode = ajvUnicode.compile({ maxLength: 1 });
+        validate = ajv.compile({ maxLength: 1 });
 
         validateWithUnicode('😀') .should.equal(true);
         validate('😀') .should.equal(false);
@@ -408,8 +407,8 @@ describe('Ajv Options', function () {
         validate(4.18) .should.equal(true);
         validate(4.181) .should.equal(false);
 
-        var schema = { multipleOf: 0.0000001 };
-        var validate = ajv.compile(schema);
+        schema = { multipleOf: 0.0000001 };
+        validate = ajv.compile(schema);
 
         validate(53.198098) .should.equal(true);
         validate(53.1980981) .should.equal(true);
@@ -449,7 +448,7 @@ describe('Ajv Options', function () {
         validate(data) .should.equal(true);
         data .should.eql({ foo: 'abc', bar: 1, baz: false, nil: null, obj: {}, arr:[] });
 
-        var data = { foo: 'foo', bar: 2, obj: { test: true } };
+        data = { foo: 'foo', bar: 2, obj: { test: true } };
         validate(data) .should.equal(true);
         data .should.eql({ foo: 'foo', bar: 2, baz: false, nil: null, obj: { test: true }, arr:[] });
       }
@@ -475,11 +474,11 @@ describe('Ajv Options', function () {
         validate(data) .should.equal(true);
         data .should.eql([ 'abc', 1, false ]);
 
-        var data = [ 'foo' ];
+        data = [ 'foo' ];
         validate(data) .should.equal(true);
         data .should.eql([ 'foo', 1, false ]);
 
-        var data = ['foo', 2,'false'];
+        data = ['foo', 2,'false'];
         validate(data) .should.equal(false);
         validate.errors .should.have.length(1);
         data .should.eql([ 'foo', 2, 'false' ]);
@@ -552,7 +551,7 @@ describe('Ajv Options', function () {
             validate(1) .should.equal(false);
             ajv.getSchema('str') .should.equal(validate);
 
-            var schema = { id: 'int', type: 'integer' };
+            schema = { id: 'int', type: 'integer' };
             ajv.validate(schema, 1) .should.equal(true);
             ajv.validate(schema, 'abc') .should.equal(false);
             ajv.getSchema('int') .should.be.a('function');
@@ -591,7 +590,7 @@ describe('Ajv Options', function () {
           validate(1) .should.equal(false);
           should.equal(ajv.getSchema('str'), undefined);
 
-          var schema = { id: 'int', type: 'integer' };
+          schema = { id: 'int', type: 'integer' };
           ajv.validate(schema, 1) .should.equal(true);
           ajv.validate(schema, 'abc') .should.equal(false);
           should.equal(ajv.getSchema('int'), undefined);
@@ -620,7 +619,7 @@ describe('Ajv Options', function () {
 
     beforeEach(function() {
       contexts = [];
-    })
+    });
 
     describe('= true', function() {
       it('should pass this value as context to custom keyword validation function', function() {
@@ -644,7 +643,7 @@ describe('Ajv Options', function () {
           ctx .should.equal(ajv);
         });
       });
-    })
+    });
 
     function getValidate(passContext) {
       ajv = new Ajv({ passContext: passContext, inlineRefs: false });

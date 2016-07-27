@@ -32,7 +32,7 @@ describe('issue #8: schema with shared references', function() {
       var result = ajv.validate('obj.json#', { foo: 'abc', bar: 'def' });
       result .should.equal(true);
 
-      var result = ajv.validate('obj.json#', { foo: 'abcde', bar: 'fghg' });
+      result = ajv.validate('obj.json#', { foo: 'abcde', bar: 'fghg' });
       result .should.equal(false);
       ajv.errors .should.have.length(1);
     };
@@ -85,12 +85,6 @@ describe('issue #50: references with "definitions"', function () {
 
 
 describe('issue #182, NaN validation', function() {
-  var ajv;
-
-  before(function(){
-    ajv = new Ajv();
-  });
-
   it('should not pass minimum/maximum validation', function() {
     testNaN({ minimum: 1 }, false);
     testNaN({ maximum: 1 }, false);
@@ -135,7 +129,7 @@ describe('issue #181, custom keyword is not validated in allErrors mode if there
     testCustomKeywordErrors({
       type:'object',
       errors: true,
-      validate: function v(value) {
+      validate: function v(/* value */) {
         return false;
       }
     });
@@ -145,7 +139,7 @@ describe('issue #181, custom keyword is not validated in allErrors mode if there
     testCustomKeywordErrors({
       type:'object',
       errors: true,
-      validate: function v(value) {
+      validate: function v(/* value */) {
         v.errors = v.errors || [];
         v.errors.push({
           keyword: 'alwaysFails',
@@ -371,11 +365,11 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
           $ref: 'schema://api.schema#resource_identifier'
         }
       ]
-    }
+    };
 
     ajv.addSchema(librarySchema);
     ajv.addSchema(catalogItemSchema);
-    ajv.addSchema(catalogItemResourceIdentifierSchema)
+    ajv.addSchema(catalogItemResourceIdentifierSchema);
     ajv.addSchema(apiSchema);
 
     var validate = ajv.compile(domainSchema);

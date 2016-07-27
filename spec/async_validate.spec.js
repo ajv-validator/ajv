@@ -16,8 +16,8 @@ describe('async schemas, formats and keywords', function() {
     ajv = instances[0];
   });
 
-  function useCo(ajv) {
-    var async = ajv._opts.async;
+  function useCo(_ajv) {
+    var async = _ajv._opts.async;
     return async == 'es7' || async == 'co*' ? identity : co;
   }
 
@@ -33,9 +33,9 @@ describe('async schemas, formats and keywords', function() {
 
       return repeat(function() { return Promise.map(instances, test); });
 
-      function test(ajv) {
-        var validate = ajv.compile(schema);
-        var _co = useCo(ajv);
+      function test(_ajv) {
+        var validate = _ajv.compile(schema);
+        var _co = useCo(_ajv);
 
         return Promise.all([
           shouldBeValid(   _co(validate('abc')) ),
@@ -72,17 +72,17 @@ describe('async schemas, formats and keywords', function() {
 
 
     it('should fail compilation if async format is inside sync schema', function() {
-      instances.forEach(function (ajv) {
+      instances.forEach(function (_ajv) {
         var schema = {
           type: 'string',
           format: 'english_word'
         };
 
         shouldThrowFunc('async format in sync schema', function() {
-          ajv.compile(schema);
-        })
+          _ajv.compile(schema);
+        });
         schema.$async = true;
-        ajv.compile(schema);
+        _ajv.compile(schema);
       });
     });
   });
@@ -90,15 +90,15 @@ describe('async schemas, formats and keywords', function() {
 
   describe('async custom keywords', function() {
     beforeEach(function() {
-      instances.forEach(function (ajv) {
-        ajv.addKeyword('idExists', {
+      instances.forEach(function (_ajv) {
+        _ajv.addKeyword('idExists', {
           async: true,
           type: 'number',
           validate: checkIdExists,
           errors: false
         });
 
-        ajv.addKeyword('idExistsWithError', {
+        _ajv.addKeyword('idExistsWithError', {
           async: true,
           type: 'number',
           validate: checkIdExistsWithError,
@@ -109,7 +109,7 @@ describe('async schemas, formats and keywords', function() {
 
 
     it('should fail compilation if async keyword is inside sync schema', function() {
-      instances.forEach(function (ajv) {
+      instances.forEach(function (_ajv) {
         var schema = {
           type: 'object',
           properties: {
@@ -121,17 +121,17 @@ describe('async schemas, formats and keywords', function() {
         };
 
         shouldThrowFunc('async keyword in sync schema', function() {
-          ajv.compile(schema);
-        })
+          _ajv.compile(schema);
+        });
 
         schema.$async = true;
-        ajv.compile(schema);
+        _ajv.compile(schema);
       });
     });
 
 
     it('should return custom error', function() {
-      return Promise.all(instances.map(function (ajv) {
+      return Promise.all(instances.map(function (_ajv) {
         var schema = {
           $async: true,
           type: 'object',
@@ -147,8 +147,8 @@ describe('async schemas, formats and keywords', function() {
           }
         };
 
-        var validate = ajv.compile(schema);
-        var _co = useCo(ajv);
+        var validate = _ajv.compile(schema);
+        var _co = useCo(_ajv);
 
         return Promise.all([
           shouldBeInvalid(_co(validate({ userId: 5, postId: 10 })), [ 'id not found in table posts' ]),
@@ -178,16 +178,13 @@ describe('async schemas, formats and keywords', function() {
         default: throw new Error('no such table');
       }
 
-      function check(table, IDs) {
-        if (IDs.indexOf(data) >= 0) {
-          return Promise.resolve(true);
-        } else {
-          var error = {
-            keyword: 'idExistsWithError',
-            message: 'id not found in table ' + table
-          };
-          return Promise.reject(new Ajv.ValidationError([error]));
-        }
+      function check(_table, IDs) {
+        if (IDs.indexOf(data) >= 0) return Promise.resolve(true);
+        var error = {
+          keyword: 'idExistsWithError',
+          message: 'id not found in table ' + _table
+        };
+        return Promise.reject(new Ajv.ValidationError([error]));
       }
     }
   });
@@ -214,9 +211,9 @@ describe('async schemas, formats and keywords', function() {
         }
       };
 
-      return repeat(function() { return Promise.map(instances, function (ajv) {
-        var validate = ajv.compile(schema);
-        var _co = useCo(ajv);
+      return repeat(function() { return Promise.map(instances, function (_ajv) {
+        var validate = _ajv.compile(schema);
+        var _co = useCo(_ajv);
 
         return Promise.all([
           shouldBeValid(   _co(validate({ word: 'tomorrow' })) ),
@@ -333,10 +330,10 @@ describe('async schemas, formats and keywords', function() {
     });
 
     function recursiveTest(schema, refSchema) {
-      return repeat(function() { return Promise.map(instances, function (ajv) {
-        if (refSchema) try { ajv.addSchema(refSchema); } catch(e) {};
-        var validate = ajv.compile(schema);
-        var _co = useCo(ajv);
+      return repeat(function() { return Promise.map(instances, function (_ajv) {
+        if (refSchema) try { _ajv.addSchema(refSchema); } catch(e) {}
+        var validate = _ajv.compile(schema);
+        var _co = useCo(_ajv);
 
         return Promise.all([
           shouldBeValid(   _co(validate({ foo: 'tomorrow' })) ),
@@ -358,8 +355,8 @@ describe('async schemas, formats and keywords', function() {
 
 
   function addFormatEnglishWord() {
-    instances.forEach(function (ajv) {
-      ajv.addFormat('english_word', {
+    instances.forEach(function (_ajv) {
+      _ajv.addFormat('english_word', {
         async: true,
         validate: checkWordOnServer
       });
@@ -405,13 +402,13 @@ function checkWordOnServer(str) {
 
 
 function shouldThrowFunc(message, func) {
-    var err;
-    should.throw(function() {
-      try { func(); }
-      catch(e) { err = e; throw e; }
-    });
+  var err;
+  should.throw(function() {
+    try { func(); }
+    catch(e) { err = e; throw e; }
+  });
 
-    err.message .should.equal(message);
+  err.message .should.equal(message);
 }
 
 
@@ -448,14 +445,14 @@ function shouldThrow(p, exception) {
 
 
 function checkNotValid(p) {
-  return p.then(function (valid) {
+  return p.then(function (/* valid */) {
     throw new Error(SHOULD_BE_INVALID);
   })
   .catch(function (err) {
     err. should.be.instanceof(Error);
     if (err.message == SHOULD_BE_INVALID) throw err;
     return err;
-  });  
+  });
 }
 
 

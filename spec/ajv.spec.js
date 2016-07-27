@@ -1,6 +1,5 @@
 'use strict';
 
-
 var Ajv = require('./ajv')
   , should = require('./chai').should()
   , stableStringify = require('json-stable-stringify');
@@ -31,14 +30,14 @@ describe('Ajv', function () {
       var v1 = ajv.compile({ id: '//e.com/int.json', type: 'integer', minimum: 1 });
       var v2 = ajv.compile({ id: '//e.com/int.json', minimum: 1, type: 'integer' });
       v1 .should.equal(v2);
-    })
+    });
 
     it('should throw if different schema has the same id', function() {
       ajv.compile({ id: '//e.com/int.json', type: 'integer' });
       should.throw(function() {
         ajv.compile({ id: '//e.com/int.json', type: 'integer', minimum: 1 });
       });
-    })
+    });
 
     it('should throw if invalid schema is compiled', function() {
       should.throw(function() {
@@ -53,13 +52,13 @@ describe('Ajv', function () {
       validate(2) .should.equal(true);
       validate(3) .should.equal(false);
 
-      var schema = { even: false };
+      schema = { even: false };
       should.throw(function() {
-        var validate = ajv.compile(schema);
+        ajv.compile(schema);
       });
 
-      function badEvenCode(it, keyword, schema) {
-        var op = schema ? '===' : '!==='; // invalid on purpose
+      function badEvenCode(it, keyword, _schema) {
+        var op = _schema ? '===' : '!==='; // invalid on purpose
         return 'data' + (it.dataLevel || '') + ' % 2 ' + op + ' 0';
       }
     });
@@ -81,7 +80,7 @@ describe('Ajv', function () {
 
       ajv.compile({ id: '//e.com/str.json', type: 'string' }) .should.be.a('function');
       ajv.validate('//e.com/str.json', 'a') .should.equal(true);
-      ajv.validate('//e.com/str.json', 1) .should.equal(false);      
+      ajv.validate('//e.com/str.json', 1) .should.equal(false);
     });
 
     it('should throw exception if no schema with ref', function() {
@@ -181,7 +180,7 @@ describe('Ajv', function () {
     });
 
     it('should throw if schema is not an object', function() {
-      should.throw(function() { ajv.addSchema('foo') });
+      should.throw(function() { ajv.addSchema('foo'); });
     });
   });
 
@@ -219,7 +218,7 @@ describe('Ajv', function () {
       var schema = { type: 'integer' }
         , str = stableStringify(schema);
       ajv.addSchema(schema, 'int');
-      var v = ajv.getSchema('int')
+      var v = ajv.getSchema('int');
 
       v .should.be.a('function');
       ajv._cache.get(str).validate .should.equal(v);
@@ -234,7 +233,7 @@ describe('Ajv', function () {
         , str = stableStringify(schema);
       ajv.addSchema(schema);
 
-      var v = ajv.getSchema('//e.com/int.json')
+      var v = ajv.getSchema('//e.com/int.json');
       v .should.be.a('function');
       ajv._cache.get(str).validate .should.equal(v);
 

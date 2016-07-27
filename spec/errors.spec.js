@@ -1,6 +1,5 @@
 'use strict';
 
-
 var Ajv = require('./ajv')
   , should = require('./chai').should();
 
@@ -65,7 +64,6 @@ describe('Validation errors', function () {
         , invalidData = { foo: 1, bar: 2, baz: 3, quux: 4 };
 
       var path = pathFunc(errorDataPath);
-      var msg = msgFunc(errorDataPath);
 
       var validate = ajv.compile(schema);
       shouldBeValid(validate, data);
@@ -105,7 +103,7 @@ describe('Validation errors', function () {
       testAdditionalIsSchema();
     });
 
-    function testAdditionalIsSchema(errorDataPath) {
+    function testAdditionalIsSchema() {
       var schema = {
         properties: {
           foo: { type: 'integer' },
@@ -114,7 +112,7 @@ describe('Validation errors', function () {
         additionalProperties: {
           type: 'object',
           properties: {
-            quux: { type: 'string' } 
+            quux: { type: 'string' }
           }
         }
       };
@@ -190,7 +188,7 @@ describe('Validation errors', function () {
 
       test();
 
-      var schema = { anyOf: [ schema ] };
+      schema = { anyOf: [ schema ] };
       test(1, '#/anyOf/0');
 
       function test(extraErrors, schemaPathPrefix) {
@@ -265,7 +263,7 @@ describe('Validation errors', function () {
 
 
     it('should not validate required twice in large schemas with loopRequired option', function() {
-      var ajv = new Ajv({ loopRequired: 1, allErrors: true });
+      ajv = new Ajv({ loopRequired: 1, allErrors: true });
 
       var schema = {
         properties: {
@@ -283,7 +281,7 @@ describe('Validation errors', function () {
 
 
     it('should not validate required twice with $data ref', function() {
-      var ajv = new Ajv({ v5: true, allErrors: true });
+      ajv = new Ajv({ v5: true, allErrors: true });
 
       var schema = {
         properties: {
@@ -452,7 +450,7 @@ describe('Validation errors', function () {
       items: [{ minimum: 10 }, { minimum: 9 }, { minimum: 12 }]
     };
 
-    var validate = ajv.compile(schema2);
+    validate = ajv.compile(schema2);
     shouldBeValid(validate, data);
     shouldBeInvalid(validate, invalidData1);
     shouldBeError(validate.errors[0], 'minimum', '#/items/0/minimum', '[0]', 'should be >= 10');
@@ -475,8 +473,8 @@ describe('Validation errors', function () {
     test(ajvJP);
     test(fullAjv);
 
-    function test(ajv) {
-      var validate = ajv.compile(schema);
+    function test(_ajv) {
+      var validate = _ajv.compile(schema);
       shouldBeValid(validate, data);
       shouldBeInvalid(validate, invalidData);
       shouldBeError(validate.errors[0], 'additionalItems', '#/additionalItems', '', 'should NOT have more than 2 items');
@@ -487,20 +485,20 @@ describe('Validation errors', function () {
   function testSchema1(schema, schemaPathPrefix) {
     _testSchema1(ajv, schema, schemaPathPrefix);
     _testSchema1(ajvJP, schema, schemaPathPrefix);
-    _testSchema1(fullAjv, schema, schemaPathPrefix)
+    _testSchema1(fullAjv, schema, schemaPathPrefix);
   }
 
 
-  function _testSchema1(ajv, schema, schemaPathPrefix) {
+  function _testSchema1(_ajv, schema, schemaPathPrefix) {
     var schPath = (schemaPathPrefix || '#/properties/foo') + '/type';
 
     var data = { foo: 1 }
       , invalidData = { foo: 'bar' };
 
-    var validate = ajv.compile(schema);
+    var validate = _ajv.compile(schema);
     shouldBeValid(validate, data);
     shouldBeInvalid(validate, invalidData);
-    shouldBeError(validate.errors[0], 'type', schPath, ajv._opts.jsonPointers ? '/foo' : '.foo');
+    shouldBeError(validate.errors[0], 'type', schPath, _ajv._opts.jsonPointers ? '/foo' : '.foo');
   }
 
 
@@ -512,7 +510,7 @@ describe('Validation errors', function () {
 
   function shouldBeInvalid(validate, data, numErrors) {
     validate(data) .should.equal(false);
-    should.equal(validate.errors.length, numErrors || 1)
+    should.equal(validate.errors.length, numErrors || 1);
   }
 
 

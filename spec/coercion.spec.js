@@ -1,7 +1,7 @@
 'use strict';
 
-var Ajv = require('./ajv')
-  , should = require('./chai').should();
+var Ajv = require('./ajv');
+require('./chai').should();
 
 
 var coercionRules = {
@@ -191,9 +191,9 @@ describe('Type coercion', function () {
 
 
   it('should coerce scalar values', function() {
-    testRules(coercionRules, function (test, schema, canCoerce, toType, fromType) {
-      instances.forEach(function (ajv) {
-        var valid = ajv.validate(schema, test.from);
+    testRules(coercionRules, function (test, schema, canCoerce/*, toType, fromType*/) {
+      instances.forEach(function (_ajv) {
+        var valid = _ajv.validate(schema, test.from);
         //if (valid !== canCoerce) console.log('true', toType, fromType, test, ajv.errors);
         valid. should.equal(canCoerce);
       });
@@ -206,8 +206,8 @@ describe('Type coercion', function () {
     instances = [ ajv, fullAjv ];
 
     testRules(coercionArrayRules, function (test, schema, canCoerce, toType, fromType) {
-      instances.forEach(function (ajv) {
-        var valid = ajv.validate(schema, test.from);
+      instances.forEach(function (_ajv) {
+        var valid = _ajv.validate(schema, test.from);
         if (valid !== canCoerce) console.log(toType, '.', fromType, test, schema, ajv.errors);
         valid. should.equal(canCoerce);
       });
@@ -215,7 +215,7 @@ describe('Type coercion', function () {
   });
 
   it('should coerce values in objects/arrays and update properties/items', function() {
-    testRules(coercionRules, function (test, schema, canCoerce, toType, fromType) {
+    testRules(coercionRules, function (test, schema, canCoerce/*, toType, fromType*/) {
       var schemaObject = {
         type: 'object',
         properties: {
@@ -234,14 +234,14 @@ describe('Type coercion', function () {
       };
 
 
-      instances.forEach(function (ajv) {
-        testCoercion(schemaArray,  [ test.from ], [ test.to ]);
-        testCoercion(schemaObject, { foo: test.from }, { foo: test.to });
-        testCoercion(schemaArrObj, [ { foo: test.from } ], [ { foo: test.to } ]);
+      instances.forEach(function (_ajv) {
+        testCoercion(_ajv, schemaArray,  [ test.from ], [ test.to ]);
+        testCoercion(_ajv, schemaObject, { foo: test.from }, { foo: test.to });
+        testCoercion(_ajv, schemaArrObj, [ { foo: test.from } ], [ { foo: test.to } ]);
       });
 
-      function testCoercion(schema, fromData, toData) {
-        var valid = ajv.validate(schema, fromData);
+      function testCoercion(_ajv, _schema, fromData, toData) {
+        var valid = _ajv.validate(_schema, fromData);
         //if (valid !== canCoerce) console.log(schema, fromData, toData);
         valid. should.equal(canCoerce);
         if (valid) fromData.should.eql(toData);
@@ -260,34 +260,34 @@ describe('Type coercion', function () {
       }
     };
 
-    instances.forEach(function (ajv) {
+    instances.forEach(function (_ajv) {
       var data;
 
-      ajv.validate(schema, data = { foo: '1' }) .should.equal(true);
+      _ajv.validate(schema, data = { foo: '1' }) .should.equal(true);
       data .should.eql({ foo: 1 });
 
-      ajv.validate(schema, data = { foo: '1.5' }) .should.equal(true);
+      _ajv.validate(schema, data = { foo: '1.5' }) .should.equal(true);
       data .should.eql({ foo: 1.5 });
 
-      ajv.validate(schema, data = { foo: 'false' }) .should.equal(true);
+      _ajv.validate(schema, data = { foo: 'false' }) .should.equal(true);
       data .should.eql({ foo: false });
 
-      ajv.validate(schema, data = { foo: 1 }) .should.equal(true);
+      _ajv.validate(schema, data = { foo: 1 }) .should.equal(true);
       data .should.eql({ foo: 1 }); // no coercion
 
-      ajv.validate(schema, data = { foo: true }) .should.equal(true);
+      _ajv.validate(schema, data = { foo: true }) .should.equal(true);
       data .should.eql({ foo: true }); // no coercion
 
-      ajv.validate(schema, data = { foo: null }) .should.equal(true);
+      _ajv.validate(schema, data = { foo: null }) .should.equal(true);
       data .should.eql({ foo: null }); // no coercion
 
-      ajv.validate(schema, data = { foo: 'abc' }) .should.equal(false);
+      _ajv.validate(schema, data = { foo: 'abc' }) .should.equal(false);
       data .should.eql({ foo: 'abc' }); // can't coerce
 
-      ajv.validate(schema, data = { foo: {} }) .should.equal(false);
+      _ajv.validate(schema, data = { foo: {} }) .should.equal(false);
       data .should.eql({ foo: {} }); // can't coerce
 
-      ajv.validate(schema, data = { foo: [] }) .should.equal(false);
+      _ajv.validate(schema, data = { foo: [] }) .should.equal(false);
       data .should.eql({ foo: [] }); // can't coerce
     });
   });
@@ -307,13 +307,13 @@ describe('Type coercion', function () {
       items: { type: 'number' }
     };
 
-    instances.forEach(function (ajv)  {
+    instances.forEach(function (_ajv)  {
       var data = { foo: '123', bar: 'bar' };
-      ajv.validate(schema, data) .should.equal(false);
+      _ajv.validate(schema, data) .should.equal(false);
       data .should.eql({ foo: 123, bar: 'bar' });
 
       var data2 = [ '123', 'bar' ];
-      ajv.validate(schema2, data2) .should.equal(false);
+      _ajv.validate(schema2, data2) .should.equal(false);
       data2 .should.eql([ 123, 'bar' ]);
     });
   });
@@ -377,8 +377,8 @@ describe('Type coercion', function () {
       testCoercion(schemaRecursive2, { foo: { foo: { foo: '1' } } },
                                      { foo: { foo: { foo: 1 } } });
 
-      function testCoercion(schema, fromData, toData) {
-        var valid = _ajv.validate(schema, fromData);
+      function testCoercion(_schema, fromData, toData) {
+        var valid = _ajv.validate(_schema, fromData);
         // if (!valid) console.log(schema, fromData, toData);
         valid. should.equal(true);
         fromData .should.eql(toData);
@@ -393,16 +393,11 @@ describe('Type coercion', function () {
         var tests = rules[toType][fromType];
         tests.forEach(function (test) {
           var canCoerce = test.to !== undefined;
-          var schema;
-      if (canCoerce) {
-        if (Array.isArray(test.to)) {
-          schema = {type: toType, "items": { "type": fromType, "enum":[test.from] }};
-        } else {
-          schema = {type: toType, "enum": [test.to]};
-        }
-      } else {
-        schema = { type: toType };
-      }
+          var schema = canCoerce
+                        ? (Array.isArray(test.to)
+                          ? { "type": toType, "items": { "type": fromType, "enum": [ test.to[0] ] } }
+                          : { "type": toType, "enum": [ test.to ] })
+                        : { type: toType };
           cb(test, schema, canCoerce, toType, fromType);
         });
       }

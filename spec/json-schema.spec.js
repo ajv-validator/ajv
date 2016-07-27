@@ -8,12 +8,12 @@ var jsonSchemaTest = require('json-schema-test')
 var instances = getAjvInstances(options);
 
 var remoteRefs = {
-    // for JSON-Schema-Test-Suite
-    'http://localhost:1234/integer.json': require('./JSON-Schema-Test-Suite/remotes/integer.json'),
-    'http://localhost:1234/subSchemas.json': require('./JSON-Schema-Test-Suite/remotes/subSchemas.json'),
-    'http://localhost:1234/folder/folderInteger.json': require('./JSON-Schema-Test-Suite/remotes/folder/folderInteger.json'),
-    // for tests
-    'http://localhost:1234/name.json': require('./remotes/name.json')
+  // for JSON-Schema-Test-Suite
+  'http://localhost:1234/integer.json': require('./JSON-Schema-Test-Suite/remotes/integer.json'),
+  'http://localhost:1234/subSchemas.json': require('./JSON-Schema-Test-Suite/remotes/subSchemas.json'),
+  'http://localhost:1234/folder/folderInteger.json': require('./JSON-Schema-Test-Suite/remotes/folder/folderInteger.json'),
+  // for tests
+  'http://localhost:1234/name.json': require('./remotes/name.json')
 };
 
 var remoteRefsWithIds = [
@@ -54,8 +54,9 @@ jsonSchemaTest(instances, {
   afterEach: function (res) {
     // console.log(res.errors);
     res.valid .should.be.a('boolean');
-    if (res.valid === true ) should.equal(res.errors, null);
-    else {
+    if (res.valid === true ) {
+      should.equal(res.errors, null);
+    } else {
       res.errors .should.be.an('array');
       for (var i=0; i<res.errors.length; i++)
         res.errors[i] .should.be.an('object');
@@ -68,8 +69,9 @@ jsonSchemaTest(instances, {
 
 
 function testSuites() {
+  var suites;
   if (typeof window == 'object') {
-    var suites = {
+    suites = {
       'JSON-Schema tests draft4': require('./JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json', {mode: 'list'}),
       'Advanced schema tests': require('./tests/{**/,}*.json', {mode: 'list'})
     };
@@ -79,7 +81,7 @@ function testSuites() {
       });
     }
   } else {
-    var suites = {
+    suites = {
       'JSON-Schema tests draft4': './JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json',
       'Advanced schema tests': './tests/{**/,}*.json'
     };
