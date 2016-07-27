@@ -5,7 +5,7 @@ layout: main
 ---
 # Ajv type coercion rules
 
-To enable type coercion pass option `coerceTypes` to Ajv (it is `false` by default). See [example](/ajv#coercing-data-types).
+To enable type coercion pass option `coerceTypes` to Ajv with `true` or `array` (it is `false` by default). See [example](/ajv#coercing-data-types).
 
 The coercion rules are different from JavaScript:
 - to validate user input as expected
@@ -103,3 +103,9 @@ Unlike JavaScript, only these numbers can be coerced to `boolean`:
 #### To boolean type
 
 `null` coerces to `false`
+
+## Coersion from array
+
+Wraps and non-array input in an array.
+
+- `"foo"` -> `[ "foo" ]`
