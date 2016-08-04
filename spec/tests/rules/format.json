@@ -101,6 +101,22 @@
     ]
   },
   {
+    "description": "validation of date-time strings",
+    "schema": {"format": "date-time"},
+    "tests": [
+      {
+        "description": "a valid date-time string",
+        "data": "1963-06-19T12:13:14Z",
+        "valid": true
+      },
+      {
+        "description": "an invalid date-time string",
+        "data": "1963-06-19",
+        "valid": false
+      }
+    ]
+  },
+  {
     "description": "validation of uuid strings",
     "schema": {"format": "uuid"},
     "tests": [
