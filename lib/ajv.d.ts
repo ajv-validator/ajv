@@ -1,4 +1,7 @@
-declare function ajv (options?: ajv.Options): ajv.Ajv;
+declare var ajv: { 
+  (options?: ajv.Options): ajv.Ajv;
+  new (options?: ajv.Options): ajv.Ajv;
+}
 
 declare namespace ajv {
   interface Ajv {
