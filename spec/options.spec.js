@@ -723,4 +723,88 @@ describe('Ajv Options', function () {
       }
     });
   });
+
+
+  describe('extendRefs', function() {
+    describe('= true and default', function() {
+      it('should allow extending $ref with other keywords', function() {
+        test(new Ajv, true);
+        test(new Ajv({ extendRefs: true }), true);
+      });
+    });
+
+    describe('= "ignore"', function() {
+      it.skip('should ignore other keywords when $ref is used', function() {
+        test(new Ajv({ extendRefs: 'ignore' }), false);
+      });
+    });
+
+    describe('= "fail"', function() {
+      it.skip('should fail schema compilation if other keywords are used with $ref', function() {
+        var ajv = new Ajv({ extendRefs: 'fail' });
+
+        should.throw(function() {
+          var schema = {
+            "definitions": {
+              "int": { "type": "integer" }
+            },
+            "$ref": "#/definitions/int",
+            "minimum": 10
+          };
+          ajv.compile(schema);
+        });
+
+        should.not.throw(function() {
+          var schema = {
+            "definitions": {
+              "int": { "type": "integer" }
+            },
+            "allOf": [
+              { "$ref": "#/definitions/int" },
+              { "minimum": 10 }
+            ]
+          };
+          ajv.compile(schema);
+        });
+      });
+    });
+
+    function test(ajv, shouldExtendRef) {
+      var schema = {
+        "definitions": {
+          "int": { "type": "integer" }
+        },
+        "$ref": "#/definitions/int",
+        "minimum": 10
+      };
+
+      var validate = ajv.compile(schema);
+      validate(10) .should.equal(true);
+      validate(1) .should.equal(!shouldExtendRef);
+
+      schema = {
+        "definitions": {
+          "int": { "type": "integer" }
+        },
+        "type": "object",
+        "properties": {
+          "foo": {
+            "$ref": "#/definitions/int",
+            "minimum": 10
+          },
+          "bar": {
+            "allOf": [
+              { "$ref": "#/definitions/int" },
+              { "minimum": 10 }
+            ]
+          }
+        }
+      };
+
+      validate = ajv.compile(schema);
+      validate({ foo: 10, bar: 10 }) .should.equal(true);
+      validate({ foo: 1, bar: 10 }) .should.equal(!shouldExtendRef);
+      validate({ foo: 10, bar: 1 }) .should.equal(false);
+    }
+  });
 });
