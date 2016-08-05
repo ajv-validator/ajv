@@ -58,12 +58,12 @@
     "schema": {"format": "date"},
     "tests": [
       {
-        "description": "a valid date-time string",
+        "description": "a valid date string",
         "data": "1963-06-19",
         "valid": true
       },
       {
-        "description": "an invalid date-time string",
+        "description": "an invalid date string",
         "data": "06/19/1963",
         "valid": false
       },
@@ -110,8 +110,13 @@
         "valid": true
       },
       {
-        "description": "an invalid date-time string",
+        "description": "an invalid date-time string (no time)",
         "data": "1963-06-19",
+        "valid": false
+      },
+      {
+        "description": "an invalid date-time string (additional part)",
+        "data": "1963-06-19T12:13:14ZTinvalid",
         "valid": false
       }
     ]
