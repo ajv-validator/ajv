@@ -734,13 +734,13 @@ describe('Ajv Options', function () {
     });
 
     describe('= "ignore"', function() {
-      it.skip('should ignore other keywords when $ref is used', function() {
+      it('should ignore other keywords when $ref is used', function() {
         test(new Ajv({ extendRefs: 'ignore' }), false);
       });
     });
 
     describe('= "fail"', function() {
-      it.skip('should fail schema compilation if other keywords are used with $ref', function() {
+      it('should fail schema compilation if other keywords are used with $ref', function() {
         var ajv = new Ajv({ extendRefs: 'fail' });
 
         should.throw(function() {

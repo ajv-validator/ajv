@@ -92,50 +92,61 @@
   {{?}}
 {{?}}
 
-{{~ it.RULES:$rulesGroup }}
-  {{? $shouldUseGroup($rulesGroup) }}
-    {{? $rulesGroup.type }}
-      if ({{= it.util.checkDataType($rulesGroup.type, $data) }}) {
-    {{?}}
-      {{? it.opts.useDefaults && !it.compositeRule }}
-        {{? $rulesGroup.type == 'object' && it.schema.properties }}
-          {{# def.defaultProperties }}
-        {{?? $rulesGroup.type == 'array' && Array.isArray(it.schema.items) }}
-          {{# def.defaultItems }}
-        {{?}}
+{{? it.opts.extendRefs == 'fail' && it.schema.$ref && it.util.schemaHasRules(it.schema, it.RULES.noRef) }}
+  {{ throw new Error('validation keywords used in the same schema as $ref'); }}
+{{?? it.opts.extendRefs == 'ignore' && it.schema.$ref }}
+  {{= it.RULES.all.$ref.code(it, '$ref') }}
+  {{? $breakOnError }}
+    }
+    if (errors === {{?$top}}0{{??}}errs_{{=$lvl}}{{?}}) {
+    {{ $closingBraces2 += '}'; }}
+  {{?}}
+{{??}}
+  {{~ it.RULES:$rulesGroup }}
+    {{? $shouldUseGroup($rulesGroup) }}
+      {{? $rulesGroup.type }}
+        if ({{= it.util.checkDataType($rulesGroup.type, $data) }}) {
       {{?}}
-      {{~ $rulesGroup.rules:$rule }}
-        {{? $shouldUseRule($rule) }}
-          {{= $rule.code(it, $rule.keyword) }}
-          {{? $breakOnError }}
-            {{ $closingBraces1 += '}'; }}
+        {{? it.opts.useDefaults && !it.compositeRule }}
+          {{? $rulesGroup.type == 'object' && it.schema.properties }}
+            {{# def.defaultProperties }}
+          {{?? $rulesGroup.type == 'array' && Array.isArray(it.schema.items) }}
+            {{# def.defaultItems }}
           {{?}}
         {{?}}
-      {{~}}
-      {{? $breakOnError }}
-        {{= $closingBraces1 }}
-        {{ $closingBraces1 = ''; }}
-      {{?}}
-    {{? $rulesGroup.type }}
-      }
-      {{? $typeSchema && $typeSchema === $rulesGroup.type }}
-        {{ var $typeChecked = true; }}
-        else {
-          {{
-            var $schemaPath = it.schemaPath + '.type'
-              , $errSchemaPath = it.errSchemaPath + '/type';
-          }}
-          {{# def.error:'type' }}
+        {{~ $rulesGroup.rules:$rule }}
+          {{? $shouldUseRule($rule) }}
+            {{= $rule.code(it, $rule.keyword) }}
+            {{? $breakOnError }}
+              {{ $closingBraces1 += '}'; }}
+            {{?}}
+          {{?}}
+        {{~}}
+        {{? $breakOnError }}
+          {{= $closingBraces1 }}
+          {{ $closingBraces1 = ''; }}
+        {{?}}
+      {{? $rulesGroup.type }}
         }
+        {{? $typeSchema && $typeSchema === $rulesGroup.type }}
+          {{ var $typeChecked = true; }}
+          else {
+            {{
+              var $schemaPath = it.schemaPath + '.type'
+                , $errSchemaPath = it.errSchemaPath + '/type';
+            }}
+            {{# def.error:'type' }}
+          }
+        {{?}}
+      {{?}}
+
+      {{? $breakOnError }}
+        if (errors === {{?$top}}0{{??}}errs_{{=$lvl}}{{?}}) {
+        {{ $closingBraces2 += '}'; }}
       {{?}}
     {{?}}
-
-    {{? $breakOnError }}
-      if (errors === {{?$top}}0{{??}}errs_{{=$lvl}}{{?}}) {
-      {{ $closingBraces2 += '}'; }}
-    {{?}}
-  {{?}}
-{{~}}
+  {{~}}
+{{?}}
 
 {{? $typeSchema && !$typeChecked && !(it.opts.coerceTypes && $coerceToTypes) }}
   {{# def.checkType }}
