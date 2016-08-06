@@ -64,7 +64,7 @@ jsonSchemaTest(instances, {
   },
   cwd: __dirname,
   hideFolder: 'draft4/',
-  timeout: 90000
+  timeout: 120000
 });
 
 

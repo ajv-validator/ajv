@@ -73,7 +73,7 @@
     , $typeIsArray = Array.isArray($typeSchema);
 }}
 
-{{##def.checkType:
+{{## def.checkType:
   {{
     var $schemaPath = it.schemaPath + '.type'
       , $errSchemaPath = it.errSchemaPath + '/type'
@@ -92,50 +92,73 @@
   {{?}}
 {{?}}
 
-{{~ it.RULES:$rulesGroup }}
-  {{? $shouldUseGroup($rulesGroup) }}
-    {{? $rulesGroup.type }}
-      if ({{= it.util.checkDataType($rulesGroup.type, $data) }}) {
-    {{?}}
-      {{? it.opts.useDefaults && !it.compositeRule }}
-        {{? $rulesGroup.type == 'object' && it.schema.properties }}
-          {{# def.defaultProperties }}
-        {{?? $rulesGroup.type == 'array' && Array.isArray(it.schema.items) }}
-          {{# def.defaultItems }}
-        {{?}}
+{{ var $refKeywords; }}
+{{? it.schema.$ref && ($refKeywords = it.util.schemaHasRules(it.schema, it.RULES.noRef)) }}
+  {{? it.opts.extendRefs == 'fail' }}
+    {{ throw new Error('$ref: validation keywords used in schema at ' + it.errorPath); }}
+  {{?? it.opts.extendRefs == 'ignore' }}
+    {{
+      $refKeywords = false;
+      console.log('$ref: keywords ignored in schema at path', it.errorPath);
+    }}
+  {{??}}
+    {{ console.log('$ref: all keywords used in schema at path', it.errorPath, '(it will change in the next major version, see issue #260)'); }}
+  {{?}}
+{{?}}
+
+{{? it.schema.$ref && !$refKeywords }}
+  {{= it.RULES.all.$ref.code(it, '$ref') }}
+  {{? $breakOnError }}
+    }
+    if (errors === {{?$top}}0{{??}}errs_{{=$lvl}}{{?}}) {
+    {{ $closingBraces2 += '}'; }}
+  {{?}}
+{{??}}
+  {{~ it.RULES:$rulesGroup }}
+    {{? $shouldUseGroup($rulesGroup) }}
+      {{? $rulesGroup.type }}
+        if ({{= it.util.checkDataType($rulesGroup.type, $data) }}) {
       {{?}}
-      {{~ $rulesGroup.rules:$rule }}
-        {{? $shouldUseRule($rule) }}
-          {{= $rule.code(it, $rule.keyword) }}
-          {{? $breakOnError }}
-            {{ $closingBraces1 += '}'; }}
+        {{? it.opts.useDefaults && !it.compositeRule }}
+          {{? $rulesGroup.type == 'object' && it.schema.properties }}
+            {{# def.defaultProperties }}
+          {{?? $rulesGroup.type == 'array' && Array.isArray(it.schema.items) }}
+            {{# def.defaultItems }}
           {{?}}
         {{?}}
-      {{~}}
-      {{? $breakOnError }}
-        {{= $closingBraces1 }}
-        {{ $closingBraces1 = ''; }}
-      {{?}}
-    {{? $rulesGroup.type }}
-      }
-      {{? $typeSchema && $typeSchema === $rulesGroup.type }}
-        {{ var $typeChecked = true; }}
-        else {
-          {{
-            var $schemaPath = it.schemaPath + '.type'
-              , $errSchemaPath = it.errSchemaPath + '/type';
-          }}
-          {{# def.error:'type' }}
+        {{~ $rulesGroup.rules:$rule }}
+          {{? $shouldUseRule($rule) }}
+            {{= $rule.code(it, $rule.keyword) }}
+            {{? $breakOnError }}
+              {{ $closingBraces1 += '}'; }}
+            {{?}}
+          {{?}}
+        {{~}}
+        {{? $breakOnError }}
+          {{= $closingBraces1 }}
+          {{ $closingBraces1 = ''; }}
+        {{?}}
+      {{? $rulesGroup.type }}
         }
+        {{? $typeSchema && $typeSchema === $rulesGroup.type }}
+          {{ var $typeChecked = true; }}
+          else {
+            {{
+              var $schemaPath = it.schemaPath + '.type'
+                , $errSchemaPath = it.errSchemaPath + '/type';
+            }}
+            {{# def.error:'type' }}
+          }
+        {{?}}
+      {{?}}
+
+      {{? $breakOnError }}
+        if (errors === {{?$top}}0{{??}}errs_{{=$lvl}}{{?}}) {
+        {{ $closingBraces2 += '}'; }}
       {{?}}
     {{?}}
-
-    {{? $breakOnError }}
-      if (errors === {{?$top}}0{{??}}errs_{{=$lvl}}{{?}}) {
-      {{ $closingBraces2 += '}'; }}
-    {{?}}
-  {{?}}
-{{~}}
+  {{~}}
+{{?}}
 
 {{? $typeSchema && !$typeChecked && !(it.opts.coerceTypes && $coerceToTypes) }}
   {{# def.checkType }}
