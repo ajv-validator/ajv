@@ -731,11 +731,20 @@ describe('Ajv Options', function () {
         test(new Ajv, true);
         test(new Ajv({ extendRefs: true }), true);
       });
+
+      it('should log warning when other keywords are used with $ref', function() {
+        testWarning(new Ajv, /keywords\sused/);
+        testWarning(new Ajv({ extendRefs: true }), /keywords\sused/);
+      });
     });
 
     describe('= "ignore"', function() {
       it('should ignore other keywords when $ref is used', function() {
         test(new Ajv({ extendRefs: 'ignore' }), false);
+      });
+
+      it('should log warning when other keywords are used with $ref', function() {
+        testWarning(new Ajv({ extendRefs: 'ignore' }), /keywords\signored/);
       });
     });
 
@@ -805,6 +814,30 @@ describe('Ajv Options', function () {
       validate({ foo: 10, bar: 10 }) .should.equal(true);
       validate({ foo: 1, bar: 10 }) .should.equal(!shouldExtendRef);
       validate({ foo: 10, bar: 1 }) .should.equal(false);
+    }
+
+    function testWarning(ajv, msgPattern) {
+      var oldConsole;
+      try {
+        oldConsole = console.log;
+        var consoleMsg;
+        console.log = function(msg) {
+          consoleMsg = msg;
+        };
+
+        var schema = {
+          "definitions": {
+            "int": { "type": "integer" }
+          },
+          "$ref": "#/definitions/int",
+          "minimum": 10
+        };
+
+        ajv.compile(schema);
+        consoleMsg .should.match(msgPattern);
+      } finally {
+        console.log = oldConsole;
+      }
     }
   });
 });

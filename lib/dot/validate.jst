@@ -73,7 +73,7 @@
     , $typeIsArray = Array.isArray($typeSchema);
 }}
 
-{{##def.checkType:
+{{## def.checkType:
   {{
     var $schemaPath = it.schemaPath + '.type'
       , $errSchemaPath = it.errSchemaPath + '/type'
@@ -92,9 +92,21 @@
   {{?}}
 {{?}}
 
-{{? it.opts.extendRefs == 'fail' && it.schema.$ref && it.util.schemaHasRules(it.schema, it.RULES.noRef) }}
-  {{ throw new Error('validation keywords used in the same schema as $ref'); }}
-{{?? it.opts.extendRefs == 'ignore' && it.schema.$ref }}
+{{ var $refKeywords; }}
+{{? it.schema.$ref && ($refKeywords = it.util.schemaHasRules(it.schema, it.RULES.noRef)) }}
+  {{? it.opts.extendRefs == 'fail' }}
+    {{ throw new Error('$ref: validation keywords used in schema at ' + it.errorPath); }}
+  {{?? it.opts.extendRefs == 'ignore' }}
+    {{
+      $refKeywords = false;
+      console.log('$ref: keywords ignored in schema at path', it.errorPath);
+    }}
+  {{??}}
+    {{ console.log('$ref: all keywords used in schema at path', it.errorPath, '(it will change in the next major version, see issue #260)'); }}
+  {{?}}
+{{?}}
+
+{{? it.schema.$ref && !$refKeywords }}
   {{= it.RULES.all.$ref.code(it, '$ref') }}
   {{? $breakOnError }}
     }
