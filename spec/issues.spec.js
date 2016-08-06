@@ -457,3 +457,12 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     validate({ data: { type: 'Foo', id: '123' } }) .should.equal(false);
   }
 });
+
+
+describe('issue #259, support validating [meta-]schemas against themselves', function() {
+  it('should add schema before validation if "id" is the same as "$schema"', function() {
+    var ajv = new Ajv;
+    var hyperSchema = require('./remotes/hyper-schema.json');
+    ajv.addMetaSchema(hyperSchema);
+  });
+});
