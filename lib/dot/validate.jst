@@ -93,7 +93,7 @@
 {{?}}
 
 {{ var $refKeywords; }}
-{{? it.schema.$ref && ($refKeywords = it.util.schemaHasRules(it.schema, it.RULES.noRef)) }}
+{{? it.schema.$ref && ($refKeywords = it.util.schemaHasRulesExcept(it.schema, it.RULES.all, '$ref')) }}
   {{? it.opts.extendRefs == 'fail' }}
     {{ throw new Error('$ref: validation keywords used in schema at ' + it.errorPath); }}
   {{?? it.opts.extendRefs == 'ignore' }}
