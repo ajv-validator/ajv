@@ -9,7 +9,7 @@ describe('Ajv', function () {
   var ajv;
 
   beforeEach(function() {
-    ajv = new Ajv();
+    ajv = new Ajv;
   });
 
   it('should create instance', function() {

@@ -151,7 +151,7 @@ describe('Ajv Options', function () {
 
   describe('meta and validateSchema', function() {
     it('should add draft-4 meta schema by default', function() {
-      testOptionMeta(new Ajv());
+      testOptionMeta(new Ajv);
       testOptionMeta(new Ajv({ meta: true }));
 
       function testOptionMeta(ajv) {
@@ -170,7 +170,7 @@ describe('Ajv Options', function () {
     });
 
     it('should skip schema validation with validateSchema: false', function() {
-      var ajv = new Ajv();
+      var ajv = new Ajv;
       should.throw(function() { ajv.addSchema({ type: 123 }, 'integer'); });
 
       ajv = new Ajv({ validateSchema: false });
@@ -199,7 +199,7 @@ describe('Ajv Options', function () {
       ajv.validateSchema({ contains: { minimum: 2 } }) .should.equal(true);
       ajv.validateSchema({ contains: 2 }). should.equal(false);
 
-      ajv = new Ajv();
+      ajv = new Ajv;
       ajv.validateSchema({ contains: 2 }). should.equal(true);
     });
 
@@ -218,7 +218,7 @@ describe('Ajv Options', function () {
         myKeyword: 2
       }) .should.equal(true);
 
-      ajv = new Ajv();
+      ajv = new Ajv;
       ajv.validateSchema({ myKeyword: true }) .should.equal(true);
       ajv.validateSchema({ myKeyword: 2 }) .should.equal(true);
     });
@@ -254,7 +254,7 @@ describe('Ajv Options', function () {
 
   describe('format', function() {
     it('should not validate formats if option format == false', function() {
-      var ajv = new Ajv()
+      var ajv = new Ajv
         , ajvFF = new Ajv({ format: false });
 
       var schema = { format: 'date-time' };
@@ -296,7 +296,7 @@ describe('Ajv Options', function () {
 
   describe('missingRefs', function() {
     it('should throw if ref is missing without this option', function() {
-      var ajv = new Ajv();
+      var ajv = new Ajv;
       should.throw(function() {
         ajv.compile({ $ref: 'missing_reference' });
       });
@@ -351,7 +351,7 @@ describe('Ajv Options', function () {
 
   describe('unicode', function() {
     it('should use String.prototype.length with unicode option == false', function() {
-      var ajvUnicode = new Ajv();
+      var ajvUnicode = new Ajv;
       testUnicode(new Ajv({ unicode: false }));
       testUnicode(new Ajv({ unicode: false, allErrors: true }));
 
@@ -682,7 +682,7 @@ describe('Ajv Options', function () {
 
   describe('allErrors', function() {
     it('should be disabled inside "not" keyword', function() {
-      test(new Ajv(), false);
+      test(new Ajv, false);
       test(new Ajv({ allErrors: true }), true);
 
       function test(ajv, allErrors) {
@@ -722,5 +722,122 @@ describe('Ajv Options', function () {
         format2called .should.equal(false);
       }
     });
+  });
+
+
+  describe('extendRefs', function() {
+    describe('= true and default', function() {
+      it('should allow extending $ref with other keywords', function() {
+        test(new Ajv, true);
+        test(new Ajv({ extendRefs: true }), true);
+      });
+
+      it('should log warning when other keywords are used with $ref', function() {
+        testWarning(new Ajv, /keywords\sused/);
+        testWarning(new Ajv({ extendRefs: true }), /keywords\sused/);
+      });
+    });
+
+    describe('= "ignore"', function() {
+      it('should ignore other keywords when $ref is used', function() {
+        test(new Ajv({ extendRefs: 'ignore' }), false);
+      });
+
+      it('should log warning when other keywords are used with $ref', function() {
+        testWarning(new Ajv({ extendRefs: 'ignore' }), /keywords\signored/);
+      });
+    });
+
+    describe('= "fail"', function() {
+      it('should fail schema compilation if other keywords are used with $ref', function() {
+        var ajv = new Ajv({ extendRefs: 'fail' });
+
+        should.throw(function() {
+          var schema = {
+            "definitions": {
+              "int": { "type": "integer" }
+            },
+            "$ref": "#/definitions/int",
+            "minimum": 10
+          };
+          ajv.compile(schema);
+        });
+
+        should.not.throw(function() {
+          var schema = {
+            "definitions": {
+              "int": { "type": "integer" }
+            },
+            "allOf": [
+              { "$ref": "#/definitions/int" },
+              { "minimum": 10 }
+            ]
+          };
+          ajv.compile(schema);
+        });
+      });
+    });
+
+    function test(ajv, shouldExtendRef) {
+      var schema = {
+        "definitions": {
+          "int": { "type": "integer" }
+        },
+        "$ref": "#/definitions/int",
+        "minimum": 10
+      };
+
+      var validate = ajv.compile(schema);
+      validate(10) .should.equal(true);
+      validate(1) .should.equal(!shouldExtendRef);
+
+      schema = {
+        "definitions": {
+          "int": { "type": "integer" }
+        },
+        "type": "object",
+        "properties": {
+          "foo": {
+            "$ref": "#/definitions/int",
+            "minimum": 10
+          },
+          "bar": {
+            "allOf": [
+              { "$ref": "#/definitions/int" },
+              { "minimum": 10 }
+            ]
+          }
+        }
+      };
+
+      validate = ajv.compile(schema);
+      validate({ foo: 10, bar: 10 }) .should.equal(true);
+      validate({ foo: 1, bar: 10 }) .should.equal(!shouldExtendRef);
+      validate({ foo: 10, bar: 1 }) .should.equal(false);
+    }
+
+    function testWarning(ajv, msgPattern) {
+      var oldConsole;
+      try {
+        oldConsole = console.log;
+        var consoleMsg;
+        console.log = function(msg) {
+          consoleMsg = msg;
+        };
+
+        var schema = {
+          "definitions": {
+            "int": { "type": "integer" }
+          },
+          "$ref": "#/definitions/int",
+          "minimum": 10
+        };
+
+        ajv.compile(schema);
+        consoleMsg .should.match(msgPattern);
+      } finally {
+        console.log = oldConsole;
+      }
+    }
   });
 });

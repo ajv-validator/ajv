@@ -11,7 +11,7 @@ describe('issue #8: schema with shared references', function() {
 
   function spec(method) {
     return function() {
-      var ajv = new Ajv();
+      var ajv = new Ajv;
 
       var propertySchema = {
         type: 'string',
@@ -48,7 +48,7 @@ describe('issue #50: references with "definitions"', function () {
     return function() {
       var result;
 
-      var ajv = new Ajv();
+      var ajv = new Ajv;
 
       ajv[method]({
         id: 'http://example.com/test/person.json#',
@@ -99,7 +99,8 @@ describe('issue #182, NaN validation', function() {
   });
 
   function testNaN(schema, NaNisValid) {
-    var validate = new Ajv().compile(schema);
+    var ajv = new Ajv;
+    var validate = ajv.compile(schema);
     validate(NaN) .should.equal(NaNisValid);
   }
 });
@@ -456,4 +457,13 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     validate({ data: { type: 'CatalogItem', id: 123 } }) .should.equal(false);
     validate({ data: { type: 'Foo', id: '123' } }) .should.equal(false);
   }
+});
+
+
+describe('issue #259, support validating [meta-]schemas against themselves', function() {
+  it('should add schema before validation if "id" is the same as "$schema"', function() {
+    var ajv = new Ajv;
+    var hyperSchema = require('./remotes/hyper-schema.json');
+    ajv.addMetaSchema(hyperSchema);
+  });
 });
