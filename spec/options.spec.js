@@ -151,7 +151,7 @@ describe('Ajv Options', function () {
 
   describe('meta and validateSchema', function() {
     it('should add draft-4 meta schema by default', function() {
-      testOptionMeta(new Ajv());
+      testOptionMeta(new Ajv);
       testOptionMeta(new Ajv({ meta: true }));
 
       function testOptionMeta(ajv) {
@@ -170,7 +170,7 @@ describe('Ajv Options', function () {
     });
 
     it('should skip schema validation with validateSchema: false', function() {
-      var ajv = new Ajv();
+      var ajv = new Ajv;
       should.throw(function() { ajv.addSchema({ type: 123 }, 'integer'); });
 
       ajv = new Ajv({ validateSchema: false });
@@ -199,7 +199,7 @@ describe('Ajv Options', function () {
       ajv.validateSchema({ contains: { minimum: 2 } }) .should.equal(true);
       ajv.validateSchema({ contains: 2 }). should.equal(false);
 
-      ajv = new Ajv();
+      ajv = new Ajv;
       ajv.validateSchema({ contains: 2 }). should.equal(true);
     });
 
@@ -218,7 +218,7 @@ describe('Ajv Options', function () {
         myKeyword: 2
       }) .should.equal(true);
 
-      ajv = new Ajv();
+      ajv = new Ajv;
       ajv.validateSchema({ myKeyword: true }) .should.equal(true);
       ajv.validateSchema({ myKeyword: 2 }) .should.equal(true);
     });
@@ -254,7 +254,7 @@ describe('Ajv Options', function () {
 
   describe('format', function() {
     it('should not validate formats if option format == false', function() {
-      var ajv = new Ajv()
+      var ajv = new Ajv
         , ajvFF = new Ajv({ format: false });
 
       var schema = { format: 'date-time' };
@@ -296,7 +296,7 @@ describe('Ajv Options', function () {
 
   describe('missingRefs', function() {
     it('should throw if ref is missing without this option', function() {
-      var ajv = new Ajv();
+      var ajv = new Ajv;
       should.throw(function() {
         ajv.compile({ $ref: 'missing_reference' });
       });
@@ -351,7 +351,7 @@ describe('Ajv Options', function () {
 
   describe('unicode', function() {
     it('should use String.prototype.length with unicode option == false', function() {
-      var ajvUnicode = new Ajv();
+      var ajvUnicode = new Ajv;
       testUnicode(new Ajv({ unicode: false }));
       testUnicode(new Ajv({ unicode: false, allErrors: true }));
 
@@ -682,7 +682,7 @@ describe('Ajv Options', function () {
 
   describe('allErrors', function() {
     it('should be disabled inside "not" keyword', function() {
-      test(new Ajv(), false);
+      test(new Ajv, false);
       test(new Ajv({ allErrors: true }), true);
 
       function test(ajv, allErrors) {

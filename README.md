@@ -363,7 +363,7 @@ Example:
  * 3. es7 async functions transpiled with regenerator
  */
 
-var ajv = new Ajv();
+var ajv = new Ajv;
 
 ajv.addKeyword('idExists', {
   async: true,
