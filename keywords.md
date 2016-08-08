@@ -168,7 +168,7 @@ __Examples__
 
 The value of the keyword should be a string. The data to be valid should match the regular expression defined by the keyword value.
 
-Ajv uses `new Regex(value)` to create the regular expression that will be used to test data.
+Ajv uses `new RegExp(value)` to create the regular expression that will be used to test data.
 
 
 __Example__
@@ -275,7 +275,7 @@ __Examples__
     _invalid_: `[1,"abc"]`
 
 
-2.  _schema_: 
+2.  _schema_:
     ```json
     {
         "items": [
@@ -500,7 +500,7 @@ __Examples__
     _valid_: `{}`, `{"foo": 1}`, `{"foo": 1, "bar": 2}`, any non-object
 
     _invalid_: `{"a": 3}`, `{"foo": 1, "baz": 3}`
-    
+
 2. _schema_:
     ```json
     {
@@ -552,7 +552,7 @@ __Examples__
             "foo": {
                 "properties": {
                     "bar": { "type": "number" }
-                } 
+                }
             }
         }
     }
@@ -812,13 +812,13 @@ __Examples__
     ```
 
     _valid_:
-    
+
     - `{ "power": 9000, "disbelief": true, "confidence": true }`
     - `{ "confidence": true }`
     - `{ "power": 1000, "confidence": true }`
 
     _invalid_:
-    
+
     - `{ "power": 9000 }` (`disbelief` & `confidence` are required)
     - `{ "power": 9000, "disbelief": true }` (`confidence` is always required)
     - `{ "power": 1000 }`
@@ -843,7 +843,7 @@ __Examples__
     _valid_: `1`, `5`, `10`, `20`, `50`, `100`, `200`, `500`, `1000`
 
     _invalid_:
-    
+
     - `-1`, `0` (<1)
     - `2000` (>1000)
     - `11`, `57`, `123` (any number with more than one non-zero digit)
