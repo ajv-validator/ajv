@@ -14,6 +14,7 @@ The fastest JSON Schema validator for node.js and browser. Supports [v5 proposal
 - [Performance](#performance)
 - [Features](#features)
 - [Getting started](#getting-started)
+- [Frequently Asked Questions](https://github.com/epoberezkin/ajv/blob/master/FAQ.md) &#128279;
 - [Using in browser](#using-in-browser)
 - [Command line interface](#command-line-interface)
 - Validation
