@@ -175,6 +175,7 @@ console.log(validate(3)); // false
 Example `range` keyword defined using [doT template](https://github.com/olado/doT):
 
 ```javascript
+// {% raw %}
 var doT = require('dot');
 var inlineRangeTemplate = doT.compile("\
 {{ \
@@ -197,6 +198,7 @@ ajv.addKeyword('range', {
     additionalItems: false
   }
 });
+// {% endraw %}
 ```
 
 `'valid' + it.level` in the example above is the expected name of the variable that should be set to the validation result.
