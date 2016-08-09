@@ -518,6 +518,26 @@ __Examples__
 
     _invalid_: `{"a": 3}`, `{"foo": 1, "baz": 3}`
 
+3. _schema_:
+    ```json
+    {
+        "properties": {
+            "foo": { "type": "number" }
+        },
+        "additionalProperties": false,
+        "anyOf": [
+            "properties": {
+                "bar": { "type": "number" }
+            },
+            "properties": {
+                "baz": { "type": "number" }
+            }
+        ]
+    }
+    ```
+    _valid_: `{}`, `{"foo": 1}`, any non-object
+
+    _invalid_: `{"bar": 2}`, `{"baz": 3}`, `{"foo": 1, "bar": 2}`, etc.
 
 
 ### `dependencies`
