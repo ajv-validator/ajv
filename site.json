@@ -19,6 +19,10 @@
     {
       "page": "custom",
       "linkText": "Custom keywords"
+    },
+    {
+      "page": "faq",
+      "linkText": "FAQ"
     }
   ],
   "pages": [
@@ -41,6 +45,11 @@
       "file": "KEYWORDS.md",
       "page": "keywords",
       "title": "Ajv - Validation Keywords"
+    },
+    {
+      "file": "FAQ.md",
+      "page": "faq",
+      "title": "Ajv - Frequently Asked Questions"
     },
     {
       "file": "LICENSE",
