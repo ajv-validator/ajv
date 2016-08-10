@@ -74,12 +74,12 @@ Performace of different validators by [json-schema-benchmark](https://github.com
 - i18n error messages support with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package (version >= 1.0.0)
 - [filtering data](#filtering-data) from additional properties
 - [assigning defaults](#assigning-defaults) to missing properties and items
-- NEW: [coercing data](#coercing-data-types) to the types specified in `type` keywords
+- [coercing data](#coercing-data-types) to the types specified in `type` keywords
 - [custom keywords](#defining-custom-keywords)
 - keywords `switch`, `constant`, `contains`, `patternGroups`, `patternRequired`, `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
 - [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#) for schemas using v5 keywords
-- NEW: [v5 $data reference](#data-reference) to use values from the validated data as values for the schema keywords
-- NEW: [asynchronous validation](#asynchronous-validation) of custom formats and keywords
+- [v5 $data reference](#data-reference) to use values from the validated data as values for the schema keywords
+- [asynchronous validation](#asynchronous-validation) of custom formats and keywords
 
 Currently Ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
 
@@ -1063,6 +1063,8 @@ All validation functions are generated using doT templates in [dot](https://gith
 `npm run build` - compiles templates to [dotjs](https://github.com/epoberezkin/ajv/tree/master/lib/dotjs) folder.
 
 `npm run watch` - automatically compiles templates when files in dot folder change
+
+Please see [Contributing guidelines](https://github.com/epoberezkin/ajv/blob/master/CONTRIBUTING.md)
 
 
 ## Changes history
