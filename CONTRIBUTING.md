@@ -103,11 +103,11 @@ All validation functions are generated using doT templates in [dot](https://gith
 To make accepting your changes faster please follow these steps:
 
 1. Submit an [issue with the bug](https://github.com/epoberezkin/ajv/issues/new) or with the proposed change (unless the contribution is to fix the documentation typos and mistakes).
-2. Please confirm with me the proposed api and implementation plan (unless the issue is a relative simple bug and fixing it doesn't change any api).
-3. Write as little code as possible to achieve the desired result.
+2. Please describe the proposed api and implementation plan (unless the issue is a relatively simple bug and fixing it doesn't change any api).
+3. Once agreed, please write as little code as possible to achieve the desired result.
 4. Please avoid unnecessary changes, refactoring or changing coding styles as part of your change (unless the change was proposed as refactoring).
 5. Please follow the coding conventions even if they are not validated (and/or you use different conventions in your code).
-6. Please run tests before committing your code.
+6. Please run the tests before committing your code.
 7. If tests fail in Travis after you make a PR please investigate and fix the issue.
 
 

@@ -62,3 +62,6 @@ It would help if you post a working code sample in Tonic notebook and include th
 ```
 
 **What results did you expect?**
+
+
+**Do you intend to resolve the issue?**
