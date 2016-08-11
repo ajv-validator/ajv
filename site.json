@@ -23,6 +23,10 @@
     {
       "page": "faq",
       "linkText": "FAQ"
+    },
+    {
+      "page": "contribute",
+      "linkText": "Contributing"
     }
   ],
   "pages": [
@@ -50,6 +54,11 @@
       "file": "FAQ.md",
       "page": "faq",
       "title": "Ajv - Frequently Asked Questions"
+    },
+    {
+      "file": "CONTRIBUTING.md",
+      "page": "contribute",
+      "title": "Ajv - Contributing Guidelines"
     },
     {
       "file": "LICENSE",

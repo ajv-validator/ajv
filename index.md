@@ -1064,7 +1064,7 @@ All validation functions are generated using doT templates in [dot](https://gith
 
 `npm run watch` - automatically compiles templates when files in dot folder change
 
-Please see [Contributing guidelines](https://github.com/epoberezkin/ajv/blob/master/CONTRIBUTING.md)
+Please see [Contributing guidelines](contribute.html)
 
 
 ## Changes history
