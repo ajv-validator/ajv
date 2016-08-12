@@ -44,7 +44,7 @@ This template is for bug reports. For other issues please use:
 ```
 
 <!--
-It would help if you post a working code sample in Tonic notebook and include the link here. You can clone this notebook: https://tonicdev.com/esp/ajv-issue-temlate.
+It would help if you post a working code sample in Tonic notebook and include the link here. You can clone this notebook: https://tonicdev.com/esp/ajv-issue.
 -->
 
 
