@@ -1,10 +1,8 @@
 <!--
 Frequently Asked Questions: https://github.com/epoberezkin/ajv/blob/master/FAQ.md
-
-I would really appreciate the time you spend providing all the information and reducing both your schema and data to the smallest possible size when they still have the issue.
+Please provide all info and reduce your schema and data to the smallest possible size.
 
 This template is for bug reports. For other issues please use:
-
 - a new feature/improvement: http://epoberezkin.github.io/ajv/contribute.html#changes
 - compatibility issues: http://epoberezkin.github.io/ajv/contribute.html#compatibility
 - JSON-Schema standard: http://epoberezkin.github.io/ajv/contribute.html#json-schema
