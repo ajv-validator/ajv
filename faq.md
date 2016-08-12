@@ -5,7 +5,7 @@ layout: main
 ---
 # Frequently Asked Questions
 
-The purpose of this document is to help find answers quicker. I am happy to continue the discussion about these issues, so please comment on some of the issues mentioned below or create a new issue if it seems more appropriate.
+The purpose of this document is to help find answers quicker. I am happy to continue the discussion about these issues, so please comment on some of the issues mentioned below or create a new one if it seems more appropriate.
 
 
 ## Ajv API for returning validation errors
