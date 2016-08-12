@@ -1,15 +1,13 @@
 <!--
-Before submitting the issue please search the existing issues and also review Frequently Asked Questions: https://github.com/epoberezkin/ajv/blob/master/FAQ.md
+Please review Frequently Asked Questions: https://github.com/epoberezkin/ajv/blob/master/FAQ.md
+
+I would really appreciate the time you spend providing all the information and reducing both your schema and data to the smallest possible size when they still have the issue.
 
 This template is for bug reports. For other issues please use:
 
 - a new feature/improvement: http://epoberezkin.github.io/ajv/contribute.html#changes
 - compatibility issues: http://epoberezkin.github.io/ajv/contribute.html#compatibility
 - JSON-Schema standard: http://epoberezkin.github.io/ajv/contribute.html#json-schema
-
-I would really appreciate the time you spend providing all the information and reducing both your schema and data to the smallest possible size when they still have the issue.
-
-Thank you!
 -->
 
 **What version of Ajv are you using? Does the issue happen if you use the latest version?**
