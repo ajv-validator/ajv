@@ -26,6 +26,7 @@ The fastest JSON Schema validator for node.js and browser. Supports [v5 proposal
   - [Keywords](#validation-keywords)
   - [Formats](#formats)
   - [$data reference](#data-reference)
+  - NEW: [$merge and $patch keywords]()
   - [Defining custom keywords](#defining-custom-keywords)
   - [Asynchronous schema compilation](#asynchronous-compilation)
   - [Asynchronous validation](#asynchronous-validation)
@@ -263,6 +264,68 @@ var validData = {
 ```
 
 `$data` reference is resolved safely - it won't throw even if some property is undefined. If `$data` resolves to `undefined` the validation succeeds (with the exclusion of `constant` keyword). If `$data` resolves to incorrect type (e.g. not "number" for maximum keyword) the validation fails.
+
+
+## $merge and $patch keywords
+
+With v5 option and the package [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) you can use the keywords `$merge` and `$patch` that allow extending JSON-schemas with patches using formats [JSON Merge Patch (RFC 7396)](https://tools.ietf.org/html/rfc7396) and [JSON Patch (RFC 6902)](https://tools.ietf.org/html/rfc6902).
+
+To add keywords `$merge` and `$patch` to Ajv instance use this code:
+
+```javascript
+require('ajv-merge-patch')(ajv);
+```
+
+Examples.
+
+Using `$merge`:
+
+```json
+{
+  "$merge": {
+    "source": {
+      "type": "object",
+      "properties": { "p": { "type": "string" } },
+      "additionalProperties": false
+    },
+    "with": {
+      "properties": { "q": { "type": "number" } }
+    }
+  }
+}
+```
+
+Using `$patch`:
+
+```json
+{
+  "$patch": {
+    "source": {
+      "type": "object",
+      "properties": { "p": { "type": "string" } },
+      "additionalProperties": false
+    },
+    "with": [
+      { "op": "add", "path": "/properties/q", "value": { "type": "number" } }
+    ]
+  }
+}
+```
+
+The schemas above are equivalent to the schema:
+
+```json
+  "type": "object",
+  "properties": {
+    "p": { "type": "string" },
+    "q": { "type": "number" }
+  },
+  "additionalProperties": false
+```
+
+The properties `source` and `with` in the keywords `$merge` and `$patch` can use `$ref` to point to other schemas previously added to the Ajv instance.
+
+See the package [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) for more information.
 
 
 ## Defining custom keywords
