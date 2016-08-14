@@ -26,7 +26,7 @@ The fastest JSON Schema validator for node.js and browser. Supports [v5 proposal
   - [Keywords](#validation-keywords)
   - [Formats](#formats)
   - [$data reference](#data-reference)
-  - NEW: [$merge and $patch keywords]()
+  - NEW: [$merge and $patch keywords](#merge-and-patch-keywords)
   - [Defining custom keywords](#defining-custom-keywords)
   - [Asynchronous schema compilation](#asynchronous-compilation)
   - [Asynchronous validation](#asynchronous-validation)
