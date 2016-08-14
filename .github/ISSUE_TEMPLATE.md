@@ -6,6 +6,7 @@ This template is for bug reports. For other issues please use:
 - a new feature/improvement: http://epoberezkin.github.io/ajv/contribute.html#changes
 - compatibility issues: http://epoberezkin.github.io/ajv/contribute.html#compatibility
 - JSON-Schema standard: http://epoberezkin.github.io/ajv/contribute.html#json-schema
+- Ajv usage questions: https://gitter.im/ajv-validator/ajv
 -->
 
 **What version of Ajv are you using? Does the issue happen if you use the latest version?**
@@ -58,4 +59,4 @@ It would help if you post a working code sample in Tonic notebook and include th
 **What results did you expect?**
 
 
-**Do you intend to resolve the issue?**
+**Are you going to resolve the issue?**

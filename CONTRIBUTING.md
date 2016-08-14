@@ -7,6 +7,7 @@ Thank you for your help making Ajv better!
   - [Change proposals](#changes)
   - [Compatibility issues](#compatibility)
   - [JSON schema standard](#json-schema)
+  - [Ajv usage questions](#usage)
 - [Contibuting code](#contibuting-code)
   - [Development](#development)
   - [Pull requests](#pull-requests)
@@ -74,7 +75,12 @@ Ajv implements JSON schema standard draft 4 and the proposed extensions for the 
 
 If the issue is related to using v5 extensions please submit it as a [bug report](https://github.com/epoberezkin/ajv/issues/new).
 
-If it is a general issue related to using the standard keywords included in JSON Schema or implementing some advanced validation logic please consider submitting the question to [JSON-Schema.org](https://github.com/json-schema-org/json-schema-spec/issues/new). Please mention @epoberezkin if you want me to be notified.
+If it is a general issue related to using the standard keywords included in JSON Schema or implementing some advanced validation logic please ask the question on [Stack Overflow](http://stackoverflow.com/questions/ask?tags=jsonschema) (my account is [esp](http://stackoverflow.com/users/1816503/esp)) or submitting the question to [JSON-Schema.org](https://github.com/json-schema-org/json-schema-spec/issues/new). Please mention @epoberezkin.
+
+
+#### <a name="usage"></a>Ajv usage questions
+
+The best place to ask a question about using Ajv is [Gitter chat](https://gitter.im/ajv-validator/ajv).
 
 
 ## Contibuting code
