@@ -1,6 +1,7 @@
-declare var ajv: { 
+declare var ajv: {
   (options?: ajv.Options): ajv.Ajv;
   new (options?: ajv.Options): ajv.Ajv;
+  ValidationError: ajv.ValidationErrorConstructor;
 }
 
 declare namespace ajv {
@@ -257,6 +258,25 @@ declare namespace ajv {
   }
 
   interface NoParams {}
+
+  interface ValidationErrorConstructor {
+    prototype: ValidationError;
+    new (errors: ErrorObject[]): ValidationError;
+  }
+
+  interface ValidationError extends Error {
+
+    /** "validation failed" */
+    message: string;
+
+    /** true */
+    avj: boolean;
+
+    /** true */
+    validation: boolean;
+
+    errors: ErrorObject[];
+  }
 }
 
 export = ajv;
