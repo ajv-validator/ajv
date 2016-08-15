@@ -88,6 +88,32 @@ describe('Ajv', function () {
       ajv.validate('integer', 1) .should.equal(true);
       should.throw(function() { ajv.validate('string', 'foo'); });
     });
+
+    it('should validate schema fragment by ref', function() {
+      ajv.addSchema({
+        "id": "http://e.com/types.json",
+        "definitions": {
+          "int": { "type": "integer" },
+          "str": { "type": "string" }
+        }
+      });
+
+      ajv.validate('http://e.com/types.json#/definitions/int', 1) .should.equal(true);
+      ajv.validate('http://e.com/types.json#/definitions/int', '1') .should.equal(false);
+    });
+
+    it('should return schema fragment by id', function() {
+      ajv.addSchema({
+        "id": "http://e.com/types.json",
+        "definitions": {
+          "int": { "id": "#int", "type": "integer" },
+          "str": { "id": "#str", "type": "string" }
+        }
+      });
+
+      ajv.validate('http://e.com/types.json#int', 1) .should.equal(true);
+      ajv.validate('http://e.com/types.json#int', '1') .should.equal(false);
+    });
   });
 
 
@@ -209,6 +235,34 @@ describe('Ajv', function () {
       var v = ajv.getSchema();
       v(1) .should.equal(true);
       v('1') .should.equal(false);
+    });
+
+    it('should return schema fragment by ref', function() {
+      ajv.addSchema({
+        "id": "http://e.com/types.json",
+        "definitions": {
+          "int": { "type": "integer" },
+          "str": { "type": "string" }
+        }
+      });
+
+      var vInt = ajv.getSchema('http://e.com/types.json#/definitions/int');
+      vInt(1) .should.equal(true);
+      vInt('1') .should.equal(false);
+    });
+
+    it('should return schema fragment by id', function() {
+      ajv.addSchema({
+        "id": "http://e.com/types.json",
+        "definitions": {
+          "int": { "id": "#int", "type": "integer" },
+          "str": { "id": "#str", "type": "string" }
+        }
+      });
+
+      var vInt = ajv.getSchema('http://e.com/types.json#int');
+      vInt(1) .should.equal(true);
+      vInt('1') .should.equal(false);
     });
   });
 
