@@ -251,6 +251,20 @@ describe('Ajv', function () {
       vInt('1') .should.equal(false);
     });
 
+    it('should return schema fragment by ref with protocol-relative URIs', function() {
+      ajv.addSchema({
+        "id": "//e.com/types.json",
+        "definitions": {
+          "int": { "type": "integer" },
+          "str": { "type": "string" }
+        }
+      });
+
+      var vInt = ajv.getSchema('//e.com/types.json#/definitions/int');
+      vInt(1) .should.equal(true);
+      vInt('1') .should.equal(false);
+    });
+
     it('should return schema fragment by id', function() {
       ajv.addSchema({
         "id": "http://e.com/types.json",

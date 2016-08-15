@@ -94,6 +94,25 @@ describe('resolve', function () {
   });
 
 
+  describe('protocol-relative URIs', function() {
+    it('should resolve fragment', function() {
+      instances.forEach(function(ajv) {
+        var schema = {
+          "id": "//e.com/types",
+          "definitions": {
+            "int": { "type": "integer" }
+          }
+        };
+
+        ajv.addSchema(schema);
+        var validate = ajv.compile({ $ref: '//e.com/types#/definitions/int' });
+        validate(1) .should.equal(true);
+        validate('foo') .should.equal(false);
+      });
+    });
+  });
+
+
   describe('missing schema error', function() {
     this.timeout(4000);
 
