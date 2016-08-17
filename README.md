@@ -307,15 +307,17 @@ Using `$patch`:
 }
 ```
 
-The schemas above are equivalent to the schema:
+The schemas above are equivalent to this schema:
 
 ```json
+{
   "type": "object",
   "properties": {
     "p": { "type": "string" },
     "q": { "type": "number" }
   },
   "additionalProperties": false
+}
 ```
 
 The properties `source` and `with` in the keywords `$merge` and `$patch` can use `$ref` to point to other schemas previously added to the Ajv instance.
