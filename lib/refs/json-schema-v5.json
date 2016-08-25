@@ -30,7 +30,10 @@
             "properties": {
                 "$data": {
                     "type": "string",
-                    "format": "relative-json-pointer"
+                    "anyOf": [
+                        { "format": "relative-json-pointer" }, 
+                        { "format": "json-pointer" }
+                    ]
                 }
             },
             "additionalProperties": false
