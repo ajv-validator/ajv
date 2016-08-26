@@ -3,7 +3,7 @@
   "version": "4.5.0",
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
-  "browser": "dist/ajv.bundle.js",
+  "webpack": "dist/ajv.bundle.js",
   "typings": "lib/ajv.d.ts",
   "files": [
     "lib/",
