@@ -161,7 +161,7 @@
   additionalProperties: "{ additionalProperty: '{{=$additionalProperty}}' }",
   anyOf:           "{}",
   dependencies:    "{ property: '{{= it.util.escapeQuotes($property) }}', missingProperty: '{{=$missingProperty}}', depsCount: {{=$deps.length}}, deps: '{{= it.util.escapeQuotes($deps.length==1 ? $deps[0] : $deps.join(\", \")) }}' }",
-  'enum':          "{}",
+  'enum':          "{ allowedValues: schema{{=$lvl}} }",
   format:          "{ format: {{#def.schemaValueQS}} }",
   _limit:          "{ comparison: {{=$opExpr}}, limit: {{=$schemaValue}}, exclusive: {{=$exclusive}} }",
   _exclusiveLimit: "{}",
