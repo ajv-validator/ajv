@@ -68,7 +68,7 @@ To add asynchronous keyword pass `async: true` in its definition.
 
 ### Define keyword with "compilation" function
 
-Compilation function will be called during schema compilation. It will be passed schema and parent schema and it should return a validation function. This validation function will be passed during validation:
+Compilation function will be called during schema compilation. It will be passed schema, parent schema and [schema compilation context](#schema-compilation-context) and it should return a validation function. This validation function will be passed during validation:
 - data
 - current data path
 - parent data object
@@ -112,7 +112,7 @@ See note on custom errors and asynchronous keywords in the previous section.
 
 ### Define keyword with "macro" function
 
-"Macro" function is called during schema compilation. It is passed schema and parent schema and it should return another schema that will be applied to the data in addition to the original schema.
+"Macro" function is called during schema compilation. It is passed schema, parent schema and [schema compilation context](#schema-compilation-context) and it should return another schema that will be applied to the data in addition to the original schema.
 
 It is the most efficient approach (in cases when the keyword logic can be expressed with another JSON-schema) because it is usually easy to implement and there is no extra function call during validation.
 
@@ -244,6 +244,7 @@ The first parameter passed to inline keyword compilation function is `it`, the s
 - _dataLevel_ - the level of the currently validated data. It can be used to access both the property names and the data on all levels from the top. See [Validation time variables](#validation-time-variables).
 - _schema_ - current level schema. The value of your keyword is `it.schema[keyword]`. This value is also passed as the 3rd parameter to the inline compilation function and the current level schema as the 4th parameter.
 - _schemaPath_ - the validation time expression that evaluates to the property name of the current schema.
+- _baseId_ - the current schema base URI that should be used as the base for resolving URIs in references ($ref).
 - _async_ - truthy if the current schema is asynchronous.
 - _opts_ - Ajv instance option. You should not be changing them.
 - _formats_ - all formats available in Ajv instance, including the custom ones.
