@@ -219,7 +219,7 @@ With `v5` option you can use values from the validated data as the values for th
 
 `$data` reference is supported in the keywords: constant, enum, format, maximum/minimum, exclusiveMaximum / exclusiveMinimum, maxLength / minLength, maxItems / minItems, maxProperties / minProperties, formatMaximum / formatMinimum, formatExclusiveMaximum / formatExclusiveMinimum, multipleOf, pattern, required, uniqueItems.
 
-The value of "$data" should be a [relative JSON-pointer](http://tools.ietf.org/html/draft-luff-relative-json-pointer-00).
+The value of "$data" should be a [JSON-pointer](https://tools.ietf.org/html/rfc6901) to the data (the root is always the top level data object, even if the $data reference is inside a referenced subschema) or a [relative JSON-pointer](http://tools.ietf.org/html/draft-luff-relative-json-pointer-00) (it is relative to the current point in data; if the $data reference is inside a referenced subschema it cannot point to the data outside of the root level for this subschema).
 
 Examples.
 
