@@ -44,10 +44,11 @@
   {{??}}
     (function
   {{?}}
-    (data, dataPath, parentData, parentDataProperty) {
+    (data, dataPath, parentData, parentDataProperty, rootData) {
     'use strict';
     var vErrors = null; {{ /* don't edit, used in replace */ }}
     var errors = 0;     {{ /* don't edit, used in replace */ }}
+    if (rootData === undefined) rootData = data;
 {{??}}
   {{
     var $lvl = it.level
