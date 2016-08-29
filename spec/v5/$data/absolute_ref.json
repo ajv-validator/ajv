@@ -1,0 +1,438 @@
+[
+  {
+    "description": "property is equal to another property [absolute JSON pointer]",
+    "schema": {
+      "properties": {
+        "sameAs": {
+          "constant": {
+            "$data": "/thisOne"
+          }
+        },
+        "thisOne": {}
+      }
+    },
+    "tests": [
+      {
+        "description": "same value is valid",
+        "data": {
+          "sameAs": 5,
+          "thisOne": 5
+        },
+        "valid": true
+      },
+      {
+        "description": "same object is valid",
+        "data": {
+          "sameAs": {
+            "foo": 1,
+            "bar": 2
+          },
+          "thisOne": {
+            "bar": 2,
+            "foo": 1
+          }
+        },
+        "valid": true
+      },
+      {
+        "description": "another value is invalid",
+        "data": {
+          "sameAs": {
+            "foo": 1
+          },
+          "thisOne": {
+            "foo": 2
+          }
+        },
+        "valid": false
+      },
+      {
+        "description": "another type is invalid",
+        "data": {
+          "sameAs": 5,
+          "thisOne": "5"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "items in one array are equal to items in another (limited length) [absolute JSON pointer]",
+    "schema": {
+      "properties": {
+        "arr": {
+          "items": [
+            {},
+            {},
+            {}
+          ],
+          "additionalItems": false
+        },
+        "sameArr": {
+          "items": [
+            {
+              "constant": {
+                "$data": "/arr/0"
+              }
+            },
+            {
+              "constant": {
+                "$data": "/arr/1"
+              }
+            },
+            {
+              "constant": {
+                "$data": "/arr/2"
+              }
+            }
+          ],
+          "additionalItems": false
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "equal arrays are valid",
+        "data": {
+          "arr": [
+            1,
+            "abc",
+            {
+              "foo": "bar"
+            }
+          ],
+          "sameArr": [
+            1,
+            "abc",
+            {
+              "foo": "bar"
+            }
+          ]
+        },
+        "valid": true
+      },
+      {
+        "description": "different arrays are invalid",
+        "data": {
+          "arr": [
+            1,
+            "abc",
+            {
+              "foo": "bar"
+            }
+          ],
+          "sameArr": [
+            1,
+            "abc",
+            {
+              "foo": "foo"
+            }
+          ]
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "property value is contained in array [absolute JSON pointer]",
+    "schema": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "list": {
+          "type": "array",
+          "contains": {
+            "constant": {
+              "$data": "/name"
+            }
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "1 item array containing property is valid",
+        "data": {
+          "name": "foo",
+          "list": [
+            "foo"
+          ]
+        },
+        "valid": true
+      },
+      {
+        "description": "2 item array containing property is valid",
+        "data": {
+          "name": "foo",
+          "list": [
+            "foo",
+            "bar"
+          ]
+        },
+        "valid": true
+      },
+      {
+        "description": "array not containing property is invalid",
+        "data": {
+          "name": "foo",
+          "list": [
+            "bar"
+          ]
+        },
+        "valid": false
+      },
+      {
+        "description": "empty array is invalid",
+        "data": {
+          "name": "foo",
+          "list": []
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "property is one of values in another property [absolute JSON pointer]",
+    "schema": {
+      "properties": {
+        "allowedValues": {},
+        "value": {
+          "enum": {
+            "$data": "/allowedValues"
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "one of the enum is valid",
+        "data": {
+          "allowedValues": [
+            1,
+            2,
+            3
+          ],
+          "value": 1
+        },
+        "valid": true
+      },
+      {
+        "description": "something else is invalid",
+        "data": {
+          "allowedValues": [
+            1,
+            2,
+            3
+          ],
+          "value": 4
+        },
+        "valid": false
+      },
+      {
+        "description": "heterogeneous enum validation",
+        "data": {
+          "allowedValues": [
+            6,
+            "foo",
+            [],
+            true,
+            {
+              "foo": 12
+            }
+          ],
+          "value": {
+            "foo": 12
+          }
+        },
+        "valid": true
+      },
+      {
+        "description": "fail if value of enum is not an array",
+        "data": {
+          "allowedValues": "[1, 2, 3]",
+          "value": 1
+        },
+        "valid": false
+      },
+      {
+        "description": "valid if value of enum is undefined",
+        "data": {
+          "value": 1
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "enum in properties [absolute JSON pointer]",
+    "schema": {
+      "properties": {
+        "allowedValues": {}
+      },
+      "additionalProperties": {
+        "enum": {
+          "$data": "/allowedValues"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "properties are valid",
+        "data": {
+          "allowedValues": [
+            "foo",
+            "bar"
+          ],
+          "a": "foo",
+          "b": "bar"
+        },
+        "valid": true
+      },
+      {
+        "description": "properties are invalid",
+        "data": {
+          "allowedValues": [
+            "foo",
+            "bar"
+          ],
+          "a": "foo",
+          "b": "baz"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "required schema in data property [absolute JSON pointer]",
+    "schema": {
+      "properties": {
+        "foo": {},
+        "bar": {},
+        "requiredProperties": {}
+      },
+      "required": {
+        "$data": "/requiredProperties"
+      }
+    },
+    "tests": [
+      {
+        "description": "present required property is valid",
+        "data": {
+          "foo": 1,
+          "requiredProperties": [
+            "foo"
+          ]
+        },
+        "valid": true
+      },
+      {
+        "description": "non-present required property is invalid",
+        "data": {
+          "bar": 2,
+          "requiredProperties": [
+            "foo"
+          ]
+        },
+        "valid": false
+      },
+      {
+        "description": "non-present second required property is invalid",
+        "data": {
+          "foo": 1,
+          "requiredProperties": [
+            "foo",
+            "bar"
+          ]
+        },
+        "valid": false
+      },
+      {
+        "description": "two present required properties is valid",
+        "data": {
+          "foo": 1,
+          "bar": 2,
+          "requiredProperties": [
+            "foo",
+            "bar"
+          ]
+        },
+        "valid": true
+      },
+      {
+        "description": "fails if value of required is not an array",
+        "data": {
+          "foo": 1,
+          "bar": 2,
+          "requiredProperties": true
+        },
+        "valid": false
+      },
+      {
+        "description": "valid if value of required is undefined",
+        "data": {
+          "foo": 1,
+          "bar": 2
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "absolute JSON pointer can access data outside of a $ref",
+    "schema": {
+      "definitions": {
+        "baz": {
+          "type": "object",
+          "properties": {
+            "foo": {
+              "constant": {
+                "$data": "/bar"
+              }
+            },
+            "bar": {}
+          }
+        }
+      },
+      "properties": {
+        "foo": {
+          "constant": {
+            "$data": "/bar"
+          }
+        },
+        "bar": {},
+        "baz": {
+          "$ref": "#/definitions/baz"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "$data reference with absolute JSON pointer resolves from root of data",
+        "data": {
+          "foo": 1,
+          "bar": 1,
+          "baz": {
+            "foo": 1,
+            "bar": 2
+          }
+        },
+        "valid": true,
+        "skip": true
+      },
+      {
+        "description": "$data reference with absolute JSON pointer should NOT resolve to root of $ref",
+        "data": {
+          "foo": 2,
+          "bar": 2,
+          "baz": {
+            "foo": 1,
+            "bar": 1
+          }
+        },
+        "valid": false,
+        "skip": true
+      }
+    ]
+  }
+]
