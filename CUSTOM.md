@@ -236,7 +236,7 @@ See [schema compilation context](#schema-compilation-context) for more informati
 
 ## Schema compilation context
 
-The first parameter passed to inline keyword compilation function is `it`, the schema compilation context. All the properties and functions documented here are safe to use in your keywords, they won't be renamed or change their meaning without major version change.
+The first parameter passed to inline keyword compilation function (and the 3rd parameter passed to compile and macro keyword functions) is `it`, the schema compilation context. All the properties and functions documented here are safe to use in your keywords, they won't be renamed or change their meaning without major version change.
 
 `it` object has the following properties:
 
