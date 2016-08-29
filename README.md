@@ -1087,6 +1087,7 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - `patternRequired` (with v5 option) - property `missingPattern` (required pattern that did not match any property).
 - `type` - property `type` (required type(s), a string, can be a comma-separated list)
 - `uniqueItems` - properties `i` and `j` (indices of duplicate items).
+- `enum` - property `allowedValues` pointing to the array of values (the schema of the keyword).
 - `$ref` - property `ref` with the referenced schema URI.
 - custom keywords (in case keyword definition doesn't create errors) - property `keyword` (the keyword name).
 
