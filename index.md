@@ -1137,9 +1137,13 @@ Please see [Contributing guidelines](contribute.html)
 
 See https://github.com/epoberezkin/ajv/releases
 
-__Please note__: [Changes in version 4.0.0](https://github.com/epoberezkin/ajv/releases/tag/4.0.0).
+__Please note__: [Changes in version 4.6.0](https://github.com/epoberezkin/ajv/releases/tag/4.6.0).
+
+[Changes in version 4.0.0](https://github.com/epoberezkin/ajv/releases/tag/4.0.0).
 
 [Changes in version 3.0.0](https://github.com/epoberezkin/ajv/releases/tag/3.0.0).
+
+[Changes in version 2.0.0](https://github.com/epoberezkin/ajv/releases/tag/2.0.0).
 
 
 ## License
