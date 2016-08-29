@@ -21,7 +21,18 @@ layout: main
 
 ### Define keyword with validation function
 
-Validation function will be called during data validation. During data validation it will be passed schema and data (and also parent schema, data path, parent object and the property name in the parent object - it allows to create keywords that modify the validated data); it should return validation result as boolean. It can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
+Validation function will be called during data validation and it will be passed:
+- schema
+- data
+- parent schema
+- current data path
+- parent data object
+- the property name in the parent data object
+- the root data
+
+The access to the parent data object and the current property name allow to create keywords that modify the validated data.
+
+The function should return validation result as boolean. It can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
 
 This way to define keywords is useful for:
 
@@ -62,7 +73,16 @@ To add asynchronous keyword pass `async: true` in its definition.
 
 ### Define keyword with "compilation" function
 
-Compilation function will be called during schema compilation. It will be passed schema and parent schema and it should return a validation function. This validation function will be passed data during validation (and also data path, parent object and the property name in the parent object - it allows to create keywords that modify the validated data); it should return validation result as boolean and it can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
+Compilation function will be called during schema compilation. It will be passed schema and parent schema and it should return a validation function. This validation function will be passed during validation:
+- data
+- current data path
+- parent data object
+- the property name in the parent data object
+- the root data
+
+The access to the parent data object and the current property name allow to create keywords that modify the validated data.
+
+The function should return validation result as boolean. It can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
 
 In some cases it is the best approach to define keywords, but it has the performance cost of an extra function call during validation. If keyword logic can be expressed via some other JSON-schema then `macro` keyword definition is more efficient (see below).
 
@@ -244,6 +264,7 @@ There is a number of variables and expressions you can use in the generated (val
 
 - `'data' + (it.dataLevel || '')` - the variable name for the data at the current level.
 - `'data' + ((it.dataLevel-1)||'')` - parent data if `it.dataLevel > 0`.
+- `'rootData'` - the root data.
 - `it.dataPathArr[it.dataLevel]` - the name of the property in the parent object that points to the current data if `it.dataLevel > 0`.
 - `'validate.schema'` - top level schema of the current validation function at validation-time.
 - `'validate.schema' + it.schemaPath` - current level schema available at validation time (the same schema at compile time is `it.schema`).
