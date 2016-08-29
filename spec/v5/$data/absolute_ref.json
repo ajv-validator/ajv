@@ -417,8 +417,7 @@
             "bar": 2
           }
         },
-        "valid": true,
-        "skip": true
+        "valid": true
       },
       {
         "description": "$data reference with absolute JSON pointer should NOT resolve to root of $ref",
@@ -430,8 +429,7 @@
             "bar": 1
           }
         },
-        "valid": false,
-        "skip": true
+        "valid": false
       }
     ]
   }
