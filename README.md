@@ -320,7 +320,7 @@ The schemas above are equivalent to this schema:
 }
 ```
 
-The properties `source` and `with` in the keywords `$merge` and `$patch` can use an absolute `$ref` (see [#278](https://github.com/epoberezkin/ajv/issues/278)) to point to other schemas previously added to the Ajv instance.
+The properties `source` and `with` in the keywords `$merge` and `$patch` can use absolute or relative `$ref` to point to other schemas previously added to the Ajv instance or to the fragments of the current schema.
 
 See the package [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) for more information.
 
