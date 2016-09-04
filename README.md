@@ -33,6 +33,7 @@ The fastest JSON Schema validator for node.js and browser. Supports [v5 proposal
   - [Methods](#api)
   - [Options](#options)
   - [Validation errors](#validation-errors)
+- [Related packages](#related-packages)
 - [Packages using Ajv](#some-packages-using-ajv)
 - [Tests, Contributing, History, License](#tests)
 
@@ -63,11 +64,11 @@ Performace of different validators by [json-schema-benchmark](https://github.com
   - correct string lengths for strings with unicode pairs (can be turned off)
   - [formats](#formats) defined by JSON Schema draft 4 standard and custom formats (can be turned off)
   - [validates schemas against meta-schema](#api-validateschema)
-- supports [browsers](#using-in-browser) and nodejs 0.10-5.0
+- supports [browsers](#using-in-browser) and nodejs 0.10-6.x
 - [asynchronous loading](#asynchronous-compilation) of referenced schemas during compilation
 - "All errors" validation mode with [option allErrors](#options)
 - [error messages with parameters](#validation-errors) describing error reasons to allow creating custom error messages
-- i18n error messages support with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package (version >= 1.0.0)
+- i18n error messages support with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package
 - [filtering data](#filtering-data) from additional properties
 - [assigning defaults](#assigning-defaults) to missing properties and items
 - [coercing data](#coercing-data-types) to the types specified in `type` keywords
@@ -327,8 +328,6 @@ See the package [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch
 
 ## Defining custom keywords
 
-Starting from version 2.0.0 ajv supports custom keyword definitions.
-
 The advantages of using custom keywords are:
 
 - allow creating validation scenarios that cannot be expressed using JSON-Schema
@@ -367,7 +366,9 @@ console.log(validate(2)); // false
 console.log(validate(4)); // false
 ```
 
-See [Defining custom keywords](https://github.com/epoberezkin/ajv/blob/master/CUSTOM.md) for details.
+Several custom keywords (typeof, instanceof, range and propertyNames) are defined in [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package - they can be used for your schemas and as a starting point for your own custom keywords.
+
+See [Defining custom keywords](https://github.com/epoberezkin/ajv/blob/master/CUSTOM.md) for more details.
 
 
 ## Asynchronous compilation
@@ -401,7 +402,7 @@ __Please note__: [Option](#options) `missingRefs` should NOT be set to `"ignore"
 
 Example in node REPL: https://tonicdev.com/esp/ajv-asynchronous-validation
 
-Starting from version 3.5.0 you can define custom formats and keywords that perform validation asyncronously by accessing database or some service. You should add `async: true` in the keyword or format defnition (see [addFormat](#api-addformat), [addKeyword](#api-addkeyword) and [Defining custom keywords](#defining-custom-keywords)).
+You can define custom formats and keywords that perform validation asyncronously by accessing database or some service. You should add `async: true` in the keyword or format defnition (see [addFormat](#api-addformat), [addKeyword](#api-addkeyword) and [Defining custom keywords](#defining-custom-keywords)).
 
 If your schema uses asynchronous formats/keywords or refers to some schema that contains them it should have `"$async": true` keyword so that Ajv can compile it correctly. If asynchronous format/keyword or reference to asynchronous schema is used in the schema without `$async` keyword Ajv will throw an exception during schema compilation.
 
@@ -814,7 +815,7 @@ If the schema is asynchronous (has `$async` keyword on the top level) this metho
 
 ##### .addSchema(Array&lt;Object&gt;|Object schema [, String key])
 
-Add schema(s) to validator instance. From version 1.0.0 this method does not compile schemas (but it still validates them). Because of that change, dependencies can be added in any order and circular dependencies are supported. It also prevents unnecessary compilation of schemas that are containers for other schemas but not used as a whole.
+Add schema(s) to validator instance. This method does not compile schemas (but it still validates them). Because of that dependencies can be added in any order and circular dependencies are supported. It also prevents unnecessary compilation of schemas that are containers for other schemas but not used as a whole.
 
 Array of schemas can be passed (schemas should have ids), the second parameter will be ignored.
 
@@ -1035,7 +1036,7 @@ Defaults:
 - _loopRequired_: by default `required` keyword is compiled into a single expression (or a sequence of statements in `allErrors` mode). In case of a very large number of properties in this keyword it may result in a very big validation function. Pass integer to set the number of properties above which `required` keyword will be validated in a loop - smaller validation function size but also worse performance.
 - _ownProperties_: by default ajv iterates over all enumerable object properties; when this option is `true` only own enumerable object properties (i.e. found directly on the object rather than on its prototype) are iterated. Contributed by @mbroadst.
 - _multipleOfPrecision_: by default `multipleOf` keyword is validated by comparing the result of division with parseInt() of that result. It works for dividers that are bigger than 1. For small dividers such as 0.01 the result of the division is usually not integer (even when it should be integer, see issue [#84](https://github.com/epoberezkin/ajv/issues/84)). If you need to use fractional dividers set this option to some positive integer N to have `multipleOf` validated using this formula: `Math.abs(Math.round(division) - division) < 1e-N` (it is slower but allows for float arithmetics deviations).
-- _errorDataPath_: set `dataPath` to point to 'object' (default) or to 'property' (default behavior in versions before 2.0) when validating keywords `required`, `additionalProperties` and `dependencies`.
+- _errorDataPath_: set `dataPath` to point to 'object' (default) or to 'property' when validating keywords `required`, `additionalProperties` and `dependencies`.
 - _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when custom messages are used (e.g. with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)).
 - _beautify_: format the generated function with [js-beautify](https://github.com/beautify-web/js-beautify) (the validating function is generated without line-breaks). `npm install js-beautify` to use this option. `true` or js-beautify options can be passed.
 - _cache_: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache [sacjs](https://github.com/epoberezkin/sacjs) can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods `put(key, value)`, `get(key)`, `del(key)` and `clear()`.
@@ -1090,6 +1091,14 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - `enum` - property `allowedValues` pointing to the array of values (the schema of the keyword).
 - `$ref` - property `ref` with the referenced schema URI.
 - custom keywords (in case keyword definition doesn't create errors) - property `keyword` (the keyword name).
+
+
+## Related packages
+
+- [ajv-cli](https://github.com/epoberezkin/ajv-cli) - command line interface for Ajv
+- [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) - internationalised error messages
+- [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) - keywords $merge and $patch from v5 proposals.
+- [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) - several custom keywords that can be used with Ajv (typeof, instanceof, range, propertyNames)
 
 
 ## Some packages using Ajv
