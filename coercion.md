@@ -110,7 +110,7 @@ Unlike JavaScript, only these numbers can be coerced to `boolean`:
 
 ## Coercion to and from from array
 
-These coercions require the the option `coerceTypes` is `"array"`.
+These coercions require that the option `coerceTypes` is `"array"`.
 
 If a scalar data is present and array is required, Ajv wraps scalar data in an array.
 
