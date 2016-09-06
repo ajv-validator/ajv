@@ -840,4 +840,27 @@ describe('Ajv Options', function () {
       }
     }
   });
+
+
+  describe('sourceCode', function() {
+    describe('= true and default', function() {
+      it('should add sourceCode property', function() {
+        test(new Ajv);
+        test(new Ajv({sourceCode: true}));
+
+        function test(ajv) {
+          var validate = ajv.compile({ "type": "number" });
+          validate.sourceCode .should.be.a('string');
+        }
+      });
+    });
+
+    describe('= false', function() {
+      it('should not add sourceCode property', function() {
+        var ajv = new Ajv({sourceCode: false});
+        var validate = ajv.compile({ "type": "number" });
+        should.not.exist(validate.sourceCode);
+      });
+    });
+  });
 });
