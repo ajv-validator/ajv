@@ -34,7 +34,7 @@
     it.dataPathArr = [undefined];
   }}
 
-  validate =
+  var validate =
   {{? $async }}
     {{? $es7 }}
       (async function
@@ -178,6 +178,8 @@
       return errors === 0;       {{ /* don't edit, used in replace */ }}
     {{?}}
   });
+
+  return validate;
 {{??}}
   var {{=$valid}} = errors === errs_{{=$lvl}};
 {{?}}
