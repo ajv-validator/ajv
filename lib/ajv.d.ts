@@ -92,7 +92,8 @@ declare namespace ajv {
       data: any,
       dataPath?: string,
       parentData?: Object | Array<any>,
-      parentDataProperty?: string | number
+      parentDataProperty?: string | number,
+      rootData?: Object | Array<any>
     ): boolean | Thenable<boolean>;
     errors?: Array<ErrorObject>;
     schema?: Object;
