@@ -1110,10 +1110,11 @@ Properties of `params` object in errors depend on the keyword that failed valida
 
 ## Some packages using Ajv
 
-- [jsonscript-js](https://github.com/JSONScript/jsonscript-js) - the interpreter for [JSONScript](http://www.json-script.com), asynchronous scripting language using JSON format
+- [jsonscript-js](https://github.com/JSONScript/jsonscript-js) - the interpreter for [JSONScript](http://www.jsonscript.org) - scripted processing of existing endpoints and services
 - [osprey-method-handler](https://github.com/mulesoft-labs/osprey-method-handler) - Express middleware for validating requests and responses based on a RAML method object, used in [osprey](https://github.com/mulesoft/osprey) - validating API proxy generated from a RAML definition
 - [jsoneditor](https://github.com/josdejong/jsoneditor) - A web-based tool to view, edit, format, and validate JSON http://jsoneditoronline.org
 - [objection](https://github.com/vincit/objection.js) - SQL-friendly ORM for node.js
+- [table](https://github.com/gajus/table) - formats data into a string table
 - [ripple-lib](https://github.com/ripple/ripple-lib) - A JavaScript API for interacting with [Ripple](https://ripple.com) in Node.js and the browser
 - [restbase](https://github.com/wikimedia/restbase) - Distributed storage with REST API & dispatcher for backend services built to provide a low-latency & high-throughput API for Wikipedia / Wikimedia content
 - [hippie-swagger](https://github.com/CacheControl/hippie-swagger) - [Hippie](https://github.com/vesln/hippie) wrapper that provides end to end API testing with swagger validation
