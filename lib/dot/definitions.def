@@ -117,7 +117,7 @@
 
 {{## def.$data:
   {{
-    var $isData = it.opts.v5 && $schema.$data
+    var $isData = it.opts.v5 && $schema && $schema.$data
       , $schemaValue;
   }}
   {{? $isData }}

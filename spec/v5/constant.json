@@ -45,5 +45,21 @@
         "valid": false
       }
     ]
+  },
+  {
+    "description": "constant keyword with null",
+    "schema": { "constant": null },
+    "tests": [
+      {
+        "description": "null is valid",
+        "data": null,
+        "valid": true
+      },
+      {
+        "description": "not null is invalid",
+        "data": 0,
+        "valid": false
+      }
+    ]
   }
 ]
