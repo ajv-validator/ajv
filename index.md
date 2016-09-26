@@ -163,7 +163,7 @@ __Please note__: some frameworks, e.g. Dojo, may redifine global require in such
 CLI is available as a separate npm package [ajv-cli](https://github.com/jessedc/ajv-cli). It supports:
 
 - compiling JSON-schemas to test their validity
-- NEW: generating standalone module exporting a validation function to be used without Ajv (using [ajv-pack](https://github.com/epoberezkin/ajv-pack))
+- BETA: generating standalone module exporting a validation function to be used without Ajv (using [ajv-pack](https://github.com/epoberezkin/ajv-pack))
 - validating data file(s) against JSON-schema
 - testing expected validity of data against JSON-schema
 - referenced schemas
