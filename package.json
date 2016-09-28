@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "4.7.4",
+  "version": "4.7.5",
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
   "webpack": "dist/ajv.bundle.js",

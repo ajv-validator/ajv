@@ -6,7 +6,7 @@
     {
       keyword: '{{= $errorKeyword || _rule }}'
       , dataPath: (dataPath || '') + {{= it.errorPath }}
-      , schemaPath: "{{=$errSchemaPath}}"
+      , schemaPath: {{=it.util.toQuotedString($errSchemaPath)}}
       , params: {{# def._errorParams[_rule] }}
       {{? it.opts.messages !== false }}
         , message: {{# def._errorMessages[_rule] }}
