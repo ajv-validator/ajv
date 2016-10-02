@@ -54,6 +54,24 @@
     ]
   },
   {
+    "description": "format: hostname",
+    "schema": {
+      "format": "hostname"
+    },
+    "tests": [
+      {
+        "description": "valid hostname",
+        "data": "123.example.com",
+        "valid": true
+      },
+      {
+        "description": "valid hostname #312",
+        "data": "lead-routing-qa.lvuucj.0001.use1.cache.amazonaws.com",
+        "valid": true
+      }
+    ]
+  },
+  {
     "description": "validation of date strings",
     "schema": {"format": "date"},
     "tests": [
