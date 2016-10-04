@@ -3,7 +3,9 @@
 var jsonSchemaTest = require('json-schema-test')
   , Promise = require('./promise')
   , getAjvInstances = require('./ajv_async_instances')
-  , Ajv = require('./ajv');
+  , Ajv = require('./ajv')
+  , suite = require('./brower_test_suite')
+  , after = require('./after_test');
 
 
 var instances = getAjvInstances({ v5: true });
@@ -14,40 +16,21 @@ instances.forEach(addAsyncFormatsAndKeywords);
 
 jsonSchemaTest(instances, {
   description: 'asynchronous schemas tests of ' + instances.length + ' ajv instances with different options',
-  suites: testSuites(),
+  suites: {
+    'async schemas':
+      typeof window == 'object'
+      ? suite(require('./async/{**/,}*.json', {mode: 'list'}))
+      : './async/{**/,}*.json'
+  },
   async: true,
   assert: require('./chai').assert,
   Promise: Promise,
-  afterError: function (res) {
-    console.log('ajv options:', res.validator._opts);
-  },
-  // afterEach: function (res) {
-  //   console.log(res.errors);
-  // },
+  afterError: after.error,
+  // afterEach: after.each,
   cwd: __dirname,
   hideFolder: 'async/',
   timeout: 90000
 });
-
-
-function testSuites() {
-  var suites;
-  if (typeof window == 'object') {
-    suites = {
-      'async schemas': require('./async/{**/,}*.json', {mode: 'list'})
-    };
-    for (var suiteName in suites) {
-      suites[suiteName].forEach(function (suite) {
-        suite.test = suite.module;
-      });
-    }
-  } else {
-    suites = {
-      'async schemas': './async/{**/,}*.json'
-    };
-  }
-  return suites;
-}
 
 
 function addAsyncFormatsAndKeywords (ajv) {

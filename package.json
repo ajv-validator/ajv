@@ -17,7 +17,7 @@
     "test-spec": "mocha spec/*.spec.js -R spec",
     "test-fast": "AJV_FAST_TEST=true npm run test-spec",
     "test-debug": "mocha spec/*.spec.js --debug-brk -R spec",
-    "test-cov": "istanbul cover -x '**/spec/**' node_modules/mocha/bin/_mocha -- spec/*.spec.js -R spec",
+    "test-cov": "nyc npm run test-spec",
     "test-ts": "tsc --target ES5 --noImplicitAny lib/ajv.d.ts",
     "bundle": "./scripts/bundle . Ajv pure_getters",
     "bundle-regenerator": "./scripts/bundle regenerator",
@@ -29,6 +29,16 @@
     "test": "npm run jshint && npm run eslint && npm run test-ts && npm run build && npm run test-cov && npm run test-browser",
     "prepublish": "npm run build && npm run bundle-all",
     "watch": "watch 'npm run build' ./lib/dot"
+  },
+  "nyc": {
+    "exclude": [
+      "**/spec/**",
+      "node_modules"
+    ],
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ]
   },
   "repository": {
     "type": "git",
@@ -66,7 +76,6 @@
     "gh-pages-generator": "^0.2.0",
     "glob": "^7.0.0",
     "if-node-version": "^1.0.0",
-    "istanbul": "^0.4.2",
     "js-beautify": "^1.5.6",
     "jshint": "^2.8.0",
     "json-schema-test": "^1.1.1",
@@ -77,6 +86,7 @@
     "karma-sauce-launcher": "^0.3.0",
     "mocha": "^3.0.0",
     "nodent": "^2.5.3",
+    "nyc": "^8.3.0",
     "phantomjs-prebuilt": "^2.1.4",
     "pre-commit": "^1.1.1",
     "regenerator": "0.8.42",

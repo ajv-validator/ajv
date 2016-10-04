@@ -31,7 +31,7 @@ describe('async schemas, formats and keywords', function() {
         maxLength: 3
       };
 
-      return repeat(function() { return Promise.map(instances, test); });
+      return repeat(function() { return Promise.all(instances.map(test)); });
 
       function test(_ajv) {
         var validate = _ajv.compile(schema);
@@ -211,7 +211,7 @@ describe('async schemas, formats and keywords', function() {
         }
       };
 
-      return repeat(function() { return Promise.map(instances, function (_ajv) {
+      return repeat(function() { return Promise.all(instances.map(function (_ajv) {
         var validate = _ajv.compile(schema);
         var _co = useCo(_ajv);
 
@@ -221,7 +221,7 @@ describe('async schemas, formats and keywords', function() {
           shouldBeInvalid( _co(validate({ word: 1 })) ),
           shouldThrow(     _co(validate({ word: 'today' })), 'unknown word' )
         ]);
-      }); });
+      })); });
     });
 
     it('should validate recursive async schema', function() {
@@ -330,7 +330,7 @@ describe('async schemas, formats and keywords', function() {
     });
 
     function recursiveTest(schema, refSchema) {
-      return repeat(function() { return Promise.map(instances, function (_ajv) {
+      return repeat(function() { return Promise.all(instances.map(function (_ajv) {
         if (refSchema) try { _ajv.addSchema(refSchema); } catch(e) {}
         var validate = _ajv.compile(schema);
         var _co = useCo(_ajv);
@@ -349,7 +349,7 @@ describe('async schemas, formats and keywords', function() {
           shouldBeInvalid( _co(validate({ foo: { foo: { foo: 1 }}})) ),
           shouldThrow(     _co(validate({ foo: { foo: { foo: 'today' }}})), 'unknown word' )
         ]);
-      }); });
+      })); });
     }
   });
 
