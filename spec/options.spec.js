@@ -734,7 +734,10 @@ describe('Ajv Options', function () {
 
       it('should log warning when other keywords are used with $ref', function() {
         testWarning(new Ajv, /keywords\sused/);
-        testWarning(new Ajv({ extendRefs: true }), /keywords\sused/);
+      });
+
+      it('should NOT log warning if extendRefs is true', function() {
+        testWarning(new Ajv({ extendRefs: true }));
       });
     });
 
@@ -821,8 +824,8 @@ describe('Ajv Options', function () {
       try {
         oldConsole = console.log;
         var consoleMsg;
-        console.log = function(msg) {
-          consoleMsg = msg;
+        console.log = function() {
+          consoleMsg = Array.prototype.join.call(arguments, ' ');
         };
 
         var schema = {
@@ -834,7 +837,8 @@ describe('Ajv Options', function () {
         };
 
         ajv.compile(schema);
-        consoleMsg .should.match(msgPattern);
+        if (msgPattern) consoleMsg .should.match(msgPattern);
+        else should.not.exist(consoleMsg);
       } finally {
         console.log = oldConsole;
       }

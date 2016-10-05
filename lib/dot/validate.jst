@@ -96,14 +96,14 @@
 {{ var $refKeywords; }}
 {{? it.schema.$ref && ($refKeywords = it.util.schemaHasRulesExcept(it.schema, it.RULES.all, '$ref')) }}
   {{? it.opts.extendRefs == 'fail' }}
-    {{ throw new Error('$ref: validation keywords used in schema at ' + it.errorPath); }}
+    {{ throw new Error('$ref: validation keywords used in schema at path "' + it.errSchemaPath + '"'); }}
   {{?? it.opts.extendRefs == 'ignore' }}
     {{
       $refKeywords = false;
-      console.log('$ref: keywords ignored in schema at path', it.errorPath);
+      console.log('$ref: keywords ignored in schema at path "' + it.errSchemaPath + '"');
     }}
-  {{??}}
-    {{ console.log('$ref: all keywords used in schema at path', it.errorPath, '(it will change in the next major version, see issue #260)'); }}
+  {{?? it.opts.extendRefs !== true }}
+    {{ console.log('$ref: all keywords used in schema at path "' + it.errSchemaPath + '" (it will change in the next major version, see issue #260)'); }}
   {{?}}
 {{?}}
 
