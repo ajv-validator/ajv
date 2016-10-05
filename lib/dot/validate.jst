@@ -103,7 +103,7 @@
       console.log('$ref: keywords ignored in schema at path "' + it.errSchemaPath + '"');
     }}
   {{?? it.opts.extendRefs !== true }}
-    {{ console.log('$ref: all keywords used in schema at path "' + it.errSchemaPath + '" (it will change in the next major version, see issue #260)'); }}
+    {{ console.log('$ref: all keywords used in schema at path "' + it.errSchemaPath + '". It will change in the next major version, see issue #260. Use option { extendRefs: true } to keep current behaviour'); }}
   {{?}}
 {{?}}
 
