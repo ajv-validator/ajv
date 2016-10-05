@@ -986,9 +986,9 @@ Defaults:
   - `"ignore"` - to log error during compilation and always pass validation.
   - `"fail"` - to log error and successfully compile schema but fail validation if this rule is checked.
 - _extendRefs_: validation of other keywords when `$ref` is present in the schema. Option values:
-  - `true` (default) - validate all keywords in the schemas with `$ref`.
+  - `"fail"` (default) - if other validation keywords are used together with `$ref` the exception will be thrown when the schema is compiled.
   - `"ignore"` - when `$ref` is used other keywords are ignored (as per [JSON Reference](https://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03#section-3) standard). A warning will be logged during the schema compilation.
-  - `"fail"` - if other validation keywords are used together with `$ref` the exception will be throw when the schema is compiled.
+  - `true` - validate all keywords in the schemas with `$ref` (the default behaviour in versions before 5.0.0).
 - _loadSchema_: asynchronous function that will be used to load remote schemas when the method `compileAsync` is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept 2 parameters: remote schema uri and node-style callback. See example in [Asynchronous compilation](#asynchronous-compilation).
 
 

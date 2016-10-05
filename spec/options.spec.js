@@ -726,14 +726,9 @@ describe('Ajv Options', function () {
 
 
   describe('extendRefs', function() {
-    describe('= true and default', function() {
+    describe('= true', function() {
       it('should allow extending $ref with other keywords', function() {
-        test(new Ajv, true);
         test(new Ajv({ extendRefs: true }), true);
-      });
-
-      it('should log warning when other keywords are used with $ref', function() {
-        testWarning(new Ajv, /keywords\sused/);
       });
 
       it('should NOT log warning if extendRefs is true', function() {
@@ -751,33 +746,36 @@ describe('Ajv Options', function () {
       });
     });
 
-    describe('= "fail"', function() {
+    describe('= "fail" and default', function() {
       it('should fail schema compilation if other keywords are used with $ref', function() {
-        var ajv = new Ajv({ extendRefs: 'fail' });
+        testFail(new Ajv);
+        testFail(new Ajv({ extendRefs: 'fail' }));
 
-        should.throw(function() {
-          var schema = {
-            "definitions": {
-              "int": { "type": "integer" }
-            },
-            "$ref": "#/definitions/int",
-            "minimum": 10
-          };
-          ajv.compile(schema);
-        });
+        function testFail(ajv) {
+          should.throw(function() {
+            var schema = {
+              "definitions": {
+                "int": { "type": "integer" }
+              },
+              "$ref": "#/definitions/int",
+              "minimum": 10
+            };
+            ajv.compile(schema);
+          });
 
-        should.not.throw(function() {
-          var schema = {
-            "definitions": {
-              "int": { "type": "integer" }
-            },
-            "allOf": [
-              { "$ref": "#/definitions/int" },
-              { "minimum": 10 }
-            ]
-          };
-          ajv.compile(schema);
-        });
+          should.not.throw(function() {
+            var schema = {
+              "definitions": {
+                "int": { "type": "integer" }
+              },
+              "allOf": [
+                { "$ref": "#/definitions/int" },
+                { "minimum": 10 }
+              ]
+            };
+            ajv.compile(schema);
+          });
+        }
       });
     });
 
