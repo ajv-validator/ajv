@@ -98,7 +98,7 @@
   {{? it.opts.extendRefs == 'ignore' }}
     {{
       $refKeywords = false;
-      console.log('$ref: keywords ignored in schema at path "' + it.errSchemaPath + '"');
+      console.warn('$ref: keywords ignored in schema at path "' + it.errSchemaPath + '"');
     }}
   {{?? it.opts.extendRefs !== true }}
     {{ throw new Error('$ref: validation keywords used in schema at path "' + it.errSchemaPath + '" (see option extendRefs)'); }}

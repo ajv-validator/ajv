@@ -820,9 +820,9 @@ describe('Ajv Options', function () {
     function testWarning(ajv, msgPattern) {
       var oldConsole;
       try {
-        oldConsole = console.log;
+        oldConsole = console.warn;
         var consoleMsg;
-        console.log = function() {
+        console.warn = function() {
           consoleMsg = Array.prototype.join.call(arguments, ' ');
         };
 
@@ -838,7 +838,7 @@ describe('Ajv Options', function () {
         if (msgPattern) consoleMsg .should.match(msgPattern);
         else should.not.exist(consoleMsg);
       } finally {
-        console.log = oldConsole;
+        console.warn = oldConsole;
       }
     }
   });

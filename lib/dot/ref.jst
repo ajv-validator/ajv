@@ -27,11 +27,11 @@
   {{? $refVal === undefined }}
     {{ var $message = 'can\'t resolve reference ' + $schema + ' from id ' + it.baseId; }}
     {{? it.opts.missingRefs == 'fail' }}
-      {{ console.log($message); }}
+      {{ console.error($message); }}
       {{# def.error:'$ref' }}
       {{? $breakOnError }} if (false) { {{?}}
     {{?? it.opts.missingRefs == 'ignore' }}
-      {{ console.log($message); }}
+      {{ console.warn($message); }}
       {{? $breakOnError }} if (true) { {{?}}
     {{??}}
       {{
