@@ -940,7 +940,7 @@ Defaults:
   schemas:          {},
   // referenced schema options:
   missingRefs:      true,
-  extendRefs:       true,
+  extendRefs:       'fail',
   loadSchema:       undefined, // function(uri, cb) { /* ... */ cb(err, schema); },
   // options to modify validated data:
   removeAdditional: false,
@@ -959,7 +959,7 @@ Defaults:
   ownProperties:    false,
   multipleOfPrecision: false,
   errorDataPath:    'object',
-  sourceCode:       true,
+  sourceCode:       false,
   messages:         true,
   beautify:         false,
   cache:            new Cache
