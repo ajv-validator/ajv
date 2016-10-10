@@ -1109,6 +1109,7 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - [jsonscript-js](https://github.com/JSONScript/jsonscript-js) - the interpreter for [JSONScript](http://www.jsonscript.org) - scripted processing of existing endpoints and services
 - [osprey-method-handler](https://github.com/mulesoft-labs/osprey-method-handler) - Express middleware for validating requests and responses based on a RAML method object, used in [osprey](https://github.com/mulesoft/osprey) - validating API proxy generated from a RAML definition
 - [jsoneditor](https://github.com/josdejong/jsoneditor) - A web-based tool to view, edit, format, and validate JSON http://jsoneditoronline.org
+- [JSON Schema Lint](https://github.com/nickcmaynard/jsonschemalint) - A web tool to validate JSON/YAML document against a single JSON-schema http://jsonschemalint.com
 - [objection](https://github.com/vincit/objection.js) - SQL-friendly ORM for node.js
 - [table](https://github.com/gajus/table) - formats data into a string table
 - [ripple-lib](https://github.com/ripple/ripple-lib) - A JavaScript API for interacting with [Ripple](https://ripple.com) in Node.js and the browser
