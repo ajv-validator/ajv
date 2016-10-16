@@ -319,6 +319,11 @@ describe('async schemas, formats and keywords', function() {
       };
 
       ajv.addSchema(schemaWord);
+      ajv.addFormat('english_word', {
+        async: true,
+        validate: checkWordOnServer
+      });
+
       shouldThrowFunc('async schema referenced by sync schema', function() {
         ajv.compile(schema);
       });

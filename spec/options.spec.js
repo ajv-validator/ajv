@@ -872,8 +872,9 @@ describe('Ajv Options', function () {
 
 
   describe('unknownFormats', function() {
-    describe('= true (will be default in 5.0.0)', function() {
+    describe('= true (default)', function() {
       it('should fail schema compilation if unknown format is used', function() {
+        test(new Ajv);
         test(new Ajv({unknownFormats: true}));
 
         function test(ajv) {
@@ -884,6 +885,7 @@ describe('Ajv Options', function () {
       });
 
       it('should fail validation if unknown format is used via $data', function() {
+        test(new Ajv({v5: true}));
         test(new Ajv({v5: true, unknownFormats: true}));
 
         function test(ajv) {
@@ -904,9 +906,8 @@ describe('Ajv Options', function () {
       });
     });
 
-    describe('= "ignore (default)"', function() {
+    describe('= "ignore (default before 5.0.0)"', function() {
       it('should pass schema compilation and be valid if unknown format is used', function() {
-        test(new Ajv);
         test(new Ajv({unknownFormats: 'ignore'}));
 
         function test(ajv) {
@@ -916,7 +917,6 @@ describe('Ajv Options', function () {
       });
 
       it('should be valid if unknown format is used via $data', function() {
-        test(new Ajv({v5: true}));
         test(new Ajv({v5: true, unknownFormats: 'ignore'}));
 
         function test(ajv) {
