@@ -6,7 +6,7 @@ var jsonSchemaTest = require('json-schema-test')
   , suite = require('./brower_test_suite')
   , after = require('./after_test');
 
-var instances = getAjvInstances(options, { v5: true });
+var instances = getAjvInstances(options, { v5: true, unknownFormats: ['allowedUnknown'] });
 
 
 jsonSchemaTest(instances, {

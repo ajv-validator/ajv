@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "4.7.7",
+  "version": "4.8.0",
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
   "webpack": "dist/ajv.bundle.js",
@@ -85,7 +85,7 @@
     "karma-phantomjs-launcher": "^1.0.0",
     "karma-sauce-launcher": "^0.3.0",
     "mocha": "^3.0.0",
-    "nodent": "^2.5.3",
+    "nodent": "^3.0.2",
     "nyc": "^8.3.0",
     "phantomjs-prebuilt": "^2.1.4",
     "pre-commit": "^1.1.1",
@@ -93,6 +93,6 @@
     "require-globify": "^1.3.0",
     "typescript": "^2.0.3",
     "uglify-js": "^2.6.1",
-    "watch": "^0.19.1"
+    "watch": "^1.0.0"
   }
 }

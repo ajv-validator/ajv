@@ -72,7 +72,7 @@
                                 "server": {
                                     "type": "string",
                                     "anyOf": [
-                                        { "format": "host-name" },
+                                        { "format": "hostname" },
                                         { "format": "ipv4" },
                                         { "format": "ipv6" }
                                     ]

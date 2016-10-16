@@ -204,14 +204,14 @@
     ]
   },
   {
-    "description": "formatMaximum is valid with unknown format",
+    "description": "formatMaximum is valid with whitelisted unknown format",
     "schema": {
-      "format": "unknown",
+      "format": "allowedUnknown",
       "formatMaximum": "2015"
     },
     "tests": [
       {
-        "description": "always valid",
+        "description": "valid string",
         "data": "2016",
         "valid": true
       }
