@@ -49,8 +49,25 @@
   }
   if ({{# def.$dataCheckFormat }}) {
 {{??}}
-  {{ var $format = it.formats[$schema]; }}
-  {{? !$format }}{{# def.skipFormat }}{{?}}
+  {{
+    var $format = it.formats[$schema]
+      , $unknownFormats = it.opts.unknownFormats
+      , $allowUnknown = Array.isArray($unknownFormats);
+  }}
+  {{? !$format }}
+    {{? $unknownFormats === true || ($allowUnknown && $unknownFormats.indexOf($schema) == -1) }}
+      {{ throw new Error('unknown format "' + $schema + '" is used in schema at path "' + it.errSchemaPath + '"'); }}
+    {{??}}
+      {{
+        if (!$allowUnknown) {
+          console.warn('unknown format "' + $schema + '" ignored in schema at path "' + it.errSchemaPath + '"');
+          if ($unknownFormats !== 'ignore')
+            console.warn('In the next major version it will throw exception. See option unknownFormats for more information');
+        }
+      }}
+      {{# def.skipFormat }}
+    {{?}}
+  {{?}}
   {{
     var $isObject = typeof $format == 'object'
                     && !($format instanceof RegExp)

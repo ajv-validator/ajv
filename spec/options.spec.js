@@ -870,7 +870,7 @@ describe('Ajv Options', function () {
 
 
   describe('unknownFormats', function() {
-    describe.skip('= true (will be default in 5.0.0)', function() {
+    describe('= true (will be default in 5.0.0)', function() {
       it('should fail schema compilation if unknown format is used', function() {
         test(new Ajv({unknownFormats: true}));
 
@@ -881,7 +881,7 @@ describe('Ajv Options', function () {
         }
       });
 
-      it('should throw during validation if unknown format is used via $data', function() {
+      it.skip('should throw during validation if unknown format is used via $data', function() {
         test(new Ajv({v5: true, unknownFormats: true}));
 
         function test(ajv) {
@@ -935,7 +935,7 @@ describe('Ajv Options', function () {
       });
     });
 
-    describe.skip('= [String]', function() {
+    describe('= [String]', function() {
       it('should pass schema compilation and be valid if whitelisted unknown format is used', function() {
         test(new Ajv({unknownFormats: ['allowed']}));
 
@@ -949,7 +949,7 @@ describe('Ajv Options', function () {
         }
       });
 
-      it('should be valid if whitelisted unknown format is used via $data', function() {
+      it.skip('should be valid if whitelisted unknown format is used via $data', function() {
         test(new Ajv({v5: true, unknownFormats: ['allowed']}));
 
         function test(ajv) {
