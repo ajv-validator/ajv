@@ -980,8 +980,8 @@ Defaults:
 - _format_: formats validation mode ('fast' by default). Pass 'full' for more correct and slow validation or `false` not to validate formats at all. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
 - _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
 - _unknownFormats_: handling of unknown formats. Option values:
-  - `true` (will be default in 5.0.0) - if the unknown format is encountered the exception is thrown during schema compilation.
-  - `[String]` - an array of unknown format names that will be ignored. This option can be used to allow usage of third party schemas with format(s) for which you don't have definitions, but still fail if some other unknown format is used.
+  - `true` (will be default in 5.0.0) - if the unknown format is encountered the exception is thrown during schema compilation. If `format` keyword value is [v5 $data reference](#data-reference) and it is unknown the validation will fail.
+  - `[String]` - an array of unknown format names that will be ignored. This option can be used to allow usage of third party schemas with format(s) for which you don't have definitions, but still fail if some other unknown format is used. If `format` keyword value is [v5 $data reference](#data-reference) and it is not in this array the validation will fail.
   - `"ignore"` (default now) - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name. This behaviour is required by JSON-schema specification.
 - _schemas_: an array or object of schemas that will be added to the instance. If the order is important, pass array. In this case schemas must have IDs in them. Otherwise the object can be passed - `addSchema(value, key)` will be called for each schema in this object.
 
