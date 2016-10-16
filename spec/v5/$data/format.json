@@ -49,12 +49,20 @@
         "valid": false
       },
       {
-        "description": "unknown format is valid",
+        "description": "whitelisted unknown format is valid",
         "data": {
           "str": "any value",
           "strFormat": "allowedUnknown"
         },
         "valid": true
+      },
+      {
+        "description": "not whitelisted unknown format is invalid",
+        "data": {
+          "str": "any value",
+          "strFormat": "completelyUnknown"
+        },
+        "valid": false
       },
       {
         "description": "valid if the format is undefined",
