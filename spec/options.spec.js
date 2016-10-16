@@ -867,4 +867,112 @@ describe('Ajv Options', function () {
       });
     });
   });
+
+
+  describe('unknownFormats', function() {
+    describe.skip('= true (will be default in 5.0.0)', function() {
+      it('should fail schema compilation if unknown format is used', function() {
+        test(new Ajv({unknownFormats: true}));
+
+        function test(ajv) {
+          should.throw(function() {
+            ajv.compile({ format: 'unknown' });
+          });
+        }
+      });
+
+      it('should throw during validation if unknown format is used via $data', function() {
+        test(new Ajv({v5: true, unknownFormats: true}));
+
+        function test(ajv) {
+          var validate = ajv.compile({
+            properties: {
+              foo: { format: { $data: '1/bar' } },
+              bar: { type: 'string' }
+            }
+          });
+
+          validate({foo: 1, bar: 'unknown'}) .should.equal(true);
+          validate({foo: '2016-10-16', bar: 'date'}) .should.equal(true);
+          validate({foo: '20161016', bar: 'date'}) .should.equal(false);
+          validate({foo: '20161016'}) .should.equal(true);
+
+          should.throw(function() {
+            validate({foo: '2016-10-16', bar: 'unknown'});
+          });
+        }
+      });
+    });
+
+    describe('= "ignore (default)"', function() {
+      it('should pass schema compilation and be valid if unknown format is used', function() {
+        test(new Ajv);
+        test(new Ajv({unknownFormats: 'ignore'}));
+
+        function test(ajv) {
+          var validate = ajv.compile({ format: 'unknown' });
+          validate('anything') .should.equal(true);
+        }
+      });
+
+      it('should be valid if unknown format is used via $data', function() {
+        test(new Ajv({v5: true, unknownFormats: true}));
+
+        function test(ajv) {
+          var validate = ajv.compile({
+            properties: {
+              foo: { format: { $data: '1/bar' } },
+              bar: { type: 'string' }
+            }
+          });
+
+          validate({foo: 1, bar: 'unknown'}) .should.equal(true);
+          validate({foo: '2016-10-16', bar: 'date'}) .should.equal(true);
+          validate({foo: '20161016', bar: 'date'}) .should.equal(false);
+          validate({foo: '20161016'}) .should.equal(true);
+          validate({foo: '2016-10-16', bar: 'unknown'}) .should.equal(true);
+        }
+      });
+    });
+
+    describe.skip('= [String]', function() {
+      it('should pass schema compilation and be valid if whitelisted unknown format is used', function() {
+        test(new Ajv({unknownFormats: ['allowed']}));
+
+        function test(ajv) {
+          var validate = ajv.compile({ format: 'allowed' });
+          validate('anything') .should.equal(true);
+
+          should.throw(function() {
+            ajv.compile({ format: 'unknown' });
+          });
+        }
+      });
+
+      it('should be valid if whitelisted unknown format is used via $data', function() {
+        test(new Ajv({v5: true, unknownFormats: ['allowed']}));
+
+        function test(ajv) {
+          var validate = ajv.compile({
+            properties: {
+              foo: { format: { $data: '1/bar' } },
+              bar: { type: 'string' }
+            }
+          });
+
+          validate({foo: 1, bar: 'allowed'}) .should.equal(true);
+          validate({foo: 1, bar: 'unknown'}) .should.equal(true);
+          validate({foo: '2016-10-16', bar: 'date'}) .should.equal(true);
+          validate({foo: '20161016', bar: 'date'}) .should.equal(false);
+          validate({foo: '20161016'}) .should.equal(true);
+
+          validate({foo: '2016-10-16', bar: 'allowed'}) .should.equal(true);
+
+          should.throw(function() {
+            validate({foo: '2016-10-16', bar: 'unknown'});
+          });
+        }
+      });
+    });
+  });
 });
