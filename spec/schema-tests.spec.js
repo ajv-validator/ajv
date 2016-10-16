@@ -6,7 +6,7 @@ var jsonSchemaTest = require('json-schema-test')
   , suite = require('./brower_test_suite')
   , after = require('./after_test');
 
-var instances = getAjvInstances(options);
+var instances = getAjvInstances(options, {unknownFormats: ['allowedUnknown']});
 
 var remoteRefs = {
   'http://localhost:1234/integer.json': require('./JSON-Schema-Test-Suite/remotes/integer.json'),

@@ -1,12 +1,12 @@
 [
   {
-    "description": "unknown format is always valid",
+    "description": "whitelisted unknown format is valid",
     "schema": {
-      "format": "unknownformat"
+      "format": "allowedUnknown"
     },
     "tests": [
       {
-        "description": "anything is valid",
+        "description": "any string is valid",
         "data": "any value",
         "valid": true
       }

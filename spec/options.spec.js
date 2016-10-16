@@ -881,7 +881,7 @@ describe('Ajv Options', function () {
         }
       });
 
-      it.skip('should throw during validation if unknown format is used via $data', function() {
+      it.skip('should fail validation if unknown format is used via $data', function() {
         test(new Ajv({v5: true, unknownFormats: true}));
 
         function test(ajv) {
@@ -897,9 +897,7 @@ describe('Ajv Options', function () {
           validate({foo: '20161016', bar: 'date'}) .should.equal(false);
           validate({foo: '20161016'}) .should.equal(true);
 
-          should.throw(function() {
-            validate({foo: '2016-10-16', bar: 'unknown'});
-          });
+          validate({foo: '2016-10-16', bar: 'unknown'}) .should.equal(false);
         }
       });
     });
@@ -967,10 +965,7 @@ describe('Ajv Options', function () {
           validate({foo: '20161016'}) .should.equal(true);
 
           validate({foo: '2016-10-16', bar: 'allowed'}) .should.equal(true);
-
-          should.throw(function() {
-            validate({foo: '2016-10-16', bar: 'unknown'});
-          });
+          validate({foo: '2016-10-16', bar: 'unknown'}) .should.equal(false);
         }
       });
     });
