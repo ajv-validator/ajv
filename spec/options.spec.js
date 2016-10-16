@@ -881,7 +881,7 @@ describe('Ajv Options', function () {
         }
       });
 
-      it.skip('should fail validation if unknown format is used via $data', function() {
+      it('should fail validation if unknown format is used via $data', function() {
         test(new Ajv({v5: true, unknownFormats: true}));
 
         function test(ajv) {
@@ -914,7 +914,8 @@ describe('Ajv Options', function () {
       });
 
       it('should be valid if unknown format is used via $data', function() {
-        test(new Ajv({v5: true, unknownFormats: true}));
+        test(new Ajv({v5: true}));
+        test(new Ajv({v5: true, unknownFormats: 'ignore'}));
 
         function test(ajv) {
           var validate = ajv.compile({
@@ -947,7 +948,7 @@ describe('Ajv Options', function () {
         }
       });
 
-      it.skip('should be valid if whitelisted unknown format is used via $data', function() {
+      it('should be valid if whitelisted unknown format is used via $data', function() {
         test(new Ajv({v5: true, unknownFormats: ['allowed']}));
 
         function test(ajv) {

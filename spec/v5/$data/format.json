@@ -52,7 +52,7 @@
         "description": "unknown format is valid",
         "data": {
           "str": "any value",
-          "strFormat": "unknownformat"
+          "strFormat": "allowedUnknown"
         },
         "valid": true
       },
