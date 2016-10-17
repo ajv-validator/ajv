@@ -1,4 +1,5 @@
 'use strict';
+/* global Promise */
 
 var Ajv = require('./ajv')
   , should = require('./chai').should();
@@ -292,8 +293,8 @@ describe('compileAsync method', function() {
         done();
       });
 
-      function badLoadSchema(ref, callback) {
-        setTimeout(function() { callback(new Error('cant load')); });
+      function badLoadSchema() {
+        return Promise.reject(new Error('cant load'));
       }
     });
 
@@ -313,11 +314,10 @@ describe('compileAsync method', function() {
   });
 
 
-  function loadSchema(uri, callback) {
+  function loadSchema(uri) {
     loadCallCount++;
-    setTimeout(function() {
-      if (SCHEMAS[uri]) return callback(null, SCHEMAS[uri]);
-      callback(new Error('404'));
-    }, 10);
+    return SCHEMAS[uri]
+            ? Promise.resolve(SCHEMAS[uri])
+            : Promise.reject(new Error('404'));
   }
 });
