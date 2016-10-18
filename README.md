@@ -23,7 +23,7 @@ The fastest JSON Schema validator for node.js and browser. Supports [v5 proposal
   - [$data reference](#data-reference)
   - NEW: [$merge and $patch keywords](#merge-and-patch-keywords)
   - [Defining custom keywords](#defining-custom-keywords)
-  - [Asynchronous schema compilation](#asynchronous-compilation)
+  - [Asynchronous schema compilation](#asynchronous-schema-compilation)
   - [Asynchronous validation](#asynchronous-validation)
 - Modifying data during validation
   - [Filtering data](#filtering-data)
@@ -65,7 +65,7 @@ Performace of different validators by [json-schema-benchmark](https://github.com
   - [formats](#formats) defined by JSON Schema draft 4 standard and custom formats (can be turned off)
   - [validates schemas against meta-schema](#api-validateschema)
 - supports [browsers](#using-in-browser) and nodejs 0.10-6.x
-- [asynchronous loading](#asynchronous-compilation) of referenced schemas during compilation
+- [asynchronous loading](#asynchronous-schema-compilation) of referenced schemas during compilation
 - "All errors" validation mode with [option allErrors](#options)
 - [error messages with parameters](#validation-errors) describing error reasons to allow creating custom error messages
 - i18n error messages support with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package
@@ -374,27 +374,26 @@ Several custom keywords (typeof, instanceof, range and propertyNames) are define
 See [Defining custom keywords](https://github.com/epoberezkin/ajv/blob/master/CUSTOM.md) for more details.
 
 
-## Asynchronous compilation
+## Asynchronous schema compilation
 
-During asynchronous compilation remote references are loaded using supplied function. See `compileAsync` method and `loadSchema` [option](#options).
+During asynchronous compilation remote references are loaded using supplied function. See `compileAsync` [method](#api-compileAsync) and `loadSchema` [option](#options).
 
 Example:
 
 ```javascript
 var ajv = new Ajv({ loadSchema: loadSchema });
 
-ajv.compileAsync(schema, function (err, validate) {
-	if (err) return;
-	var valid = validate(data);
+ajv.compileAsync(schema).then(function (validate) {
+  var valid = validate(data);
+  // ...
 });
 
-function loadSchema(uri, callback) {
-	request.json(uri, function(err, res, body) {
-		if (err || res.statusCode >= 400)
-			callback(err || new Error('Loading error: ' + res.statusCode));
-		else
-			callback(null, body);
-	});
+function loadSchema(uri) {
+  return request.json(uri).then(function (res) {
+    if (res.statusCode >= 400)
+      throw new Error('Loading error: ' + res.statusCode);
+    return res.body;
+  });
 }
 ```
 
@@ -790,17 +789,17 @@ Validating function returns boolean and has properties `errors` with the errors 
 Unless the option `validateSchema` is false, the schema will be validated against meta-schema and if schema is invalid the error will be thrown. See [options](#options).
 
 
-##### .compileAsync(Object schema, Function callback)
+##### <a name="api-compileAsync"></a>.compileAsync(Object schema [, Function callback]) -&gt; Promise
 
-Asyncronous version of `compile` method that loads missing remote schemas using asynchronous function in `options.loadSchema`. Callback will always be called with 2 parameters: error (or null) and validating function. Error will be not null in the following cases:
+Asyncronous version of `compile` method that loads missing remote schemas using asynchronous function in `options.loadSchema`. This function returns a Promise that resolves to a validation function. An optional callback passed to `compileAsync` will be called with 2 parameters: error (or null) and validating function. The returned promise will reject (and callback if passed will be called with an error) when:
 
-- missing schema can't be loaded (`loadSchema` calls callback with error).
+- missing schema can't be loaded (`loadSchema` returns the Promise that rejects).
 - the schema containing missing reference is loaded, but the reference cannot be resolved.
 - schema (or some referenced schema) is invalid.
 
 The function compiles schema and loads the first missing schema multiple times, until all missing schemas are loaded.
 
-See example in [Asynchronous compilation](#asynchronous-compilation).
+See example in [Asynchronous compilation](#asynchronous-schema-compilation).
 
 
 ##### .validate(Object schema|String key|String ref, data) -&gt; Boolean
@@ -944,7 +943,7 @@ Defaults:
   // referenced schema options:
   missingRefs:      true,
   extendRefs:       'fail',
-  loadSchema:       undefined, // function(uri, cb) { /* ... */ cb(err, schema); },
+  loadSchema:       undefined, // function(uri) {}, it should return Promise
   // options to modify validated data:
   removeAdditional: false,
   useDefaults:      false,
@@ -996,7 +995,7 @@ Defaults:
   - `"fail"` (default) - if other validation keywords are used together with `$ref` the exception will be thrown when the schema is compiled.
   - `"ignore"` - when `$ref` is used other keywords are ignored (as per [JSON Reference](https://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03#section-3) standard). A warning will be logged during the schema compilation.
   - `true` - validate all keywords in the schemas with `$ref` (the default behaviour in versions before 5.0.0).
-- _loadSchema_: asynchronous function that will be used to load remote schemas when the method `compileAsync` is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept 2 parameters: remote schema uri and node-style callback. See example in [Asynchronous compilation](#asynchronous-compilation).
+- _loadSchema_: asynchronous function that will be used to load remote schemas when `compileAsync` [method](#api-compileAsync) is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept remote schema uri as a parameter and return a Promise that resolves to a schema. See example in [Asynchronous compilation](#asynchronous-schema-compilation).
 
 
 ##### Options to modify validated data
