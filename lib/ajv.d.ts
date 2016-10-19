@@ -108,6 +108,7 @@ declare namespace ajv {
     unicode?: boolean;
     format?: string;
     formats?: Object;
+    unknownFormats?: boolean | string | Array<string>;
     schemas?: Array<Object> | Object;
     ownProperties?: boolean;
     missingRefs?: boolean | string;
