@@ -24,9 +24,10 @@ declare namespace ajv {
     * `loadSchema` option should be a function that accepts schema uri and node-style callback.
     * @this  Ajv
     * @param {Object}   schema schema object
-    * @param {Function} callback node-style callback, it is always called with 2 parameters: error (or null) and validating function.
+    * @param {Function} callback optional node-style callback, it is always called with 2 parameters: error (or null) and validating function.
+    * @return {Thenable<ValidateFunction>} validating function
     */
-    compileAsync(schema: Object, callback: (err: Error, validate: ValidateFunction) => any): void;
+    compileAsync(schema: Object, callback?: (err: Error, validate: ValidateFunction) => any): Thenable<ValidateFunction>;
     /**
     * Adds schema to the instance.
     * @param {Object|Array} schema schema or array of schemas. If array is passed, `key` and other parameters will be ignored.
@@ -111,7 +112,7 @@ declare namespace ajv {
     schemas?: Array<Object> | Object;
     ownProperties?: boolean;
     missingRefs?: boolean | string;
-    loadSchema?: (uri: string, cb: (err: Error, schema: Object) => any) => any;
+    loadSchema?: (uri: string) => Thenable<Object>;
     removeAdditional?: boolean | string;
     useDefaults?: boolean | string;
     coerceTypes?: boolean | string;
