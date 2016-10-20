@@ -86,6 +86,7 @@ If it is a general issue related to using the standard keywords included in JSON
 #### <a name="usage"></a>Ajv usage questions
 
 The best place to ask a question about using Ajv is [Gitter chat](https://gitter.im/ajv-validator/ajv).
+
 If the question is advanced, it can be submitted to [Stack Overflow](http://stackoverflow.com/questions/ask?tags=jsonschema,ajv).
 
 
