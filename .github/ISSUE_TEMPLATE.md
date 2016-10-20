@@ -4,7 +4,7 @@ Please provide all info and reduce your schema and data to the smallest possible
 
 This template is for bug reports. For other issues please use:
 - a new feature/improvement: http://epoberezkin.github.io/ajv/contribute.html#changes
-- compatibility issues: http://epoberezkin.github.io/ajv/contribute.html#compatibility
+- browser/compatibility issues: http://epoberezkin.github.io/ajv/contribute.html#compatibility
 - JSON-Schema standard: http://epoberezkin.github.io/ajv/contribute.html#json-schema
 - Ajv usage questions: https://gitter.im/ajv-validator/ajv
 -->

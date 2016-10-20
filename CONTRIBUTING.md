@@ -5,7 +5,7 @@ Thank you for your help making Ajv better!
 - [Submitting issues](#submitting-issues)
   - [Bug reports](#bug-reports)
   - [Change proposals](#changes)
-  - [Compatibility issues](#compatibility)
+  - [Browser and compatibility issues](#compatibility)
   - [JSON schema standard](#json-schema)
   - [Ajv usage questions](#usage)
 - [Contibuting code](#contibuting-code)
@@ -55,7 +55,7 @@ If you’re requesting a change, it would be helpful to include this as well:
 Please include as much details as possible.
 
 
-#### <a name="compatibility"></a>Compatibility issues
+#### <a name="compatibility"></a>Browser and compatibility issues
 
 [Create an issue](https://github.com/epoberezkin/ajv/issues/new?body=**The version of Ajv you are using**%0A%0A**The environment you have the problem with.**%0A%0A**Your code (please make it as small as possible to reproduce the issue).**%0A%0A**If your issue is in the browser, please list the other packages loaded in the page in the order they are loaded. Please check if the issue gets resolved (or results change) if you move Ajv bundle closer to the top.**%0A%0A**Results in node.js v4.**%0A%0A**Results and error messages in your platform.**%0A%0A) to report a compatibility problem that only happens in a particular environemnt (when your code works correctly in node.js v4 in linux systems but fails in some other environment).
 
@@ -75,12 +75,13 @@ Ajv implements JSON schema standard draft 4 and the proposed extensions for the 
 
 If the issue is related to using v5 extensions please submit it as a [bug report](https://github.com/epoberezkin/ajv/issues/new).
 
-If it is a general issue related to using the standard keywords included in JSON Schema or implementing some advanced validation logic please ask the question on [Stack Overflow](http://stackoverflow.com/questions/ask?tags=jsonschema) (my account is [esp](http://stackoverflow.com/users/1816503/esp)) or submitting the question to [JSON-Schema.org](https://github.com/json-schema-org/json-schema-spec/issues/new). Please mention @epoberezkin.
+If it is a general issue related to using the standard keywords included in JSON Schema or implementing some advanced validation logic please ask the question on [Stack Overflow](http://stackoverflow.com/questions/ask?tags=jsonschema,ajv) (my account is [esp](http://stackoverflow.com/users/1816503/esp)) or submitting the question to [JSON-Schema.org](https://github.com/json-schema-org/json-schema-spec/issues/new). Please mention @epoberezkin.
 
 
 #### <a name="usage"></a>Ajv usage questions
 
 The best place to ask a question about using Ajv is [Gitter chat](https://gitter.im/ajv-validator/ajv).
+If the question is advanced, it can be submitted to [Stack Overflow](http://stackoverflow.com/questions/ask?tags=jsonschema,ajv).
 
 
 ## Contibuting code
