@@ -12,7 +12,6 @@
     ".tonic_example.js"
   ],
   "scripts": {
-    "jshint": "jshint lib/*.js lib/**/*.js --exclude lib/dotjs/**/*",
     "eslint": "if-node-version '>=4' eslint lib/*.js lib/compile/*.js spec",
     "test-spec": "mocha spec/*.spec.js -R spec",
     "test-fast": "AJV_FAST_TEST=true npm run test-spec",
@@ -26,7 +25,7 @@
     "bundle-beautify": "./scripts/bundle js-beautify",
     "build": "node scripts/compile-dots.js",
     "test-browser": "npm run bundle-all && scripts/prepare-tests && karma start --single-run --browsers PhantomJS",
-    "test": "npm run jshint && npm run eslint && npm run test-ts && npm run build && npm run test-cov && npm run test-browser",
+    "test": "npm run eslint && npm run test-ts && npm run build && npm run test-cov && npm run test-browser",
     "prepublish": "npm run build && npm run bundle-all",
     "watch": "watch 'npm run build' ./lib/dot"
   },
@@ -77,7 +76,6 @@
     "glob": "^7.0.0",
     "if-node-version": "^1.0.0",
     "js-beautify": "^1.5.6",
-    "jshint": "^2.8.0",
     "json-schema-test": "^1.1.1",
     "karma": "^1.0.0",
     "karma-chrome-launcher": "^2.0.0",
