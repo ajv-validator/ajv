@@ -83,7 +83,7 @@
     "karma-chrome-launcher": "^2.0.0",
     "karma-mocha": "^1.1.1",
     "karma-phantomjs-launcher": "^1.0.0",
-    "karma-sauce-launcher": "^0.3.0",
+    "karma-sauce-launcher": "^1.1.0",
     "mocha": "^3.0.0",
     "nodent": "^3.0.2",
     "nyc": "^8.3.0",
