@@ -46,6 +46,20 @@ describe('compileAsync method', function() {
         "invalid": { "type": "number" }
       },
       "required": "invalid"
+    },
+    "http://example.com/foobar.json": {
+      "id": "http://example.com/foobar.json",
+      "$schema": "http://example.com/foobar_meta.json",
+      "myFooBar": "foo"
+    },
+    "http://example.com/foobar_meta.json": {
+      "id": "http://example.com/foobar_meta.json",
+      "type": "object",
+      "properties": {
+        "myFooBar": {
+          "enum": ["foo", "bar"]
+        }
+      }
     }
   };
 
@@ -159,6 +173,26 @@ describe('compileAsync method', function() {
       validate .should.be.a('function');
       validate({ a: 'foo' }) .should.equal(true);
       validate({ a: 42 }) .should.equal(false);
+    });
+  });
+
+
+  describe.skip('loading metaschemas (#334)', function() {
+    it('should load metaschema if not available', function() {
+      var schema = { "$ref": "http://example.com/foobar.json" };
+      ajv.addKeyword('myFooBar', {
+        type: 'string',
+        validate: function (sch, data) {
+          return sch == data;
+        }
+      });
+
+      return ajv.compileAsync(schema).then(function (validate) {
+        should.equal(loadCallCount, 2);
+        validate .should.be.a('function');
+        validate('foo') .should.equal(true);
+        validate('bar') .should.equal(false);
+      });
     });
   });
 
