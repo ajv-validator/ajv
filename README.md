@@ -789,7 +789,7 @@ Validating function returns boolean and has properties `errors` with the errors 
 Unless the option `validateSchema` is false, the schema will be validated against meta-schema and if schema is invalid the error will be thrown. See [options](#options).
 
 
-##### <a name="api-compileAsync"></a>.compileAsync(Object schema [, Function callback]) -&gt; Promise
+##### <a name="api-compileAsync"></a>.compileAsync(Object schema [, Boolean meta] [, Function callback]) -&gt; Promise
 
 Asyncronous version of `compile` method that loads missing remote schemas using asynchronous function in `options.loadSchema`. This function returns a Promise that resolves to a validation function. An optional callback passed to `compileAsync` will be called with 2 parameters: error (or null) and validating function. The returned promise will reject (and callback if passed will be called with an error) when:
 
@@ -797,7 +797,9 @@ Asyncronous version of `compile` method that loads missing remote schemas using 
 - the schema containing missing reference is loaded, but the reference cannot be resolved.
 - schema (or some referenced schema) is invalid.
 
-The function compiles schema and loads the first missing schema multiple times, until all missing schemas are loaded.
+The function compiles schema and loads the first missing schema (or meta-schema), until all missing schemas are loaded.
+
+You can asynchronously compile meta-schema by passing `true` as the second parameter.
 
 See example in [Asynchronous compilation](#asynchronous-schema-compilation).
 

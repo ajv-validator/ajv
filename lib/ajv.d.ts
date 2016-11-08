@@ -24,10 +24,11 @@ declare namespace ajv {
     * `loadSchema` option should be a function that accepts schema uri and node-style callback.
     * @this  Ajv
     * @param {Object}   schema schema object
+    * @param {Boolean}  meta optional true to compile meta-schema; this parameter can be skipped
     * @param {Function} callback optional node-style callback, it is always called with 2 parameters: error (or null) and validating function.
     * @return {Thenable<ValidateFunction>} validating function
     */
-    compileAsync(schema: Object, callback?: (err: Error, validate: ValidateFunction) => any): Thenable<ValidateFunction>;
+    compileAsync(schema: Object, meta?: Boolean, callback?: (err: Error, validate: ValidateFunction) => any): Thenable<ValidateFunction>;
     /**
     * Adds schema to the instance.
     * @param {Object|Array} schema schema or array of schemas. If array is passed, `key` and other parameters will be ignored.
