@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "eslint": "if-node-version '>=4' eslint lib/*.js lib/compile/*.js spec",
-    "test-spec": "mocha spec/*.spec.js -R spec",
+    "test-spec": "mocha spec/*.spec.js -R spec $(if-node-version 7 echo --harmony-async-await)",
     "test-fast": "AJV_FAST_TEST=true npm run test-spec",
     "test-debug": "mocha spec/*.spec.js --debug-brk -R spec",
     "test-cov": "nyc npm run test-spec",
