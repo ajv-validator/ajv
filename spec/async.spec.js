@@ -177,9 +177,16 @@ describe('compileAsync method', function() {
   });
 
 
-  describe.skip('loading metaschemas (#334)', function() {
+  describe('loading metaschemas (#334)', function() {
     it('should load metaschema if not available', function() {
-      var schema = { "$ref": "http://example.com/foobar.json" };
+      return test(SCHEMAS['http://example.com/foobar.json'], 1);
+    });
+
+    it('should load metaschema of referenced schema if not available', function() {
+      return test({ "$ref": "http://example.com/foobar.json" }, 2);
+    });
+
+    function test(schema, expectedLoadCallCount) {
       ajv.addKeyword('myFooBar', {
         type: 'string',
         validate: function (sch, data) {
@@ -188,12 +195,12 @@ describe('compileAsync method', function() {
       });
 
       return ajv.compileAsync(schema).then(function (validate) {
-        should.equal(loadCallCount, 2);
+        should.equal(loadCallCount, expectedLoadCallCount);
         validate .should.be.a('function');
         validate('foo') .should.equal(true);
         validate('bar') .should.equal(false);
       });
-    });
+    }
   });
 
 
@@ -237,13 +244,14 @@ describe('compileAsync method', function() {
       }
     };
 
-    return Promise.all[
+    return Promise.all([
       ajv.compileAsync(schema).then(spec),
       ajv.compileAsync(schema).then(spec),
       ajv.compileAsync(schema).then(spec)
-    ];
+    ]);
 
     function spec(validate) {
+      should.equal(loadCallCount, 2);
       validate .should.be.a('function');
       validate({ a: { b: 2 } }) .should.equal(true);
       validate({ a: { b: 1 } }) .should.equal(false);
