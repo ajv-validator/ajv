@@ -411,13 +411,17 @@ If your schema uses asynchronous formats/keywords or refers to some schema that 
 
 __Please note__: all asynchronous subschemas that are referenced from the current or other schemas should have `"$async": true` keyword as well, otherwise the schema compilation will fail.
 
-Validation function for an asynchronous custom format/keyword should return a promise that resolves to `true` or `false` (or rejects with `new Ajv.ValidationError(errors)` if you want to return custom errors from the keyword function). Ajv compiles asynchronous schemas to either [generator function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*) (default) that can be optionally transpiled with [regenerator](https://github.com/facebook/regenerator) or to [es7 async function](http://tc39.github.io/ecmascript-asyncawait/) that can be transpiled with [nodent](https://github.com/MatAtBread/nodent) or with regenerator as well. You can also supply any other transpiler as a function. See [Options](#options).
+Validation function for an asynchronous custom format/keyword should return a promise that resolves to `true` or `false` (or rejects with `new Ajv.ValidationError(errors)` if you want to return custom errors from the keyword function). Ajv compiles asynchronous schemas to either [es7 async functions](http://tc39.github.io/ecmascript-asyncawait/) (default) that can optionally be transpiled with [nodent](https://github.com/MatAtBread/nodent) or with [regenerator](https://github.com/facebook/regenerator) or to [generator functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*) that can be optionally transpiled with regenerator as well. You can also supply any other transpiler as a function. See [Options](#options).
 
 The compiled validation function has `$async: true` property (if the schema is asynchronous), so you can differentiate these functions if you are using both syncronous and asynchronous schemas.
 
 If you are using generators, the compiled validation function can be either wrapped with [co](https://github.com/tj/co) (default) or returned as generator function, that can be used directly, e.g. in [koa](http://koajs.com/) 1.0. `co` is a small library, it is included in Ajv (both as npm dependency and in the browser bundle).
 
-Generator functions are currently supported in Chrome, Firefox and node.js (0.11+); if you are using Ajv in other browsers or in older versions of node.js you should use one of available transpiling options. All provided async modes use global Promise class. If your platform does not have Promise you should use a polyfill that defines it.
+Async functions are currently supported in Chrome 55, Firefox 52, Node 7 (with --harmony-async-await) and MS Edge 13 (with flag).
+
+Generator functions are currently supported in Chrome, Firefox and node.js.
+
+If you are using Ajv in other browsers or in older versions of node.js you should use one of available transpiling options. All provided async modes use global Promise class. If your platform does not have Promise you should use a polyfill that defines it.
 
 Validation result will be a promise that resolves to `true` or rejects with an exception `Ajv.ValidationError` that has the array of validation errors in `errors` property.
 
@@ -428,9 +432,10 @@ Example:
 /**
  * without "async" and "transpile" options (or with option {async: true})
  * Ajv will choose the first supported/installed option in this order:
- * 1. native generator function wrapped with co
- * 2. es7 async functions transpiled with nodent
- * 3. es7 async functions transpiled with regenerator
+ * 1. native async function
+ * 2. native generator function wrapped with co
+ * 3. es7 async functions transpiled with nodent
+ * 4. es7 async functions transpiled with regenerator
  */
 
 var ajv = new Ajv;
@@ -524,12 +529,13 @@ See [Options](#options).
 
 |mode|transpile<br>speed*|run-time<br>speed*|bundle<br>size|
 |---|:-:|:-:|:-:|
+|es7 async<br>(native)|-|0.75|-|
 |generators<br>(native)|-|1.0|-|
 |es7.nodent|1.35|1.1|183Kb|
 |es7.regenerator|1.0|2.7|322Kb|
 |regenerator|1.0|3.2|322Kb|
 
-\* Relative performance in node v.4, smaller is better.
+\* Relative performance in node v.7, smaller is better.
 
 [nodent](https://github.com/MatAtBread/nodent) has several advantages:
 
@@ -1022,8 +1028,17 @@ Defaults:
 
 - _async_: determines how Ajv compiles asynchronous schemas (see [Asynchronous validation](#asynchronous-validation)) to functions. Option values:
   - `"*"` / `"co*"` - compile to generator function ("co*" - wrapped with `co.wrap`). If generators are not supported and you don't provide `transpile` option, the exception will be thrown when Ajv instance is created.
-  - `"es7"` - compile to es7 async function. Unless your platform supports them you need to provide `transpile` option. Currently only MS Edge 13 with flag supports es7 async functions according to [compatibility table](http://kangax.github.io/compat-table/es7/)).
-  - `true` - if transpile option is not passed Ajv will choose the first supported/installed async/transpile modes in this order: "co*" (native generator with co.wrap), "es7"/"nodent", "co*"/"regenerator" during the creation of the Ajv instance. If none of the options is available the exception will be thrown.
+  - `"es7"` - compile to es7 async function. Unless your platform supports them you need to provide `transpile` option. According to [compatibility table](http://kangax.github.io/compat-table/es7/)) async functions are supported by:
+    - Firefox 52,
+    - Chrome 55,
+    - Node.js 7 (with `--harmony-async-await`),
+    - MS Edge 13 (with flag).
+  - `true` - if transpile option is not passed Ajv will choose the first of supported/installed async/transpile modes in this order:
+    - "es7" (native async functions),
+    - "co*" (native generators with co.wrap),
+    - "es7"/"nodent",
+    - "co*"/"regenerator" during the creation of the Ajv instance.
+    If none of the options is available the exception will be thrown.
   - `undefined`- Ajv will choose the first available async mode in the same way as with `true` option but when the first asynchronous schema is compiled.
 - _transpile_: determines whether Ajv transpiles compiled asynchronous validation function. Option values:
   - `"nodent"` - transpile with [nodent](https://github.com/MatAtBread/nodent). If nodent is not installed, the exception will be thrown. nodent can only transpile es7 async functions; it will enforce this mode.
