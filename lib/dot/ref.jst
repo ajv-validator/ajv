@@ -25,7 +25,7 @@
 {{??}}
   {{ var $refVal = it.resolveRef(it.baseId, $schema, it.isRoot); }}
   {{? $refVal === undefined }}
-    {{ var $message = 'can\'t resolve reference ' + $schema + ' from id ' + it.baseId; }}
+    {{ var $message = it.MissingRefError.message(it.baseId, $schema); }}
     {{? it.opts.missingRefs == 'fail' }}
       {{ console.error($message); }}
       {{# def.error:'$ref' }}
@@ -34,12 +34,7 @@
       {{ console.warn($message); }}
       {{? $breakOnError }} if (true) { {{?}}
     {{??}}
-      {{
-        var $error = new Error($message);
-        $error.missingRef = it.resolve.url(it.baseId, $schema);
-        $error.missingSchema = it.resolve.normalizeId(it.resolve.fullPath($error.missingRef));
-        throw $error;
-      }}
+      {{ throw new it.MissingRefError(it.baseId, $schema, $message); }}
     {{?}}
   {{?? $refVal.inline }}
     {{# def.setupNextLevel }}
