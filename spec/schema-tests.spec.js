@@ -3,7 +3,7 @@
 var jsonSchemaTest = require('json-schema-test')
   , getAjvInstances = require('./ajv_instances')
   , options = require('./ajv_options')
-  , suite = require('./brower_test_suite')
+  , suite = require('./browser_test_suite')
   , after = require('./after_test');
 
 var instances = getAjvInstances(options, {unknownFormats: ['allowedUnknown']});
