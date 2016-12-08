@@ -1,6 +1,7 @@
-declare var ajv: { 
+declare var ajv: {
   (options?: ajv.Options): ajv.Ajv;
   new (options?: ajv.Options): ajv.Ajv;
+  ValidationError: ajv.ValidationErrorConstructor;
 }
 
 declare namespace ajv {
@@ -13,6 +14,14 @@ declare namespace ajv {
     * @return {Boolean} validation result. Errors from the last validation will be available in `ajv.errors` (and also in compiled schema: `schema.errors`).
     */
     validate(schemaKeyRef: Object | string, data: any): boolean;
+    /**
+    * Validate data using schema and throw a ValidationError if the data is not valid
+    * Schema will be compiled and cached (using serialized JSON as key. [json-stable-stringify](https://github.com/substack/json-stable-stringify) is used to serialize.
+    * @param  {String|Object} schemaKeyRef key, ref or schema object
+    * @param  {Any} data to be validated
+    * @throws ValidationError Has the `errors` property and the `errorsText` method
+    */
+    assert(schemaKeyRef: Object | string, data: any): void;
     /**
     * Create validating function for passed schema.
     * @param  {Object} schema schema object
@@ -79,7 +88,8 @@ declare namespace ajv {
     * @param  {Object} options optional options with properties `separator` and `dataVar`.
     * @return {String} human readable string with all errors descriptions
     */
-    errorsText(errors?: Array<ErrorObject>, options?: ErrorsTextOptions): string;
+    errorsText(errors: Array<ErrorObject>, options?: ErrorsTextOptions): string;
+    errorsText(options?: ErrorsTextOptions): string;
     errors?: Array<ErrorObject>;
   }
 
@@ -258,6 +268,39 @@ declare namespace ajv {
   }
 
   interface NoParams {}
+
+  interface ValidationErrorConstructor {
+    prototype: ValidationError;
+    new (errors: ErrorObject[]): ValidationError;
+  }
+
+  interface ValidationError extends Error {
+
+    /** "validation failed" */
+    message: string;
+
+    /** true */
+    avj: boolean;
+
+    /** true */
+    validation: boolean;
+
+    errors: ErrorObject[];
+
+    /**
+     * the data that was validated. Available if `assert()` was used
+     */
+    actual?: any;
+
+    /**
+    * Available if `assert()` was used.
+    * Convert array of error message objects to string
+    * @param  {Array<Object>} errors optional array of validation errors, if not passed errors from the instance are used.
+    * @param  {Object} options optional options with properties `separator` and `dataVar`.
+    * @return {String} human readable string with all errors descriptions
+    */
+    errorsText?: (options?: ErrorsTextOptions) => string;
+  }
 }
 
 export = ajv;

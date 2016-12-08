@@ -117,6 +117,45 @@ describe('Ajv', function () {
   });
 
 
+  describe('assert method', function () {
+
+    it('should compile schema and validate data against it', function() {
+      should.not.throw(function () { ajv.assert({ type: 'integer' }, 1); });
+      should.throw(function () { ajv.assert({ type: 'integer' }, '1'); });
+      should.not.throw(function () { ajv.assert({ type: 'string' }, 'a'); });
+      should.throw(function () { ajv.assert({ type: 'string' }, 1); });
+    });
+
+    it('should validate against previously compiled schema by id (also see addSchema)', function() {
+      should.not.throw(function () { ajv.assert({ id: '//e.com/int.json', type: 'integer' }, 1); });
+      should.not.throw(function () { ajv.assert('//e.com/int.json', 1); });
+      should.throw(function () { ajv.assert('//e.com/int.json', '1'); });
+
+      ajv.compile({ id: '//e.com/str.json', type: 'string' }).should.be.a('function');
+      should.not.throw(function () { ajv.assert('//e.com/str.json', 'a'); });
+      should.throw(function () { ajv.assert('//e.com/str.json', 1); });
+    });
+
+    it('should throw exception if no schema with ref', function() {
+      should.not.throw(function () { ajv.assert({ id: 'integer', type: 'integer' }, 1); });
+      should.not.throw(function () { ajv.assert('integer', 1); });
+      should.throw(function() { ajv.assert('string', 'foo'); });
+    });
+
+    it('should throw a ValidationError with the failure reason', function () {
+      try {
+        ajv.assert({ type: 'integer' }, '1');
+      } catch (error) {
+        error.should.be.instanceof(Ajv.ValidationError);
+        error.should.have.property('errors');
+        error.should.have.property('errorsText');
+        error.should.have.property('actual');
+        return;
+      }
+      throw new Error('no error thrown');
+    });
+  });
+
   describe('addSchema method', function() {
     it('should add and compile schema with key', function() {
       var res = ajv.addSchema({ type: 'integer' }, 'int');

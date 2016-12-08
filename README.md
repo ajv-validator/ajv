@@ -827,6 +827,15 @@ __Please note__: every time this method is called the errors are overwritten so 
 If the schema is asynchronous (has `$async` keyword on the top level) this method returns a Promise. See [Asynchronous validation](#asynchronous-validation).
 
 
+##### .assert(Object schema|String key|String ref, data)
+
+Just like `validate`, but throws a [`ValidationError`](#validation-errors) if the validation fails.
+
+The error object has the `errors` property and the `errorsText` method.
+
+This method does not support async validation.
+
+
 ##### .addSchema(Array&lt;Object&gt;|Object schema [, String key])
 
 Add schema(s) to validator instance. This method does not compile schemas (but it still validates them). Because of that dependencies can be added in any order and circular dependencies are supported. It also prevents unnecessary compilation of schemas that are containers for other schemas but not used as a whole.
