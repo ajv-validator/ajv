@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "4.9.2",
+  "version": "4.9.3",
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
   "webpack": "dist/ajv.bundle.js",
@@ -8,6 +8,7 @@
   "files": [
     "lib/",
     "dist/",
+    "scripts/",
     "LICENSE",
     ".tonic_example.js"
   ],
