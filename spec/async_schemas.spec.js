@@ -4,7 +4,7 @@ var jsonSchemaTest = require('json-schema-test')
   , Promise = require('./promise')
   , getAjvInstances = require('./ajv_async_instances')
   , Ajv = require('./ajv')
-  , suite = require('./brower_test_suite')
+  , suite = require('./browser_test_suite')
   , after = require('./after_test');
 
 

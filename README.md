@@ -5,9 +5,13 @@ The fastest JSON Schema validator for node.js and browser. Supports [v5 proposal
 
 [![Build Status](https://travis-ci.org/epoberezkin/ajv.svg?branch=master)](https://travis-ci.org/epoberezkin/ajv)
 [![npm version](https://badge.fury.io/js/ajv.svg)](https://www.npmjs.com/package/ajv)
+[![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![Code Climate](https://codeclimate.com/github/epoberezkin/ajv/badges/gpa.svg)](https://codeclimate.com/github/epoberezkin/ajv)
 [![Coverage Status](https://coveralls.io/repos/epoberezkin/ajv/badge.svg?branch=master&service=github)](https://coveralls.io/github/epoberezkin/ajv?branch=master)
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
+
+
+__Please note__: version [5.0.0](https://github.com/epoberezkin/ajv/releases/tag/5.0.0-beta.1) can be used with `npm install ajv@^5.0.0-beta`.
 
 
 ## Contents
@@ -86,6 +90,12 @@ Currently Ajv is the only validator that passes all the tests from [JSON Schema 
 
 ```
 npm install ajv
+```
+
+To install a stable beta version [5.0.0](https://github.com/epoberezkin/ajv/releases/tag/5.0.0-beta.1):
+
+```
+npm install ajv@^5.0.0-beta
 ```
 
 

@@ -6,16 +6,19 @@ var glob = require('glob')
   , doT = require('dot')
   , beautify = require('js-beautify').js_beautify;
 
+var defsRootPath = process.argv[2] || path.join(__dirname, '../lib');
+
 var defs = {};
-var defFiles = glob.sync('../lib/dot/**/*.def', { cwd: __dirname });
+var defFiles = glob.sync('./dot/**/*.def', { cwd: defsRootPath });
 defFiles.forEach(function (f) {
   var name = path.basename(f, '.def');
-  defs[name] = fs.readFileSync(path.join(__dirname, f));
+  defs[name] = fs.readFileSync(path.join(defsRootPath, f));
 });
 
-var files = glob.sync('../lib/dot/**/*.jst', { cwd: __dirname });
+var filesRootPath = process.argv[3] || path.join(__dirname, '../lib');
+var files = glob.sync('./dot/**/*.jst', { cwd: filesRootPath });
 
-var dotjsPath = path.join(__dirname, '../lib/dotjs');
+var dotjsPath = path.join(filesRootPath, './dotjs');
 try { fs.mkdirSync(dotjsPath); } catch(e) {}
 
 console.log('\n\nCompiling:');
@@ -29,7 +32,7 @@ var VARS = ['$errs', '$valid', '$lvl', '$data', '$dataLvl',
 files.forEach(function (f) {
   var keyword = path.basename(f, '.jst');
   var targetPath = path.join(dotjsPath, keyword + '.js');
-  var template = fs.readFileSync(path.join(__dirname, f));
+  var template = fs.readFileSync(path.join(filesRootPath, f));
   var code = doT.compile(template, defs);
   code = code.toString()
              .replace(OUT_EMPTY_STRING, '')
