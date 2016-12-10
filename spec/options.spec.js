@@ -132,21 +132,6 @@ describe('Ajv Options', function () {
       validate(object).should.equal(false);
       validate.errors.should.have.length(1);
     });
-
-    it('should only validate against own properties when using patternRequired', function() {
-      var ajv = new Ajv({ v5: true, allErrors: true, ownProperties: true });
-      var validate = ajv.compile({
-        patternRequired: [ 'f.*o' ]
-      });
-
-      var baz = { foooo: false, fooooooo: 42.31 };
-      function FooThing() { this.bar = 123; }
-      FooThing.prototype = baz;
-      var object = new FooThing();
-
-      validate(object).should.equal(false);
-      validate.errors.should.have.length(1);
-    });
   });
 
   describe('meta and validateSchema', function() {
@@ -262,20 +247,6 @@ describe('Ajv Options', function () {
 
       ajv.validate(schema, invalideDateTime) .should.equal(false);
       ajvFF.validate(schema, invalideDateTime) .should.equal(true);
-    });
-
-    it('should not validate formatMaximum/Minimum if option format == false', function() {
-      var ajv = new Ajv({ v5: true, allErrors: true })
-        , ajvFF = new Ajv({ v5: true, allErrors: true, format: false });
-
-      var schema = {
-        format: 'date',
-        formatMaximum: '2015-08-01'
-      };
-
-      var date = '2015-09-01';
-      ajv.validate(schema, date) .should.equal(false);
-      ajvFF.validate(schema, date) .should.equal(true);
     });
   });
 
