@@ -928,6 +928,20 @@ __Please note__: If the keyword is validating data type that is different from t
 See [Defining custom keywords](#defining-custom-keywords) for more details.
 
 
+##### .getKeyword(String keyword) -&gt; Object|Boolean
+
+Returns custom keyword definition, `true` for pre-defined keywords and `false` if the keyword is unknown.
+
+
+##### .removeKeyword(String keyword)
+
+Removes custom or pre-defined keyword so you can redefine them.
+
+While this method can be used to extend pre-defined keywords, it can also be used to completely change their meaning - it may lead to unexpected results.
+
+__Please note__: schemas compiled before the keyword is removed will continue to work without changes. To recompile schemas use `removeSchema` method and compile them again.
+
+
 ##### .errorsText([Array&lt;Object&gt; errors [, Object options]]) -&gt; String
 
 Returns the text with all errors in a String.
