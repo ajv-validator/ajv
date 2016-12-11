@@ -204,40 +204,42 @@ var valid{{=$it.level}} = true;
   {{~}}
 {{?}}
 
-{{~ $pPropertyKeys:$pProperty }}
-  {{ var $sch = $pProperties[$pProperty]; }}
+{{? $pPropertyKeys.length }}
+  {{~ $pPropertyKeys:$pProperty }}
+    {{ var $sch = $pProperties[$pProperty]; }}
 
-  {{? {{# def.nonEmptySchema:$sch}} }}
-    {{
-      $it.schema = $sch;
-      $it.schemaPath = it.schemaPath + '.patternProperties' + it.util.getProperty($pProperty);
-      $it.errSchemaPath = it.errSchemaPath + '/patternProperties/'
-                                           + it.util.escapeFragment($pProperty);
-    }}
+    {{? {{# def.nonEmptySchema:$sch}} }}
+      {{
+        $it.schema = $sch;
+        $it.schemaPath = it.schemaPath + '.patternProperties' + it.util.getProperty($pProperty);
+        $it.errSchemaPath = it.errSchemaPath + '/patternProperties/'
+                                             + it.util.escapeFragment($pProperty);
+      }}
 
-    for (var {{=$key}} in {{=$data}}) {
-      {{# def.checkOwnProperty }}
-      if ({{= it.usePattern($pProperty) }}.test({{=$key}})) {
-        {{
-          $it.errorPath = it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
-          var $passData = $data + '[key' + $lvl + ']';
-          $it.dataPathArr[$dataNxt] = 'key' + $lvl;
-        }}
+      for (var {{=$key}} in {{=$data}}) {
+        {{# def.checkOwnProperty }}
+        if ({{= it.usePattern($pProperty) }}.test({{=$key}})) {
+          {{
+            $it.errorPath = it.util.getPathExpr(it.errorPath, 'key' + $lvl, it.opts.jsonPointers);
+            var $passData = $data + '[key' + $lvl + ']';
+            $it.dataPathArr[$dataNxt] = 'key' + $lvl;
+          }}
 
-        {{# def.generateSubschemaCode }}
-        {{# def.optimizeValidate }}
+          {{# def.generateSubschemaCode }}
+          {{# def.optimizeValidate }}
 
-        {{? $breakOnError }} if (!valid{{=$it.level}}) break; {{?}}
+          {{? $breakOnError }} if (!valid{{=$it.level}}) break; {{?}}
+        }
+        {{? $breakOnError }} else valid{{=$it.level}} = true; {{?}}
       }
-      {{? $breakOnError }} else valid{{=$it.level}} = true; {{?}}
-    }
 
-    {{# def.ifResultValid }}
-  {{?}} {{ /* def.nonEmptySchema */ }}
-{{~}}
+      {{# def.ifResultValid }}
+    {{?}} {{ /* def.nonEmptySchema */ }}
+  {{~}}
+{{?}}
 
 
-{{? it.opts.v5 }}
+{{? it.opts.v5 && $pgPropertyKeys.length }}
   {{~ $pgPropertyKeys:$pgProperty }}
     {{
       var $pgSchema = $pgProperties[$pgProperty]

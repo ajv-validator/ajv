@@ -190,19 +190,21 @@
 
 {{
   function $shouldUseGroup($rulesGroup) {
-    for (var i=0; i < $rulesGroup.rules.length; i++)
-      if ($shouldUseRule($rulesGroup.rules[i]))
+    var rules = $rulesGroup.rules;
+    for (var i=0; i < rules.length; i++)
+      if ($shouldUseRule(rules[i]))
         return true;
   }
 
   function $shouldUseRule($rule) {
     return it.schema[$rule.keyword] !== undefined ||
-           ( $rule.keyword == 'properties' &&
-             ( it.schema.additionalProperties === false ||
-               typeof it.schema.additionalProperties == 'object'
-               || ( it.schema.patternProperties &&
-                    Object.keys(it.schema.patternProperties).length )
-               || ( it.opts.v5 && it.schema.patternGroups &&
-                    Object.keys(it.schema.patternGroups).length )));
+           ($rule.implements && $ruleImlementsSomeKeyword($rule));
+  }
+
+  function $ruleImlementsSomeKeyword($rule) {
+    var impl = $rule.implements;
+    for (var i=0; i < impl.length; i++)
+      if (it.schema[impl[i]] !== undefined)
+        return true;
   }
 }}
