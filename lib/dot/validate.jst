@@ -113,6 +113,9 @@
     {{ $closingBraces2 += '}'; }}
   {{?}}
 {{??}}
+  {{? it.opts.v5 && it.schema.patternGroups }}
+    {{ console.warn('keyword "patternGroups" is deprecated and disabled. Use option patternGroups: true to enable.'); }}
+  {{?}}
   {{~ it.RULES:$rulesGroup }}
     {{? $shouldUseGroup($rulesGroup) }}
       {{? $rulesGroup.type }}
