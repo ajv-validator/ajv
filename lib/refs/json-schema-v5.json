@@ -271,30 +271,6 @@
             ]
         },
         "contains": { "$ref": "#" },
-        "patternGroups": {
-            "type": "object",
-            "additionalProperties": {
-                "type": "object",
-                "required": [ "schema" ],
-                "properties": {
-                    "maximum": {
-                        "anyOf": [
-                            { "$ref": "#/definitions/positiveInteger" },
-                            { "$ref": "#/definitions/$data" }
-                        ]
-                    },
-                    "minimum": {
-                        "anyOf": [
-                            { "$ref": "#/definitions/positiveIntegerDefault0" },
-                            { "$ref": "#/definitions/$data" }
-                        ]
-                    },
-                    "schema": { "$ref": "#" }
-                },
-                "additionalProperties": false
-            },
-            "default": {}
-        },
         "switch": {
             "type": "array",
             "items": {

@@ -117,7 +117,7 @@ describe('Ajv Options', function () {
     });
 
     it('should only validate against own properties when using patternGroups', function() {
-      var ajv = new Ajv({ v5: true, allErrors: true, ownProperties: true });
+      var ajv = new Ajv({ allErrors: true, ownProperties: true, patternGroups: true });
       var validate = ajv.compile({
         patternGroups: {
           'f.*o': { schema: { type: 'integer' } }

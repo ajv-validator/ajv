@@ -30,7 +30,7 @@ The keywords and their values define what rules the data should satisfy to be va
     - [patternProperties](#patternproperties)
     - [additionalProperties](#additionalproperties)
     - [dependencies](#dependencies)
-    - [patternGroups](#patterngroups-v5-proposal) (v5)
+    - [patternGroups](#patterngroups-deprecated) (deprecated)
     - [patternRequired](#patternrequired-v5-proposal) (v5)
 - [Keywords for all types](#keywords-for-all-types)
     - [enum](#enum)
@@ -579,7 +579,9 @@ __Examples__
 
 
 
-### `patternGroups` (v5 proposal)
+### `patternGroups` (deprecated)
+
+This keyword is only provided for backward compatibility, it will be removed in the next major version. To use it, pass option `patternGroups: true`.
 
 The value of this keyword should be a map where keys should be regular expressions and the values should be objects with the following properties:
 

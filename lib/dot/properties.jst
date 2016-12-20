@@ -43,7 +43,7 @@
   if ($required && !(it.opts.v5 && $required.$data) && $required.length < it.opts.loopRequired)
     var $requiredHash = it.util.toHash($required);
 
-  if (it.opts.v5) {
+  if (it.opts.patternGroups) {
     var $pgProperties = it.schema.patternGroups || {}
       , $pgPropertyKeys = Object.keys($pgProperties);
   }
@@ -72,7 +72,7 @@ var valid{{=$it.level}} = true;
             || {{= it.usePattern($pProperty) }}.test({{=$key}})
           {{~}}
         {{?}}
-        {{? it.opts.v5 && $pgPropertyKeys && $pgPropertyKeys.length }}
+        {{? it.opts.patternGroups && $pgPropertyKeys.length }}
           {{~ $pgPropertyKeys:$pgProperty:$i }}
             || {{= it.usePattern($pgProperty) }}.test({{=$key}})
           {{~}}
@@ -239,7 +239,7 @@ var valid{{=$it.level}} = true;
 {{?}}
 
 
-{{? it.opts.v5 && $pgPropertyKeys.length }}
+{{? it.opts.patternGroups && $pgPropertyKeys.length }}
   {{~ $pgPropertyKeys:$pgProperty }}
     {{
       var $pgSchema = $pgProperties[$pgProperty]

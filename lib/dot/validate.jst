@@ -127,9 +127,12 @@
         {{?}}
         {{~ $rulesGroup.rules:$rule }}
           {{? $shouldUseRule($rule) }}
-            {{= $rule.code(it, $rule.keyword) }}
-            {{? $breakOnError }}
-              {{ $closingBraces1 += '}'; }}
+            {{ var $code = $rule.code(it, $rule.keyword); }}
+            {{? $code }}
+              {{= $code }}
+              {{? $breakOnError }}
+                {{ $closingBraces1 += '}'; }}
+              {{?}}
             {{?}}
           {{?}}
         {{~}}
