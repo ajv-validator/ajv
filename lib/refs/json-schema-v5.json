@@ -234,71 +234,17 @@
                 { "$ref": "#/definitions/$data" }
             ]
         },
-        "formatMaximum": {
-            "anyOf": [
-                { "type": "string" },
-                { "$ref": "#/definitions/$data" }
-            ]
-        },
-        "formatMinimum": {
-            "anyOf": [
-                { "type": "string" },
-                { "$ref": "#/definitions/$data" }
-            ]
-        },
-        "formatExclusiveMaximum": {
-            "anyOf": [
-                {
-                    "type": "boolean",
-                    "default": false
-                },
-                { "$ref": "#/definitions/$data" }
-            ]
-        },
-        "formatExclusiveMinimum": {
-            "anyOf": [
-                {
-                    "type": "boolean",
-                    "default": false
-                },
-                { "$ref": "#/definitions/$data" }
-            ]
-        },
         "constant": {
             "anyOf": [
                 {},
                 { "$ref": "#/definitions/$data" }
             ]
         },
-        "contains": { "$ref": "#" },
-        "switch": {
-            "type": "array",
-            "items": {
-                "required": [ "then" ],
-                "properties": {
-                    "if": { "$ref": "#" },
-                    "then": {
-                        "anyOf": [
-                            { "type": "boolean" },
-                            { "$ref": "#" }
-                        ]
-                    },
-                    "continue": { "type": "boolean" }
-                },
-                "additionalProperties": false,
-                "dependencies": {
-                    "continue": [ "if" ]
-                }
-            }
-        }
+        "contains": { "$ref": "#" }
     },
     "dependencies": {
         "exclusiveMaximum": [ "maximum" ],
-        "exclusiveMinimum": [ "minimum" ],
-        "formatMaximum": [ "format" ],
-        "formatMinimum": [ "format" ],
-        "formatExclusiveMaximum": [ "formatMaximum" ],
-        "formatExclusiveMinimum": [ "formatMinimum" ]
+        "exclusiveMinimum": [ "minimum" ]
     },
     "default": {}
 }
