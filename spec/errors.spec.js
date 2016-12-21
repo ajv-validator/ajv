@@ -281,7 +281,7 @@ describe('Validation errors', function () {
 
 
     it('should not validate required twice with $data ref', function() {
-      ajv = new Ajv({ v5: true, allErrors: true });
+      ajv = new Ajv({ $data: true, allErrors: true });
 
       var schema = {
         properties: {

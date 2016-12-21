@@ -8,7 +8,7 @@ var jsonSchemaTest = require('json-schema-test')
   , after = require('./after_test');
 
 
-var instances = getAjvInstances({ v5: true });
+var instances = getAjvInstances({ $data: true });
 
 
 instances.forEach(addAsyncFormatsAndKeywords);

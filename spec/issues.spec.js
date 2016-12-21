@@ -256,7 +256,7 @@ describe('issue #210, mutual recursive $refs that are schema fragments', functio
 
 describe('issue #240, mutually recursive fragment refs reference a common schema', function() {
   var apiSchema = {
-    $schema: 'http://json-schema.org/draft-04/schema#',
+    $schema: 'http://json-schema.org/draft-06/schema#',
     id: 'schema://api.schema#',
     resource: {
       id: '#resource',
@@ -274,7 +274,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
   };
 
   var domainSchema = {
-    $schema: 'http://json-schema.org/draft-04/schema#',
+    $schema: 'http://json-schema.org/draft-06/schema#',
     id: 'schema://domain.schema#',
     properties: {
       data: {
@@ -290,7 +290,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     var ajv = new Ajv;
 
     var librarySchema = {
-      $schema: 'http://json-schema.org/draft-04/schema#',
+      $schema: 'http://json-schema.org/draft-06/schema#',
       id: 'schema://library.schema#',
       properties: {
         name: { type: 'string' },
@@ -322,7 +322,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     };
 
     var catalogItemSchema = {
-      $schema: 'http://json-schema.org/draft-04/schema#',
+      $schema: 'http://json-schema.org/draft-06/schema#',
       id: 'schema://catalog_item.schema#',
       properties: {
         name: { type: 'string' },
@@ -351,7 +351,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     };
 
     var catalogItemResourceIdentifierSchema = {
-      $schema: 'http://json-schema.org/draft-04/schema#',
+      $schema: 'http://json-schema.org/draft-06/schema#',
       id: 'schema://catalog_item_resource_identifier.schema#',
       allOf: [
         {
@@ -381,7 +381,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     var ajv = new Ajv;
 
     var librarySchema = {
-      $schema: 'http://json-schema.org/draft-04/schema#',
+      $schema: 'http://json-schema.org/draft-06/schema#',
       id: 'schema://library.schema#',
       properties: {
         name: { type: 'string' },
@@ -413,7 +413,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     };
 
     var catalogItemSchema = {
-      $schema: 'http://json-schema.org/draft-04/schema#',
+      $schema: 'http://json-schema.org/draft-06/schema#',
       id: 'schema://catalog_item.schema#',
       properties: {
         name: { type: 'string' },
@@ -463,6 +463,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
 describe('issue #259, support validating [meta-]schemas against themselves', function() {
   it('should add schema before validation if "id" is the same as "$schema"', function() {
     var ajv = new Ajv;
+    ajv.addMetaSchema(require('../lib/refs/json-schema-draft-04.json'));
     var hyperSchema = require('./remotes/hyper-schema.json');
     ajv.addMetaSchema(hyperSchema);
   });

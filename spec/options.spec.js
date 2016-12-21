@@ -135,12 +135,12 @@ describe('Ajv Options', function () {
   });
 
   describe('meta and validateSchema', function() {
-    it('should add draft-4 meta schema by default', function() {
+    it('should add draft-6 meta schema by default', function() {
       testOptionMeta(new Ajv);
       testOptionMeta(new Ajv({ meta: true }));
 
       function testOptionMeta(ajv) {
-        ajv.getSchema('http://json-schema.org/draft-04/schema') .should.be.a('function');
+        ajv.getSchema('http://json-schema.org/draft-06/schema') .should.be.a('function');
         ajv.validateSchema({ type: 'integer' }) .should.equal(true);
         ajv.validateSchema({ type: 123 }) .should.equal(false);
         should.not.throw(function() { ajv.addSchema({ type: 'integer' }); });
@@ -179,18 +179,15 @@ describe('Ajv Options', function () {
       should.throw(function() { ajv.addSchema({ type: 123 }, 'integer'); });
     });
 
-    it('should validate v5 schema', function() {
-      var ajv = new Ajv({ v5: true });
+    it('should validate v6 schema', function() {
+      var ajv = new Ajv;
       ajv.validateSchema({ contains: { minimum: 2 } }) .should.equal(true);
       ajv.validateSchema({ contains: 2 }). should.equal(false);
-
-      ajv = new Ajv;
-      ajv.validateSchema({ contains: 2 }). should.equal(true);
     });
 
     it('should use option meta as default meta schema', function() {
       var meta = {
-        $schema: 'http://json-schema.org/draft-04/schema',
+        $schema: 'http://json-schema.org/draft-06/schema',
         properties: {
           myKeyword: { type: 'boolean' }
         }
@@ -199,7 +196,7 @@ describe('Ajv Options', function () {
       ajv.validateSchema({ myKeyword: true }) .should.equal(true);
       ajv.validateSchema({ myKeyword: 2 }) .should.equal(false);
       ajv.validateSchema({
-        $schema: 'http://json-schema.org/draft-04/schema',
+        $schema: 'http://json-schema.org/draft-06/schema',
         myKeyword: 2
       }) .should.equal(true);
 
@@ -856,8 +853,8 @@ describe('Ajv Options', function () {
       });
 
       it('should fail validation if unknown format is used via $data', function() {
-        test(new Ajv({v5: true}));
-        test(new Ajv({v5: true, unknownFormats: true}));
+        test(new Ajv({$data: true}));
+        test(new Ajv({$data: true, unknownFormats: true}));
 
         function test(ajv) {
           var validate = ajv.compile({
@@ -888,7 +885,7 @@ describe('Ajv Options', function () {
       });
 
       it('should be valid if unknown format is used via $data', function() {
-        test(new Ajv({v5: true, unknownFormats: 'ignore'}));
+        test(new Ajv({$data: true, unknownFormats: 'ignore'}));
 
         function test(ajv) {
           var validate = ajv.compile({
@@ -922,7 +919,7 @@ describe('Ajv Options', function () {
       });
 
       it('should be valid if whitelisted unknown format is used via $data', function() {
-        test(new Ajv({v5: true, unknownFormats: ['allowed']}));
+        test(new Ajv({$data: true, unknownFormats: ['allowed']}));
 
         function test(ajv) {
           var validate = ajv.compile({

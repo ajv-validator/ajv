@@ -377,10 +377,10 @@ describe('Custom keywords', function () {
     it('should correctly expand macros in macro expansions', function() {
       instances.forEach(function (_ajv) {
         _ajv.addKeyword('range', { type: 'number', macro: macroRange });
-        _ajv.addKeyword('contains', { type: 'array', macro: macroContains });
+        _ajv.addKeyword('myContains', { type: 'array', macro: macroContains });
 
         var schema = {
-          "contains": {
+          "myContains": {
             "type": "number",
             "range": [4,7],
             "exclusiveRange": true
@@ -507,13 +507,13 @@ describe('Custom keywords', function () {
   });
 
 
-  describe('$data reference support with custom keywords (v5 only)', function() {
+  describe('$data reference support with custom keywords (with $data option)', function() {
     beforeEach(function() {
       instances = getAjvInstances({
         allErrors:    true,
         verbose:      true,
         inlineRefs:   false
-      }, { v5: true });
+      }, { $data: true });
       ajv = instances[0];
     });
 
@@ -731,9 +731,9 @@ describe('Custom keywords', function () {
 
   function testConstantKeyword(definition, numErrors) {
     instances.forEach(function (_ajv) {
-      _ajv.addKeyword('constant', definition);
+      _ajv.addKeyword('myConstant', definition);
 
-      var schema = { "constant": "abc" };
+      var schema = { "myConstant": "abc" };
       var validate = _ajv.compile(schema);
 
       shouldBeValid(validate, 'abc');
@@ -744,15 +744,15 @@ describe('Custom keywords', function () {
 
   function testMultipleConstantKeyword(definition, numErrors) {
     instances.forEach(function (_ajv) {
-      _ajv.addKeyword('constant', definition);
+      _ajv.addKeyword('myConstant', definition);
 
       var schema = {
         "properties": {
-          "a": { "constant": 1 },
-          "b": { "constant": 1 }
+          "a": { "myConstant": 1 },
+          "b": { "myConstant": 1 }
         },
-        "additionalProperties": { "constant": { "foo": "bar" } },
-        "items": { "constant": { "foo": "bar" } }
+        "additionalProperties": { "myConstant": { "foo": "bar" } },
+        "items": { "myConstant": { "foo": "bar" } }
       };
       var validate = _ajv.compile(schema);
 

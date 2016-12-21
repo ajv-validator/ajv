@@ -1,7 +1,7 @@
 {
     "id": "https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#",
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "description": "Core schema meta-schema (v5 proposals)",
+    "description": "Core schema meta-schema (v5 proposals - deprecated)",
     "definitions": {
         "schemaArray": {
             "type": "array",
