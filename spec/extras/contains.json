@@ -28,9 +28,9 @@
     ]
   },
   {
-    "description": "contains keyword with constant keyword requires a specific item to be present",
+    "description": "contains keyword with const keyword requires a specific item to be present",
     "schema": {
-        "contains": { "constant": 5 }
+        "contains": { "const": 5 }
     },
     "tests": [
       {

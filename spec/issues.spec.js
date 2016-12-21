@@ -106,14 +106,14 @@ describe('issue #182, NaN validation', function() {
 });
 
 
-describe('issue #204, options schemas and v5 used together', function() {
+describe('issue #204, options schemas and $data used together', function() {
   it('should use v5 metaschemas by default', function() {
     var ajv = new Ajv({
-      v5: true,
       schemas: [{id: 'str', type: 'string'}],
+      $data: true
     });
 
-    var schema = { constant: 42 };
+    var schema = { const: 42 };
     var validate = ajv.compile(schema);
 
     validate(42) .should.equal(true);

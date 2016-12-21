@@ -39,7 +39,7 @@ This way to define keywords is useful for:
 __Please note__: In cases when validation flow is different depending on the schema and you have to use `if`s, this way to define keywords will have worse performance than compiled keyword returning different validation functions depending on the schema.
 
 
-Example. `constant` keyword from version 5 proposals (that is equivalent to `enum` keyword with one item):
+Example. `constant` keyword (a synonym for draft6 keyword `const`, it is equivalent to `enum` keyword with one item):
 
 ```javascript
 ajv.addKeyword('constant', { validate: function (schema, data) {
@@ -59,7 +59,7 @@ console.log(validate({foo: 'bar'})); // true
 console.log(validate({foo: 'baz'})); // false
 ```
 
-`constant` keyword is already available in Ajv with option `v5: true`.
+`const` keyword is already available in Ajv.
 
 __Please note:__ If the keyword does not define custom errors (see [Reporting errors in custom keywords](#reporting-errors-in-custom-keywords)) pass `errors: false` in its definition; it will make generated code more efficient.
 

@@ -114,7 +114,7 @@
   patternGroups:   "'should NOT have {{=$moreOrLess}} than {{=$limit}} properties matching pattern \"{{=it.util.escapeQuotes($pgProperty)}}\"'",
   patternRequired: "'should have property matching pattern \\'{{=$missingPattern}}\\''",
   switch:          "'should pass \"switch\" keyword validation'",
-  constant:        "'should be equal to constant'",
+  const:           "'should be equal to constant'",
   _formatLimit:    "'should be {{=$opStr}} \"{{#def.concatSchemaEQ}}\"'",
   _formatExclusiveLimit: "'{{=$exclusiveKeyword}} should be boolean'"
 } #}}
@@ -147,7 +147,7 @@
   patternGroups:   "validate.schema{{=$schemaPath}}",
   patternRequired: "validate.schema{{=$schemaPath}}",
   switch:          "validate.schema{{=$schemaPath}}",
-  constant:        "validate.schema{{=$schemaPath}}",
+  const:           "validate.schema{{=$schemaPath}}",
   _formatLimit:    "{{#def.schemaRefOrQS}}",
   _formatExclusiveLimit: "validate.schema{{=$schemaPath}}"
 } #}}
@@ -179,7 +179,7 @@
   patternGroups:   "{ reason: '{{=$reason}}', limit: {{=$limit}}, pattern: '{{=it.util.escapeQuotes($pgProperty)}}' }",
   patternRequired: "{ missingPattern: '{{=$missingPattern}}' }",
   switch:          "{ caseIndex: {{=$caseIndex}} }",
-  constant:        "{}",
+  const:           "{}",
   _formatLimit:    "{ comparison: {{=$opExpr}}, limit: {{#def.schemaValueQS}}, exclusive: {{=$exclusive}} }",
   _formatExclusiveLimit: "{}"
 } #}}

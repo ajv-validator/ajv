@@ -4,7 +4,7 @@
     "schema": {
       "properties": {
         "sameAs": {
-          "constant": {
+          "const": {
             "$data": "/thisOne"
           }
         },
@@ -71,17 +71,17 @@
         "sameArr": {
           "items": [
             {
-              "constant": {
+              "const": {
                 "$data": "/arr/0"
               }
             },
             {
-              "constant": {
+              "const": {
                 "$data": "/arr/1"
               }
             },
             {
-              "constant": {
+              "const": {
                 "$data": "/arr/2"
               }
             }
@@ -143,7 +143,7 @@
         "list": {
           "type": "array",
           "contains": {
-            "constant": {
+            "const": {
               "$data": "/name"
             }
           }
@@ -386,7 +386,7 @@
           "type": "object",
           "properties": {
             "foo": {
-              "constant": {
+              "const": {
                 "$data": "/bar"
               }
             },
@@ -396,7 +396,7 @@
       },
       "properties": {
         "foo": {
-          "constant": {
+          "const": {
             "$data": "/bar"
           }
         },

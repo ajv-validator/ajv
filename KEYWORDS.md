@@ -34,7 +34,8 @@ The keywords and their values define what rules the data should satisfy to be va
     - [patternRequired](#patternrequired-v5-proposal) (v5)
 - [Keywords for all types](#keywords-for-all-types)
     - [enum](#enum)
-    - [constant](#constant-v5-proposal) (v5)
+    - [const](#const)
+- [Compound keywords](#compound-keywords)
     - [not](#not)
     - [oneOf](#oneof)
     - [anyOf](#anyof)
@@ -653,20 +654,20 @@ _invalid_: `1`, `"bar"`, `{"foo": "baz"}`, `[1, 2, 3, 4]`, any value not in the 
 
 
 
-### `constant` (v5 proposal)
+### `const`
 
 The value of this keyword can be anything. The data is valid if it is deeply equal to the value of the keyword.
 
 __Example__
 
-_schema_: `{ "constant": "foo" }`
+_schema_: `{ "const": "foo" }`
 
 _valid_: `"foo"`
 
 _invalid_: any other value
 
 
-The same can be achieved with `enum` keyword using the array with one item. But `constant` keyword is more that just a syntax sugar for `enum`. In combination with the [$data reference](https://github.com/epoberezkin/ajv#data-reference) it allows to define equality relations between different parts of the data. This cannot be achieved with `enum` keyword even with `$data` reference because `$data` cannot be used in place of one item - it can only be used in place of the whole array in `enum` keyword.
+The same can be achieved with `enum` keyword using the array with one item. But `const` keyword is more that just a syntax sugar for `enum`. In combination with the [$data reference](https://github.com/epoberezkin/ajv#data-reference) it allows to define equality relations between different parts of the data. This cannot be achieved with `enum` keyword even with `$data` reference because `$data` cannot be used in place of one item - it can only be used in place of the whole array in `enum` keyword.
 
 
 __Example__
@@ -677,7 +678,7 @@ _schema_:
 {
     "properties": {
         "foo": { "type": "number" },
-        "bar": { "constant": { "$data": "1/foo" } }
+        "bar": { "const": { "$data": "1/foo" } }
     }
 }
 ```
@@ -687,6 +688,8 @@ _valid_: `{ "foo": 1, "bar": 1 }`, `{}`
 _invalid_: `{ "foo": 1 }`, `{ "bar": 1 }`, `{ "foo": 1, "bar": 2 }`
 
 
+
+## Compound keywords
 
 ### `not`
 
