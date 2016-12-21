@@ -1,6 +1,6 @@
 # Ajv: Another JSON Schema Validator
 
-The fastest JSON Schema validator for node.js and browser. Supports [v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals).
+The fastest JSON Schema validator for node.js and browser.
 
 
 [![Build Status](https://travis-ci.org/epoberezkin/ajv.svg?branch=master)](https://travis-ci.org/epoberezkin/ajv)
@@ -78,9 +78,9 @@ Performace of different validators by [json-schema-benchmark](https://github.com
 - [assigning defaults](#assigning-defaults) to missing properties and items
 - [coercing data](#coercing-data-types) to the types specified in `type` keywords
 - [custom keywords](#defining-custom-keywords)
-- keywords `switch`, `const`, `contains`, `patternGroups`, `patternRequired`, `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [option v5](#options)
-- [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#) for schemas using v5 keywords
-- [v5 $data reference](#data-reference) to use values from the validated data as values for the schema keywords
+- keywords `const` and `contains`
+- keywords `switch`, `patternRequired`, `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` from [JSON-schema extension proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package
+- [$data reference](#data-reference) to use values from the validated data as values for the schema keywords
 - [asynchronous validation](#asynchronous-validation) of custom formats and keywords
 
 Currently Ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
@@ -186,18 +186,16 @@ Ajv supports all validation keywords from draft 4 of JSON-schema standard:
 - [type](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#type)
 - [for numbers](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-numbers) - maximum, minimum, exclusiveMaximum, exclusiveMinimum, multipleOf
 - [for strings](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-strings) - maxLength, minLength, pattern, format
-- [for arrays](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-arrays) - maxItems, minItems, uniqueItems, items, additionalItems
+- [for arrays](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-arrays) - maxItems, minItems, uniqueItems, items, additionalItems, [contains](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#contains)
 - [for objects](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-objects) - maxProperties, minproperties, required, properties, patternProperties, additionalProperties, dependencies
 - [for all types](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-all-types) - enum, [const](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#const)
 - [compound keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#compound-keywords) - not, oneOf, anyOf, allOf
 
-With option `v5: true` Ajv also supports all validation keywords and [$data reference](#data-reference) from [v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) for JSON-schema standard:
+With [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package Ajv also supports validation keywords from [JSON-Schema extension proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) for JSON-schema standard:
 
-- [switch](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#switch-v5-proposal) - conditional validation with a sequence of if/then clauses
-- [contains](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#contains-v5-proposal) - check that array contains a valid item
-- [patternGroups](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#patterngroups-v5-proposal) - a more powerful alternative to patternProperties
-- [patternRequired](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#patternrequired-v5-proposal) - like `required` but with patterns that some property should match.
-- [formatMaximum, formatMinimum, formatExclusiveMaximum, formatExclusiveMinimum](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-v5-proposal) - setting limits for date, time, etc.
+- [switch](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#switch-proposed) - conditional validation with a sequence of if/then clauses
+- [patternRequired](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#patternrequired-proposed) - like `required` but with patterns that some property should match.
+- [formatMaximum, formatMinimum, formatExclusiveMaximum, formatExclusiveMinimum](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-proposed) - setting limits for date, time, etc.
 
 See [JSON-Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md) for more details.
 
@@ -230,7 +228,7 @@ You can find patterns used for format validation and the sources that were used 
 
 ## $data reference
 
-With `v5` option you can use values from the validated data as the values for the schema keywords. See [v5 proposal](https://github.com/json-schema/json-schema/wiki/$data-(v5-proposal)) for more information about how it works.
+With `$data` option you can use values from the validated data as the values for the schema keywords. See [proposal](https://github.com/json-schema/json-schema/wiki/$data-(v5-proposal)) for more information about how it works.
 
 `$data` reference is supported in the keywords: const, enum, format, maximum/minimum, exclusiveMaximum / exclusiveMinimum, maxLength / minLength, maxItems / minItems, maxProperties / minProperties, formatMaximum / formatMinimum, formatExclusiveMaximum / formatExclusiveMinimum, multipleOf, pattern, required, uniqueItems.
 
@@ -278,7 +276,7 @@ var validData = {
 
 ## $merge and $patch keywords
 
-With v5 option and the package [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) you can use the keywords `$merge` and `$patch` that allow extending JSON-schemas with patches using formats [JSON Merge Patch (RFC 7396)](https://tools.ietf.org/html/rfc7396) and [JSON Patch (RFC 6902)](https://tools.ietf.org/html/rfc6902).
+With the package [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) you can use the keywords `$merge` and `$patch` that allow extending JSON-schemas with patches using formats [JSON Merge Patch (RFC 7396)](https://tools.ietf.org/html/rfc7396) and [JSON Patch (RFC 6902)](https://tools.ietf.org/html/rfc6902).
 
 To add keywords `$merge` and `$patch` to Ajv instance use this code:
 
@@ -730,7 +728,7 @@ console.log(data2); // { foo: { bar: 2 } }
 
 - not in `properties` or `items` subschemas
 - in schemas inside `anyOf`, `oneOf` and `not` (see [#42](https://github.com/epoberezkin/ajv/issues/42))
-- in `if` subschema of v5 `switch` keyword
+- in `if` subschema of `switch` keyword
 - in schemas generated by custom macro keywords
 
 
@@ -854,9 +852,7 @@ By default the schema is validated against meta-schema before it is added, and i
 
 Adds meta schema(s) that can be used to validate other schemas. That function should be used instead of `addSchema` because there may be instance options that would compile a meta schema incorrectly (at the moment it is `removeAdditional` option).
 
-There is no need to explicitly add draft 4 meta schema (http://json-schema.org/draft-04/schema and http://json-schema.org/schema) - it is added by default, unless option `meta` is set to `false`. You only need to use it if you have a changed meta-schema that you want to use to validate your schemas. See `validateSchema`.
-
-With option `v5: true` [meta-schema that includes v5 keywords](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json) also added.
+There is no need to explicitly add draft 6 meta schema (http://json-schema.org/draft-06/schema and http://json-schema.org/schema) - it is added by default, unless option `meta` is set to `false`. You only need to use it if you have a changed meta-schema that you want to use to validate your schemas. See `validateSchema`.
 
 
 ##### <a name="api-validateschema"></a>.validateSchema(Object schema) -&gt; Boolean
@@ -865,7 +861,7 @@ Validates schema. This method should be used to validate schemas rather than `va
 
 By default this method is called automatically when the schema is added, so you rarely need to use it directly.
 
-If schema doesn't have `$schema` property it is validated against draft 4 meta-schema (option `meta` should not be false) or against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#) if option `v5` is true.
+If schema doesn't have `$schema` property it is validated against draft 6 meta-schema (option `meta` should not be false).
 
 If schema has `$schema` property then the schema with this id (that should be previously added) is used to validate passed schema.
 
@@ -901,7 +897,7 @@ Function should return validation result as `true` or `false`.
 If object is passed it should have properties `validate`, `compare` and `async`:
 
 - _validate_: a string, RegExp or a function as described above.
-- _compare_: an optional comparison function that accepts two strings and compares them according to the format meaning. This function is used with keywords `formatMaximum`/`formatMinimum` (from [v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) - `v5` option should be used). It should return `1` if the first value is bigger than the second value, `-1` if it is smaller and `0` if it is equal.
+- _compare_: an optional comparison function that accepts two strings and compares them according to the format meaning. This function is used with keywords `formatMaximum`/`formatMinimum` (defined in [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package). It should return `1` if the first value is bigger than the second value, `-1` if it is smaller and `0` if it is equal.
 - _async_: an optional `true` value if `validate` is an asynchronous function; in this case it should return a promise that resolves with a value `true` or `false`.
 
 Custom formats can be also added via `formats` option.
@@ -949,7 +945,7 @@ Defaults:
 ```javascript
 {
   // validation and reporting options:
-  v5:               false,
+  $data:            false,
   allErrors:        false,
   verbose:          false,
   jsonPointers:     false,
@@ -989,7 +985,7 @@ Defaults:
 
 ##### Validation and reporting options
 
-- _v5_: add keywords `switch`, `const`, `contains`, `patternGroups`, `patternRequired`, `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` from [JSON-schema v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals). With this option added schemas without `$schema` property are validated against [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#). `false` by default.
+- _$data_: support [$data references]([$data reference](#data-reference)). Draft 6 meta-schema that is added by default will be extended to allow them. If you want to use another meta-schema you need to use $dataMetaSchema method to add support for $data reference. See [API](#api).
 - _allErrors_: check all rules collecting all errors. Default is to return after the first error.
 - _verbose_: include the reference to the part of the schema (`schema` and `parentSchema`) and validated data in errors (false by default).
 - _jsonPointers_: set `dataPath` propery of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
@@ -998,8 +994,8 @@ Defaults:
 - _format_: formats validation mode ('fast' by default). Pass 'full' for more correct and slow validation or `false` not to validate formats at all. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
 - _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
 - _unknownFormats_: handling of unknown formats. Option values:
-  - `true` (default) - if an unknown format is encountered the exception is thrown during schema compilation. If `format` keyword value is [v5 $data reference](#data-reference) and it is unknown the validation will fail.
-  - `[String]` - an array of unknown format names that will be ignored. This option can be used to allow usage of third party schemas with format(s) for which you don't have definitions, but still fail if another unknown format is used. If `format` keyword value is [v5 $data reference](#data-reference) and it is not in this array the validation will fail.
+  - `true` (default) - if an unknown format is encountered the exception is thrown during schema compilation. If `format` keyword value is [$data reference](#data-reference) and it is unknown the validation will fail.
+  - `[String]` - an array of unknown format names that will be ignored. This option can be used to allow usage of third party schemas with format(s) for which you don't have definitions, but still fail if another unknown format is used. If `format` keyword value is [$data reference](#data-reference) and it is not in this array the validation will fail.
   - `"ignore"` - to log warning during schema compilation and always pass validation (the default behaviour in versions before 5.0.0). This option is not recommended, as it allows to mistype format name and it won't be validated without any error message. This behaviour is required by JSON-schema specification.
 - _schemas_: an array or object of schemas that will be added to the instance. If the order is important, pass array. In this case schemas must have IDs in them. Otherwise the object can be passed - `addSchema(value, key)` will be called for each schema in this object.
 
@@ -1058,7 +1054,7 @@ Defaults:
 
 ##### Advanced options
 
-- _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default). With option `v5: true` [v5 meta-schema](https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-v5.json#) will be added as well. If an object is passed, it will be used as the default meta-schema for schemas that have no `$schema` keyword. This default meta-schema MUST have `$schema` keyword.
+- _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default). If an object is passed, it will be used as the default meta-schema for schemas that have no `$schema` keyword. This default meta-schema MUST have `$schema` keyword.
 - _validateSchema_: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can either be http://json-schema.org/schema or http://json-schema.org/draft-04/schema or absent (draft-4 meta-schema will be used) or can be a reference to the schema previously added with `addMetaSchema` method. Option values:
   - `true` (default) -  if the validation fails, throw the exception.
   - `"log"` - if the validation fails, log error.
@@ -1105,10 +1101,6 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - `maxItems`, `minItems`, `maxLength`, `minLength`, `maxProperties`, `minProperties` - property `limit` (number, the schema of the keyword).
 - `additionalItems` - property `limit` (the maximum number of allowed items in case when `items` keyword is an array of schemas and `additionalItems` is false).
 - `additionalProperties` - property `additionalProperty` (the property not used in `properties` and `patternProperties` keywords).
-- `patternGroups` (with v5 option) - properties:
-  - `pattern`
-  - `reason` ("minimum"/"maximum"),
-  - `limit` (max/min allowed number of properties matching number)
 - `dependencies` - properties:
   - `property` (dependent property),
   - `missingProperty` (required missing dependency - only the first one is reported currently)
@@ -1122,7 +1114,7 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - `multipleOf` - property `multipleOf` (the schema of the keyword)
 - `pattern` - property `pattern` (the schema of the keyword)
 - `required` - property `missingProperty` (required property that is missing).
-- `patternRequired` (with v5 option) - property `missingPattern` (required pattern that did not match any property).
+- `patternRequired` (in ajv-keywords) - property `missingPattern` (required pattern that did not match any property).
 - `type` - property `type` (required type(s), a string, can be a comma-separated list)
 - `uniqueItems` - properties `i` and `j` (indices of duplicate items).
 - `enum` - property `allowedValues` pointing to the array of values (the schema of the keyword).
@@ -1134,7 +1126,7 @@ Properties of `params` object in errors depend on the keyword that failed valida
 
 - [ajv-cli](https://github.com/epoberezkin/ajv-cli) - command line interface for Ajv
 - [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) - internationalised error messages
-- [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) - keywords $merge and $patch from v5 proposals.
+- [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) - keywords $merge and $patch.
 - [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) - several custom keywords that can be used with Ajv (typeof, instanceof, range, propertyNames)
 
 

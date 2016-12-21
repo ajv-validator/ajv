@@ -16,13 +16,13 @@ The keywords and their values define what rules the data should satisfy to be va
     - [maxLength/minLength](#maxlength--minlength)
     - [pattern](#pattern)
     - [format](#format)
-    - [formatMaximum / formatMinimum and formatExclusiveMaximum / formatExclusiveMinimum](#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-v5-proposal) (v5)
+    - [formatMaximum / formatMinimum and formatExclusiveMaximum / formatExclusiveMinimum](#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-proposed) (proposed)
 - [Keywords for arrays](#keywords-for-arrays)
     - [maxItems/minItems](#maxitems--minitems)
     - [uniqueItems](#uniqueitems)
     - [items](#items)
     - [additionalItems](#additionalitems)
-    - [contains](#contains-v5-proposal) (v5)
+    - [contains](#contains)
 - [Keywords for objects](#keywords-for-objects)
     - [maxProperties/minProperties](#maxproperties--minproperties)
     - [required](#required)
@@ -31,7 +31,7 @@ The keywords and their values define what rules the data should satisfy to be va
     - [additionalProperties](#additionalproperties)
     - [dependencies](#dependencies)
     - [patternGroups](#patterngroups-deprecated) (deprecated)
-    - [patternRequired](#patternrequired-v5-proposal) (v5)
+    - [patternRequired](#patternrequired-proposed) (proposed)
 - [Keywords for all types](#keywords-for-all-types)
     - [enum](#enum)
     - [const](#const)
@@ -40,7 +40,7 @@ The keywords and their values define what rules the data should satisfy to be va
     - [oneOf](#oneof)
     - [anyOf](#anyof)
     - [allOf](#allof)
-    - [switch](#switch-v5-proposal) (v5)
+    - [switch](#switch-proposed) (proposed)
 
 
 
@@ -194,7 +194,9 @@ _invalid_: `"abc"`
 
 
 
-### `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` (v5 proposal)
+### `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` (proposed)
+
+Defined in [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package.
 
 The value of keyword `formatMaximum` (`formatMinimum`) should be a string. This value is the maximum (minimum) allowed value for the data to be valid as determined by `format` keyword.
 
@@ -354,7 +356,7 @@ __Examples__
     _invalid_: `["abc"]`, `[1, 2, 3]`
 
 
-### `contains` (v5 proposal)
+### `contains`
 
 The value of the keyword is a JSON-schema. The array is valid if it contains at least one item that is valid according to this schema.
 
@@ -367,7 +369,7 @@ _valid_: `[1]`, `[1, "foo"]`, any array with at least one integer, any non-array
 _invalid_: `[]`, `["foo", "bar"]`, any array without integers
 
 
-The same can be expressed using only draft 4 keywords but it is quite verbose. The schema from the example above is equivalent to:
+The schema from the example above is equivalent to:
 
 ```json
 {
@@ -615,7 +617,9 @@ _invalid_: `{}`, `{ "foo": "bar" }`, `{ "1": "2" }`
 
 
 
-### `patternRequired` (v5 proposal)
+### `patternRequired` (proposed)
+
+Defined in [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package.
 
 The value of this keyword should be an array of strings, each string being a regular expression. For data object to be valid each regular expression in this array should match at least one property name in the data object.
 
@@ -791,7 +795,9 @@ _invalid_: `1.5`, `2.5`, `4`, `4.5`, `5`, `5.5`, any non-number
 
 
 
-### `switch` (v5 proposal)
+### `switch` (proposed)
+
+Defined in [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package.
 
 The value of the keyword is the array of if/then clauses. Each clause is the object with the following properties:
 
