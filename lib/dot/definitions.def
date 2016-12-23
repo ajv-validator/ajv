@@ -33,6 +33,7 @@
     var $it = it.util.copy(it);
     var $closingBraces = '';
     $it.level++;
+    var $nextValid = 'valid' + $it.level;
   }}
 #}}
 
@@ -47,7 +48,7 @@
 
 {{## def.ifResultValid:
   {{? $breakOnError }}
-    if (valid{{=$it.level}}) {
+    if ({{=$nextValid}}) {
     {{ $closingBraces += '}'; }}
   {{?}}
 #}}
