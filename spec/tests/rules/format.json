@@ -170,11 +170,6 @@
         "valid": true
       },
       {
-        "description": "a valid JSON-pointer with terminating /",
-        "data": "/foo/bar~0/baz~1/%a/",
-        "valid": true
-      },
-      {
         "description": "a valid JSON-pointer as uri fragment",
         "data": "#/foo/%25a",
         "valid": true
@@ -195,14 +190,29 @@
         "valid": false
       },
       {
-        "description": "not a valid JSON-pointer (/ not escaped)",
-        "data": "/foo//",
-        "valid": false
-      },
-      {
         "description": "not a valid JSON-pointer as uri fragment (% not URL-encoded)",
         "data": "#/foo/%a",
         "valid": false
+      },
+      {
+        "description": "valid JSON-pointer with empty segment",
+        "data": "/foo//bar",
+        "valid": true
+      },
+      {
+        "description": "valid JSON-pointer with the last empty segment",
+        "data": "/foo/bar/",
+        "valid": true
+      },
+      {
+        "description": "valid JSON-pointer with empty segment as uri fragment",
+        "data": "#/foo//bar",
+        "valid": true
+      },
+      {
+        "description": "valid JSON-pointer with the last empty segment as uri fragment",
+        "data": "#/foo/bar/",
+        "valid": true
       }
     ]
   },
@@ -213,11 +223,6 @@
       {
         "description": "a valid relative JSON-pointer",
         "data": "1/foo/bar~0/baz~1/%a",
-        "valid": true
-      },
-      {
-        "description": "a valid relative JSON-pointer with terminating /",
-        "data": "1/foo/bar~0/baz~1/%a/",
         "valid": true
       },
       {
@@ -241,11 +246,6 @@
         "valid": false
       },
       {
-        "description": "not a valid relative JSON-pointer (/ not escaped)",
-        "data": "1/foo//",
-        "valid": false
-      },
-      {
         "description": "not a valid relative JSON-pointer (leading 0)",
         "data": "01/foo",
         "valid": false
@@ -254,6 +254,16 @@
         "description": "not a valid relative JSON-pointer with # (leading 0)",
         "data": "02#",
         "valid": false
+      },
+      {
+        "description": "valid relative JSON-pointer with empty segment",
+        "data": "1/foo//bar",
+        "valid": true
+      },
+      {
+        "description": "valid relative JSON-pointer with the last empty segment",
+        "data": "1/foo/bar/",
+        "valid": true
       }
     ]
   }
