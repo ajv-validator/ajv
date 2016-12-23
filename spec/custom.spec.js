@@ -941,4 +941,86 @@ describe('Custom keywords', function () {
       });
     }
   });
+
+
+  describe('getKeyword', function() {
+    it('should return boolean for pre-defined and unknown keywords', function() {
+      ajv.getKeyword('type') .should.equal(true);
+      ajv.getKeyword('properties') .should.equal(true);
+      ajv.getKeyword('additionalProperties') .should.equal(true);
+      ajv.getKeyword('unknown') .should.equal(false);
+    });
+
+    it('should return keyword definition for custom keywords', function() {
+      var definition = {
+        validate: function() { return true; }
+      };
+
+      ajv.addKeyword('mykeyword', definition);
+      ajv.getKeyword('mykeyword') .should.equal(definition);
+    });
+  });
+
+
+  describe('removeKeyword', function() {
+    it('should remove and allow redefining custom keyword', function() {
+      ajv.addKeyword('positive', {
+        type: 'number',
+        validate: function (schema, data) { return data > 0; }
+      });
+
+      var schema = { positive: true };
+
+      var validate = ajv.compile(schema);
+      validate(0) .should.equal(false);
+      validate(1) .should.equal(true);
+
+      should.throw(function() {
+        ajv.addKeyword('positive', {
+          type: 'number',
+          validate: function(sch, data) { return data >= 0; }
+        });
+      });
+
+      ajv.removeKeyword('positive');
+      ajv.removeSchema(schema);
+      ajv.addKeyword('positive', {
+        type: 'number',
+        validate: function (sch, data) { return data >= 0; }
+      });
+
+      validate = ajv.compile(schema);
+      validate(-1) .should.equal(false);
+      validate(0) .should.equal(true);
+      validate(1) .should.equal(true);
+    });
+
+    it('should remove and allow redefining standard keyword', function() {
+      var schema = { minimum: 1 };
+      var validate = ajv.compile(schema);
+      validate(0) .should.equal(false);
+      validate(1) .should.equal(true);
+      validate(2) .should.equal(true);
+
+      ajv.removeKeyword('minimum');
+      ajv.removeSchema(schema);
+
+      validate = ajv.compile(schema);
+      validate(0) .should.equal(true);
+      validate(1) .should.equal(true);
+      validate(2) .should.equal(true);
+
+      ajv.addKeyword('minimum', {
+        type: 'number',
+        // make minimum exclusive
+        validate: function (sch, data) { return data > sch; }
+      });
+      ajv.removeSchema(schema);
+
+      validate = ajv.compile(schema);
+      validate(0) .should.equal(false);
+      validate(1) .should.equal(false);
+      validate(2) .should.equal(true);
+    });
+  });
 });
