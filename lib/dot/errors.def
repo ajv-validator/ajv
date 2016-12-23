@@ -64,7 +64,7 @@
       throw new ValidationError(vErrors);
     {{??}}
       validate.errors = vErrors;
-      return false
+      return false;
     {{?}}
   {{?}}
 #}}
@@ -111,6 +111,7 @@
   type:            "'should be {{? $typeIsArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}'",
   uniqueItems:     "'should NOT have duplicate items (items ## ' + j + ' and ' + i + ' are identical)'",
   custom:          "'should pass \"{{=$rule.keyword}}\" keyword validation'",
+  propertyNames:   "'property name \\'{{=$invalidName}}\\' is invalid'",
   patternGroups:   "'should NOT have {{=$moreOrLess}} than {{=$limit}} properties matching pattern \"{{=it.util.escapeQuotes($pgProperty)}}\"'",
   patternRequired: "'should have property matching pattern \\'{{=$missingPattern}}\\''",
   switch:          "'should pass \"switch\" keyword validation'",
@@ -144,6 +145,7 @@
   type:            "validate.schema{{=$schemaPath}}",
   uniqueItems:     "{{#def.schemaRefOrVal}}",
   custom:          "validate.schema{{=$schemaPath}}",
+  propertyNames:   "validate.schema{{=$schemaPath}}",
   patternGroups:   "validate.schema{{=$schemaPath}}",
   patternRequired: "validate.schema{{=$schemaPath}}",
   switch:          "validate.schema{{=$schemaPath}}",
@@ -176,6 +178,7 @@
   type:            "{ type: '{{? $typeIsArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}' }",
   uniqueItems:     "{ i: i, j: j }",
   custom:          "{ keyword: '{{=$rule.keyword}}' }",
+  propertyNames:   "{ propertyName: '{{=$invalidName}}' }",
   patternGroups:   "{ reason: '{{=$reason}}', limit: {{=$limit}}, pattern: '{{=it.util.escapeQuotes($pgProperty)}}' }",
   patternRequired: "{ missingPattern: '{{=$missingPattern}}' }",
   switch:          "{ caseIndex: {{=$caseIndex}} }",

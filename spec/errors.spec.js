@@ -14,7 +14,7 @@ describe('Validation errors', function () {
   function createInstances(errorDataPath) {
     ajv = new Ajv({ errorDataPath: errorDataPath, loopRequired: 21 });
     ajvJP = new Ajv({ errorDataPath: errorDataPath, jsonPointers: true, loopRequired: 21 });
-    fullAjv = new Ajv({ errorDataPath: errorDataPath, allErrors: true, jsonPointers: true, loopRequired: 21 });
+    fullAjv = new Ajv({ errorDataPath: errorDataPath, allErrors: true, verbose: true, jsonPointers: true, loopRequired: 21 });
   }
 
   it('error should include dataPath', function() {
@@ -479,6 +479,42 @@ describe('Validation errors', function () {
       shouldBeInvalid(validate, invalidData);
       shouldBeError(validate.errors[0], 'additionalItems', '#/additionalItems', '', 'should NOT have more than 2 items');
     }
+  });
+
+
+  describe('"propertyNames" errors', function() {
+    it('should add propertyName to errors', function() {
+      var schema = {
+        type: 'object',
+        propertyNames: { format: 'email' }
+      };
+
+      var data = {
+        'bar.baz@email.example.com': {}
+      };
+
+      var invalidData = {
+        'foo': {},
+        'bar': {},
+        'bar.baz@email.example.com': {}
+      };
+
+      test(ajv, 2);
+      test(ajvJP, 2);
+      test(fullAjv, 4);
+
+      function test(_ajv, numErrors) {
+        var validate = _ajv.compile(schema);
+        shouldBeValid(validate, data);
+        shouldBeInvalid(validate, invalidData, numErrors);
+        shouldBeError(validate.errors[0], 'format', '#/propertyNames/format', '', 'should match format "email"');
+        shouldBeError(validate.errors[1], 'propertyNames', '#/propertyNames', '', 'property name \'foo\' is invalid');
+        if (numErrors == 4) {
+          shouldBeError(validate.errors[2], 'format', '#/propertyNames/format', '', 'should match format "email"');
+          shouldBeError(validate.errors[3], 'propertyNames', '#/propertyNames', '', 'property name \'bar\' is invalid');
+        }
+      }
+    });
   });
 
 
