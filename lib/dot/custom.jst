@@ -73,7 +73,7 @@ var valid{{=$lvl}};
       ({{= $ruleValidate.validate }})
     {{?}}
   {{?? $macro }}
-    valid{{=$it.level}}
+    {{=$nextValid}}
   {{??}}
     {{? $asyncKeyword }}
       {{? $rDef.errors === false }}
