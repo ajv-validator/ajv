@@ -78,7 +78,7 @@ Performace of different validators by [json-schema-benchmark](https://github.com
 - [assigning defaults](#assigning-defaults) to missing properties and items
 - [coercing data](#coercing-data-types) to the types specified in `type` keywords
 - [custom keywords](#defining-custom-keywords)
-- keywords `const` and `contains`
+- draft-6 keywords `const`, `contains` and `propertyNames`
 - keywords `switch`, `patternRequired`, `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` from [JSON-schema extension proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package
 - [$data reference](#data-reference) to use values from the validated data as values for the schema keywords
 - [asynchronous validation](#asynchronous-validation) of custom formats and keywords
@@ -187,7 +187,7 @@ Ajv supports all validation keywords from draft 4 of JSON-schema standard:
 - [for numbers](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-numbers) - maximum, minimum, exclusiveMaximum, exclusiveMinimum, multipleOf
 - [for strings](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-strings) - maxLength, minLength, pattern, format
 - [for arrays](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-arrays) - maxItems, minItems, uniqueItems, items, additionalItems, [contains](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#contains)
-- [for objects](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-objects) - maxProperties, minproperties, required, properties, patternProperties, additionalProperties, dependencies
+- [for objects](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-objects) - maxProperties, minproperties, required, properties, patternProperties, additionalProperties, dependencies, [propertyNames](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#propertynames)
 - [for all types](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-all-types) - enum, [const](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#const)
 - [compound keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#compound-keywords) - not, oneOf, anyOf, allOf
 
@@ -1080,7 +1080,7 @@ Defaults:
   - integer number - to limit the maximum number of keywords of the schema that will be inlined.
 - _passContext_: pass validation context to custom keyword functions. If this option is `true` and you pass some context to the compiled validation function with `validate.call(context, data)`, the `context` will be available as `this` in your custom keywords. By default `this` is Ajv instance.
 - _loopRequired_: by default `required` keyword is compiled into a single expression (or a sequence of statements in `allErrors` mode). In case of a very large number of properties in this keyword it may result in a very big validation function. Pass integer to set the number of properties above which `required` keyword will be validated in a loop - smaller validation function size but also worse performance.
-- _ownProperties_: by default ajv iterates over all enumerable object properties; when this option is `true` only own enumerable object properties (i.e. found directly on the object rather than on its prototype) are iterated. Contributed by @mbroadst.
+- _ownProperties_: by default Ajv iterates over all enumerable object properties; when this option is `true` only own enumerable object properties (i.e. found directly on the object rather than on its prototype) are iterated. Contributed by @mbroadst.
 - _multipleOfPrecision_: by default `multipleOf` keyword is validated by comparing the result of division with parseInt() of that result. It works for dividers that are bigger than 1. For small dividers such as 0.01 the result of the division is usually not integer (even when it should be integer, see issue [#84](https://github.com/epoberezkin/ajv/issues/84)). If you need to use fractional dividers set this option to some positive integer N to have `multipleOf` validated using this formula: `Math.abs(Math.round(division) - division) < 1e-N` (it is slower but allows for float arithmetics deviations).
 - _errorDataPath_: set `dataPath` to point to 'object' (default) or to 'property' when validating keywords `required`, `additionalProperties` and `dependencies`.
 - _sourceCode_: add `sourceCode` property to validating function (for debugging; this code can be different from the result of toString call).
@@ -1107,6 +1107,8 @@ Each error is an object with the following properties:
 - _parentSchema_: the schema containing the keyword (added with `verbose` option)
 - _data_: the data validated by the keyword (added with `verbose` option).
 
+__Please note__: `propertyNames` keyword schema validation errors have an additional property `propertyName`, `dataPath` points to the object. After schema validation for each property name, if it is invalid an additional error is added with the property `keyword` equal to `"propertyNames"`.
+
 
 ### Error parameters
 
@@ -1128,6 +1130,7 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - `multipleOf` - property `multipleOf` (the schema of the keyword)
 - `pattern` - property `pattern` (the schema of the keyword)
 - `required` - property `missingProperty` (required property that is missing).
+- `propertyNames` - property `propertyName` (an invalid property name).
 - `patternRequired` (in ajv-keywords) - property `missingPattern` (required pattern that did not match any property).
 - `type` - property `type` (required type(s), a string, can be a comma-separated list)
 - `uniqueItems` - properties `i` and `j` (indices of duplicate items).

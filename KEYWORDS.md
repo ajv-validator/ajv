@@ -22,7 +22,7 @@ The keywords and their values define what rules the data should satisfy to be va
     - [uniqueItems](#uniqueitems)
     - [items](#items)
     - [additionalItems](#additionalitems)
-    - [contains](#contains)
+    - [contains](#contains) (NEW in draft-6)
 - [Keywords for objects](#keywords-for-objects)
     - [maxProperties/minProperties](#maxproperties--minproperties)
     - [required](#required)
@@ -30,11 +30,12 @@ The keywords and their values define what rules the data should satisfy to be va
     - [patternProperties](#patternproperties)
     - [additionalProperties](#additionalproperties)
     - [dependencies](#dependencies)
+    - [propertyNames](#propertynames) (NEW in draft-6)
     - [patternGroups](#patterngroups-deprecated) (deprecated)
     - [patternRequired](#patternrequired-proposed) (proposed)
 - [Keywords for all types](#keywords-for-all-types)
     - [enum](#enum)
-    - [const](#const)
+    - [const](#const) (NEW in draft-6)
 - [Compound keywords](#compound-keywords)
     - [not](#not)
     - [oneOf](#oneof)
@@ -538,6 +539,7 @@ __Examples__
     _invalid_: `{"bar": 2}`, `{"baz": 3}`, `{"foo": 1, "bar": 2}`, etc.
 
 
+
 ### `dependencies`
 
 The value of the keyword is a map with keys equal to data object properties. Each value in the map should be either an array of unique property names ("property dependency") or a JSON schema ("schema dependency").
@@ -579,6 +581,29 @@ __Examples__
     _valid_: `{}`, `{"foo": 1}`, `{"foo": 1, "bar": 2}`, `{"a": 1}`, any non-object
 
     _invalid_: `{"foo": 1, "bar": "a"}`
+
+
+
+### `propertyNames`
+
+The value of this keyword is a JSON schema.
+
+For data object to be valid each property name in this object should be valid according to this schema.
+
+
+__Example__
+
+_schema_:
+
+```json
+{
+    "propertyNames": { "format": "email" }
+}
+```
+
+_valid_: `{"foo@bar.com": "any", "bar@bar.com": "any"}`, any non-object
+
+_invalid_: `{"foo": "any value"}`
 
 
 
