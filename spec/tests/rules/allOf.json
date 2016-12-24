@@ -1,0 +1,75 @@
+[
+  {
+    "description": "allOf with one empty schema",
+    "schema": {
+      "allOf": [
+        {}
+      ]
+    },
+    "tests": [
+      {
+        "description": "any data is valid",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "allOf with two empty schemas",
+    "schema": {
+      "allOf": [
+        {},
+        {}
+      ]
+    },
+    "tests": [
+      {
+        "description": "any data is valid",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "allOf with two schemas, the first is empty",
+    "schema": {
+      "allOf": [
+        {},
+        { "type": "number" }
+      ]
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "string is invalid",
+        "data": "foo",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "allOf with two schemas, the second is empty",
+    "schema": {
+      "allOf": [
+        { "type": "number" },
+        {}
+      ]
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "string is invalid",
+        "data": "foo",
+        "valid": false
+      }
+    ]
+  }
+]
