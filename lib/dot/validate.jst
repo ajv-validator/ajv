@@ -14,7 +14,12 @@
     * validateRef etc. are defined in the parent scope in index.js
     */ }}
 
-{{ var $async = it.schema.$async === true; }}
+{{
+  if (typeof it.schema == 'boolean') {
+    it.schema = it.schema ? {} : { not: {} };
+  }
+  var $async = it.schema.$async === true;
+}}
 
 {{? it.isTop}}
   {{
