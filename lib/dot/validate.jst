@@ -21,7 +21,57 @@
   var $async = it.schema.$async === true;
 }}
 
-{{? it.isTop}}
+{{? it.isTop }}
+  {{? $async }}
+    {{
+      it.async = true;
+      var $es7 = it.opts.async == 'es7';
+      it.yieldAwait = $es7 ? 'await' : 'yield';
+    }}
+  {{?}}
+
+  {{# def.beginDefOut}}
+    var validate =
+      {{? $async }}
+        {{? $es7 }}
+          (async function
+        {{??}}
+          {{? it.opts.async == 'co*'}}co.wrap{{?}}(function*
+        {{?}}
+      {{??}}
+        (function
+      {{?}}
+  {{# def.storeDefOut:def_function }}
+{{?}}
+
+
+{{? typeof it.schema == 'boolean' }}
+  {{? it.isTop}}
+    {{= def_function }}() {
+      {{? it.schema }}
+        {{? !$async }}
+          validate.errors = null;
+        {{?}}
+        return true;
+      {{??}}
+        {{ $breakOnError = true; }}
+        {{# def.error:'false schema' }}
+      {{?}}
+    });
+
+    return validate;
+  {{??}}
+    var {{=$valid}} = {{=it.schema}};
+    {{? !it.schema }}
+      {{# def.error:'false schema' }}
+    {{?}}
+  {{?}}
+
+  {{ return out; }}
+{{?}}
+
+
+{{? it.isTop }}
   {{
     var $top = it.isTop
       , $lvl = it.level = 0
@@ -29,26 +79,12 @@
       , $data = 'data';
     it.rootId = it.resolve.fullPath(it.root.schema.id);
     it.baseId = it.baseId || it.rootId;
-    if ($async) {
-      it.async = true;
-      var $es7 = it.opts.async == 'es7';
-      it.yieldAwait = $es7 ? 'await' : 'yield';
-    }
     delete it.isTop;
 
     it.dataPathArr = [undefined];
   }}
 
-  var validate =
-  {{? $async }}
-    {{? $es7 }}
-      (async function
-    {{??}}
-      {{? it.opts.async == 'co*'}}co.wrap{{?}}(function*
-    {{?}}
-  {{??}}
-    (function
-  {{?}}
+  {{= def_function }}
     (data, dataPath, parentData, parentDataProperty, rootData) {
     'use strict';
     var vErrors = null; {{ /* don't edit, used in replace */ }}

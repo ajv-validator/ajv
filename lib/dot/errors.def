@@ -91,6 +91,7 @@
 {{## def.concatSchemaEQ:{{?$isData}}' + {{=$schemaValue}} + '{{??}}{{=it.util.escapeQuotes($schema)}}{{?}}#}}
 
 {{## def._errorMessages = {
+  'false schema':  "'boolean schema is false'",
   $ref:            "'can\\\'t resolve reference {{=it.util.escapeQuotes($schema)}}'",
   additionalItems: "'should NOT have more than {{=$schema.length}} items'",
   additionalProperties: "'should NOT have additional properties'",
@@ -125,6 +126,7 @@
 {{## def.schemaRefOrQS: {{?$isData}}validate.schema{{=$schemaPath}}{{??}}{{=it.util.toQuotedString($schema)}}{{?}} #}}
 
 {{## def._errorSchemas = {
+  'false schema':  "false",
   $ref:            "{{=it.util.toQuotedString($schema)}}",
   additionalItems: "false",
   additionalProperties: "false",
@@ -158,6 +160,7 @@
 {{## def.schemaValueQS: {{?$isData}}{{=$schemaValue}}{{??}}{{=it.util.toQuotedString($schema)}}{{?}} #}}
 
 {{## def._errorParams = {
+  'false schema':  "{}",
   $ref:            "{ ref: '{{=it.util.escapeQuotes($schema)}}' }",
   additionalItems: "{ limit: {{=$schema.length}} }",
   additionalProperties: "{ additionalProperty: '{{=$additionalProperty}}' }",
