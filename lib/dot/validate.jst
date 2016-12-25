@@ -14,7 +14,10 @@
     * validateRef etc. are defined in the parent scope in index.js
     */ }}
 
-{{ var $async = it.schema.$async === true; }}
+{{
+  var $async = it.schema.$async === true
+    , $refKeywords = it.util.schemaHasRulesExcept(it.schema, it.RULES.all, '$ref');
+}}
 
 {{? it.isTop }}
   {{? $async }}
@@ -39,16 +42,8 @@
           'use strict';
 {{?}}
 
-
-{{? typeof it.schema == 'boolean' }}
-  {{? it.schema }}
-    {{? it.isTop}}
-      {{? !$async }} validate.errors = null; {{?}}
-      return true;
-    {{??}}
-      var {{=$valid}} = true;
-    {{?}}
-  {{??}}
+{{? typeof it.schema == 'boolean' || !($refKeywords || it.schema.$ref) }}
+  {{? it.schema === false}}
     {{ var $keyword = 'false schema'; }}
     {{# def.setupKeyword }}
     {{? it.isTop}}
@@ -57,6 +52,13 @@
       var {{=$valid}} = false;
     {{?}}
     {{# def.error:'false schema' }}
+  {{??}}
+    {{? it.isTop}}
+      {{? !$async }} validate.errors = null; {{?}}
+      return true;
+    {{??}}
+      var {{=$valid}} = true;
+    {{?}}
   {{?}}
 
   {{? it.isTop}}
@@ -128,8 +130,7 @@
   {{?}}
 {{?}}
 
-{{ var $refKeywords; }}
-{{? it.schema.$ref && ($refKeywords = it.util.schemaHasRulesExcept(it.schema, it.RULES.all, '$ref')) }}
+{{? it.schema.$ref && $refKeywords }}
   {{? it.opts.extendRefs == 'ignore' }}
     {{
       $refKeywords = false;
