@@ -8,3 +8,4 @@
 {{?}}
 var {{=$valid}} = equal({{=$data}}, schema{{=$lvl}});
 {{# def.checkError:'const' }}
+{{? $breakOnError }} else { {{?}}
