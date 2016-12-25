@@ -8,7 +8,11 @@ describe('boolean schemas', function() {
   var ajvs;
 
   before(function() {
-    ajvs = [ new Ajv, new Ajv({allErrors: true}) ];
+    ajvs = [
+      new Ajv,
+      new Ajv({allErrors: true}),
+      new Ajv({inlineRefs: false})
+    ];
   });
 
   describe('top level schema', function() {
@@ -426,6 +430,35 @@ describe('boolean schemas', function() {
 
         validate = ajv.compile(schema);
         testSchema(validate, !valid);
+      };
+    }
+  });
+
+
+  describe('in $ref', function() {
+    describe('schema = true', function() {
+      it('should be valid with any data', function() {
+        ajvs.forEach(test(true, true));
+      });
+    });
+
+    describe('schema = false', function() {
+      it('should be invalid with any data', function() {
+        ajvs.forEach(test(false, false));
+      });
+    });
+
+    function test(boolSchema, valid) {
+      return function (ajv) {
+        var schema = {
+          $ref: '#/definitions/bool',
+          definitions: {
+            bool: boolSchema
+          }
+        };
+
+        var validate = ajv.compile(schema);
+        testSchema(validate, valid);
       };
     }
   });
