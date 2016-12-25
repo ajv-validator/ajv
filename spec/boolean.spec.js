@@ -315,7 +315,7 @@ describe('boolean schemas', function() {
 
 
   describe('in allOf', function() {
-    describe.skip('schema = true', function() {
+    describe('schema = true', function() {
       it('should be valid with any data', function() {
         ajvs.forEach(test(true, true));
       });
