@@ -23,6 +23,7 @@ jsonSchemaTest(instances, {
       : './async/{**/,}*.json'
   },
   async: true,
+  asyncValid: 'data',
   assert: require('./chai').assert,
   Promise: Promise,
   afterError: after.error,

@@ -54,8 +54,12 @@
     {{# def.error:'false schema' }}
   {{??}}
     {{? it.isTop}}
-      {{? !$async }} validate.errors = null; {{?}}
-      return true;
+      {{? $async }}
+        return data;
+      {{??}}
+        validate.errors = null;
+        return true;
+      {{?}}
     {{??}}
       var {{=$valid}} = true;
     {{?}}
@@ -211,7 +215,7 @@
 
 {{? $top }}
     {{? $async }}
-      if (errors === 0) return true;           {{ /* don't edit, used in replace */ }}
+      if (errors === 0) return data;           {{ /* don't edit, used in replace */ }}
       else throw new ValidationError(vErrors); {{ /* don't edit, used in replace */ }}
     {{??}}
       validate.errors = vErrors; {{ /* don't edit, used in replace */ }}

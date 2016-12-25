@@ -63,12 +63,16 @@
 
   {{? $async }}
     {{ if (!it.async) throw new Error('async schema referenced by sync schema'); }}
-    try { {{? $breakOnError }}var {{=$valid}} ={{?}} {{=it.yieldAwait}} {{=__callValidate}}; }
-    catch (e) {
+    {{? $breakOnError }} var {{=$valid}}; {{?}}
+    try {
+      {{=it.yieldAwait}} {{=__callValidate}};
+      {{? $breakOnError }} {{=$valid}} = true; {{?}}
+    } catch (e) {
       if (!(e instanceof ValidationError)) throw e;
       if (vErrors === null) vErrors = e.errors;
       else vErrors = vErrors.concat(e.errors);
       errors = vErrors.length;
+      {{? $breakOnError }} {{=$valid}} = false; {{?}}
     }
     {{? $breakOnError }} if ({{=$valid}}) { {{?}}
   {{??}}

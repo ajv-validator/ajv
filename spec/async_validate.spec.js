@@ -38,7 +38,7 @@ describe('async schemas, formats and keywords', function() {
         var _co = useCo(_ajv);
 
         return Promise.all([
-          shouldBeValid(   _co(validate('abc')) ),
+          shouldBeValid(   _co(validate('abc')), 'abc' ),
           shouldBeInvalid( _co(validate('abcd')) ),
           shouldBeInvalid( _co(validate(1)) ),
         ]);
@@ -214,9 +214,10 @@ describe('async schemas, formats and keywords', function() {
       return repeat(function() { return Promise.all(instances.map(function (_ajv) {
         var validate = _ajv.compile(schema);
         var _co = useCo(_ajv);
+        var validData = { word: 'tomorrow' };
 
         return Promise.all([
-          shouldBeValid(   _co(validate({ word: 'tomorrow' })) ),
+          shouldBeValid(   _co(validate(validData)), validData ),
           shouldBeInvalid( _co(validate({ word: 'manana' })) ),
           shouldBeInvalid( _co(validate({ word: 1 })) ),
           shouldThrow(     _co(validate({ word: 'today' })), 'unknown word' )
@@ -339,17 +340,18 @@ describe('async schemas, formats and keywords', function() {
         if (refSchema) try { _ajv.addSchema(refSchema); } catch(e) {}
         var validate = _ajv.compile(schema);
         var _co = useCo(_ajv);
+        var data;
 
         return Promise.all([
-          shouldBeValid(   _co(validate({ foo: 'tomorrow' })) ),
+          shouldBeValid(   _co(validate(data = { foo: 'tomorrow' })), data ),
           shouldBeInvalid( _co(validate({ foo: 'manana' })) ),
           shouldBeInvalid( _co(validate({ foo: 1 })) ),
           shouldThrow(     _co(validate({ foo: 'today' })), 'unknown word' ),
-          shouldBeValid(   _co(validate({ foo: { foo: 'tomorrow' }})) ),
+          shouldBeValid(   _co(validate(data = { foo: { foo: 'tomorrow' }})), data ),
           shouldBeInvalid( _co(validate({ foo: { foo: 'manana' }})) ),
           shouldBeInvalid( _co(validate({ foo: { foo: 1 }})) ),
           shouldThrow(     _co(validate({ foo: { foo: 'today' }})), 'unknown word' ),
-          shouldBeValid(   _co(validate({ foo: { foo: { foo: 'tomorrow' }}})) ),
+          shouldBeValid(   _co(validate(data = { foo: { foo: { foo: 'tomorrow' }}})), data ),
           shouldBeInvalid( _co(validate({ foo: { foo: { foo: 'manana' }}})) ),
           shouldBeInvalid( _co(validate({ foo: { foo: { foo: 1 }}})) ),
           shouldThrow(     _co(validate({ foo: { foo: { foo: 'today' }}})), 'unknown word' )
@@ -417,9 +419,9 @@ function shouldThrowFunc(message, func) {
 }
 
 
-function shouldBeValid(p) {
+function shouldBeValid(p, data) {
   return p.then(function (valid) {
-    valid .should.equal(true);
+    valid .should.equal(data);
   });
 }
 
