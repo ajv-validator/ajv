@@ -25,46 +25,43 @@
     }}
   {{?}}
 
-  {{# def.beginDefOut}}
-    var validate =
-      {{? $async }}
-        {{? $es7 }}
-          (async function
-        {{??}}
-          {{? it.opts.async == 'co*'}}co.wrap{{?}}(function*
-        {{?}}
+  var validate =
+    {{? $async }}
+      {{? $es7 }}
+        (async function
       {{??}}
-        (function
+        {{? it.opts.async == 'co*'}}co.wrap{{?}}(function*
       {{?}}
-      (data, dataPath, parentData, parentDataProperty, rootData) {
-  {{# def.storeDefOut:def_function }}
+    {{??}}
+      (function
+    {{?}}
+        (data, dataPath, parentData, parentDataProperty, rootData) {
+          'use strict';
 {{?}}
 
 
 {{? typeof it.schema == 'boolean' }}
-  {{? !it.schema }}
-    {{ var $keyword = 'false schema'; }}
-    {{# def.setupKeyword}}
-  {{?}}
-  {{? it.isTop}}
-    {{= def_function }}
-      {{? it.schema }}
-        {{? !$async }}
-          validate.errors = null;
-        {{?}}
-        return true;
-      {{??}}
-        {{ $breakOnError = true; }}
-        {{# def.error:'false schema' }}
-      {{?}}
-    });
-
-    return validate;
-  {{??}}
-    var {{=$valid}} = {{=it.schema}};
-    {{? !it.schema }}
-      {{# def.error:'false schema' }}
+  {{? it.schema }}
+    {{? it.isTop}}
+      {{? !$async }} validate.errors = null; {{?}}
+      return true;
+    {{??}}
+      var {{=$valid}} = true;
     {{?}}
+  {{??}}
+    {{ var $keyword = 'false schema'; }}
+    {{# def.setupKeyword }}
+    {{? it.isTop}}
+      {{ $breakOnError = true; }}
+    {{??}}
+      var {{=$valid}} = false;
+    {{?}}
+    {{# def.error:'false schema' }}
+  {{?}}
+
+  {{? it.isTop}}
+    });
+    return validate;
   {{?}}
 
   {{ return out; }}
@@ -84,11 +81,9 @@
     it.dataPathArr = [undefined];
   }}
 
-  {{= def_function }}
-    'use strict';
-    var vErrors = null; {{ /* don't edit, used in replace */ }}
-    var errors = 0;     {{ /* don't edit, used in replace */ }}
-    if (rootData === undefined) rootData = data;
+  var vErrors = null; {{ /* don't edit, used in replace */ }}
+  var errors = 0;     {{ /* don't edit, used in replace */ }}
+  if (rootData === undefined) rootData = data;
 {{??}}
   {{
     var $lvl = it.level
