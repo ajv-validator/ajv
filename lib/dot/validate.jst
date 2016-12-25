@@ -14,12 +14,7 @@
     * validateRef etc. are defined in the parent scope in index.js
     */ }}
 
-{{
-  if (typeof it.schema == 'boolean') {
-    it.schema = it.schema ? {} : { not: {} };
-  }
-  var $async = it.schema.$async === true;
-}}
+{{ var $async = it.schema.$async === true; }}
 
 {{? it.isTop }}
   {{? $async }}
@@ -41,13 +36,18 @@
       {{??}}
         (function
       {{?}}
+      (data, dataPath, parentData, parentDataProperty, rootData) {
   {{# def.storeDefOut:def_function }}
 {{?}}
 
 
 {{? typeof it.schema == 'boolean' }}
+  {{? !it.schema }}
+    {{ var $keyword = 'false schema'; }}
+    {{# def.setupKeyword}}
+  {{?}}
   {{? it.isTop}}
-    {{= def_function }}() {
+    {{= def_function }}
       {{? it.schema }}
         {{? !$async }}
           validate.errors = null;
@@ -85,7 +85,6 @@
   }}
 
   {{= def_function }}
-    (data, dataPath, parentData, parentDataProperty, rootData) {
     'use strict';
     var vErrors = null; {{ /* don't edit, used in replace */ }}
     var errors = 0;     {{ /* don't edit, used in replace */ }}
