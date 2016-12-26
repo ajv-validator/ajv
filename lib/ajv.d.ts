@@ -115,7 +115,7 @@ declare namespace ajv {
   }
 
   interface Options {
-    v5?: boolean;
+    $data?: boolean;
     allErrors?: boolean;
     verbose?: boolean;
     jsonPointers?: boolean;
@@ -143,7 +143,8 @@ declare namespace ajv {
     multipleOfPrecision?: boolean | number;
     errorDataPath?: string,
     messages?: boolean;
-    beautify?: boolean | Object;
+    sourceCode?: boolean;
+    processCode?: (code: string) => string;
     cache?: Object;
   }
 

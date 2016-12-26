@@ -156,7 +156,7 @@ describe('issue #181, custom keyword is not validated in allErrors mode if there
   });
 
   function testCustomKeywordErrors(def) {
-    var ajv = new Ajv({ allErrors: true, beautify: true });
+    var ajv = new Ajv({ allErrors: true });
 
     ajv.addKeyword('alwaysFails', def);
 

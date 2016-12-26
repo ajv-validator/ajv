@@ -941,4 +941,20 @@ describe('Ajv Options', function () {
       });
     });
   });
+
+
+  describe('processCode', function() {
+    it('should process generated code', function() {
+      var ajv = new Ajv;
+      var validate = ajv.compile({type: 'string'});
+      validate.toString().split('\n').length .should.equal(1);
+
+      var beautify = require('js-beautify').js_beautify;
+      var ajvPC = new Ajv({processCode: beautify});
+      validate = ajvPC.compile({type: 'string'});
+      validate.toString().split('\n').length .should.be.above(1);
+      validate('foo') .should.equal(true);
+      validate(1) .should.equal(false);
+    });
+  });
 });
