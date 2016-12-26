@@ -67,6 +67,7 @@
     "json-stable-stringify": "^1.0.1"
   },
   "devDependencies": {
+    "ajv-async": "^0.1.0",
     "bluebird": "^3.1.5",
     "brfs": "^1.4.3",
     "browserify": "^13.0.0",

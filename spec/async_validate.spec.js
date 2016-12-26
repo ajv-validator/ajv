@@ -4,7 +4,8 @@ var Ajv = require('./ajv')
   , Promise = require('./promise')
   , getAjvInstances = require('./ajv_async_instances')
   , should = require('./chai').should()
-  , co = require('co');
+  , co = require('co')
+  , setupAsync = require('ajv-async');
 
 
 describe('async schemas, formats and keywords', function() {
@@ -375,27 +376,27 @@ describe('async schemas, formats and keywords', function() {
 describe('async/transpile option', function() {
   it('should throw error with unknown async option', function() {
     shouldThrowFunc('bad async mode: es8', function() {
-      new Ajv({ async: 'es8' });
+      setupAsync(new Ajv({ async: 'es8' }));
     });
   });
 
 
   it('should throw error with unknown transpile option', function() {
     shouldThrowFunc('bad transpiler: babel', function() {
-      new Ajv({ transpile: 'babel' });
+      setupAsync(new Ajv({ transpile: 'babel' }));
     });
 
     shouldThrowFunc('bad transpiler: [object Object]', function() {
-      new Ajv({ transpile: {} });
+      setupAsync(new Ajv({ transpile: {} }));
     });
   });
 
 
   it('should set async option to es7 if tranpiler is nodent', function() {
-    var ajv1 = new Ajv({ transpile: 'nodent' });
+    var ajv1 = setupAsync(new Ajv({ transpile: 'nodent' }));
     ajv1._opts.async .should.equal('es7');
 
-    var ajv2 = new Ajv({ async: '*', transpile: 'nodent' });
+    var ajv2 = setupAsync(new Ajv({ async: '*', transpile: 'nodent' }));
     ajv2._opts.async .should.equal('es7');
   });
 });

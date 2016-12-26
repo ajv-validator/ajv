@@ -1,7 +1,8 @@
 'use strict';
 
 var Ajv = require('./ajv')
-  , util = require('../lib/compile/util');
+  , util = require('../lib/compile/util')
+  , setupAsync = require('ajv-async');
 
 module.exports = getAjvInstances;
 
@@ -98,5 +99,5 @@ function getAjvInstances(opts) {
 
 
 function getAjv(opts){
-  try { return new Ajv(opts); } catch(e) {}
+  try { return setupAsync(new Ajv(opts)); } catch(e) {}
 }
