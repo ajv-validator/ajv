@@ -516,26 +516,6 @@ validate(data).then(successFunc).catch(errorFunc);
 
 `npm install nodent` or use `nodent.min.js` from dist folder of npm package.
 
-You can use `nodent` directly, without [ajv-async](https://github.com/epoberezkin/ajv-async):
-
-```javascript
-var nodent = require('nodent')({
-  log: false,
-  dontInstallRequireHook: true
-});
-
-function nodentTranspile(code) {
-  return nodent.compile(code, '', {
-    promises: true,
-    sourcemap: false
-  }).code;
-}
-
-var ajv = new Ajv({ async: 'es7', processCode: nodentTranspile });
-```
-
-You have to explicitely specify `async: 'es7'` option in this case.
-
 
 #### Using regenerator
 
@@ -548,21 +528,6 @@ validate(data).then(successFunc).catch(errorFunc);
 ```
 
 `npm install regenerator` or use `regenerator.min.js` from dist folder of npm package.
-
-You can use `regenerator` directly:
-
-```javascript
-var regenerator = require(name);
-regenerator.runtime();
-
-function regeneratorTranspile(code) {
-  return regenerator.compile(code).code;
-}
-
-var ajv = new Ajv({ async: 'es7', processCode: regeneratorTranspile });
-```
-
-You have to explicitely specify `async` option in this case.
 
 
 #### Using other transpilers
