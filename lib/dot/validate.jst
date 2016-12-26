@@ -33,7 +33,7 @@
       {{? $es7 }}
         (async function
       {{??}}
-        {{? it.opts.async == 'co*'}}co.wrap{{?}}(function*
+        {{? it.opts.async != '*'}}co.wrap{{?}}(function*
       {{?}}
     {{??}}
       (function
