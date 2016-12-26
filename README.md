@@ -1064,7 +1064,8 @@ Defaults:
     - "co*" (native generators with co.wrap),
     - "es7"/"nodent",
     - "co*"/"regenerator" during the creation of the Ajv instance.
-    If none of the options is available the exception will be thrown.
+
+  If none of the options is available the exception will be thrown.
 - _transpile_: Requires [ajv-async](https://github.com/epoberezkin/ajv-async) package. It determines whether Ajv transpiles compiled asynchronous validation function. Option values:
   - `"nodent"` - transpile with [nodent](https://github.com/MatAtBread/nodent). If nodent is not installed, the exception will be thrown. nodent can only transpile es7 async functions; it will enforce this mode.
   - `"regenerator"` - transpile with [regenerator](https://github.com/facebook/regenerator). If regenerator is not installed, the exception will be thrown.
