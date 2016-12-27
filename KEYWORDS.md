@@ -16,7 +16,7 @@ The keywords and their values define what rules the data should satisfy to be va
     - [maxLength/minLength](#maxlength--minlength)
     - [pattern](#pattern)
     - [format](#format)
-    - [formatMaximum / formatMinimum and formatExclusiveMaximum / formatExclusiveMinimum](#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-proposed) (proposed)
+    - [formatMaximum / formatMinimum and formatExclusiveMaximum / formatExclusiveMinimum](#formatmaximum--formatminimum-and-formatexclusivemaximum--formatexclusiveminimum-proposed) (proposed)
 - [Keywords for arrays](#keywords-for-arrays)
     - [maxItems/minItems](#maxitems--minitems)
     - [uniqueItems](#uniqueitems)
@@ -218,7 +218,7 @@ _schema_:
 }
 ```
 
-_valid_: `2015-12-31`, `"2016-02-05"`, any non-string
+_valid_: `"2015-12-31"`, `"2016-02-05"`, any non-string
 
 _invalid_: `"2016-02-06"`, `"2016-02-07"`, `"abc"`
 
