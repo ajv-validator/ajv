@@ -1,0 +1,97 @@
+[
+  {
+    "description": "exclusiveMaximum as number",
+    "schema": {
+      "exclusiveMaximum": 3.0
+    },
+    "tests": [
+      {
+        "description": "below the exclusiveMaximum is valid",
+        "data": 2.2,
+        "valid": true
+      },
+      {
+        "description": "boundary point is invalid",
+        "data": 3.0,
+        "valid": false
+      },
+      {
+        "description": "above the exclusiveMaximum is invalid",
+        "data": 3.2,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "both exclusiveMaximum and maximum are numbers, exclusiveMaximum > maximum",
+    "schema": {
+      "exclusiveMaximum": 3.0,
+      "maximum": 2.0
+    },
+    "tests": [
+      {
+        "description": "below the maximum is valid",
+        "data": 1.2,
+        "valid": true
+      },
+      {
+        "description": "boundary point is valid",
+        "data": 2.0,
+        "valid": true
+      },
+      {
+        "description": "above maximum is invalid",
+        "data": 2.2,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "both exclusiveMaximum and maximum are numbers, exclusiveMaximum = maximum",
+    "schema": {
+      "exclusiveMaximum": 3.0,
+      "maximum": 3.0
+    },
+    "tests": [
+      {
+        "description": "below the maximum is valid",
+        "data": 2.2,
+        "valid": true
+      },
+      {
+        "description": "boundary point is invalid",
+        "data": 3.0,
+        "valid": false
+      },
+      {
+        "description": "above maximum is invalid",
+        "data": 3.2,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "both exclusiveMaximum and maximum are numbers, exclusiveMaximum < maximum",
+    "schema": {
+      "exclusiveMaximum": 2.0,
+      "maximum": 3.0
+    },
+    "tests": [
+      {
+        "description": "below the exclusiveMaximum is valid",
+        "data": 1.2,
+        "valid": true
+      },
+      {
+        "description": "boundary point is invalid",
+        "data": 2.0,
+        "valid": false
+      },
+      {
+        "description": "above exclusiveMaximum is invalid",
+        "data": 2.2,
+        "valid": false
+      }
+    ]
+  }
+]

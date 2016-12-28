@@ -34,15 +34,40 @@
     var op{{=$lvl}} = exclusive{{=$lvl}} ? '{{=$op}}' : '{{=$op}}=';
 {{??}}
   {{
-    var $exclusive = $schemaExcl === true
+    var $exclIsNumber = typeof $schemaExcl == 'number'
       , $opStr = $op;  /*used in error*/
-    if (!$exclusive) $opStr += '=';
-    var $opExpr = '\'' + $opStr + '\''; /*used in error*/
   }}
 
-  if ({{# def.$dataNotType:'number' }}
-      {{=$data}} {{=$notOp}}{{?$exclusive}}={{?}} {{=$schemaValue}}
-      || {{=$data}} !== {{=$data}}) {
+  {{? $exclIsNumber && $isData }}
+    {{ var $opExpr = '\'' + $opStr + '\''; /*used in error*/ }}
+    if ({{# def.$dataNotType:'number' }}
+        ( {{=$schemaValue}} === undefined
+          || {{=$schemaExcl}} {{=$op}}= {{=$schemaValue}}
+            ? {{=$data}} {{=$notOp}}= {{=$schemaExcl}}
+            : {{=$data}} {{=$notOp}} {{=$schemaValue}} )
+        || {{=$data}} !== {{=$data}}) {
+  {{??}}
+    {{
+      if ($exclIsNumber && $schema === undefined) {
+          $schemaValue = $schemaExcl;
+          $notOp += '=';
+      } else {
+        if ($exclIsNumber)
+          $schemaValue = Math[$isMax ? 'min' : 'max']($schemaExcl, $schema);
+
+        if ($schemaExcl === ($exclIsNumber ? $schemaValue : true))
+          $notOp += '=';
+        else
+          $opStr += '=';
+      }
+
+      var $opExpr = '\'' + $opStr + '\''; /*used in error*/
+    }}
+
+    if ({{# def.$dataNotType:'number' }}
+        {{=$data}} {{=$notOp}} {{=$schemaValue}}
+        || {{=$data}} !== {{=$data}}) {
+  {{?}}
 {{?}}
     {{ var $errorKeyword = $keyword; }}
     {{# def.error:'_limit' }}

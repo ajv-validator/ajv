@@ -1,0 +1,97 @@
+[
+  {
+    "description": "exclusiveMinimum as number",
+    "schema": {
+      "exclusiveMinimum": 1.1
+    },
+    "tests": [
+      {
+        "description": "above the exclusiveMinimum is still valid",
+        "data": 1.2,
+        "valid": true
+      },
+      {
+        "description": "boundary point is invalid",
+        "data": 1.1,
+        "valid": false
+      },
+      {
+        "description": "below exclusiveMinimum is invalid",
+        "data": 1.0,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "both exclusiveMinimum and minimum are numbers, exclusiveMinimum < minimum",
+    "schema": {
+      "exclusiveMinimum": 2.0,
+      "minimum": 3.0
+    },
+    "tests": [
+      {
+        "description": "above the minimum is valid",
+        "data": 3.2,
+        "valid": true
+      },
+      {
+        "description": "boundary point is valid",
+        "data": 3.0,
+        "valid": true
+      },
+      {
+        "description": "below minimum is invalid",
+        "data": 2.2,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "both exclusiveMinimum and minimum are numbers, exclusiveMinimum = minimum",
+    "schema": {
+      "exclusiveMinimum": 3.0,
+      "minimum": 3.0
+    },
+    "tests": [
+      {
+        "description": "above the minimum is valid",
+        "data": 3.2,
+        "valid": true
+      },
+      {
+        "description": "boundary point is invalid",
+        "data": 3.0,
+        "valid": false
+      },
+      {
+        "description": "below minimum is invalid",
+        "data": 2.2,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "both exclusiveMinimum and minimum are numbers, exclusiveMinimum > minimum",
+    "schema": {
+      "exclusiveMinimum": 3.0,
+      "minimum": 2.0
+    },
+    "tests": [
+      {
+        "description": "above the exclusiveMinimum is valid",
+        "data": 3.2,
+        "valid": true
+      },
+      {
+        "description": "boundary point is invalid",
+        "data": 3.0,
+        "valid": false
+      },
+      {
+        "description": "below exclusiveMinimum is invalid",
+        "data": 2.2,
+        "valid": false
+      }
+    ]
+  }
+]

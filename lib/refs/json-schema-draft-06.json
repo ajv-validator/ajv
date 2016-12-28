@@ -61,14 +61,14 @@
             "type": "number"
         },
         "exclusiveMaximum": {
-            "type": "boolean",
+            "type": ["number", "boolean"],
             "default": false
         },
         "minimum": {
             "type": "number"
         },
         "exclusiveMinimum": {
-            "type": "boolean",
+            "type": ["number", "boolean"],
             "default": false
         },
         "maxLength": { "$ref": "#/definitions/positiveInteger" },
@@ -145,8 +145,18 @@
         "not": { "$ref": "#" }
     },
     "dependencies": {
-        "exclusiveMaximum": [ "maximum" ],
-        "exclusiveMinimum": [ "minimum" ]
+        "exclusiveMaximum": {
+            "anyOf": [
+                { "properties": { "exclusiveMaximum": { "type": "number" } } },
+                { "required": ["maximum"] }
+            ]
+        },
+        "exclusiveMinimum": {
+            "anyOf": [
+                { "properties": { "exclusiveMinimum": { "type": "number" } } },
+                { "required": ["minimum"] }
+            ]
+        }
     },
     "default": {}
 }
