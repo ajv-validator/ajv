@@ -10,7 +10,7 @@ The keywords and their values define what rules the data should satisfy to be va
 
 - [type](#type)
 - [Keywords for numbers](#keywords-for-numbers)
-    - [maximum / minimum and exclusiveMaximum / exclusiveMinimum](#maximum--minimum-and-exclusivemaximum--exclusiveminimum)
+    - [maximum / minimum and exclusiveMaximum / exclusiveMinimum](#maximum--minimum-and-exclusivemaximum--exclusiveminimum) (CHANGED in draft 6)
     - [multipleOf](#multipleof)
 - [Keywords for strings](#keywords-for-strings)
     - [maxLength/minLength](#maxlength--minlength)
@@ -22,7 +22,7 @@ The keywords and their values define what rules the data should satisfy to be va
     - [uniqueItems](#uniqueitems)
     - [items](#items)
     - [additionalItems](#additionalitems)
-    - [contains](#contains) (NEW in draft-6)
+    - [contains](#contains) (NEW in draft 6)
 - [Keywords for objects](#keywords-for-objects)
     - [maxProperties/minProperties](#maxproperties--minproperties)
     - [required](#required)
@@ -30,12 +30,12 @@ The keywords and their values define what rules the data should satisfy to be va
     - [patternProperties](#patternproperties)
     - [additionalProperties](#additionalproperties)
     - [dependencies](#dependencies)
-    - [propertyNames](#propertynames) (NEW in draft-6)
+    - [propertyNames](#propertynames) (NEW in draft 6)
     - [patternGroups](#patterngroups-deprecated) (deprecated)
     - [patternRequired](#patternrequired-proposed) (proposed)
 - [Keywords for all types](#keywords-for-all-types)
     - [enum](#enum)
-    - [const](#const) (NEW in draft-6)
+    - [const](#const) (NEW in draft 6)
 - [Compound keywords](#compound-keywords)
     - [not](#not)
     - [oneOf](#oneof)
@@ -88,7 +88,11 @@ Most other keywords apply only to a particular type of data. If the data is of d
 
 The value of keyword `maximum` (`minimum`) should be a number. This value is the maximum (minimum) allowed value for the data to be valid.
 
-The value of keyword `exclusiveMaximum` (`exclusiveMinimum`) should be a boolean value. These keyword cannot be used without `maximum` (`minimum`). If this keyword value is equal to `true`, the data should not be equal to the value in `maximum` (`minimum`) keyword to be valid.
+Draft 4: The value of keyword `exclusiveMaximum` (`exclusiveMinimum`) should be a boolean value. These keyword cannot be used without `maximum` (`minimum`). If this keyword value is equal to `true`, the data should not be equal to the value in `maximum` (`minimum`) keyword to be valid.
+
+Draft 6: The value of keyword `exclusiveMaximum` (`exclusiveMinimum`) should be a number. This value is the exclusive maximum (minimum) allowed value for the data to be valid (the data equal to this keyword value is invalid).
+
+Ajv supports both draft 4 and draft 6 syntaxes.
 
 
 __Examples__
@@ -107,7 +111,9 @@ __Examples__
     _invalid_: `4`, `4.5`
 
 
-3.  _schema_: `{ "minimum": 5, "exclusiveMinimum": true }`
+3.  _schema_:
+        draft 4: `{ "minimum": 5, "exclusiveMinimum": true }`
+        draft 6: `{ "exclusiveMinimum": 5 }`
 
     _valid_: `6`, `7`, any non-number (`"abc"`, `[]`, `{}`, `null`, `true`)
 
