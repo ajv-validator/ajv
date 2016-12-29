@@ -59,6 +59,7 @@
       }
     ]
   },
+  
   {
     "description": "exclusiveMaximum as number and maximum as $data, exclusiveMaximum > maximum",
     "schema": {
@@ -173,6 +174,134 @@
       }
     ]
   },
+
+  {
+    "description": "exclusiveMaximum and maximum as $data, exclusiveMaximum > maximum",
+    "schema": {
+      "properties": {
+        "larger": {},
+        "largerExclusive": {},
+        "smaller": {
+          "exclusiveMaximum": { "$data": "1/largerExclusive" },
+          "maximum": { "$data": "1/larger" }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "below the maximum is valid",
+        "data": {
+          "larger": 3,
+          "largerExclusive": 3.5,
+          "smaller": 2
+        },
+        "valid": true
+      },
+      {
+        "description": "equal to the maximum is valid",
+        "data": {
+          "larger": 3,
+          "largerExclusive": 3.5,
+          "smaller": 3
+        },
+        "valid": true
+      },
+      {
+        "description": "above the maximum is invalid",
+        "data": {
+          "larger": 3,
+          "largerExclusive": 3.5,
+          "smaller": 3.2
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "exclusiveMaximum as number and maximum as $data, exclusiveMaximum = maximum",
+    "schema": {
+      "properties": {
+        "larger": {},
+        "largerExclusive": {},
+        "smaller": {
+          "exclusiveMaximum": { "$data": "1/largerExclusive" },
+          "maximum": { "$data": "1/larger" }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "below the maximum is valid",
+        "data": {
+          "larger": 3,
+          "largerExclusive": 3,
+          "smaller": 2
+        },
+        "valid": true
+      },
+      {
+        "description": "boundary point is invalid",
+        "data": {
+          "larger": 3,
+          "largerExclusive": 3,
+          "smaller": 3
+        },
+        "valid": false
+      },
+      {
+        "description": "above the maximum is invalid",
+        "data": {
+          "larger": 3,
+          "largerExclusive": 3,
+          "smaller": 4
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "exclusiveMaximum as number and maximum as $data, exclusiveMaximum < maximum",
+    "schema": {
+      "properties": {
+        "larger": {},
+        "largerExclusive": {},
+        "smaller": {
+          "exclusiveMaximum": { "$data": "1/largerExclusive" },
+          "maximum": { "$data": "1/larger" }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "below the exclusiveMaximum is valid",
+        "data": {
+          "larger": 3,
+          "largerExclusive": 2.5,
+          "smaller": 2
+        },
+        "valid": true
+      },
+      {
+        "description": "boundary point is invalid",
+        "data": {
+          "larger": 3,
+          "largerExclusive": 2.5,
+          "smaller": 2.5
+        },
+        "valid": false
+      },
+      {
+        "description": "above the exclusiveMaximum is invalid",
+        "data": {
+          "larger": 3,
+          "largerExclusive": 2.5,
+          "smaller": 2.8
+        },
+        "valid": false
+      }
+    ]
+  },
+
   {
     "description": "items in array are < than their indeces",
     "schema": {

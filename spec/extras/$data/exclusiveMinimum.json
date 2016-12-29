@@ -52,6 +52,7 @@
       }
     ]
   },
+
   {
     "description": "exclusiveMinimum as number and minimum as $data, exclusiveMinimum < minimum",
     "schema": {
@@ -166,6 +167,134 @@
       }
     ]
   },
+
+  {
+    "description": "exclusiveMinimum and minimum as $data, exclusiveMinimum < minimum",
+    "schema": {
+      "properties": {
+        "smaller": {},
+        "smallerExclusive": {},
+        "larger": {
+          "exclusiveMinimum": { "$data": "1/smallerExclusive" },
+          "minimum": { "$data": "1/smaller" }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "above the minimum is valid",
+        "data": {
+          "smaller": 3,
+          "smallerExclusive": 2.5,
+          "larger": 4
+        },
+        "valid": true
+      },
+      {
+        "description": "equal to the minimum is valid",
+        "data": {
+          "smaller": 3,
+          "smallerExclusive": 2.5,
+          "larger": 3
+        },
+        "valid": true
+      },
+      {
+        "description": "below the minimum is invalid",
+        "data": {
+          "smaller": 3,
+          "smallerExclusive": 2.5,
+          "larger": 2.8
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "exclusiveMinimum as number and minimum as $data, exclusiveMinimum = minimum",
+    "schema": {
+      "properties": {
+        "smaller": {},
+        "smallerExclusive": {},
+        "larger": {
+          "exclusiveMinimum": { "$data": "1/smallerExclusive" },
+          "minimum": { "$data": "1/smaller" }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "above the minimum is valid",
+        "data": {
+          "smaller": 3,
+          "smallerExclusive": 3,
+          "larger": 4
+        },
+        "valid": true
+      },
+      {
+        "description": "boundary point is invalid",
+        "data": {
+          "smaller": 3,
+          "smallerExclusive": 3,
+          "larger": 3
+        },
+        "valid": false
+      },
+      {
+        "description": "below the minimum is invalid",
+        "data": {
+          "smaller": 3,
+          "smallerExclusive": 3,
+          "larger": 2
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "exclusiveMinimum as number and minimum as $data, exclusiveMinimum > minimum",
+    "schema": {
+      "properties": {
+        "smaller": {},
+        "smallerExclusive": {},
+        "larger": {
+          "exclusiveMinimum": { "$data": "1/smallerExclusive" },
+          "minimum": { "$data": "1/smaller" }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "above the exclusiveMinimum is valid",
+        "data": {
+          "smaller": 3,
+          "smallerExclusive": 3.5,
+          "larger": 4
+        },
+        "valid": true
+      },
+      {
+        "description": "boundary point is invalid",
+        "data": {
+          "smaller": 3,
+          "smallerExclusive": 3.5,
+          "larger": 3.5
+        },
+        "valid": false
+      },
+      {
+        "description": "below the exclusiveMinimum is invalid",
+        "data": {
+          "smaller": 3,
+          "smallerExclusive": 3.5,
+          "larger": 3.3
+        },
+        "valid": false
+      }
+    ]
+  },
+
   {
     "description": "items in array are > than their indeces",
     "schema": {
