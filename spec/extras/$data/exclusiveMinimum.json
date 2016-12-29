@@ -11,7 +11,6 @@
     },
     "tests": [
       {
-        "skip": true,
         "description": "above the exclusiveMinimum is valid",
         "data": {
           "smaller": 3,
@@ -176,7 +175,6 @@
     },
     "tests": [
       {
-        "skip": true,
         "description": "valid array",
         "data": [1, 2, 3, 4, 5, 6],
         "valid": true
