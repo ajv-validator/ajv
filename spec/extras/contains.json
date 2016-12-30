@@ -21,6 +21,11 @@
         "valid": false
       },
       {
+        "description": "empty array is invalid",
+        "data": [],
+        "valid": false
+      },
+      {
         "description": "not array is valid",
         "data": {},
         "valid": true

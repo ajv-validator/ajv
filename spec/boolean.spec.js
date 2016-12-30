@@ -259,13 +259,13 @@ describe('boolean schemas', function() {
 
   describe('in contains', function() {
     describe('schema = true', function() {
-      it('should be valid with any property', function() {
+      it('should be valid with any items', function() {
         ajvs.forEach(test(true, true));
       });
     });
 
     describe('schema = false', function() {
-      it('should be invalid with any property', function() {
+      it('should be invalid with any items', function() {
         ajvs.forEach(test(false, false));
       });
     });
