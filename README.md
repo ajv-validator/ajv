@@ -1,6 +1,6 @@
 # Ajv: Another JSON Schema Validator
 
-The fastest JSON Schema validator for node.js and browser.
+The fastest JSON Schema validator for node.js and browser with draft 6 support.
 
 
 [![Build Status](https://travis-ci.org/epoberezkin/ajv.svg?branch=master)](https://travis-ci.org/epoberezkin/ajv)
@@ -11,7 +11,7 @@ The fastest JSON Schema validator for node.js and browser.
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 
 
-__Please note__: version [5.0.0](https://github.com/epoberezkin/ajv/releases/tag/5.0.0-beta.1) can be used with `npm install ajv@^5.0.0-beta`.
+__Please note__: version [5.0.1](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0) can be used with `npm install ajv@^5.0.1-beta`.
 
 
 ## Contents
@@ -62,7 +62,7 @@ Performace of different validators by [json-schema-benchmark](https://github.com
 
 ## Features
 
-- Ajv implements full [JSON Schema draft 4](http://json-schema.org/) standard:
+- Ajv implements full JSON Schema [draft 6](http://json-schema.org/) and draft 4 standards:
   - all validation keywords (see [JSON-Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md))
   - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
   - support of circular references between schemas
@@ -79,6 +79,7 @@ Performace of different validators by [json-schema-benchmark](https://github.com
 - [coercing data](#coercing-data-types) to the types specified in `type` keywords
 - [custom keywords](#defining-custom-keywords)
 - draft-6 keywords `const`, `contains` and `propertyNames`
+- draft-6 boolean schemas (`true`/`false` as a schema to always pass/fail).
 - keywords `switch`, `patternRequired`, `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` from [JSON-schema extension proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package
 - [$data reference](#data-reference) to use values from the validated data as values for the schema keywords
 - [asynchronous validation](#asynchronous-validation) of custom formats and keywords
