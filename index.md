@@ -16,7 +16,9 @@ The fastest JSON Schema validator for node.js and browser. Supports [v5 proposal
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 
 
-__Please note__: version [5.0.0](https://github.com/epoberezkin/ajv/releases/tag/5.0.0-beta.1) can be used with `npm install ajv@^5.0.0-beta`.
+__Please note__: You can start using NEW beta version [5.0.1 (change log)](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0) with the support of draft 6 (not officially published yet): `npm install ajv@^5.0.1-beta`.
+
+Also see [docs](https://github.com/epoberezkin/ajv/tree/b82905dc771193112c9c016f08c7fadb6ec3e896) for 5.0.1.
 
 
 ## Contents
@@ -1184,7 +1186,9 @@ Please see [Contributing guidelines](contribute.html)
 
 See https://github.com/epoberezkin/ajv/releases
 
-__Please note__: [Changes in version 4.6.0](https://github.com/epoberezkin/ajv/releases/tag/4.6.0).
+__Please note__: [Changes in version 5.0.1-beta](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0).
+
+[Changes in version 4.6.0](https://github.com/epoberezkin/ajv/releases/tag/4.6.0).
 
 [Changes in version 4.0.0](https://github.com/epoberezkin/ajv/releases/tag/4.0.0).
 
