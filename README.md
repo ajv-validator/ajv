@@ -906,9 +906,15 @@ Custom formats can be also added via `formats` option.
 
 Add custom validation keyword to Ajv instance.
 
-Keyword should be a valid JavaScript identifier.
-
 Keyword should be different from all standard JSON schema keywords and different from previously defined keywords. There is no way to redefine keywords or to remove keyword definition from the instance.
+
+Keyword must start with a letter, `_` or `$`, and may continue with letters, numbers, `_`, `$`, or `-`.
+It is recommended to use an application-specific prefix for keywords to avoid current and future name collisions.
+
+Example Keywords:
+- `"xyz-example"`: valid, and uses prefix for the xyz project to avoid name collisions.
+- `"example"`: valid, but not recommended as it could collide with future versions of JSON schema etc.
+- `"3-example"`: invalid as numbers are not allowed to be the first character in a keyword
 
 Keyword definition is an object with the following properties:
 
