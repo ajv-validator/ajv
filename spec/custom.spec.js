@@ -906,7 +906,7 @@ describe('Custom keywords', function () {
       }
     });
 
-    it('should not throw even if keyword is not a valid identifier', function() {
+    it('should throw if keyword is not a valid name', function() {
       should.not.throw(function() {
         ajv.addKeyword('mykeyword', {
           validate: function() { return true; }
@@ -914,7 +914,25 @@ describe('Custom keywords', function () {
       });
 
       should.not.throw(function() {
-        ajv.addKeyword('my-keyword', {
+        ajv.addKeyword('hyphens-are-valid', {
+          validate: function() { return true; }
+        });
+      });
+
+      should.throw(function() {
+        ajv.addKeyword('3-start-with-number-not-valid`', {
+          validate: function() { return true; }
+        });
+      });
+
+      should.throw(function() {
+        ajv.addKeyword('-start-with-hyphen-not-valid`', {
+          validate: function() { return true; }
+        });
+      });
+
+      should.throw(function() {
+        ajv.addKeyword('spaces not valid`', {
           validate: function() { return true; }
         });
       });
