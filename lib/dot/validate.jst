@@ -40,6 +40,9 @@
     {{?}}
         (data, dataPath, parentData, parentDataProperty, rootData) {
           'use strict';
+          {{? it.schema.id && (it.opts.sourceCode || it.opts.processCode) }}
+            {{= '/\*# sourceURL=' + it.schema.id + ' */' }}
+          {{?}}
 {{?}}
 
 {{? typeof it.schema == 'boolean' || !($refKeywords || it.schema.$ref) }}
