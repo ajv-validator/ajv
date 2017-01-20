@@ -1093,4 +1093,38 @@ describe('Custom keywords', function () {
       obj .should.eql({ foo: ['bar', 'baz', 'quux'] });
     }
   });
+
+
+  describe('custom keywords with predefined validation result', function() {
+    it('should ignore result from validation function', function() {
+      ajv.addKeyword('pass', {
+        validate: function() { return false; },
+        valid: true
+      });
+
+      ajv.addKeyword('fail', {
+        validate: function() { return true; },
+        valid: false
+      });
+
+      ajv.validate({ pass: '' }, 1) .should.equal(true);
+      ajv.validate({ fail: '' }, 1) .should.equal(false);
+    });
+
+    it('should throw exception if used with macro keyword', function() {
+      should.throw(function() {
+        ajv.addKeyword('pass', {
+          macro: function() { return {}; },
+          valid: true
+        });
+      });
+
+      should.throw(function() {
+        ajv.addKeyword('fail', {
+          macro: function() { return {not:{}}; },
+          valid: false
+        });
+      });
+    });
+  });
 });
