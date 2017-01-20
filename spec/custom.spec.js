@@ -1043,8 +1043,18 @@ describe('Custom keywords', function () {
   });
 
 
-  describe.skip('mutating data', function() {
-    beforeEach(function() {
+  describe('custom keywords mutating data', function() {
+    it('should NOT update data without option modifying', function() {
+      should.throw(function() {
+        testModifying(false);
+      });
+    });
+
+    it('should update data with option modifying', function() {
+      testModifying(true);
+    });
+
+    function testModifying(withOption) {
       var collectionFormat = {
         csv: function (data, dataPath, parentData, parentDataProperty) {
           parentData[parentDataProperty] = data.split(',');
@@ -1054,14 +1064,13 @@ describe('Custom keywords', function () {
 
       ajv.addKeyword('collectionFormat', {
         type: 'string',
+        modifying: withOption,
         compile: function(schema) { return collectionFormat[schema]; },
         metaSchema: {
           enum: ['csv']
         }
       });
-    });
 
-    it('should allow custom keywords mutating data', function() {
       var validate = ajv.compile({
         type: 'object',
         properties: {
@@ -1082,6 +1091,6 @@ describe('Custom keywords', function () {
 
       validate(obj) .should.equal(true);
       obj .should.eql({ foo: ['bar', 'baz', 'quux'] });
-    });
+    }
   });
 });

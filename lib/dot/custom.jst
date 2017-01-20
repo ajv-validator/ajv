@@ -127,6 +127,10 @@ var {{=$valid}};
   {{?}}
 {{?}}
 
+{{? $rDef.modifying }}
+  {{=$data}} = {{=$parentData}}[{{=$parentDataProperty}}];
+{{?}}
+
 {{? $validateSchema }}
   }
 {{?}}
