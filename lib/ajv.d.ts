@@ -164,6 +164,8 @@ declare namespace ajv {
     metaSchema?: Object;
     // schema: false makes validate not to expect schema (ValidateFunction)
     schema?: boolean;
+    modifying?: boolean;
+    valid?: boolean;
     // one and only one of the following properties should be present
     validate?: SchemaValidateFunction;
     compile?: (schema: any, parentSchema: Object) => ValidateFunction;

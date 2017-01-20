@@ -37,7 +37,7 @@ describe('Custom keywords', function () {
           metaSchema: { "type": "boolean" }
         });
 
-        shouldBeInvalidSchema({ "even": "not_boolean" });
+        shouldBeInvalidSchema({ "x-even": "not_boolean" });
 
         function validateEven(schema, data) {
           return data % 2 ? !schema : schema;
@@ -69,9 +69,9 @@ describe('Custom keywords', function () {
             "additionalItems": false
           }
         });
-        shouldBeInvalidSchema({ range: [ "1", 2 ] });
-        shouldBeInvalidSchema({ range: {} });
-        shouldBeInvalidSchema({ range: [ 1, 2, 3 ] });
+        shouldBeInvalidSchema({ 'x-range': [ "1", 2 ] });
+        shouldBeInvalidSchema({ 'x-range': {} });
+        shouldBeInvalidSchema({ 'x-range': [ 1, 2, 3 ] });
 
         function validateRange(schema, data, parentSchema) {
           return parentSchema.exclusiveRange === true
@@ -94,7 +94,7 @@ describe('Custom keywords', function () {
           var valid = minOk && maxOk;
 
           if (!valid) {
-            var err = { keyword: 'range' };
+            var err = { keyword: 'x-range' };
             validateRange.errors = [err];
             var comparison, limit;
             if (minOk) {
@@ -121,7 +121,7 @@ describe('Custom keywords', function () {
     describe('rule with "compiled" keyword validation', function() {
       it('should add and validate rule', function() {
         testEvenKeyword({ type: 'number', compile: compileEven });
-        shouldBeInvalidSchema({ "even": "not_boolean" });
+        shouldBeInvalidSchema({ "x-even": "not_boolean" });
 
         function compileEven(schema) {
           if (typeof schema != 'boolean') throw new Error('The value of "even" keyword must be boolean');
@@ -138,7 +138,7 @@ describe('Custom keywords', function () {
           compile: compileEven,
           metaSchema: { "type": "boolean" }
         });
-        shouldBeInvalidSchema({ "even": "not_boolean" });
+        shouldBeInvalidSchema({ "x-even": "not_boolean" });
 
         function compileEven(schema) {
           return schema ? isEven : isOdd;
@@ -565,7 +565,7 @@ describe('Custom keywords', function () {
         metaSchema: { "type": "boolean" }
       });
       compileCalled .should.equal(true);
-      shouldBeInvalidSchema({ "even": "false" });
+      shouldBeInvalidSchema({ "x-even-$data": "false" });
 
       function validateEven(schema, data) {
         return data % 2 ? !schema : schema;
@@ -613,7 +613,7 @@ describe('Custom keywords', function () {
         metaSchema: { "type": "boolean" }
       }, 2);
       macroCalled .should.equal(true);
-      shouldBeInvalidSchema({ "even": "false" });
+      shouldBeInvalidSchema({ "x-even-$data": "false" });
 
       function validateEven(schema, data) {
         return data % 2 ? !schema : schema;
@@ -658,7 +658,7 @@ describe('Custom keywords', function () {
         metaSchema: { "type": "boolean" }
       });
       inlineCalled .should.equal(true);
-      shouldBeInvalidSchema({ "even": "false" });
+      shouldBeInvalidSchema({ "x-even-$data": "false" });
 
       function validateEven(schema, data) {
         return data % 2 ? !schema : schema;
@@ -685,8 +685,8 @@ describe('Custom keywords', function () {
 
   function testEvenKeyword(definition, numErrors) {
     instances.forEach(function (_ajv) {
-      _ajv.addKeyword('even', definition);
-      var schema = { "even": true };
+      _ajv.addKeyword('x-even', definition);
+      var schema = { "x-even": true };
       var validate = _ajv.compile(schema);
 
       shouldBeValid(validate, 2);
@@ -698,9 +698,9 @@ describe('Custom keywords', function () {
 
   function testEvenKeyword$data(definition, numErrors) {
     instances.forEach(function (_ajv) {
-      _ajv.addKeyword('even', definition);
+      _ajv.addKeyword('x-even-$data', definition);
 
-      var schema = { "even": true };
+      var schema = { "x-even-$data": true };
       var validate = _ajv.compile(schema);
 
       shouldBeValid(validate, 2);
@@ -710,7 +710,7 @@ describe('Custom keywords', function () {
 
       schema = {
         "properties": {
-          "data": { "even": { "$data": "1/evenValue" } },
+          "data": { "x-even-$data": { "$data": "1/evenValue" } },
           "evenValue": {}
         }
       };
@@ -744,15 +744,15 @@ describe('Custom keywords', function () {
 
   function testMultipleConstantKeyword(definition, numErrors) {
     instances.forEach(function (_ajv) {
-      _ajv.addKeyword('myConstant', definition);
+      _ajv.addKeyword('x-constant', definition);
 
       var schema = {
         "properties": {
-          "a": { "myConstant": 1 },
-          "b": { "myConstant": 1 }
+          "a": { "x-constant": 1 },
+          "b": { "x-constant": 1 }
         },
-        "additionalProperties": { "myConstant": { "foo": "bar" } },
-        "items": { "myConstant": { "foo": "bar" } }
+        "additionalProperties": { "x-constant": { "foo": "bar" } },
+        "items": { "x-constant": { "foo": "bar" } }
       };
       var validate = _ajv.compile(schema);
 
@@ -771,9 +771,9 @@ describe('Custom keywords', function () {
 
   function testRangeKeyword(definition, customErrors, numErrors) {
     instances.forEach(function (_ajv) {
-      _ajv.addKeyword('range', definition);
+      _ajv.addKeyword('x-range', definition);
 
-      var schema = { "range": [2, 4] };
+      var schema = { "x-range": [2, 4] };
       var validate = _ajv.compile(schema);
 
       shouldBeValid(validate, 2);
@@ -782,14 +782,14 @@ describe('Custom keywords', function () {
       shouldBeValid(validate, 'abc');
 
       shouldBeInvalid(validate, 1.99, numErrors);
-      if (customErrors) shouldBeRangeError(validate.errors[0], '', '#/range', '>=', 2);
+      if (customErrors) shouldBeRangeError(validate.errors[0], '', '#/x-range', '>=', 2);
       shouldBeInvalid(validate, 4.01, numErrors);
-      if (customErrors) shouldBeRangeError(validate.errors[0], '', '#/range','<=', 4);
+      if (customErrors) shouldBeRangeError(validate.errors[0], '', '#/x-range','<=', 4);
 
       schema = {
         "properties": {
           "foo": {
-            "range": [2, 4],
+            "x-range": [2, 4],
             "exclusiveRange": true
           }
         }
@@ -801,23 +801,23 @@ describe('Custom keywords', function () {
       shouldBeValid(validate, { foo: 3.99 });
 
       shouldBeInvalid(validate, { foo: 2 }, numErrors);
-      if (customErrors) shouldBeRangeError(validate.errors[0], '.foo', '#/properties/foo/range', '>', 2, true);
+      if (customErrors) shouldBeRangeError(validate.errors[0], '.foo', '#/properties/foo/x-range', '>', 2, true);
       shouldBeInvalid(validate, { foo: 4 }, numErrors);
-      if (customErrors) shouldBeRangeError(validate.errors[0], '.foo', '#/properties/foo/range', '<', 4, true);
+      if (customErrors) shouldBeRangeError(validate.errors[0], '.foo', '#/properties/foo/x-range', '<', 4, true);
     });
   }
 
   function testMultipleRangeKeyword(definition, numErrors) {
     instances.forEach(function (_ajv) {
-      _ajv.addKeyword('range', definition);
+      _ajv.addKeyword('x-range', definition);
 
       var schema = {
         "properties": {
-          "a": { "range": [2, 4], "exclusiveRange": true },
-          "b": { "range": [2, 4], "exclusiveRange": false }
+          "a": { "x-range": [2, 4], "exclusiveRange": true },
+          "b": { "x-range": [2, 4], "exclusiveRange": false }
         },
-        "additionalProperties": { "range": [5, 7] },
-        "items": { "range": [5, 7] }
+        "additionalProperties": { "x-range": [5, 7] },
+        "items": { "x-range": [5, 7] }
       };
       var validate = _ajv.compile(schema);
 
@@ -836,7 +836,7 @@ describe('Custom keywords', function () {
     delete error.schema;
     delete error.data;
     error .should.eql({
-      keyword: 'range',
+      keyword: 'x-range',
       dataPath: dataPath,
       schemaPath: schemaPath,
       message: 'should be ' + comparison + ' ' + limit,
@@ -906,15 +906,33 @@ describe('Custom keywords', function () {
       }
     });
 
-    it('should throw if keyword is not a valid identifier', function() {
+    it('should throw if keyword is not a valid name', function() {
       should.not.throw(function() {
         ajv.addKeyword('mykeyword', {
           validate: function() { return true; }
         });
       });
 
+      should.not.throw(function() {
+        ajv.addKeyword('hyphens-are-valid', {
+          validate: function() { return true; }
+        });
+      });
+
       should.throw(function() {
-        ajv.addKeyword('my-keyword', {
+        ajv.addKeyword('3-start-with-number-not-valid`', {
+          validate: function() { return true; }
+        });
+      });
+
+      should.throw(function() {
+        ajv.addKeyword('-start-with-hyphen-not-valid`', {
+          validate: function() { return true; }
+        });
+      });
+
+      should.throw(function() {
+        ajv.addKeyword('spaces not valid`', {
           validate: function() { return true; }
         });
       });
@@ -1021,6 +1039,92 @@ describe('Custom keywords', function () {
       validate(0) .should.equal(false);
       validate(1) .should.equal(false);
       validate(2) .should.equal(true);
+    });
+  });
+
+
+  describe('custom keywords mutating data', function() {
+    it('should NOT update data without option modifying', function() {
+      should.throw(function() {
+        testModifying(false);
+      });
+    });
+
+    it('should update data with option modifying', function() {
+      testModifying(true);
+    });
+
+    function testModifying(withOption) {
+      var collectionFormat = {
+        csv: function (data, dataPath, parentData, parentDataProperty) {
+          parentData[parentDataProperty] = data.split(',');
+          return true;
+        }
+      };
+
+      ajv.addKeyword('collectionFormat', {
+        type: 'string',
+        modifying: withOption,
+        compile: function(schema) { return collectionFormat[schema]; },
+        metaSchema: {
+          enum: ['csv']
+        }
+      });
+
+      var validate = ajv.compile({
+        type: 'object',
+        properties: {
+          foo: {
+            allOf: [
+              { collectionFormat: 'csv' },
+              {
+                type: 'array',
+                items: { type: 'string' },
+              }
+            ]
+          }
+        },
+        additionalProperties: false
+      });
+
+      var obj = { foo: 'bar,baz,quux' };
+
+      validate(obj) .should.equal(true);
+      obj .should.eql({ foo: ['bar', 'baz', 'quux'] });
+    }
+  });
+
+
+  describe('custom keywords with predefined validation result', function() {
+    it('should ignore result from validation function', function() {
+      ajv.addKeyword('pass', {
+        validate: function() { return false; },
+        valid: true
+      });
+
+      ajv.addKeyword('fail', {
+        validate: function() { return true; },
+        valid: false
+      });
+
+      ajv.validate({ pass: '' }, 1) .should.equal(true);
+      ajv.validate({ fail: '' }, 1) .should.equal(false);
+    });
+
+    it('should throw exception if used with macro keyword', function() {
+      should.throw(function() {
+        ajv.addKeyword('pass', {
+          macro: function() { return {}; },
+          valid: true
+        });
+      });
+
+      should.throw(function() {
+        ajv.addKeyword('fail', {
+          macro: function() { return {not:{}}; },
+          valid: false
+        });
+      });
     });
   });
 });

@@ -11,7 +11,9 @@ The fastest JSON Schema validator for node.js and browser with draft 6 support.
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 
 
-__Please note__: version [5.0.1](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0) can be used with `npm install ajv@^5.0.1-beta`.
+__Please note__: You can start using NEW beta version [5.0.1 (change log)](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0) with the support of draft 6 (not officially published yet): `npm install ajv@^5.0.1-beta`.
+
+Also see [docs](https://github.com/epoberezkin/ajv/tree/5.0.1-beta.0) for 5.0.1.
 
 
 ## Contents
@@ -347,7 +349,9 @@ The advantages of using custom keywords are:
 - simplify your schemas
 - help bringing a bigger part of the validation logic to your schemas
 - make your schemas more expressive, less verbose and closer to your application domain
-- implement custom data processors that modify your data and/or create side effects while the data is being validated
+- implement custom data processors that modify your data (`modifying` option MUST be used in keyword definition) and/or create side effects while the data is being validated
+
+If a keyword is used only for side-effects and its validation result is pre-defined, use option `valid: true/false` in keyword definition to simplify both generated code (no error handling in case of `valid: true`) and your keyword functions (no need to return any validation result).
 
 The concerns you have to be aware of when extending JSON-schema standard with custom keywords are the portability and understanding of your schemas. You will have to support these custom keywords on other platforms and to properly document these keywords so that everybody can understand them in your schemas.
 
@@ -914,9 +918,15 @@ Custom formats can be also added via `formats` option.
 
 Add custom validation keyword to Ajv instance.
 
-Keyword should be a valid JavaScript identifier.
-
 Keyword should be different from all standard JSON schema keywords and different from previously defined keywords. There is no way to redefine keywords or to remove keyword definition from the instance.
+
+Keyword must start with a letter, `_` or `$`, and may continue with letters, numbers, `_`, `$`, or `-`.
+It is recommended to use an application-specific prefix for keywords to avoid current and future name collisions.
+
+Example Keywords:
+- `"xyz-example"`: valid, and uses prefix for the xyz project to avoid name collisions.
+- `"example"`: valid, but not recommended as it could collide with future versions of JSON schema etc.
+- `"3-example"`: invalid as numbers are not allowed to be the first character in a keyword
 
 Keyword definition is an object with the following properties:
 
@@ -927,6 +937,8 @@ Keyword definition is an object with the following properties:
 - _inline_: compiling function that returns code (as string)
 - _schema_: an optional `false` value used with "validate" keyword to not pass schema
 - _metaSchema_: an optional meta-schema for keyword schema
+- _modifying_: `true` MUST be passed if keyword modifies data
+- _valid_: pass `true`/`false` to pre-define validation result, the result returned from validation function will be ignored. This option cannot be used with macro keywords.
 - _$data_: an optional `true` value to support [$data reference](#data-reference) as the value of custom keyword. The reference will be resolved at validation time. If the keyword has meta-schema it would be extended to allow $data and it will be used to validate the resolved value. Supporting $data reference requires that keyword has validating function (as the only option or in addition to compile, macro or inline function).
 - _async_: an optional `true` value if the validation function is asynchronous (whether it is compiled or passed in _validate_ property); in this case it should return a promise that resolves with a value `true` or `false`. This option is ignored in case of "macro" and "inline" keywords.
 - _errors_: an optional boolean indicating whether keyword returns errors. If this property is not set Ajv will determine if the errors were set in case of failed validation.
@@ -1199,7 +1211,9 @@ Please see [Contributing guidelines](https://github.com/epoberezkin/ajv/blob/mas
 
 See https://github.com/epoberezkin/ajv/releases
 
-__Please note__: [Changes in version 4.6.0](https://github.com/epoberezkin/ajv/releases/tag/4.6.0).
+__Please note__: [Changes in version 5.0.1-beta](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0).
+
+[Changes in version 4.6.0](https://github.com/epoberezkin/ajv/releases/tag/4.6.0).
 
 [Changes in version 4.0.0](https://github.com/epoberezkin/ajv/releases/tag/4.0.0).
 

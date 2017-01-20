@@ -3,7 +3,7 @@
     var $lvl = it.level;
     var $dataLvl = it.dataLevel;
     var $schema = it.schema[$keyword];
-    var $schemaPath = it.schemaPath + '.' + $keyword;
+    var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
     var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
     var $breakOnError = !it.opts.allErrors;
     var $errorKeyword;
@@ -161,15 +161,17 @@
 
 {{## def.dataPath:(dataPath || ''){{? it.errorPath != '""'}} + {{= it.errorPath }}{{?}}#}}
 
+{{## def.setParentData:
+  {{
+    var $parentData = $dataLvl ? 'data' + (($dataLvl-1)||'') : 'parentData'
+      , $parentDataProperty = $dataLvl ? it.dataPathArr[$dataLvl] : 'parentDataProperty';
+  }}
+#}}
 
 {{## def.passParentData:
-  {{? $dataLvl }}
-    , data{{= ($dataLvl-1)||'' }}
-    , {{= it.dataPathArr[$dataLvl] }}
-  {{??}}
-    , parentData
-    , parentDataProperty
-  {{?}}
+  {{# def.setParentData }}
+  , {{= $parentData }}
+  , {{= $parentDataProperty }}
 #}}
 
 

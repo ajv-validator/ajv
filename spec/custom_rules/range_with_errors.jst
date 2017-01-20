@@ -1,7 +1,7 @@
 {{
   var $data = 'data' + (it.dataLevel || '')
-    , $min = it.schema.range[0]
-    , $max = it.schema.range[1]
+    , $min = it.schema['x-range'][0]
+    , $max = it.schema['x-range'][1]
     , $exclusive = !!it.schema.exclusiveRange
     , $gt = $exclusive ? '>' : '>='
     , $lt = $exclusive ? '<' : '<='
@@ -16,7 +16,7 @@ if (!valid{{=$lvl}}) {
   var {{=$err}};
   if (minOk{{=$lvl}}) {
     {{=$err}} = {
-      keyword: 'range',
+      keyword: 'x-range',
       message: 'should be {{=$lt}} {{=$max}}',
       params: {
         comparison: '{{=$lt}}',
@@ -26,7 +26,7 @@ if (!valid{{=$lvl}}) {
     };
   } else {
     {{=$err}} = {
-      keyword: 'range',
+      keyword: 'x-range',
       message: 'should be {{=$gt}} {{=$min}}',
       params: {
         comparison: '{{=$gt}}',
