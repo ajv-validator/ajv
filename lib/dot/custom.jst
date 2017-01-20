@@ -46,7 +46,7 @@
 
 {{? !($inline || $macro) }}{{=$ruleErrs}} = null;{{?}}
 var {{=$errs}} = errors;
-var valid{{=$lvl}};
+var {{=$valid}};
 
 {{## def.callRuleValidate:
   {{=$validateCode}}.call(
@@ -62,28 +62,6 @@ var valid{{=$lvl}};
     {{# def.passParentData }}
     , rootData
   )
-#}}
-
-{{## def.ruleValidationResult:
-  {{? $inline }}
-    {{? $rDef.statements }}
-      valid{{=$lvl}}
-    {{??}}
-      ({{= $ruleValidate.validate }})
-    {{?}}
-  {{?? $macro }}
-    {{=$nextValid}}
-  {{??}}
-    {{? $asyncKeyword }}
-      {{? $rDef.errors === false }}
-        ({{=it.yieldAwait}}{{= def_callRuleValidate }})
-      {{??}}
-        valid{{=$lvl}}
-      {{?}}
-    {{??}}
-      {{= def_callRuleValidate }}
-    {{?}}
-  {{?}}
 #}}
 
 {{## def.extendErrors:_inline:
@@ -102,8 +80,18 @@ var valid{{=$lvl}};
   }
 #}}
 
-{{? $inline && $rDef.statements }}
-  {{= $ruleValidate.validate }}
+
+{{? $validateSchema }}
+  {{=$valid}} = {{=$definition}}.validateSchema({{=$schemaValue}});
+  if ({{=$valid}}) {
+{{?}}
+
+{{? $inline }}
+  {{? $rDef.statements }}
+    {{= $ruleValidate.validate }}
+  {{??}}
+    {{=$valid}} = {{= $ruleValidate.validate }};
+  {{?}}
 {{?? $macro }}
   {{# def.setupNextLevel }}
   {{
@@ -114,33 +102,36 @@ var valid{{=$lvl}};
   {{ var $code = it.validate($it).replace(/validate\.schema/g, $validateCode); }}
   {{# def.resetCompositeRule }}
   {{= $code }}
-{{?? !$inline }}
+{{??}}
   {{# def.beginDefOut}}
     {{# def.callRuleValidate }}
   {{# def.storeDefOut:def_callRuleValidate }}
 
-  {{? $rDef.errors !== false }}
+  {{? $rDef.errors === false }}
+    {{=$valid}} = {{? $asyncKeyword }}{{=it.yieldAwait}}{{?}}{{= def_callRuleValidate }};
+  {{??}}
     {{? $asyncKeyword }}
       {{ $ruleErrs = 'customErrors' + $lvl; }}
       var {{=$ruleErrs}} = null;
       try {
-        valid{{=$lvl}} = {{=it.yieldAwait}}{{= def_callRuleValidate }};
+        {{=$valid}} = {{=it.yieldAwait}}{{= def_callRuleValidate }};
       } catch (e) {
-        valid{{=$lvl}} = false;
+        {{=$valid}} = false;
         if (e instanceof ValidationError) {{=$ruleErrs}} = e.errors;
         else throw e;
       }
     {{??}}
-      {{=$validateCode}}.errors = null;
+      {{=$ruleErrs}} = null;
+      {{=$valid}} = {{= def_callRuleValidate }};
     {{?}}
   {{?}}
 {{?}}
 
+{{? $validateSchema }}
+  }
+{{?}}
 
-if ({{? $validateSchema }}
-      !{{=$definition}}.validateSchema({{=$schemaValue}}) ||
-    {{?}}
-    !{{# def.ruleValidationResult }}) {
+if (!{{? $macro }}{{=$nextValid}}{{??}}{{=$valid}}{{?}}) {
   {{ $errorKeyword = $rule.keyword; }}
   {{# def.beginDefOut}}
     {{# def.error:'custom' }}

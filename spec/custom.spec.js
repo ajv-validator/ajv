@@ -1045,8 +1045,8 @@ describe('Custom keywords', function () {
 
   describe.skip('mutating data', function() {
     beforeEach(function() {
-      const collectionFormat = {
-        csv: function (data, dataPath, parentData, parentDataProperty, rootData) {
+      var collectionFormat = {
+        csv: function (data, dataPath, parentData, parentDataProperty) {
           parentData[parentDataProperty] = data.split(',');
           return true;
         }
@@ -1076,12 +1076,12 @@ describe('Custom keywords', function () {
           }
         },
         additionalProperties: false
-      })
+      });
 
       var obj = { foo: 'bar,baz,quux' };
 
-      validate(obj) .should.equal(true)
-      obj .should.eql({ foo: ['bar', 'baz', 'quux'] })
+      validate(obj) .should.equal(true);
+      obj .should.eql({ foo: ['bar', 'baz', 'quux'] });
     });
   });
 });
