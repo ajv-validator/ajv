@@ -25,7 +25,7 @@ Validation function will be called during data validation and it will be passed:
 - the property name in the parent data object
 - the root data
 
-The access to the parent data object and the current property name allow to create keywords that modify the validated data.
+The access to the parent data object and the current property name allow to create keywords that modify the validated data (`modifying` option MUST be used in keyword definition in this case).
 
 The function should return validation result as boolean. It can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
 
@@ -75,7 +75,7 @@ Compilation function will be called during schema compilation. It will be passed
 - the property name in the parent data object
 - the root data
 
-The access to the parent data object and the current property name allow to create keywords that modify the validated data.
+The access to the parent data object and the current property name allow to create keywords that modify the validated data (`modifying` option MUST be used).
 
 The function should return validation result as boolean. It can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
 
