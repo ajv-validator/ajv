@@ -1041,4 +1041,47 @@ describe('Custom keywords', function () {
       validate(2) .should.equal(true);
     });
   });
+
+
+  describe.skip('mutating data', function() {
+    beforeEach(function() {
+      const collectionFormat = {
+        csv: function (data, dataPath, parentData, parentDataProperty, rootData) {
+          parentData[parentDataProperty] = data.split(',');
+          return true;
+        }
+      };
+
+      ajv.addKeyword('collectionFormat', {
+        type: 'string',
+        compile: function(schema) { return collectionFormat[schema]; },
+        metaSchema: {
+          enum: ['csv']
+        }
+      });
+    });
+
+    it('should allow custom keywords mutating data', function() {
+      var validate = ajv.compile({
+        type: 'object',
+        properties: {
+          foo: {
+            allOf: [
+              { collectionFormat: 'csv' },
+              {
+                type: 'array',
+                items: { type: 'string' },
+              }
+            ]
+          }
+        },
+        additionalProperties: false
+      })
+
+      var obj = { foo: 'bar,baz,quux' };
+
+      validate(obj) .should.equal(true)
+      obj .should.eql({ foo: ['bar', 'baz', 'quux'] })
+    });
+  });
 });
