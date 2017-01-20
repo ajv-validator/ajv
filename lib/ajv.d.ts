@@ -167,7 +167,7 @@ declare namespace ajv {
     modifying?: boolean;
     valid?: boolean;
     // one and only one of the following properties should be present
-    validate?: SchemaValidateFunction;
+    validate?: SchemaValidateFunction | ValidateFunction;
     compile?: (schema: any, parentSchema: Object) => ValidateFunction;
     macro?: (schema: any, parentSchema: Object) => Object | boolean;
     inline?: (it: Object, keyword: string, schema: any, parentSchema: Object) => string;
