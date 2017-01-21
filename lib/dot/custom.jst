@@ -68,9 +68,8 @@ var {{=$valid}};
 {{## def.extendErrors:_inline:
   for (var {{=$i}}={{=$errs}}; {{=$i}}<errors; {{=$i}}++) {
     var {{=$ruleErr}} = vErrors[{{=$i}}];
-    {{# _inline ? 'if (\{\{=$ruleErr\}\}.dataPath === undefined) {' : '' }}
+    if ({{=$ruleErr}}.dataPath === undefined)
       {{=$ruleErr}}.dataPath = (dataPath || '') + {{= it.errorPath }};
-    {{# _inline ? '}' : '' }}
     {{# _inline ? 'if (\{\{=$ruleErr\}\}.schemaPath === undefined) {' : '' }}
       {{=$ruleErr}}.schemaPath = "{{=$errSchemaPath}}";
     {{# _inline ? '}' : '' }}
