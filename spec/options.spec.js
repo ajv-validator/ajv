@@ -957,4 +957,21 @@ describe('Ajv Options', function () {
       validate(1) .should.equal(false);
     });
   });
+
+
+  describe('serialize', function() {
+    var serializeCalled;
+
+    it('should use custom function to serialize schema to string', function() {
+      serializeCalled = undefined;
+      var ajv = new Ajv({ serialize: serialize });
+      ajv.addSchema({ type: 'string' });
+      should.equal(serializeCalled, true);
+    });
+
+    function serialize(schema) {
+      serializeCalled = true;
+      return JSON.stringify(schema);
+    }
+  });
 });
