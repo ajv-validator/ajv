@@ -1,0 +1,31 @@
+[
+  {
+    "description": "allow underscores in email domains (#396)",
+    "schema": {
+      "type": "string",
+      "format": "email"
+    },
+    "tests": [
+      {
+        "description": "email with _ in the middle of the domain is valid",
+        "data": "foo@my_domain.com",
+        "valid": true
+      },
+      {
+        "description": "email with _ at the start of the domain is valid",
+        "data": "foo@_email.com",
+        "valid": true
+      },
+      {
+        "description": "email with _ at the end of the domain is valid",
+        "data": "foo@email_.com",
+        "valid": true
+      },
+      {
+        "description": "email with multiple _ is valid",
+        "data":"foo@_my_domain_.com",
+        "valid": true
+      }
+    ]
+  }
+]
