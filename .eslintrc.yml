@@ -25,3 +25,4 @@ rules:
   semi: [2, always]
   strict: [2, global]
   valid-jsdoc: [2, requireReturn: false]
+  no-control-regex: 0

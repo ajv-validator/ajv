@@ -54,6 +54,24 @@
     ]
   },
   {
+    "description": "format: uri-template",
+    "schema": {
+      "format": "uri-template"
+    },
+    "tests": [
+      {
+        "description": "valid uri-template",
+        "data": "http://example.com/dictionary/{term:1}/{term}",
+        "valid": true
+      },
+      {
+        "description": "invalid uri-template",
+        "data": "http://example.com/dictionary/{term:1}/{term",
+        "valid": false
+      }
+    ]
+  },
+  {
     "description": "format: hostname",
     "schema": {
       "format": "hostname"
