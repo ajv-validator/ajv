@@ -150,8 +150,8 @@ describe('Ajv Options', function () {
 
     it('should throw if meta: false and validateSchema: true', function() {
       var ajv = new Ajv({ meta: false });
-      should.not.exist(ajv.getSchema('http://json-schema.org/draft-04/schema'));
-      should.throw(function() { ajv.addSchema({ type: 'integer' }, 'integer'); });
+      should.not.exist(ajv.getSchema('http://json-schema.org/draft-06/schema'));
+      should.not.throw(function() { ajv.addSchema({ type: 'wrong_type' }, 'integer'); });
     });
 
     it('should skip schema validation with validateSchema: false', function() {
@@ -173,10 +173,12 @@ describe('Ajv Options', function () {
       var ajv = new Ajv({ validateSchema: 'log' });
       should.not.throw(function() { ajv.addSchema({ type: 123 }, 'integer'); });
       loggedError .should.equal(true);
-      console.error = logError;
 
+      loggedError = false;
       ajv = new Ajv({ validateSchema: 'log', meta: false });
-      should.throw(function() { ajv.addSchema({ type: 123 }, 'integer'); });
+      should.not.throw(function() { ajv.addSchema({ type: 123 }, 'integer'); });
+      loggedError .should.equal(false);
+      console.error = logError;
     });
 
     it('should validate v6 schema', function() {
@@ -973,5 +975,60 @@ describe('Ajv Options', function () {
       serializeCalled = true;
       return JSON.stringify(schema);
     }
+  });
+
+
+  describe('patternGroups without draft-06 meta-schema', function() {
+    it('should use default meta-schema', function() {
+      var ajv = new Ajv({
+        patternGroups: true,
+        meta: require('../lib/refs/json-schema-draft-04.json')
+      });
+
+      ajv.compile({
+        patternGroups: {
+          '^foo': {
+            schema: { type: 'number' },
+            minimum: 1
+          }
+        }
+      });
+
+      should.throw(function() {
+        ajv.compile({
+          patternGroups: {
+            '^foo': {
+              schema: { type: 'wrong_type' },
+              minimum: 1
+            }
+          }
+        });
+      });
+    });
+
+    it('should not use meta-schema if not available', function() {
+      var ajv = new Ajv({
+        patternGroups: true,
+        meta: false
+      });
+
+      ajv.compile({
+        patternGroups: {
+          '^foo': {
+            schema: { type: 'number' },
+            minimum: 1
+          }
+        }
+      });
+
+      ajv.compile({
+        patternGroups: {
+          '^foo': {
+            schema: { type: 'wrong_type' },
+            minimum: 1
+          }
+        }
+      });
+    });
   });
 });
