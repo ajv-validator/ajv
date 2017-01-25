@@ -91,7 +91,7 @@
   },
   {
     "description": "validation of URL strings",
-    "schema": {"format": "uri"},
+    "schema": {"format": "url"},
     "tests": [
       {
         "data": "http://foo.com/blah_blah",
