@@ -239,6 +239,11 @@
         "valid": true
       },
       {
+        "data": "http://مثال.إختبار",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
         "data": "http://例子.测试",
         "description": "a valid URL string",
         "valid": true
@@ -389,6 +394,11 @@
         "valid": false
       },
       {
+        "data": "http://a.b--c.de/",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
         "data": "http://-a.b.co",
         "description": "an invalid URL string",
         "valid": false
@@ -435,6 +445,11 @@
       },
       {
         "data": "http://.www.foo.bar/",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://www.foo.bar./",
         "description": "an invalid URL string",
         "valid": false
       },
