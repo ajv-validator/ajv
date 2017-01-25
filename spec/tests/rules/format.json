@@ -90,6 +90,387 @@
     ]
   },
   {
+    "description": "validation of URL strings",
+    "schema": {"format": "uri"},
+    "tests": [
+      {
+        "data": "http://foo.com/blah_blah",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://foo.com/blah_blah/",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://foo.com/blah_blah_(wikipedia)",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://foo.com/blah_blah_(wikipedia)_(again)",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://www.example.com/wpstyle/?p=364",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "https://www.example.com/foo/?bar=baz&inga=42&quux",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://✪df.ws/123",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://userid:password@example.com:8080",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://userid:password@example.com:8080/",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://userid@example.com",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://userid@example.com/",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://userid@example.com:8080",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://userid@example.com:8080/",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://userid:password@example.com",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://userid:password@example.com/",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://142.42.1.1/",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://142.42.1.1:8080/",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://➡.ws/䨹",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://⌘.ws",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://⌘.ws/",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://foo.com/blah_(wikipedia)#cite-1",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://foo.com/blah_(wikipedia)_blah#cite-1",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://foo.com/unicode_(✪)_in_parens",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://foo.com/(something)?after=parens",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://☺.damowmow.com/",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://code.google.com/events/#&product=browser",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://j.mp",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "ftp://foo.bar/baz",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://foo.bar/?q=Test%20URL-encoded%20stuff",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://مثال.إختبار",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://例子.测试",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://उदाहरण.परीक्षा",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://-.~_!$&'()*+,;=:%40:80%2f::::::@example.com",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://1337.net",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://a.b-c.de",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://223.255.255.254",
+        "description": "a valid URL string",
+        "valid": true
+      },
+      {
+        "data": "http://",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://.",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://..",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://../",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://?",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://??",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://??/",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://#",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://##",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://##/",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://foo.bar?q=Spaces should be encoded",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "//",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "//a",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "///a",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "///",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http:///a",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "foo.com",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "rdar://1234",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "h://test",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http:// shouldfail.com",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": ":// should fail",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://foo.bar/foo(bar)baz quux",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "ftps://foo.bar/",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://-error-.invalid/",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://a.b--c.de/",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://-a.b.co",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://a.b-.co",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://0.0.0.0",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://10.1.1.0",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://10.1.1.255",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://224.1.1.1",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://1.1.1.1.1",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://123.123.123",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://3628126748",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://.www.foo.bar/",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://www.foo.bar./",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://.www.foo.bar./",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://10.1.1.1",
+        "description": "an invalid URL string",
+        "valid": false
+      },
+      {
+        "data": "http://10.1.1.254",
+        "description": "an invalid URL string",
+        "valid": false
+      }
+    ]
+  },
+  {
     "description": "validation of date strings",
     "schema": {"format": "date"},
     "tests": [
