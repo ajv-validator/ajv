@@ -211,6 +211,7 @@ The following formats are supported for string validation with "format" keyword:
 - _time_: time with optional time-zone.
 - _date-time_: date-time from the same source (time-zone is mandatory). `date`, `time` and `date-time` validate ranges in `full` mode and only regexp in `fast` mode (see [options](#options)).
 - _uri_: full uri with optional protocol.
+- _url_: [URL record](https://url.spec.whatwg.org/#concept-url).
 - _email_: email address.
 - _hostname_: host name acording to [RFC1034](http://tools.ietf.org/html/rfc1034#section-3.5).
 - _ipv4_: IP address v4.
