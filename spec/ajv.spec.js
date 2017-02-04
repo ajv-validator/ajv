@@ -208,6 +208,15 @@ describe('Ajv', function () {
     it('should throw if schema is not an object', function() {
       should.throw(function() { ajv.addSchema('foo'); });
     });
+
+    it('should throw if schema id is not a string', function() {
+      try {
+        ajv.addSchema({ id: 1, type: 'integer' });
+        throw new Error('should have throw exception');
+      } catch(e) {
+        e.message .should.equal('schema id must be string');
+      }
+    });
   });
 
 
