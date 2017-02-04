@@ -399,4 +399,46 @@ describe('Ajv', function () {
       validate(123) .should.equal(true);
     }
   });
+
+
+  describe('validateSchema method', function() {
+    it('should validate schema against meta-schema', function() {
+      var valid = ajv.validateSchema({
+        $schema: 'http://json-schema.org/draft-06/schema#',
+        type: 'number'
+      });
+
+      valid .should.equal(true);
+      should.equal(ajv.errors, null);
+
+      valid = ajv.validateSchema({
+        $schema: 'http://json-schema.org/draft-06/schema#',
+        type: 'wrong_type'
+      });
+
+      valid .should.equal(false);
+      ajv.errors.length .should.equal(3);
+      ajv.errors[0].keyword .should.equal('enum');
+      ajv.errors[1].keyword .should.equal('type');
+      ajv.errors[2].keyword .should.equal('anyOf');
+    });
+
+    it('should throw exception if meta-schema is unknown', function() {
+      should.throw(function() {
+        ajv.validateSchema({
+          $schema: 'http://example.com/unknown/schema#',
+          type: 'number'
+        });
+      });
+    });
+
+    it('should throw exception if $schema is not a string', function() {
+      should.throw(function() {
+        ajv.validateSchema({
+          $schema: {},
+          type: 'number'
+        });
+      });
+    });
+  });
 });
