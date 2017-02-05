@@ -12,7 +12,8 @@
     , $inline
     , $macro
     , $ruleValidate
-    , $validateCode;
+    , $validateCode
+    , $closingBraces = '';
 }}
 
 {{? $isData && $rDef.$data }}
@@ -81,9 +82,16 @@ var {{=$valid}};
 #}}
 
 
-{{? $validateSchema }}
-  {{=$valid}} = {{=$definition}}.validateSchema({{=$schemaValue}});
-  if ({{=$valid}}) {
+{{? $isData && $rDef.$data }}
+  {{ $closingBraces += '}'; }}
+  if ({{=$schemaValue}} === undefined) {
+    {{=$valid}} = true;
+  } else {
+  {{? $validateSchema }}
+    {{ $closingBraces += '}'; }}
+    {{=$valid}} = {{=$definition}}.validateSchema({{=$schemaValue}});
+    if ({{=$valid}}) {
+  {{?}}
 {{?}}
 
 {{? $inline }}
@@ -131,9 +139,7 @@ var {{=$valid}};
   {{=$data}} = {{=$parentData}}[{{=$parentDataProperty}}];
 {{?}}
 
-{{? $validateSchema }}
-  }
-{{?}}
+{{= $closingBraces }}
 
 {{## def.notValidationResult:
   {{? $rDef.valid === undefined }}

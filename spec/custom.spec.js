@@ -726,6 +726,10 @@ describe('Custom keywords', function () {
       shouldBeValid(validate, { data: 3, evenValue: false });
 
       shouldBeInvalid(validate, { data: 2, evenValue: "true" });
+
+      // valid if the value of x-even-$data keyword is undefined
+      shouldBeValid(validate, { data: 2 });
+      shouldBeValid(validate, { data: 3 });
     });
   }
 
