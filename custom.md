@@ -48,7 +48,7 @@ Example. `constant` keyword from version 5 proposals (that is equivalent to `enu
 
 ```javascript
 ajv.addKeyword('constant', { validate: function (schema, data) {
-  return typeof schema == 'object && schema !== null'
+  return typeof schema == 'object' && schema !== null
           ? deepEqual(schema, data)
           : schema === data;
 }, errors: false });
