@@ -432,6 +432,27 @@ describe('Ajv', function () {
         validate(2) .should.equal(true);
         validate('abc') .should.equal(true);
       });
+
+      it('should validate numbers with format via $data', function() {
+        ajv = new Ajv({$data: true});
+        ajv.addFormat('positive', {
+          type: 'number',
+          validate: function(x) {
+            return x > 0;
+          }
+        });
+
+        var validate = ajv.compile({
+          properties: {
+            data: { format: { $data: '1/frmt' } },
+            frmt: { type: 'string' }
+          }
+        });
+        validate({data: -2, frmt: 'positive'}) .should.equal(false);
+        validate({data: 0, frmt: 'positive'})  .should.equal(false);
+        validate({data: 2, frmt: 'positive'})  .should.equal(true);
+        validate({data: 'abc', frmt: 'positive'}) .should.equal(true);
+      });
     });
   });
 
