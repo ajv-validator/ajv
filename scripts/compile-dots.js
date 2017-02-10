@@ -36,7 +36,7 @@ files.forEach(function (f) {
   var code = doT.compile(template, defs);
   code = code.toString()
              .replace(OUT_EMPTY_STRING, '')
-             .replace(FUNCTION_NAME, 'function generate_' + keyword + '(it, $keyword) {')
+             .replace(FUNCTION_NAME, 'function generate_' + keyword + '(it, $keyword, $ruleType) {')
              .replace(ISTANBUL, '/* $1 */');
   VARS.forEach(removeUnusedVar);
   code = "'use strict';\nmodule.exports = " + code;

@@ -401,12 +401,59 @@ describe('Ajv', function () {
       testFormat();
     });
 
+    it('should add format as object', function() {
+      ajv.addFormat('identifier', {
+        validate: function (str) { return /^[a-z_$][a-z0-9_$]*$/i.test(str); },
+      });
+      testFormat();
+    });
+
     function testFormat() {
       var validate = ajv.compile({ format: 'identifier' });
       validate('Abc1') .should.equal(true);
       validate('123') .should.equal(false);
       validate(123) .should.equal(true);
     }
+
+    describe('formats for number', function() {
+      it('should validate only numbers', function() {
+        ajv.addFormat('positive', {
+          type: 'number',
+          validate: function(x) {
+            return x > 0;
+          }
+        });
+
+        var validate = ajv.compile({
+          format: 'positive'
+        });
+        validate(-2) .should.equal(false);
+        validate(0) .should.equal(false);
+        validate(2) .should.equal(true);
+        validate('abc') .should.equal(true);
+      });
+
+      it('should validate numbers with format via $data', function() {
+        ajv = new Ajv({$data: true});
+        ajv.addFormat('positive', {
+          type: 'number',
+          validate: function(x) {
+            return x > 0;
+          }
+        });
+
+        var validate = ajv.compile({
+          properties: {
+            data: { format: { $data: '1/frmt' } },
+            frmt: { type: 'string' }
+          }
+        });
+        validate({data: -2, frmt: 'positive'}) .should.equal(false);
+        validate({data: 0, frmt: 'positive'})  .should.equal(false);
+        validate({data: 2, frmt: 'positive'})  .should.equal(true);
+        validate({data: 'abc', frmt: 'positive'}) .should.equal(true);
+      });
+    });
   });
 
 

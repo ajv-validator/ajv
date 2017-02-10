@@ -899,7 +899,7 @@ If no parameter is passed all schemas but meta-schemas will be removed and the c
 
 ##### <a name="api-addformat"></a>.addFormat(String name, String|RegExp|Function|Object format)
 
-Add custom format to validate strings. It can also be used to replace pre-defined formats for Ajv instance.
+Add custom format to validate strings or numbers. It can also be used to replace pre-defined formats for Ajv instance.
 
 Strings are converted to RegExp.
 
@@ -910,6 +910,7 @@ If object is passed it should have properties `validate`, `compare` and `async`:
 - _validate_: a string, RegExp or a function as described above.
 - _compare_: an optional comparison function that accepts two strings and compares them according to the format meaning. This function is used with keywords `formatMaximum`/`formatMinimum` (defined in [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package). It should return `1` if the first value is bigger than the second value, `-1` if it is smaller and `0` if it is equal.
 - _async_: an optional `true` value if `validate` is an asynchronous function; in this case it should return a promise that resolves with a value `true` or `false`.
+- _type_: an optional type of data that the format applies to. It can be `"string"` (default) or `"number"` (see https://github.com/epoberezkin/ajv/issues/291#issuecomment-259923858). If the type of data is different, the validation will pass.
 
 Custom formats can be also added via `formats` option.
 

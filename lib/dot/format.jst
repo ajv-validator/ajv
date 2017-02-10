@@ -21,7 +21,8 @@
         && self._opts.unknownFormats.indexOf({{=$schemaValue}}) == -1
       {{?}}) ||
    {{?}}
-   ({{=$format}} && !(typeof {{=$format}} == 'function'
+   ({{=$format}} && {{=$formatType}} == '{{=$ruleType}}'
+                 && !(typeof {{=$format}} == 'function'
                      ? {{? it.async}}
                         (async{{=$lvl}} ? {{=it.yieldAwait}} {{=$format}}({{=$data}}) : {{=$format}}({{=$data}}))
                        {{??}}
@@ -49,12 +50,17 @@
 }}
 
 {{? $isData }}
-  {{ var $format = 'format' + $lvl; }}
+  {{
+    var $format = 'format' + $lvl
+      , $isObject = 'isObject' + $lvl
+      , $formatType = 'formatType' + $lvl;
+  }}
   var {{=$format}} = formats[{{=$schemaValue}}];
-  var isObject{{=$lvl}} = typeof {{=$format}} == 'object'
-                          && !({{=$format}} instanceof RegExp)
-                          && {{=$format}}.validate;
-  if (isObject{{=$lvl}}) {
+  var {{=$isObject}} = typeof {{=$format}} == 'object'
+                        && !({{=$format}} instanceof RegExp)
+                        && {{=$format}}.validate;
+  var {{=$formatType}} = {{=$isObject}} && {{=$format}}.type || 'string';
+  if ({{=$isObject}}) {
     {{? it.async}}
       var async{{=$lvl}} = {{=$format}}.async;
     {{?}}
@@ -77,11 +83,15 @@
     var $isObject = typeof $format == 'object'
                     && !($format instanceof RegExp)
                     && $format.validate;
+    var $formatType = $isObject && $format.type || 'string';
     if ($isObject) {
       var $async = $format.async === true;
       $format = $format.validate;
     }
   }}
+  {{? $formatType != $ruleType }}
+    {{# def.skipFormat }}
+  {{?}}
   {{? $async }}
     {{
       if (!it.async) throw new Error('async format in sync schema');
