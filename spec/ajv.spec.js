@@ -386,70 +386,52 @@ describe('Ajv', function () {
 
 
   describe('addFormat method', function() {
-    describe.skip('without any type restrictions specified', function() {
-      it('should add format as regular expression', function() {
-        ajv.addFormat('identifier', /^[a-z_$][a-z0-9_$]*$/i);
-        testFormat();
-      });
-
-      it('should add format as string', function() {
-        ajv.addFormat('identifier', '^[A-Za-z_$][A-Za-z0-9_$]*$');
-        testFormat();
-      });
-
-      it('should add format as function', function() {
-        ajv.addFormat('identifier', function (str) { return /^[a-z_$][a-z0-9_$]*$/i.test(str); });
-        testFormat();
-      });
-
-      it('should add format as object', function() {
-        ajv.addFormat('identifier', {
-          validate: function (str) { return /^[a-z_$][a-z0-9_$]*$/i.test(str); },
-        });
-        testFormat();
-      });
-
-      function testFormat() {
-        var validate = ajv.compile({ format: 'identifier' });
-        validate('Abc1') .should.equal(true);
-        validate('123') .should.equal(false);
-        validate(123) .should.equal(true);
-      }
+    it('should add format as regular expression', function() {
+      ajv.addFormat('identifier', /^[a-z_$][a-z0-9_$]*$/i);
+      testFormat();
     });
 
-    describe('with type restrictions specified', function() {
-      it('should apply the format to the type specified', function() {
+    it('should add format as string', function() {
+      ajv.addFormat('identifier', '^[A-Za-z_$][A-Za-z0-9_$]*$');
+      testFormat();
+    });
 
+    it('should add format as function', function() {
+      ajv.addFormat('identifier', function (str) { return /^[a-z_$][a-z0-9_$]*$/i.test(str); });
+      testFormat();
+    });
+
+    it('should add format as object', function() {
+      ajv.addFormat('identifier', {
+        validate: function (str) { return /^[a-z_$][a-z0-9_$]*$/i.test(str); },
+      });
+      testFormat();
+    });
+
+    function testFormat() {
+      var validate = ajv.compile({ format: 'identifier' });
+      validate('Abc1') .should.equal(true);
+      validate('123') .should.equal(false);
+      validate(123) .should.equal(true);
+    }
+
+    describe('formats for number', function() {
+      it('should validate only numbers', function() {
         ajv.addFormat('positive', {
-          types: ['number'],
-          validate: function(x) {
-            return x >= 0;
-          }
-        });
-
-        var validate = ajv.compile({
           type: 'number',
-          format: 'positive'
-        });
-        validate(-12.3) .should.equal(false);
-        validate(12.3) .should.equal(true);
-      });
-
-      it('should not fail types not specified', function() {
-        ajv.addFormat('positive', {
-          types: ['number'],
           validate: function(x) {
-            return x >= 0;
+            return x > 0;
           }
         });
 
         var validate = ajv.compile({
-          type: 'string',
           format: 'positive'
         });
-        validate('Abc1') .should.equal(true);
+        validate(-2) .should.equal(false);
+        validate(0) .should.equal(false);
+        validate(2) .should.equal(true);
+        validate('abc') .should.equal(true);
       });
-
     });
   });
 

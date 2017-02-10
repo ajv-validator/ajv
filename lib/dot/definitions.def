@@ -2,7 +2,6 @@
   {{
     var $lvl = it.level;
     var $dataLvl = it.dataLevel;
-    var $type = it.schema.type || '';
     var $schema = it.schema[$keyword];
     var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
     var $errSchemaPath = it.errSchemaPath + '/' + $keyword;

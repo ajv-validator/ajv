@@ -49,6 +49,9 @@
 }}
 
 {{? $isData }}
+  {{? $ruleType != 'string' }}
+    {{# def.skipFormat }}
+  {{?}}
   {{ var $format = 'format' + $lvl; }}
   var {{=$format}} = formats[{{=$schemaValue}}];
   var isObject{{=$lvl}} = typeof {{=$format}} == 'object'
@@ -77,13 +80,13 @@
     var $isObject = typeof $format == 'object'
                     && !($format instanceof RegExp)
                     && $format.validate;
-    var $types = $isObject && $format.types || ['string'];
+    var $formatType = $isObject && $format.type || 'string';
     if ($isObject) {
       var $async = $format.async === true;
       $format = $format.validate;
     }
   }}
-  {{? $types.indexOf($type) === -1 }}
+  {{? $formatType != $ruleType }}
     {{# def.skipFormat }}
   {{?}}
   {{? $async }}

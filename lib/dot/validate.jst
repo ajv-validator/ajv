@@ -173,7 +173,7 @@
         {{?}}
         {{~ $rulesGroup.rules:$rule }}
           {{? $shouldUseRule($rule) }}
-            {{ var $code = $rule.code(it, $rule.keyword); }}
+            {{ var $code = $rule.code(it, $rule.keyword, $rulesGroup.type); }}
             {{? $code }}
               {{= $code }}
               {{? $breakOnError }}
