@@ -866,7 +866,7 @@ describe('Ajv Options', function () {
             }
           });
 
-          validate({foo: 1, bar: 'unknown'}) .should.equal(true);
+          validate({foo: 1, bar: 'unknown'}) .should.equal(false);
           validate({foo: '2016-10-16', bar: 'date'}) .should.equal(true);
           validate({foo: '20161016', bar: 'date'}) .should.equal(false);
           validate({foo: '20161016'}) .should.equal(true);
@@ -932,7 +932,7 @@ describe('Ajv Options', function () {
           });
 
           validate({foo: 1, bar: 'allowed'}) .should.equal(true);
-          validate({foo: 1, bar: 'unknown'}) .should.equal(true);
+          validate({foo: 1, bar: 'unknown'}) .should.equal(false);
           validate({foo: '2016-10-16', bar: 'date'}) .should.equal(true);
           validate({foo: '20161016', bar: 'date'}) .should.equal(false);
           validate({foo: '20161016'}) .should.equal(true);
