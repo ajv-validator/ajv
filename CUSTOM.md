@@ -43,7 +43,7 @@ Example. `constant` keyword (a synonym for draft6 keyword `const`, it is equival
 
 ```javascript
 ajv.addKeyword('constant', { validate: function (schema, data) {
-  return typeof schema == 'object && schema !== null'
+  return typeof schema == 'object' && schema !== null
           ? deepEqual(schema, data)
           : schema === data;
 }, errors: false });
