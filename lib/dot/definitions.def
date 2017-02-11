@@ -180,3 +180,16 @@
     if (!Object.prototype.hasOwnProperty.call({{=$data}}, {{=$key}})) continue;
   {{?}}
 #}}
+
+
+{{## def.noPropertyInData:
+  {{=$useData}} === undefined
+  {{? $ownProperties }}
+    || !{{# def.isOwnProperty }}
+  {{?}}
+#}}
+
+
+{{## def.isOwnProperty:
+  Object.prototype.hasOwnProperty.call({{=$data}}, '{{=it.util.escapeQuotes($propertyKey)}}')
+#}}

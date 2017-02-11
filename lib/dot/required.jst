@@ -41,7 +41,8 @@
 {{? $isData || $required.length }}
   {{
     var $currentErrorPath = it.errorPath
-      , $loopRequired = $isData || $required.length >= it.opts.loopRequired;
+      , $loopRequired = $isData || $required.length >= it.opts.loopRequired
+      , $ownProperties = it.opts.ownProperties;
   }}
 
   {{? $breakOnError }}
@@ -83,7 +84,7 @@
 
       {{? $isData }}  }  {{?}}
     {{??}}
-      {{~ $required:$reqProperty }}
+      {{~ $required:$propertyKey }}
         {{# def.allErrorsMissingProperty:'required' }}
       {{~}}
     {{?}}

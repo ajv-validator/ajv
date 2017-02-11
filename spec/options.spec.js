@@ -117,7 +117,7 @@ describe('Ajv Options', function () {
       test(schema, obj, proto);
     });
 
-    it.skip('should only validate own properties with required keyword', function() {
+    it('should only validate own properties with required keyword', function() {
       var schema = {
         required: ['a', 'b']
       };

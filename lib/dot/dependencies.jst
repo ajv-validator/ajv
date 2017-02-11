@@ -7,7 +7,8 @@
 
 {{
   var $schemaDeps = {}
-    , $propertyDeps = {};
+    , $propertyDeps = {}
+    , $ownProperties = it.opts.ownProperties;
 
   for ($property in $schema) {
     var $sch = $schema[$property];
@@ -30,7 +31,7 @@ var missing{{=$lvl}};
           {{# def.errorMissingProperty:'dependencies' }}
       {{??}}
         ) {
-          {{~ $deps:$reqProperty }}
+          {{~ $deps:$propertyKey }}
             {{# def.allErrorsMissingProperty:'dependencies' }}
           {{~}}
       {{?}}

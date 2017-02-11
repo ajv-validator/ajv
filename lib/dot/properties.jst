@@ -21,19 +21,6 @@
 #}}
 
 
-{{## def.noPropertyInData:
-  {{=$useData}} === undefined
-  {{? $ownProperties }}
-    || !{{# def.isOwnProperty }}
-  {{?}}
-#}}
-
-
-{{## def.isOwnProperty:
-  Object.prototype.hasOwnProperty.call({{=$data}}, '{{=it.util.escapeQuotes($propertyKey)}}')
-#}}
-
-
 {{
   var $key = 'key' + $lvl
     , $dataNxt = $it.dataLevel = it.dataLevel + 1
