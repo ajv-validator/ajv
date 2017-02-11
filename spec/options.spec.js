@@ -84,54 +84,74 @@ describe('Ajv Options', function () {
   });
 
 
-  describe('ownProperties', function() {
-    it('should only validate against own properties of data if specified', function() {
-      var ajv = new Ajv({ ownProperties: true });
-      var validate = ajv.compile({
-        properties: { c: { type: 'number' } },
+  describe.only('ownProperties', function() {
+    var ajv, ajvOP;
+
+    beforeEach(function() {
+      ajv = new Ajv({ allErrors: true });
+      ajvOP = new Ajv({ ownProperties: true, allErrors: true });
+    });
+
+    it('should only validate own properties with additionalProperties', function() {
+      var schema = {
+        properties: { a: { type: 'number' } },
         additionalProperties: false
-      });
+      };
 
-      var triangle = { a: 1, b: 2 };
-      function ColoredTriangle() { this.c = 3; }
-      ColoredTriangle.prototype = triangle;
-      var object = new ColoredTriangle();
-
-      validate(object).should.equal(true);
-      should.equal(validate.errors, null);
+      var obj = { a: 1 };
+      var proto = { b: 2 };
+      test(schema, obj, proto);
     });
 
-    it('should only validate against own properties when using patternProperties', function() {
-      var ajv = new Ajv({ allErrors: true, ownProperties: true });
-      var validate = ajv.compile({
+    it('should only validate own properties with patternProperties', function() {
+      var schema = {
         patternProperties: { 'f.*o': { type: 'integer' } },
-      });
+      };
 
-      var baz = { foooo: false, fooooooo: 42.31 };
-      function FooThing() { this.foo = 'not a number'; }
-      FooThing.prototype = baz;
-      var object = new FooThing();
-
-      validate(object).should.equal(false);
-      validate.errors.should.have.length(1);
+      var obj = { fooo: 1 };
+      var proto = { foo: 'not a number' };
+      test(schema, obj, proto);
     });
 
-    it('should only validate against own properties when using patternGroups', function() {
-      var ajv = new Ajv({ allErrors: true, ownProperties: true, patternGroups: true });
-      var validate = ajv.compile({
+    it('should only validate own properties with patternGroups', function() {
+      ajv = new Ajv({ allErrors: true, patternGroups: true });
+      ajvOP = new Ajv({ ownProperties: true, allErrors: true, patternGroups: true });
+
+      var schema = {
         patternGroups: {
           'f.*o': { schema: { type: 'integer' } }
         }
-      });
+      };
 
-      var baz = { foooo: false, fooooooo: 42.31 };
-      function FooThing() { this.foo = 'not a number'; }
-      FooThing.prototype = baz;
-      var object = new FooThing();
-
-      validate(object).should.equal(false);
-      validate.errors.should.have.length(1);
+      var obj = { fooo: 1 };
+      var proto = { foo: 'not a number' };
+      test(schema, obj, proto);
     });
+
+    it('should only validate own properties with propertyNames', function() {
+      var schema = {
+        propertyNames: {
+          format: 'email'
+        }
+      };
+
+      var obj = { 'e@example.com': 2 };
+      var proto = { 'not email': 1 };
+      test(schema, obj, proto, 2);
+    });
+
+    function test(schema, obj, proto, errors) {
+      errors = errors || 1;
+      var validate = ajv.compile(schema);
+      var validateOP = ajvOP.compile(schema);
+      var data = Object.create(proto);
+      for (var key in obj) data[key] = obj[key];
+
+      validate(data) .should.equal(false);
+      validate.errors .should.have.length(errors);
+
+      validateOP(data) .should.equal(true)
+    }
   });
 
   describe('meta and validateSchema', function() {
