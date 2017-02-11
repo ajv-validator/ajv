@@ -119,14 +119,26 @@ describe('Ajv Options', function () {
 
     it.skip('should only validate own properties with required keyword', function() {
       var schema = {
-        not: {
-          required: ['a', 'b']
-        }
+        required: ['a', 'b']
       };
 
       var obj = { a: 1 };
       var proto = { b: 2 };
-      test(schema, obj, proto);
+      test(schema, obj, proto, 1, true);
+    });
+
+    it('should only validate own properties with properties and required keyword', function() {
+      var schema = {
+        properties: {
+          a: { type: 'number' },
+          b: { type: 'number' }
+        },
+        required: ['a', 'b']
+      };
+
+      var obj = { a: 1 };
+      var proto = { b: 2 };
+      test(schema, obj, proto, 1, true);
     });
 
     it('should only validate own properties with patternProperties', function() {
@@ -166,7 +178,7 @@ describe('Ajv Options', function () {
       test(schema, obj, proto, 2);
     });
 
-    function test(schema, obj, proto, errors) {
+    function test(schema, obj, proto, errors, reverse) {
       errors = errors || 1;
       var validate = ajv.compile(schema);
       var validateOP = ajvOP.compile(schema);
@@ -174,11 +186,18 @@ describe('Ajv Options', function () {
       var data = Object.create(proto);
       for (var key in obj) data[key] = obj[key];
 
-      validate(data) .should.equal(false);
-      validate.errors .should.have.length(errors);
-
-      validateOP(data) .should.equal(true);
-      validateOP1(data) .should.equal(true);
+      if (reverse) {
+        validate(data) .should.equal(true);
+        validateOP(data) .should.equal(false);
+        validateOP.errors .should.have.length(errors);
+        validateOP1(data) .should.equal(false);
+        validateOP1.errors .should.have.length(errors);
+      } else {
+        validate(data) .should.equal(false);
+        validate.errors .should.have.length(errors);
+        validateOP(data) .should.equal(true);
+        validateOP1(data) .should.equal(true);
+      }
     }
   });
 
