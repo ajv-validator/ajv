@@ -85,11 +85,12 @@ describe('Ajv Options', function () {
 
 
   describe('ownProperties', function() {
-    var ajv, ajvOP;
+    var ajv, ajvOP, ajvOP1;
 
     beforeEach(function() {
       ajv = new Ajv({ allErrors: true });
       ajvOP = new Ajv({ ownProperties: true, allErrors: true });
+      ajvOP1 = new Ajv({ ownProperties: true });
     });
 
     it('should only validate own properties with additionalProperties', function() {
@@ -103,7 +104,7 @@ describe('Ajv Options', function () {
       test(schema, obj, proto);
     });
 
-    it.skip('should only validate own properties with properties keyword', function() {
+    it('should only validate own properties with properties keyword', function() {
       var schema = {
         properties: {
           a: { type: 'number' },
@@ -169,13 +170,15 @@ describe('Ajv Options', function () {
       errors = errors || 1;
       var validate = ajv.compile(schema);
       var validateOP = ajvOP.compile(schema);
+      var validateOP1 = ajvOP1.compile(schema);
       var data = Object.create(proto);
       for (var key in obj) data[key] = obj[key];
 
       validate(data) .should.equal(false);
       validate.errors .should.have.length(errors);
 
-      validateOP(data) .should.equal(true)
+      validateOP(data) .should.equal(true);
+      validateOP1(data) .should.equal(true);
     }
   });
 
