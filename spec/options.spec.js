@@ -84,7 +84,7 @@ describe('Ajv Options', function () {
   });
 
 
-  describe.only('ownProperties', function() {
+  describe('ownProperties', function() {
     var ajv, ajvOP;
 
     beforeEach(function() {
@@ -96,6 +96,31 @@ describe('Ajv Options', function () {
       var schema = {
         properties: { a: { type: 'number' } },
         additionalProperties: false
+      };
+
+      var obj = { a: 1 };
+      var proto = { b: 2 };
+      test(schema, obj, proto);
+    });
+
+    it.skip('should only validate own properties with properties keyword', function() {
+      var schema = {
+        properties: {
+          a: { type: 'number' },
+          b: { type: 'number' }
+        }
+      };
+
+      var obj = { a: 1 };
+      var proto = { b: 'not a number' };
+      test(schema, obj, proto);
+    });
+
+    it.skip('should only validate own properties with required keyword', function() {
+      var schema = {
+        not: {
+          required: ['a', 'b']
+        }
       };
 
       var obj = { a: 1 };
