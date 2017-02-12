@@ -5,21 +5,27 @@ layout: main
 ---
 # Contributing
 
-Thank you for your help making Ajv better!
+Thank you for your help making Ajv better! Every contribution is appreciated. If you plan to implement a new feature or some other change please create an issue first, to make sure that your work is not lost.
 
-- [Submitting issues](#submitting-issues)
+- [Documentation](#documentation)
+- [Issues](#issues)
   - [Bug reports](#bug-reports)
   - [Change proposals](#changes)
   - [Browser and compatibility issues](#compatibility)
   - [JSON schema standard](#json-schema)
   - [Ajv usage questions](#usage)
-- [Contibuting code](#contibuting-code)
+- [Code](#code)
   - [Development](#development)
   - [Pull requests](#pull-requests)
   - [Contributions license](#contributions-license)
 
 
-## Submitting issues
+## Documentation
+
+Ajv has a lot of features and maintaining documentation takes time. I appreciate the time you spend correcting or clarifying the documentation.
+
+
+## Issues
 
 Before submitting the issue please search the existing issues and also review [Frequently Asked Questions](faq.html).
 
@@ -90,18 +96,26 @@ The best place to ask a question about using Ajv is [Gitter chat](https://gitter
 If the question is advanced, it can be submitted to [Stack Overflow](http://stackoverflow.com/questions/ask?tags=jsonschema,ajv).
 
 
-## Contibuting code
+## Code
 
 Thanks a lot for considering contributing to Ajv. Many very useful features were created by its users.
+
 
 #### Development
 
 Running tests:
 
-```
+```bash
 npm install
 git submodule update --init
 npm test
+```
+
+The full test suite runs for 3 minutes. If your change is trivial you can run quick test before committing (10 sec) and then disable pre-commit hook:
+
+```bash
+npm run test-fast
+git commit -nm 'type: message'
 ```
 
 All validation functions are generated using doT templates in [dot](https://github.com/epoberezkin/ajv/tree/master/lib/dot) folder. Templates are precompiled so doT is not a run-time dependency.
