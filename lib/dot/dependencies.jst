@@ -26,6 +26,9 @@ var missing{{=$lvl}};
   {{ $deps = $propertyDeps[$property]; }}
   {{? $deps.length }}
     if ({{=$data}}{{= it.util.getProperty($property) }} !== undefined
+      {{? $ownProperties }}
+        && Object.prototype.hasOwnProperty.call({{=$data}}, '{{=it.util.escapeQuotes($property)}}')
+      {{?}}
       {{? $breakOnError }}
           && ({{# def.checkMissingProperty:$deps }})) {
           {{# def.errorMissingProperty:'dependencies' }}

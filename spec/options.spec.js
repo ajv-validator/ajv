@@ -141,6 +141,23 @@ describe('Ajv Options', function () {
       test(schema, obj, proto, 1, true);
     });
 
+    it('should only validate own properties with dependencies keyword', function() {
+      var schema = {
+        dependencies: {
+          a: ['c'],
+          b: ['d']
+        }
+      };
+
+      var obj = { a: 1, c: 3 };
+      var proto = { b: 2 };
+      test(schema, obj, proto);
+
+      obj = { a: 1, b: 2, c: 3 };
+      proto = { d: 4 };
+      test(schema, obj, proto, 1, true);
+    });
+
     it('should only validate own properties with patternProperties', function() {
       var schema = {
         patternProperties: { 'f.*o': { type: 'integer' } },
