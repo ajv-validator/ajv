@@ -1,0 +1,29 @@
+[
+  {
+    "description": "JSON with control characters - 'dependencies'",
+    "schema": {
+      "dependencies": {
+        "foo'bar": {
+          "not": { "required": ["bar"] }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid object",
+        "data": {
+          "foo'bar": 1
+        },
+        "valid": true
+      },
+      {
+        "description": "invalid object",
+        "data": {
+          "foo'bar": 1,
+          "bar": 2
+        },
+        "valid": false
+      }
+    ]
+  }
+]
