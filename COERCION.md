@@ -103,7 +103,7 @@ Unlike JavaScript, only these numbers can be coerced to `boolean`:
 `null` coerces to `false`
 
 
-## Coercion to and from from array
+## Coercion to and from array
 
 These coercions require that the option `coerceTypes` is `"array"`.
 
