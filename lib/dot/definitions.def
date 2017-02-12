@@ -175,9 +175,13 @@
 #}}
 
 
-{{## def.checkOwnProperty:
+{{## def.iterateProperties:
   {{? $ownProperties }}
-    if (!Object.prototype.hasOwnProperty.call({{=$data}}, {{=$key}})) continue;
+    {{=$dataProperties}} = {{=$dataProperties}} || Object.keys({{=$data}});
+    for (var {{=$idx}}=0; {{=$idx}}<{{=$dataProperties}}.length; {{=$idx}}++) {
+      var {{=$key}} = {{=$dataProperties}}[{{=$idx}}];
+  {{??}}
+    for (var {{=$key}} in {{=$data}}) {
   {{?}}
 #}}
 

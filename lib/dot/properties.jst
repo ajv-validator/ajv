@@ -23,8 +23,10 @@
 
 {{
   var $key = 'key' + $lvl
+    , $idx = 'idx' + $lvl
     , $dataNxt = $it.dataLevel = it.dataLevel + 1
-    , $nextData = 'data' + $dataNxt;
+    , $nextData = 'data' + $dataNxt
+    , $dataProperties = 'dataProperties' + $lvl;
 
   var $schemaKeys = Object.keys($schema || {})
     , $pProperties = it.schema.patternProperties || {}
@@ -52,10 +54,12 @@
 
 var {{=$errs}} = errors;
 var {{=$nextValid}} = true;
+{{? $ownProperties }}
+  var {{=$dataProperties}} = undefined;
+{{?}}
 
 {{? $checkAdditional }}
-  for (var {{=$key}} in {{=$data}}) {
-    {{# def.checkOwnProperty }}
+  {{# def.iterateProperties }}
     {{? $someProperties }}
       var isAdditional{{=$lvl}} = !(false
         {{? $schemaKeys.length }}
@@ -220,8 +224,7 @@ var {{=$nextValid}} = true;
                                              + it.util.escapeFragment($pProperty);
       }}
 
-      for (var {{=$key}} in {{=$data}}) {
-        {{# def.checkOwnProperty }}
+      {{# def.iterateProperties }}
         if ({{= it.usePattern($pProperty) }}.test({{=$key}})) {
           {{
             $it.errorPath = it.util.getPathExpr(it.errorPath, $key, it.opts.jsonPointers);
@@ -261,8 +264,7 @@ var {{=$nextValid}} = true;
 
       var pgPropCount{{=$lvl}} = 0;
 
-      for (var {{=$key}} in {{=$data}}) {
-        {{# def.checkOwnProperty }}
+      {{# def.iterateProperties }}
         if ({{= it.usePattern($pgProperty) }}.test({{=$key}})) {
           pgPropCount{{=$lvl}}++;
 
