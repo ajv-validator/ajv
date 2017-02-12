@@ -22,6 +22,11 @@
 #}}
 
 
+{{## def.isRequiredOwnProperty:
+  Object.prototype.hasOwnProperty.call({{=$data}}, {{=$vSchema}}[{{=$i}}])
+#}}
+
+
 {{? !$isData }}
   {{? $schema.length < it.opts.loopRequired &&
       it.schema.properties && Object.keys(it.schema.properties).length }}
@@ -54,7 +59,10 @@
       {{?$isData}}{{# def.check$dataIsArray }}{{?}}
 
       for (var {{=$i}} = 0; {{=$i}} < {{=$vSchema}}.length; {{=$i}}++) {
-        {{=$valid}} = {{=$data}}[{{=$vSchema}}[{{=$i}}]] !== undefined;
+        {{=$valid}} = {{=$data}}[{{=$vSchema}}[{{=$i}}]] !== undefined
+                      {{? $ownProperties }}
+                        && {{# def.isRequiredOwnProperty }}
+                      {{?}};
         if (!{{=$valid}}) break;
       }
 
@@ -77,7 +85,10 @@
       {{?}}
 
       for (var {{=$i}} = 0; {{=$i}} < {{=$vSchema}}.length; {{=$i}}++) {
-        if ({{=$data}}[{{=$vSchema}}[{{=$i}}]] === undefined) {
+        if ({{=$data}}[{{=$vSchema}}[{{=$i}}]] === undefined
+            {{? $ownProperties }}
+              || !{{# def.isRequiredOwnProperty }}
+            {{?}}) {
           {{# def.addError:'required' }}
         }
       }

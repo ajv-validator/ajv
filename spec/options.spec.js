@@ -127,6 +127,43 @@ describe('Ajv Options', function () {
       test(schema, obj, proto, 1, true);
     });
 
+    it('should only validate own properties with required keyword - many properties', function() {
+      ajv = new Ajv({ allErrors: true, loopRequired: 1 });
+      ajvOP = new Ajv({ ownProperties: true, allErrors: true, loopRequired: 1 });
+      ajvOP1 = new Ajv({ ownProperties: true, loopRequired: 1 });
+
+      var schema = {
+        required: ['a', 'b', 'c', 'd']
+      };
+
+      var obj = { a: 1, b: 2 };
+      var proto = { c: 3, d: 4 };
+      test(schema, obj, proto, 2, true);
+    });
+
+    it('should only validate own properties with required keyword as $data', function() {
+      ajv = new Ajv({ allErrors: true, $data: true });
+      ajvOP = new Ajv({ ownProperties: true, allErrors: true, $data: true });
+      ajvOP1 = new Ajv({ ownProperties: true, $data: true });
+
+      var schema = {
+        required: { $data: '0/req' },
+        properties: {
+          req: {
+            type: 'array',
+            items: { type: 'string' }
+          }
+        }
+      };
+
+      var obj = {
+        req: ['a', 'b'],
+        a: 1
+      };
+      var proto = { b: 2 };
+      test(schema, obj, proto, 1, true);
+    });
+
     it('should only validate own properties with properties and required keyword', function() {
       var schema = {
         properties: {
@@ -225,7 +262,7 @@ describe('Ajv Options', function () {
         validateOP(data) .should.equal(false);
         validateOP.errors .should.have.length(errors);
         validateOP1(data) .should.equal(false);
-        validateOP1.errors .should.have.length(errors);
+        validateOP1.errors .should.have.length(1);
       } else {
         validate(data) .should.equal(false);
         validate.errors .should.have.length(errors);
