@@ -5,6 +5,14 @@
 {{# def.setupNextLevel }}
 
 
+{{## def.propertyInData:
+  {{=$data}}{{= it.util.getProperty($property) }} !== undefined
+  {{? $ownProperties }}
+    && Object.prototype.hasOwnProperty.call({{=$data}}, '{{=it.util.escapeQuotes($property)}}')
+  {{?}}
+#}}
+
+
 {{
   var $schemaDeps = {}
     , $propertyDeps = {}
@@ -25,10 +33,7 @@ var missing{{=$lvl}};
 {{ for (var $property in $propertyDeps) { }}
   {{ $deps = $propertyDeps[$property]; }}
   {{? $deps.length }}
-    if ({{=$data}}{{= it.util.getProperty($property) }} !== undefined
-      {{? $ownProperties }}
-        && Object.prototype.hasOwnProperty.call({{=$data}}, '{{=it.util.escapeQuotes($property)}}')
-      {{?}}
+    if ({{# def.propertyInData }}
       {{? $breakOnError }}
           && ({{# def.checkMissingProperty:$deps }})) {
           {{# def.errorMissingProperty:'dependencies' }}
@@ -53,7 +58,7 @@ var missing{{=$lvl}};
   {{? {{# def.nonEmptySchema:$sch }} }}
     {{=$nextValid}} = true;
 
-    if ({{=$data}}{{= it.util.getProperty($property) }} !== undefined) {
+    if ({{# def.propertyInData }}) {
       {{ 
         $it.schema = $sch;
         $it.schemaPath = $schemaPath + it.util.getProperty($property);
