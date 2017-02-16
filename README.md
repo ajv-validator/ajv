@@ -462,7 +462,7 @@ function checkIdExists(schema, data) {
   .select('id')
   .where('id', data)
   .then(function (rows) {
-    return !!rows/length; // true if record is found
+    return !!rows.length; // true if record is found
   });
 }
 
