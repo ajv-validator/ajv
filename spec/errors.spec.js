@@ -459,7 +459,7 @@ describe('Validation errors', function () {
   });
 
 
-  it('should has correct schema path for additionalItems', function() {
+  it('should have correct schema path for additionalItems', function() {
     var schema = {
       type: 'array',
       items: [ { type: 'integer' }, { type: 'integer' } ],
@@ -513,6 +513,53 @@ describe('Validation errors', function () {
           shouldBeError(validate.errors[2], 'format', '#/propertyNames/format', '', 'should match format "email"');
           shouldBeError(validate.errors[3], 'propertyNames', '#/propertyNames', '', 'property name \'bar\' is invalid');
         }
+      }
+    });
+  });
+
+
+  describe('oneOf errors', function() {
+    it('should have errors from inner schemas', function() {
+      var schema = {
+        oneOf: [
+          { type: 'number' },
+          { type: 'integer' }
+        ]
+      };
+
+      test(ajv);
+      test(fullAjv);
+
+      function test(_ajv) {
+        var validate = _ajv.compile(schema);
+        validate('foo') .should.equal(false);
+        validate.errors.length .should.equal(3);
+        validate(1) .should.equal(false);
+        validate.errors.length .should.equal(1);
+        validate(1.5) .should.equal(true);
+      }
+    });
+  });
+
+
+  describe('anyOf errors', function() {
+    it('should have errors from inner schemas', function() {
+      var schema = {
+        anyOf: [
+          { type: 'number' },
+          { type: 'integer' }
+        ]
+      };
+
+      test(ajv);
+      test(fullAjv);
+
+      function test(_ajv) {
+        var validate = _ajv.compile(schema);
+        validate('foo') .should.equal(false);
+        validate.errors.length .should.equal(3);
+        validate(1) .should.equal(true);
+        validate(1.5) .should.equal(true);
       }
     });
   });
