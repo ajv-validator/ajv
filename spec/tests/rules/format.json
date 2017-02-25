@@ -47,9 +47,9 @@
         "valid": true
       },
       {
-        "description": "valid relative uri",
+        "description": "invalid relative uri-ref",
         "data": "/abc",
-        "valid": true
+        "valid": false
       }
     ]
   },
