@@ -844,19 +844,20 @@ describe('Ajv Options', function () {
       });
     });
 
-    describe('= "ignore"', function() {
+    describe('= "ignore" and default', function() {
       it('should ignore other keywords when $ref is used', function() {
+        test(new Ajv);
         test(new Ajv({ extendRefs: 'ignore' }), false);
       });
 
       it('should log warning when other keywords are used with $ref', function() {
+        testWarning(new Ajv, /keywords\signored/);
         testWarning(new Ajv({ extendRefs: 'ignore' }), /keywords\signored/);
       });
     });
 
-    describe('= "fail" and default', function() {
+    describe('= "fail"', function() {
       it('should fail schema compilation if other keywords are used with $ref', function() {
-        testFail(new Ajv);
         testFail(new Ajv({ extendRefs: 'fail' }));
 
         function testFail(ajv) {

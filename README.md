@@ -991,7 +991,7 @@ Defaults:
   schemas:          {},
   // referenced schema options:
   missingRefs:      true,
-  extendRefs:       'fail',
+  extendRefs:       'ignore',
   loadSchema:       undefined, // function(uri: string): Promise {}
   // options to modify validated data:
   removeAdditional: false,
@@ -1042,8 +1042,8 @@ Defaults:
   - `"ignore"` - to log error during compilation and always pass validation.
   - `"fail"` - to log error and successfully compile schema but fail validation if this rule is checked.
 - _extendRefs_: validation of other keywords when `$ref` is present in the schema. Option values:
-  - `"fail"` (default) - if other validation keywords are used together with `$ref` the exception will be thrown when the schema is compiled.
-  - `"ignore"` - when `$ref` is used other keywords are ignored (as per [JSON Reference](https://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03#section-3) standard). A warning will be logged during the schema compilation.
+  - `"ignore"` (default) - when `$ref` is used other keywords are ignored (as per [JSON Reference](https://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03#section-3) standard). A warning will be logged during the schema compilation.
+  - `"fail"` (recommended) - if other validation keywords are used together with `$ref` the exception will be thrown when the schema is compiled.
   - `true` - validate all keywords in the schemas with `$ref` (the default behaviour in versions before 5.0.0).
 - _loadSchema_: asynchronous function that will be used to load remote schemas when `compileAsync` [method](#api-compileAsync) is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept remote schema uri as a parameter and return a Promise that resolves to a schema. See example in [Asynchronous compilation](#asynchronous-schema-compilation).
 
