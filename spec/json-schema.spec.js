@@ -20,10 +20,14 @@ instances.forEach(addRemoteRefs);
 jsonSchemaTest(instances, {
   description: 'JSON-Schema Test Suite: ' + instances.length + ' ajv instances with different options',
   suites: {
-    'JSON-Schema tests draft4':
+    'draft-04':
       typeof window == 'object'
       ? suite(require('./JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json', {mode: 'list'}))
-      : './JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json'
+      : './JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json',
+    'draft-06':
+      typeof window == 'object'
+      ? suite(require('./JSON-Schema-Test-Suite/tests/draft6/{**/,}*.json', {mode: 'list'}))
+      : './JSON-Schema-Test-Suite/tests/draft6/{**/,}*.json'
   },
   only: [
     // 'type', 'not', 'allOf', 'anyOf', 'oneOf', 'enum',
