@@ -990,8 +990,9 @@ Defaults:
   unknownFormats:   true,
   schemas:          {},
   // referenced schema options:
+  schemaId:         undefined // recommended '$id'
   missingRefs:      true,
-  extendRefs:       'ignore',
+  extendRefs:       'ignore', // recommended 'fail'
   loadSchema:       undefined, // function(uri: string): Promise {}
   // options to modify validated data:
   removeAdditional: false,
@@ -1037,13 +1038,17 @@ Defaults:
 
 ##### Referenced schema options
 
+- _schemaId_: this option defines which keywords are used as schema URI. Option value:
+  - `"$id"` (recommended) - only use `$id` keyword as schema URI (as specified in JSON-Schema draft-06), ignore `id` keyword (if it is present a warning will be logged).
+  - `"id"` - only use `id` keyword as schema URI (as specified in JSON-Schema draft-04), ignore `$id` keyword (if it is present a warning will be logged).
+  - `undefined` (default) - use both `$id` and `id` keywords as schema URI. If both are present (in the same schema object) and different the exception will be thrown during schema compilation.
 - _missingRefs_: handling of missing referenced schemas. Option values:
   - `true` (default) - if the reference cannot be resolved during compilation the exception is thrown. The thrown error has properties `missingRef` (with hash fragment) and `missingSchema` (without it). Both properties are resolved relative to the current base id (usually schema id, unless it was substituted).
   - `"ignore"` - to log error during compilation and always pass validation.
   - `"fail"` - to log error and successfully compile schema but fail validation if this rule is checked.
 - _extendRefs_: validation of other keywords when `$ref` is present in the schema. Option values:
   - `"ignore"` (default) - when `$ref` is used other keywords are ignored (as per [JSON Reference](https://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03#section-3) standard). A warning will be logged during the schema compilation.
-  - `"fail"` (recommended) - if other validation keywords are used together with `$ref` the exception will be thrown when the schema is compiled.
+  - `"fail"` (recommended) - if other validation keywords are used together with `$ref` the exception will be thrown when the schema is compiled. This option is recomended to make sure schema has no keywords that are ignored, which can be confusing.
   - `true` - validate all keywords in the schemas with `$ref` (the default behaviour in versions before 5.0.0).
 - _loadSchema_: asynchronous function that will be used to load remote schemas when `compileAsync` [method](#api-compileAsync) is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept remote schema uri as a parameter and return a Promise that resolves to a schema. See example in [Asynchronous compilation](#asynchronous-schema-compilation).
 
@@ -1094,7 +1099,7 @@ Defaults:
   - `true` (default) -  if the validation fails, throw the exception.
   - `"log"` - if the validation fails, log error.
   - `false` - skip schema validation.
-- _addUsedSchema_: by default methods `compile` and `validate` add schemas to the instance if they have `id` property that doesn't start with "#". If `id` is present and it is not unique the exception will be thrown. Set this option to `false` to skip adding schemas to the instance and the `id` uniqueness check when these methods are used. This option does not affect `addSchema` method.
+- _addUsedSchema_: by default methods `compile` and `validate` add schemas to the instance if they have `$id` (or `id`) property that doesn't start with "#". If `$id` is present and it is not unique the exception will be thrown. Set this option to `false` to skip adding schemas to the instance and the `$id` uniqueness check when these methods are used. This option does not affect `addSchema` method.
 - _inlineRefs_: Affects compilation of referenced schemas. Option values:
   - `true` (default) - the referenced schemas that don't have refs in them are inlined, regardless of their size - that substantially improves performance at the cost of the bigger size of compiled schema functions.
   - `false` - to not inline referenced schemas (they will be compiled as separate functions).
