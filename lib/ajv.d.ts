@@ -125,6 +125,7 @@ declare namespace ajv {
     formats?: Object;
     unknownFormats?: true | string[] | 'ignore';
     schemas?: Array<Object> | Object;
+    schemaId?: '$id' | 'id';
     missingRefs?: true | 'ignore' | 'fail';
     extendRefs?: true | 'ignore' | 'fail';
     loadSchema?: (uri: string, cb?: (err: Error, schema: Object) => void) => Thenable<Object | boolean>;
