@@ -2,7 +2,7 @@
   {
     "description": "hash ref inside hash ref in remote ref (#70, was passing)",
     "schema": {
-        "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveIntegerDefault0"
+      "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveIntegerDefault0"
     },
     "tests": [
       { "data": 1, "valid": true, "description": "positive integer is valid" },
@@ -12,10 +12,16 @@
   },
   {
     "description": "hash ref inside hash ref in remote ref with id (#70, was passing)",
-    "schema": {
-        "id": "http://example.com/my_schema.json",
+    "schemas": [
+      {
+        "id": "http://example.com/my_schema_1.json",
         "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveIntegerDefault0"
-    },
+      },
+      {
+        "$id": "http://example.com/my_schema_2.json",
+        "$ref": "http://json-schema.org/draft-06/schema#/definitions/positiveIntegerDefault0"
+      }
+    ],
     "tests": [
       { "data": 1, "valid": true, "description": "positive integer is valid" },
       { "data": 0, "valid": true, "description": "zero is valid" },

@@ -16,7 +16,8 @@
 
 {{
   var $async = it.schema.$async === true
-    , $refKeywords = it.util.schemaHasRulesExcept(it.schema, it.RULES.all, '$ref');
+    , $refKeywords = it.util.schemaHasRulesExcept(it.schema, it.RULES.all, '$ref')
+    , $id = it.self._getId(it.schema);
 }}
 
 {{? it.isTop }}
@@ -40,8 +41,8 @@
     {{?}}
         (data, dataPath, parentData, parentDataProperty, rootData) {
           'use strict';
-          {{? it.schema.id && (it.opts.sourceCode || it.opts.processCode) }}
-            {{= '/\*# sourceURL=' + it.schema.id + ' */' }}
+          {{? $id && (it.opts.sourceCode || it.opts.processCode) }}
+            {{= '/\*# sourceURL=' + $id + ' */' }}
           {{?}}
 {{?}}
 
@@ -83,7 +84,7 @@
       , $lvl = it.level = 0
       , $dataLvl = it.dataLevel = 0
       , $data = 'data';
-    it.rootId = it.resolve.fullPath(it.root.schema.id);
+    it.rootId = it.resolve.fullPath(it.self._getId(it.root.schema));
     it.baseId = it.baseId || it.rootId;
     delete it.isTop;
 
@@ -99,7 +100,7 @@
       , $dataLvl = it.dataLevel
       , $data = 'data' + ($dataLvl || '');
 
-    if (it.schema.id) it.baseId = it.resolve.url(it.baseId, it.schema.id);
+    if ($id) it.baseId = it.resolve.url(it.baseId, $id);
 
     if ($async && !it.async) throw new Error('async schema in sync schema');
   }}
