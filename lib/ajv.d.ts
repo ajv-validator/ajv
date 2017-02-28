@@ -212,7 +212,7 @@ declare namespace ajv {
                           MultipleOfParams | PatternParams | RequiredParams |
                           TypeParams | UniqueItemsParams | CustomParams |
                           PatternGroupsParams | PatternRequiredParams |
-                          PropertyNamesParams | SwitchParams | NoParams;
+                          PropertyNamesParams | SwitchParams | NoParams | EnumParams;
 
   interface RefParams {
     ref: string;
@@ -287,6 +287,10 @@ declare namespace ajv {
   }
 
   interface NoParams {}
+
+  interface EnumParams {
+    allowedValues: Array<any>;
+  }
 }
 
 export = ajv;

@@ -69,7 +69,7 @@
     "ajv-async": "^0.1.0",
     "bluebird": "^3.1.5",
     "brfs": "^1.4.3",
-    "browserify": "^13.0.0",
+    "browserify": "^14.1.0",
     "chai": "^3.5.0",
     "coveralls": "^2.11.4",
     "dot": "^1.0.3",
