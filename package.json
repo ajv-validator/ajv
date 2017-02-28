@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "5.0.2-beta.0",
+  "version": "5.0.3-beta.0",
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
   "typings": "lib/ajv.d.ts",
@@ -92,7 +92,7 @@
     "regenerator": "0.9.5",
     "require-globify": "^1.3.0",
     "typescript": "^2.0.3",
-    "uglify-js": "^2.6.1",
+    "uglify-js": "2.6.1",
     "watch": "^1.0.0"
   }
 }
