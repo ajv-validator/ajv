@@ -1150,17 +1150,19 @@ Properties of `params` object in errors depend on the keyword that failed valida
 
 ## Some packages using Ajv
 
+- [webpack](https://github.com/webpack/webpack) - a module bundler. Its main purpose is to bundle JavaScript files for usage in a browser
 - [jsonscript-js](https://github.com/JSONScript/jsonscript-js) - the interpreter for [JSONScript](http://www.jsonscript.org) - scripted processing of existing endpoints and services
 - [osprey-method-handler](https://github.com/mulesoft-labs/osprey-method-handler) - Express middleware for validating requests and responses based on a RAML method object, used in [osprey](https://github.com/mulesoft/osprey) - validating API proxy generated from a RAML definition
-- [jsoneditor](https://github.com/josdejong/jsoneditor) - A web-based tool to view, edit, format, and validate JSON http://jsoneditoronline.org
-- [JSON Schema Lint](https://github.com/nickcmaynard/jsonschemalint) - A web tool to validate JSON/YAML document against a single JSON-schema http://jsonschemalint.com
+- [har-validator](https://github.com/ahmadnassri/har-validator) - HTTP Archive (HAR) validator
+- [jsoneditor](https://github.com/josdejong/jsoneditor) - a web-based tool to view, edit, format, and validate JSON http://jsoneditoronline.org
+- [JSON Schema Lint](https://github.com/nickcmaynard/jsonschemalint) - a web tool to validate JSON/YAML document against a single JSON-schema http://jsonschemalint.com
 - [objection](https://github.com/vincit/objection.js) - SQL-friendly ORM for node.js
 - [table](https://github.com/gajus/table) - formats data into a string table
-- [ripple-lib](https://github.com/ripple/ripple-lib) - A JavaScript API for interacting with [Ripple](https://ripple.com) in Node.js and the browser
-- [restbase](https://github.com/wikimedia/restbase) - Distributed storage with REST API & dispatcher for backend services built to provide a low-latency & high-throughput API for Wikipedia / Wikimedia content
+- [ripple-lib](https://github.com/ripple/ripple-lib) - a JavaScript API for interacting with [Ripple](https://ripple.com) in Node.js and the browser
+- [restbase](https://github.com/wikimedia/restbase) - distributed storage with REST API & dispatcher for backend services built to provide a low-latency & high-throughput API for Wikipedia / Wikimedia content
 - [hippie-swagger](https://github.com/CacheControl/hippie-swagger) - [Hippie](https://github.com/vesln/hippie) wrapper that provides end to end API testing with swagger validation
 - [react-form-controlled](https://github.com/seeden/react-form-controlled) - React controlled form components with validation
-- [rabbitmq-schema](https://github.com/tjmehta/rabbitmq-schema) - A schema definition module for RabbitMQ graphs and messages
+- [rabbitmq-schema](https://github.com/tjmehta/rabbitmq-schema) - a schema definition module for RabbitMQ graphs and messages
 - [@query/schema](https://www.npmjs.com/package/@query/schema) - stream filtering with a URI-safe query syntax parsing to JSON Schema
 - [chai-ajv-json-schema](https://github.com/peon374/chai-ajv-json-schema) - chai plugin to us JSON-schema with expect in mocha tests
 - [grunt-jsonschema-ajv](https://github.com/SignpostMarv/grunt-jsonschema-ajv) - Grunt plugin for validating files against JSON-Schema
