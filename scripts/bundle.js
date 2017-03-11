@@ -1,28 +1,36 @@
 'use strict';
 
-var pkg = process.argv[2];
-var standalone = process.argv[3];
-var compress = process.argv[4];
+var fs = require('fs')
+  , path = require('path')
+  , browserify = require('browserify')
+  , uglify = require('uglify-js');
 
-var fs = require('fs');
-var packageDir = __dirname + '/..';
-if ('.' !== pkg) packageDir += '/node_modules/' + pkg;
+var pkg = process.argv[2]
+  , standalone = process.argv[3]
+  , compress = process.argv[4];
 
-var json = JSON.parse(fs.readFileSync(packageDir + '/package.json', 'utf8'));
+var packageDir = path.join(__dirname, '..');
+if (pkg != '.') packageDir = path.join(packageDir, 'node_modules', pkg);
 
-var distDir = __dirname + '/../dist';
+var json = require(path.join(packageDir, 'package.json'));
+
+var distDir = path.join(__dirname, '..', 'dist');
 if (!fs.existsSync(distDir)) fs.mkdirSync(distDir);
 
-var browserify = require('browserify');
-var bo = {};
-if (standalone) bo.standalone = standalone;
+var bOpts = {};
+if (standalone) bOpts.standalone = standalone;
 
-var b = browserify(bo);
-b.require(packageDir + '/' + json.main, {expose: json.name});
-var outputPath = distDir + '/' + json.name + '.bundle.js';
+browserify(bOpts)
+.require(path.join(packageDir, json.main), {expose: json.name})
+.bundle(function (err, buf) {
+  if (err) {
+    console.error('browserify error:', err);
+    process.exit(1);
+  }
 
-b.bundle().pipe(fs.createWriteStream(outputPath)).on('close', function () {
-  var UglifyJS = require('uglify-js');
+  var outputFile = path.join(distDir, json.name);
+  var outputBundle = outputFile + '.bundle.js';
+  fs.writeFileSync(outputBundle, buf);
   var uglifyOpts = {
     warnings: true,
     compress: {},
@@ -32,18 +40,15 @@ b.bundle().pipe(fs.createWriteStream(outputPath)).on('close', function () {
   };
   if (compress) {
     var compressOpts = compress.split(',');
-    for (var i = 0, l = compressOpts.length; i<l; ++i) {
+    for (var i=0; i<compressOpts.length; ++i) {
       var pair = compressOpts[i].split('=');
-      uglifyOpts.compress[pair[0]] = pair.length < 1 || 'false' !== pair[1];
+      uglifyOpts.compress[pair[0]] = pair.length < 1 || pair[1] != 'false';
     }
   }
-  if (standalone) {
-    uglifyOpts.outSourceMap = json.name + '.min.js.map';
-    uglifyOpts.mangle = {except: [standalone]};
-  }
+  if (standalone) uglifyOpts.outSourceMap = json.name + '.min.js.map';
 
-  var result = UglifyJS.minify(distDir + '/' + json.name + '.bundle.js', uglifyOpts);
-  fs.writeFileSync(distDir + '/' + json.name + '.min.js', result.code);
-  if (result.map) fs.writeFileSync(distDir + '/' + json.name + '.min.js.map', result.map);
-  if (!standalone) fs.unlinkSync(distDir + '/' + json.name + '.bundle.js');
+  var result = uglify.minify(outputBundle, uglifyOpts);
+  fs.writeFileSync(outputFile + '.min.js', result.code);
+  if (result.map) fs.writeFileSync(outputFile + '.min.js.map', result.map);
+  if (!standalone) fs.unlinkSync(outputBundle);
 });
