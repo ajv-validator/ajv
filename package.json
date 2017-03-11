@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "jshint": "jshint lib/*.js lib/**/*.js --exclude lib/dotjs/**/*",
-    "eslint": "if-node-version \">=4\" eslint lib/*.js lib/compile/*.js spec",
+    "eslint": "if-node-version \">=4\" eslint lib/*.js lib/compile/*.js spec scripts",
     "test-spec": "mocha spec/*.spec.js -R spec",
     "test-fast": "AJV_FAST_TEST=true npm run test-spec",
     "test-debug": "mocha spec/*.spec.js --debug-brk -R spec",
