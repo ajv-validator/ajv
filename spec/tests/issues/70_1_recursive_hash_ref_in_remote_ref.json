@@ -19,7 +19,7 @@
       },
       {
         "$id": "http://example.com/my_schema_2.json",
-        "$ref": "http://json-schema.org/draft-06/schema#/definitions/positiveIntegerDefault0"
+        "$ref": "http://json-schema.org/draft-06/schema#/definitions/nonNegativeIntegerDefault0"
       }
     ],
     "tests": [

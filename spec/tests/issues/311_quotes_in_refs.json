@@ -4,19 +4,11 @@
     "schema": {
       "properties": {
         "foo\"bar": { "$ref": "#/definitions/foo\"bar" },
-        "foo\\bar": { "$ref": "#/definitions/foo\\bar" },
-        "foo\nbar": { "$ref": "#/definitions/foo\nbar" },
-        "foo\rbar": { "$ref": "#/definitions/foo\rbar" },
-        "foo\tbar": { "$ref": "#/definitions/foo\tbar" },
-        "foo\fbar": { "$ref": "#/definitions/foo\fbar" }
+        "foo\\bar": { "$ref": "#/definitions/foo\\bar" }
       },
       "definitions": {
         "foo\"bar": { "type": "number" },
-        "foo\\bar": { "type": "number" },
-        "foo\nbar": { "type": "number" },
-        "foo\rbar": { "type": "number" },
-        "foo\tbar": { "type": "number" },
-        "foo\fbar": { "type": "number" }
+        "foo\\bar": { "type": "number" }
       }
     },
     "tests": [

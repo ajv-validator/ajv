@@ -429,12 +429,9 @@ describe('Custom keywords', function () {
       validateRangeSchema(schema, parentSchema);
       var exclusive = !!parentSchema.exclusiveRange;
 
-      return {
-        minimum: schema[0],
-        exclusiveMinimum: exclusive,
-        maximum: schema[1],
-        exclusiveMaximum: exclusive
-      };
+      return exclusive
+             ? { exclusiveMinimum: schema[0], exclusiveMaximum: schema[1] }
+             : { minimum: schema[0], maximum: schema[1] };
     }
   });
 

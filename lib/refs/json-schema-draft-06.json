@@ -8,13 +8,13 @@
             "minItems": 1,
             "items": { "$ref": "#" }
         },
-        "positiveInteger": {
+        "nonNegativeInteger": {
             "type": "integer",
             "minimum": 0
         },
-        "positiveIntegerDefault0": {
+        "nonNegativeIntegerDefault0": {
             "allOf": [
-                { "$ref": "#/definitions/positiveInteger" },
+                { "$ref": "#/definitions/nonNegativeInteger" },
                 { "default": 0 }
             ]
         },
@@ -32,7 +32,8 @@
         "stringArray": {
             "type": "array",
             "items": { "type": "string" },
-            "uniqueItems": true
+            "uniqueItems": true,
+            "default": []
         }
     },
     "type": ["object", "boolean"],
@@ -45,6 +46,10 @@
             "type": "string",
             "format": "uri"
         },
+        "$ref": {
+            "type": "string",
+            "format": "uri-reference"
+        },
         "title": {
             "type": "string"
         },
@@ -54,25 +59,22 @@
         "default": {},
         "multipleOf": {
             "type": "number",
-            "minimum": 0,
-            "exclusiveMinimum": true
+            "exclusiveMinimum": 0
         },
         "maximum": {
             "type": "number"
         },
         "exclusiveMaximum": {
-            "type": ["number", "boolean"],
-            "default": false
+            "type": "number"
         },
         "minimum": {
             "type": "number"
         },
         "exclusiveMinimum": {
-            "type": ["number", "boolean"],
-            "default": false
+            "type": "number"
         },
-        "maxLength": { "$ref": "#/definitions/positiveInteger" },
-        "minLength": { "$ref": "#/definitions/positiveIntegerDefault0" },
+        "maxLength": { "$ref": "#/definitions/nonNegativeInteger" },
+        "minLength": { "$ref": "#/definitions/nonNegativeIntegerDefault0" },
         "pattern": {
             "type": "string",
             "format": "regex"
@@ -85,15 +87,15 @@
             ],
             "default": {}
         },
-        "maxItems": { "$ref": "#/definitions/positiveInteger" },
-        "minItems": { "$ref": "#/definitions/positiveIntegerDefault0" },
+        "maxItems": { "$ref": "#/definitions/nonNegativeInteger" },
+        "minItems": { "$ref": "#/definitions/nonNegativeIntegerDefault0" },
         "uniqueItems": {
             "type": "boolean",
             "default": false
         },
         "contains": { "$ref": "#" },
-        "maxProperties": { "$ref": "#/definitions/positiveInteger" },
-        "minProperties": { "$ref": "#/definitions/positiveIntegerDefault0" },
+        "maxProperties": { "$ref": "#/definitions/nonNegativeInteger" },
+        "minProperties": { "$ref": "#/definitions/nonNegativeIntegerDefault0" },
         "required": { "$ref": "#/definitions/stringArray" },
         "additionalProperties": { "$ref": "#" },
         "definitions": {
@@ -143,20 +145,6 @@
         "anyOf": { "$ref": "#/definitions/schemaArray" },
         "oneOf": { "$ref": "#/definitions/schemaArray" },
         "not": { "$ref": "#" }
-    },
-    "dependencies": {
-        "exclusiveMaximum": {
-            "anyOf": [
-                { "properties": { "exclusiveMaximum": { "type": "number" } } },
-                { "required": ["maximum"] }
-            ]
-        },
-        "exclusiveMinimum": {
-            "anyOf": [
-                { "properties": { "exclusiveMinimum": { "type": "number" } } },
-                { "required": ["minimum"] }
-            ]
-        }
     },
     "default": {}
 }
