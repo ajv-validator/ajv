@@ -47,7 +47,7 @@
         "valid": true
       },
       {
-        "description": "invalid relative uri-ref",
+        "description": "invalid relative uri-reference",
         "data": "/abc",
         "valid": false
       }

@@ -39,7 +39,7 @@
     "properties": {
         "$id": {
             "type": "string",
-            "format": "uri-ref"
+            "format": "uri-reference"
         },
         "$schema": {
             "type": "string",
