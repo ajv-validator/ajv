@@ -11,9 +11,9 @@ The fastest JSON Schema validator for node.js and browser with draft 6 support.
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 
 
-__Please note__: You can start using NEW beta version 5.0.2 ([migration guide](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0)) with the support of draft 6 (not officially published yet): `npm install ajv@^5.0.2-beta`.
+__Please note__: You can start using NEW beta version [5.0.3](https://github.com/epoberezkin/ajv/releases/tag/5.0.3-beta.0) (see [migration guide from 4.x.x](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0)) with the support of JSON-Schema draft-06 (not officially published yet): `npm install ajv@^5.0.3-beta`.
 
-Also see [docs](https://github.com/epoberezkin/ajv/tree/5.0.2-beta.0) for 5.0.2.
+Also see [docs](https://github.com/epoberezkin/ajv/tree/5.0.3-beta.0) for 5.0.3.
 
 
 ## Contents
@@ -95,10 +95,10 @@ Currently Ajv is the only validator that passes all the tests from [JSON Schema 
 npm install ajv
 ```
 
-To install a stable beta version 5.0.2 (see [migration guide](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0)):
+To install a stable beta version [5.0.3](https://github.com/epoberezkin/ajv/releases/tag/5.0.3-beta.0) (see [migration guide from 4.x.x](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0)):
 
 ```
-npm install ajv@^5.0.2-beta
+npm install ajv@^5.0.3-beta
 ```
 
 
@@ -1178,20 +1178,24 @@ Properties of `params` object in errors depend on the keyword that failed valida
 
 ## Some packages using Ajv
 
+- [webpack](https://github.com/webpack/webpack) - a module bundler. Its main purpose is to bundle JavaScript files for usage in a browser
 - [jsonscript-js](https://github.com/JSONScript/jsonscript-js) - the interpreter for [JSONScript](http://www.jsonscript.org) - scripted processing of existing endpoints and services
 - [osprey-method-handler](https://github.com/mulesoft-labs/osprey-method-handler) - Express middleware for validating requests and responses based on a RAML method object, used in [osprey](https://github.com/mulesoft/osprey) - validating API proxy generated from a RAML definition
-- [jsoneditor](https://github.com/josdejong/jsoneditor) - A web-based tool to view, edit, format, and validate JSON http://jsoneditoronline.org
-- [JSON Schema Lint](https://github.com/nickcmaynard/jsonschemalint) - A web tool to validate JSON/YAML document against a single JSON-schema http://jsonschemalint.com
+- [har-validator](https://github.com/ahmadnassri/har-validator) - HTTP Archive (HAR) validator
+- [jsoneditor](https://github.com/josdejong/jsoneditor) - a web-based tool to view, edit, format, and validate JSON http://jsoneditoronline.org
+- [JSON Schema Lint](https://github.com/nickcmaynard/jsonschemalint) - a web tool to validate JSON/YAML document against a single JSON-schema http://jsonschemalint.com
 - [objection](https://github.com/vincit/objection.js) - SQL-friendly ORM for node.js
 - [table](https://github.com/gajus/table) - formats data into a string table
-- [ripple-lib](https://github.com/ripple/ripple-lib) - A JavaScript API for interacting with [Ripple](https://ripple.com) in Node.js and the browser
-- [restbase](https://github.com/wikimedia/restbase) - Distributed storage with REST API & dispatcher for backend services built to provide a low-latency & high-throughput API for Wikipedia / Wikimedia content
+- [ripple-lib](https://github.com/ripple/ripple-lib) - a JavaScript API for interacting with [Ripple](https://ripple.com) in Node.js and the browser
+- [restbase](https://github.com/wikimedia/restbase) - distributed storage with REST API & dispatcher for backend services built to provide a low-latency & high-throughput API for Wikipedia / Wikimedia content
 - [hippie-swagger](https://github.com/CacheControl/hippie-swagger) - [Hippie](https://github.com/vesln/hippie) wrapper that provides end to end API testing with swagger validation
 - [react-form-controlled](https://github.com/seeden/react-form-controlled) - React controlled form components with validation
-- [rabbitmq-schema](https://github.com/tjmehta/rabbitmq-schema) - A schema definition module for RabbitMQ graphs and messages
+- [rabbitmq-schema](https://github.com/tjmehta/rabbitmq-schema) - a schema definition module for RabbitMQ graphs and messages
 - [@query/schema](https://www.npmjs.com/package/@query/schema) - stream filtering with a URI-safe query syntax parsing to JSON Schema
 - [chai-ajv-json-schema](https://github.com/peon374/chai-ajv-json-schema) - chai plugin to us JSON-schema with expect in mocha tests
 - [grunt-jsonschema-ajv](https://github.com/SignpostMarv/grunt-jsonschema-ajv) - Grunt plugin for validating files against JSON-Schema
+- [extract-text-webpack-plugin](https://github.com/webpack-contrib/extract-text-webpack-plugin) - extract text from bundle into a file
+- [electron-builder](https://github.com/electron-userland/electron-builder) - a solution to package and build a ready for distribution Electron app 
 - [addons-linter](https://github.com/mozilla/addons-linter) - Mozilla Add-ons Linter
 - [gh-pages-generator](https://github.com/epoberezkin/gh-pages-generator) - multi-page site generator converting markdown files to GitHub pages
 
