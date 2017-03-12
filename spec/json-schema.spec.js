@@ -41,7 +41,7 @@ function runTest(instances, draft, tests) {
       // 'optional/format', 'optional/bignum',
       // 'ref', 'refRemote', 'definitions',
     ],
-    skip: [ 'optional/zeroTerminatedFloats', 'optional/bignum' ],
+    skip: ['optional/zeroTerminatedFloats'],
     assert: require('./chai').assert,
     afterError: after.error,
     afterEach: after.each,
