@@ -168,7 +168,7 @@
   additionalProperties: "{ additionalProperty: '{{=$additionalProperty}}' }",
   anyOf:           "{}",
   const:           "{}",
-  constains:       "{}",
+  contains:        "{}",
   dependencies:    "{ property: '{{= it.util.escapeQuotes($property) }}', missingProperty: '{{=$missingProperty}}', depsCount: {{=$deps.length}}, deps: '{{= it.util.escapeQuotes($deps.length==1 ? $deps[0] : $deps.join(\", \")) }}' }",
   'enum':          "{ allowedValues: schema{{=$lvl}} }",
   format:          "{ format: {{#def.schemaValueQS}} }",
