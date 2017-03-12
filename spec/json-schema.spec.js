@@ -12,25 +12,22 @@ var remoteRefs = {
   'http://localhost:1234/folder/folderInteger.json': require('./JSON-Schema-Test-Suite/remotes/folder/folderInteger.json'),
 };
 
-var instances4 = getAjvInstances(options, {meta: false});
-instances4.forEach(function (ajv) {
-  addRemoteRefs(ajv);
-  ajv._opts.defaultMeta = 'http://json-schema.org/draft-04/schema#';
-});
-
-runTest(instances4, 4, typeof window == 'object'
+runTest(getAjvInstances(options, {meta: false}), 4, typeof window == 'object'
   ? suite(require('./JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json', {mode: 'list'}))
   : './JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json');
 
-var instances6 = getAjvInstances(options);
-instances6.forEach(addRemoteRefs);
-
-runTest(instances6, 6, typeof window == 'object'
+runTest(getAjvInstances(options), 6, typeof window == 'object'
   ? suite(require('./JSON-Schema-Test-Suite/tests/draft6/{**/,}*.json', {mode: 'list'}))
   : './JSON-Schema-Test-Suite/tests/draft6/{**/,}*.json');
 
 
 function runTest(instances, draft, tests) {
+  instances.forEach(function (ajv) {
+    ajv.addMetaSchema(require('../lib/refs/json-schema-draft-04.json'));
+    if (draft == 4) ajv._opts.defaultMeta = 'http://json-schema.org/draft-04/schema#';
+    for (var id in remoteRefs) ajv.addSchema(remoteRefs[id], id);
+  });
+
   jsonSchemaTest(instances, {
     description: 'JSON-Schema Test Suite draft-0' + draft + ': ' + instances.length + ' ajv instances with different options',
     suites: {tests: tests},
@@ -52,11 +49,4 @@ function runTest(instances, draft, tests) {
     hideFolder: 'draft' + draft + '/',
     timeout: 120000
   });
-
-}
-
-
-function addRemoteRefs(ajv) {
-  ajv.addMetaSchema(require('../lib/refs/json-schema-draft-04.json'));
-  for (var id in remoteRefs) ajv.addSchema(remoteRefs[id], id);
 }
