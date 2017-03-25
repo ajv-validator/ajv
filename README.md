@@ -11,9 +11,9 @@ The fastest JSON Schema validator for node.js and browser. Supports [v5 proposal
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 
 
-__Please note__: You can start using NEW beta version [5.0.3](https://github.com/epoberezkin/ajv/releases/tag/5.0.3-beta.0) (see [migration guide from 4.x.x](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0)) with the support of JSON-Schema draft-06 (not officially published yet): `npm install ajv@^5.0.3-beta`.
+__Please note__: You can start using NEW beta version [5.0.4](https://github.com/epoberezkin/ajv/releases/tag/5.0.4-beta.1) (see [migration guide from 4.x.x](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0)) with the support of JSON-Schema draft-06 (not officially published yet): `npm install ajv@^5.0.4-beta`.
 
-Also see [docs](https://github.com/epoberezkin/ajv/tree/5.0.3-beta.0) for 5.0.3.
+Also see [docs](https://github.com/epoberezkin/ajv/tree/5.0.4-beta.1) for 5.0.4.
 
 
 ## Contents
@@ -94,10 +94,10 @@ Currently Ajv is the only validator that passes all the tests from [JSON Schema 
 npm install ajv
 ```
 
-To install a stable beta version [5.0.3](https://github.com/epoberezkin/ajv/releases/tag/5.0.3-beta.0) (see [migration guide from 4.x.x](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0)):
+To install a stable beta version [5.0.4](https://github.com/epoberezkin/ajv/releases/tag/5.0.4-beta.1) (see [migration guide from 4.x.x](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0)):
 
 ```
-npm install ajv@^5.0.3-beta
+npm install ajv@^5.0.4-beta
 ```
 
 
