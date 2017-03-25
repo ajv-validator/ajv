@@ -136,7 +136,7 @@ var {{=$valid}};
 {{?}}
 
 {{? $rDef.modifying }}
-  {{=$data}} = {{=$parentData}}[{{=$parentDataProperty}}];
+  if ({{=$parentData}}) {{=$data}} = {{=$parentData}}[{{=$parentDataProperty}}];
 {{?}}
 
 {{= $closingBraces }}
