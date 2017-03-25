@@ -173,6 +173,7 @@ CLI is available as a separate npm package [ajv-cli](https://github.com/jessedc/
 
 - compiling JSON-schemas to test their validity
 - BETA: generating standalone module exporting a validation function to be used without Ajv (using [ajv-pack](https://github.com/epoberezkin/ajv-pack))
+- migrate schemas to draft-06 (using [json-schema-migrate](https://github.com/epoberezkin/json-schema-migrate))
 - validating data file(s) against JSON-schema
 - testing expected validity of data against JSON-schema
 - referenced schemas
