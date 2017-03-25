@@ -11,6 +11,8 @@ Type coercion only happens if there is `type` keyword and if without coercion th
 
 If there are multiple types allowed in `type` keyword the coercion will only happen if none of the types match the data and some of the scalar types are present (coercion to/from `object`/`array` is not possible). In this case the validating function will try coercing the data to each type in order until some of them succeeds.
 
+Application of these rules can have some unexpected consequences. Ajv may coerce the same value multiple times (this is why coercion reversibility is required) as needed at different points in the schema. This is particularly evident when using `oneOf`, which must test all of the subschemas. Ajv will coerce the type for each subschema, possibly resulting in unexpected failure if it can coerce to match more than one of the subschemas.  Even if it succeeds, Ajv will not backtrack, so you'll get the type of the final coercion even if that's not the one that allowed the data to pass validation.  If possible, structure your schema with `anyOf`, which won't validate subsequent subschemas as soon as it encounters one subschema that matches.
+
 Possible type coercions:
 
 |from&nbsp;type&nbsp;&rarr;<br>to&nbsp;type&nbsp;&darr;|string|number|boolean|null|array*|
