@@ -88,7 +88,7 @@
     "karma-phantomjs-launcher": "^1.0.0",
     "karma-sauce-launcher": "^1.1.0",
     "mocha": "^3.0.0",
-    "nodent": "^3.0.2",
+    "nodent": "^3.0.15",
     "nyc": "^10.0.0",
     "phantomjs-prebuilt": "^2.1.4",
     "pre-commit": "^1.1.1",
