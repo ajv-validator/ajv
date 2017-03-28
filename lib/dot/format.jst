@@ -81,11 +81,15 @@
     var $isObject = typeof $format == 'object'
                     && !($format instanceof RegExp)
                     && $format.validate;
+    var $types = $isObject && $format.types || ['string'];
     if ($isObject) {
       var $async = $format.async === true;
       $format = $format.validate;
     }
   }}
+  {{? $types.indexOf($type) === -1 }}
+    {{# def.skipFormat }}
+  {{?}}
   {{? $async }}
     {{
       if (!it.async) throw new Error('async format in sync schema');
