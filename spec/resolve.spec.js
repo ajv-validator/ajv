@@ -91,6 +91,35 @@ describe('resolve', function () {
         });
       });
     });
+
+    it('should resolve ids defined as urn\'s (issue #423)', function() {
+      var schema = {
+        "type": "object",
+        "properties": {
+          "ip1": {
+            "id": "urn:some:ip:prop",
+            "type": "string",
+            "format": "ipv4"
+          },
+          "ip2": {
+            "$ref": "urn:some:ip:prop"
+          }
+        },
+        "required": [
+          "ip1",
+          "ip2"
+        ]
+      };
+
+      var data = {
+        "ip1": "0.0.0.0",
+        "ip2": "0.0.0.0"
+      };
+      instances.forEach(function (ajv) {
+        var validate = ajv.compile(schema);
+        validate(data) .should.equal(true);
+      });
+    });
   });
 
 
