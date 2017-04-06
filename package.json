@@ -95,7 +95,7 @@
     "regenerator": "0.9.7",
     "require-globify": "^1.3.0",
     "typescript": "^2.0.3",
-    "uglify-js": "^2.6.1",
+    "uglify-js": "^2.8.0",
     "watch": "^1.0.0"
   }
 }
