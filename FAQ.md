@@ -61,7 +61,7 @@ See the exemple in [Filtering Data](https://github.com/epoberezkin/ajv#filtering
 
 ## Generating schemas with resolved references ($ref)
 
-See [#22](https://github.com/epoberezkin/ajv/issues/22), [#125](https://github.com/epoberezkin/ajv/issues/125), [#146](https://github.com/epoberezkin/ajv/issues/146), [#228](https://github.com/epoberezkin/ajv/issues/228), [#336](https://github.com/epoberezkin/ajv/issues/336), [#455](https://github.com/epoberezkin/ajv/issues/455)
+See [#22](https://github.com/epoberezkin/ajv/issues/22), [#125](https://github.com/epoberezkin/ajv/issues/125), [#146](https://github.com/epoberezkin/ajv/issues/146), [#228](https://github.com/epoberezkin/ajv/issues/228), [#336](https://github.com/epoberezkin/ajv/issues/336), [#454](https://github.com/epoberezkin/ajv/issues/454)
 
 
 ##### Why Ajv does not replace references ($refs) with the actual referenced schemas as some validators do?
