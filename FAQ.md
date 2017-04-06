@@ -64,7 +64,7 @@ See the exemple in [Filtering Data](https://github.com/epoberezkin/ajv#filtering
 See [#22](https://github.com/epoberezkin/ajv/issues/22), [#125](https://github.com/epoberezkin/ajv/issues/125), [#146](https://github.com/epoberezkin/ajv/issues/146), [#228](https://github.com/epoberezkin/ajv/issues/228), [#336](https://github.com/epoberezkin/ajv/issues/336), [#454](https://github.com/epoberezkin/ajv/issues/454)
 
 
-##### Why Ajv does not replace references ($refs) with the actual referenced schemas as some validators do?
+##### Why Ajv does not replace references ($ref) with the actual referenced schemas as some validators do?
 
 1. The scope of Ajv is validating data against JSON-Schemas; inlining referenced schemas is not necessary for validation. When Ajv generates code for validation it either inlines the code of referenced schema or uses function calls. Doing schema manipulation is more complex and out of scope.
 2. When schemas are recursive (or mutually recursive) resolving references would result in recursive data-structures, that can be difficult to process.
@@ -73,9 +73,9 @@ See [#22](https://github.com/epoberezkin/ajv/issues/22), [#125](https://github.c
 There were many conversations about the meaning of `$ref` in [JSON-Schema GitHub organisation](https://github.com/json-schema-org). The consesus is that while it is possible to treat `$ref` as schema inclusion with two caveats (above), this interpretation is unnecessary complex. A more efficient approach is to treat `$ref` as delegation, i.e. a special keyword that validates the current data instance against the referenced schema. The analogy with programming languages is be that `$ref` is a function call rather than a macro. See [here](https://github.com/json-schema-org/json-schema-spec/issues/279), for example.
 
 
-##### How can I generate a schema where `$ref`s are replaced with referenced schemas?
+##### How can I generate a schema where `$ref` keywords are replaced with referenced schemas?
 
 There are two possible approaches:
 
-1. Write code to traverse schema and replace every `$ref` with the referenced schema. An additional limitation is that `"$ref"`s inside keywords "properties", "patternProperties" and "dependencies" mean property name (or pattern) rather than the reference to another schema.
+1. Write code to traverse schema and replace every `$ref` with the referenced schema. An additional limitation is that `"$ref"` inside keywords "properties", "patternProperties" and "dependencies" means property name (or pattern) rather than the reference to another schema.
 2. Use a specially constructed JSON Schema with a [custom keyword](https://github.com/epoberezkin/ajv/blob/master/CUSTOM.md) to traverse and modify your schema.
