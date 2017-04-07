@@ -28,7 +28,7 @@
     "build": "del-cli lib/dotjs/*.js && node scripts/compile-dots.js",
     "test-karma": "karma start --single-run --browsers PhantomJS",
     "test-browser": "del-cli .browser && npm run bundle-all && scripts/prepare-tests && npm run test-karma",
-    "test": "npm run jshint && npm run eslint && npm run test-ts && npm run build && npm run test-cov && npm run test-browser",
+    "test": "npm run jshint && npm run eslint && npm run test-ts && npm run build && npm run test-cov && if-node-version 4 npm run test-browser",
     "prepublish": "npm run build && npm run bundle-all",
     "watch": "watch 'npm run build' ./lib/dot"
   },
