@@ -3,6 +3,8 @@ page_name: index
 title: Ajv - Another JSON Schema Validator
 layout: main
 ---
+<img align="right" width="137" src="http://epoberezkin.github.io/ajv/images/ajv_logo.png">
+
 # Ajv: Another JSON Schema Validator
 
 The fastest JSON Schema validator for node.js and browser. Supports [v5 proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals).
