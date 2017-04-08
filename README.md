@@ -1,4 +1,4 @@
-<img align="right" width="137" src="http://epoberezkin.github.io/ajv/images/ajv_logo.png">
+<img align="right" alt="Ajv logo" width="160" src="http://epoberezkin.github.io/ajv/images/ajv_logo.png">
 
 # Ajv: Another JSON Schema Validator
 
