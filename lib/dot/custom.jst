@@ -7,13 +7,9 @@
   var $rule = this
     , $definition = 'definition' + $lvl
     , $rDef = $rule.definition
-    , $validate = $rDef.validate
-    , $compile
-    , $inline
-    , $macro
-    , $ruleValidate
-    , $validateCode
     , $closingBraces = '';
+  var $validate = $rDef.validate;
+  var $compile, $inline, $macro, $ruleValidate, $validateCode;
 }}
 
 {{? $isData && $rDef.$data }}
