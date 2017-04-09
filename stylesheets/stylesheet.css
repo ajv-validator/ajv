@@ -157,7 +157,7 @@ strong {
   font-weight: bold;
 }
 
-img {
+#main_content_wrap img {
   position: relative;
   margin: 0 auto;
   max-width: 739px;
@@ -172,7 +172,7 @@ img {
   -ms-box-shadow: 0 0 5px #ebebeb;
 }
 
-p img {
+#main_content_wrap p img {
   display: inline;
   margin: 0;
   padding: 0;
@@ -331,18 +331,27 @@ Full-Width Styles
   text-shadow: #111 0px 0px 10px;
 }
 
+#project_logo {
+  width: 137px;
+  vertical-align: -26px;
+  margin: 20px 0 0 0;
+  padding: 0;
+}
+
 #project_tagline {
+  display: inline-block;
   color: #fff;
-  font-size: 24px;
-  font-weight: 300;
+  font-size: 28px;
+  font-weight: bold;
   background: none;
   text-shadow: #111 0px 0px 10px;
+  margin: 0 0 16px 20px;
 }
 
 #downloads {
   position: absolute;
   z-index: 10;
-  bottom: 25px;
+  bottom: 10px;
   right: 10px;
 }
 
@@ -374,6 +383,8 @@ Full-Width Styles
 
 #page_links {
   padding: 0;
+  margin-top: 12px;
+  margin-bottom: 0;
 }
 
 #page_links li {
