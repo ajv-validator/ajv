@@ -12,6 +12,8 @@ if [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" && $TRAV
     currentDir=$(pwd)
     cd ../gh-pages
     $currentDir/node_modules/.bin/gh-pages-generator
+    # remove logo from README
+    sed -i "" -E "s/<img[^>]+ajv_logo[^>]+>//" index.md
     git config user.email "$GIT_USER_EMAIL"
     git config user.name "$GIT_USER_NAME"
     git add .
