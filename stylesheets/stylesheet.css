@@ -298,16 +298,8 @@ Full-Width Styles
 #forkme_banner {
   display: block;
   position: absolute;
-  top: 0;
-  right: 10px;
-  z-index: 10;
-  padding: 10px 48px 10px 10px;
-  color: #fff;
-  background: url('../images/blacktocat.png') #3E983E no-repeat 95% 50%;
-  font-weight: 700;
-  box-shadow: 0 0 10px rgba(0,0,0,.5);
-  border-bottom-left-radius: 2px;
-  border-bottom-right-radius: 2px;
+  top: 16px;
+  right: 0;
 }
 
 #header_wrap {
@@ -334,7 +326,7 @@ Full-Width Styles
 #project_logo {
   width: 137px;
   vertical-align: -26px;
-  margin: 20px 0 0 0;
+  margin: 24px 0 0 0;
   padding: 0;
 }
 
@@ -345,7 +337,7 @@ Full-Width Styles
   font-weight: bold;
   background: none;
   text-shadow: #111 0px 0px 10px;
-  margin: 0 0 16px 20px;
+  margin: 0 0 12px 20px;
 }
 
 #downloads {
