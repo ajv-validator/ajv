@@ -602,7 +602,7 @@ If the option were `"failing"` then property `additional1` would have been remov
 
 __Please note__: If you use `removeAdditional` option with `additionalProperties` keyword inside `anyOf`/`oneOf` keywords your validation can fail with this schema, for example:
 
-```JSON
+```json
 {
   "type": "object",
   "oneOf": [
@@ -630,7 +630,7 @@ With the option `removeAdditional: true` the validation will pass for the object
 
 While this behaviour is unexpected (issues [#129](https://github.com/epoberezkin/ajv/issues/129), [#134](https://github.com/epoberezkin/ajv/issues/134)), it is correct. To have the expected behaviour (both objects are allowed and additional properties are removed) the schema has to be refactored in this way:
 
-```JSON
+```json
 {
   "type": "object",
   "properties": {
