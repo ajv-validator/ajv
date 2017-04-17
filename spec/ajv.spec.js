@@ -208,6 +208,15 @@ describe('Ajv', function () {
     it('should throw if schema is not an object', function() {
       should.throw(function() { ajv.addSchema('foo'); });
     });
+
+    it('should throw if schema id is not a string', function() {
+      try {
+        ajv.addSchema({ id: 1, type: 'integer' });
+        throw new Error('should have throw exception');
+      } catch(e) {
+        e.message .should.equal('schema id must be string');
+      }
+    });
   });
 
 
@@ -392,11 +401,100 @@ describe('Ajv', function () {
       testFormat();
     });
 
+    it('should add format as object', function() {
+      ajv.addFormat('identifier', {
+        validate: function (str) { return /^[a-z_$][a-z0-9_$]*$/i.test(str); },
+      });
+      testFormat();
+    });
+
     function testFormat() {
       var validate = ajv.compile({ format: 'identifier' });
       validate('Abc1') .should.equal(true);
       validate('123') .should.equal(false);
       validate(123) .should.equal(true);
     }
+
+    describe('formats for number', function() {
+      it('should validate only numbers', function() {
+        ajv.addFormat('positive', {
+          type: 'number',
+          validate: function(x) {
+            return x > 0;
+          }
+        });
+
+        var validate = ajv.compile({
+          format: 'positive'
+        });
+        validate(-2) .should.equal(false);
+        validate(0) .should.equal(false);
+        validate(2) .should.equal(true);
+        validate('abc') .should.equal(true);
+      });
+
+      it('should validate numbers with format via $data', function() {
+        ajv = new Ajv({$data: true});
+        ajv.addFormat('positive', {
+          type: 'number',
+          validate: function(x) {
+            return x > 0;
+          }
+        });
+
+        var validate = ajv.compile({
+          properties: {
+            data: { format: { $data: '1/frmt' } },
+            frmt: { type: 'string' }
+          }
+        });
+        validate({data: -2, frmt: 'positive'}) .should.equal(false);
+        validate({data: 0, frmt: 'positive'})  .should.equal(false);
+        validate({data: 2, frmt: 'positive'})  .should.equal(true);
+        validate({data: 'abc', frmt: 'positive'}) .should.equal(true);
+      });
+    });
+  });
+
+
+  describe('validateSchema method', function() {
+    it('should validate schema against meta-schema', function() {
+      var valid = ajv.validateSchema({
+        $schema: 'http://json-schema.org/draft-06/schema#',
+        type: 'number'
+      });
+
+      valid .should.equal(true);
+      should.equal(ajv.errors, null);
+
+      valid = ajv.validateSchema({
+        $schema: 'http://json-schema.org/draft-06/schema#',
+        type: 'wrong_type'
+      });
+
+      valid .should.equal(false);
+      ajv.errors.length .should.equal(3);
+      ajv.errors[0].keyword .should.equal('enum');
+      ajv.errors[1].keyword .should.equal('type');
+      ajv.errors[2].keyword .should.equal('anyOf');
+    });
+
+    it('should throw exception if meta-schema is unknown', function() {
+      should.throw(function() {
+        ajv.validateSchema({
+          $schema: 'http://example.com/unknown/schema#',
+          type: 'number'
+        });
+      });
+    });
+
+    it('should throw exception if $schema is not a string', function() {
+      should.throw(function() {
+        ajv.validateSchema({
+          $schema: {},
+          type: 'number'
+        });
+      });
+    });
   });
 });

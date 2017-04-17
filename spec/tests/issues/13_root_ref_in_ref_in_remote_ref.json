@@ -1,13 +1,22 @@
 [
   {
     "description": "root ref in remote ref (#13)",
-    "schema": {
-      "id": "http://localhost:1234/object",
-      "type": "object",
-      "properties": {
-        "name": { "$ref": "name.json#/definitions/orNull" }
+    "schemas": [
+      {
+        "id": "http://localhost:1234/issue13_1",
+        "type": "object",
+        "properties": {
+          "name": { "$ref": "name.json#/definitions/orNull" }
+        }
+      },
+      {
+        "$id": "http://localhost:1234/issue13_2",
+        "type": "object",
+        "properties": {
+          "name": { "$ref": "name.json#/definitions/orNull" }
+        }
       }
-    },
+    ],
     "tests": [
       {
         "description": "string is valid",

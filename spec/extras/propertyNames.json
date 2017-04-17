@@ -1,0 +1,32 @@
+[
+  {
+    "description": "propertyNames validation",
+    "schema": {
+      "type": "object",
+      "propertyNames": { "format": "email" }
+    },
+    "tests": [
+      {
+        "description": "all property names valid",
+        "data": {
+          "foo@example.com": {},
+          "bar.baz@email.example.com": {}
+        },
+        "valid": true
+      },
+      {
+        "description": "some property names invalid",
+        "data": {
+          "foo": {},
+          "bar.baz@email.example.com": {}
+        },
+        "valid": false
+      },
+      {
+        "description": "object without properties is valid",
+        "data": {},
+        "valid": true
+      }
+    ]
+  }
+]

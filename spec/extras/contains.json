@@ -21,6 +21,11 @@
         "valid": false
       },
       {
+        "description": "empty array is invalid",
+        "data": [],
+        "valid": false
+      },
+      {
         "description": "not array is valid",
         "data": {},
         "valid": true
@@ -28,9 +33,9 @@
     ]
   },
   {
-    "description": "contains keyword with constant keyword requires a specific item to be present",
+    "description": "contains keyword with const keyword requires a specific item to be present",
     "schema": {
-        "contains": { "constant": 5 }
+        "contains": { "const": 5 }
     },
     "tests": [
       {

@@ -3,7 +3,7 @@
     "description": "property is equal to another property",
     "schema": {
       "properties": {
-        "sameAs": { "constant": { "$data": "1/thisOne" } },
+        "sameAs": { "const": { "$data": "1/thisOne" } },
         "thisOne": {}
       }
     },
@@ -46,7 +46,7 @@
     "description": "property values are equal to property names",
     "schema": {
       "additionalProperties": {
-        "constant": { "$data": "0#" }
+        "const": { "$data": "0#" }
       }
     },
     "tests": [
@@ -66,7 +66,7 @@
     "description": "items are equal to their indeces",
     "schema": {
       "items": {
-        "constant": { "$data": "0#" }
+        "const": { "$data": "0#" }
       }
     },
     "tests": [
@@ -92,9 +92,9 @@
         },
         "sameArr": {
           "items": [
-            { "constant": { "$data": "2/arr/0" } },
-            { "constant": { "$data": "2/arr/1" } },
-            { "constant": { "$data": "2/arr/2" } }
+            { "const": { "$data": "2/arr/0" } },
+            { "const": { "$data": "2/arr/1" } },
+            { "const": { "$data": "2/arr/2" } }
           ],
           "additionalItems": false
         }
@@ -122,7 +122,7 @@
   {
     "description": "any data is equal to itself",
     "schema": {
-      "constant": { "$data": "0" }
+      "const": { "$data": "0" }
     },
     "tests": [
       {
@@ -154,7 +154,7 @@
         "name": { "type": "string" },
         "list": {
           "type": "array",
-          "contains": { "constant": { "$data": "2/name" } }
+          "contains": { "const": { "$data": "2/name" } }
         }
       }
     },

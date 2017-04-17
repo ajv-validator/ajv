@@ -14,7 +14,7 @@ describe('Validation errors', function () {
   function createInstances(errorDataPath) {
     ajv = new Ajv({ errorDataPath: errorDataPath, loopRequired: 21 });
     ajvJP = new Ajv({ errorDataPath: errorDataPath, jsonPointers: true, loopRequired: 21 });
-    fullAjv = new Ajv({ errorDataPath: errorDataPath, allErrors: true, jsonPointers: true, loopRequired: 21 });
+    fullAjv = new Ajv({ errorDataPath: errorDataPath, allErrors: true, verbose: true, jsonPointers: true, loopRequired: 21 });
   }
 
   it('error should include dataPath', function() {
@@ -281,7 +281,7 @@ describe('Validation errors', function () {
 
 
     it('should not validate required twice with $data ref', function() {
-      ajv = new Ajv({ v5: true, allErrors: true });
+      ajv = new Ajv({ $data: true, allErrors: true });
 
       var schema = {
         properties: {
@@ -459,7 +459,7 @@ describe('Validation errors', function () {
   });
 
 
-  it('should has correct schema path for additionalItems', function() {
+  it('should have correct schema path for additionalItems', function() {
     var schema = {
       type: 'array',
       items: [ { type: 'integer' }, { type: 'integer' } ],
@@ -479,6 +479,89 @@ describe('Validation errors', function () {
       shouldBeInvalid(validate, invalidData);
       shouldBeError(validate.errors[0], 'additionalItems', '#/additionalItems', '', 'should NOT have more than 2 items');
     }
+  });
+
+
+  describe('"propertyNames" errors', function() {
+    it('should add propertyName to errors', function() {
+      var schema = {
+        type: 'object',
+        propertyNames: { format: 'email' }
+      };
+
+      var data = {
+        'bar.baz@email.example.com': {}
+      };
+
+      var invalidData = {
+        'foo': {},
+        'bar': {},
+        'bar.baz@email.example.com': {}
+      };
+
+      test(ajv, 2);
+      test(ajvJP, 2);
+      test(fullAjv, 4);
+
+      function test(_ajv, numErrors) {
+        var validate = _ajv.compile(schema);
+        shouldBeValid(validate, data);
+        shouldBeInvalid(validate, invalidData, numErrors);
+        shouldBeError(validate.errors[0], 'format', '#/propertyNames/format', '', 'should match format "email"');
+        shouldBeError(validate.errors[1], 'propertyNames', '#/propertyNames', '', 'property name \'foo\' is invalid');
+        if (numErrors == 4) {
+          shouldBeError(validate.errors[2], 'format', '#/propertyNames/format', '', 'should match format "email"');
+          shouldBeError(validate.errors[3], 'propertyNames', '#/propertyNames', '', 'property name \'bar\' is invalid');
+        }
+      }
+    });
+  });
+
+
+  describe('oneOf errors', function() {
+    it('should have errors from inner schemas', function() {
+      var schema = {
+        oneOf: [
+          { type: 'number' },
+          { type: 'integer' }
+        ]
+      };
+
+      test(ajv);
+      test(fullAjv);
+
+      function test(_ajv) {
+        var validate = _ajv.compile(schema);
+        validate('foo') .should.equal(false);
+        validate.errors.length .should.equal(3);
+        validate(1) .should.equal(false);
+        validate.errors.length .should.equal(1);
+        validate(1.5) .should.equal(true);
+      }
+    });
+  });
+
+
+  describe('anyOf errors', function() {
+    it('should have errors from inner schemas', function() {
+      var schema = {
+        anyOf: [
+          { type: 'number' },
+          { type: 'integer' }
+        ]
+      };
+
+      test(ajv);
+      test(fullAjv);
+
+      function test(_ajv) {
+        var validate = _ajv.compile(schema);
+        validate('foo') .should.equal(false);
+        validate.errors.length .should.equal(3);
+        validate(1) .should.equal(true);
+        validate(1.5) .should.equal(true);
+      }
+    });
   });
 
 

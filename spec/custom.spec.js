@@ -377,10 +377,10 @@ describe('Custom keywords', function () {
     it('should correctly expand macros in macro expansions', function() {
       instances.forEach(function (_ajv) {
         _ajv.addKeyword('range', { type: 'number', macro: macroRange });
-        _ajv.addKeyword('contains', { type: 'array', macro: macroContains });
+        _ajv.addKeyword('myContains', { type: 'array', macro: macroContains });
 
         var schema = {
-          "contains": {
+          "myContains": {
             "type": "number",
             "range": [4,7],
             "exclusiveRange": true
@@ -429,12 +429,9 @@ describe('Custom keywords', function () {
       validateRangeSchema(schema, parentSchema);
       var exclusive = !!parentSchema.exclusiveRange;
 
-      return {
-        minimum: schema[0],
-        exclusiveMinimum: exclusive,
-        maximum: schema[1],
-        exclusiveMaximum: exclusive
-      };
+      return exclusive
+             ? { exclusiveMinimum: schema[0], exclusiveMaximum: schema[1] }
+             : { minimum: schema[0], maximum: schema[1] };
     }
   });
 
@@ -507,13 +504,13 @@ describe('Custom keywords', function () {
   });
 
 
-  describe('$data reference support with custom keywords (v5 only)', function() {
+  describe('$data reference support with custom keywords (with $data option)', function() {
     beforeEach(function() {
       instances = getAjvInstances({
         allErrors:    true,
         verbose:      true,
         inlineRefs:   false
-      }, { v5: true });
+      }, { $data: true });
       ajv = instances[0];
     });
 
@@ -726,14 +723,18 @@ describe('Custom keywords', function () {
       shouldBeValid(validate, { data: 3, evenValue: false });
 
       shouldBeInvalid(validate, { data: 2, evenValue: "true" });
+
+      // valid if the value of x-even-$data keyword is undefined
+      shouldBeValid(validate, { data: 2 });
+      shouldBeValid(validate, { data: 3 });
     });
   }
 
   function testConstantKeyword(definition, numErrors) {
     instances.forEach(function (_ajv) {
-      _ajv.addKeyword('constant', definition);
+      _ajv.addKeyword('myConstant', definition);
 
-      var schema = { "constant": "abc" };
+      var schema = { "myConstant": "abc" };
       var validate = _ajv.compile(schema);
 
       shouldBeValid(validate, 'abc');

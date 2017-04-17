@@ -48,6 +48,7 @@ jsonSchemaTest(instances, {
 
 
 function addRemoteRefs(ajv) {
+  ajv.addMetaSchema(require('../lib/refs/json-schema-draft-04.json'));
   for (var id in remoteRefs) ajv.addSchema(remoteRefs[id], id);
   ajv.addSchema(remoteRefsWithIds);
 }

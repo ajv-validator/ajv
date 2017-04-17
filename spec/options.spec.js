@@ -85,77 +85,200 @@ describe('Ajv Options', function () {
 
 
   describe('ownProperties', function() {
-    it('should only validate against own properties of data if specified', function() {
-      var ajv = new Ajv({ ownProperties: true });
-      var validate = ajv.compile({
-        properties: { c: { type: 'number' } },
+    var ajv, ajvOP, ajvOP1;
+
+    beforeEach(function() {
+      ajv = new Ajv({ allErrors: true });
+      ajvOP = new Ajv({ ownProperties: true, allErrors: true });
+      ajvOP1 = new Ajv({ ownProperties: true });
+    });
+
+    it('should only validate own properties with additionalProperties', function() {
+      var schema = {
+        properties: { a: { type: 'number' } },
         additionalProperties: false
-      });
+      };
 
-      var triangle = { a: 1, b: 2 };
-      function ColoredTriangle() { this.c = 3; }
-      ColoredTriangle.prototype = triangle;
-      var object = new ColoredTriangle();
-
-      validate(object).should.equal(true);
-      should.equal(validate.errors, null);
+      var obj = { a: 1 };
+      var proto = { b: 2 };
+      test(schema, obj, proto);
     });
 
-    it('should only validate against own properties when using patternProperties', function() {
-      var ajv = new Ajv({ allErrors: true, ownProperties: true });
-      var validate = ajv.compile({
+    it('should only validate own properties with properties keyword', function() {
+      var schema = {
+        properties: {
+          a: { type: 'number' },
+          b: { type: 'number' }
+        }
+      };
+
+      var obj = { a: 1 };
+      var proto = { b: 'not a number' };
+      test(schema, obj, proto);
+    });
+
+    it('should only validate own properties with required keyword', function() {
+      var schema = {
+        required: ['a', 'b']
+      };
+
+      var obj = { a: 1 };
+      var proto = { b: 2 };
+      test(schema, obj, proto, 1, true);
+    });
+
+    it('should only validate own properties with required keyword - many properties', function() {
+      ajv = new Ajv({ allErrors: true, loopRequired: 1 });
+      ajvOP = new Ajv({ ownProperties: true, allErrors: true, loopRequired: 1 });
+      ajvOP1 = new Ajv({ ownProperties: true, loopRequired: 1 });
+
+      var schema = {
+        required: ['a', 'b', 'c', 'd']
+      };
+
+      var obj = { a: 1, b: 2 };
+      var proto = { c: 3, d: 4 };
+      test(schema, obj, proto, 2, true);
+    });
+
+    it('should only validate own properties with required keyword as $data', function() {
+      ajv = new Ajv({ allErrors: true, $data: true });
+      ajvOP = new Ajv({ ownProperties: true, allErrors: true, $data: true });
+      ajvOP1 = new Ajv({ ownProperties: true, $data: true });
+
+      var schema = {
+        required: { $data: '0/req' },
+        properties: {
+          req: {
+            type: 'array',
+            items: { type: 'string' }
+          }
+        }
+      };
+
+      var obj = {
+        req: ['a', 'b'],
+        a: 1
+      };
+      var proto = { b: 2 };
+      test(schema, obj, proto, 1, true);
+    });
+
+    it('should only validate own properties with properties and required keyword', function() {
+      var schema = {
+        properties: {
+          a: { type: 'number' },
+          b: { type: 'number' }
+        },
+        required: ['a', 'b']
+      };
+
+      var obj = { a: 1 };
+      var proto = { b: 2 };
+      test(schema, obj, proto, 1, true);
+    });
+
+    it('should only validate own properties with dependencies keyword', function() {
+      var schema = {
+        dependencies: {
+          a: ['c'],
+          b: ['d']
+        }
+      };
+
+      var obj = { a: 1, c: 3 };
+      var proto = { b: 2 };
+      test(schema, obj, proto);
+
+      obj = { a: 1, b: 2, c: 3 };
+      proto = { d: 4 };
+      test(schema, obj, proto, 1, true);
+    });
+
+    it('should only validate own properties with schema dependencies', function() {
+      var schema = {
+        dependencies: {
+          a: { not: { required: ['c'] } },
+          b: { not: { required: ['d'] } }
+        }
+      };
+
+      var obj = { a: 1, d: 3 };
+      var proto = { b: 2 };
+      test(schema, obj, proto);
+
+      obj = { a: 1, b: 2 };
+      proto = { d: 4 };
+      test(schema, obj, proto);
+    });
+
+    it('should only validate own properties with patternProperties', function() {
+      var schema = {
         patternProperties: { 'f.*o': { type: 'integer' } },
-      });
+      };
 
-      var baz = { foooo: false, fooooooo: 42.31 };
-      function FooThing() { this.foo = 'not a number'; }
-      FooThing.prototype = baz;
-      var object = new FooThing();
-
-      validate(object).should.equal(false);
-      validate.errors.should.have.length(1);
+      var obj = { fooo: 1 };
+      var proto = { foo: 'not a number' };
+      test(schema, obj, proto);
     });
 
-    it('should only validate against own properties when using patternGroups', function() {
-      var ajv = new Ajv({ v5: true, allErrors: true, ownProperties: true });
-      var validate = ajv.compile({
+    it('should only validate own properties with patternGroups', function() {
+      ajv = new Ajv({ allErrors: true, patternGroups: true });
+      ajvOP = new Ajv({ ownProperties: true, allErrors: true, patternGroups: true });
+
+      var schema = {
         patternGroups: {
           'f.*o': { schema: { type: 'integer' } }
         }
-      });
+      };
 
-      var baz = { foooo: false, fooooooo: 42.31 };
-      function FooThing() { this.foo = 'not a number'; }
-      FooThing.prototype = baz;
-      var object = new FooThing();
-
-      validate(object).should.equal(false);
-      validate.errors.should.have.length(1);
+      var obj = { fooo: 1 };
+      var proto = { foo: 'not a number' };
+      test(schema, obj, proto);
     });
 
-    it('should only validate against own properties when using patternRequired', function() {
-      var ajv = new Ajv({ v5: true, allErrors: true, ownProperties: true });
-      var validate = ajv.compile({
-        patternRequired: [ 'f.*o' ]
-      });
+    it('should only validate own properties with propertyNames', function() {
+      var schema = {
+        propertyNames: {
+          format: 'email'
+        }
+      };
 
-      var baz = { foooo: false, fooooooo: 42.31 };
-      function FooThing() { this.bar = 123; }
-      FooThing.prototype = baz;
-      var object = new FooThing();
-
-      validate(object).should.equal(false);
-      validate.errors.should.have.length(1);
+      var obj = { 'e@example.com': 2 };
+      var proto = { 'not email': 1 };
+      test(schema, obj, proto, 2);
     });
+
+    function test(schema, obj, proto, errors, reverse) {
+      errors = errors || 1;
+      var validate = ajv.compile(schema);
+      var validateOP = ajvOP.compile(schema);
+      var validateOP1 = ajvOP1.compile(schema);
+      var data = Object.create(proto);
+      for (var key in obj) data[key] = obj[key];
+
+      if (reverse) {
+        validate(data) .should.equal(true);
+        validateOP(data) .should.equal(false);
+        validateOP.errors .should.have.length(errors);
+        validateOP1(data) .should.equal(false);
+        validateOP1.errors .should.have.length(1);
+      } else {
+        validate(data) .should.equal(false);
+        validate.errors .should.have.length(errors);
+        validateOP(data) .should.equal(true);
+        validateOP1(data) .should.equal(true);
+      }
+    }
   });
 
   describe('meta and validateSchema', function() {
-    it('should add draft-4 meta schema by default', function() {
+    it('should add draft-6 meta schema by default', function() {
       testOptionMeta(new Ajv);
       testOptionMeta(new Ajv({ meta: true }));
 
       function testOptionMeta(ajv) {
-        ajv.getSchema('http://json-schema.org/draft-04/schema') .should.be.a('function');
+        ajv.getSchema('http://json-schema.org/draft-06/schema') .should.be.a('function');
         ajv.validateSchema({ type: 'integer' }) .should.equal(true);
         ajv.validateSchema({ type: 123 }) .should.equal(false);
         should.not.throw(function() { ajv.addSchema({ type: 'integer' }); });
@@ -165,8 +288,8 @@ describe('Ajv Options', function () {
 
     it('should throw if meta: false and validateSchema: true', function() {
       var ajv = new Ajv({ meta: false });
-      should.not.exist(ajv.getSchema('http://json-schema.org/draft-04/schema'));
-      should.throw(function() { ajv.addSchema({ type: 'integer' }, 'integer'); });
+      should.not.exist(ajv.getSchema('http://json-schema.org/draft-06/schema'));
+      should.not.throw(function() { ajv.addSchema({ type: 'wrong_type' }, 'integer'); });
     });
 
     it('should skip schema validation with validateSchema: false', function() {
@@ -188,24 +311,23 @@ describe('Ajv Options', function () {
       var ajv = new Ajv({ validateSchema: 'log' });
       should.not.throw(function() { ajv.addSchema({ type: 123 }, 'integer'); });
       loggedError .should.equal(true);
-      console.error = logError;
 
+      loggedError = false;
       ajv = new Ajv({ validateSchema: 'log', meta: false });
-      should.throw(function() { ajv.addSchema({ type: 123 }, 'integer'); });
+      should.not.throw(function() { ajv.addSchema({ type: 123 }, 'integer'); });
+      loggedError .should.equal(false);
+      console.error = logError;
     });
 
-    it('should validate v5 schema', function() {
-      var ajv = new Ajv({ v5: true });
+    it('should validate v6 schema', function() {
+      var ajv = new Ajv;
       ajv.validateSchema({ contains: { minimum: 2 } }) .should.equal(true);
       ajv.validateSchema({ contains: 2 }). should.equal(false);
-
-      ajv = new Ajv;
-      ajv.validateSchema({ contains: 2 }). should.equal(true);
     });
 
     it('should use option meta as default meta schema', function() {
       var meta = {
-        $schema: 'http://json-schema.org/draft-04/schema',
+        $schema: 'http://json-schema.org/draft-06/schema',
         properties: {
           myKeyword: { type: 'boolean' }
         }
@@ -214,7 +336,7 @@ describe('Ajv Options', function () {
       ajv.validateSchema({ myKeyword: true }) .should.equal(true);
       ajv.validateSchema({ myKeyword: 2 }) .should.equal(false);
       ajv.validateSchema({
-        $schema: 'http://json-schema.org/draft-04/schema',
+        $schema: 'http://json-schema.org/draft-06/schema',
         myKeyword: 2
       }) .should.equal(true);
 
@@ -262,20 +384,6 @@ describe('Ajv Options', function () {
 
       ajv.validate(schema, invalideDateTime) .should.equal(false);
       ajvFF.validate(schema, invalideDateTime) .should.equal(true);
-    });
-
-    it('should not validate formatMaximum/Minimum if option format == false', function() {
-      var ajv = new Ajv({ v5: true, allErrors: true })
-        , ajvFF = new Ajv({ v5: true, allErrors: true, format: false });
-
-      var schema = {
-        format: 'date',
-        formatMaximum: '2015-08-01'
-      };
-
-      var date = '2015-09-01';
-      ajv.validate(schema, date) .should.equal(false);
-      ajvFF.validate(schema, date) .should.equal(true);
     });
   });
 
@@ -726,14 +834,9 @@ describe('Ajv Options', function () {
 
 
   describe('extendRefs', function() {
-    describe('= true and default', function() {
+    describe('= true', function() {
       it('should allow extending $ref with other keywords', function() {
-        test(new Ajv, true);
         test(new Ajv({ extendRefs: true }), true);
-      });
-
-      it('should log warning when other keywords are used with $ref', function() {
-        testWarning(new Ajv, /keywords\sused/);
       });
 
       it('should NOT log warning if extendRefs is true', function() {
@@ -741,43 +844,47 @@ describe('Ajv Options', function () {
       });
     });
 
-    describe('= "ignore"', function() {
+    describe('= "ignore" and default', function() {
       it('should ignore other keywords when $ref is used', function() {
+        test(new Ajv);
         test(new Ajv({ extendRefs: 'ignore' }), false);
       });
 
       it('should log warning when other keywords are used with $ref', function() {
+        testWarning(new Ajv, /keywords\signored/);
         testWarning(new Ajv({ extendRefs: 'ignore' }), /keywords\signored/);
       });
     });
 
     describe('= "fail"', function() {
       it('should fail schema compilation if other keywords are used with $ref', function() {
-        var ajv = new Ajv({ extendRefs: 'fail' });
+        testFail(new Ajv({ extendRefs: 'fail' }));
 
-        should.throw(function() {
-          var schema = {
-            "definitions": {
-              "int": { "type": "integer" }
-            },
-            "$ref": "#/definitions/int",
-            "minimum": 10
-          };
-          ajv.compile(schema);
-        });
+        function testFail(ajv) {
+          should.throw(function() {
+            var schema = {
+              "definitions": {
+                "int": { "type": "integer" }
+              },
+              "$ref": "#/definitions/int",
+              "minimum": 10
+            };
+            ajv.compile(schema);
+          });
 
-        should.not.throw(function() {
-          var schema = {
-            "definitions": {
-              "int": { "type": "integer" }
-            },
-            "allOf": [
-              { "$ref": "#/definitions/int" },
-              { "minimum": 10 }
-            ]
-          };
-          ajv.compile(schema);
-        });
+          should.not.throw(function() {
+            var schema = {
+              "definitions": {
+                "int": { "type": "integer" }
+              },
+              "allOf": [
+                { "$ref": "#/definitions/int" },
+                { "minimum": 10 }
+              ]
+            };
+            ajv.compile(schema);
+          });
+        }
       });
     });
 
@@ -822,9 +929,9 @@ describe('Ajv Options', function () {
     function testWarning(ajv, msgPattern) {
       var oldConsole;
       try {
-        oldConsole = console.log;
+        oldConsole = console.warn;
         var consoleMsg;
-        console.log = function() {
+        console.warn = function() {
           consoleMsg = Array.prototype.join.call(arguments, ' ');
         };
 
@@ -840,38 +947,43 @@ describe('Ajv Options', function () {
         if (msgPattern) consoleMsg .should.match(msgPattern);
         else should.not.exist(consoleMsg);
       } finally {
-        console.log = oldConsole;
+        console.warn = oldConsole;
       }
     }
   });
 
 
   describe('sourceCode', function() {
-    describe('= true and default', function() {
-      it('should add sourceCode property', function() {
-        test(new Ajv);
+    describe('= true', function() {
+      it('should add source.code property', function() {
         test(new Ajv({sourceCode: true}));
 
         function test(ajv) {
           var validate = ajv.compile({ "type": "number" });
-          validate.sourceCode .should.be.a('string');
+          validate.source.code .should.be.a('string');
         }
       });
     });
 
-    describe('= false', function() {
-      it('should not add sourceCode property', function() {
-        var ajv = new Ajv({sourceCode: false});
-        var validate = ajv.compile({ "type": "number" });
-        should.not.exist(validate.sourceCode);
+    describe('= false and default', function() {
+      it('should not add source and sourceCode properties', function() {
+        test(new Ajv);
+        test(new Ajv({sourceCode: false}));
+
+        function test(ajv) {
+          var validate = ajv.compile({ "type": "number" });
+          should.not.exist(validate.source);
+          should.not.exist(validate.sourceCode);
+        }
       });
     });
   });
 
 
   describe('unknownFormats', function() {
-    describe('= true (will be default in 5.0.0)', function() {
+    describe('= true (default)', function() {
       it('should fail schema compilation if unknown format is used', function() {
+        test(new Ajv);
         test(new Ajv({unknownFormats: true}));
 
         function test(ajv) {
@@ -882,7 +994,8 @@ describe('Ajv Options', function () {
       });
 
       it('should fail validation if unknown format is used via $data', function() {
-        test(new Ajv({v5: true, unknownFormats: true}));
+        test(new Ajv({$data: true}));
+        test(new Ajv({$data: true, unknownFormats: true}));
 
         function test(ajv) {
           var validate = ajv.compile({
@@ -892,7 +1005,7 @@ describe('Ajv Options', function () {
             }
           });
 
-          validate({foo: 1, bar: 'unknown'}) .should.equal(true);
+          validate({foo: 1, bar: 'unknown'}) .should.equal(false);
           validate({foo: '2016-10-16', bar: 'date'}) .should.equal(true);
           validate({foo: '20161016', bar: 'date'}) .should.equal(false);
           validate({foo: '20161016'}) .should.equal(true);
@@ -902,9 +1015,8 @@ describe('Ajv Options', function () {
       });
     });
 
-    describe('= "ignore (default)"', function() {
+    describe('= "ignore (default before 5.0.0)"', function() {
       it('should pass schema compilation and be valid if unknown format is used', function() {
-        test(new Ajv);
         test(new Ajv({unknownFormats: 'ignore'}));
 
         function test(ajv) {
@@ -914,8 +1026,7 @@ describe('Ajv Options', function () {
       });
 
       it('should be valid if unknown format is used via $data', function() {
-        test(new Ajv({v5: true}));
-        test(new Ajv({v5: true, unknownFormats: 'ignore'}));
+        test(new Ajv({$data: true, unknownFormats: 'ignore'}));
 
         function test(ajv) {
           var validate = ajv.compile({
@@ -949,7 +1060,7 @@ describe('Ajv Options', function () {
       });
 
       it('should be valid if whitelisted unknown format is used via $data', function() {
-        test(new Ajv({v5: true, unknownFormats: ['allowed']}));
+        test(new Ajv({$data: true, unknownFormats: ['allowed']}));
 
         function test(ajv) {
           var validate = ajv.compile({
@@ -960,7 +1071,7 @@ describe('Ajv Options', function () {
           });
 
           validate({foo: 1, bar: 'allowed'}) .should.equal(true);
-          validate({foo: 1, bar: 'unknown'}) .should.equal(true);
+          validate({foo: 1, bar: 'unknown'}) .should.equal(false);
           validate({foo: '2016-10-16', bar: 'date'}) .should.equal(true);
           validate({foo: '20161016', bar: 'date'}) .should.equal(false);
           validate({foo: '20161016'}) .should.equal(true);
@@ -968,6 +1079,143 @@ describe('Ajv Options', function () {
           validate({foo: '2016-10-16', bar: 'allowed'}) .should.equal(true);
           validate({foo: '2016-10-16', bar: 'unknown'}) .should.equal(false);
         }
+      });
+    });
+  });
+
+
+  describe('processCode', function() {
+    it('should process generated code', function() {
+      var ajv = new Ajv;
+      var validate = ajv.compile({type: 'string'});
+      validate.toString().split('\n').length .should.equal(1);
+
+      var beautify = require('js-beautify').js_beautify;
+      var ajvPC = new Ajv({processCode: beautify});
+      validate = ajvPC.compile({type: 'string'});
+      validate.toString().split('\n').length .should.be.above(1);
+      validate('foo') .should.equal(true);
+      validate(1) .should.equal(false);
+    });
+  });
+
+
+  describe('serialize', function() {
+    var serializeCalled;
+
+    it('should use custom function to serialize schema to string', function() {
+      serializeCalled = undefined;
+      var ajv = new Ajv({ serialize: serialize });
+      ajv.addSchema({ type: 'string' });
+      should.equal(serializeCalled, true);
+    });
+
+    function serialize(schema) {
+      serializeCalled = true;
+      return JSON.stringify(schema);
+    }
+  });
+
+
+  describe('patternGroups without draft-06 meta-schema', function() {
+    it('should use default meta-schema', function() {
+      var ajv = new Ajv({
+        patternGroups: true,
+        meta: require('../lib/refs/json-schema-draft-04.json')
+      });
+
+      ajv.compile({
+        patternGroups: {
+          '^foo': {
+            schema: { type: 'number' },
+            minimum: 1
+          }
+        }
+      });
+
+      should.throw(function() {
+        ajv.compile({
+          patternGroups: {
+            '^foo': {
+              schema: { type: 'wrong_type' },
+              minimum: 1
+            }
+          }
+        });
+      });
+    });
+
+    it('should not use meta-schema if not available', function() {
+      var ajv = new Ajv({
+        patternGroups: true,
+        meta: false
+      });
+
+      ajv.compile({
+        patternGroups: {
+          '^foo': {
+            schema: { type: 'number' },
+            minimum: 1
+          }
+        }
+      });
+
+      ajv.compile({
+        patternGroups: {
+          '^foo': {
+            schema: { type: 'wrong_type' },
+            minimum: 1
+          }
+        }
+      });
+    });
+  });
+
+
+  describe('schemaId', function() {
+    describe('= undefined (default)', function() {
+      it('should throw if both id and $id are available and different', function() {
+        var ajv = new Ajv;
+
+        ajv.compile({
+          id: 'mySchema',
+          $id: 'mySchema'
+        });
+
+        should.throw(function() {
+          ajv.compile({
+            id: 'mySchema1',
+            $id: 'mySchema2'
+          });
+        });
+      });
+    });
+
+    describe('= "id"', function() {
+      it('should use id and ignore $id', function() {
+        var ajv = new Ajv({schemaId: 'id'});
+
+        ajv.addSchema({ id: 'mySchema1', type: 'string' });
+        var validate = ajv.getSchema('mySchema1');
+        validate('foo') .should.equal(true);
+        validate(1) .should.equal(false);
+
+        validate = ajv.compile({ $id: 'mySchema2', type: 'string' });
+        should.not.exist(ajv.getSchema('mySchema2'));
+      });
+    });
+
+    describe('= "$id"', function() {
+      it('should use $id and ignore id', function() {
+        var ajv = new Ajv({schemaId: '$id'});
+
+        ajv.addSchema({ $id: 'mySchema1', type: 'string' });
+        var validate = ajv.getSchema('mySchema1');
+        validate('foo') .should.equal(true);
+        validate(1) .should.equal(false);
+
+        validate = ajv.compile({ id: 'mySchema2', type: 'string' });
+        should.not.exist(ajv.getSchema('mySchema2'));
       });
     });
   });

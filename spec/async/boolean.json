@@ -1,0 +1,126 @@
+[
+  {
+    "description": "boolean schema = true in properties",
+    "schema": {
+      "$async": true,
+      "properties": {
+        "foo": true
+      }
+    },
+    "tests": [
+      {
+        "description": "any data is valid",
+        "data": { "foo": 1 },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "boolean schema = false in properties",
+    "schema": {
+      "$async": true,
+      "properties": {
+        "foo": false
+      }
+    },
+    "tests": [
+      {
+        "description": "any property is invalid",
+        "data": { "foo": 1 },
+        "valid": false
+      },
+      {
+        "description": "without property is valid",
+        "data": { "bar": 1 },
+        "valid": true
+      },
+      {
+        "description": "empty object is valid",
+        "data": {},
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "boolean schema = true in $ref",
+    "schema": {
+      "$async": true,
+      "$ref": "#/definitions/true",
+      "definitions": {
+        "true": true
+      }
+    },
+    "tests": [
+      {
+        "description": "any data is valid",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "boolean schema = false in $ref",
+    "schema": {
+      "$async": true,
+      "$ref": "#/definitions/false",
+      "definitions": {
+        "false": false
+      }
+    },
+    "tests": [
+      {
+        "description": "any data is invalid",
+        "data": 1,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "boolean schema = true in properties with $ref",
+    "schema": {
+      "$async": true,
+      "properties": {
+        "foo": { "$ref": "#/definitions/foo" }
+      },
+      "definitions": {
+        "foo": true
+      }
+    },
+    "tests": [
+      {
+        "description": "any data is valid",
+        "data": { "foo": 1 },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "boolean schema = false in properties with $ref",
+    "schema": {
+      "$async": true,
+      "properties": {
+        "foo": { "$ref": "#/definitions/foo" }
+      },
+      "definitions": {
+        "foo": false
+      }
+    },
+    "tests": [
+      {
+        "description": "any property is invalid",
+        "data": { "foo": 1 },
+        "valid": false
+      },
+      {
+        "description": "without property is valid",
+        "data": { "bar": 1 },
+        "valid": true
+      },
+      {
+        "description": "empty object is valid",
+        "data": {},
+        "valid": true
+      }
+    ]
+  }
+]

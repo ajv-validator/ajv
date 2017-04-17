@@ -137,7 +137,7 @@
     "description": "custom keyword in async schema",
     "schema": {
       "$async": true,
-      "constant": 5
+      "const": 5
     },
     "tests": [
       {

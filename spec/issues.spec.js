@@ -106,14 +106,14 @@ describe('issue #182, NaN validation', function() {
 });
 
 
-describe('issue #204, options schemas and v5 used together', function() {
+describe('issue #204, options schemas and $data used together', function() {
   it('should use v5 metaschemas by default', function() {
     var ajv = new Ajv({
-      v5: true,
       schemas: [{id: 'str', type: 'string'}],
+      $data: true
     });
 
-    var schema = { constant: 42 };
+    var schema = { const: 42 };
     var validate = ajv.compile(schema);
 
     validate(42) .should.equal(true);
@@ -156,7 +156,7 @@ describe('issue #181, custom keyword is not validated in allErrors mode if there
   });
 
   function testCustomKeywordErrors(def) {
-    var ajv = new Ajv({ allErrors: true, beautify: true });
+    var ajv = new Ajv({ allErrors: true });
 
     ajv.addKeyword('alwaysFails', def);
 
@@ -256,7 +256,7 @@ describe('issue #210, mutual recursive $refs that are schema fragments', functio
 
 describe('issue #240, mutually recursive fragment refs reference a common schema', function() {
   var apiSchema = {
-    $schema: 'http://json-schema.org/draft-04/schema#',
+    $schema: 'http://json-schema.org/draft-06/schema#',
     id: 'schema://api.schema#',
     resource: {
       id: '#resource',
@@ -274,7 +274,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
   };
 
   var domainSchema = {
-    $schema: 'http://json-schema.org/draft-04/schema#',
+    $schema: 'http://json-schema.org/draft-06/schema#',
     id: 'schema://domain.schema#',
     properties: {
       data: {
@@ -290,7 +290,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     var ajv = new Ajv;
 
     var librarySchema = {
-      $schema: 'http://json-schema.org/draft-04/schema#',
+      $schema: 'http://json-schema.org/draft-06/schema#',
       id: 'schema://library.schema#',
       properties: {
         name: { type: 'string' },
@@ -322,7 +322,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     };
 
     var catalogItemSchema = {
-      $schema: 'http://json-schema.org/draft-04/schema#',
+      $schema: 'http://json-schema.org/draft-06/schema#',
       id: 'schema://catalog_item.schema#',
       properties: {
         name: { type: 'string' },
@@ -351,7 +351,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     };
 
     var catalogItemResourceIdentifierSchema = {
-      $schema: 'http://json-schema.org/draft-04/schema#',
+      $schema: 'http://json-schema.org/draft-06/schema#',
       id: 'schema://catalog_item_resource_identifier.schema#',
       allOf: [
         {
@@ -381,7 +381,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     var ajv = new Ajv;
 
     var librarySchema = {
-      $schema: 'http://json-schema.org/draft-04/schema#',
+      $schema: 'http://json-schema.org/draft-06/schema#',
       id: 'schema://library.schema#',
       properties: {
         name: { type: 'string' },
@@ -413,7 +413,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     };
 
     var catalogItemSchema = {
-      $schema: 'http://json-schema.org/draft-04/schema#',
+      $schema: 'http://json-schema.org/draft-06/schema#',
       id: 'schema://catalog_item.schema#',
       properties: {
         name: { type: 'string' },
@@ -463,8 +463,36 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
 describe('issue #259, support validating [meta-]schemas against themselves', function() {
   it('should add schema before validation if "id" is the same as "$schema"', function() {
     var ajv = new Ajv;
+    ajv.addMetaSchema(require('../lib/refs/json-schema-draft-04.json'));
     var hyperSchema = require('./remotes/hyper-schema.json');
     ajv.addMetaSchema(hyperSchema);
+  });
+});
+
+
+describe.skip('issue #273, schemaPath in error in referenced schema', function() {
+  it('should have canonic reference with hash after file name', function() {
+    test(new Ajv);
+    test(new Ajv({inlineRefs: false}));
+
+    function test(ajv) {
+      var schema = {
+        "properties": {
+          "a": { "$ref": "int" }
+        }
+      };
+
+      var referencedSchema = {
+        "id": "int",
+        "type": "integer"
+      };
+
+      ajv.addSchema(referencedSchema);
+      var validate = ajv.compile(schema);
+
+      validate({ "a": "foo" }) .should.equal(false);
+      validate.errors[0].schemaPath .should.equal('int#/type');
+    }
   });
 });
 
@@ -494,5 +522,29 @@ describe('issue #342, support uniqueItems with some non-JSON objects', function(
     validate([{foo: undefined}, {}]) .should.equal(true);
     validate([{foo: undefined}, {bar: undefined}]) .should.equal(true);
     validate([{foo: undefined}, {foo: undefined}]) .should.equal(false);
+  });
+});
+
+
+describe('issue #388, code clean-up not working', function() {
+  it('should remove assignement to rootData if it is not used', function() {
+    var ajv = new Ajv;
+    var validate = ajv.compile({
+      type: 'object',
+      properties: {
+        foo: { type: 'string' }
+      }
+    });
+    var code = validate.toString();
+    code.match(/rootData/g).length .should.equal(1);
+  });
+
+  it('should remove assignement to errors if they are not used', function() {
+    var ajv = new Ajv;
+    var validate = ajv.compile({
+      type: 'object'
+    });
+    var code = validate.toString();
+    should.equal(code.match(/[^\.]errors|vErrors/g), null);
   });
 });

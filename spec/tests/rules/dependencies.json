@@ -1,0 +1,27 @@
+[
+  {
+    "description": "dependencies keyword with empty array",
+    "schema": {
+      "dependencies": {
+        "foo": []
+      }
+    },
+    "tests": [
+      {
+        "description": "object with property is valid",
+        "data": { "foo": 1 },
+        "valid": true
+      },
+      {
+        "description": "empty object is valid",
+        "data": {},
+        "valid": true
+      },
+      {
+        "description": "non-object is valid",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  }
+]

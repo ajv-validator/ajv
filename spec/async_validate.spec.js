@@ -4,7 +4,8 @@ var Ajv = require('./ajv')
   , Promise = require('./promise')
   , getAjvInstances = require('./ajv_async_instances')
   , should = require('./chai').should()
-  , co = require('co');
+  , co = require('co')
+  , setupAsync = require('ajv-async');
 
 
 describe('async schemas, formats and keywords', function() {
@@ -38,7 +39,7 @@ describe('async schemas, formats and keywords', function() {
         var _co = useCo(_ajv);
 
         return Promise.all([
-          shouldBeValid(   _co(validate('abc')) ),
+          shouldBeValid(   _co(validate('abc')), 'abc' ),
           shouldBeInvalid( _co(validate('abcd')) ),
           shouldBeInvalid( _co(validate(1)) ),
         ]);
@@ -214,9 +215,10 @@ describe('async schemas, formats and keywords', function() {
       return repeat(function() { return Promise.all(instances.map(function (_ajv) {
         var validate = _ajv.compile(schema);
         var _co = useCo(_ajv);
+        var validData = { word: 'tomorrow' };
 
         return Promise.all([
-          shouldBeValid(   _co(validate({ word: 'tomorrow' })) ),
+          shouldBeValid(   _co(validate(validData)), validData ),
           shouldBeInvalid( _co(validate({ word: 'manana' })) ),
           shouldBeInvalid( _co(validate({ word: 1 })) ),
           shouldThrow(     _co(validate({ word: 'today' })), 'unknown word' )
@@ -319,6 +321,11 @@ describe('async schemas, formats and keywords', function() {
       };
 
       ajv.addSchema(schemaWord);
+      ajv.addFormat('english_word', {
+        async: true,
+        validate: checkWordOnServer
+      });
+
       shouldThrowFunc('async schema referenced by sync schema', function() {
         ajv.compile(schema);
       });
@@ -334,17 +341,18 @@ describe('async schemas, formats and keywords', function() {
         if (refSchema) try { _ajv.addSchema(refSchema); } catch(e) {}
         var validate = _ajv.compile(schema);
         var _co = useCo(_ajv);
+        var data;
 
         return Promise.all([
-          shouldBeValid(   _co(validate({ foo: 'tomorrow' })) ),
+          shouldBeValid(   _co(validate(data = { foo: 'tomorrow' })), data ),
           shouldBeInvalid( _co(validate({ foo: 'manana' })) ),
           shouldBeInvalid( _co(validate({ foo: 1 })) ),
           shouldThrow(     _co(validate({ foo: 'today' })), 'unknown word' ),
-          shouldBeValid(   _co(validate({ foo: { foo: 'tomorrow' }})) ),
+          shouldBeValid(   _co(validate(data = { foo: { foo: 'tomorrow' }})), data ),
           shouldBeInvalid( _co(validate({ foo: { foo: 'manana' }})) ),
           shouldBeInvalid( _co(validate({ foo: { foo: 1 }})) ),
           shouldThrow(     _co(validate({ foo: { foo: 'today' }})), 'unknown word' ),
-          shouldBeValid(   _co(validate({ foo: { foo: { foo: 'tomorrow' }}})) ),
+          shouldBeValid(   _co(validate(data = { foo: { foo: { foo: 'tomorrow' }}})), data ),
           shouldBeInvalid( _co(validate({ foo: { foo: { foo: 'manana' }}})) ),
           shouldBeInvalid( _co(validate({ foo: { foo: { foo: 1 }}})) ),
           shouldThrow(     _co(validate({ foo: { foo: { foo: 'today' }}})), 'unknown word' )
@@ -368,27 +376,27 @@ describe('async schemas, formats and keywords', function() {
 describe('async/transpile option', function() {
   it('should throw error with unknown async option', function() {
     shouldThrowFunc('bad async mode: es8', function() {
-      new Ajv({ async: 'es8' });
+      setupAsync(new Ajv({ async: 'es8' }));
     });
   });
 
 
   it('should throw error with unknown transpile option', function() {
     shouldThrowFunc('bad transpiler: babel', function() {
-      new Ajv({ transpile: 'babel' });
+      setupAsync(new Ajv({ transpile: 'babel' }));
     });
 
     shouldThrowFunc('bad transpiler: [object Object]', function() {
-      new Ajv({ transpile: {} });
+      setupAsync(new Ajv({ transpile: {} }));
     });
   });
 
 
   it('should set async option to es7 if tranpiler is nodent', function() {
-    var ajv1 = new Ajv({ transpile: 'nodent' });
+    var ajv1 = setupAsync(new Ajv({ transpile: 'nodent' }));
     ajv1._opts.async .should.equal('es7');
 
-    var ajv2 = new Ajv({ async: '*', transpile: 'nodent' });
+    var ajv2 = setupAsync(new Ajv({ async: '*', transpile: 'nodent' }));
     ajv2._opts.async .should.equal('es7');
   });
 });
@@ -412,9 +420,9 @@ function shouldThrowFunc(message, func) {
 }
 
 
-function shouldBeValid(p) {
+function shouldBeValid(p, data) {
   return p.then(function (valid) {
-    valid .should.equal(true);
+    valid .should.equal(data);
   });
 }
 
