@@ -13,9 +13,13 @@ The fastest JSON Schema validator for node.js and browser with draft 6 support.
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 
 
-__Please note__: You can start using NEW beta version [5.0.4](https://github.com/epoberezkin/ajv/releases/tag/5.0.4-beta.3) (see [migration guide from 4.x.x](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0)) with the support of JSON-Schema draft-06 (not officially published yet): `npm install ajv@^5.0.4-beta`.
+__Please note__:
 
-Also see [docs](https://github.com/epoberezkin/ajv/tree/5.0.4-beta.3) for 5.0.4.
+[JSON-Schema draft-06](https://trac.tools.ietf.org/html/draft-wright-json-schema-validation-01) is published.
+
+[Ajv version 5.0.0](https://github.com/epoberezkin/ajv/releases/tag/5.0.0) is released.
+
+You can still use [Ajv version 4](https://github.com/epoberezkin/ajv/tree/v4): `npm install ajv@^4`.
 
 
 ## Contents
@@ -1227,7 +1231,7 @@ Please see [Contributing guidelines](https://github.com/epoberezkin/ajv/blob/mas
 
 See https://github.com/epoberezkin/ajv/releases
 
-__Please note__: [Changes in version 5.0.1-beta](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0).
+__Please note__: [Changes in version 5.0.0](https://github.com/epoberezkin/ajv/releases/tag/5.0.0).
 
 [Changes in version 4.6.0](https://github.com/epoberezkin/ajv/releases/tag/4.6.0).
 
