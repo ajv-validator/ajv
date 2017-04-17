@@ -15,19 +15,19 @@ The keywords and their values define what rules the data should satisfy to be va
 
 - [type](#type)
 - [Keywords for numbers](#keywords-for-numbers)
-    - [maximum / minimum and exclusiveMaximum / exclusiveMinimum](#maximum--minimum-and-exclusivemaximum--exclusiveminimum)
+    - [maximum / minimum and exclusiveMaximum / exclusiveMinimum](#maximum--minimum-and-exclusivemaximum--exclusiveminimum) (CHANGED in draft 6)
     - [multipleOf](#multipleof)
 - [Keywords for strings](#keywords-for-strings)
     - [maxLength/minLength](#maxlength--minlength)
     - [pattern](#pattern)
     - [format](#format)
-    - [formatMaximum / formatMinimum and formatExclusiveMaximum / formatExclusiveMinimum](#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-v5-proposal) (v5)
+    - [formatMaximum / formatMinimum and formatExclusiveMaximum / formatExclusiveMinimum](#formatmaximum--formatminimum-and-formatexclusivemaximum--formatexclusiveminimum-proposed) (proposed)
 - [Keywords for arrays](#keywords-for-arrays)
     - [maxItems/minItems](#maxitems--minitems)
     - [uniqueItems](#uniqueitems)
     - [items](#items)
     - [additionalItems](#additionalitems)
-    - [contains](#contains-v5-proposal) (v5)
+    - [contains](#contains) (NEW in draft 6)
 - [Keywords for objects](#keywords-for-objects)
     - [maxProperties/minProperties](#maxproperties--minproperties)
     - [required](#required)
@@ -35,16 +35,18 @@ The keywords and their values define what rules the data should satisfy to be va
     - [patternProperties](#patternproperties)
     - [additionalProperties](#additionalproperties)
     - [dependencies](#dependencies)
-    - [patternGroups](#patterngroups-v5-proposal) (v5)
-    - [patternRequired](#patternrequired-v5-proposal) (v5)
+    - [propertyNames](#propertynames) (NEW in draft 6)
+    - [patternGroups](#patterngroups-deprecated) (deprecated)
+    - [patternRequired](#patternrequired-proposed) (proposed)
 - [Keywords for all types](#keywords-for-all-types)
     - [enum](#enum)
-    - [constant](#constant-v5-proposal) (v5)
+    - [const](#const) (NEW in draft 6)
+- [Compound keywords](#compound-keywords)
     - [not](#not)
     - [oneOf](#oneof)
     - [anyOf](#anyof)
     - [allOf](#allof)
-    - [switch](#switch-v5-proposal) (v5)
+    - [switch](#switch-proposed) (proposed)
 
 
 
@@ -91,7 +93,11 @@ Most other keywords apply only to a particular type of data. If the data is of d
 
 The value of keyword `maximum` (`minimum`) should be a number. This value is the maximum (minimum) allowed value for the data to be valid.
 
-The value of keyword `exclusiveMaximum` (`exclusiveMinimum`) should be a boolean value. These keyword cannot be used without `maximum` (`minimum`). If this keyword value is equal to `true`, the data should not be equal to the value in `maximum` (`minimum`) keyword to be valid.
+Draft 4: The value of keyword `exclusiveMaximum` (`exclusiveMinimum`) should be a boolean value. These keyword cannot be used without `maximum` (`minimum`). If this keyword value is equal to `true`, the data should not be equal to the value in `maximum` (`minimum`) keyword to be valid.
+
+Draft 6: The value of keyword `exclusiveMaximum` (`exclusiveMinimum`) should be a number. This value is the exclusive maximum (minimum) allowed value for the data to be valid (the data equal to this keyword value is invalid).
+
+Ajv supports both draft 4 and draft 6 syntaxes.
 
 
 __Examples__
@@ -110,7 +116,9 @@ __Examples__
     _invalid_: `4`, `4.5`
 
 
-3.  _schema_: `{ "minimum": 5, "exclusiveMinimum": true }`
+3.  _schema_:
+        draft 4: `{ "minimum": 5, "exclusiveMinimum": true }`
+        draft 6: `{ "exclusiveMinimum": 5 }`
 
     _valid_: `6`, `7`, any non-number (`"abc"`, `[]`, `{}`, `null`, `true`)
 
@@ -198,7 +206,9 @@ _invalid_: `"abc"`
 
 
 
-### `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` (v5 proposal)
+### `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` (proposed)
+
+Defined in [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package.
 
 The value of keyword `formatMaximum` (`formatMinimum`) should be a string. This value is the maximum (minimum) allowed value for the data to be valid as determined by `format` keyword.
 
@@ -219,7 +229,7 @@ _schema_:
 }
 ```
 
-_valid_: `2015-12-31`, `"2016-02-05"`, any non-string
+_valid_: `"2015-12-31"`, `"2016-02-05"`, any non-string
 
 _invalid_: `"2016-02-06"`, `"2016-02-07"`, `"abc"`
 
@@ -358,7 +368,7 @@ __Examples__
     _invalid_: `["abc"]`, `[1, 2, 3]`
 
 
-### `contains` (v5 proposal)
+### `contains`
 
 The value of the keyword is a JSON-schema. The array is valid if it contains at least one item that is valid according to this schema.
 
@@ -371,7 +381,7 @@ _valid_: `[1]`, `[1, "foo"]`, any array with at least one integer, any non-array
 _invalid_: `[]`, `["foo", "bar"]`, any array without integers
 
 
-The same can be expressed using only draft 4 keywords but it is quite verbose. The schema from the example above is equivalent to:
+The schema from the example above is equivalent to:
 
 ```json
 {
@@ -540,6 +550,7 @@ __Examples__
     _invalid_: `{"bar": 2}`, `{"baz": 3}`, `{"foo": 1, "bar": 2}`, etc.
 
 
+
 ### `dependencies`
 
 The value of the keyword is a map with keys equal to data object properties. Each value in the map should be either an array of unique property names ("property dependency") or a JSON schema ("schema dependency").
@@ -584,7 +595,32 @@ __Examples__
 
 
 
-### `patternGroups` (v5 proposal)
+### `propertyNames`
+
+The value of this keyword is a JSON schema.
+
+For data object to be valid each property name in this object should be valid according to this schema.
+
+
+__Example__
+
+_schema_:
+
+```json
+{
+    "propertyNames": { "format": "email" }
+}
+```
+
+_valid_: `{"foo@bar.com": "any", "bar@bar.com": "any"}`, any non-object
+
+_invalid_: `{"foo": "any value"}`
+
+
+
+### `patternGroups` (deprecated)
+
+This keyword is only provided for backward compatibility, it will be removed in the next major version. To use it, pass option `patternGroups: true`.
 
 The value of this keyword should be a map where keys should be regular expressions and the values should be objects with the following properties:
 
@@ -617,7 +653,9 @@ _invalid_: `{}`, `{ "foo": "bar" }`, `{ "1": "2" }`
 
 
 
-### `patternRequired` (v5 proposal)
+### `patternRequired` (proposed)
+
+Defined in [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package.
 
 The value of this keyword should be an array of strings, each string being a regular expression. For data object to be valid each regular expression in this array should match at least one property name in the data object.
 
@@ -656,20 +694,20 @@ _invalid_: `1`, `"bar"`, `{"foo": "baz"}`, `[1, 2, 3, 4]`, any value not in the 
 
 
 
-### `constant` (v5 proposal)
+### `const`
 
 The value of this keyword can be anything. The data is valid if it is deeply equal to the value of the keyword.
 
 __Example__
 
-_schema_: `{ "constant": "foo" }`
+_schema_: `{ "const": "foo" }`
 
 _valid_: `"foo"`
 
 _invalid_: any other value
 
 
-The same can be achieved with `enum` keyword using the array with one item. But `constant` keyword is more than just a syntax sugar for `enum`. In combination with the [$data reference](/ajv#data-reference) it allows to define equality relations between different parts of the data. This cannot be achieved with `enum` keyword even with `$data` reference because `$data` cannot be used in place of one item - it can only be used in place of the whole array in `enum` keyword.
+The same can be achieved with `enum` keyword using the array with one item. But `const` keyword is more than just a syntax sugar for `enum`. In combination with the [$data reference](/ajv#data-reference) it allows to define equality relations between different parts of the data. This cannot be achieved with `enum` keyword even with `$data` reference because `$data` cannot be used in place of one item - it can only be used in place of the whole array in `enum` keyword.
 
 
 __Example__
@@ -680,7 +718,7 @@ _schema_:
 {
     "properties": {
         "foo": { "type": "number" },
-        "bar": { "constant": { "$data": "1/foo" } }
+        "bar": { "const": { "$data": "1/foo" } }
     }
 }
 ```
@@ -690,6 +728,8 @@ _valid_: `{ "foo": 1, "bar": 1 }`, `{}`
 _invalid_: `{ "foo": 1 }`, `{ "bar": 1 }`, `{ "foo": 1, "bar": 2 }`
 
 
+
+## Compound keywords
 
 ### `not`
 
@@ -791,7 +831,9 @@ _invalid_: `1.5`, `2.5`, `4`, `4.5`, `5`, `5.5`, any non-number
 
 
 
-### `switch` (v5 proposal)
+### `switch` (proposed)
+
+Defined in [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package.
 
 The value of the keyword is the array of if/then clauses. Each clause is the object with the following properties:
 
