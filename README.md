@@ -13,11 +13,11 @@ The fastest JSON Schema validator for node.js and browser with draft 6 support.
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 
 
-__Please note__:
+## Using verion 5
 
 [JSON-Schema draft-06](https://trac.tools.ietf.org/html/draft-wright-json-schema-validation-01) is published.
 
-[Ajv version 5.0.0](https://github.com/epoberezkin/ajv/releases/tag/5.0.0) is released.
+[Ajv version 5.0.0](https://github.com/epoberezkin/ajv/releases/tag/5.0.0) that supports draft-06 is released. It is likely to require either migrating your schemas or updating your code (to continue using draft-04 and v5 schemas).
 
 You can still use [Ajv version 4](https://github.com/epoberezkin/ajv/tree/v4): `npm install ajv@^4`.
 
