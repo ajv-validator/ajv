@@ -1,3 +1,5 @@
+<img align="right" alt="Ajv logo" width="160" src="http://epoberezkin.github.io/ajv/images/ajv_logo.png">
+
 # Ajv: Another JSON Schema Validator
 
 The fastest JSON Schema validator for node.js and browser with draft 6 support.
@@ -11,9 +13,9 @@ The fastest JSON Schema validator for node.js and browser with draft 6 support.
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 
 
-__Please note__: You can start using NEW beta version [5.0.4](https://github.com/epoberezkin/ajv/releases/tag/5.0.4-beta.1) (see [migration guide from 4.x.x](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0)) with the support of JSON-Schema draft-06 (not officially published yet): `npm install ajv@^5.0.4-beta`.
+__Please note__: You can start using NEW beta version [5.0.4](https://github.com/epoberezkin/ajv/releases/tag/5.0.4-beta.3) (see [migration guide from 4.x.x](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0)) with the support of JSON-Schema draft-06 (not officially published yet): `npm install ajv@^5.0.4-beta`.
 
-Also see [docs](https://github.com/epoberezkin/ajv/tree/5.0.4-beta.1) for 5.0.4.
+Also see [docs](https://github.com/epoberezkin/ajv/tree/5.0.4-beta.3) for 5.0.4.
 
 
 ## Contents
@@ -95,7 +97,7 @@ Currently Ajv is the only validator that passes all the tests from [JSON Schema 
 npm install ajv
 ```
 
-To install a stable beta version [5.0.4](https://github.com/epoberezkin/ajv/releases/tag/5.0.4-beta.1) (see [migration guide from 4.x.x](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0)):
+To install a stable beta version [5.0.4](https://github.com/epoberezkin/ajv/releases/tag/5.0.4-beta.3) (see [migration guide from 4.x.x](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0)):
 
 ```
 npm install ajv@^5.0.4-beta
@@ -612,7 +614,7 @@ If the option were `"failing"` then property `additional1` would have been remov
 
 __Please note__: If you use `removeAdditional` option with `additionalProperties` keyword inside `anyOf`/`oneOf` keywords your validation can fail with this schema, for example:
 
-```JSON
+```json
 {
   "type": "object",
   "oneOf": [
@@ -640,7 +642,7 @@ With the option `removeAdditional: true` the validation will pass for the object
 
 While this behaviour is unexpected (issues [#129](https://github.com/epoberezkin/ajv/issues/129), [#134](https://github.com/epoberezkin/ajv/issues/134)), it is correct. To have the expected behaviour (both objects are allowed and additional properties are removed) the schema has to be refactored in this way:
 
-```JSON
+```json
 {
   "type": "object",
   "properties": {
