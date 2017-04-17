@@ -72,10 +72,10 @@ See [#22](https://github.com/epoberezkin/ajv/issues/22), [#125](https://github.c
 ##### Why Ajv does not replace references ($ref) with the actual referenced schemas as some validators do?
 
 1. The scope of Ajv is validating data against JSON-Schemas; inlining referenced schemas is not necessary for validation. When Ajv generates code for validation it either inlines the code of referenced schema or uses function calls. Doing schema manipulation is more complex and out of scope.
-2. When schemas are recursive (or mutually recursive) resolving references would result in recursive data-structures, that can be difficult to process.
+2. When schemas are recursive (or mutually recursive) resolving references would result in self-referencing recursive data-structures that can be difficult to process.
 3. There are cases when such inlining would also require adding (or modyfing) `id` attribute in the inlined schema fragment to make the resulting schema equivalent.
 
-There were many conversations about the meaning of `$ref` in [JSON-Schema GitHub organisation](https://github.com/json-schema-org). The consesus is that while it is possible to treat `$ref` as schema inclusion with two caveats (above), this interpretation is unnecessary complex. A more efficient approach is to treat `$ref` as delegation, i.e. a special keyword that validates the current data instance against the referenced schema. The analogy with programming languages is be that `$ref` is a function call rather than a macro. See [here](https://github.com/json-schema-org/json-schema-spec/issues/279), for example.
+There were many conversations about the meaning of `$ref` in [JSON-Schema GitHub organisation](https://github.com/json-schema-org). The consesus is that while it is possible to treat `$ref` as schema inclusion with two caveats (above), this interpretation is unnecessary complex. A more efficient approach is to treat `$ref` as a delegation, i.e. a special keyword that validates the current data instance against the referenced schema. The analogy with programming languages is that `$ref` is a function call rather than a macro. See [here](https://github.com/json-schema-org/json-schema-spec/issues/279), for example.
 
 
 ##### How can I generate a schema where `$ref` keywords are replaced with referenced schemas?
