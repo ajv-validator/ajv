@@ -101,12 +101,6 @@ Currently Ajv is the only validator that passes all the tests from [JSON Schema 
 npm install ajv
 ```
 
-To install a stable beta version [5.0.4](https://github.com/epoberezkin/ajv/releases/tag/5.0.4-beta.3) (see [migration guide from 4.x.x](https://github.com/epoberezkin/ajv/releases/tag/5.0.1-beta.0)):
-
-```
-npm install ajv@^5.0.4-beta
-```
-
 
 ## <a name="usage"></a>Getting started
 
