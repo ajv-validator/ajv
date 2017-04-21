@@ -13,7 +13,9 @@ This template is for bug reports. For other issues please use:
 
 
 
-**Ajv options object (see https://github.com/epoberezkin/ajv#options):**
+**Ajv options object**
+
+<!-- See https://github.com/epoberezkin/ajv#options -->
 
 ```javascript
 
@@ -21,7 +23,9 @@ This template is for bug reports. For other issues please use:
 ```
 
 
-**JSON Schema (please make it as small as possible to reproduce the issue):**
+**JSON Schema**
+
+<!-- Please make it as small as possible to reproduce the issue -->
 
 ```json
 
@@ -29,7 +33,9 @@ This template is for bug reports. For other issues please use:
 ```
 
 
-**Data (please make it as small as posssible to reproduce the issue):**
+**Sample data**
+
+<!-- Please make it as small as posssible to reproduce the issue -->
 
 ```json
 
@@ -37,19 +43,26 @@ This template is for bug reports. For other issues please use:
 ```
 
 
-**Your code (please use `options`, `schema` and `data` as variables):**
-
-```javascript
-
-
-```
+**Your code**
 
 <!--
-It would help if you post a working code sample in Tonic notebook and include the link here. You can clone this notebook: https://tonicdev.com/esp/ajv-issue.
+Please:
+- make it as small as posssible to reproduce the issue
+- use one of the usage patterns from https://github.com/epoberezkin/ajv#getting-started
+- use `options`, `schema` and `data` as variables, do not repeat their values here
+- post a working code sample in RunKit notebook cloned from https://runkit.com/esp/ajv-issue and include the link here.
+
+It would make understanding your problem easier and the issue more useful to others.
+Thank you!
 -->
 
+```javascript
 
-**Validation result, data AFTER validation, error messages:**
+
+```
+
+
+**Validation result, data AFTER validation, error messages**
 
 ```
 
