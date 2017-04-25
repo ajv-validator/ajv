@@ -18,7 +18,7 @@ The fastest JSON Schema validator for node.js and browser with draft 6 support.
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 
 
-## Using verion 5
+## Using version 5
 
 [JSON-Schema draft-06](https://trac.tools.ietf.org/html/draft-wright-json-schema-validation-01) is published.
 
