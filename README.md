@@ -1123,7 +1123,7 @@ Defaults:
 
 ## Validation errors
 
-In case of validation failure Ajv assigns the array of errors to `.errors` property of validation function (or to `.errors` property of Ajv instance in case `validate` or `validateSchema` methods were called). In case of [asynchronous validation](#asynchronous-validation) the returned promise is rejected with the exception of the class `Ajv.ValidationError` that has `.errors` poperty.
+In case of validation failure Ajv assigns the array of errors to `.errors` property of validation function (or to `.errors` property of Ajv instance in case `validate` or `validateSchema` methods were called). In case of [asynchronous validation](#asynchronous-validation) the returned promise is rejected with the exception of the class `Ajv.ValidationError` that has `.errors` property.
 
 
 ### Error objects
