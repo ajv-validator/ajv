@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "4.11.7",
+  "version": "4.11.8",
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
   "webpack": "dist/ajv.bundle.js",
@@ -12,6 +12,9 @@
     "LICENSE",
     ".tonic_example.js"
   ],
+  "publishConfig": {
+    "tag": "4.x"
+  },
   "scripts": {
     "jshint": "jshint lib/*.js lib/**/*.js --exclude lib/dotjs/**/*",
     "eslint": "if-node-version \">=4\" eslint lib/*.js lib/compile/*.js spec scripts",
