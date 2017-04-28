@@ -397,6 +397,25 @@ describe('Type coercion', function () {
   });
 
 
+  it.skip('should generate one error for type with coerceTypes option (issue #469)', function() {
+    var schema = {
+      "type": "number",
+      "minimum": 10
+    };
+
+    instances.forEach(function (ajv) {
+      var validate = ajv.compile(schema);
+      validate(9). should.equal(false);
+      validate.errors.length .should.equal(1);
+
+      validate(11). should.equal(true);
+
+      validate('foo'). should.equal(false);
+      validate.errors.length .should.equal(1);
+    });
+  });
+
+
   function testRules(rules, cb) {
     for (var toType in rules) {
       for (var fromType in rules[toType]) {
