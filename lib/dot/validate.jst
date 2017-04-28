@@ -141,7 +141,7 @@
         {{?}}
       {{? $rulesGroup.type }}
         }
-        {{? $typeSchema && $typeSchema === $rulesGroup.type }}
+        {{? $typeSchema && $typeSchema === $rulesGroup.type && !$coerceToTypes }}
           {{ var $typeChecked = true; }}
           else {
             {{
@@ -161,7 +161,7 @@
   {{~}}
 {{?}}
 
-{{? $typeSchema && !$typeChecked && !(it.opts.coerceTypes && $coerceToTypes) }}
+{{? $typeSchema && !$typeChecked && !$coerceToTypes }}
   {{# def.checkType }}
     {{# def.error:'type' }}
   }
