@@ -1175,6 +1175,7 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) - internationalised error messages
 - [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) - keywords $merge and $patch.
 - [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) - several custom keywords that can be used with Ajv (typeof, instanceof, range, propertyNames)
+- [ajv-errors](https://github.com/epoberezkin/ajv-errors) - custom error messages for Ajv
 
 
 ## Some packages using Ajv
