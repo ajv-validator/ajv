@@ -531,11 +531,15 @@ __Examples__
         },
         "additionalProperties": false,
         "anyOf": [
-            "properties": {
-                "bar": { "type": "number" }
+            {
+                "properties": {
+                    "bar": { "type": "number" }
+                }
             },
-            "properties": {
-                "baz": { "type": "number" }
+            {
+                "properties": {
+                    "baz": { "type": "number" }
+                }
             }
         ]
     }
