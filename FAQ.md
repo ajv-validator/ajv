@@ -25,6 +25,13 @@ No. There is no concurrency in JavaScript - it is single-threaded. While a valid
 No. In many cases there is a module responsible for the validation in the application, usually to load schemas and to process errors. This module is the right place to introduce any custom API. Convenience is a subjective thing, changing or extending API purely because of convenience would either break backward compatibility (even if it's done in a new major version it still complicates migration) or bloat API (making it more difficult to maintain).
 
 
+##### Why don't `"additionalProperties": false` errors display the property name?
+
+Doing this would create a precedent where validated data is used in error messages, creating a vulnerability (e.g., when ajv is used to validate API data/parameters and error messages are logged).
+
+Since the property name is already in the params object, in an application you can modify messages in any way you need. ajv-errors package will allow to modify messages as well - templating is [not there yet](https://github.com/epoberezkin/ajv-errors/issues/4), though.
+
+
 ## Additional properties inside compound keywords anyOf, oneOf, etc.
 
 See [#127](https://github.com/epoberezkin/ajv/issues/127), [#129](https://github.com/epoberezkin/ajv/issues/129), [#134](https://github.com/epoberezkin/ajv/issues/134), [#140](https://github.com/epoberezkin/ajv/issues/140), [#193](https://github.com/epoberezkin/ajv/issues/193), [#205](https://github.com/epoberezkin/ajv/issues/205), [#238](https://github.com/epoberezkin/ajv/issues/238), [#264](https://github.com/epoberezkin/ajv/issues/264).
