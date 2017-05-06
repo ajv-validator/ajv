@@ -2,6 +2,8 @@
 
 # Ajv: Another JSON Schema Validator
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/epoberezkin/ajv.svg)](https://greenkeeper.io/)
+
 The fastest JSON Schema validator for node.js and browser with draft 6 support.
 
 
