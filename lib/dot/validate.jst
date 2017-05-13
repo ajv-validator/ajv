@@ -150,9 +150,10 @@
     {{ var $coerceToTypes = it.util.coerceToTypes(it.opts.coerceTypes, $typeSchema); }}
   {{?}}
 
-  {{ var $rulesGroup = it.RULES.types[$typeSchema]; }}
-  {{? $coerceToTypes || $typeIsArray || $rulesGroup === true ||
-    ($rulesGroup && !$shouldUseGroup($rulesGroup)) }}
+  {{ var $rulesGroup; }}
+  {{? $coerceToTypes || $typeIsArray ||
+      ($rulesGroup = it.RULES.types[$typeSchema == 'integer' ? 'number' : $typeSchema],
+       $rulesGroup === true || ($rulesGroup && !$shouldUseGroup($rulesGroup))) }}
     {{
       var $schemaPath = it.schemaPath + '.type'
         , $errSchemaPath = it.errSchemaPath + '/type';
@@ -182,7 +183,8 @@
   {{~ it.RULES:$rulesGroup }}
     {{? $shouldUseGroup($rulesGroup) }}
       {{? $rulesGroup.type }}
-        if ({{= it.util.checkDataType($rulesGroup.type, $data) }}) {
+        {{ var $typeToCheck = $rulesGroup.type == 'number' && $typeSchema == 'integer' ? 'integer' : $rulesGroup.type; }}
+        if ({{= it.util.checkDataType($typeToCheck, $data) }}) {
       {{?}}
         {{? it.opts.useDefaults && !it.compositeRule }}
           {{? $rulesGroup.type == 'object' && it.schema.properties }}

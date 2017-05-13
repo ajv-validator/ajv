@@ -575,4 +575,14 @@ describe('issue #485, order of type validation', function() {
       });
     }
   });
+
+  it('should validate type only once when "type" is "integer"', function() {
+    var ajv = new Ajv;
+    var validate = ajv.compile({
+      type: 'integer',
+      minimum: 2
+    });
+    var code = validate.toString();
+    code.match(/typeof\s+/g) .should.have.length(1);
+  });
 });
