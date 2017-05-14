@@ -117,6 +117,11 @@
   var $errorKeyword;
   var $typeSchema = it.schema.type
     , $typeIsArray = Array.isArray($typeSchema);
+
+  if ($typeIsArray && $typeSchema.length == 1) {
+    $typeSchema = $typeSchema[0];
+    $typeIsArray = false;
+  }
 }}
 
 {{## def.checkType:
@@ -129,15 +134,6 @@
   if ({{= it.util[$method]($typeSchema, $data, true) }}) {
 #}}
 
-{{? $typeSchema && it.opts.coerceTypes }}
-  {{ var $coerceToTypes = it.util.coerceToTypes(it.opts.coerceTypes, $typeSchema); }}
-  {{? $coerceToTypes }}
-    {{# def.checkType }}
-      {{# def.coerceType }}
-    }
-  {{?}}
-{{?}}
-
 {{? it.schema.$ref && $refKeywords }}
   {{? it.opts.extendRefs == 'fail' }}
     {{ throw new Error('$ref: validation keywords used in schema at path "' + it.errSchemaPath + '" (see option extendRefs)'); }}
@@ -148,6 +144,30 @@
     }}
   {{?}}
 {{?}}
+
+{{? $typeSchema }}
+  {{? it.opts.coerceTypes }}
+    {{ var $coerceToTypes = it.util.coerceToTypes(it.opts.coerceTypes, $typeSchema); }}
+  {{?}}
+
+  {{ var $rulesGroup; }}
+  {{? $coerceToTypes || $typeIsArray ||
+      ($rulesGroup = it.RULES.types[$typeSchema == 'integer' ? 'number' : $typeSchema],
+       $rulesGroup === true || ($rulesGroup && !$shouldUseGroup($rulesGroup))) }}
+    {{
+      var $schemaPath = it.schemaPath + '.type'
+        , $errSchemaPath = it.errSchemaPath + '/type';
+    }}
+    {{# def.checkType }}
+      {{? $coerceToTypes }}
+        {{# def.coerceType }}
+      {{??}}
+        {{# def.error:'type' }}
+      {{?}}
+    }
+  {{?}}
+{{?}}
+
 
 {{? it.schema.$ref && !$refKeywords }}
   {{= it.RULES.all.$ref.code(it, '$ref') }}
@@ -163,7 +183,8 @@
   {{~ it.RULES:$rulesGroup }}
     {{? $shouldUseGroup($rulesGroup) }}
       {{? $rulesGroup.type }}
-        if ({{= it.util.checkDataType($rulesGroup.type, $data) }}) {
+        {{ var $typeToCheck = $rulesGroup.type == 'number' && $typeSchema == 'integer' ? 'integer' : $rulesGroup.type; }}
+        if ({{= it.util.checkDataType($typeToCheck, $data) }}) {
       {{?}}
         {{? it.opts.useDefaults && !it.compositeRule }}
           {{? $rulesGroup.type == 'object' && it.schema.properties }}
@@ -190,7 +211,6 @@
       {{? $rulesGroup.type }}
         }
         {{? $typeSchema && $typeSchema === $rulesGroup.type && !$coerceToTypes }}
-          {{ var $typeChecked = true; }}
           else {
             {{
               var $schemaPath = it.schemaPath + '.type'
@@ -207,12 +227,6 @@
       {{?}}
     {{?}}
   {{~}}
-{{?}}
-
-{{? $typeSchema && !$typeChecked && !$coerceToTypes }}
-  {{# def.checkType }}
-    {{# def.error:'type' }}
-  }
 {{?}}
 
 {{? $breakOnError }} {{= $closingBraces2 }} {{?}}

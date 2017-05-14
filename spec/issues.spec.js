@@ -548,3 +548,41 @@ describe('issue #388, code clean-up not working', function() {
     should.equal(code.match(/[^\.]errors|vErrors/g), null);
   });
 });
+
+
+describe('issue #485, order of type validation', function() {
+  it('should validate types befor keywords', function() {
+    var ajv = new Ajv({allErrors: true});
+    var validate = ajv.compile({
+      type: ['integer', 'string'],
+      required: ['foo'],
+      minimum: 2
+    });
+
+    validate(2) .should.equal(true);
+    validate('foo') .should.equal(true);
+
+    validate(1.5) .should.equal(false);
+    checkErrors(['type', 'minimum']);
+
+    validate({}) .should.equal(false);
+    checkErrors(['type', 'required']);
+
+    function checkErrors(expectedErrs) {
+      validate.errors .should.have.length(expectedErrs.length);
+      expectedErrs.forEach(function (keyword, i) {
+        validate.errors[i].keyword .should.equal(keyword);
+      });
+    }
+  });
+
+  it('should validate type only once when "type" is "integer"', function() {
+    var ajv = new Ajv;
+    var validate = ajv.compile({
+      type: 'integer',
+      minimum: 2
+    });
+    var code = validate.toString();
+    code.match(/typeof\s+/g) .should.have.length(1);
+  });
+});
