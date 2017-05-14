@@ -210,7 +210,7 @@
         {{?}}
       {{? $rulesGroup.type }}
         }
-        {{? $typeSchema && $typeSchema === $rulesGroup.type && !$coerceToTypes }}
+        {{? $typeSchema && $typeSchema === $typeToCheck && !$coerceToTypes }}
           else {
             {{
               var $schemaPath = it.schemaPath + '.type'
