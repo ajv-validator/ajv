@@ -1,0 +1,31 @@
+[
+  {
+    "description": "integer validation (#490)",
+    "schema": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "tests": [
+      {
+        "description": "valid integer",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "invalid integer",
+        "data": -1,
+        "valid": false
+      },
+      {
+        "description": "non-integer number is invalid",
+        "data": 1.1,
+        "valid": false
+      },
+      {
+        "description": "string is invalid",
+        "data": "foo",
+        "valid": false
+      }
+    ]
+  }
+]
