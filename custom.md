@@ -293,6 +293,11 @@ it.util.toHash(['a', 'b', 'c']) // { a: true, b: true, c: true }
 ```
 
 
+##### .equal(value1, value2) -&gt; Boolean
+
+Performs deep equality comparison. This function is used in keywords `enum`, `constant`, `uniqueItems` and can be used in custom keywords.
+
+
 ##### .getProperty(String key) -&gt; String
 
 Converts the string that is the key/index to access the property/item to the JavaScript syntax to access the property (either "." notation or "[...]" notation).
