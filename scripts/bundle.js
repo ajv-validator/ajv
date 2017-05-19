@@ -29,8 +29,6 @@ browserify(bOpts)
   }
 
   var outputFile = path.join(distDir, json.name);
-  var outputBundle = outputFile + '.bundle.js';
-  fs.writeFileSync(outputBundle, buf);
   var uglifyOpts = {
     warnings: true,
     compress: {},
@@ -55,7 +53,7 @@ browserify(bOpts)
   var result = uglify.minify(buf.toString(), uglifyOpts);
   fs.writeFileSync(outputFile + '.min.js', result.code);
   if (result.map) fs.writeFileSync(outputFile + '.min.js.map', result.map);
-  if (!standalone) fs.unlinkSync(outputBundle);
+  if (standalone) fs.writeFileSync(outputFile + '.bundle.js', buf);
   if (result.warnings) {
     for (var j=0, jl = result.warnings.length; j<jl; ++j)
       console.warn('UglifyJS warning:', result.warnings[j]);
