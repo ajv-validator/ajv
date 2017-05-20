@@ -565,6 +565,87 @@ describe('Validation errors', function () {
   });
 
 
+  describe('type errors', function() {
+    describe('integer', function() {
+      it('should have only one error in {allErrors: false} mode', function() {
+        test(ajv);
+      });
+
+      it('should return all errors in {allErrors: true} mode', function() {
+        test(fullAjv, 2);
+      });
+
+      function test(_ajv, numErrors) {
+        var schema = {
+          type: 'integer',
+          minimum: 5
+        };
+
+
+        var validate = _ajv.compile(schema);
+        shouldBeValid(validate, 5);
+        shouldBeInvalid(validate, 5.5);
+        shouldBeInvalid(validate, 4);
+        shouldBeInvalid(validate, '4');
+        shouldBeInvalid(validate, 4.5, numErrors);
+      }
+    });
+
+    describe('keyword for another type', function() {
+      it('should have only one error in {allErrors: false} mode', function() {
+        test(ajv);
+      });
+
+      it('should return all errors in {allErrors: true} mode', function() {
+        test(fullAjv, 2);
+      });
+
+      function test(_ajv, numErrors) {
+        var schema = {
+          type: 'array',
+          minItems: 2,
+          minimum: 5
+        };
+
+
+        var validate = _ajv.compile(schema);
+        shouldBeValid(validate, [1, 2]);
+        shouldBeInvalid(validate, [1]);
+        shouldBeInvalid(validate, 5);
+        shouldBeInvalid(validate, 4, numErrors);
+      }
+    });
+
+    describe('array of types', function() {
+      it('should have only one error in {allErrors: false} mode', function() {
+        test(ajv);
+      });
+
+      it('should return all errors in {allErrors: true} mode', function() {
+        test(fullAjv, 2);
+      });
+
+      function test(_ajv, numErrors) {
+        var schema = {
+          type: ['array', 'object'],
+          minItems: 2,
+          minProperties: 2,
+          minimum: 5
+        };
+
+
+        var validate = _ajv.compile(schema);
+        shouldBeValid(validate, [1, 2]);
+        shouldBeValid(validate, {foo: 1, bar: 2});
+        shouldBeInvalid(validate, [1]);
+        shouldBeInvalid(validate, {foo: 1});
+        shouldBeInvalid(validate, 5);
+        shouldBeInvalid(validate, 4, numErrors);
+      }
+    });
+  });
+
+
   function testSchema1(schema, schemaPathPrefix) {
     _testSchema1(ajv, schema, schemaPathPrefix);
     _testSchema1(ajvJP, schema, schemaPathPrefix);
