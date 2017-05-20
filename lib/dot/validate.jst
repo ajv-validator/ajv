@@ -208,7 +208,7 @@
         {{?}}
       {{? $rulesGroup.type }}
         }
-        {{? $typeSchema && $typeSchema === $typeToCheck && !$coerceToTypes }}
+        {{? $typeSchema && $typeSchema === $rulesGroup.type && !$coerceToTypes }}
           else {
             {{
               var $schemaPath = it.schemaPath + '.type'
