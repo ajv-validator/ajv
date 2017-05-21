@@ -81,7 +81,7 @@ Performace of different validators by [json-schema-benchmark](https://github.com
   - correct string lengths for strings with unicode pairs (can be turned off)
   - [formats](#formats) defined by JSON Schema draft 4 standard and custom formats (can be turned off)
   - [validates schemas against meta-schema](#api-validateschema)
-- supports [browsers](#using-in-browser) and nodejs 0.10-6.x
+- supports [browsers](#using-in-browser) and nodejs 0.10-7.x
 - [asynchronous loading](#asynchronous-schema-compilation) of referenced schemas during compilation
 - "All errors" validation mode with [option allErrors](#options)
 - [error messages with parameters](#validation-errors) describing error reasons to allow creating custom error messages
@@ -809,8 +809,6 @@ See [Coercion rules](coercion.html) for details.
 ##### new Ajv(Object options) -&gt; Object
 
 Create Ajv instance.
-
-All the instance methods below are bound to the instance, so they can be used without the instance.
 
 
 ##### .compile(Object schema) -&gt; Function&lt;Object data&gt;
