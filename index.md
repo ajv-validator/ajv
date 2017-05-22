@@ -1026,7 +1026,7 @@ Defaults:
 
 ##### Validation and reporting options
 
-- _$data_: support [$data references]([$data reference](#data-reference)). Draft 6 meta-schema that is added by default will be extended to allow them. If you want to use another meta-schema you need to use $dataMetaSchema method to add support for $data reference. See [API](#api).
+- _$data_: support [$data references](#data-reference). Draft 6 meta-schema that is added by default will be extended to allow them. If you want to use another meta-schema you need to use $dataMetaSchema method to add support for $data reference. See [API](#api).
 - _allErrors_: check all rules collecting all errors. Default is to return after the first error.
 - _verbose_: include the reference to the part of the schema (`schema` and `parentSchema`) and validated data in errors (false by default).
 - _jsonPointers_: set `dataPath` propery of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
