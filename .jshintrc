@@ -4,5 +4,6 @@
   "curly": false,
   "-W058": true,
   "eqeqeq": false,
-  "node": true
+  "node": true,
+  "validthis": true
 }
