@@ -24,6 +24,8 @@ var {{=$valid}};
     $it.errSchemaPath = $errSchemaPath;
   }}
 
+  {{=$nextValid}} = false;
+
   for (var {{=$idx}} = 0; {{=$idx}} < {{=$data}}.length; {{=$idx}}++) {
     {{
       $it.errorPath = it.util.getPathExpr(it.errorPath, $idx, it.opts.jsonPointers, true);
