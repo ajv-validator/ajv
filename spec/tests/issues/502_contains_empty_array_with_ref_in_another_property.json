@@ -1,0 +1,66 @@
+[
+  {
+    "description": "\"contains\" allows empty array when ref is used in sibling property (#502)",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "str": { "$ref": "#/definitions/str" },
+        "arr": {
+          "type": "array",
+          "contains": { "type": "number" }
+        }
+      },
+      "definitions": {
+        "str": { "type": "string" }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid object 1",
+        "data": {
+          "str": "a",
+          "arr": [1]
+        },
+        "valid": true
+      },
+      {
+        "description": "valid object 2",
+        "data": {
+          "arr": [1]
+        },
+        "valid": true
+      },
+      {
+        "description": "invalid object 1",
+        "data": {
+          "str": "a",
+          "arr": ["b"]
+        },
+        "valid": false
+      },
+      {
+        "description": "invalid object 2",
+        "data": {
+          "arr": ["b"]
+        },
+        "valid": false
+      },
+      {
+        "description": "invalid object 3",
+        "data": {
+          "arr": []
+        },
+        "valid": false
+      },
+      {
+        "skip": true,
+        "description": "invalid object 4 (fails in #502)",
+        "data": {
+          "str": "a",
+          "arr": []
+        },
+        "valid": false
+      }
+    ]
+  }
+]
