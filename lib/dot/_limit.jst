@@ -3,13 +3,20 @@
 {{# def.setupKeyword }}
 {{# def.$data }}
 
+{{## def.setExclusiveLimit:
+  $exclusive = true;
+  $errorKeyword = $exclusiveKeyword;
+  $errSchemaPath = it.errSchemaPath + '/' + $exclusiveKeyword;
+#}}
+
 {{
   var $isMax = $keyword == 'maximum'
     , $exclusiveKeyword = $isMax ? 'exclusiveMaximum' : 'exclusiveMinimum'
     , $schemaExcl = it.schema[$exclusiveKeyword]
     , $isDataExcl = it.opts.$data && $schemaExcl && $schemaExcl.$data
     , $op = $isMax ? '<' : '>'
-    , $notOp = $isMax ? '>' : '<';
+    , $notOp = $isMax ? '>' : '<'
+    , $errorKeyword = undefined;
 }}
 
 {{? $isDataExcl }}
@@ -60,16 +67,20 @@
   {{??}}
     {{
       if ($exclIsNumber && $schema === undefined) {
+          {{# def.setExclusiveLimit }}
           $schemaValue = $schemaExcl;
           $notOp += '=';
       } else {
         if ($exclIsNumber)
           $schemaValue = Math[$isMax ? 'min' : 'max']($schemaExcl, $schema);
 
-        if ($schemaExcl === ($exclIsNumber ? $schemaValue : true))
+        if ($schemaExcl === ($exclIsNumber ? $schemaValue : true)) {
+          {{# def.setExclusiveLimit }}
           $notOp += '=';
-        else
+        } else {
+          $exclusive = false;
           $opStr += '=';
+        }
       }
 
       var $opExpr = '\'' + $opStr + '\''; /*used in error*/
@@ -80,6 +91,6 @@
         || {{=$data}} !== {{=$data}}) {
   {{?}}
 {{?}}
-    {{ var $errorKeyword = $keyword; }}
+    {{ $errorKeyword = $errorKeyword || $keyword; }}
     {{# def.error:'_limit' }}
   } {{? $breakOnError }} else { {{?}}

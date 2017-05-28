@@ -646,6 +646,34 @@ describe('Validation errors', function () {
   });
 
 
+  describe('exclusiveMaximum/Minimum errors', function() {
+    it('should include limits in error message', function() {
+      var schema = {
+        type: 'integer',
+        exclusiveMinimum: 2,
+        exclusiveMaximum: 5
+      };
+
+      [ajv, fullAjv].forEach(function (_ajv) {
+        var validate = _ajv.compile(schema);
+        shouldBeValid(validate, 3);
+        shouldBeValid(validate, 4);
+
+        shouldBeInvalid(validate, 2);
+        testError('exclusiveMinimum', 'should be > 2', {comparison: '>', limit: 2, exclusive: true});
+
+        shouldBeInvalid(validate, 5);
+        testError('exclusiveMaximum', 'should be < 5', {comparison: '<', limit: 5, exclusive: true});
+
+        function testError(keyword, message, params) {
+          var err = validate.errors[0];
+          shouldBeError(err, keyword, '#/' + keyword, '', message, params);
+        }
+      });
+    });
+  });
+
+
   function testSchema1(schema, schemaPathPrefix) {
     _testSchema1(ajv, schema, schemaPathPrefix);
     _testSchema1(ajvJP, schema, schemaPathPrefix);
