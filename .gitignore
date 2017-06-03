@@ -34,6 +34,3 @@ lib/dotjs/*.js
 
 # Browserified tests
 .browser
-
-# bundles
-dist/
