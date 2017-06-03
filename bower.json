@@ -1,6 +1,7 @@
 {
   "name": "ajv",
   "description": "Another JSON Schema Validator",
+  "version": "4.0.3",
   "main": "dist/ajv.min.js",
   "authors": [
     "Evgeny Poberezkin"
@@ -18,8 +19,19 @@
     "node"
   ],
   "ignore": [
+    ".codeclimate.yml",
+    ".eslintrc.json",
+    ".gitignore",
+    ".gitmodules",
+    ".jshintrc",
+    ".tonic_example.js",
+    ".travis.yml",
+    "circle.yml",
+    "karma.conf.js",
+    "karma.sauce.js",
+    "lib",
     "node_modules",
-    "bower_components",
+    "scripts",
     "spec"
   ]
 }
