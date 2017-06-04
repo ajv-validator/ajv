@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$id": "https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/$param.json#",
+    "description": "Meta-schema for $param (JSON-schema extension proposal)",
+    "type": "object",
+    "required": [ "$param" ],
+    "properties": {
+        "$param": {
+            "type": "string",
+            "format": "json-pointer"
+        }
+    },
+    "additionalProperties": false
+}
