@@ -20,6 +20,12 @@ The fastest JSON Schema validator for node.js and browser with draft 6 support.
 
 [Ajv version 5.0.0](https://github.com/epoberezkin/ajv/releases/tag/5.0.0) that supports draft-06 is released. It may require either migrating your schemas or updating your code (to continue using draft-04 and v5 schemas).
 
+__Please note__: To use Ajv with draft-04 schemas you need to explicitly add meta-schema to the validator instance:
+
+```javascript
+ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
+```
+
 
 ## Contents
 
