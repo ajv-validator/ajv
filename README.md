@@ -16,7 +16,7 @@ The fastest JSON Schema validator for node.js and browser with draft 6 support.
 
 ## Using version 5
 
-[JSON-Schema draft-06](https://trac.tools.ietf.org/html/draft-wright-json-schema-validation-01) is published.
+[JSON Schema draft-06](https://trac.tools.ietf.org/html/draft-wright-json-schema-validation-01) is published.
 
 [Ajv version 5.0.0](https://github.com/epoberezkin/ajv/releases/tag/5.0.0) that supports draft-06 is released. It may require either migrating your schemas or updating your code (to continue using draft-04 and v5 schemas).
 
@@ -76,7 +76,7 @@ Performace of different validators by [json-schema-benchmark](https://github.com
 ## Features
 
 - Ajv implements full JSON Schema [draft 6](http://json-schema.org/) and draft 4 standards:
-  - all validation keywords (see [JSON-Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md))
+  - all validation keywords (see [JSON Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md))
   - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
   - support of circular references between schemas
   - correct string lengths for strings with unicode pairs (can be turned off)
@@ -200,13 +200,13 @@ Ajv supports all validation keywords from draft 4 of JSON-schema standard:
 - [for all types](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-all-types) - enum, [const](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#const)
 - [compound keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#compound-keywords) - not, oneOf, anyOf, allOf
 
-With [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package Ajv also supports validation keywords from [JSON-Schema extension proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) for JSON-schema standard:
+With [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package Ajv also supports validation keywords from [JSON Schema extension proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) for JSON-schema standard:
 
 - [switch](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#switch-proposed) - conditional validation with a sequence of if/then clauses
 - [patternRequired](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#patternrequired-proposed) - like `required` but with patterns that some property should match.
 - [formatMaximum, formatMinimum, formatExclusiveMaximum, formatExclusiveMinimum](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-proposed) - setting limits for date, time, etc.
 
-See [JSON-Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md) for more details.
+See [JSON Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md) for more details.
 
 
 ## Formats
@@ -353,7 +353,7 @@ See the package [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch
 
 The advantages of using custom keywords are:
 
-- allow creating validation scenarios that cannot be expressed using JSON-Schema
+- allow creating validation scenarios that cannot be expressed using JSON Schema
 - simplify your schemas
 - help bringing a bigger part of the validation logic to your schemas
 - make your schemas more expressive, less verbose and closer to your application domain
@@ -874,7 +874,7 @@ There is no need to explicitly add draft 6 meta schema (http://json-schema.org/d
 
 ##### <a name="api-validateschema"></a>.validateSchema(Object schema) -&gt; Boolean
 
-Validates schema. This method should be used to validate schemas rather than `validate` due to the inconsistency of `uri` format in JSON-Schema standard.
+Validates schema. This method should be used to validate schemas rather than `validate` due to the inconsistency of `uri` format in JSON Schema standard.
 
 By default this method is called automatically when the schema is added, so you rarely need to use it directly.
 
@@ -1045,8 +1045,8 @@ Defaults:
 ##### Referenced schema options
 
 - _schemaId_: this option defines which keywords are used as schema URI. Option value:
-  - `"$id"` (recommended) - only use `$id` keyword as schema URI (as specified in JSON-Schema draft-06), ignore `id` keyword (if it is present a warning will be logged).
-  - `"id"` - only use `id` keyword as schema URI (as specified in JSON-Schema draft-04), ignore `$id` keyword (if it is present a warning will be logged).
+  - `"$id"` (recommended) - only use `$id` keyword as schema URI (as specified in JSON Schema draft-06), ignore `id` keyword (if it is present a warning will be logged).
+  - `"id"` - only use `id` keyword as schema URI (as specified in JSON Schema draft-04), ignore `$id` keyword (if it is present a warning will be logged).
   - `undefined` (default) - use both `$id` and `id` keywords as schema URI. If both are present (in the same schema object) and different the exception will be thrown during schema compilation.
 - _missingRefs_: handling of missing referenced schemas. Option values:
   - `true` (default) - if the reference cannot be resolved during compilation the exception is thrown. The thrown error has properties `missingRef` (with hash fragment) and `missingSchema` (without it). Both properties are resolved relative to the current base id (usually schema id, unless it was substituted).
@@ -1200,7 +1200,7 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - [rabbitmq-schema](https://github.com/tjmehta/rabbitmq-schema) - a schema definition module for RabbitMQ graphs and messages
 - [@query/schema](https://www.npmjs.com/package/@query/schema) - stream filtering with a URI-safe query syntax parsing to JSON Schema
 - [chai-ajv-json-schema](https://github.com/peon374/chai-ajv-json-schema) - chai plugin to us JSON-schema with expect in mocha tests
-- [grunt-jsonschema-ajv](https://github.com/SignpostMarv/grunt-jsonschema-ajv) - Grunt plugin for validating files against JSON-Schema
+- [grunt-jsonschema-ajv](https://github.com/SignpostMarv/grunt-jsonschema-ajv) - Grunt plugin for validating files against JSON Schema
 - [extract-text-webpack-plugin](https://github.com/webpack-contrib/extract-text-webpack-plugin) - extract text from bundle into a file
 - [electron-builder](https://github.com/electron-userland/electron-builder) - a solution to package and build a ready for distribution Electron app 
 - [addons-linter](https://github.com/mozilla/addons-linter) - Mozilla Add-ons Linter
