@@ -3,7 +3,7 @@ page_name: keywords
 title: Ajv - Validation Keywords
 layout: main
 ---
-# JSON-Schema validation keywords
+# JSON Schema validation keywords
 
 
 In a simple way, JSON schema is an object with validation keywords.
