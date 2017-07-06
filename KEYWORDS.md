@@ -1,4 +1,4 @@
-# JSON-Schema validation keywords
+# JSON Schema validation keywords
 
 
 In a simple way, JSON schema is an object with validation keywords.
