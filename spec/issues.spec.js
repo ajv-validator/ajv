@@ -545,7 +545,7 @@ describe('issue #388, code clean-up not working', function() {
       type: 'object'
     });
     var code = validate.toString();
-    should.equal(code.match(/[^\.]errors|vErrors/g), null);
+    should.equal(code.match(/[^.]errors|vErrors/g), null);
   });
 });
 
