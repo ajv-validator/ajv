@@ -255,6 +255,8 @@ Examples.
 This schema requires that the value in property `smaller` is less or equal than the value in the property larger:
 
 ```javascript
+var ajv = new Ajv({$data: true});
+
 var schema = {
   "properties": {
     "smaller": {
@@ -269,6 +271,8 @@ var validData = {
   smaller: 5,
   larger: 7
 };
+
+ajv.validate(schema, validData); // true
 ```
 
 This schema requires that the properties have the same format as their field names:
