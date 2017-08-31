@@ -57,7 +57,9 @@ var {{=$nextValid}} = true;
 {{? $ownProperties }}
   var {{=$dataProperties}} = undefined;
 {{?}}
-
+{{? $removeAdditional }}
+  var additionalToRemove{{=$lvl}} = [];
+{{?}}
 {{? $checkAdditional }}
   {{# def.iterateProperties }}
     {{? $someProperties }}
@@ -86,7 +88,7 @@ var {{=$nextValid}} = true;
       if (isAdditional{{=$lvl}}) {
     {{?}}
     {{? $removeAdditional == 'all' }}
-      delete {{=$data}}[{{=$key}}];
+      additionalToRemove{{=$lvl}}.push({{=$key}});
     {{??}}
       {{
         var $currentErrorPath = it.errorPath;
@@ -97,7 +99,7 @@ var {{=$nextValid}} = true;
       }}
       {{? $noAdditional }}
         {{? $removeAdditional }}
-          delete {{=$data}}[{{=$key}}];
+          additionalToRemove{{=$lvl}}.push({{=$key}});
         {{??}}
           {{=$nextValid}} = false;
           {{
@@ -121,7 +123,7 @@ var {{=$nextValid}} = true;
               if (errors) validate.errors.length = errors;
               else validate.errors = null;
             }
-            delete {{=$data}}[{{=$key}}];
+            additionalToRemove{{=$lvl}}.push({{=$key}});
           }
 
           {{# def.resetCompositeRule }}
@@ -325,3 +327,9 @@ var {{=$nextValid}} = true;
 {{?}}
 
 {{# def.cleanUp }}
+
+{{? $removeAdditional }}
+  for (var {{=$idx}}=0; {{=$idx}} < additionalToRemove{{=$lvl}}.length; {{=$idx}}++) {
+    delete {{=$data}}[additionalToRemove{{=$lvl}}[{{=$idx}}]];
+  }
+{{?}}

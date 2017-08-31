@@ -81,6 +81,28 @@ describe('Ajv Options', function () {
       object.should.have.property('baz');
       object.should.not.have.property('fizz');
     });
+
+    it('should not remove properties from an invalid schema', function() {
+      var ajv = new Ajv({ removeAdditional: true });
+
+      ajv.addSchema({
+        id: '//test/fooBar',
+        properties: {
+          foo: { type: 'string' },
+          bar: { type: 'number' }
+        },
+        additionalProperties: false
+      });
+
+      var object = {
+        foo: 'foo', bar: 'bar', baz: 'baz-not-to-be-removed'
+      };
+
+      ajv.validate('//test/fooBar', object).should.equal(false);
+      object.should.have.property('foo');
+      object.should.have.property('bar');
+      object.should.have.property('baz');
+    });
   });
 
 
