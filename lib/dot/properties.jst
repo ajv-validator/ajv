@@ -20,6 +20,13 @@
   {{# def.optimizeValidate }}
 #}}
 
+{{## def.removeKey:
+  {{? $removeAdditionalOnSuccess }}
+    additionalToRemove{{=$lvl}}.push({{=$key}});
+  {{??}}
+    delete {{=$data}}[{{=$key}}];
+  {{?}}
+#}}
 
 {{
   var $key = 'key' + $lvl
@@ -37,6 +44,7 @@
     , $additionalIsSchema = typeof $aProperties == 'object'
                               && Object.keys($aProperties).length
     , $removeAdditional = it.opts.removeAdditional
+    , $removeAdditionalOnSuccess = it.opts.removeAdditional && it.opts.removeAdditionalOnSuccess
     , $checkAdditional = $noAdditional || $additionalIsSchema || $removeAdditional
     , $ownProperties = it.opts.ownProperties
     , $currentBaseId = it.baseId;
@@ -57,7 +65,7 @@ var {{=$nextValid}} = true;
 {{? $ownProperties }}
   var {{=$dataProperties}} = undefined;
 {{?}}
-{{? $removeAdditional }}
+{{? $removeAdditionalOnSuccess }}
   var additionalToRemove{{=$lvl}} = [];
 {{?}}
 {{? $checkAdditional }}
@@ -88,7 +96,7 @@ var {{=$nextValid}} = true;
       if (isAdditional{{=$lvl}}) {
     {{?}}
     {{? $removeAdditional == 'all' }}
-      additionalToRemove{{=$lvl}}.push({{=$key}});
+      {{# def.removeKey }}
     {{??}}
       {{
         var $currentErrorPath = it.errorPath;
@@ -99,7 +107,7 @@ var {{=$nextValid}} = true;
       }}
       {{? $noAdditional }}
         {{? $removeAdditional }}
-          additionalToRemove{{=$lvl}}.push({{=$key}});
+          {{# def.removeKey }}
         {{??}}
           {{=$nextValid}} = false;
           {{
@@ -123,7 +131,8 @@ var {{=$nextValid}} = true;
               if (errors) validate.errors.length = errors;
               else validate.errors = null;
             }
-            additionalToRemove{{=$lvl}}.push({{=$key}});
+            {{=$nextValid}} = true;
+            {{# def.removeKey }}
           }
 
           {{# def.resetCompositeRule }}
@@ -328,7 +337,7 @@ var {{=$nextValid}} = true;
 
 {{# def.cleanUp }}
 
-{{? $removeAdditional }}
+{{? $removeAdditionalOnSuccess }}
   for (var {{=$idx}}=0; {{=$idx}} < additionalToRemove{{=$lvl}}.length; {{=$idx}}++) {
     delete {{=$data}}[additionalToRemove{{=$lvl}}[{{=$idx}}]];
   }

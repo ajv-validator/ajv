@@ -6,102 +6,119 @@ var Ajv = require('./ajv')
 
 
 describe('Ajv Options', function () {
-  describe('removeAdditional', function() {
-    it('should remove all additional properties', function() {
-      var ajv = new Ajv({ removeAdditional: 'all' });
+  [true, false].forEach(function(removeAdditionalOnSuccess) {
+    describe('removeAdditional' + (removeAdditionalOnSuccess ? ' with removeAdditionalOnSuccess': ''), function() {
+      it('should remove all additional properties', function() {
+        var ajv = new Ajv({ removeAdditional: 'all', removeAdditionalOnSuccess: removeAdditionalOnSuccess });
 
-      ajv.addSchema({
-        id: '//test/fooBar',
-        properties: { foo: { type: 'string' }, bar: { type: 'string' } }
+        ajv.addSchema({
+          id: '//test/fooBar',
+          properties: { foo: { type: 'string' }, bar: { type: 'string' } }
+        });
+
+        var object = {
+          foo: 'foo', bar: 'bar', baz: 'baz-to-be-removed'
+        };
+
+        ajv.validate('//test/fooBar', object).should.equal(true);
+        object.should.have.property('foo');
+        object.should.have.property('bar');
+        object.should.not.have.property('baz');
+
+        var failingObject = {
+          foo: 'foo', bar: 42, baz: 'baz-to-be-removed'
+        };
+
+        ajv.validate('//test/fooBar', failingObject).should.equal(false);
+        failingObject.should.have.property('foo');
+        failingObject.should.have.property('bar');
+        if (removeAdditionalOnSuccess)
+          failingObject.should.have.property('baz');
+        else
+          failingObject.should.not.have.property('baz');
       });
 
-      var object = {
-        foo: 'foo', bar: 'bar', baz: 'baz-to-be-removed'
-      };
 
-      ajv.validate('//test/fooBar', object).should.equal(true);
-      object.should.have.property('foo');
-      object.should.have.property('bar');
-      object.should.not.have.property('baz');
-    });
+      it('should remove properties that would error when `additionalProperties = false`', function() {
+        var ajv = new Ajv({ removeAdditional: true, removeAdditionalOnSuccess: removeAdditionalOnSuccess });
 
+        ajv.addSchema({
+          id: '//test/fooBar',
+          properties: { foo: { type: 'string' }, bar: { type: 'string' } },
+          additionalProperties: false
+        });
 
-    it('should remove properties that would error when `additionalProperties = false`', function() {
-      var ajv = new Ajv({ removeAdditional: true });
+        var object = {
+          foo: 'foo', bar: 'bar', baz: 'baz-to-be-removed'
+        };
 
-      ajv.addSchema({
-        id: '//test/fooBar',
-        properties: { foo: { type: 'string' }, bar: { type: 'string' } },
-        additionalProperties: false
+        ajv.validate('//test/fooBar', object).should.equal(true);
+        object.should.have.property('foo');
+        object.should.have.property('bar');
+        object.should.not.have.property('baz');
+
+        var failingObject = {
+          foo: 'foo', bar: 42, baz: 'baz-to-be-removed'
+        };
+
+        ajv.validate('//test/fooBar', failingObject).should.equal(false);
+        failingObject.should.have.property('foo');
+        failingObject.should.have.property('bar');
+        if (removeAdditionalOnSuccess)
+          failingObject.should.have.property('baz');
+        else
+          failingObject.should.not.have.property('baz');
       });
 
-      var object = {
-        foo: 'foo', bar: 'bar', baz: 'baz-to-be-removed'
-      };
 
-      ajv.validate('//test/fooBar', object).should.equal(true);
-      object.should.have.property('foo');
-      object.should.have.property('bar');
-      object.should.not.have.property('baz');
-    });
+      it('should remove properties that would error when `additionalProperties` is a schema', function() {
+        var ajv = new Ajv({ removeAdditional: 'failing', removeAdditionalOnSuccess: removeAdditionalOnSuccess });
 
+        ajv.addSchema({
+          id: '//test/fooBar',
+          properties: { foo: { type: 'string' }, bar: { type: 'string' } },
+          additionalProperties: { type: 'string' }
+        });
 
-    it('should remove properties that would error when `additionalProperties` is a schema', function() {
-      var ajv = new Ajv({ removeAdditional: 'failing' });
+        var object = {
+          foo: 'foo', bar: 'bar', baz: 'baz-to-be-kept', fizz: 1000
+        };
 
-      ajv.addSchema({
-        id: '//test/fooBar',
-        properties: { foo: { type: 'string' }, bar: { type: 'string' } },
-        additionalProperties: { type: 'string' }
+        ajv.validate('//test/fooBar', object).should.equal(true);
+        object.should.have.property('foo');
+        object.should.have.property('bar');
+        object.should.have.property('baz');
+        object.should.not.have.property('fizz');
+
+        ajv.addSchema({
+          id: '//test/fooBar2',
+          properties: { foo: { type: 'string' }, bar: { type: 'string' } },
+          additionalProperties: { type: 'string', pattern: '^to-be-', maxLength: 10 }
+        });
+
+        object = {
+          foo: 'foo', bar: 'bar', baz: 'to-be-kept', quux: 'to-be-removed', fizz: 1000
+        };
+
+        ajv.validate('//test/fooBar2', object).should.equal(true);
+        object.should.have.property('foo');
+        object.should.have.property('bar');
+        object.should.have.property('baz');
+        object.should.not.have.property('fizz');
+
+        var failingObject = {
+          foo: 'foo', bar: 42, baz: 'to-be-kept', quux: 'to-be-removed', fizz: 1000
+        };
+
+        ajv.validate('//test/fooBar2', failingObject).should.equal(false);
+        failingObject.should.have.property('foo');
+        failingObject.should.have.property('bar');
+        failingObject.should.have.property('baz');
+        if (removeAdditionalOnSuccess)
+          failingObject.should.have.property('fizz');
+        else
+          failingObject.should.not.have.property('fizz');
       });
-
-      var object = {
-        foo: 'foo', bar: 'bar', baz: 'baz-to-be-kept', fizz: 1000
-      };
-
-      ajv.validate('//test/fooBar', object).should.equal(true);
-      object.should.have.property('foo');
-      object.should.have.property('bar');
-      object.should.have.property('baz');
-      object.should.not.have.property('fizz');
-
-      ajv.addSchema({
-        id: '//test/fooBar2',
-        properties: { foo: { type: 'string' }, bar: { type: 'string' } },
-        additionalProperties: { type: 'string', pattern: '^to-be-', maxLength: 10 }
-      });
-
-      object = {
-        foo: 'foo', bar: 'bar', baz: 'to-be-kept', quux: 'to-be-removed', fizz: 1000
-      };
-
-      ajv.validate('//test/fooBar2', object).should.equal(true);
-      object.should.have.property('foo');
-      object.should.have.property('bar');
-      object.should.have.property('baz');
-      object.should.not.have.property('fizz');
-    });
-
-    it('should not remove properties from an invalid schema', function() {
-      var ajv = new Ajv({ removeAdditional: true });
-
-      ajv.addSchema({
-        id: '//test/fooBar',
-        properties: {
-          foo: { type: 'string' },
-          bar: { type: 'number' }
-        },
-        additionalProperties: false
-      });
-
-      var object = {
-        foo: 'foo', bar: 'bar', baz: 'baz-not-to-be-removed'
-      };
-
-      ajv.validate('//test/fooBar', object).should.equal(false);
-      object.should.have.property('foo');
-      object.should.have.property('bar');
-      object.should.have.property('baz');
     });
   });
 
