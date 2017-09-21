@@ -207,7 +207,7 @@ Defined in [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package.
 
 The value of keyword `formatMaximum` (`formatMinimum`) should be a string. This value is the maximum (minimum) allowed value for the data to be valid as determined by `format` keyword.
 
-Ajv defines comparison rules for formats `"date"`, `"time"` and `"date-time".
+Ajv defines comparison rules for formats `"date"`, `"time"` and `"date-time"`.
 
 The value of keyword `formatExclusiveMaximum` (`formatExclusiveMinimum`) should be a boolean value. These keyword cannot be used without `formatMaximum` (`formatMinimum`). If this keyword value is equal to `true`, the data to be valid should not be equal to the value in `formatMaximum` (`formatMinimum`) keyword.
 
