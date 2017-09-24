@@ -507,7 +507,7 @@ var schema = {
 
 var validate = ajv.compile(schema);
 
-validate({ userId: 1, postId: 19 }))
+validate({ userId: 1, postId: 19 })
 .then(function (data) {
   console.log('Data is valid', data); // { userId: 1, postId: 19 }
 })
