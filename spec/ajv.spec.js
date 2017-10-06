@@ -2,7 +2,7 @@
 
 var Ajv = require('./ajv')
   , should = require('./chai').should()
-  , stableStringify = require('json-stable-stringify');
+  , stableStringify = require('fast-stable-stringify');
 
 
 describe('Ajv', function () {
