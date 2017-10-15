@@ -1,6 +1,9 @@
 declare var ajv: { 
   (options?: ajv.Options): ajv.Ajv;
   new (options?: ajv.Options): ajv.Ajv;
+  ValidationError: ValidationError;
+  MissingRefError: MissingRefError;
+  $dataMetaSchema: Object;
 }
 
 declare namespace ajv {
@@ -296,6 +299,24 @@ declare namespace ajv {
   interface EnumParams {
     allowedValues: Array<any>;
   }
+}
+
+declare class ValidationError extends Error {
+  constructor(errors: Array<ajv.ErrorObject>);
+
+  message: string;
+  errors: Array<ajv.ErrorObject>;
+  ajv: true;
+  validation: true;
+}
+
+declare class MissingRefError extends Error {
+  constructor(baseId: string, ref: string, message?: string);
+  static message: (baseId: string, ref: string) => string;
+
+  message: string;
+  missingRef: string;
+  missingSchema: string;
 }
 
 export = ajv;
