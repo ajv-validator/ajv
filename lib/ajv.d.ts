@@ -149,7 +149,7 @@ declare namespace ajv {
     cache?: Object;
   }
 
-  type FormatValidator = string | RegExp | ((data: string) => boolean);
+  type FormatValidator = string | RegExp | ((data: string) => boolean | Thenable<any>);
 
   interface FormatDefinition {
     validate: FormatValidator;
