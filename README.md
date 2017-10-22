@@ -83,7 +83,7 @@ Performance of different validators by [json-schema-benchmark](https://github.co
   - correct string lengths for strings with unicode pairs (can be turned off)
   - [formats](#formats) defined by JSON Schema draft 4 standard and custom formats (can be turned off)
   - [validates schemas against meta-schema](#api-validateschema)
-- supports [browsers](#using-in-browser) and Node.js 4.x, 6.x, 7.x, and 8.x.
+- supports [browsers](#using-in-browser) and Node.js 0.10-8.x.
 - [asynchronous loading](#asynchronous-schema-compilation) of referenced schemas during compilation
 - "All errors" validation mode with [option allErrors](#options)
 - [error messages with parameters](#validation-errors) describing error reasons to allow creating custom error messages
@@ -148,7 +148,7 @@ Ajv compiles schemas to functions and caches them in all cases (using schema ser
 
 The best performance is achieved when using compiled functions returned by `compile` or `getSchema` methods (there is no additional function call).
 
-__Please note__: every time the validation function or `ajv.validate` are called the `errors` property is overwritten. You need to copy the `errors` array reference to another variable if you want to use it later (e.g., in the callback). See [Validation errors](#validation-errors)
+__Please note__: every time a validation function or `ajv.validate` are called `errors` property is overwritten. You need to copy `errors` array reference to another variable if you want to use it later (e.g., in the callback). See [Validation errors](#validation-errors)
 
 
 ## Using in browser
@@ -162,7 +162,7 @@ Then you need to load Ajv in the browser:
 <script src="ajv.min.js"></script>
 ```
 
-This bundle can be used with different module systems or create a global `Ajv` if no module system is found.
+This bundle can be used with different module systems; it creates global `Ajv` if no module system is found.
 
 The browser bundle is available on [cdnjs](https://cdnjs.com/libraries/ajv).
 
@@ -233,14 +233,14 @@ There are two modes of format validation: `fast` and `full`. This mode affects f
 
 You can add additional formats and replace any of the formats above using [addFormat](#api-addformat) method.
 
-The option `unknownFormats` allows for changing the default behaviour when an unknown format is encountered. Ajv can either fail to compile the schema (default) or ignore it (default in versions before 5.0.0). You also can whitelist specific format(s) to be ignored. See [Options](#options) for details.
+The option `unknownFormats` allows changing the default behaviour when an unknown format is encountered. In this case Ajv can either fail schema compilation (default) or ignore it (default in versions before 5.0.0). You also can whitelist specific format(s) to be ignored. See [Options](#options) for details.
 
 You can find patterns used for format validation and the sources that were used in [formats.js](https://github.com/epoberezkin/ajv/blob/master/lib/compile/formats.js).
 
 
 ## <a name="ref"></a>Combining schemas with $ref
 
-You can structure your validation logic across multiple schema files and have schemas reference each other using the `$ref` keyword.
+You can structure your validation logic across multiple schema files and have schemas reference each other using `$ref` keyword.
 
 Example:
 
@@ -263,14 +263,14 @@ var defsSchema = {
 };
 ```
 
-Now to compile your schema you can either pass all schemas to an Ajv instance:
+Now to compile your schema you can either pass all schemas to Ajv instance:
 
 ```javascript
 var ajv = new Ajv({schemas: [schema, defsSchema]});
 var validate = ajv.getSchema('http://example.com/schemas/schema.json');
 ```
 
-or use the `addSchema` method:
+or use `addSchema` method:
 
 ```javascript
 var ajv = new Ajv;
@@ -278,7 +278,7 @@ ajv.addSchema(defsSchema);
 var validate = ajv.compile(schema);
 ```
 
-See [Options](#options) and the [addSchema](#api) method.
+See [Options](#options) and [addSchema](#api) method.
 
 __Please note__:
 - `$ref` is resolved as the uri-reference using schema $id as the base URI (see the example).
@@ -287,7 +287,7 @@ __Please note__:
 - The actual location of the schema file in the file system is not used.
 - You can pass the identifier of the schema as the second parameter of `addSchema` method or as a property name in `schemas` option. This identifier can be used instead of (or in addition to) schema $id.
 - You cannot have the same $id (or the schema identifier) used for more than one schema - the exception will be thrown.
-- You can implement dynamic resolution of the referenced schemas using the `compileAsync` method. In this way, you can store schemas in any system (files, web, database, etc.) and reference them without explicitly adding them to an Ajv instance. See [Asynchronous schema compilation](#asynchronous-schema-compilation).
+- You can implement dynamic resolution of the referenced schemas using `compileAsync` method. In this way you can store schemas in any system (files, web, database, etc.) and reference them without explicitly adding to Ajv instance. See [Asynchronous schema compilation](#asynchronous-schema-compilation).
 
 
 ## $data reference
@@ -483,7 +483,7 @@ __Please note__: [Option](#options) `missingRefs` should NOT be set to `"ignore"
 
 Example in Node.js REPL: https://tonicdev.com/esp/ajv-asynchronous-validation
 
-You can define custom formats and keywords that perform validation asynchronously by accessing a database or some other service. You should add `async: true` in the keyword or format definition (see [addFormat](#api-addformat), [addKeyword](#api-addkeyword) and [Defining custom keywords](#defining-custom-keywords)).
+You can define custom formats and keywords that perform validation asynchronously by accessing database or some other service. You should add `async: true` in the keyword or format definition (see [addFormat](#api-addformat), [addKeyword](#api-addkeyword) and [Defining custom keywords](#defining-custom-keywords)).
 
 If your schema uses asynchronous formats/keywords or refers to some schema that contains them it should have `"$async": true` keyword so that Ajv can compile it correctly. If asynchronous format/keyword or reference to asynchronous schema is used in the schema without `$async` keyword Ajv will throw an exception during schema compilation.
 
@@ -491,7 +491,7 @@ __Please note__: all asynchronous subschemas that are referenced from the curren
 
 Validation function for an asynchronous custom format/keyword should return a promise that resolves with `true` or `false` (or rejects with `new Ajv.ValidationError(errors)` if you want to return custom errors from the keyword function). Ajv compiles asynchronous schemas to either [es7 async functions](http://tc39.github.io/ecmascript-asyncawait/) that can optionally be transpiled with [nodent](https://github.com/MatAtBread/nodent) or with [regenerator](https://github.com/facebook/regenerator) or to [generator functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*) that can be optionally transpiled with regenerator as well. You can also supply any other transpiler as a function. See [Options](#options).
 
-The compiled validation function has the `$async: true` property (if the schema is asynchronous), so you can differentiate these functions if you are using both synchronous and asynchronous schemas.
+The compiled validation function has `$async: true` property (if the schema is asynchronous), so you can differentiate these functions if you are using both synchronous and asynchronous schemas.
 
 If you are using generators, the compiled validation function can be either wrapped with [co](https://github.com/tj/co) (default) or returned as generator function, that can be used directly, e.g. in [koa](http://koajs.com/) 1.0. `co` is a small library, it is included in Ajv (both as npm dependency and in the browser bundle).
 
@@ -499,9 +499,9 @@ Async functions are currently supported in Chrome 55, Firefox 52, Node.js 7 (wit
 
 Generator functions are currently supported in Chrome, Firefox and Node.js.
 
-If you are using Ajv in other browsers or in older versions of Node.js you should use one of the available transpiling options. All provided async modes use the global Promise class. If your platform does not have Promise you should use a polyfill that defines it.
+If you are using Ajv in other browsers or in older versions of Node.js you should use one of available transpiling options. All provided async modes use global Promise class. If your platform does not have Promise you should use a polyfill that defines it.
 
-Validation result will be a promise that resolves with validated data or rejects with an exception of type `Ajv.ValidationError` that contains the array of validation errors in an `.errors` property.
+Validation result will be a promise that resolves with validated data or rejects with an exception `Ajv.ValidationError` that contains the array of validation errors in `errors` property.
 
 
 Example:
@@ -879,13 +879,13 @@ Unless the option `validateSchema` is false, the schema will be validated agains
 
 ##### <a name="api-compileAsync"></a>.compileAsync(Object schema [, Boolean meta] [, Function callback]) -&gt; Promise
 
-Asynchronous version of the `compile` method that loads missing remote schemas using an asynchronous function in `options.loadSchema`. This function returns a Promise that resolves to a validation function. An optional callback passed to `compileAsync` will be called with 2 parameters: error (or null) and a validating function. The returned promise will reject (and the callback, if passed, will be called with an error) when:
+Asynchronous version of `compile` method that loads missing remote schemas using asynchronous function in `options.loadSchema`. This function returns a Promise that resolves to a validation function. An optional callback passed to `compileAsync` will be called with 2 parameters: error (or null) and validating function. The returned promise will reject (and the callback will be called with an error) when:
 
 - missing schema can't be loaded (`loadSchema` returns a Promise that rejects).
 - a schema containing a missing reference is loaded, but the reference cannot be resolved.
-- the loaded schema (or some referenced schema) is invalid.
+- schema (or some loaded/referenced schema) is invalid.
 
-The function compiles the schema and loads the first missing schema (or meta-schema) until all missing schemas are loaded.
+The function compiles schema and loads the first missing schema (or meta-schema) until all missing schemas are loaded.
 
 You can asynchronously compile meta-schema by passing `true` as the second parameter.
 
@@ -930,20 +930,20 @@ There is no need to explicitly add draft 6 meta schema (http://json-schema.org/d
 
 ##### <a name="api-validateschema"></a>.validateSchema(Object schema) -&gt; Boolean
 
-Validates schema. This method should be used to validate schemas rather than `validate` due to the inconsistency of the `uri` format in the JSON Schema standard.
+Validates schema. This method should be used to validate schemas rather than `validate` due to the inconsistency of `uri` format in JSON Schema standard.
 
 By default this method is called automatically when the schema is added, so you rarely need to use it directly.
 
-If the schema doesn't have a `$schema` property, it is validated against draft 6 meta-schema (option `meta` should not be false).
+If schema doesn't have `$schema` property, it is validated against draft 6 meta-schema (option `meta` should not be false).
 
-If the schema has a `$schema` property, then the schema with this id (that should be previously added) is used to validate the passed-in schema.
+If schema has `$schema` property, then the schema with this id (that should be previously added) is used to validate passed schema.
 
 Errors will be available at `ajv.errors`.
 
 
 ##### .getSchema(String key) -&gt; Function&lt;Object data&gt;
 
-Retrieve compiled schema previously added with `addSchema` by the key passed to `addSchema` or by its full reference (id). The returned validating function has a `schema` property with the reference to the original schema.
+Retrieve compiled schema previously added with `addSchema` by the key passed to `addSchema` or by its full reference (id). The returned validating function has `schema` property with the reference to the original schema.
 
 
 ##### .removeSchema([Object schema|String key|String ref|RegExp pattern])
@@ -1024,7 +1024,7 @@ Removes custom or pre-defined keyword so you can redefine them.
 
 While this method can be used to extend pre-defined keywords, it can also be used to completely change their meaning - it may lead to unexpected results.
 
-__Please note__: schemas compiled before the keyword is removed will continue to work without changes. To recompile schemas use the `removeSchema` method and compile them again.
+__Please note__: schemas compiled before the keyword is removed will continue to work without changes. To recompile schemas use `removeSchema` method and compile them again.
 
 
 ##### .errorsText([Array&lt;Object&gt; errors [, Object options]]) -&gt; String
@@ -1135,13 +1135,13 @@ Defaults:
 ##### Asynchronous validation options
 
 - _async_: determines how Ajv compiles asynchronous schemas (see [Asynchronous validation](#asynchronous-validation)) to functions. Option values:
-  - `"*"` / `"co*"` (default) - compile to generator function ("co*" - wrapped with `co.wrap`). If generators are not supported and you don't provide the `processCode` option (or the `transpile` option if you use the [ajv-async](https://github.com/epoberezkin/ajv-async) package), the exception will be thrown when an async schema is compiled.
-  - `"es7"` - compile to an es7 async function. Unless your platform supports them you need to provide the `processCode` or `transpile` option. According to this [compatibility table](http://kangax.github.io/compat-table/es7/)) async functions are supported by:
+  - `"*"` / `"co*"` (default) - compile to generator function ("co*" - wrapped with `co.wrap`). If generators are not supported and you don't provide `processCode` option (or `transpile` option if you use [ajv-async](https://github.com/epoberezkin/ajv-async) package), the exception will be thrown when async schema is compiled.
+  - `"es7"` - compile to es7 async function. Unless your platform supports them you need to provide `processCode` or `transpile` option. According to [compatibility table](http://kangax.github.io/compat-table/es7/)) async functions are supported by:
     - Firefox 52,
     - Chrome 55,
     - Node.js 7 (with `--harmony-async-await`),
     - MS Edge 13 (with flag).
-  - `undefined`/`true` - auto-detect async mode. It requires [ajv-async](https://github.com/epoberezkin/ajv-async) package. If the `transpile` option is not passed, ajv-async will choose the first of supported/installed async/transpile modes in this order:
+  - `undefined`/`true` - auto-detect async mode. It requires [ajv-async](https://github.com/epoberezkin/ajv-async) package. If `transpile` option is not passed, ajv-async will choose the first of supported/installed async/transpile modes in this order:
     - "es7" (native async functions),
     - "co*" (native generators with co.wrap),
     - "es7"/"nodent",
@@ -1182,7 +1182,7 @@ Defaults:
 
 ## Validation errors
 
-In the case of a validation failure, Ajv assigns the array of errors to the `.errors` property of the validation function (or to the `.errors` property of an Ajv instance if the `validate` or `validateSchema` methods were called). In the case of [asynchronous validation](#asynchronous-validation), the returned promise is rejected with an exception of class `Ajv.ValidationError` that has an `.errors` property.
+In case of validation failure, Ajv assigns the array of errors to `errors` property of validation function (or to `errors` property of Ajv instance when `validate` or `validateSchema` methods were called). In case of [asynchronous validation](#asynchronous-validation), the returned promise is rejected with exception `Ajv.ValidationError` that has `errors` property.
 
 
 ### Error objects
