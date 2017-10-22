@@ -1,6 +1,9 @@
 declare var ajv: { 
   (options?: ajv.Options): ajv.Ajv;
   new (options?: ajv.Options): ajv.Ajv;
+  ValidationError: ValidationError;
+  MissingRefError: MissingRefError;
+  $dataMetaSchema: Object;
 }
 
 declare namespace ajv {
@@ -110,8 +113,13 @@ declare namespace ajv {
       parentDataProperty?: string | number,
       rootData?: Object | Array<any>
     ): boolean | Thenable<any>;
-    errors?: Array<ErrorObject>;
-    schema?: Object | boolean;
+    schema: Object | boolean;
+    errors?: null | Array<ErrorObject>;
+    refs: Object;
+    refVal: Array<any>;
+    root: ValidateFunction | Object;
+    $async?: true;
+    source?: Object;
   }
 
   interface Options {
@@ -149,7 +157,7 @@ declare namespace ajv {
     cache?: Object;
   }
 
-  type FormatValidator = string | RegExp | ((data: string) => boolean);
+  type FormatValidator = string | RegExp | ((data: string) => boolean | Thenable<any>);
 
   interface FormatDefinition {
     validate: FormatValidator;
@@ -291,6 +299,24 @@ declare namespace ajv {
   interface EnumParams {
     allowedValues: Array<any>;
   }
+}
+
+declare class ValidationError extends Error {
+  constructor(errors: Array<ajv.ErrorObject>);
+
+  message: string;
+  errors: Array<ajv.ErrorObject>;
+  ajv: true;
+  validation: true;
+}
+
+declare class MissingRefError extends Error {
+  constructor(baseId: string, ref: string, message?: string);
+  static message: (baseId: string, ref: string) => string;
+
+  message: string;
+  missingRef: string;
+  missingSchema: string;
 }
 
 export = ajv;
