@@ -113,11 +113,11 @@ declare namespace ajv {
       parentDataProperty?: string | number,
       rootData?: Object | Array<any>
     ): boolean | Thenable<any>;
-    schema: Object | boolean;
+    schema?: Object | boolean;
     errors?: null | Array<ErrorObject>;
-    refs: Object;
-    refVal: Array<any>;
-    root: ValidateFunction | Object;
+    refs?: Object;
+    refVal?: Array<any>;
+    root?: ValidateFunction | Object;
     $async?: true;
     source?: Object;
   }
