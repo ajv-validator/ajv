@@ -10,7 +10,7 @@ declare namespace ajv {
   interface Ajv {
     /**
     * Validate data using schema
-    * Schema will be compiled and cached (using serialized JSON as key, [json-stable-stringify](https://github.com/substack/json-stable-stringify) is used to serialize by default).
+    * Schema will be compiled and cached (using serialized JSON as key, [fast-json-stable-stringify](https://github.com/epoberezkin/fast-json-stable-stringify) is used to serialize by default).
     * @param  {String|Object|Boolean} schemaKeyRef key, ref or schema object
     * @param  {Any} data to be validated
     * @return {Boolean} validation result. Errors from the last validation will be available in `ajv.errors` (and also in compiled schema: `schema.errors`).
