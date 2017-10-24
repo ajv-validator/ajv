@@ -1237,11 +1237,14 @@ Properties of `params` object in errors depend on the keyword that failed valida
 
 ## Related packages
 
-- [ajv-cli](https://github.com/epoberezkin/ajv-cli) - command line interface for Ajv
+- [ajv-async](https://github.com/epoberezkin/ajv-async) - configure async validation mode
+- [ajv-cli](https://github.com/jessedc/ajv-cli) - command line interface
+- [ajv-errors](https://github.com/epoberezkin/ajv-errors) - custom error messages
 - [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) - internationalised error messages
-- [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) - keywords $merge and $patch.
-- [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) - several custom keywords that can be used with Ajv (typeof, instanceof, range, propertyNames)
-- [ajv-errors](https://github.com/epoberezkin/ajv-errors) - custom error messages for Ajv
+- [ajv-istanbul](https://github.com/epoberezkin/ajv-istanbul) - instrument generated validation code to measure test coverage of your schemas
+- [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) - custom validation keywords (if/then/else, select, typeof, etc.)
+- [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) - keywords $merge and $patch
+- [ajv-pack](https://github.com/epoberezkin/ajv-pack) - produces a compact module exporting validation functions
 
 
 ## Some packages using Ajv
