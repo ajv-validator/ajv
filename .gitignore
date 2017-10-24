@@ -37,3 +37,8 @@ lib/dotjs/*.js
 
 # bundles
 dist/
+
+# IDEs
+.idea/
+.vscode/
+
