@@ -24,7 +24,7 @@
     "bundle-nodent": "node ./scripts/bundle.js nodent",
     "bundle-all": "del-cli dist && npm run bundle && npm run bundle-regenerator && npm run bundle-nodent",
     "bundle-beautify": "node ./scripts/bundle.js js-beautify",
-    "build": "del-cli lib/dotjs/*.js && node scripts/compile-dots.js",
+    "build": "del-cli lib/dotjs/*.js '!lib/dotjs/index.js' && node scripts/compile-dots.js",
     "test-karma": "karma start --single-run --browsers PhantomJS",
     "test-browser": "del-cli .browser && npm run bundle-all && scripts/prepare-tests && npm run test-karma",
     "test": "npm run jshint && npm run eslint && npm run test-ts && npm run build && npm run test-cov && if-node-version 4 npm run test-browser",
