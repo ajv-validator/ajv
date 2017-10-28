@@ -52,6 +52,7 @@ ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
   - [Methods](#api)
   - [Options](#options)
   - [Validation errors](#validation-errors)
+- [Plugins](#plugins)
 - [Related packages](#related-packages)
 - [Packages using Ajv](#some-packages-using-ajv)
 - [Tests, Contributing, History, License](#tests)
@@ -1230,15 +1231,26 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - custom keywords (in case keyword definition doesn't create errors) - property `keyword` (the keyword name).
 
 
+## Plugins
+
+Ajv can be extended with plugins that add custom keywords, formats or functions to process generated code. When such plugin is published as npm package it is recommended that it follows these conventions:
+
+- it exports a function
+- this function accepts ajv instance as the first parameter and returns the same instance to allow chaining
+- this function can accept an optional configuration as the second parameter
+
+If you have published a useful plugin please submit a PR to add it to the next section.
+
+
 ## Related packages
 
-- [ajv-async](https://github.com/epoberezkin/ajv-async) - configure async validation mode
+- [ajv-async](https://github.com/epoberezkin/ajv-async) - plugin to configure async validation mode
 - [ajv-cli](https://github.com/jessedc/ajv-cli) - command line interface
-- [ajv-errors](https://github.com/epoberezkin/ajv-errors) - custom error messages
+- [ajv-errors](https://github.com/epoberezkin/ajv-errors) - plugin for custom error messages
 - [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) - internationalised error messages
-- [ajv-istanbul](https://github.com/epoberezkin/ajv-istanbul) - instrument generated validation code to measure test coverage of your schemas
-- [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) - custom validation keywords (if/then/else, select, typeof, etc.)
-- [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) - keywords $merge and $patch
+- [ajv-istanbul](https://github.com/epoberezkin/ajv-istanbul) - plugin to instrument generated validation code to measure test coverage of your schemas
+- [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) - plugin with custom validation keywords (if/then/else, select, typeof, etc.)
+- [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) - plugin with keywords $merge and $patch
 - [ajv-pack](https://github.com/epoberezkin/ajv-pack) - produces a compact module exporting validation functions
 
 
