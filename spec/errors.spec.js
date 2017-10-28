@@ -674,6 +674,78 @@ describe('Validation errors', function () {
   });
 
 
+  describe('if/then/else errors', function() {
+    it('if/then/else should include failing keyword in message and params', function() {
+      var schema = {
+        'if': { maximum: 10 },
+        'then': { multipleOf: 2 },
+        'else': { multipleOf: 5 }
+      };
+
+      [ajv, fullAjv].forEach(function (_ajv) {
+        var validate = _ajv.compile(schema);
+        shouldBeValid(validate, 8);
+        shouldBeValid(validate, 15);
+
+        shouldBeInvalid(validate, 7, 2);
+        testError('should match "then" schema', {failingKeyword: 'then'});
+
+        shouldBeInvalid(validate, 17, 2);
+        testError('should match "else" schema', {failingKeyword: 'else'});
+
+        function testError(message, params) {
+          var err = validate.errors[1];
+          shouldBeError(err, 'if', '#/if', '', message, params);
+        }
+      });
+    });
+
+    it('if/then should include failing keyword in message and params', function() {
+      var schema = {
+        'if': { maximum: 10 },
+        'then': { multipleOf: 2 }
+      };
+
+      [ajv, fullAjv].forEach(function (_ajv) {
+        var validate = _ajv.compile(schema);
+        shouldBeValid(validate, 8);
+        shouldBeValid(validate, 11);
+        shouldBeValid(validate, 12);
+
+        shouldBeInvalid(validate, 7, 2);
+        testError('should match "then" schema', {failingKeyword: 'then'});
+
+        function testError(message, params) {
+          var err = validate.errors[1];
+          shouldBeError(err, 'if', '#/if', '', message, params);
+        }
+      });
+    });
+
+    it('if/else should include failing keyword in message and params', function() {
+      var schema = {
+        'if': { maximum: 10 },
+        'else': { multipleOf: 5 }
+      };
+
+      [ajv, fullAjv].forEach(function (_ajv) {
+        var validate = _ajv.compile(schema);
+        shouldBeValid(validate, 7);
+        shouldBeValid(validate, 8);
+        shouldBeValid(validate, 15);
+
+        shouldBeInvalid(validate, 17, 2);
+        testError('should match "else" schema', {failingKeyword: 'else'});
+
+        function testError(message, params) {
+          var err = validate.errors[1];
+          shouldBeError(err, 'if', '#/if', '', message, params);
+        }
+      });
+    });
+  });
+
+
   function testSchema1(schema, schemaPathPrefix) {
     _testSchema1(ajv, schema, schemaPathPrefix);
     _testSchema1(ajvJP, schema, schemaPathPrefix);
