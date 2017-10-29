@@ -182,7 +182,7 @@
   _limitProperties:"{ limit: {{=$schemaValue}} }",
   multipleOf:      "{ multipleOf: {{=$schemaValue}} }",
   not:             "{}",
-  oneOf:           "{}",
+  oneOf:           "{ passingSchemas: {{=$passingSchemas}} }",
   pattern:         "{ pattern: {{#def.schemaValueQS}} }",
   patternGroups:   "{ reason: '{{=$reason}}', limit: {{=$limit}}, pattern: '{{=it.util.escapeQuotes($pgProperty)}}' }",
   propertyNames:   "{ propertyName: '{{=$invalidName}}' }",

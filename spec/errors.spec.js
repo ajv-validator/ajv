@@ -539,6 +539,39 @@ describe('Validation errors', function () {
         validate(1.5) .should.equal(true);
       }
     });
+
+    it('should return passing schemas in error params', function() {
+      var schema = {
+        oneOf: [
+          { type: 'number' },
+          { type: 'integer' },
+          { const: 1.5 }
+        ]
+      };
+
+      test(ajv);
+      test(fullAjv);
+
+      function test(_ajv) {
+        var validate = _ajv.compile(schema);
+        validate(1) .should.equal(false);
+        var err = validate.errors.pop();
+        err.keyword .should.equal('oneOf');
+        err.params .should.eql({passingSchemas: [0, 1]});
+
+        validate(1.5) .should.equal(false);
+        err = validate.errors.pop();
+        err.keyword .should.equal('oneOf');
+        err.params .should.eql({passingSchemas: [0, 2]});
+
+        validate(2.5) .should.equal(true);
+
+        validate('foo') .should.equal(false);
+        err = validate.errors.pop();
+        err.keyword .should.equal('oneOf');
+        err.params .should.eql({passingSchemas: null});
+      }
+    });
   });
 
 
