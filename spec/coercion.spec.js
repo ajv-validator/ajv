@@ -416,6 +416,39 @@ describe('Type coercion', function () {
   });
 
 
+  it('should check "uniqueItems" after coercion', function() {
+    var schema = {
+      items: {type: 'number'},
+      uniqueItems: true
+    };
+
+    instances.forEach(function (_ajv) {
+      var validate = _ajv.compile(schema);
+      validate([1, '2', 3]). should.equal(true);
+
+      validate([1, '2', 2]). should.equal(false);
+      validate.errors.length .should.equal(1);
+      validate.errors[0].keyword .should.equal('uniqueItems');
+    });
+  });
+
+
+  it('should check "contains" after coercion', function() {
+    var schema = {
+      items: {type: 'number'},
+      contains: {const: 2}
+    };
+
+    instances.forEach(function (_ajv) {
+      var validate = _ajv.compile(schema);
+      validate([1, '2', 3]). should.equal(true);
+
+      validate([1, '3', 4]). should.equal(false);
+      validate.errors.pop().keyword .should.equal('contains');
+    });
+  });
+
+
   function testRules(rules, cb) {
     for (var toType in rules) {
       for (var fromType in rules[toType]) {
