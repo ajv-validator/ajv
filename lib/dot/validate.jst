@@ -260,10 +260,10 @@
 
   function $shouldUseRule($rule) {
     return it.schema[$rule.keyword] !== undefined ||
-           ($rule.implements && $ruleImlementsSomeKeyword($rule));
+           ($rule.implements && $ruleImplementsSomeKeyword($rule));
   }
 
-  function $ruleImlementsSomeKeyword($rule) {
+  function $ruleImplementsSomeKeyword($rule) {
     var impl = $rule.implements;
     for (var i=0; i < impl.length; i++)
       if (it.schema[impl[i]] !== undefined)
