@@ -746,6 +746,36 @@ describe('Validation errors', function () {
   });
 
 
+  describe('uniqueItems errors', function() {
+    it('should not return uniqueItems error when non-unique items are of a different type than required', function() {
+      var schema = {
+        items: {type: 'number'},
+        uniqueItems: true
+      };
+
+      [ajvJP, fullAjv].forEach(function (_ajv) {
+        var validate = _ajv.compile(schema);
+        shouldBeValid(validate, [1, 2, 3]);
+
+        shouldBeInvalid(validate, [1, 2, 2]);
+        shouldBeError(validate.errors[0], 'uniqueItems', '#/uniqueItems', '',
+          'should NOT have duplicate items (items ## 2 and 1 are identical)',
+          {i: 1, j: 2});
+
+        var expectedErrors = _ajv._opts.allErrors ? 2 : 1;
+        shouldBeInvalid(validate, [1, "2", "2", 2], expectedErrors);
+        testTypeError(0, '/1');
+        if (expectedErrors == 2) testTypeError(1, '/2');
+
+        function testTypeError(i, dataPath) {
+          var err = validate.errors[i];
+          shouldBeError(err, 'type', '#/items/type', dataPath, 'should be number');
+        }
+      });
+    });
+  });
+
+
   function testSchema1(schema, schemaPathPrefix) {
     _testSchema1(ajv, schema, schemaPathPrefix);
     _testSchema1(ajvJP, schema, schemaPathPrefix);
