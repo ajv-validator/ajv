@@ -17,7 +17,6 @@ module.exports = function(config) {
     files: [
       'dist/ajv.min.js',
       'node_modules/chai/chai.js',
-      'dist/regenerator.min.js',
       'dist/nodent.min.js',
       'node_modules/bluebird/js/browser/bluebird.core.min.js',
       '.browser/*.spec.js'

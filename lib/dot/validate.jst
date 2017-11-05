@@ -21,29 +21,11 @@
 }}
 
 {{? it.isTop }}
-  {{? $async }}
-    {{
-      it.async = true;
-      var $es7 = it.opts.async == 'es7';
-      it.yieldAwait = $es7 ? 'await' : 'yield';
-    }}
-  {{?}}
-
-  var validate =
-    {{? $async }}
-      {{? $es7 }}
-        (async function
-      {{??}}
-        {{? it.opts.async != '*'}}co.wrap{{?}}(function*
-      {{?}}
-    {{??}}
-      (function
+  var validate = {{?$async}}{{it.async = true;}}async {{?}}function(data, dataPath, parentData, parentDataProperty, rootData) {
+    'use strict';
+    {{? $id && (it.opts.sourceCode || it.opts.processCode) }}
+      {{= '/\*# sourceURL=' + $id + ' */' }}
     {{?}}
-        (data, dataPath, parentData, parentDataProperty, rootData) {
-          'use strict';
-          {{? $id && (it.opts.sourceCode || it.opts.processCode) }}
-            {{= '/\*# sourceURL=' + $id + ' */' }}
-          {{?}}
 {{?}}
 
 {{? typeof it.schema == 'boolean' || !($refKeywords || it.schema.$ref) }}
@@ -70,7 +52,7 @@
   {{?}}
 
   {{? it.isTop}}
-    });
+    };
     return validate;
   {{?}}
 
@@ -237,7 +219,7 @@
       validate.errors = vErrors; {{ /* don't edit, used in replace */ }}
       return errors === 0;       {{ /* don't edit, used in replace */ }}
     {{?}}
-  });
+  };
 
   return validate;
 {{??}}
