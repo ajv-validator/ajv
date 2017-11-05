@@ -18,7 +18,7 @@
         }
       },
       {
-        "$schema": "http://json-schema.org/draft-06/schema#",
+        "$schema": "http://json-schema.org/draft-07/schema#",
         "$id": "http://example.com/base_object_2",
         "type": "object",
         "properties": {
@@ -71,7 +71,7 @@
         }
       },
       {
-        "$schema": "http://json-schema.org/draft-06/schema#",
+        "$schema": "http://json-schema.org/draft-07/schema#",
         "$id": "http://example.com/base_array_2",
         "type": "array",
         "items": [
@@ -117,7 +117,7 @@
         }
       },
       {
-        "$schema": "http://json-schema.org/draft-06/schema#",
+        "$schema": "http://json-schema.org/draft-07/schema#",
         "$id": "http://example.com/base_anyof_2",
         "anyOf": [
           {
@@ -167,7 +167,7 @@
         }
       },
       {
-        "$schema": "http://json-schema.org/draft-06/schema#",
+        "$schema": "http://json-schema.org/draft-07/schema#",
         "$id": "http://example.com/base_oneof_2",
         "oneOf": [
           {
@@ -218,7 +218,7 @@
         }
       },
       {
-        "$schema": "http://json-schema.org/draft-06/schema#",
+        "$schema": "http://json-schema.org/draft-07/schema#",
         "$id": "http://example.com/base_allof_2",
         "allOf": [
           {
@@ -265,7 +265,7 @@
         }
       },
       {
-        "$schema": "http://json-schema.org/draft-06/schema#",
+        "$schema": "http://json-schema.org/draft-07/schema#",
         "$id": "http://example.com/base_dependencies_2",
         "type": "object",
         "dependencies": {

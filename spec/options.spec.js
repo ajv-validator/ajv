@@ -278,7 +278,7 @@ describe('Ajv Options', function () {
       testOptionMeta(new Ajv({ meta: true }));
 
       function testOptionMeta(ajv) {
-        ajv.getSchema('http://json-schema.org/draft-06/schema') .should.be.a('function');
+        ajv.getSchema('http://json-schema.org/draft-07/schema') .should.be.a('function');
         ajv.validateSchema({ type: 'integer' }) .should.equal(true);
         ajv.validateSchema({ type: 123 }) .should.equal(false);
         should.not.throw(function() { ajv.addSchema({ type: 'integer' }); });
@@ -288,7 +288,7 @@ describe('Ajv Options', function () {
 
     it('should throw if meta: false and validateSchema: true', function() {
       var ajv = new Ajv({ meta: false });
-      should.not.exist(ajv.getSchema('http://json-schema.org/draft-06/schema'));
+      should.not.exist(ajv.getSchema('http://json-schema.org/draft-07/schema'));
       should.not.throw(function() { ajv.addSchema({ type: 'wrong_type' }, 'integer'); });
     });
 
@@ -327,7 +327,7 @@ describe('Ajv Options', function () {
 
     it('should use option meta as default meta schema', function() {
       var meta = {
-        $schema: 'http://json-schema.org/draft-06/schema',
+        $schema: 'http://json-schema.org/draft-07/schema',
         properties: {
           myKeyword: { type: 'boolean' }
         }
@@ -336,7 +336,7 @@ describe('Ajv Options', function () {
       ajv.validateSchema({ myKeyword: true }) .should.equal(true);
       ajv.validateSchema({ myKeyword: 2 }) .should.equal(false);
       ajv.validateSchema({
-        $schema: 'http://json-schema.org/draft-06/schema',
+        $schema: 'http://json-schema.org/draft-07/schema',
         myKeyword: 2
       }) .should.equal(true);
 
@@ -1117,7 +1117,7 @@ describe('Ajv Options', function () {
   });
 
 
-  describe('patternGroups without draft-06 meta-schema', function() {
+  describe('patternGroups without draft-07 meta-schema', function() {
     it('should use default meta-schema', function() {
       var ajv = new Ajv({
         patternGroups: true,

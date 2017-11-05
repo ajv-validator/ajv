@@ -16,14 +16,15 @@ The fastest JSON Schema validator for Node.js and browser with draft 6 support.
 
 ## Using version 5
 
-[JSON Schema draft-06](https://trac.tools.ietf.org/html/draft-wright-json-schema-validation-01) is published.
+[JSON Schema draft-07 WIP](http://json-schema.org/work-in-progress/WIP-jsonschema-validation.html) is published.
 
-[Ajv version 5.0.0](https://github.com/epoberezkin/ajv/releases/tag/5.0.0) that supports draft-06 is released. It may require either migrating your schemas or updating your code (to continue using draft-04 and v5 schemas).
+[Ajv version 6.0.0-beta.0](https://github.com/epoberezkin/ajv/releases/tag/6.0.0-beta.0) that supports draft-07 is released. It may require either migrating your schemas or updating your code (to continue using draft-04 and v5 schemas, draft-06 schemas will be supported without changes).
 
-__Please note__: To use Ajv with draft-04 schemas you need to explicitly add meta-schema to the validator instance:
+__Please note__: To use Ajv with draft-04 (or draft-06) schemas you need to explicitly add meta-schema to the validator instance:
 
 ```javascript
 ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
+// ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
 ```
 
 
@@ -180,7 +181,7 @@ CLI is available as a separate npm package [ajv-cli](https://github.com/jessedc/
 
 - compiling JSON-schemas to test their validity
 - BETA: generating standalone module exporting a validation function to be used without Ajv (using [ajv-pack](https://github.com/epoberezkin/ajv-pack))
-- migrate schemas to draft-06 (using [json-schema-migrate](https://github.com/epoberezkin/json-schema-migrate))
+- migrate schemas to draft-07 (using [json-schema-migrate](https://github.com/epoberezkin/json-schema-migrate))
 - validating data file(s) against JSON-schema
 - testing expected validity of data against JSON-schema
 - referenced schemas
@@ -871,7 +872,7 @@ By default the schema is validated against meta-schema before it is added, and i
 
 Adds meta schema(s) that can be used to validate other schemas. That function should be used instead of `addSchema` because there may be instance options that would compile a meta schema incorrectly (at the moment it is `removeAdditional` option).
 
-There is no need to explicitly add draft 6 meta schema (http://json-schema.org/draft-06/schema and http://json-schema.org/schema) - it is added by default, unless option `meta` is set to `false`. You only need to use it if you have a changed meta-schema that you want to use to validate your schemas. See `validateSchema`.
+There is no need to explicitly add draft-07 meta schema (http://json-schema.org/draft-07/schema) - it is added by default, unless option `meta` is set to `false`. You only need to use it if you have a changed meta-schema that you want to use to validate your schemas. See `validateSchema`.
 
 
 ##### <a name="api-validateschema"></a>.validateSchema(Object schema) -&gt; Boolean
@@ -1046,7 +1047,7 @@ Defaults:
 ##### Referenced schema options
 
 - _schemaId_: this option defines which keywords are used as schema URI. Option value:
-  - `"$id"` (recommended) - only use `$id` keyword as schema URI (as specified in JSON Schema draft-06), ignore `id` keyword (if it is present a warning will be logged).
+  - `"$id"` (recommended) - only use `$id` keyword as schema URI (as specified in JSON Schema draft-06/07), ignore `id` keyword (if it is present a warning will be logged).
   - `"id"` - only use `id` keyword as schema URI (as specified in JSON Schema draft-04), ignore `$id` keyword (if it is present a warning will be logged).
   - `undefined` (default) - use both `$id` and `id` keywords as schema URI. If both are present (in the same schema object) and different the exception will be thrown during schema compilation.
 - _missingRefs_: handling of missing referenced schemas. Option values:

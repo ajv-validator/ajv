@@ -460,7 +460,7 @@ describe('Ajv', function () {
   describe('validateSchema method', function() {
     it('should validate schema against meta-schema', function() {
       var valid = ajv.validateSchema({
-        $schema: 'http://json-schema.org/draft-06/schema#',
+        $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'number'
       });
 
@@ -468,7 +468,7 @@ describe('Ajv', function () {
       should.equal(ajv.errors, null);
 
       valid = ajv.validateSchema({
-        $schema: 'http://json-schema.org/draft-06/schema#',
+        $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'wrong_type'
       });
 

@@ -11,7 +11,7 @@
       {
         "type" : "object",
         "properties": {
-          "title": { "$ref": "http://json-schema.org/draft-06/schema#/properties/title" }
+          "title": { "$ref": "http://json-schema.org/draft-07/schema#/properties/title" }
         }
       }
     ],

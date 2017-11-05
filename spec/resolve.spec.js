@@ -219,7 +219,7 @@ describe('resolve', function () {
       var ajv = new Ajv({ verbose: true });
 
       var schemaMessage = {
-        $schema: "http://json-schema.org/draft-06/schema#",
+        $schema: "http://json-schema.org/draft-07/schema#",
         id: "http://e.com/message.json#",
         type: "object",
         required: ["header"],
@@ -235,7 +235,7 @@ describe('resolve', function () {
 
       // header schema
       var schemaHeader = {
-        $schema: "http://json-schema.org/draft-06/schema#",
+        $schema: "http://json-schema.org/draft-07/schema#",
         id: "http://e.com/header.json#",
         type: "object",
         properties: {
