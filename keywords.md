@@ -54,7 +54,7 @@ The keywords and their values define what rules the data should satisfy to be va
 
 `type` keyword requires that the data is of certain type (or some of types). Its value can be a string (the allowed type) or an array of strings (multiple allowed types).
 
-Type can be: number, integer, string, boolean, array, object or null.
+Type can be: `number`, `integer`, `string`, `boolean`, `array`, `object` or `null`.
 
 
 __Examples__
