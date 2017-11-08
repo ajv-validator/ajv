@@ -551,9 +551,7 @@ validate({ userId: 1, postId: 19 })
 
 ### Using transpilers with asynchronous validation functions.
 
-To use a transpiler you should separately install it (or load its bundle in the browser).
-
-Ajv npm package includes minified browser bundle of regenerator and nodent in dist folder.
+[ajv-async](https://github.com/epoberezkin/ajv-async) uses [nodent](https://github.com/MatAtBread/nodent) to transpile async functions. To use another transpiler you should separately install it (or load its bundle in the browser).
 
 
 #### Using nodent
@@ -561,6 +559,8 @@ Ajv npm package includes minified browser bundle of regenerator and nodent in di
 ```javascript
 var ajv = new Ajv;
 require('ajv-async')(ajv);
+// in the browser if you want to load ajv-async bundle separately you can:
+// window.ajvAsync(ajv);
 var validate = ajv.compile(schema); // transpiled es7 async function
 validate(data).then(successFunc).catch(errorFunc);
 ```

@@ -2,7 +2,7 @@
 
 var Ajv = require('./ajv')
   , util = require('../lib/compile/util')
-  , setupAsync = require('ajv-async');
+  , setupAsync = require('./ajv-async');
 
 module.exports = getAjvInstances;
 
