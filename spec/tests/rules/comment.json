@@ -1,0 +1,40 @@
+[
+  {
+    "description": "$comment keyword",
+    "schema": {
+      "$comment": "test"
+    },
+    "tests": [
+      {
+        "description": "any value is valid",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "$comment keyword in subschemas",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "foo": {
+          "$comment": "test"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "empty object is valid",
+        "data": {},
+        "valid": true
+      },
+      {
+        "description": "any value of property foo is valid object is valid",
+        "data": {
+          "foo": 1
+        },
+        "valid": true
+      }
+    ]
+  }
+]

@@ -8,3 +8,4 @@ globals:
   it: false
   before: false
   beforeEach: false
+  afterEach: false

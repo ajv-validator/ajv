@@ -991,6 +991,7 @@ Defaults:
   $data:            false,
   allErrors:        false,
   verbose:          false,
+  $comment:         false, // NEW in Ajv version 6.0
   jsonPointers:     false,
   uniqueItems:      true,
   unicode:          true,
@@ -1032,6 +1033,10 @@ Defaults:
 - _$data_: support [$data references](#data-reference). Draft 6 meta-schema that is added by default will be extended to allow them. If you want to use another meta-schema you need to use $dataMetaSchema method to add support for $data reference. See [API](#api).
 - _allErrors_: check all rules collecting all errors. Default is to return after the first error.
 - _verbose_: include the reference to the part of the schema (`schema` and `parentSchema`) and validated data in errors (false by default).
+- _$comment_ (NEW in Ajv version 6.0): log or pass the value of `$comment` keyword to a function. Option values:
+  - `false` (default): ignore $comment keyword.
+  - `true`: log the keyword value to console.
+  - function: pass the keyword value, its schema path and root schema to the specified function
 - _jsonPointers_: set `dataPath` property of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
 - _uniqueItems_: validate `uniqueItems` keyword (true by default).
 - _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.

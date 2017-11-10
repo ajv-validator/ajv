@@ -127,6 +127,10 @@
   {{?}}
 {{?}}
 
+{{? it.schema.$comment && it.opts.$comment }}
+  {{= it.RULES.all.$comment.code(it, '$comment') }}
+{{?}}
+
 {{? $typeSchema }}
   {{? it.opts.coerceTypes }}
     {{ var $coerceToTypes = it.util.coerceToTypes(it.opts.coerceTypes, $typeSchema); }}
