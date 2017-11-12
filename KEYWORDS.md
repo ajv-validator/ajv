@@ -10,7 +10,7 @@ The keywords and their values define what rules the data should satisfy to be va
 
 - [type](#type)
 - [Keywords for numbers](#keywords-for-numbers)
-    - [maximum / minimum and exclusiveMaximum / exclusiveMinimum](#maximum--minimum-and-exclusivemaximum--exclusiveminimum) (CHANGED in draft-06)
+    - [maximum / minimum and exclusiveMaximum / exclusiveMinimum](#maximum--minimum-and-exclusivemaximum--exclusiveminimum) (changed in draft-06)
     - [multipleOf](#multipleof)
 - [Keywords for strings](#keywords-for-strings)
     - [maxLength/minLength](#maxlength--minlength)
