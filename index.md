@@ -12,11 +12,14 @@ The fastest JSON Schema validator for Node.js and browser with draft 6 support.
 
 [![Build Status](https://travis-ci.org/epoberezkin/ajv.svg?branch=master)](https://travis-ci.org/epoberezkin/ajv)
 [![npm version](https://badge.fury.io/js/ajv.svg)](https://www.npmjs.com/package/ajv)
+[![npm@beta](https://img.shields.io/npm/v/ajv/beta.svg)](https://github.com/epoberezkin/ajv/tree/beta)
 [![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
-[![Code Climate](https://codeclimate.com/github/epoberezkin/ajv/badges/gpa.svg)](https://codeclimate.com/github/epoberezkin/ajv)
 [![Coverage Status](https://coveralls.io/repos/epoberezkin/ajv/badge.svg?branch=master&service=github)](https://coveralls.io/github/epoberezkin/ajv?branch=master)
 [![Greenkeeper badge](https://badges.greenkeeper.io/epoberezkin/ajv.svg)](https://greenkeeper.io/)
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
+
+
+__Please note__: Ajv [version 6](https://github.com/epoberezkin/ajv/tree/beta) with [JSON Schema draft-07](http://json-schema.org/work-in-progress) support is released. Use `npm install ajv@beta` to install.
 
 
 ## Using version 5
@@ -110,6 +113,12 @@ Currently Ajv is the only validator that passes all the tests from [JSON Schema 
 
 ```
 npm install ajv
+```
+
+or to install [version 6](https://github.com/epoberezkin/ajv/tree/beta):
+
+```
+npm install ajv@beta
 ```
 
 
