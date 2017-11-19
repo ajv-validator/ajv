@@ -1219,4 +1219,96 @@ describe('Ajv Options', function () {
       });
     });
   });
+
+  describe('logger', function() {
+
+    /**
+     * The logger option tests are based on the meta scenario which writes into the logger.warn
+     */
+
+    var origConsoleWarn = console.warn;
+    var consoleCalled = false;
+
+    beforeEach(function() {
+      console.warn = function() {
+        consoleCalled = true;
+      };
+    });
+
+    afterEach(function() {
+      console.warn = origConsoleWarn;
+      consoleCalled = false;
+    });
+
+    it('logger is undefined - global console should be in use', function() {
+
+      var ajv = new Ajv({
+        meta: false
+      });
+
+      ajv.compile({
+        schema: { type: 'number' },
+        minimum: 1
+      });
+
+      should.equal(consoleCalled, true);
+    });
+
+    it('logger is an object - logs should only reported to it', function() {
+
+      var loggerCalled = false;
+
+      var logger = {
+        warn: function() {
+          loggerCalled = true;
+        }
+      };
+
+      var ajv = new Ajv({
+        meta: false,
+        logger: logger
+      });
+
+      ajv.compile({
+        schema: { type: 'number' },
+        minimum: 1
+      });
+
+      should.equal(loggerCalled, true);
+      should.equal(consoleCalled, false);
+    });
+
+    it('logger is an object but not implements the basic functions - make sure that it not leads to an error', function() {
+
+      var logger = {};
+
+      var ajv = new Ajv({
+        meta: false,
+        logger: logger
+      });
+
+      ajv.compile({
+        schema: { type: 'number' },
+        minimum: 1
+      });
+
+      should.equal(consoleCalled, false);
+    });
+
+    it('logger option is false - no logs should be reported', function() {
+
+      var ajv = new Ajv({
+        meta: false,
+        logger: false
+      });
+
+      ajv.compile({
+        schema: { type: 'number' },
+        minimum: 1
+      });
+
+      should.equal(consoleCalled, false);
+    });
+
+  });
 });
