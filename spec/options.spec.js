@@ -1261,6 +1261,12 @@ describe('Ajv Options', function () {
       var logger = {
         warn: function() {
           loggerCalled = true;
+        },
+        log: function() {
+          loggerCalled = true;
+        },
+        error: function() {
+          loggerCalled = true;
         }
       };
 
@@ -1278,25 +1284,7 @@ describe('Ajv Options', function () {
       should.equal(consoleCalled, false);
     });
 
-    it('custom logger is an object but not implements the basic functions - make sure that it not leads to an error', function() {
-
-      var logger = {};
-
-      var ajv = new Ajv({
-        meta: false,
-        logger: logger
-      });
-
-      ajv.compile({
-        schema: { type: 'number' },
-        minimum: 1
-      });
-
-      should.equal(consoleCalled, false);
-    });
-
     it('logger option is false - no logs should be reported', function() {
-
       var ajv = new Ajv({
         meta: false,
         logger: false
@@ -1308,6 +1296,15 @@ describe('Ajv Options', function () {
       });
 
       should.equal(consoleCalled, false);
+    });
+
+    it('logger option is an object but not implmemting the console functions - an error should be raised', function() {
+      (function(){
+        new Ajv({
+          meta: false,
+          logger: {}
+        });
+      }).should.throw(Error, /logger must implement log, warn and error function/);
     });
 
   });
