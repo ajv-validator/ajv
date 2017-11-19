@@ -1,9 +1,12 @@
 'use strict';
 
-var logger = require('../lib/compile/logger')
+var Logger = require('../lib/compile/logger')
   , should = require('./chai').should();
 
 describe('logger object tests', function() {
+
+  var logger;
+
   var origConsoleWarn = console.warn;
   var origConsoleLog = console.log;
   var origConsoleError = console.error;
@@ -32,11 +35,13 @@ describe('logger object tests', function() {
     console.warn = origConsoleWarn;
     console.log = origConsoleLog;
     console.error = origConsoleError;
-    logger.reset();
     consoleErrorCalled = consoleLogCalled = consoleWarnCalled = false;
   });
 
   it('logger should log into global console by default', function() {
+
+    logger = new Logger();
+
     logger.log('42');
     logger.warn('42');
     logger.error('42');
@@ -46,8 +51,7 @@ describe('logger object tests', function() {
     should.equal(consoleErrorCalled, true);
   });
 
-  it('logger should log only into a custom logger if given console by default', function() {
-
+  it('logger should log only into a custom logger if given', function() {
     var customWarnCalled = false;
     var customLogCalled = false;
     var customErrorCalled = false;
@@ -64,7 +68,8 @@ describe('logger object tests', function() {
       }
     };
 
-    logger.set(customLogger);
+    logger = new Logger(customLogger);
+
     logger.log('42');
     logger.warn('42');
     logger.error('42');
@@ -79,7 +84,8 @@ describe('logger object tests', function() {
   });
 
   it('if a custom logger is given without basic logging functions implementations it should not leads to an exception', function() {
-    logger.set({});
+    logger = new Logger({});
+
     logger.log('42');
     logger.warn('42');
     logger.error('42');
@@ -90,7 +96,8 @@ describe('logger object tests', function() {
   });
 
   it('if a custom logger is set to null logging should be disabled', function() {
-    logger.set(null);
+    logger = new Logger(null);
+
     logger.log('42');
     logger.warn('42');
     logger.error('42');

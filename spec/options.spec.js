@@ -1240,7 +1240,7 @@ describe('Ajv Options', function () {
       consoleCalled = false;
     });
 
-    it('logger is undefined - global console should be in use', function() {
+    it('no custom logger is given - global console should be in use', function() {
 
       var ajv = new Ajv({
         meta: false
@@ -1254,7 +1254,7 @@ describe('Ajv Options', function () {
       should.equal(consoleCalled, true);
     });
 
-    it('logger is an object - logs should only reported to it', function() {
+    it('custom logger is an object - logs should only reported to it', function() {
 
       var loggerCalled = false;
 
@@ -1278,7 +1278,7 @@ describe('Ajv Options', function () {
       should.equal(consoleCalled, false);
     });
 
-    it('logger is an object but not implements the basic functions - make sure that it not leads to an error', function() {
+    it('custom logger is an object but not implements the basic functions - make sure that it not leads to an error', function() {
 
       var logger = {};
 
