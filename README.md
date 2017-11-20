@@ -1106,16 +1106,9 @@ Defaults:
   - `[String]` - an array of unknown format names that will be ignored. This option can be used to allow usage of third party schemas with format(s) for which you don't have definitions, but still fail if another unknown format is used. If `format` keyword value is [$data reference](#data-reference) and it is not in this array the validation will fail.
   - `"ignore"` - to log warning during schema compilation and always pass validation (the default behaviour in versions before 5.0.0). This option is not recommended, as it allows to mistype format name and it won't be validated without any error message. This behaviour is required by JSON-schema specification.
 - _schemas_: an array or object of schemas that will be added to the instance. In case you pass the array the schemas must have IDs in them. When the object is passed the method `addSchema(value, key)` will be called for each schema in this object.
-- _logger_: sets the logging method. deafult is the global `console` object. Option values:
-  - custom logger object, should implement the following methods:
-    ```
-    {
-      log: function() {...},
-      warn: function() {...},
-      error: function() {...}
-    }
-    ```
-  - `false` - logging is disabled
+- _logger_: sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. Option values:
+  - custom logger - it should have methods `log`, `warn` and `error`. If any of these methods is missing an exception will be thrown.
+  - `false` - logging is disabled.
 
 
 ##### Referenced schema options

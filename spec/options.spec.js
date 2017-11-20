@@ -1227,9 +1227,10 @@ describe('Ajv Options', function () {
      */
 
     var origConsoleWarn = console.warn;
-    var consoleCalled = false;
+    var consoleCalled;
 
     beforeEach(function() {
+      consoleCalled = false;
       console.warn = function() {
         consoleCalled = true;
       };
@@ -1237,37 +1238,28 @@ describe('Ajv Options', function () {
 
     afterEach(function() {
       console.warn = origConsoleWarn;
-      consoleCalled = false;
     });
 
-    it('no custom logger is given - global console should be in use', function() {
-
+    it('no custom logger is given - global console should be used', function() {
       var ajv = new Ajv({
         meta: false
       });
 
       ajv.compile({
-        schema: { type: 'number' },
+        type: 'number',
         minimum: 1
       });
 
       should.equal(consoleCalled, true);
     });
 
-    it('custom logger is an object - logs should only reported to it', function() {
-
+    it('custom logger is an object - logs should only report to it', function() {
       var loggerCalled = false;
 
       var logger = {
-        warn: function() {
-          loggerCalled = true;
-        },
-        log: function() {
-          loggerCalled = true;
-        },
-        error: function() {
-          loggerCalled = true;
-        }
+        warn: log,
+        log: log,
+        error: log
       };
 
       var ajv = new Ajv({
@@ -1276,12 +1268,16 @@ describe('Ajv Options', function () {
       });
 
       ajv.compile({
-        schema: { type: 'number' },
+        type: 'number',
         minimum: 1
       });
 
       should.equal(loggerCalled, true);
       should.equal(consoleCalled, false);
+
+      function log() {
+        loggerCalled = true;
+      }
     });
 
     it('logger option is false - no logs should be reported', function() {
@@ -1291,21 +1287,20 @@ describe('Ajv Options', function () {
       });
 
       ajv.compile({
-        schema: { type: 'number' },
+        type: 'number',
         minimum: 1
       });
 
       should.equal(consoleCalled, false);
     });
 
-    it('logger option is an object but not implmemting the console functions - an error should be raised', function() {
+    it('logger option is an object without required methods - an error should be thrown', function() {
       (function(){
         new Ajv({
           meta: false,
           logger: {}
         });
-      }).should.throw(Error, /logger must implement log, warn and error function/);
+      }).should.throw(Error, /logger must implement log, warn and error methods/);
     });
-
   });
 });
