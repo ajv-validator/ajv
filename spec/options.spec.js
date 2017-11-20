@@ -1219,4 +1219,88 @@ describe('Ajv Options', function () {
       });
     });
   });
+
+  describe('logger', function() {
+
+    /**
+     * The logger option tests are based on the meta scenario which writes into the logger.warn
+     */
+
+    var origConsoleWarn = console.warn;
+    var consoleCalled;
+
+    beforeEach(function() {
+      consoleCalled = false;
+      console.warn = function() {
+        consoleCalled = true;
+      };
+    });
+
+    afterEach(function() {
+      console.warn = origConsoleWarn;
+    });
+
+    it('no custom logger is given - global console should be used', function() {
+      var ajv = new Ajv({
+        meta: false
+      });
+
+      ajv.compile({
+        type: 'number',
+        minimum: 1
+      });
+
+      should.equal(consoleCalled, true);
+    });
+
+    it('custom logger is an object - logs should only report to it', function() {
+      var loggerCalled = false;
+
+      var logger = {
+        warn: log,
+        log: log,
+        error: log
+      };
+
+      var ajv = new Ajv({
+        meta: false,
+        logger: logger
+      });
+
+      ajv.compile({
+        type: 'number',
+        minimum: 1
+      });
+
+      should.equal(loggerCalled, true);
+      should.equal(consoleCalled, false);
+
+      function log() {
+        loggerCalled = true;
+      }
+    });
+
+    it('logger option is false - no logs should be reported', function() {
+      var ajv = new Ajv({
+        meta: false,
+        logger: false
+      });
+
+      ajv.compile({
+        type: 'number',
+        minimum: 1
+      });
+
+      should.equal(consoleCalled, false);
+    });
+
+    it('logger option is an object without required methods - an error should be thrown', function() {
+      (function(){
+        new Ajv({
+          meta: false,
+          logger: {}
+        });
+      }).should.throw(Error, /logger must implement log, warn and error methods/);
+    });
+  });
 });
