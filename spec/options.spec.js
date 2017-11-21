@@ -639,6 +639,47 @@ describe('Ajv Options', function () {
           throw new Error('unknown useDefaults mode');
       }
     });
+
+
+    describe('useDefaults: "undefined"', function() {
+      it('should set undefined properties on objects', function() {
+        var schema = {
+          properties: {
+            strValue: { type: 'string' },
+            numValue: { type: 'number' },
+            defValue: { type: 'string', default: 'a-default' },
+            objValue: { properties: {} },
+            deepObjValue: {
+              properties: {
+                other: { type: 'string' }
+              }
+            },
+            items: {
+              type: 'array'
+            }
+          }
+        };
+        var data = {};
+        var ajv = new Ajv({ useDefaults: 'smart' });
+
+        var validate = ajv.compile(schema);
+        validate(data);
+
+        data .should.eql({
+          strValue: undefined,
+          numValue: undefined,
+          defValue: 'a-default',
+          objValue: {},
+          deepObjValue: { other: undefined },
+          items: []
+        });
+
+        // Verify that the keys are actually there.
+        Object.keys(data) .should.eql([
+          'strValue', 'numValue', 'defValue', 'objValue', 'deepObjValue', 'items'
+        ]);
+      });
+    });
   });
 
 

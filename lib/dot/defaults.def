@@ -2,6 +2,14 @@
   if ({{=$passData}} === undefined)
     {{=$passData}} = {{? it.opts.useDefaults == 'shared' }}
                        {{= it.useDefault($sch.default) }}
+                     {{?? it.opts.useDefaults == 'smart' && $sch.default === undefined }}
+                       {{? $sch.type == 'object' || $sch.properties }}
+                         {}
+                       {{?? $sch.type == 'array' || $sch.items }}
+                         []
+                       {{??}}
+                         undefined
+                       {{?}}
                      {{??}}
                        {{= JSON.stringify($sch.default) }}
                      {{?}};
@@ -14,7 +22,7 @@
       , $schemaKeys = Object.keys($schema); }}
   {{~ $schemaKeys:$propertyKey }}
     {{ var $sch = $schema[$propertyKey]; }}
-    {{? $sch.default !== undefined }}
+    {{? $sch.default !== undefined || it.opts.useDefaults == 'smart' }}
       {{ var $passData = $data + it.util.getProperty($propertyKey); }}
       {{# def.assignDefault }}
     {{?}}
@@ -24,7 +32,7 @@
 
 {{## def.defaultItems:
   {{~ it.schema.items:$sch:$i }}
-    {{? $sch.default !== undefined }}
+    {{? $sch.default !== undefined || it.opts.useDefaults == 'smart' }}
       {{ var $passData = $data + '[' + $i + ']'; }}
       {{# def.assignDefault }}
     {{?}}
