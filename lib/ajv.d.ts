@@ -138,7 +138,7 @@ declare namespace ajv {
     extendRefs?: true | 'ignore' | 'fail';
     loadSchema?: (uri: string, cb?: (err: Error, schema: Object) => void) => Thenable<Object | boolean>;
     removeAdditional?: boolean | 'all' | 'failing';
-    useDefaults?: boolean | 'shared';
+    useDefaults?: boolean | 'shared' | 'smart';
     coerceTypes?: boolean | 'array';
     async?: boolean | string;
     transpile?: string | ((code: string) => string);
