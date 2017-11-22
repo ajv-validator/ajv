@@ -151,6 +151,17 @@ if (!valid) console.log(ajv.errorsText());
 // ...
 ```
 
+or with method chaining
+
+```javascript
+// ...
+var validate = new Ajv()
+    .addSchema(cardSchema)
+    .getSchema('/card#/definitions/organisation');
+var valid = validate(data);
+// ...
+```
+
 See [API](#api) and [Options](#options) for more details.
 
 Ajv compiles schemas to functions and caches them in all cases (using schema serialized with [fast-json-stable-stringify](https://github.com/epoberezkin/fast-json-stable-stringify) or a custom function as a key), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
