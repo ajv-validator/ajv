@@ -119,8 +119,7 @@ describe('Ajv', function () {
 
   describe('addSchema method', function() {
     it('should add and compile schema with key', function() {
-      var res = ajv.addSchema({ type: 'integer' }, 'int');
-      should.not.exist(res);
+      ajv.addSchema({ type: 'integer' }, 'int');
       var validate = ajv.getSchema('int');
       validate .should.be.a('function');
 
@@ -216,6 +215,11 @@ describe('Ajv', function () {
       } catch(e) {
         e.message .should.equal('schema id must be string');
       }
+    });
+
+    it('should return instance of itself', function() {
+      var res = ajv.addSchema({ type: 'integer' }, 'int');
+      res.should.equal(ajv);
     });
   });
 
@@ -382,6 +386,13 @@ describe('Ajv', function () {
       should.not.exist(ajv._cache.get(str2));
       ajv._cache.get(str3) .should.be.an('object');
     });
+
+    it('should return instance of itself', function() {
+      var res = ajv
+        .addSchema({ type: 'integer' }, 'int')
+        .removeSchema('int');
+      res.should.equal(ajv);
+    });
   });
 
 
@@ -406,6 +417,11 @@ describe('Ajv', function () {
         validate: function (str) { return /^[a-z_$][a-z0-9_$]*$/i.test(str); },
       });
       testFormat();
+    });
+
+    it('should return instance of itself', function() {
+      var res = ajv.addFormat('identifier', /^[a-z_$][a-z0-9_$]*$/i);
+      res.should.equal(ajv);
     });
 
     function testFormat() {

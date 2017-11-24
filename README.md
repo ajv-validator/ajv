@@ -145,8 +145,8 @@ or
 
 ```javascript
 // ...
-ajv.addSchema(schema, 'mySchema');
-var valid = ajv.validate('mySchema', data);
+var valid = ajv.addSchema(schema, 'mySchema')
+               .validate('mySchema', data);
 if (!valid) console.log(ajv.errorsText());
 // ...
 ```
@@ -283,8 +283,8 @@ or use `addSchema` method:
 
 ```javascript
 var ajv = new Ajv;
-ajv.addSchema(defsSchema);
-var validate = ajv.compile(schema);
+var validate = ajv.addSchema(defsSchema)
+                  .compile(schema);
 ```
 
 See [Options](#options) and [addSchema](#api) method.
@@ -440,14 +440,17 @@ Ajv allows defining keywords with:
 Example. `range` and `exclusiveRange` keywords using compiled schema:
 
 ```javascript
-ajv.addKeyword('range', { type: 'number', compile: function (sch, parentSchema) {
-  var min = sch[0];
-  var max = sch[1];
+ajv.addKeyword('range', {
+  type: 'number',
+  compile: function (sch, parentSchema) {
+    var min = sch[0];
+    var max = sch[1];
 
-  return parentSchema.exclusiveRange === true
-          ? function (data) { return data > min && data < max; }
-          : function (data) { return data >= min && data <= max; }
-} });
+    return parentSchema.exclusiveRange === true
+            ? function (data) { return data > min && data < max; }
+            : function (data) { return data >= min && data <= max; }
+  }
+});
 
 var schema = { "range": [2, 4], "exclusiveRange": true };
 var validate = ajv.compile(schema);
@@ -914,7 +917,7 @@ __Please note__: every time this method is called the errors are overwritten so 
 If the schema is asynchronous (has `$async` keyword on the top level) this method returns a Promise. See [Asynchronous validation](#asynchronous-validation).
 
 
-##### .addSchema(Array&lt;Object&gt;|Object schema [, String key])
+##### .addSchema(Array&lt;Object&gt;|Object schema [, String key]) -&gt; Ajv
 
 Add schema(s) to validator instance. This method does not compile schemas (but it still validates them). Because of that dependencies can be added in any order and circular dependencies are supported. It also prevents unnecessary compilation of schemas that are containers for other schemas but not used as a whole.
 
@@ -929,8 +932,14 @@ Although `addSchema` does not compile schemas, explicit compilation is not requi
 
 By default the schema is validated against meta-schema before it is added, and if the schema does not pass validation the exception is thrown. This behaviour is controlled by `validateSchema` option.
 
+__Please note__: Ajv uses the [method chaining syntax](https://en.wikipedia.org/wiki/Method_chaining) for all methods with the prefix `add*` and `remove*`.
+This allows you to do nice things like the following.
 
-##### .addMetaSchema(Array&lt;Object&gt;|Object schema [, String key])
+```javascript
+var validate = new Ajv().addSchema(schema).addFormat(name, regex).getSchema(uri);
+```  
+
+##### .addMetaSchema(Array&lt;Object&gt;|Object schema [, String key]) -&gt; Ajv
 
 Adds meta schema(s) that can be used to validate other schemas. That function should be used instead of `addSchema` because there may be instance options that would compile a meta schema incorrectly (at the moment it is `removeAdditional` option).
 
@@ -955,7 +964,7 @@ Errors will be available at `ajv.errors`.
 Retrieve compiled schema previously added with `addSchema` by the key passed to `addSchema` or by its full reference (id). The returned validating function has `schema` property with the reference to the original schema.
 
 
-##### .removeSchema([Object schema|String key|String ref|RegExp pattern])
+##### .removeSchema([Object schema|String key|String ref|RegExp pattern]) -&gt; Ajv
 
 Remove added/cached schema. Even if schema is referenced by other schemas it can be safely removed as dependent schemas have local references.
 
@@ -968,7 +977,7 @@ Schema can be removed using:
 If no parameter is passed all schemas but meta-schemas will be removed and the cache will be cleared.
 
 
-##### <a name="api-addformat"></a>.addFormat(String name, String|RegExp|Function|Object format)
+##### <a name="api-addformat"></a>.addFormat(String name, String|RegExp|Function|Object format) -&gt; Ajv
 
 Add custom format to validate strings or numbers. It can also be used to replace pre-defined formats for Ajv instance.
 
@@ -986,7 +995,7 @@ If object is passed it should have properties `validate`, `compare` and `async`:
 Custom formats can be also added via `formats` option.
 
 
-##### <a name="api-addkeyword"></a>.addKeyword(String keyword, Object definition)
+##### <a name="api-addkeyword"></a>.addKeyword(String keyword, Object definition) -&gt; Ajv
 
 Add custom validation keyword to Ajv instance.
 
@@ -1027,7 +1036,7 @@ See [Defining custom keywords](#defining-custom-keywords) for more details.
 Returns custom keyword definition, `true` for pre-defined keywords and `false` if the keyword is unknown.
 
 
-##### .removeKeyword(String keyword)
+##### .removeKeyword(String keyword) -&gt; Ajv
 
 Removes custom or pre-defined keyword so you can redefine them.
 
