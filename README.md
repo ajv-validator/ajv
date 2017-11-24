@@ -145,20 +145,9 @@ or
 
 ```javascript
 // ...
-ajv.addSchema(schema, 'mySchema');
-var valid = ajv.validate('mySchema', data);
+var valid = ajv.addSchema(schema, 'mySchema')
+               .validate('mySchema', data);
 if (!valid) console.log(ajv.errorsText());
-// ...
-```
-
-or with method chaining
-
-```javascript
-// ...
-var validate = new Ajv()
-    .addSchema(cardSchema)
-    .getSchema('/card#/definitions/organisation');
-var valid = validate(data);
 // ...
 ```
 
@@ -294,8 +283,8 @@ or use `addSchema` method:
 
 ```javascript
 var ajv = new Ajv;
-ajv.addSchema(defsSchema);
-var validate = ajv.compile(schema);
+var validate = ajv.addSchema(defsSchema)
+                  .compile(schema);
 ```
 
 See [Options](#options) and [addSchema](#api) method.
@@ -451,14 +440,17 @@ Ajv allows defining keywords with:
 Example. `range` and `exclusiveRange` keywords using compiled schema:
 
 ```javascript
-ajv.addKeyword('range', { type: 'number', compile: function (sch, parentSchema) {
-  var min = sch[0];
-  var max = sch[1];
+ajv.addKeyword('range', {
+  type: 'number',
+  compile: function (sch, parentSchema) {
+    var min = sch[0];
+    var max = sch[1];
 
-  return parentSchema.exclusiveRange === true
-          ? function (data) { return data > min && data < max; }
-          : function (data) { return data >= min && data <= max; }
-} });
+    return parentSchema.exclusiveRange === true
+            ? function (data) { return data > min && data < max; }
+            : function (data) { return data >= min && data <= max; }
+  }
+});
 
 var schema = { "range": [2, 4], "exclusiveRange": true };
 var validate = ajv.compile(schema);

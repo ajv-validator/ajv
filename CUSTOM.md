@@ -42,18 +42,27 @@ __Please note__: In cases when validation flow is different depending on the sch
 Example. `constant` keyword (a synonym for draft6 keyword `const`, it is equivalent to `enum` keyword with one item):
 
 ```javascript
-ajv.addKeyword('constant', { validate: function (schema, data) {
-  return typeof schema == 'object' && schema !== null
-          ? deepEqual(schema, data)
-          : schema === data;
-}, errors: false });
+ajv.addKeyword('constant', {
+  validate: function (schema, data) {
+    return typeof schema == 'object' && schema !== null
+            ? deepEqual(schema, data)
+            : schema === data;
+  },
+  errors: false
+});
 
-var schema = { "constant": 2 };
+var schema = {
+  "constant": 2
+};
 var validate = ajv.compile(schema);
 console.log(validate(2)); // true
 console.log(validate(3)); // false
 
-var schema = { "constant": { "foo": "bar" } };
+var schema = {
+  "constant": {
+    "foo": "bar"
+  }
+};
 var validate = ajv.compile(schema);
 console.log(validate({foo: 'bar'})); // true
 console.log(validate({foo: 'baz'})); // false
@@ -86,20 +95,31 @@ All custom keywords types can have an optional `metaSchema` property in their de
 Example. `range` and `exclusiveRange` keywords using compiled schema:
 
 ```javascript
-ajv.addKeyword('range', { type: 'number', compile: function (sch, parentSchema) {
-  var min = sch[0];
-  var max = sch[1];
+ajv.addKeyword('range', {
+  type: 'number',
+  compile: function (sch, parentSchema) {
+    var min = sch[0];
+    var max = sch[1];
 
-  return parentSchema.exclusiveRange === true
-          ? function (data) { return data > min && data < max; }
-          : function (data) { return data >= min && data <= max; }
-}, errors: false, metaSchema: {
-  type: 'array',
-  items: [ { type: 'number' }, { type: 'number' } ],
-  additionalItems: false
-} });
+    return parentSchema.exclusiveRange === true
+            ? function (data) { return data > min && data < max; }
+            : function (data) { return data >= min && data <= max; }
+  },
+  errors: false,
+  metaSchema: {
+    type: 'array',
+    items: [
+      { type: 'number' },
+      { type: 'number' }
+    ],
+    additionalItems: false
+  }
+});
 
-var schema = { "range": [2, 4], "exclusiveRange": true };
+var schema = {
+  "range": [2, 4],
+  "exclusiveRange": true
+};
 var validate = ajv.compile(schema);
 console.log(validate(2.01)); // true
 console.log(validate(3.99)); // true
@@ -122,27 +142,30 @@ In addition to the errors from the expanded schema macro keyword will add its ow
 Example. `range` and `exclusiveRange` keywords from the previous example defined with macro:
 
 ```javascript
-ajv.addKeyword('range', { type: 'number', macro: function (schema, parentSchema) {
-  return {
-    minimum: schema[0],
-    maximum: schema[1],
-    exclusiveMinimum: !!parentSchema.exclusiveRange,
-    exclusiveMaximum: !!parentSchema.exclusiveRange
-  };
-}, metaSchema: {
-  type: 'array',
-  items: [ { type: 'number' }, { type: 'number' } ],
-  additionalItems: false
-} });
+ajv.addKeyword('range', {
+  type: 'number',
+  macro: function (schema, parentSchema) {
+    return {
+      minimum: schema[0],
+      maximum: schema[1],
+      exclusiveMinimum: !!parentSchema.exclusiveRange,
+      exclusiveMaximum: !!parentSchema.exclusiveRange
+    };
+  },
+  metaSchema: {
+    type: 'array',
+    items: [
+      { type: 'number' },
+      { type: 'number' }
+    ],
+    additionalItems: false
+  }
+});
 ```
 
 Example. `contains` keyword from version 5 proposals that requires that the array has at least one item matching schema (see https://github.com/json-schema/json-schema/wiki/contains-(v5-proposal)):
 
 ```javascript
-ajv.addKeyword('contains', { type: 'array', macro: function (schema) {
-  return { "not": { "items": { "not": schema } } };
-} });
-
 var schema = {
   "contains": {
     "type": "number",
@@ -151,7 +174,20 @@ var schema = {
   }
 };
 
-var validate = ajv.compile(schema);
+var validate = ajv.addKeyword('contains', {
+  type: 'array',
+  macro: function (schema) {
+    return {
+      "not": {
+        "items": {
+          "not": schema
+        }
+      }
+    };
+  }
+})
+.compile(schema);
+
 console.log(validate([1,2,3])); // false
 console.log(validate([2,3,4])); // false
 console.log(validate([3,4,5])); // true, number 5 matches schema inside "contains"
@@ -177,14 +213,18 @@ While it can be more challenging to define keywords with "inline" functions, it 
 Example `even` keyword:
 
 ```javascript
-ajv.addKeyword('even', { type: 'number', inline: function (it, keyword, schema) {
-  var op = schema ? '===' : '!==';
-  return 'data' + (it.dataLevel || '') + ' % 2 ' + op + ' 0';
-}, metaSchema: { type: 'boolean' } });
-
 var schema = { "even": true };
 
-var validate = ajv.compile(schema);
+var validate = ajv.addKeyword('even', {
+  type: 'number',
+  inline: function (it, keyword, schema) {
+    var op = schema ? '===' : '!==';
+    return 'data' + (it.dataLevel || '') + ' % 2 ' + op + ' 0';
+  },
+  metaSchema: { type: 'boolean' }
+})
+.compile(schema);
+
 console.log(validate(2)); // true
 console.log(validate(3)); // false
 ```
@@ -214,7 +254,10 @@ ajv.addKeyword('range', {
   statements: true,
   metaSchema: {
     type: 'array',
-    items: [ { type: 'number' }, { type: 'number' } ],
+    items: [
+      { type: 'number' },
+      { type: 'number' }
+    ],
     additionalItems: false
   }
 });
