@@ -593,6 +593,37 @@ describe('Ajv Options', function () {
       }
     });
 
+    it('should apply default in "then" subschema (issue #635)', function() {
+      test(new Ajv({ useDefaults: true }));
+      test(new Ajv({ useDefaults: true, allErrors: true }));
+
+      function test(ajv) {
+        var schema = {
+          if: { required: ['foo'] },
+          then: {
+            properties: {
+              bar: { default: 2 }
+            }
+          },
+          else: {
+            properties: {
+              foo: { default: 1 }
+            }
+          }
+        };
+
+        var validate = ajv.compile(schema);
+
+        var data = {};
+        validate(data) .should.equal(true);
+        data .should.eql({foo: 1});
+
+        data = {foo: 1};
+        validate(data) .should.equal(true);
+        data .should.eql({foo: 1, bar: 2});
+      }
+    });
+
 
     describe('useDefaults: by value / by reference', function() {
       describe('using by value', function() {

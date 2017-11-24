@@ -43,6 +43,7 @@
   {{# def.insertSubschemaCode }}
   {{ $it.createErrors = true; }}
   {{# def.resetErrors }}
+  {{# def.resetCompositeRule }}
 
   {{? $thenPresent }}
     if ({{=$nextValid}}) {
@@ -59,8 +60,6 @@
       {{# def.validateIfClause:else }}
     }
   {{?}}
-
-  {{# def.resetCompositeRule }}
 
   if (!{{=$valid}}) {
     {{# def.extraError:'if' }}

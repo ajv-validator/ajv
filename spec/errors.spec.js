@@ -708,6 +708,8 @@ describe('Validation errors', function () {
 
 
   describe('if/then/else errors', function() {
+    var validate, numErrors;
+
     it('if/then/else should include failing keyword in message and params', function() {
       var schema = {
         'if': { maximum: 10 },
@@ -716,20 +718,15 @@ describe('Validation errors', function () {
       };
 
       [ajv, fullAjv].forEach(function (_ajv) {
-        var validate = _ajv.compile(schema);
+        prepareTest(_ajv, schema);
         shouldBeValid(validate, 8);
         shouldBeValid(validate, 15);
 
-        shouldBeInvalid(validate, 7, 2);
-        testError('should match "then" schema', {failingKeyword: 'then'});
+        shouldBeInvalid(validate, 7, numErrors);
+        testIfError('then', 2);
 
-        shouldBeInvalid(validate, 17, 2);
-        testError('should match "else" schema', {failingKeyword: 'else'});
-
-        function testError(message, params) {
-          var err = validate.errors[1];
-          shouldBeError(err, 'if', '#/if', '', message, params);
-        }
+        shouldBeInvalid(validate, 17, numErrors);
+        testIfError('else', 5);
       });
     });
 
@@ -740,18 +737,13 @@ describe('Validation errors', function () {
       };
 
       [ajv, fullAjv].forEach(function (_ajv) {
-        var validate = _ajv.compile(schema);
+        prepareTest(_ajv, schema);
         shouldBeValid(validate, 8);
         shouldBeValid(validate, 11);
         shouldBeValid(validate, 12);
 
-        shouldBeInvalid(validate, 7, 2);
-        testError('should match "then" schema', {failingKeyword: 'then'});
-
-        function testError(message, params) {
-          var err = validate.errors[1];
-          shouldBeError(err, 'if', '#/if', '', message, params);
-        }
+        shouldBeInvalid(validate, 7, numErrors);
+        testIfError('then', 2);
       });
     });
 
@@ -762,20 +754,32 @@ describe('Validation errors', function () {
       };
 
       [ajv, fullAjv].forEach(function (_ajv) {
-        var validate = _ajv.compile(schema);
+        prepareTest(_ajv, schema);
         shouldBeValid(validate, 7);
         shouldBeValid(validate, 8);
         shouldBeValid(validate, 15);
 
-        shouldBeInvalid(validate, 17, 2);
-        testError('should match "else" schema', {failingKeyword: 'else'});
-
-        function testError(message, params) {
-          var err = validate.errors[1];
-          shouldBeError(err, 'if', '#/if', '', message, params);
-        }
+        shouldBeInvalid(validate, 17, numErrors);
+        testIfError('else', 5);
       });
     });
+
+    function prepareTest(_ajv, schema) {
+      validate = _ajv.compile(schema);
+      numErrors = _ajv._opts.allErrors ? 2 : 1;
+    }
+
+    function testIfError(ifClause, multipleOf) {
+      var err = validate.errors[0];
+      shouldBeError(err, 'multipleOf', '#/' + ifClause + '/multipleOf', '',
+        'should be multiple of ' + multipleOf, {multipleOf: multipleOf});
+
+      if (numErrors == 2) {
+        err = validate.errors[1];
+        shouldBeError(err, 'if', '#/if', '',
+          'should match "' + ifClause + '" schema', {failingKeyword: ifClause});
+      }
+    }
   });
 
 
