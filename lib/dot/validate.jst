@@ -122,7 +122,7 @@
   {{?? it.opts.extendRefs !== true }}
     {{
       $refKeywords = false;
-      console.warn('$ref: keywords ignored in schema at path "' + it.errSchemaPath + '"');
+      it.logger.warn('$ref: keywords ignored in schema at path "' + it.errSchemaPath + '"');
     }}
   {{?}}
 {{?}}
@@ -163,7 +163,7 @@
   {{?}}
 {{??}}
   {{? it.opts.v5 && it.schema.patternGroups }}
-    {{ console.warn('keyword "patternGroups" is deprecated and disabled. Use option patternGroups: true to enable.'); }}
+    {{ it.logger.warn('keyword "patternGroups" is deprecated and disabled. Use option patternGroups: true to enable.'); }}
   {{?}}
   {{~ it.RULES:$rulesGroup }}
     {{? $shouldUseGroup($rulesGroup) }}

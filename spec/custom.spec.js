@@ -939,6 +939,13 @@ describe('Custom keywords', function () {
       });
     });
 
+    it('should return instance of itself', function() {
+      var res = ajv.addKeyword('any', {
+        validate: function() { return true; }
+      });
+      res.should.equal(ajv);
+    });
+
     it('should throw if unknown type is passed', function() {
       should.throw(function() {
         addKeyword('custom1', 'wrongtype');
@@ -1040,6 +1047,15 @@ describe('Custom keywords', function () {
       validate(0) .should.equal(false);
       validate(1) .should.equal(false);
       validate(2) .should.equal(true);
+    });
+
+    it('should return instance of itself', function() {
+      var res = ajv
+        .addKeyword('any', {
+          validate: function() { return true; }
+        })
+        .removeKeyword('any');
+      res.should.equal(ajv);
     });
   });
 

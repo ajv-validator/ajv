@@ -239,6 +239,32 @@ describe('async schemas, formats and keywords', function() {
       return recursiveTest(schema);
     });
 
+    it.skip('should validate recursive ref to async sub-schema, issue #612', function() {
+      var schema = {
+        $async: true,
+        type: 'object',
+        properties: {
+          foo: {
+            $async: true,
+            anyOf: [
+              {
+                type: 'string',
+                format: 'english_word'
+              },
+              {
+                type: 'object',
+                properties: {
+                  foo: { $ref: '#/properties/foo' }
+                }
+              }
+            ]
+          }
+        }
+      };
+
+      return recursiveTest(schema);
+    });
+
     it('should validate ref from referenced async schema to root schema', function() {
       var schema = {
         $async: true,
