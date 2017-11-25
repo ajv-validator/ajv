@@ -39,7 +39,7 @@ This way to define keywords is useful for:
 __Please note__: In cases when validation flow is different depending on the schema and you have to use `if`s, this way to define keywords will have worse performance than compiled keyword returning different validation functions depending on the schema.
 
 
-Example. `constant` keyword (a synonym for draft6 keyword `const`, it is equivalent to `enum` keyword with one item):
+Example. `constant` keyword (a synonym for draft-06 keyword `const`, it is equivalent to `enum` keyword with one item):
 
 ```javascript
 ajv.addKeyword('constant', {
@@ -88,7 +88,7 @@ The access to the parent data object and the current property name allow to crea
 
 The function should return validation result as boolean. It can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
 
-In some cases it is the best approach to define keywords, but it has the performance cost of an extra function call during validation. If keyword logic can be expressed via some other JSON-schema then `macro` keyword definition is more efficient (see below).
+In some cases it is the best approach to define keywords, but it has the performance cost of an extra function call during validation. If keyword logic can be expressed via some other JSON Schema then `macro` keyword definition is more efficient (see below).
 
 All custom keywords types can have an optional `metaSchema` property in their definitions. It is a schema against which the value of keyword will be validated during schema compilation.
 
@@ -134,7 +134,7 @@ See note on custom errors and asynchronous keywords in the previous section.
 
 "Macro" function is called during schema compilation. It is passed schema, parent schema and [schema compilation context](#schema-compilation-context) and it should return another schema that will be applied to the data in addition to the original schema.
 
-It is the most efficient approach (in cases when the keyword logic can be expressed with another JSON-schema) because it is usually easy to implement and there is no extra function call during validation.
+It is the most efficient approach (in cases when the keyword logic can be expressed with another JSON Schema) because it is usually easy to implement and there is no extra function call during validation.
 
 In addition to the errors from the expanded schema macro keyword will add its own error in case validation fails.
 

@@ -7,7 +7,7 @@ Thank you for your help making Ajv better! Every contribution is appreciated. If
   - [Bug reports](#bug-reports)
   - [Change proposals](#changes)
   - [Browser and compatibility issues](#compatibility)
-  - [JSON schema standard](#json-schema)
+  - [JSON Schema standard](#json-schema)
   - [Ajv usage questions](#usage)
 - [Code](#code)
   - [Development](#development)
@@ -33,7 +33,7 @@ Please make sure to include the following information in the issue:
 
 1. What version of Ajv are you using? Does the issue happen if you use the latest version?
 2. Ajv options object (see https://github.com/epoberezkin/ajv#options).
-3. JSON schema and the data you are validating (please make it as small as possible to reproduce the issue).
+3. JSON Schema and the data you are validating (please make it as small as possible to reproduce the issue).
 4. Your code (please use `options`, `schema` and `data` as variables).
 5. Validation result, data AFTER validation, error messages.
 6. What results did you expect?
@@ -75,11 +75,9 @@ Please include this information:
 6. Results and error messages in your platform.
 
 
-#### <a name="json-schema"></a>Using JSON schema standard
+#### <a name="json-schema"></a>Using JSON Schema standard
 
-Ajv implements JSON schema standard draft 4 and the proposed extensions for the next version of the standard (available when you use the option `v5: true`).
-
-If the issue is related to using v5 extensions please submit it as a [bug report](https://github.com/epoberezkin/ajv/issues/new).
+Ajv implements JSON Schema standard draft-04 and draft-06/07.
 
 If it is a general issue related to using the standard keywords included in JSON Schema or implementing some advanced validation logic please ask the question on [Stack Overflow](http://stackoverflow.com/questions/ask?tags=jsonschema,ajv) (my account is [esp](http://stackoverflow.com/users/1816503/esp)) or submitting the question to [JSON-Schema.org](https://github.com/json-schema-org/json-schema-spec/issues/new). Please mention @epoberezkin.
 
