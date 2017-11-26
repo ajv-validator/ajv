@@ -222,21 +222,6 @@ describe('Ajv Options', function () {
       test(schema, obj, proto);
     });
 
-    it('should only validate own properties with patternGroups', function() {
-      ajv = new Ajv({ allErrors: true, patternGroups: true });
-      ajvOP = new Ajv({ ownProperties: true, allErrors: true, patternGroups: true });
-
-      var schema = {
-        patternGroups: {
-          'f.*o': { schema: { type: 'integer' } }
-        }
-      };
-
-      var obj = { fooo: 1 };
-      var proto = { foo: 'not a number' };
-      test(schema, obj, proto);
-    });
-
     it('should only validate own properties with propertyNames', function() {
       var schema = {
         propertyNames: {
@@ -1145,61 +1130,6 @@ describe('Ajv Options', function () {
       serializeCalled = true;
       return JSON.stringify(schema);
     }
-  });
-
-
-  describe('patternGroups without draft-07 meta-schema', function() {
-    it('should use default meta-schema', function() {
-      var ajv = new Ajv({
-        patternGroups: true,
-        meta: require('../lib/refs/json-schema-draft-04.json')
-      });
-
-      ajv.compile({
-        patternGroups: {
-          '^foo': {
-            schema: { type: 'number' },
-            minimum: 1
-          }
-        }
-      });
-
-      should.throw(function() {
-        ajv.compile({
-          patternGroups: {
-            '^foo': {
-              schema: { type: 'wrong_type' },
-              minimum: 1
-            }
-          }
-        });
-      });
-    });
-
-    it('should not use meta-schema if not available', function() {
-      var ajv = new Ajv({
-        patternGroups: true,
-        meta: false
-      });
-
-      ajv.compile({
-        patternGroups: {
-          '^foo': {
-            schema: { type: 'number' },
-            minimum: 1
-          }
-        }
-      });
-
-      ajv.compile({
-        patternGroups: {
-          '^foo': {
-            schema: { type: 'wrong_type' },
-            minimum: 1
-          }
-        }
-      });
-    });
   });
 
 

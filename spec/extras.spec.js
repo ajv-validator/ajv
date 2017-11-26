@@ -8,7 +8,6 @@ var jsonSchemaTest = require('json-schema-test')
 
 var instances = getAjvInstances(options, {
   $data: true,
-  patternGroups: true,
   unknownFormats: ['allowedUnknown']
 });
 

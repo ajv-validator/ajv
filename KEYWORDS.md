@@ -31,7 +31,6 @@ The keywords and their values define what rules the data should satisfy to be va
     - [additionalProperties](#additionalproperties)
     - [dependencies](#dependencies)
     - [propertyNames](#propertynames) (added in draft-06)
-    - [patternGroups](#patterngroups-deprecated) (deprecated)
     - [patternRequired](#patternrequired-proposed) (proposed)
 - [Keywords for all types](#keywords-for-all-types)
     - [enum](#enum)
@@ -614,41 +613,6 @@ _schema_:
 _valid_: `{"foo@bar.com": "any", "bar@bar.com": "any"}`, any non-object
 
 _invalid_: `{"foo": "any value"}`
-
-
-
-### `patternGroups` (deprecated)
-
-This keyword is only provided for backward compatibility, it will be removed in the next major version. To use it, pass option `patternGroups: true`.
-
-The value of this keyword should be a map where keys should be regular expressions and the values should be objects with the following properties:
-
-- `schema` (required) - should be a JSON Schema. For data object to be valid the values in data object properties that match regular expression(s) should be valid according to the corresponding `schema`(s).
-- `maximum` / `minimum` (optional) - should be integers. For data object to be valid the number of properties that match regular expression(s) should be within limits set by `minimum`(s) and `maximum`(s).
-
-
-__Example__
-
-_schema_:
-
-```json
-{
-    "patternGroups": {
-        "^[a-z]+$": {
-            "minimum": 1,
-            "schema": { "type": "string" }
-        },
-        "^[0-9]+$": {
-            "minimum": 1,
-            "schema": { "type": "integer" }
-        }
-    }
-}
-```
-
-_valid_: `{ "foo": "bar", "1": "2" }`, any non-object
-
-_invalid_: `{}`, `{ "foo": "bar" }`, `{ "1": "2" }`
 
 
 
