@@ -6,7 +6,7 @@ The fastest JSON Schema validator for Node.js and browser with draft-07 support.
 
 
 [![Build Status](https://travis-ci.org/epoberezkin/ajv.svg?branch=master)](https://travis-ci.org/epoberezkin/ajv)
-[![npm version](https://badge.fury.io/js/ajv.svg)](https://www.npmjs.com/package/ajv)
+[![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![npm@beta](https://img.shields.io/npm/v/ajv/beta.svg)](https://github.com/epoberezkin/ajv/tree/beta)
 [![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![Coverage Status](https://coveralls.io/repos/epoberezkin/ajv/badge.svg?branch=master&service=github)](https://coveralls.io/github/epoberezkin/ajv?branch=master)
