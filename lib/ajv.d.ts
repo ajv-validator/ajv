@@ -226,7 +226,7 @@ declare namespace ajv {
                           MultipleOfParams | PatternParams | RequiredParams |
                           TypeParams | UniqueItemsParams | CustomParams |
                           PatternRequiredParams | PropertyNamesParams |
-                          SwitchParams | NoParams | EnumParams;
+                          IfParams | SwitchParams | NoParams | EnumParams;
 
   interface RefParams {
     ref: string;
@@ -288,6 +288,10 @@ declare namespace ajv {
 
   interface PropertyNamesParams {
     propertyName: string;
+  }
+
+  interface IfParams {
+    failingKeyword: string;
   }
 
   interface SwitchParams {
