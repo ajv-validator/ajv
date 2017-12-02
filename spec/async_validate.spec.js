@@ -239,7 +239,7 @@ describe('async schemas, formats and keywords', function() {
       return recursiveTest(schema);
     });
 
-    it.skip('should validate recursive ref to async sub-schema, issue #612', function() {
+    it('should validate recursive ref to async sub-schema, issue #612', function() {
       var schema = {
         $async: true,
         type: 'object',

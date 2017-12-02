@@ -50,7 +50,7 @@
     {{?}}
   {{??}}
     {{
-      $async = $refVal.$async === true;
+      $async = $refVal.$async === true || (it.async && $refVal.$async !== false);
       $refCode = $refVal.code;
     }}
   {{?}}
