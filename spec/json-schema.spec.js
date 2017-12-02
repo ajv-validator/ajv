@@ -13,13 +13,23 @@ var remoteRefs = {
   'http://localhost:1234/name.json': require('./JSON-Schema-Test-Suite/remotes/name.json')
 };
 
+var SKIP = {
+  4: ['optional/zeroTerminatedFloats'],
+  7: ['optional/content', 'optional/format']
+};
+
+
 runTest(getAjvInstances(options, {meta: false, schemaId: 'id'}), 4, typeof window == 'object'
   ? suite(require('./JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json', {mode: 'list'}))
   : './JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json');
 
-runTest(getAjvInstances(options, {meta: false, schemaId: 'auto', format: 'full'}), 6, typeof window == 'object'
+runTest(getAjvInstances(options, {meta: false, format: 'full'}), 6, typeof window == 'object'
   ? suite(require('./JSON-Schema-Test-Suite/tests/draft6/{**/,}*.json', {mode: 'list'}))
   : './JSON-Schema-Test-Suite/tests/draft6/{**/,}*.json');
+
+runTest(getAjvInstances(options, {format: 'full'}), 7, typeof window == 'object'
+  ? suite(require('./JSON-Schema-Test-Suite/tests/draft7/{**/,}*.json', {mode: 'list'}))
+  : './JSON-Schema-Test-Suite/tests/draft7/{**/,}*.json');
 
 
 function runTest(instances, draft, tests) {
@@ -40,17 +50,8 @@ function runTest(instances, draft, tests) {
   jsonSchemaTest(instances, {
     description: 'JSON-Schema Test Suite draft-0' + draft + ': ' + instances.length + ' ajv instances with different options',
     suites: {tests: tests},
-    only: [
-      // 'type', 'not', 'allOf', 'anyOf', 'oneOf', 'enum',
-      // 'maximum', 'minimum', 'multipleOf', 'maxLength', 'minLength', 'pattern',
-      // 'properties', 'patternProperties', 'additionalProperties',
-      // 'dependencies', 'required',
-      // 'maxProperties', 'minProperties', 'maxItems', 'minItems',
-      // 'items', 'additionalItems', 'uniqueItems',
-      // 'optional/format', 'optional/bignum',
-      // 'ref', 'refRemote', 'definitions',
-    ],
-    skip: ['optional/zeroTerminatedFloats'],
+    only: [],
+    skip: SKIP[draft],
     assert: require('./chai').assert,
     afterError: after.error,
     afterEach: after.each,
