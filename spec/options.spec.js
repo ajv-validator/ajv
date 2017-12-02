@@ -1153,7 +1153,9 @@ describe('Ajv Options', function () {
 
     describe('= "id"', function() {
       it('should use id and ignore $id', function() {
-        var ajv = new Ajv({schemaId: 'id'});
+        var ajv = new Ajv({schemaId: 'id', meta: false});
+        ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
+        ajv._opts.defaultMeta = 'http://json-schema.org/draft-04/schema#';
 
         ajv.addSchema({ id: 'mySchema1', type: 'string' });
         var validate = ajv.getSchema('mySchema1');

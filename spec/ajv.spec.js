@@ -27,8 +27,8 @@ describe('Ajv', function () {
     });
 
     it('should cache compiled functions for the same schema', function() {
-      var v1 = ajv.compile({ id: '//e.com/int.json', type: 'integer', minimum: 1 });
-      var v2 = ajv.compile({ id: '//e.com/int.json', minimum: 1, type: 'integer' });
+      var v1 = ajv.compile({ $id: '//e.com/int.json', type: 'integer', minimum: 1 });
+      var v2 = ajv.compile({ $id: '//e.com/int.json', minimum: 1, type: 'integer' });
       v1 .should.equal(v2);
     });
 

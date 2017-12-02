@@ -410,7 +410,7 @@ describe('Validation errors', function () {
 
   it('"items" errors should include item index without quotes in dataPath (#48)', function() {
     var schema1 = {
-      id: 'schema1',
+      $id: 'schema1',
       type: 'array',
       items: {
         type: 'integer',
@@ -445,7 +445,7 @@ describe('Validation errors', function () {
     shouldBeError(fullValidate.errors[1], 'minimum', '#/items/minimum', '/3', 'should be >= 10');
 
     var schema2 = {
-      id: 'schema2',
+      $id: 'schema2',
       type: 'array',
       items: [{ minimum: 10 }, { minimum: 9 }, { minimum: 12 }]
     };

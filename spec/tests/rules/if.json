@@ -56,9 +56,9 @@
   {
     "description": "if keyword with id in sibling subschema",
     "schema": {
-      "id": "http://example.com/base_if",
+      "$id": "http://example.com/base_if",
       "if": {
-        "id": "http://example.com/if",
+        "$id": "http://example.com/if",
         "minimum": 10
       },
       "then": { "$ref": "#/definitions/def" },

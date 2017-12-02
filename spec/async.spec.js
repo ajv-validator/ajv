@@ -375,7 +375,7 @@ describe('compileAsync method', function() {
 
     it('if loadSchema returned error', function() {
       var schema = {
-        "id": "http://example.com/parent.json",
+        "$id": "http://example.com/parent.json",
         "properties": {
           "a": { "$ref": "object.json" }
         }
