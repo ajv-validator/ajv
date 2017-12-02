@@ -29,11 +29,11 @@ runTest(getAjvInstances(options, {meta: false, schemaId: 'id'}), 4, typeof windo
   ? suite(require('./JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json', {mode: 'list'}))
   : './JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json');
 
-runTest(getAjvInstances(options, {meta: false, format: 'full'}), 6, typeof window == 'object'
+runTest(getAjvInstances(options, {meta: false}), 6, typeof window == 'object'
   ? suite(require('./JSON-Schema-Test-Suite/tests/draft6/{**/,}*.json', {mode: 'list'}))
   : './JSON-Schema-Test-Suite/tests/draft6/{**/,}*.json');
 
-runTest(getAjvInstances(options, {format: 'full'}), 7, typeof window == 'object'
+runTest(getAjvInstances(options), 7, typeof window == 'object'
   ? suite(require('./JSON-Schema-Test-Suite/tests/draft7/{**/,}*.json', {mode: 'list'}))
   : './JSON-Schema-Test-Suite/tests/draft7/{**/,}*.json');
 
