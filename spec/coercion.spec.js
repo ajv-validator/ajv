@@ -365,10 +365,10 @@ describe('Type coercion', function () {
     };
 
     var schemaRecursive2 = {
-      id: 'http://e.com/schema.json#',
+      $id: 'http://e.com/schema.json#',
       definitions: {
         foo: {
-          id: 'http://e.com/foo.json#',
+          $id: 'http://e.com/foo.json#',
           type: [ 'object', 'number' ],
           properties: {
             foo: { $ref: '#' }

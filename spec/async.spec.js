@@ -10,50 +10,50 @@ describe('compileAsync method', function() {
 
   var SCHEMAS = {
     "http://example.com/object.json": {
-      "id": "http://example.com/object.json",
+      "$id": "http://example.com/object.json",
       "properties": {
         "a": { "type": "string" },
         "b": { "$ref": "int2plus.json" }
       }
     },
     "http://example.com/int2plus.json": {
-      "id": "http://example.com/int2plus.json",
+      "$id": "http://example.com/int2plus.json",
       "type": "integer",
       "minimum": 2
     },
     "http://example.com/tree.json": {
-      "id": "http://example.com/tree.json",
+      "$id": "http://example.com/tree.json",
       "type": "array",
       "items": { "$ref": "leaf.json" }
     },
     "http://example.com/leaf.json": {
-      "id": "http://example.com/leaf.json",
+      "$id": "http://example.com/leaf.json",
       "properties": {
         "name": { "type": "string" },
         "subtree": { "$ref": "tree.json" }
       }
     },
     "http://example.com/recursive.json": {
-      "id": "http://example.com/recursive.json",
+      "$id": "http://example.com/recursive.json",
       "properties": {
         "b": { "$ref": "parent.json" }
       },
       "required": ["b"]
     },
     "http://example.com/invalid.json": {
-      "id": "http://example.com/recursive.json",
+      "$id": "http://example.com/recursive.json",
       "properties": {
         "invalid": { "type": "number" }
       },
       "required": "invalid"
     },
     "http://example.com/foobar.json": {
-      "id": "http://example.com/foobar.json",
+      "$id": "http://example.com/foobar.json",
       "$schema": "http://example.com/foobar_meta.json",
       "myFooBar": "foo"
     },
     "http://example.com/foobar_meta.json": {
-      "id": "http://example.com/foobar_meta.json",
+      "$id": "http://example.com/foobar_meta.json",
       "type": "object",
       "properties": {
         "myFooBar": {
@@ -71,7 +71,7 @@ describe('compileAsync method', function() {
 
   it('should compile schemas loading missing schemas with options.loadSchema function', function() {
     var schema = {
-      "id": "http://example.com/parent.json",
+      "$id": "http://example.com/parent.json",
       "properties": {
         "a": { "$ref": "object.json" }
       }
@@ -87,7 +87,7 @@ describe('compileAsync method', function() {
 
   it('should compile schemas loading missing schemas and return function via callback', function (done) {
     var schema = {
-      "id": "http://example.com/parent.json",
+      "$id": "http://example.com/parent.json",
       "properties": {
         "a": { "$ref": "object.json" }
       }
@@ -105,7 +105,7 @@ describe('compileAsync method', function() {
 
   it('should correctly load schemas when missing reference has JSON path', function() {
     var schema = {
-      "id": "http://example.com/parent.json",
+      "$id": "http://example.com/parent.json",
       "properties": {
         "a": { "$ref": "object.json#/properties/b" }
       }
@@ -121,7 +121,7 @@ describe('compileAsync method', function() {
 
   it('should correctly compile with remote schemas that have mutual references', function() {
     var schema = {
-      "id": "http://example.com/root.json",
+      "$id": "http://example.com/root.json",
       "properties": {
         "tree": { "$ref": "tree.json" }
       }
@@ -143,7 +143,7 @@ describe('compileAsync method', function() {
 
   it('should correctly compile with remote schemas that reference the compiled schema', function() {
     var schema = {
-      "id": "http://example.com/parent.json",
+      "$id": "http://example.com/parent.json",
       "properties": {
         "a": { "$ref": "recursive.json" }
       }
@@ -161,7 +161,7 @@ describe('compileAsync method', function() {
 
   it('should resolve reference containing "properties" segment with the same property (issue #220)', function() {
     var schema = {
-      "id": "http://example.com/parent.json",
+      "$id": "http://example.com/parent.json",
       "properties": {
         "a": {
           "$ref": "object.json#/properties/a"
@@ -206,7 +206,7 @@ describe('compileAsync method', function() {
 
   it('should return compiled schema on the next tick if there are no references (#51)', function() {
     var schema = {
-      "id": "http://example.com/int2plus.json",
+      "$id": "http://example.com/int2plus.json",
       "type": "integer",
       "minimum": 2
     };
@@ -238,7 +238,7 @@ describe('compileAsync method', function() {
 
   it('should queue calls so only one compileAsync executes at a time (#52)', function() {
     var schema = {
-      "id": "http://example.com/parent.json",
+      "$id": "http://example.com/parent.json",
       "properties": {
         "a": { "$ref": "object.json" }
       }
@@ -261,7 +261,7 @@ describe('compileAsync method', function() {
 
   it('should throw exception if loadSchema is not passed', function (done) {
     var schema = {
-      "id": "http://example.com/int2plus.json",
+      "$id": "http://example.com/int2plus.json",
       "type": "integer",
       "minimum": 2
     };
@@ -281,7 +281,7 @@ describe('compileAsync method', function() {
   describe('should return error via callback', function() {
     it('if passed schema is invalid', function (done) {
       var invalidSchema = {
-        "id": "http://example.com/int2plus.json",
+        "$id": "http://example.com/int2plus.json",
         "type": "integer",
         "minimum": "invalid"
       };
@@ -290,7 +290,7 @@ describe('compileAsync method', function() {
 
     it('if loaded schema is invalid', function (done) {
       var schema = {
-        "id": "http://example.com/parent.json",
+        "$id": "http://example.com/parent.json",
         "properties": {
           "a": { "$ref": "invalid.json" }
         }
@@ -300,7 +300,7 @@ describe('compileAsync method', function() {
 
     it('if required schema is loaded but the reference cannot be resolved', function (done) {
       var schema = {
-        "id": "http://example.com/parent.json",
+        "$id": "http://example.com/parent.json",
         "properties": {
           "a": { "$ref": "object.json#/definitions/not_found" }
         }
@@ -310,7 +310,7 @@ describe('compileAsync method', function() {
 
     it('if loadSchema returned error', function (done) {
       var schema = {
-        "id": "http://example.com/parent.json",
+        "$id": "http://example.com/parent.json",
         "properties": {
           "a": { "$ref": "object.json" }
         }
@@ -346,7 +346,7 @@ describe('compileAsync method', function() {
   describe('should return error via promise', function() {
     it('if passed schema is invalid', function() {
       var invalidSchema = {
-        "id": "http://example.com/int2plus.json",
+        "$id": "http://example.com/int2plus.json",
         "type": "integer",
         "minimum": "invalid"
       };
@@ -355,7 +355,7 @@ describe('compileAsync method', function() {
 
     it('if loaded schema is invalid', function() {
       var schema = {
-        "id": "http://example.com/parent.json",
+        "$id": "http://example.com/parent.json",
         "properties": {
           "a": { "$ref": "invalid.json" }
         }
@@ -365,7 +365,7 @@ describe('compileAsync method', function() {
 
     it('if required schema is loaded but the reference cannot be resolved', function() {
       var schema = {
-        "id": "http://example.com/parent.json",
+        "$id": "http://example.com/parent.json",
         "properties": {
           "a": { "$ref": "object.json#/definitions/not_found" }
         }

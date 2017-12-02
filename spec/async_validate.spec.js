@@ -291,7 +291,7 @@ describe('async schemas, formats and keywords', function() {
 
     it('should validate refs between two async schemas', function() {
       var schemaObj = {
-        id: 'http://e.com/obj.json#',
+        $id: 'http://e.com/obj.json#',
         $async: true,
         type: 'object',
         properties: {
@@ -300,7 +300,7 @@ describe('async schemas, formats and keywords', function() {
       };
 
       var schemaWord = {
-        id: 'http://e.com/word.json#',
+        $id: 'http://e.com/word.json#',
         $async: true,
         anyOf: [
           {
@@ -316,7 +316,7 @@ describe('async schemas, formats and keywords', function() {
 
     it('should fail compilation if sync schema references async schema', function() {
       var schema = {
-        id: 'http://e.com/obj.json#',
+        $id: 'http://e.com/obj.json#',
         type: 'object',
         properties: {
           foo: { $ref: 'http://e.com/word.json#' }
@@ -324,7 +324,7 @@ describe('async schemas, formats and keywords', function() {
       };
 
       var schemaWord = {
-        id: 'http://e.com/word.json#',
+        $id: 'http://e.com/word.json#',
         $async: true,
         anyOf: [
           {
@@ -345,7 +345,7 @@ describe('async schemas, formats and keywords', function() {
         ajv.compile(schema);
       });
 
-      schema.id = 'http://e.com/obj2.json#';
+      schema.$id = 'http://e.com/obj2.json#';
       schema.$async = true;
 
       ajv.compile(schema);

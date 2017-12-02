@@ -1033,7 +1033,7 @@ Defaults:
   schemas:          {},
   logger:           undefined,
   // referenced schema options:
-  schemaId:         undefined // recommended '$id'
+  schemaId:         '$id',
   missingRefs:      true,
   extendRefs:       'ignore', // recommended 'fail'
   loadSchema:       undefined, // function(uri: string): Promise {}
@@ -1088,9 +1088,9 @@ Defaults:
 ##### Referenced schema options
 
 - _schemaId_: this option defines which keywords are used as schema URI. Option value:
-  - `"$id"` (recommended) - only use `$id` keyword as schema URI (as specified in JSON Schema draft-06/07), ignore `id` keyword (if it is present a warning will be logged).
+  - `"$id"` (default) - only use `$id` keyword as schema URI (as specified in JSON Schema draft-06/07), ignore `id` keyword (if it is present a warning will be logged).
   - `"id"` - only use `id` keyword as schema URI (as specified in JSON Schema draft-04), ignore `$id` keyword (if it is present a warning will be logged).
-  - `undefined` (default) - use both `$id` and `id` keywords as schema URI. If both are present (in the same schema object) and different the exception will be thrown during schema compilation.
+  - `"auto"` - use both `$id` and `id` keywords as schema URI. If both are present (in the same schema object) and different the exception will be thrown during schema compilation.
 - _missingRefs_: handling of missing referenced schemas. Option values:
   - `true` (default) - if the reference cannot be resolved during compilation the exception is thrown. The thrown error has properties `missingRef` (with hash fragment) and `missingSchema` (without it). Both properties are resolved relative to the current base id (usually schema id, unless it was substituted).
   - `"ignore"` - to log error during compilation and always pass validation.

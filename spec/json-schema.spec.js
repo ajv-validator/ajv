@@ -12,11 +12,11 @@ var remoteRefs = {
   'http://localhost:1234/folder/folderInteger.json': require('./JSON-Schema-Test-Suite/remotes/folder/folderInteger.json'),
 };
 
-runTest(getAjvInstances(options, {meta: false}), 4, typeof window == 'object'
+runTest(getAjvInstances(options, {meta: false, schemaId: 'id'}), 4, typeof window == 'object'
   ? suite(require('./JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json', {mode: 'list'}))
   : './JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json');
 
-runTest(getAjvInstances(options), 6, typeof window == 'object'
+runTest(getAjvInstances(options, {schemaId: 'auto'}), 6, typeof window == 'object'
   ? suite(require('./JSON-Schema-Test-Suite/tests/draft6/{**/,}*.json', {mode: 'list'}))
   : './JSON-Schema-Test-Suite/tests/draft6/{**/,}*.json');
 
