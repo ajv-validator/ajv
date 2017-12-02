@@ -10,13 +10,19 @@ var remoteRefs = {
   'http://localhost:1234/integer.json': require('./JSON-Schema-Test-Suite/remotes/integer.json'),
   'http://localhost:1234/subSchemas.json': require('./JSON-Schema-Test-Suite/remotes/subSchemas.json'),
   'http://localhost:1234/folder/folderInteger.json': require('./JSON-Schema-Test-Suite/remotes/folder/folderInteger.json'),
+  'http://localhost:1234/name.json': require('./JSON-Schema-Test-Suite/remotes/name.json')
 };
 
 runTest(getAjvInstances(options, {meta: false}), 4, typeof window == 'object'
   ? suite(require('./JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json', {mode: 'list'}))
   : './JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json');
 
-runTest(getAjvInstances(options), 6, typeof window == 'object'
+runTest(getAjvInstances(options, {
+  format: 'full',
+  formats: {
+    'json-pointer': /^(?:\/(?:[^~/]|~0|~1)*)*$/
+  }
+}), 6, typeof window == 'object'
   ? suite(require('./JSON-Schema-Test-Suite/tests/draft6/{**/,}*.json', {mode: 'list'}))
   : './JSON-Schema-Test-Suite/tests/draft6/{**/,}*.json');
 
