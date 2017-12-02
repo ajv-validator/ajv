@@ -5,7 +5,7 @@
       {
         "definitions": {
           "int": {
-            "id": "#int",
+            "$id": "#int",
             "type": "integer"
           }
         },
@@ -30,10 +30,10 @@
     "description": "IDs in refs with root id",
     "schemas": [
       {
-        "id": "http://example.com/int_1.json",
+        "$id": "http://example.com/int_1.json",
         "definitions": {
           "int": {
-            "id": "#int",
+            "$id": "#int",
             "type": "integer"
           }
         },

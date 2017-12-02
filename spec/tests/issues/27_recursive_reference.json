@@ -3,12 +3,12 @@
     "description": "Recursive reference (#27)",
     "schemas": [
       {
-        "$schema": "http://json-schema.org/draft-04/schema#",
-        "id": "testrec_1",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "testrec_1",
         "type": "object",
         "properties": {
           "layout": {
-            "id": "layout",
+            "$id": "layout",
             "type": "object",
             "properties": {
               "layout": { "type": "string" },

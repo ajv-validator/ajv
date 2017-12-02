@@ -1,20 +1,12 @@
 [
   {
     "description": "id property in referenced schema in object that is not a schema (#63)",
-    "schemas": [
-      {
-        "type" : "object",
-        "properties": {
-          "title": { "$ref": "http://json-schema.org/draft-04/schema#/properties/title" }
-        }
-      },
-      {
-        "type" : "object",
-        "properties": {
-          "title": { "$ref": "http://json-schema.org/draft-07/schema#/properties/title" }
-        }
+    "schema": {
+      "type" : "object",
+      "properties": {
+        "title": { "$ref": "http://json-schema.org/draft-07/schema#/properties/title" }
       }
-    ],
+    },
     "tests": [
       {
         "description": "empty object is valid",

@@ -2,7 +2,7 @@
   {
     "description": "hash ref inside hash ref in remote ref (#70, was passing)",
     "schema": {
-      "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveIntegerDefault0"
+      "$ref": "http://json-schema.org/draft-07/schema#/definitions/nonNegativeIntegerDefault0"
     },
     "tests": [
       { "data": 1, "valid": true, "description": "positive integer is valid" },
@@ -12,16 +12,10 @@
   },
   {
     "description": "hash ref inside hash ref in remote ref with id (#70, was passing)",
-    "schemas": [
-      {
-        "id": "http://example.com/my_schema_1.json",
-        "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveIntegerDefault0"
-      },
-      {
-        "$id": "http://example.com/my_schema_2.json",
-        "$ref": "http://json-schema.org/draft-07/schema#/definitions/nonNegativeIntegerDefault0"
-      }
-    ],
+    "schema": {
+      "$id": "http://example.com/my_schema_2.json",
+      "$ref": "http://json-schema.org/draft-07/schema#/definitions/nonNegativeIntegerDefault0"
+    },
     "tests": [
       { "data": 1, "valid": true, "description": "positive integer is valid" },
       { "data": 0, "valid": true, "description": "zero is valid" },
@@ -32,7 +26,7 @@
     "description": "local hash ref with remote hash ref without inner hash ref (#70, was passing)",
     "schema": {
       "definitions": {
-        "a": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveInteger" }
+        "a": { "$ref": "http://json-schema.org/draft-07/schema#/definitions/nonNegativeIntegerDefault0" }
       },
       "properties": {
         "b": { "$ref": "#/definitions/a" }
@@ -48,7 +42,7 @@
     "description": "local hash ref with remote hash ref that has inner hash ref (#70)",
     "schema": {
       "definitions": {
-        "a": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveIntegerDefault0" }
+        "a": { "$ref": "http://json-schema.org/draft-07/schema#/definitions/nonNegativeIntegerDefault0" }
       },
       "properties": {
         "b": { "$ref": "#/definitions/a" }
