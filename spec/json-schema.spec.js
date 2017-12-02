@@ -15,7 +15,13 @@ var remoteRefs = {
 
 var SKIP = {
   4: ['optional/zeroTerminatedFloats'],
-  7: ['optional/content', 'optional/format']
+  7: [
+    'optional/content',
+    'format/idn-email',
+    'format/idn-hostname',
+    'format/iri',
+    'format/iri-reference'
+  ]
 };
 
 
