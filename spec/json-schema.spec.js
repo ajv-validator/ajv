@@ -10,21 +10,30 @@ var remoteRefs = {
   'http://localhost:1234/integer.json': require('./JSON-Schema-Test-Suite/remotes/integer.json'),
   'http://localhost:1234/subSchemas.json': require('./JSON-Schema-Test-Suite/remotes/subSchemas.json'),
   'http://localhost:1234/folder/folderInteger.json': require('./JSON-Schema-Test-Suite/remotes/folder/folderInteger.json'),
+  'http://localhost:1234/name.json': require('./JSON-Schema-Test-Suite/remotes/name.json')
 };
 
 runTest(getAjvInstances(options, {meta: false, schemaId: 'id'}), 4, typeof window == 'object'
   ? suite(require('./JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json', {mode: 'list'}))
   : './JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json');
 
-runTest(getAjvInstances(options, {schemaId: 'auto'}), 6, typeof window == 'object'
+runTest(getAjvInstances(options, {meta: false, schemaId: 'auto', format: 'full'}), 6, typeof window == 'object'
   ? suite(require('./JSON-Schema-Test-Suite/tests/draft6/{**/,}*.json', {mode: 'list'}))
   : './JSON-Schema-Test-Suite/tests/draft6/{**/,}*.json');
 
 
 function runTest(instances, draft, tests) {
   instances.forEach(function (ajv) {
-    ajv.addMetaSchema(require('../lib/refs/json-schema-draft-04.json'));
-    if (draft == 4) ajv._opts.defaultMeta = 'http://json-schema.org/draft-04/schema#';
+    switch (draft) {
+      case 4:
+        ajv.addMetaSchema(require('../lib/refs/json-schema-draft-04.json'));
+        ajv._opts.defaultMeta = 'http://json-schema.org/draft-04/schema#';
+        break;
+      case 6:
+        ajv.addMetaSchema(require('../lib/refs/json-schema-draft-06.json'));
+        ajv._opts.defaultMeta = 'http://json-schema.org/draft-06/schema#';
+        break;
+    }
     for (var id in remoteRefs) ajv.addSchema(remoteRefs[id], id);
   });
 
