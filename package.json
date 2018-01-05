@@ -72,7 +72,7 @@
     "ajv-async": "^0.1.0",
     "bluebird": "^3.1.5",
     "brfs": "^1.4.3",
-    "browserify": "^14.1.0",
+    "browserify": "^15.0.0",
     "chai": "^4.0.1",
     "coveralls": "^3.0.0",
     "del-cli": "^1.1.0",
