@@ -511,9 +511,19 @@
         "valid": true
       },
       {
-        "description": "not valid time",
+        "description": "an invalid time format",
         "data": "12.34.56",
         "valid": false
+      },
+      {
+        "description": "an invalid time",
+        "data": "12:34:67",
+        "valid": false
+      },
+      {
+        "description": "a valid time (leap second)",
+        "data": "23:59:60",
+        "valid": true
       }
     ]
   },
@@ -535,6 +545,21 @@
         "description": "an invalid date-time string (additional part)",
         "data": "1963-06-19T12:13:14ZTinvalid",
         "valid": false
+      },
+      {
+        "description": "an invalid date-time string (invalid date)",
+        "data": "1963-20-19T12:13:14Z",
+        "valid": false
+      },
+      {
+        "description": "an invalid date-time string (invalid time)",
+        "data": "1963-06-19T12:13:67Z",
+        "valid": false
+      },
+      {
+        "description": "a valid date-time string (leap second)",
+        "data": "2016-12-31T23:59:60Z",
+        "valid": true
       }
     ]
   },
@@ -569,11 +594,6 @@
         "valid": true
       },
       {
-        "description": "a valid JSON-pointer as uri fragment",
-        "data": "#/foo/%25a",
-        "valid": true
-      },
-      {
         "description": "empty string is valid",
         "data": "",
         "valid": true
@@ -589,11 +609,6 @@
         "valid": false
       },
       {
-        "description": "not a valid JSON-pointer as uri fragment (% not URL-encoded)",
-        "data": "#/foo/%a",
-        "valid": false
-      },
-      {
         "description": "valid JSON-pointer with empty segment",
         "data": "/foo//bar",
         "valid": true
@@ -602,6 +617,22 @@
         "description": "valid JSON-pointer with the last empty segment",
         "data": "/foo/bar/",
         "valid": true
+      }
+    ]
+  },
+  {
+    "description": "validation of JSON-pointer URI fragment strings",
+    "schema": {"format": "json-pointer-uri-fragment"},
+    "tests": [
+      {
+        "description": "a valid JSON-pointer as uri fragment",
+        "data": "#/foo/%25a",
+        "valid": true
+      },
+      {
+        "description": "not a valid JSON-pointer as uri fragment (% not URL-encoded)",
+        "data": "#/foo/%a",
+        "valid": false
       },
       {
         "description": "valid JSON-pointer with empty segment as uri fragment",

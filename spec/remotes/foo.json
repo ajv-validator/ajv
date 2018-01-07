@@ -1,5 +1,5 @@
 {
-  "id": "http://localhost:1234/foo.json",
+  "$id": "http://localhost:1234/foo.json",
   "type": "object",
   "properties": {
     "bar": { "$ref": "bar.json" }

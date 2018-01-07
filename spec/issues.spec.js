@@ -19,7 +19,7 @@ describe('issue #8: schema with shared references', function() {
       };
 
       var schema = {
-        id: 'obj.json#',
+        $id: 'obj.json#',
         type: 'object',
         properties: {
           foo: propertySchema,
@@ -51,7 +51,7 @@ describe('issue #50: references with "definitions"', function () {
       var ajv = new Ajv;
 
       ajv[method]({
-        id: 'http://example.com/test/person.json#',
+        $id: 'http://example.com/test/person.json#',
         definitions: {
           name: { type: 'string' }
         },
@@ -62,7 +62,7 @@ describe('issue #50: references with "definitions"', function () {
       });
 
       ajv[method]({
-        id: 'http://example.com/test/employee.json#',
+        $id: 'http://example.com/test/employee.json#',
         type: 'object',
         properties: {
           person: { $ref: '/test/person.json#' },
@@ -109,7 +109,7 @@ describe('issue #182, NaN validation', function() {
 describe('issue #204, options schemas and $data used together', function() {
   it('should use v5 metaschemas by default', function() {
     var ajv = new Ajv({
-      schemas: [{id: 'str', type: 'string'}],
+      schemas: [{$id: 'str', type: 'string'}],
       $data: true
     });
 
@@ -184,7 +184,7 @@ describe('issue #210, mutual recursive $refs that are schema fragments', functio
     var ajv = new Ajv;
 
     ajv.addSchema({
-      "id" : "foo",
+      "$id" : "foo",
       "definitions": {
         "bar": {
           "properties": {
@@ -200,7 +200,7 @@ describe('issue #210, mutual recursive $refs that are schema fragments', functio
     });
 
     ajv.addSchema({
-      "id" : "boo",
+      "$id" : "boo",
       "type": "object",
       "required": ["quux"],
       "properties": {
@@ -218,7 +218,7 @@ describe('issue #210, mutual recursive $refs that are schema fragments', functio
     var ajv = new Ajv;
 
     ajv.addSchema({
-      "id" : "foo",
+      "$id" : "foo",
       "definitions": {
         "bar": {
           "properties": {
@@ -234,7 +234,7 @@ describe('issue #210, mutual recursive $refs that are schema fragments', functio
     });
 
     ajv.addSchema({
-      "id" : "boo",
+      "$id" : "boo",
       "definitions": {
         "buu": {
           "type": "object",
@@ -256,16 +256,16 @@ describe('issue #210, mutual recursive $refs that are schema fragments', functio
 
 describe('issue #240, mutually recursive fragment refs reference a common schema', function() {
   var apiSchema = {
-    $schema: 'http://json-schema.org/draft-06/schema#',
-    id: 'schema://api.schema#',
+    $schema: 'http://json-schema.org/draft-07/schema#',
+    $id: 'schema://api.schema#',
     resource: {
-      id: '#resource',
+      $id: '#resource',
       properties: {
         id: { type: 'string' }
       }
     },
     resourceIdentifier: {
-      id: '#resource_identifier',
+      $id: '#resource_identifier',
       properties: {
         id: { type: 'string' },
         type: { type: 'string' }
@@ -274,8 +274,8 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
   };
 
   var domainSchema = {
-    $schema: 'http://json-schema.org/draft-06/schema#',
-    id: 'schema://domain.schema#',
+    $schema: 'http://json-schema.org/draft-07/schema#',
+    $id: 'schema://domain.schema#',
     properties: {
       data: {
         oneOf: [
@@ -290,8 +290,8 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     var ajv = new Ajv;
 
     var librarySchema = {
-      $schema: 'http://json-schema.org/draft-06/schema#',
-      id: 'schema://library.schema#',
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      $id: 'schema://library.schema#',
       properties: {
         name: { type: 'string' },
         links: {
@@ -305,7 +305,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
       },
       definitions: {
         resource_identifier: {
-          id: '#resource_identifier',
+          $id: '#resource_identifier',
           allOf: [
             {
               properties: {
@@ -322,8 +322,8 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     };
 
     var catalogItemSchema = {
-      $schema: 'http://json-schema.org/draft-06/schema#',
-      id: 'schema://catalog_item.schema#',
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      $id: 'schema://catalog_item.schema#',
       properties: {
         name: { type: 'string' },
         links: {
@@ -334,7 +334,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
       },
       definitions: {
         resource_identifier: {
-          id: '#resource_identifier',
+          $id: '#resource_identifier',
           allOf: [
             {
               properties: {
@@ -351,8 +351,8 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     };
 
     var catalogItemResourceIdentifierSchema = {
-      $schema: 'http://json-schema.org/draft-06/schema#',
-      id: 'schema://catalog_item_resource_identifier.schema#',
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      $id: 'schema://catalog_item_resource_identifier.schema#',
       allOf: [
         {
           properties: {
@@ -381,8 +381,8 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     var ajv = new Ajv;
 
     var librarySchema = {
-      $schema: 'http://json-schema.org/draft-06/schema#',
-      id: 'schema://library.schema#',
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      $id: 'schema://library.schema#',
       properties: {
         name: { type: 'string' },
         links: {
@@ -396,7 +396,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
       },
       definitions: {
         resource_identifier: {
-          id: '#resource_identifier',
+          $id: '#resource_identifier',
           allOf: [
             {
               properties: {
@@ -413,8 +413,8 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
     };
 
     var catalogItemSchema = {
-      $schema: 'http://json-schema.org/draft-06/schema#',
-      id: 'schema://catalog_item.schema#',
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      $id: 'schema://catalog_item.schema#',
       properties: {
         name: { type: 'string' },
         links: {
@@ -425,7 +425,7 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
       },
       definitions: {
         resource_identifier: {
-          id: '#resource_identifier',
+          $id: '#resource_identifier',
           allOf: [
             {
               properties: {
@@ -463,7 +463,6 @@ describe('issue #240, mutually recursive fragment refs reference a common schema
 describe('issue #259, support validating [meta-]schemas against themselves', function() {
   it('should add schema before validation if "id" is the same as "$schema"', function() {
     var ajv = new Ajv;
-    ajv.addMetaSchema(require('../lib/refs/json-schema-draft-04.json'));
     var hyperSchema = require('./remotes/hyper-schema.json');
     ajv.addMetaSchema(hyperSchema);
   });
@@ -623,5 +622,47 @@ describe('issue #533, throwing missing ref exception with option missingRefs: "i
     should.throw(function() {
       ajv.compile(schema);
     });
+  });
+});
+
+describe('full date format validation should understand leap years', function () {
+  it('should handle non leap year affected dates with date-time', function() {
+    var ajv = new Ajv({ format: 'full' });
+
+    var schema = { format: 'date-time' };
+    var validDateTime = '2016-01-31T00:00:00Z';
+
+    ajv.validate(schema, validDateTime).should.equal(true);
+  });
+
+  it('should handle non leap year affected dates with date', function () {
+    var ajv = new Ajv({ format: 'full' });
+
+    var schema = { format: 'date' };
+    var validDate = '2016-11-30';
+
+    ajv.validate(schema, validDate).should.equal(true);
+  });
+
+  it('should handle year leaps as date-time', function() {
+    var ajv = new Ajv({ format: 'full' });
+
+    var schema = { format: 'date-time' };
+    var validDateTime = '2016-02-29T00:00:00Z';
+    var invalidDateTime = '2017-02-29T00:00:00Z';
+
+    ajv.validate(schema, validDateTime) .should.equal(true);
+    ajv.validate(schema, invalidDateTime) .should.equal(false);
+  });
+
+  it('should handle year leaps as date', function() {
+    var ajv = new Ajv({ format: 'full' });
+
+    var schema = { format: 'date' };
+    var validDate = '2016-02-29';
+    var invalidDate = '2017-02-29';
+
+    ajv.validate(schema, validDate) .should.equal(true);
+    ajv.validate(schema, invalidDate) .should.equal(false);
   });
 });

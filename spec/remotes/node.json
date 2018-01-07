@@ -1,5 +1,5 @@
 {
-  "id": "http://localhost:1234/node.json",
+  "$id": "http://localhost:1234/node.json",
   "description": "node",
   "type": "object",
   "properties": {

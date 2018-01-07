@@ -20,28 +20,28 @@ describe('resolve', function () {
     it('should resolve ids in schema', function() {
       // Example from http://json-schema.org/latest/json-schema-core.html#anchor29
       var schema = {
-        "id": "http://x.y.z/rootschema.json#",
+        "$id": "http://x.y.z/rootschema.json#",
         "schema1": {
-          "id": "#foo",
+          "$id": "#foo",
           "description": "schema1",
           "type": "integer"
         },
         "schema2": {
-          "id": "otherschema.json",
+          "$id": "otherschema.json",
           "description": "schema2",
           "nested": {
-            "id": "#bar",
+            "$id": "#bar",
             "description": "nested",
             "type": "string"
           },
           "alsonested": {
-            "id": "t/inner.json#a",
+            "$id": "t/inner.json#a",
             "description": "alsonested",
             "type": "boolean"
           }
         },
         "schema3": {
-          "id": "some://where.else/completely#",
+          "$id": "some://where.else/completely#",
           "description": "schema3",
           "type": "null"
         },
@@ -65,13 +65,13 @@ describe('resolve', function () {
     it('should throw if the same id resolves to two different schemas', function() {
       instances.forEach(function (ajv) {
         ajv.compile({
-          "id": "http://example.com/1.json",
+          "$id": "http://example.com/1.json",
           "type": "integer"
         });
         should.throw(function() {
           ajv.compile({
             "additionalProperties": {
-              "id": "http://example.com/1.json",
+              "$id": "http://example.com/1.json",
               "type": "string"
             }
           });
@@ -80,11 +80,11 @@ describe('resolve', function () {
         should.throw(function() {
           ajv.compile({
             "items": {
-              "id": "#int",
+              "$id": "#int",
               "type": "integer"
             },
             "additionalProperties": {
-              "id": "#int",
+              "$id": "#int",
               "type": "string"
             }
           });
@@ -98,7 +98,7 @@ describe('resolve', function () {
     it('should resolve fragment', function() {
       instances.forEach(function(ajv) {
         var schema = {
-          "id": "//e.com/types",
+          "$id": "//e.com/types",
           "definitions": {
             "int": { "type": "integer" }
           }
@@ -166,7 +166,7 @@ describe('resolve', function () {
       instances.forEach(function (ajv) {
         try {
           ajv.compile({
-            "id": opts.baseId,
+            "$id": opts.baseId,
             "properties": { "a": { "$ref": opts.ref } }
           });
         } catch(e) {
@@ -180,14 +180,14 @@ describe('resolve', function () {
 
   describe('inline referenced schemas without refs in them', function() {
     var schemas = [
-      { id: 'http://e.com/obj.json#',
+      { $id: 'http://e.com/obj.json#',
         properties: { a: { $ref: 'int.json#' } } },
-      { id: 'http://e.com/int.json#',
+      { $id: 'http://e.com/int.json#',
         type: 'integer', minimum: 2, maximum: 4 },
-      { id: 'http://e.com/obj1.json#',
+      { $id: 'http://e.com/obj1.json#',
         definitions: { int: { type: 'integer', minimum: 2, maximum: 4 } },
         properties: { a: { $ref: '#/definitions/int' } } },
-      { id: 'http://e.com/list.json#',
+      { $id: 'http://e.com/list.json#',
         items: { $ref: 'obj.json#' } }
     ];
 
@@ -219,8 +219,8 @@ describe('resolve', function () {
       var ajv = new Ajv({ verbose: true });
 
       var schemaMessage = {
-        $schema: "http://json-schema.org/draft-06/schema#",
-        id: "http://e.com/message.json#",
+        $schema: "http://json-schema.org/draft-07/schema#",
+        $id: "http://e.com/message.json#",
         type: "object",
         required: ["header"],
         properties: {
@@ -235,8 +235,8 @@ describe('resolve', function () {
 
       // header schema
       var schemaHeader = {
-        $schema: "http://json-schema.org/draft-06/schema#",
-        id: "http://e.com/header.json#",
+        $schema: "http://json-schema.org/draft-07/schema#",
+        $id: "http://e.com/header.json#",
         type: "object",
         properties: {
           version: {
@@ -270,14 +270,14 @@ describe('resolve', function () {
       var v = ajv.getSchema('http://e.com/message.json#');
 
       v(validMessage) .should.equal(true);
-      v.schema.id .should.equal('http://e.com/message.json#');
+      v.schema.$id .should.equal('http://e.com/message.json#');
 
       v(invalidMessage) .should.equal(false);
       v.errors .should.have.length(1);
-      v.schema.id .should.equal('http://e.com/message.json#');
+      v.schema.$id .should.equal('http://e.com/message.json#');
 
       v(validMessage) .should.equal(true);
-      v.schema.id .should.equal('http://e.com/message.json#');
+      v.schema.$id .should.equal('http://e.com/message.json#');
     });
 
 

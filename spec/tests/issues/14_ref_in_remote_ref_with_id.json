@@ -1,18 +1,11 @@
 [
   {
     "description": "ref in remote ref with ids",
-    "schemas": [
-      {
-        "id": "http://localhost:1234/issue14a_1.json",
-        "type": "array",
-        "items": { "$ref": "foo.json" }
-      },
-      {
-        "$id": "http://localhost:1234/issue14a_2.json",
-        "type": "array",
-        "items": { "$ref": "foo.json" }
-      }
-    ],
+    "schema": {
+      "$id": "http://localhost:1234/issue14a.json",
+      "type": "array",
+      "items": { "$ref": "foo.json" }
+    },
     "tests": [
       {
         "description": "string is valid",
@@ -36,18 +29,11 @@
   },
   {
     "description": "remote ref in definitions in remote ref with ids (#14)",
-    "schemas": [
-      {
-        "id": "http://localhost:1234/issue14b_1.json",
-        "type": "array",
-        "items": { "$ref": "buu.json#/definitions/buu" }
-      },
-      {
-        "$id": "http://localhost:1234/issue14b_2.json",
-        "type": "array",
-        "items": { "$ref": "buu.json#/definitions/buu" }
-      }
-    ],
+    "schema": {
+      "$id": "http://localhost:1234/issue14b.json",
+      "type": "array",
+      "items": { "$ref": "buu.json#/definitions/buu" }
+    },
     "tests": [
       {
         "description": "string is valid",
