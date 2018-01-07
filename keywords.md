@@ -6,7 +6,7 @@ layout: main
 # JSON Schema validation keywords
 
 
-In a simple way, JSON schema is an object with validation keywords.
+In a simple way, JSON Schema is an object with validation keywords.
 
 The keywords and their values define what rules the data should satisfy to be valid.
 
@@ -15,7 +15,7 @@ The keywords and their values define what rules the data should satisfy to be va
 
 - [type](#type)
 - [Keywords for numbers](#keywords-for-numbers)
-    - [maximum / minimum and exclusiveMaximum / exclusiveMinimum](#maximum--minimum-and-exclusivemaximum--exclusiveminimum) (CHANGED in draft 6)
+    - [maximum / minimum and exclusiveMaximum / exclusiveMinimum](#maximum--minimum-and-exclusivemaximum--exclusiveminimum) (changed in draft-06)
     - [multipleOf](#multipleof)
 - [Keywords for strings](#keywords-for-strings)
     - [maxLength/minLength](#maxlength--minlength)
@@ -27,7 +27,7 @@ The keywords and their values define what rules the data should satisfy to be va
     - [uniqueItems](#uniqueitems)
     - [items](#items)
     - [additionalItems](#additionalitems)
-    - [contains](#contains) (NEW in draft 6)
+    - [contains](#contains) (added in draft-06)
 - [Keywords for objects](#keywords-for-objects)
     - [maxProperties/minProperties](#maxproperties--minproperties)
     - [required](#required)
@@ -35,18 +35,17 @@ The keywords and their values define what rules the data should satisfy to be va
     - [patternProperties](#patternproperties)
     - [additionalProperties](#additionalproperties)
     - [dependencies](#dependencies)
-    - [propertyNames](#propertynames) (NEW in draft 6)
-    - [patternGroups](#patterngroups-deprecated) (deprecated)
+    - [propertyNames](#propertynames) (added in draft-06)
     - [patternRequired](#patternrequired-proposed) (proposed)
 - [Keywords for all types](#keywords-for-all-types)
     - [enum](#enum)
-    - [const](#const) (NEW in draft 6)
+    - [const](#const) (added in draft-06)
 - [Compound keywords](#compound-keywords)
     - [not](#not)
     - [oneOf](#oneof)
     - [anyOf](#anyof)
     - [allOf](#allof)
-    - [switch](#switch-proposed) (proposed)
+    - [if/then/else](#ifthenelse) (NEW in draft-07)
 
 
 
@@ -80,7 +79,7 @@ __Examples__
     _invalid_: `[]`, `{}`, `null`, `true`
 
 
-All examples above are JSON schemas that only require data to be of certain type to be valid.
+All examples above are JSON Schemas that only require data to be of certain type to be valid.
 
 Most other keywords apply only to a particular type of data. If the data is of different type, the keyword will not apply and the data will be considered valid.
 
@@ -93,11 +92,11 @@ Most other keywords apply only to a particular type of data. If the data is of d
 
 The value of keyword `maximum` (`minimum`) should be a number. This value is the maximum (minimum) allowed value for the data to be valid.
 
-Draft 4: The value of keyword `exclusiveMaximum` (`exclusiveMinimum`) should be a boolean value. These keyword cannot be used without `maximum` (`minimum`). If this keyword value is equal to `true`, the data should not be equal to the value in `maximum` (`minimum`) keyword to be valid.
+Draft-04: The value of keyword `exclusiveMaximum` (`exclusiveMinimum`) should be a boolean value. These keyword cannot be used without `maximum` (`minimum`). If this keyword value is equal to `true`, the data should not be equal to the value in `maximum` (`minimum`) keyword to be valid.
 
-Draft 6: The value of keyword `exclusiveMaximum` (`exclusiveMinimum`) should be a number. This value is the exclusive maximum (minimum) allowed value for the data to be valid (the data equal to this keyword value is invalid).
+Draft-06/07: The value of keyword `exclusiveMaximum` (`exclusiveMinimum`) should be a number. This value is the exclusive maximum (minimum) allowed value for the data to be valid (the data equal to this keyword value is invalid).
 
-Ajv supports both draft 4 and draft 6 syntaxes.
+Ajv supports both draft-04 and draft-06/07 syntaxes.
 
 
 __Examples__
@@ -117,8 +116,8 @@ __Examples__
 
 
 3.  _schema_:
-        draft 4: `{ "minimum": 5, "exclusiveMinimum": true }`
-        draft 6: `{ "exclusiveMinimum": 5 }`
+        draft-04: `{ "minimum": 5, "exclusiveMinimum": true }`
+        draft-06/07: `{ "exclusiveMinimum": 5 }`
 
     _valid_: `6`, `7`, any non-number (`"abc"`, `[]`, `{}`, `null`, `true`)
 
@@ -370,7 +369,7 @@ __Examples__
 
 ### `contains`
 
-The value of the keyword is a JSON-schema. The array is valid if it contains at least one item that is valid according to this schema.
+The value of the keyword is a JSON Schema. The array is valid if it contains at least one item that is valid according to this schema.
 
 __Example__
 
@@ -429,7 +428,7 @@ _invalid_: `{}`, `{"a": 1}`, `{"c": 3, "d":4}`
 
 ### `properties`
 
-The value of the keyword should be a map with keys equal to data object properties. Each value in the map should be a JSON schema. For data object to be valid the corresponding values in data object properties should be valid according to these schemas.
+The value of the keyword should be a map with keys equal to data object properties. Each value in the map should be a JSON Schema. For data object to be valid the corresponding values in data object properties should be valid according to these schemas.
 
 __Please note__: `properties` keyword does not require that the properties mentioned in it are present in the object (see examples).
 
@@ -456,7 +455,7 @@ _invalid_: `{"foo": 1}`, `{"foo": "a", "bar": 1}`
 
 ### `patternProperties`
 
-The value of this keyword should be a map where keys should be regular expressions and the values should be JSON schemas. For data object to be valid the values in data object properties that match regular expression(s) should be valid according to the corresponding schema(s).
+The value of this keyword should be a map where keys should be regular expressions and the values should be JSON Schemas. For data object to be valid the values in data object properties that match regular expression(s) should be valid according to the corresponding schema(s).
 
 When the value in data object property matches multiple regular expressions it should be valid according to all the schemas for all matched regular expressions.
 
@@ -483,7 +482,7 @@ _invalid_: `{"foo": 1}`, `{"foo": "a", "bar": "b"}`
 
 ### `additionalProperties`
 
-The value of the keyword should be either a boolean or a JSON schema.
+The value of the keyword should be either a boolean or a JSON Schema.
 
 If the value is `true` the keyword is ignored.
 
@@ -557,7 +556,7 @@ __Examples__
 
 ### `dependencies`
 
-The value of the keyword is a map with keys equal to data object properties. Each value in the map should be either an array of unique property names ("property dependency") or a JSON schema ("schema dependency").
+The value of the keyword is a map with keys equal to data object properties. Each value in the map should be either an array of unique property names ("property dependency") or a JSON Schema ("schema dependency").
 
 For property dependency, if the data object contains a property that is a key in the keyword value, then to be valid the data object should also contain all properties from the array of properties.
 
@@ -601,7 +600,7 @@ __Examples__
 
 ### `propertyNames`
 
-The value of this keyword is a JSON schema.
+The value of this keyword is a JSON Schema.
 
 For data object to be valid each property name in this object should be valid according to this schema.
 
@@ -619,41 +618,6 @@ _schema_:
 _valid_: `{"foo@bar.com": "any", "bar@bar.com": "any"}`, any non-object
 
 _invalid_: `{"foo": "any value"}`
-
-
-
-### `patternGroups` (deprecated)
-
-This keyword is only provided for backward compatibility, it will be removed in the next major version. To use it, pass option `patternGroups: true`.
-
-The value of this keyword should be a map where keys should be regular expressions and the values should be objects with the following properties:
-
-- `schema` (required) - should be a JSON schema. For data object to be valid the values in data object properties that match regular expression(s) should be valid according to the corresponding `schema`(s).
-- `maximum` / `minimum` (optional) - should be integers. For data object to be valid the number of properties that match regular expression(s) should be within limits set by `minimum`(s) and `maximum`(s).
-
-
-__Example__
-
-_schema_:
-
-```json
-{
-    "patternGroups": {
-        "^[a-z]+$": {
-            "minimum": 1,
-            "schema": { "type": "string" }
-        },
-        "^[0-9]+$": {
-            "minimum": 1,
-            "schema": { "type": "integer" }
-        }
-    }
-}
-```
-
-_valid_: `{ "foo": "bar", "1": "2" }`, any non-object
-
-_invalid_: `{}`, `{ "foo": "bar" }`, `{ "1": "2" }`
 
 
 
@@ -737,7 +701,7 @@ _invalid_: `{ "foo": 1 }`, `{ "bar": 1 }`, `{ "foo": 1, "bar": 2 }`
 
 ### `not`
 
-The value of the keyword should be a JSON schema. The data is valid if it is invalid according to this schema.
+The value of the keyword should be a JSON Schema. The data is valid if it is invalid according to this schema.
 
 
 __Examples__
@@ -768,7 +732,7 @@ __Examples__
 
 ### `oneOf`
 
-The value of the keyword should be an array of JSON schemas. The data is valid if it matches exactly one JSON schema from this array. Validators have to validate data against all schemas to establish validity according to this keyword.
+The value of the keyword should be an array of JSON Schemas. The data is valid if it matches exactly one JSON Schema from this array. Validators have to validate data against all schemas to establish validity according to this keyword.
 
 
 __Example__
@@ -791,7 +755,7 @@ _invalid_: `2`, `3`, `4.5`, `5.5`
 
 ### `anyOf`
 
-The value of the keyword should be an array of JSON schemas. The data is valid if it is valid according to one or more JSON schemas in this array. Validators only need to validate data against schemas in order until the first schema matches (or until all schemas have been tried). For this reason validating against this keyword is faster than against "oneOf" keyword in most cases.
+The value of the keyword should be an array of JSON Schemas. The data is valid if it is valid according to one or more JSON Schemas in this array. Validators only need to validate data against schemas in order until the first schema matches (or until all schemas have been tried). For this reason validating against this keyword is faster than against "oneOf" keyword in most cases.
 
 
 __Example__
@@ -814,7 +778,7 @@ _invalid_: `4.5`, `5.5`
 
 ### `allOf`
 
-The value of the keyword should be an array of JSON schemas. The data is valid if it is valid according to all JSON schemas in this array.
+The value of the keyword should be an array of JSON Schemas. The data is valid if it is valid according to all JSON Schemas in this array.
 
 
 __Example__
@@ -835,29 +799,15 @@ _invalid_: `1.5`, `2.5`, `4`, `4.5`, `5`, `5.5`, any non-number
 
 
 
-### `switch` (proposed)
+### `if`/`then`/`else`
 
-Defined in [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package.
+These keywords allow to implement conditional validation. Their values should be valid JSON Schemas (object or boolean).
 
-The value of the keyword is the array of if/then clauses. Each clause is the object with the following properties:
+If `if` keyword is absent, the validation succeds.
 
-- `if` (optional) - the value is JSON-schema
-- `then` (required) - the value is JSON-schema or boolean
-- `continue` (optional) - the value is boolean
+If the data is valid against the sub-schema in `if` keyword, then the validation result is equal to the result of data validation against the sub-schema in `then` keyword (if `then` is absent, the validation succeeds).
 
-The validation process is dynamic; all clauses are executed sequentially in the following way:
-
-1. `if`:
-    1.  `if` property is JSON-schema according to which the data is:
-        1.  valid => go to step 2.
-        2.  invalid => go to the NEXT clause, if this was the last clause the validation of `switch` SUCCEEDS.
-    2.  `if` property is absent => go to step 2.
-2. `then`:
-    1.  `then` property is `true` or it is JSON-schema according to which the data is valid => go to step 3.
-    2.  `then` property is `false` or it is JSON-schema according to which the data is invalid => the validation of `switch` FAILS.
-3. `continue`:
-    1.  `continue` property is `true` => go to the NEXT clause, if this was the last clause the validation of `switch` SUCCEEDS.
-    2.  `continue` property is `false` or absent => validation of `switch` SUCCEEDS.
+If the data is invalid against the sub-schema in `if` keyword, then the validation result is equal to the result of data validation against the sub-schema in `else` keyword (if `else` is absent, the validation succeeds).
 
 
 __Examples__
@@ -866,29 +816,24 @@ __Examples__
 
     ```json
     {
-        "switch": [
-            {
-                "if": { "properties": { "power": { "minimum": 9000 } } },
-                "then": { "required": [ "disbelief" ] },
-                "continue": true
-            },
-            { "then": { "required": [ "confidence" ] } }
-        ]
+        "if": { "properties": { "power": { "minimum": 9000 } } },
+        "then": { "required": [ "disbelief" ] },
+        "else": { "required": [ "confidence" ] }
     }
     ```
 
     _valid_:
 
-    - `{ "power": 9000, "disbelief": true, "confidence": true }`
-    - `{ "confidence": true }`
+    - `{ "power": 10000, "disbelief": true }`
+    - `{}`
     - `{ "power": 1000, "confidence": true }`
+    - any non-object
 
     _invalid_:
 
-    - `{ "power": 9000 }` (`disbelief` & `confidence` are required)
-    - `{ "power": 9000, "disbelief": true }` (`confidence` is always required)
-    - `{ "power": 1000 }`
-    - `{}`
+    - `{ "power": 10000 }` (`disbelief` is required)
+    - `{ "power": 10000, "confidence": true }` (`disbelief` is required)
+    - `{ "power": 1000 }` (`confidence` is required)
 
 
 2.  _schema_:
@@ -896,13 +841,14 @@ __Examples__
     ```json
     {
         "type": "integer",
-        "switch": [
-            { "if": { "not": { "minimum": 1 } }, "then": false },
-            { "if": { "maximum": 10 }, "then": true },
-            { "if": { "maximum": 100 }, "then": { "multipleOf": 10 } },
-            { "if": { "maximum": 1000 }, "then": { "multipleOf": 100 } },
-            { "then": false }
-        ]
+        "minimum": 1,
+        "maximum": 1000,
+        "if": { "minimum": 100 },
+        "then": { "multipleOf": 100 },
+        "else": {
+            "if": { "minimum": 10 },
+            "then": { "multipleOf": 10 }
+        }
     }
     ```
 

@@ -12,7 +12,7 @@ Thank you for your help making Ajv better! Every contribution is appreciated. If
   - [Bug reports](#bug-reports)
   - [Change proposals](#changes)
   - [Browser and compatibility issues](#compatibility)
-  - [JSON schema standard](#json-schema)
+  - [JSON Schema standard](#json-schema)
   - [Ajv usage questions](#usage)
 - [Code](#code)
   - [Development](#development)
@@ -38,7 +38,7 @@ Please make sure to include the following information in the issue:
 
 1. What version of Ajv are you using? Does the issue happen if you use the latest version?
 2. Ajv options object (see /ajv#options).
-3. JSON schema and the data you are validating (please make it as small as possible to reproduce the issue).
+3. JSON Schema and the data you are validating (please make it as small as possible to reproduce the issue).
 4. Your code (please use `options`, `schema` and `data` as variables).
 5. Validation result, data AFTER validation, error messages.
 6. What results did you expect?
@@ -68,7 +68,7 @@ Please include as much details as possible.
 
 #### <a name="compatibility"></a>Browser and compatibility issues
 
-[Create an issue](https://github.com/epoberezkin/ajv/issues/new?labels=compatibility&body=**The%20version%20of%20Ajv%20you%20are%20using**%0A%0A**The%20environment%20you%20have%20the%20problem%20with.**%0A%0A**Your%20code%20(please%20make%20it%20as%20small%20as%20possible%20to%20reproduce%20the%20issue).**%0A%0A**If%20your%20issue%20is%20in%20the%20browser,%20please%20list%20the%20other%20packages%20loaded%20in%20the%20page%20in%20the%20order%20they%20are%20loaded.%20Please%20check%20if%20the%20issue%20gets%20resolved%20(or%20results%20change)%20if%20you%20move%20Ajv%20bundle%20closer%20to%20the%20top.**%0A%0A**Results%20in%20node.js%20v4.**%0A%0A**Results%20and%20error%20messages%20in%20your%20platform.**%0A%0A) to report a compatibility problem that only happens in a particular environemnt (when your code works correctly in node.js v4 in linux systems but fails in some other environment).
+[Create an issue](https://github.com/epoberezkin/ajv/issues/new?labels=compatibility&body=**The%20version%20of%20Ajv%20you%20are%20using**%0A%0A**The%20environment%20you%20have%20the%20problem%20with.**%0A%0A**Your%20code%20(please%20make%20it%20as%20small%20as%20possible%20to%20reproduce%20the%20issue).**%0A%0A**If%20your%20issue%20is%20in%20the%20browser,%20please%20list%20the%20other%20packages%20loaded%20in%20the%20page%20in%20the%20order%20they%20are%20loaded.%20Please%20check%20if%20the%20issue%20gets%20resolved%20(or%20results%20change)%20if%20you%20move%20Ajv%20bundle%20closer%20to%20the%20top.**%0A%0A**Results%20in%20node.js%20v4.**%0A%0A**Results%20and%20error%20messages%20in%20your%20platform.**%0A%0A) to report a compatibility problem that only happens in a particular environment (when your code works correctly in node.js v4 in linux systems but fails in some other environment).
 
 Please include this information:
 
@@ -80,11 +80,9 @@ Please include this information:
 6. Results and error messages in your platform.
 
 
-#### <a name="json-schema"></a>Using JSON schema standard
+#### <a name="json-schema"></a>Using JSON Schema standard
 
-Ajv implements JSON schema standard draft 4 and the proposed extensions for the next version of the standard (available when you use the option `v5: true`).
-
-If the issue is related to using v5 extensions please submit it as a [bug report](https://github.com/epoberezkin/ajv/issues/new).
+Ajv implements JSON Schema standard draft-04 and draft-06/07.
 
 If it is a general issue related to using the standard keywords included in JSON Schema or implementing some advanced validation logic please ask the question on [Stack Overflow](http://stackoverflow.com/questions/ask?tags=jsonschema,ajv) (my account is [esp](http://stackoverflow.com/users/1816503/esp)) or submitting the question to [JSON-Schema.org](https://github.com/json-schema-org/json-schema-spec/issues/new). Please mention @epoberezkin.
 
