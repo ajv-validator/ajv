@@ -69,7 +69,7 @@
     "json-schema-traverse": "^0.3.0"
   },
   "devDependencies": {
-    "ajv-async": "^0.1.0",
+    "ajv-async": "^1.0.0",
     "bluebird": "^3.1.5",
     "brfs": "^1.4.3",
     "browserify": "^15.0.0",
