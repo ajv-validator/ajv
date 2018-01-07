@@ -2,12 +2,11 @@
 
 # Ajv: Another JSON Schema Validator
 
-The fastest JSON Schema validator for Node.js and browser with draft-07 support.
+The fastest JSON Schema validator for Node.js and browser. Supports draft-04/06/07.
 
 
 [![Build Status](https://travis-ci.org/epoberezkin/ajv.svg?branch=master)](https://travis-ci.org/epoberezkin/ajv)
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
-[![npm@beta](https://img.shields.io/npm/v/ajv/beta.svg)](https://github.com/epoberezkin/ajv/tree/beta)
 [![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![Coverage Status](https://coveralls.io/repos/epoberezkin/ajv/badge.svg?branch=master&service=github)](https://coveralls.io/github/epoberezkin/ajv?branch=master)
 [![Greenkeeper badge](https://badges.greenkeeper.io/epoberezkin/ajv.svg)](https://greenkeeper.io/)
@@ -18,7 +17,7 @@ The fastest JSON Schema validator for Node.js and browser with draft-07 support.
 
 [JSON Schema draft-07](http://json-schema.org/latest/json-schema-validation.html) is published.
 
-[Ajv version 6.0.0-beta.0](https://github.com/epoberezkin/ajv/releases/tag/v6.0.0-beta.0) that supports draft-07 is released. It may require either migrating your schemas or updating your code (to continue using draft-04 and v5 schemas, draft-06 schemas will be supported without changes).
+[Ajv version 6.0.0](https://github.com/epoberezkin/ajv/releases/tag/v6.0.0) that supports draft-07 is released. It may require either migrating your schemas or updating your code (to continue using draft-04 and v5 schemas, draft-06 schemas will be supported without changes).
 
 __Please note__: To use Ajv with draft-06 schemas you need to explicitly add the meta-schema to the validator instance:
 
@@ -116,12 +115,6 @@ Currently Ajv is the only validator that passes all the tests from [JSON Schema 
 
 ```
 npm install ajv
-```
-
-or to install [version 6](https://github.com/epoberezkin/ajv/tree/beta):
-
-```
-npm install ajv@beta
 ```
 
 
@@ -1282,15 +1275,15 @@ Please see [Contributing guidelines](https://github.com/epoberezkin/ajv/blob/mas
 
 See https://github.com/epoberezkin/ajv/releases
 
-__Please note__: [Changes in version 5.0.0](https://github.com/epoberezkin/ajv/releases/tag/5.0.0).
+__Please note__: [Changes in version 6.0.0](https://github.com/epoberezkin/ajv/releases/tag/v6.0.0).
 
-[Changes in version 4.6.0](https://github.com/epoberezkin/ajv/releases/tag/4.6.0).
+[Version 5.0.0](https://github.com/epoberezkin/ajv/releases/tag/5.0.0).
 
-[Changes in version 4.0.0](https://github.com/epoberezkin/ajv/releases/tag/4.0.0).
+[Version 4.0.0](https://github.com/epoberezkin/ajv/releases/tag/4.0.0).
 
-[Changes in version 3.0.0](https://github.com/epoberezkin/ajv/releases/tag/3.0.0).
+[Version 3.0.0](https://github.com/epoberezkin/ajv/releases/tag/3.0.0).
 
-[Changes in version 2.0.0](https://github.com/epoberezkin/ajv/releases/tag/2.0.0).
+[Version 2.0.0](https://github.com/epoberezkin/ajv/releases/tag/2.0.0).
 
 
 ## License
