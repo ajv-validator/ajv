@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "6.0.0-rc.1",
+  "version": "6.0.0",
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
   "typings": "lib/ajv.d.ts",
@@ -65,7 +65,7 @@
     "json-schema-traverse": "^0.3.0"
   },
   "devDependencies": {
-    "ajv-async": "^1.0.0-beta.0",
+    "ajv-async": "^1.0.0",
     "bluebird": "^3.1.5",
     "brfs": "^1.4.3",
     "browserify": "^15.0.0",
