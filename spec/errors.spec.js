@@ -410,7 +410,7 @@ describe('Validation errors', function () {
 
   it('"items" errors should include item index without quotes in dataPath (#48)', function() {
     var schema1 = {
-      id: 'schema1',
+      $id: 'schema1',
       type: 'array',
       items: {
         type: 'integer',
@@ -445,7 +445,7 @@ describe('Validation errors', function () {
     shouldBeError(fullValidate.errors[1], 'minimum', '#/items/minimum', '/3', 'should be >= 10');
 
     var schema2 = {
-      id: 'schema2',
+      $id: 'schema2',
       type: 'array',
       items: [{ minimum: 10 }, { minimum: 9 }, { minimum: 12 }]
     };
@@ -537,6 +537,39 @@ describe('Validation errors', function () {
         validate(1) .should.equal(false);
         validate.errors.length .should.equal(1);
         validate(1.5) .should.equal(true);
+      }
+    });
+
+    it('should return passing schemas in error params', function() {
+      var schema = {
+        oneOf: [
+          { type: 'number' },
+          { type: 'integer' },
+          { const: 1.5 }
+        ]
+      };
+
+      test(ajv);
+      test(fullAjv);
+
+      function test(_ajv) {
+        var validate = _ajv.compile(schema);
+        validate(1) .should.equal(false);
+        var err = validate.errors.pop();
+        err.keyword .should.equal('oneOf');
+        err.params .should.eql({passingSchemas: [0, 1]});
+
+        validate(1.5) .should.equal(false);
+        err = validate.errors.pop();
+        err.keyword .should.equal('oneOf');
+        err.params .should.eql({passingSchemas: [0, 2]});
+
+        validate(2.5) .should.equal(true);
+
+        validate('foo') .should.equal(false);
+        err = validate.errors.pop();
+        err.keyword .should.equal('oneOf');
+        err.params .should.eql({passingSchemas: null});
       }
     });
   });
@@ -668,6 +701,112 @@ describe('Validation errors', function () {
         function testError(keyword, message, params) {
           var err = validate.errors[0];
           shouldBeError(err, keyword, '#/' + keyword, '', message, params);
+        }
+      });
+    });
+  });
+
+
+  describe('if/then/else errors', function() {
+    var validate, numErrors;
+
+    it('if/then/else should include failing keyword in message and params', function() {
+      var schema = {
+        'if': { maximum: 10 },
+        'then': { multipleOf: 2 },
+        'else': { multipleOf: 5 }
+      };
+
+      [ajv, fullAjv].forEach(function (_ajv) {
+        prepareTest(_ajv, schema);
+        shouldBeValid(validate, 8);
+        shouldBeValid(validate, 15);
+
+        shouldBeInvalid(validate, 7, numErrors);
+        testIfError('then', 2);
+
+        shouldBeInvalid(validate, 17, numErrors);
+        testIfError('else', 5);
+      });
+    });
+
+    it('if/then should include failing keyword in message and params', function() {
+      var schema = {
+        'if': { maximum: 10 },
+        'then': { multipleOf: 2 }
+      };
+
+      [ajv, fullAjv].forEach(function (_ajv) {
+        prepareTest(_ajv, schema);
+        shouldBeValid(validate, 8);
+        shouldBeValid(validate, 11);
+        shouldBeValid(validate, 12);
+
+        shouldBeInvalid(validate, 7, numErrors);
+        testIfError('then', 2);
+      });
+    });
+
+    it('if/else should include failing keyword in message and params', function() {
+      var schema = {
+        'if': { maximum: 10 },
+        'else': { multipleOf: 5 }
+      };
+
+      [ajv, fullAjv].forEach(function (_ajv) {
+        prepareTest(_ajv, schema);
+        shouldBeValid(validate, 7);
+        shouldBeValid(validate, 8);
+        shouldBeValid(validate, 15);
+
+        shouldBeInvalid(validate, 17, numErrors);
+        testIfError('else', 5);
+      });
+    });
+
+    function prepareTest(_ajv, schema) {
+      validate = _ajv.compile(schema);
+      numErrors = _ajv._opts.allErrors ? 2 : 1;
+    }
+
+    function testIfError(ifClause, multipleOf) {
+      var err = validate.errors[0];
+      shouldBeError(err, 'multipleOf', '#/' + ifClause + '/multipleOf', '',
+        'should be multiple of ' + multipleOf, {multipleOf: multipleOf});
+
+      if (numErrors == 2) {
+        err = validate.errors[1];
+        shouldBeError(err, 'if', '#/if', '',
+          'should match "' + ifClause + '" schema', {failingKeyword: ifClause});
+      }
+    }
+  });
+
+
+  describe('uniqueItems errors', function() {
+    it('should not return uniqueItems error when non-unique items are of a different type than required', function() {
+      var schema = {
+        items: {type: 'number'},
+        uniqueItems: true
+      };
+
+      [ajvJP, fullAjv].forEach(function (_ajv) {
+        var validate = _ajv.compile(schema);
+        shouldBeValid(validate, [1, 2, 3]);
+
+        shouldBeInvalid(validate, [1, 2, 2]);
+        shouldBeError(validate.errors[0], 'uniqueItems', '#/uniqueItems', '',
+          'should NOT have duplicate items (items ## 2 and 1 are identical)',
+          {i: 1, j: 2});
+
+        var expectedErrors = _ajv._opts.allErrors ? 2 : 1;
+        shouldBeInvalid(validate, [1, "2", "2", 2], expectedErrors);
+        testTypeError(0, '/1');
+        if (expectedErrors == 2) testTypeError(1, '/2');
+
+        function testTypeError(i, dataPath) {
+          var err = validate.errors[i];
+          shouldBeError(err, 'type', '#/items/type', dataPath, 'should be number');
         }
       });
     });

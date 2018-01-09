@@ -22,29 +22,18 @@ module.exports = function(config) {
       browserName: 'chrome',
       version: '27'
     },
-    // 'SL_Chrome_37': {
-    //   base: 'SauceLabs',
-    //   browserName: 'chrome',
-    //   version: '37'
-    // },
     'SL_Chrome': {
       base: 'SauceLabs',
       browserName: 'chrome'
-    },
-    'SL_InternetExplorer_9': {
-      base: 'SauceLabs',
-      browserName: 'internet explorer',
-      version: '9'
     },
     'SL_InternetExplorer_10': {
       base: 'SauceLabs',
       browserName: 'internet explorer',
       version: '10'
     },
-    'SL_InternetExplorer_11': {
+    'SL_InternetExplorer': {
       base: 'SauceLabs',
-      browserName: 'internet explorer',
-      version: '11' // default
+      browserName: 'internet explorer'
     },
     'SL_MicrosoftEdge': {
       base: 'SauceLabs',
@@ -55,45 +44,32 @@ module.exports = function(config) {
       browserName: 'firefox',
       version: '17'
     },
-    // 'SL_FireFox_24': {
-    //   base: 'SauceLabs',
-    //   browserName: 'firefox',
-    //   version: '24'
-    // },
     'SL_FireFox': {
       base: 'SauceLabs',
       browserName: 'firefox'
     },
-    'SL_Safari_5': {
+    'SL_Safari_7': {
       base: 'SauceLabs',
       browserName: 'safari',
-      version: '5' // default
+      version: '7'
     },
-    // 'SL_Safari_7': {
-    //   base: 'SauceLabs',
-    //   browserName: 'safari',
-    //   version: '7'
-    // },
-    'SL_Safari_9': {
+    'SL_Safari': {
       base: 'SauceLabs',
-      browserName: 'safari',
-      version: '9'
+      browserName: 'safari'
     },
     'SL_iPhone_8': {
       base: 'SauceLabs',
       browserName: 'iphone',
       version: '8.4'
     },
-    'SL_iPhone_9': {
+    'SL_iPhone': {
       base: 'SauceLabs',
-      browserName: 'iphone',
-      version: '9.2'
+      browserName: 'iphone'
+    },
+    'SL_Android': {
+      base: 'SauceLabs',
+      browserName: 'android'
     }
-    // 'SL_Android_4': {
-    //   base: 'SauceLabs',
-    //   browserName: 'android',
-    //   version: '4'
-    // }
   };
 
 
@@ -112,7 +88,7 @@ module.exports = function(config) {
     files: [
       'dist/ajv.min.js',
       'node_modules/chai/chai.js',
-      'dist/nodent.min.js',
+      'node_modules/ajv-async/dist/ajv-async.min.js',
       'node_modules/bluebird/js/browser/bluebird.core.min.js',
       '.browser/*.spec.js'
     ],

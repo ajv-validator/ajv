@@ -7,17 +7,17 @@
       "minItems": 1,
       "definitions": {
         "base58": {
-          "id": "#base58",
+          "$id": "#base58",
           "type": "string",
           "pattern": "^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]+$"
         },
         "hex": {
-          "id": "#hex",
+          "$id": "#hex",
           "type": "string",
           "pattern": "^[0123456789A-Fa-f]+$"
         },
         "tx_id": {
-          "id": "#tx_id",
+          "$id": "#tx_id",
           "allOf": [
             { "$ref": "#hex" },
             {
@@ -27,7 +27,7 @@
           ]
         },
         "address": {
-          "id": "#address",
+          "$id": "#address",
           "allOf": [
             { "$ref": "#base58" },
             {
@@ -37,7 +37,7 @@
           ]
         },
         "signature": {
-          "id": "#signature",
+          "$id": "#signature",
           "allOf": [
             { "$ref": "#hex" },
             {
@@ -47,7 +47,7 @@
           ]
         },
         "transaction": {
-          "id": "#transaction",
+          "$id": "#transaction",
           "additionalProperties": false,
           "required": [
             "metadata",
@@ -108,7 +108,7 @@
           }
         },
         "input": {
-          "id": "#input",
+          "$id": "#input",
           "type": "object",
           "additionalProperties": false,
           "required": [
@@ -134,7 +134,7 @@
           }
         },
         "output": {
-          "id": "#output",
+          "$id": "#output",
           "type": "object",
           "additionalProperties": false,
           "required": [

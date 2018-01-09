@@ -365,10 +365,10 @@ describe('Type coercion', function () {
     };
 
     var schemaRecursive2 = {
-      id: 'http://e.com/schema.json#',
+      $id: 'http://e.com/schema.json#',
       definitions: {
         foo: {
-          id: 'http://e.com/foo.json#',
+          $id: 'http://e.com/foo.json#',
           type: [ 'object', 'number' ],
           properties: {
             foo: { $ref: '#' }
@@ -412,6 +412,39 @@ describe('Type coercion', function () {
 
       validate('foo'). should.equal(false);
       validate.errors.length .should.equal(1);
+    });
+  });
+
+
+  it('should check "uniqueItems" after coercion', function() {
+    var schema = {
+      items: {type: 'number'},
+      uniqueItems: true
+    };
+
+    instances.forEach(function (_ajv) {
+      var validate = _ajv.compile(schema);
+      validate([1, '2', 3]). should.equal(true);
+
+      validate([1, '2', 2]). should.equal(false);
+      validate.errors.length .should.equal(1);
+      validate.errors[0].keyword .should.equal('uniqueItems');
+    });
+  });
+
+
+  it('should check "contains" after coercion', function() {
+    var schema = {
+      items: {type: 'number'},
+      contains: {const: 2}
+    };
+
+    instances.forEach(function (_ajv) {
+      var validate = _ajv.compile(schema);
+      validate([1, '2', 3]). should.equal(true);
+
+      validate([1, '3', 4]). should.equal(false);
+      validate.errors.pop().keyword .should.equal('contains');
     });
   });
 

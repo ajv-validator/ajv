@@ -2,7 +2,7 @@
     {
         "description": "advanced schema from z-schema benchmark (https://github.com/zaggino/z-schema)",
         "schema": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "object",
             "properties": {
                 "/": { "$ref": "#/definitions/entry" }
@@ -14,7 +14,7 @@
             "required": [ "/" ],
             "definitions": {
                 "entry": {
-                    "$schema": "http://json-schema.org/draft-04/schema#",
+                    "$schema": "http://json-schema.org/draft-07/schema#",
                     "description": "schema for an fstab entry",
                     "type": "object",
                     "required": [ "storage" ],

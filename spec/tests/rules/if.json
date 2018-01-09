@@ -1,0 +1,134 @@
+[
+  {
+    "description": "if/then keyword validation",
+    "schema": {
+      "if": { "minimum": 10 },
+      "then": { "multipleOf": 2 }
+    },
+    "tests": [
+      {
+        "description": ">= 10 and even is valid",
+        "data": 12,
+        "valid": true
+      },
+      {
+        "description": ">= 10 and odd is invalid",
+        "data": 11,
+        "valid": false
+      },
+      {
+        "description": "< 10 is valid",
+        "data": 9,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "if/then/else keyword validation",
+    "schema": {
+      "if": { "maximum": 10 },
+      "then": { "multipleOf": 2 },
+      "else": { "multipleOf": 5 }
+    },
+    "tests": [
+      {
+        "description": "<=10 and even is valid",
+        "data": 8,
+        "valid": true
+      },
+      {
+        "description": "<=10 and odd is invalid",
+        "data": 7,
+        "valid": false
+      },
+      {
+        "description": ">10 and mulitple of 5 is valid",
+        "data": 15,
+        "valid": true
+      },
+      {
+        "description": ">10 and not mulitple of 5 is invalid",
+        "data": 17,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "if keyword with id in sibling subschema",
+    "schema": {
+      "$id": "http://example.com/base_if",
+      "if": {
+        "$id": "http://example.com/if",
+        "minimum": 10
+      },
+      "then": { "$ref": "#/definitions/def" },
+      "definitions": {
+        "def": { "multipleOf": 2 }
+      }
+    },
+    "tests": [
+      {
+        "description": ">= 10 and even is valid",
+        "data": 12,
+        "valid": true
+      },
+      {
+        "description": ">= 10 and odd is invalid",
+        "data": 11,
+        "valid": false
+      },
+      {
+        "description": "< 10 is valid",
+        "data": 9,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "then/else without if should be ignored",
+    "schema": {
+      "then": { "multipleOf": 2 },
+      "else": { "multipleOf": 5 }      
+    },
+    "tests": [
+      {
+        "description": "even is valid",
+        "data": 8,
+        "valid": true
+      },
+      {
+        "description": "odd is valid",
+        "data": 7,
+        "valid": true
+      },
+      {
+        "description": "mulitple of 5 is valid",
+        "data": 15,
+        "valid": true
+      },
+      {
+        "description": "not mulitple of 5 is valid",
+        "data": 17,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "if without then/else should be ignored",
+    "schema": {
+      "if": { "maximum": 10 }
+    },
+    "tests": [
+      {
+        "description": "<=10 is valid",
+        "data": 8,
+        "valid": true
+      },
+      {
+        "description": ">10 is valid",
+        "data": 15,
+        "valid": true
+      }
+    ]
+  }
+]

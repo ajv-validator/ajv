@@ -3,9 +3,7 @@
 var Ajv = require('./ajv')
   , Promise = require('./promise')
   , getAjvInstances = require('./ajv_async_instances')
-  , should = require('./chai').should()
-  , co = require('co')
-  , setupAsync = require('ajv-async');
+  , should = require('./chai').should();
 
 
 describe('async schemas, formats and keywords', function() {
@@ -17,12 +15,6 @@ describe('async schemas, formats and keywords', function() {
     ajv = instances[0];
   });
 
-  function useCo(_ajv) {
-    var async = _ajv._opts.async;
-    return async == 'es7' || async == 'co*' ? identity : co;
-  }
-
-  function identity(x) { return x; }
 
   describe('async schemas without async elements', function() {
     it('should return result as promise', function() {
@@ -36,12 +28,11 @@ describe('async schemas, formats and keywords', function() {
 
       function test(_ajv) {
         var validate = _ajv.compile(schema);
-        var _co = useCo(_ajv);
 
         return Promise.all([
-          shouldBeValid(   _co(validate('abc')), 'abc' ),
-          shouldBeInvalid( _co(validate('abcd')) ),
-          shouldBeInvalid( _co(validate(1)) ),
+          shouldBeValid(   validate('abc'), 'abc' ),
+          shouldBeInvalid( validate('abcd') ),
+          shouldBeInvalid( validate(1) ),
         ]);
       }
     });
@@ -149,11 +140,10 @@ describe('async schemas, formats and keywords', function() {
         };
 
         var validate = _ajv.compile(schema);
-        var _co = useCo(_ajv);
 
         return Promise.all([
-          shouldBeInvalid(_co(validate({ userId: 5, postId: 10 })), [ 'id not found in table posts' ]),
-          shouldBeInvalid(_co(validate({ userId: 9, postId: 25 })), [ 'id not found in table users' ])
+          shouldBeInvalid( validate({ userId: 5, postId: 10 }), [ 'id not found in table posts' ] ),
+          shouldBeInvalid( validate({ userId: 9, postId: 25 }), [ 'id not found in table users' ] )
         ]);
       }));
     });
@@ -214,14 +204,13 @@ describe('async schemas, formats and keywords', function() {
 
       return repeat(function() { return Promise.all(instances.map(function (_ajv) {
         var validate = _ajv.compile(schema);
-        var _co = useCo(_ajv);
         var validData = { word: 'tomorrow' };
 
         return Promise.all([
-          shouldBeValid(   _co(validate(validData)), validData ),
-          shouldBeInvalid( _co(validate({ word: 'manana' })) ),
-          shouldBeInvalid( _co(validate({ word: 1 })) ),
-          shouldThrow(     _co(validate({ word: 'today' })), 'unknown word' )
+          shouldBeValid(   validate(validData), validData ),
+          shouldBeInvalid( validate({ word: 'manana' }) ),
+          shouldBeInvalid( validate({ word: 1 }) ),
+          shouldThrow(     validate({ word: 'today' }), 'unknown word' )
         ]);
       })); });
     });
@@ -250,7 +239,7 @@ describe('async schemas, formats and keywords', function() {
       return recursiveTest(schema);
     });
 
-    it.skip('should validate recursive ref to async sub-schema, issue #612', function() {
+    it('should validate recursive ref to async sub-schema, issue #612', function() {
       var schema = {
         $async: true,
         type: 'object',
@@ -302,7 +291,7 @@ describe('async schemas, formats and keywords', function() {
 
     it('should validate refs between two async schemas', function() {
       var schemaObj = {
-        id: 'http://e.com/obj.json#',
+        $id: 'http://e.com/obj.json#',
         $async: true,
         type: 'object',
         properties: {
@@ -311,7 +300,7 @@ describe('async schemas, formats and keywords', function() {
       };
 
       var schemaWord = {
-        id: 'http://e.com/word.json#',
+        $id: 'http://e.com/word.json#',
         $async: true,
         anyOf: [
           {
@@ -327,7 +316,7 @@ describe('async schemas, formats and keywords', function() {
 
     it('should fail compilation if sync schema references async schema', function() {
       var schema = {
-        id: 'http://e.com/obj.json#',
+        $id: 'http://e.com/obj.json#',
         type: 'object',
         properties: {
           foo: { $ref: 'http://e.com/word.json#' }
@@ -335,7 +324,7 @@ describe('async schemas, formats and keywords', function() {
       };
 
       var schemaWord = {
-        id: 'http://e.com/word.json#',
+        $id: 'http://e.com/word.json#',
         $async: true,
         anyOf: [
           {
@@ -356,7 +345,7 @@ describe('async schemas, formats and keywords', function() {
         ajv.compile(schema);
       });
 
-      schema.id = 'http://e.com/obj2.json#';
+      schema.$id = 'http://e.com/obj2.json#';
       schema.$async = true;
 
       ajv.compile(schema);
@@ -366,22 +355,21 @@ describe('async schemas, formats and keywords', function() {
       return repeat(function() { return Promise.all(instances.map(function (_ajv) {
         if (refSchema) try { _ajv.addSchema(refSchema); } catch(e) {}
         var validate = _ajv.compile(schema);
-        var _co = useCo(_ajv);
         var data;
 
         return Promise.all([
-          shouldBeValid(   _co(validate(data = { foo: 'tomorrow' })), data ),
-          shouldBeInvalid( _co(validate({ foo: 'manana' })) ),
-          shouldBeInvalid( _co(validate({ foo: 1 })) ),
-          shouldThrow(     _co(validate({ foo: 'today' })), 'unknown word' ),
-          shouldBeValid(   _co(validate(data = { foo: { foo: 'tomorrow' }})), data ),
-          shouldBeInvalid( _co(validate({ foo: { foo: 'manana' }})) ),
-          shouldBeInvalid( _co(validate({ foo: { foo: 1 }})) ),
-          shouldThrow(     _co(validate({ foo: { foo: 'today' }})), 'unknown word' ),
-          shouldBeValid(   _co(validate(data = { foo: { foo: { foo: 'tomorrow' }}})), data ),
-          shouldBeInvalid( _co(validate({ foo: { foo: { foo: 'manana' }}})) ),
-          shouldBeInvalid( _co(validate({ foo: { foo: { foo: 1 }}})) ),
-          shouldThrow(     _co(validate({ foo: { foo: { foo: 'today' }}})), 'unknown word' )
+          shouldBeValid(   validate(data = { foo: 'tomorrow' }), data ),
+          shouldBeInvalid( validate({ foo: 'manana' }) ),
+          shouldBeInvalid( validate({ foo: 1 }) ),
+          shouldThrow(     validate({ foo: 'today' }), 'unknown word' ),
+          shouldBeValid(   validate(data = { foo: { foo: 'tomorrow' }}), data ),
+          shouldBeInvalid( validate({ foo: { foo: 'manana' }}) ),
+          shouldBeInvalid( validate({ foo: { foo: 1 }}) ),
+          shouldThrow(     validate({ foo: { foo: 'today' }}), 'unknown word' ),
+          shouldBeValid(   validate(data = { foo: { foo: { foo: 'tomorrow' }}}), data ),
+          shouldBeInvalid( validate({ foo: { foo: { foo: 'manana' }}}) ),
+          shouldBeInvalid( validate({ foo: { foo: { foo: 1 }}}) ),
+          shouldThrow(     validate({ foo: { foo: { foo: 'today' }}}), 'unknown word' )
         ]);
       })); });
     }
@@ -396,35 +384,6 @@ describe('async schemas, formats and keywords', function() {
       });
     });
   }
-});
-
-
-describe('async/transpile option', function() {
-  it('should throw error with unknown async option', function() {
-    shouldThrowFunc('bad async mode: es8', function() {
-      setupAsync(new Ajv({ async: 'es8' }));
-    });
-  });
-
-
-  it('should throw error with unknown transpile option', function() {
-    shouldThrowFunc('bad transpiler: babel', function() {
-      setupAsync(new Ajv({ transpile: 'babel' }));
-    });
-
-    shouldThrowFunc('bad transpiler: [object Object]', function() {
-      setupAsync(new Ajv({ transpile: {} }));
-    });
-  });
-
-
-  it('should set async option to es7 if tranpiler is nodent', function() {
-    var ajv1 = setupAsync(new Ajv({ transpile: 'nodent' }));
-    ajv1._opts.async .should.equal('es7');
-
-    var ajv2 = setupAsync(new Ajv({ async: '*', transpile: 'nodent' }));
-    ajv2._opts.async .should.equal('es7');
-  });
 });
 
 

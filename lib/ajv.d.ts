@@ -255,8 +255,8 @@ declare namespace ajv {
                           DependenciesParams | FormatParams | ComparisonParams |
                           MultipleOfParams | PatternParams | RequiredParams |
                           TypeParams | UniqueItemsParams | CustomParams |
-                          PatternGroupsParams | PatternRequiredParams |
-                          PropertyNamesParams | SwitchParams | NoParams | EnumParams;
+                          PatternRequiredParams | PropertyNamesParams |
+                          IfParams | SwitchParams | NoParams | EnumParams;
 
   interface RefParams {
     ref: string;
@@ -312,18 +312,16 @@ declare namespace ajv {
     keyword: string;
   }
 
-  interface PatternGroupsParams {
-    reason: string;
-    limit: number;
-    pattern: string;
-  }
-
   interface PatternRequiredParams {
     missingPattern: string;
   }
 
   interface PropertyNamesParams {
     propertyName: string;
+  }
+
+  interface IfParams {
+    failingKeyword: string;
   }
 
   interface SwitchParams {

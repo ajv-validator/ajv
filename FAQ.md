@@ -29,7 +29,7 @@ No. In many cases there is a module responsible for the validation in the applic
 
 Doing this would create a precedent where validated data is used in error messages, creating a vulnerability (e.g., when ajv is used to validate API data/parameters and error messages are logged).
 
-Since the property name is already in the params object, in an application you can modify messages in any way you need. ajv-errors package will allow to modify messages as well - templating is [not there yet](https://github.com/epoberezkin/ajv-errors/issues/4), though.
+Since the property name is already in the params object, in an application you can modify messages in any way you need. ajv-errors package allows modifying messages as well.
 
 
 ## Additional properties inside compound keywords anyOf, oneOf, etc.
@@ -39,7 +39,7 @@ See [#127](https://github.com/epoberezkin/ajv/issues/127), [#129](https://github
 
 ##### Why the keyword `additionalProperties: false` fails validation when some properties are "declared" inside a subschema in `anyOf`/etc.?
 
-The keyword `additionalProperties` creates the restriction on validated data based on its own value (`false` or schema object) and on the keywords `properties` and `patternProperties` in the SAME schema object. JSON-schema validators must NOT take into account properties used in other schema objects.
+The keyword `additionalProperties` creates the restriction on validated data based on its own value (`false` or schema object) and on the keywords `properties` and `patternProperties` in the SAME schema object. JSON Schema validators must NOT take into account properties used in other schema objects.
 
 While you can expect that the schema below would allow the objects either with properties `foo` and `bar` or with properties `foo` and `baz` and all other properties will be prohibited, this schema will only allow objects with one property `foo` (an empty object and any non-objects will also be valid):
 
@@ -84,5 +84,5 @@ There were many conversations about the meaning of `$ref` in [JSON Schema GitHub
 
 There are two possible approaches:
 
-1. Write code to traverse schema and replace every `$ref` with the referenced schema. An additional limitation is that `"$ref"` inside keywords "properties", "patternProperties" and "dependencies" means property name (or pattern) rather than the reference to another schema.
+1. Traverse schema (e.g. with json-schema-traverse) and replace every `$ref` with the referenced schema.
 2. Use a specially constructed JSON Schema with a [custom keyword](https://github.com/epoberezkin/ajv/blob/master/CUSTOM.md) to traverse and modify your schema.

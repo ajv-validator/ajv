@@ -27,15 +27,15 @@ describe('Ajv', function () {
     });
 
     it('should cache compiled functions for the same schema', function() {
-      var v1 = ajv.compile({ id: '//e.com/int.json', type: 'integer', minimum: 1 });
-      var v2 = ajv.compile({ id: '//e.com/int.json', minimum: 1, type: 'integer' });
+      var v1 = ajv.compile({ $id: '//e.com/int.json', type: 'integer', minimum: 1 });
+      var v2 = ajv.compile({ $id: '//e.com/int.json', minimum: 1, type: 'integer' });
       v1 .should.equal(v2);
     });
 
     it('should throw if different schema has the same id', function() {
-      ajv.compile({ id: '//e.com/int.json', type: 'integer' });
+      ajv.compile({ $id: '//e.com/int.json', type: 'integer' });
       should.throw(function() {
-        ajv.compile({ id: '//e.com/int.json', type: 'integer', minimum: 1 });
+        ajv.compile({ $id: '//e.com/int.json', type: 'integer', minimum: 1 });
       });
     });
 
@@ -74,24 +74,24 @@ describe('Ajv', function () {
     });
 
     it('should validate against previously compiled schema by id (also see addSchema)', function() {
-      ajv.validate({ id: '//e.com/int.json', type: 'integer' }, 1) .should.equal(true);
+      ajv.validate({ $id: '//e.com/int.json', type: 'integer' }, 1) .should.equal(true);
       ajv.validate('//e.com/int.json', 1) .should.equal(true);
       ajv.validate('//e.com/int.json', '1') .should.equal(false);
 
-      ajv.compile({ id: '//e.com/str.json', type: 'string' }) .should.be.a('function');
+      ajv.compile({ $id: '//e.com/str.json', type: 'string' }) .should.be.a('function');
       ajv.validate('//e.com/str.json', 'a') .should.equal(true);
       ajv.validate('//e.com/str.json', 1) .should.equal(false);
     });
 
     it('should throw exception if no schema with ref', function() {
-      ajv.validate({ id: 'integer', type: 'integer' }, 1) .should.equal(true);
+      ajv.validate({ $id: 'integer', type: 'integer' }, 1) .should.equal(true);
       ajv.validate('integer', 1) .should.equal(true);
       should.throw(function() { ajv.validate('string', 'foo'); });
     });
 
     it('should validate schema fragment by ref', function() {
       ajv.addSchema({
-        "id": "http://e.com/types.json",
+        "$id": "http://e.com/types.json",
         "definitions": {
           "int": { "type": "integer" },
           "str": { "type": "string" }
@@ -104,10 +104,10 @@ describe('Ajv', function () {
 
     it('should return schema fragment by id', function() {
       ajv.addSchema({
-        "id": "http://e.com/types.json",
+        "$id": "http://e.com/types.json",
         "definitions": {
-          "int": { "id": "#int", "type": "integer" },
-          "str": { "id": "#str", "type": "string" }
+          "int": { "$id": "#int", "type": "integer" },
+          "str": { "$id": "#str", "type": "string" }
         }
       });
 
@@ -137,13 +137,13 @@ describe('Ajv', function () {
     });
 
     it('should add and compile schema with id', function() {
-      ajv.addSchema({ id: '//e.com/int.json', type: 'integer' });
+      ajv.addSchema({ $id: '//e.com/int.json', type: 'integer' });
       ajv.validate('//e.com/int.json', 1) .should.equal(true);
       ajv.validate('//e.com/int.json', '1') .should.equal(false);
     });
 
     it('should normalize schema keys and ids', function() {
-      ajv.addSchema({ id: '//e.com/int.json#', type: 'integer' }, 'int#');
+      ajv.addSchema({ $id: '//e.com/int.json#', type: 'integer' }, 'int#');
       ajv.validate('int', 1) .should.equal(true);
       ajv.validate('int', '1') .should.equal(false);
       ajv.validate('//e.com/int.json', 1) .should.equal(true);
@@ -156,8 +156,8 @@ describe('Ajv', function () {
 
     it('should add and compile array of schemas with ids', function() {
       ajv.addSchema([
-        { id: '//e.com/int.json', type: 'integer' },
-        { id: '//e.com/str.json', type: 'string' }
+        { $id: '//e.com/int.json', type: 'integer' },
+        { $id: '//e.com/str.json', type: 'string' }
       ]);
 
       var validate0 = ajv.getSchema('//e.com/int.json');
@@ -210,7 +210,7 @@ describe('Ajv', function () {
 
     it('should throw if schema id is not a string', function() {
       try {
-        ajv.addSchema({ id: 1, type: 'integer' });
+        ajv.addSchema({ $id: 1, type: 'integer' });
         throw new Error('should have throw exception');
       } catch(e) {
         e.message .should.equal('schema id must be string');
@@ -233,7 +233,7 @@ describe('Ajv', function () {
     });
 
     it('should return compiled schema by id or ref', function() {
-      ajv.addSchema({ id: '//e.com/int.json', type: 'integer' });
+      ajv.addSchema({ $id: '//e.com/int.json', type: 'integer' });
       var validate = ajv.getSchema('//e.com/int.json');
       validate(1) .should.equal(true);
       validate('1') .should.equal(false);
@@ -252,7 +252,7 @@ describe('Ajv', function () {
 
     it('should return schema fragment by ref', function() {
       ajv.addSchema({
-        "id": "http://e.com/types.json",
+        "$id": "http://e.com/types.json",
         "definitions": {
           "int": { "type": "integer" },
           "str": { "type": "string" }
@@ -266,7 +266,7 @@ describe('Ajv', function () {
 
     it('should return schema fragment by ref with protocol-relative URIs', function() {
       ajv.addSchema({
-        "id": "//e.com/types.json",
+        "$id": "//e.com/types.json",
         "definitions": {
           "int": { "type": "integer" },
           "str": { "type": "string" }
@@ -280,10 +280,10 @@ describe('Ajv', function () {
 
     it('should return schema fragment by id', function() {
       ajv.addSchema({
-        "id": "http://e.com/types.json",
+        "$id": "http://e.com/types.json",
         "definitions": {
-          "int": { "id": "#int", "type": "integer" },
-          "str": { "id": "#str", "type": "string" }
+          "int": { "$id": "#int", "type": "integer" },
+          "str": { "$id": "#str", "type": "string" }
         }
       });
 
@@ -310,7 +310,7 @@ describe('Ajv', function () {
     });
 
     it('should remove schema by id', function() {
-      var schema = { id: '//e.com/int.json', type: 'integer' }
+      var schema = { $id: '//e.com/int.json', type: 'integer' }
         , str = stableStringify(schema);
       ajv.addSchema(schema);
 
@@ -333,11 +333,11 @@ describe('Ajv', function () {
     });
 
     it('should remove schema with id by schema object', function() {
-      var schema = { id: '//e.com/int.json', type: 'integer' }
+      var schema = { $id: '//e.com/int.json', type: 'integer' }
         , str = stableStringify(schema);
       ajv.addSchema(schema);
       ajv._cache.get(str) .should.be.an('object');
-      ajv.removeSchema({ id: '//e.com/int.json', type: 'integer' });
+      ajv.removeSchema({ $id: '//e.com/int.json', type: 'integer' });
       // should.not.exist(ajv.getSchema('//e.com/int.json'));
       should.not.exist(ajv._cache.get(str));
     });
@@ -350,7 +350,7 @@ describe('Ajv', function () {
     });
 
     it('should remove all schemas but meta-schemas if called without an arguments', function() {
-      var schema1 = { id: '//e.com/int.json', type: 'integer' }
+      var schema1 = { $id: '//e.com/int.json', type: 'integer' }
         , str1 = stableStringify(schema1);
       ajv.addSchema(schema1);
       ajv._cache.get(str1) .should.be.an('object');
@@ -366,12 +366,12 @@ describe('Ajv', function () {
     });
 
     it('should remove all schemas but meta-schemas with key/id matching pattern', function() {
-      var schema1 = { id: '//e.com/int.json', type: 'integer' }
+      var schema1 = { $id: '//e.com/int.json', type: 'integer' }
         , str1 = stableStringify(schema1);
       ajv.addSchema(schema1);
       ajv._cache.get(str1) .should.be.an('object');
 
-      var schema2 = { id: 'str.json', type: 'string' }
+      var schema2 = { $id: 'str.json', type: 'string' }
         , str2 = stableStringify(schema2);
       ajv.addSchema(schema2, '//e.com/str.json');
       ajv._cache.get(str2) .should.be.an('object');
@@ -476,7 +476,7 @@ describe('Ajv', function () {
   describe('validateSchema method', function() {
     it('should validate schema against meta-schema', function() {
       var valid = ajv.validateSchema({
-        $schema: 'http://json-schema.org/draft-06/schema#',
+        $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'number'
       });
 
@@ -484,7 +484,7 @@ describe('Ajv', function () {
       should.equal(ajv.errors, null);
 
       valid = ajv.validateSchema({
-        $schema: 'http://json-schema.org/draft-06/schema#',
+        $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'wrong_type'
       });
 

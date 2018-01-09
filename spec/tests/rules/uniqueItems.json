@@ -1,0 +1,26 @@
+[
+  {
+    "description": "uniqueItems with algorithm using hash",
+    "schema": {
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "tests": [
+      {
+        "description": "array of unique strings are valid",
+        "data": ["foo", "bar", "baz"],
+        "valid": true
+      },
+      {
+        "description": "array of non-unique strings are invalid",
+        "data": ["foo", "bar", "bar"],
+        "valid": false
+      },
+      {
+        "description": "array with non-strings is invalid",
+        "data": ["1", 2],
+        "valid": false
+      }
+    ]
+  }
+]

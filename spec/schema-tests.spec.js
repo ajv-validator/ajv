@@ -36,9 +36,7 @@ jsonSchemaTest(instances, {
       ? suite(require('./tests/{**/,}*.json', {mode: 'list'}))
       : './tests/{**/,}*.json'
   },
-  only: [
-    // 'schemas/complex', 'schemas/basic', 'schemas/advanced',
-  ],
+  only: [],
   assert: require('./chai').assert,
   afterError: after.error,
   afterEach: after.each,
@@ -48,7 +46,6 @@ jsonSchemaTest(instances, {
 
 
 function addRemoteRefs(ajv) {
-  ajv.addMetaSchema(require('../lib/refs/json-schema-draft-04.json'));
   for (var id in remoteRefs) ajv.addSchema(remoteRefs[id], id);
   ajv.addSchema(remoteRefsWithIds);
 }
