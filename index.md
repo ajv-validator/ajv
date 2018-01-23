@@ -30,7 +30,7 @@ __Please note__: To use Ajv with draft-06 schemas you need to explicitly add the
 ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
 ```
 
-To use Ajv with draft-04 schemas in addition to explicitely adding meta-schema you also need to use option schemaId:
+To use Ajv with draft-04 schemas in addition to explicitly adding meta-schema you also need to use option schemaId:
 
 ```javascript
 var ajv = new Ajv({schemaId: 'id'});
@@ -236,7 +236,7 @@ JSON Schema specification defines several annotation keywords that describe sche
 - `contentEncoding`: [RFC 2045](https://tools.ietf.org/html/rfc2045#section-6.1 ), e.g., "base64".
 - `contentMediaType`: [RFC 2046](https://tools.ietf.org/html/rfc2046), e.g., "image/png".
 
-__Please note__:  Ajv does not implement validation of the keywords `examples`, `contentEncoding` and `contentMediaType` but it reserves them. If you want to create a plugin that implements some of them, it should remove these kewords from the instance.
+__Please note__:  Ajv does not implement validation of the keywords `examples`, `contentEncoding` and `contentMediaType` but it reserves them. If you want to create a plugin that implements some of them, it should remove these keywords from the instance.
 
 
 ## Formats
