@@ -1255,6 +1255,7 @@ If you have published a useful plugin please submit a PR to add it to the next s
 - [electron-builder](https://github.com/electron-userland/electron-builder) - a solution to package and build a ready for distribution Electron app
 - [addons-linter](https://github.com/mozilla/addons-linter) - Mozilla Add-ons Linter
 - [gh-pages-generator](https://github.com/epoberezkin/gh-pages-generator) - multi-page site generator converting markdown files to GitHub pages
+- [ESLint](https://github.com/eslint/eslint) - the pluggable linting utility for JavaScript and JSX
 
 
 ## Tests
