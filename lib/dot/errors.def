@@ -94,7 +94,7 @@
   'false schema':  "'boolean schema is false'",
   $ref:            "'can\\\'t resolve reference {{=it.util.escapeQuotes($schema)}}'",
   additionalItems: "'should NOT have more than {{=$schema.length}} items'",
-  additionalProperties: "'should NOT have additional properties'",
+  additionalProperties: "'{{? it.opts._errorDataPathProperty }}is an invalid additional property{{??}}should NOT have additional properties{{?}}'",
   anyOf:           "'should match some schema in anyOf'",
   const:           "'should be equal to constant'",
   contains:        "'should contain a valid item'",
