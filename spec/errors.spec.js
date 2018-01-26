@@ -64,22 +64,23 @@ describe('Validation errors', function () {
         , invalidData = { foo: 1, bar: 2, baz: 3, quux: 4 };
 
       var path = pathFunc(errorDataPath);
+      var msg = additionalFunc(errorDataPath);
 
       var validate = ajv.compile(schema);
       shouldBeValid(validate, data);
       shouldBeInvalid(validate, invalidData);
-      shouldBeError(validate.errors[0], 'additionalProperties', '#/additionalProperties', path("['baz']"), undefined, { additionalProperty: 'baz' });
+      shouldBeError(validate.errors[0], 'additionalProperties', '#/additionalProperties', path("['baz']"), msg, { additionalProperty: 'baz' });
 
       var validateJP = ajvJP.compile(schema);
       shouldBeValid(validateJP, data);
       shouldBeInvalid(validateJP, invalidData);
-      shouldBeError(validateJP.errors[0], 'additionalProperties', '#/additionalProperties', path("/baz"), undefined, { additionalProperty: 'baz' });
+      shouldBeError(validateJP.errors[0], 'additionalProperties', '#/additionalProperties', path("/baz"), msg, { additionalProperty: 'baz' });
 
       var fullValidate = fullAjv.compile(schema);
       shouldBeValid(fullValidate, data);
       shouldBeInvalid(fullValidate, invalidData, 2);
-      shouldBeError(fullValidate.errors[0], 'additionalProperties', '#/additionalProperties', path('/baz'), undefined, { additionalProperty: 'baz' });
-      shouldBeError(fullValidate.errors[1], 'additionalProperties', '#/additionalProperties', path('/quux'), undefined, { additionalProperty: 'quux' });
+      shouldBeError(fullValidate.errors[0], 'additionalProperties', '#/additionalProperties', path('/baz'), msg, { additionalProperty: 'baz' });
+      shouldBeError(fullValidate.errors[1], 'additionalProperties', '#/additionalProperties', path('/quux'), msg, { additionalProperty: 'quux' });
 
       if (errorDataPath == 'property') {
         fullValidate.errors
@@ -184,7 +185,7 @@ describe('Validation errors', function () {
       delete invalidData2[98];
 
       var path = pathFunc(errorDataPath);
-      var msg = msgFunc(errorDataPath);
+      var msg = requiredFunc(errorDataPath);
 
       test();
 
@@ -368,7 +369,7 @@ describe('Validation errors', function () {
       , invalidData2 = { bar: 2 };
 
     var path = pathFunc(errorDataPath);
-    var msg = msgFunc(errorDataPath);
+    var msg = requiredFunc(errorDataPath);
 
     var validate = ajv.compile(schema);
     shouldBeValid(validate, data);
@@ -399,12 +400,18 @@ describe('Validation errors', function () {
     };
   }
 
-  function msgFunc(errorDataPath) {
+  function requiredFunc(errorDataPath) {
     return function (prop) {
       return errorDataPath == 'property'
               ? 'is a required property'
               : 'should have required property \'' + prop + '\'';
     };
+  }
+
+  function additionalFunc(errorDataPath) {
+    return errorDataPath == 'property'
+            ? 'is an invalid additional property'
+            : 'should NOT have additional properties';
   }
 
 
