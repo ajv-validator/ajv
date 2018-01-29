@@ -139,7 +139,7 @@ declare namespace ajv {
     formats?: object;
     unknownFormats?: true | string[] | 'ignore';
     schemas?: Array<object> | object;
-    schemaId?: '$id' | 'id';
+    schemaId?: '$id' | 'id' | 'auto';
     missingRefs?: true | 'ignore' | 'fail';
     extendRefs?: true | 'ignore' | 'fail';
     loadSchema?: (uri: string, cb?: (err: Error, schema: object) => void) => Thenable<object | boolean>;
