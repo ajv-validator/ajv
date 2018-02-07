@@ -302,7 +302,7 @@ describe('Type coercion', function () {
     });
   });
 
-  it.skip('should coerce to multiple types in order with integer type', function() {
+  it('should coerce to multiple types in order with integer type', function() {
     var schema = {
       type: 'object',
       properties: {
