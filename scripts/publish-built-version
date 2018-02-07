@@ -10,9 +10,10 @@ if [[ -n $TRAVIS_TAG && $TRAVIS_JOB_NUMBER =~ ".3" ]]; then
 
   git clone https://${GITHUB_TOKEN}@github.com/epoberezkin/ajv-dist.git ../ajv-dist
 
-  mkdir -p ../ajv-dist/dist
-  cp ./dist/* ../ajv-dist/dist
-  cp ./bower.json ../ajv-dist
+  rm -rf ../ajv-dist/dist
+  mkdir ../ajv-dist/dist
+  cp ./dist/ajv.* ../ajv-dist/dist
+  cat bower.json | sed 's/"name": "ajv"/"name": "ajv-dist"/' > ../ajv-dist/bower.json
   cd ../ajv-dist
 
   if [[ `git status --porcelain` ]]; then
