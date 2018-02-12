@@ -260,7 +260,7 @@ describe('Type coercion', function () {
   });
 
 
-  it('should coerce to multiple types in order', function() {
+  it('should coerce to multiple types in order with number type', function() {
     var schema = {
       type: 'object',
       properties: {
@@ -278,6 +278,45 @@ describe('Type coercion', function () {
 
       _ajv.validate(schema, data = { foo: '1.5' }) .should.equal(true);
       data .should.eql({ foo: 1.5 });
+
+      _ajv.validate(schema, data = { foo: 'false' }) .should.equal(true);
+      data .should.eql({ foo: false });
+
+      _ajv.validate(schema, data = { foo: 1 }) .should.equal(true);
+      data .should.eql({ foo: 1 }); // no coercion
+
+      _ajv.validate(schema, data = { foo: true }) .should.equal(true);
+      data .should.eql({ foo: true }); // no coercion
+
+      _ajv.validate(schema, data = { foo: null }) .should.equal(true);
+      data .should.eql({ foo: null }); // no coercion
+
+      _ajv.validate(schema, data = { foo: 'abc' }) .should.equal(false);
+      data .should.eql({ foo: 'abc' }); // can't coerce
+
+      _ajv.validate(schema, data = { foo: {} }) .should.equal(false);
+      data .should.eql({ foo: {} }); // can't coerce
+
+      _ajv.validate(schema, data = { foo: [] }) .should.equal(false);
+      data .should.eql({ foo: [] }); // can't coerce
+    });
+  });
+
+  it('should coerce to multiple types in order with integer type', function() {
+    var schema = {
+      type: 'object',
+      properties: {
+        foo: {
+          type: [ 'integer', 'boolean', 'null' ]
+        }
+      }
+    };
+
+    instances.forEach(function (_ajv) {
+      var data;
+
+      _ajv.validate(schema, data = { foo: '1' }) .should.equal(true);
+      data .should.eql({ foo: 1 });
 
       _ajv.validate(schema, data = { foo: 'false' }) .should.equal(true);
       data .should.eql({ foo: false });
