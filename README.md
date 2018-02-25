@@ -846,9 +846,10 @@ Create Ajv instance.
 
 Generate validating function and cache the compiled schema for future use.
 
-Validating function returns boolean and has properties `errors` with the errors from the last validation (`null` if there were no errors) and `schema` with the reference to the original schema.
+Validating function returns a boolean value and has two properties: `errors`, `schema`. Any errors returned from the last validation are set to `errors`
+while the value of `errors` is set to `null` to indicate no errors. `schema` contains the reference to the original schema.
 
-Unless the option `validateSchema` is false, the schema will be validated against meta-schema and if schema is invalid the error will be thrown. See [options](#options).
+The schema will be validated against meta-schema unless `validateSchema` option is set to false. If schema is invalid, an error will be thrown. See [options](#options).
 
 
 ##### <a name="api-compileAsync"></a>.compileAsync(Object schema [, Boolean meta] [, Function callback]) -&gt; Promise
