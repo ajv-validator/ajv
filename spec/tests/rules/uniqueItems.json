@@ -12,6 +12,11 @@
         "valid": true
       },
       {
+        "description": "array of unique items with strings that are properties of has are valid",
+        "data": ["toString", "foo"],
+        "valid": true
+      },
+      {
         "description": "array of non-unique strings are invalid",
         "data": ["foo", "bar", "bar"],
         "valid": false
