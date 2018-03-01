@@ -12,7 +12,7 @@
         "valid": true
       },
       {
-        "description": "array of unique items with strings that are properties of has are valid",
+        "description": "array of unique items with strings that are properties of hash are valid",
         "data": ["toString", "foo"],
         "valid": true
       },
