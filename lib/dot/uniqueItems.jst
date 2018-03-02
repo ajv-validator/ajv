@@ -34,7 +34,7 @@
       for (;i--;) {
         var item = {{=$data}}[i];
         if (typeof item != '{{=$itemType}}') continue;
-        if (itemIndices[item] !== undefined) {
+        if (typeof itemIndices[item] == 'number') {
           {{=$valid}} = false;
           j = itemIndices[item];
           break;
