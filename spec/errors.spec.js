@@ -711,6 +711,42 @@ describe('Validation errors', function () {
         }
       });
     });
+
+    it('should include limits in error message with $data', function() {
+      var schema = {
+        "properties": {
+          "smaller": {
+            "type": "number",
+            "exclusiveMaximum": { "$data": "1/larger" }
+          },
+          "larger": { "type": "number" }
+        }
+      };
+
+      ajv = new Ajv({$data: true});
+      fullAjv = new Ajv({$data: true, allErrors: true, verbose: true, jsonPointers: true});
+
+      [ajv, fullAjv].forEach(function (_ajv) {
+        var validate = _ajv.compile(schema);
+        shouldBeValid(validate, {smaller: 2, larger: 4});
+        shouldBeValid(validate, {smaller: 3, larger: 4});
+
+        shouldBeInvalid(validate, {smaller: 4, larger: 4});
+        testError();
+
+        shouldBeInvalid(validate, {smaller: 5, larger: 4});
+        testError();
+
+        function testError() {
+          var err = validate.errors[0];
+          shouldBeError(err, 'exclusiveMaximum',
+                        '#/properties/smaller/exclusiveMaximum',
+                        _ajv._opts.jsonPointers ? '/smaller' : '.smaller',
+                        'should be < 4',
+                        {comparison: '<', limit: 4, exclusive: true});
+        }
+      });
+    });
   });
 
 
