@@ -15,7 +15,7 @@ declare namespace ajv {
     * @param  {Any} data to be validated
     * @return {Boolean} validation result. Errors from the last validation will be available in `ajv.errors` (and also in compiled schema: `schema.errors`).
     */
-    validate(schemaKeyRef: object | string | boolean, data: any): boolean | Thenable<any>;
+    validate(schemaKeyRef: object | string | boolean, data: any): boolean | PromiseLike<any>;
     /**
     * Create validating function for passed schema.
     * @param  {object|Boolean} schema schema object
@@ -29,9 +29,9 @@ declare namespace ajv {
     * @param {object|Boolean} schema schema object
     * @param {Boolean} meta optional true to compile meta-schema; this parameter can be skipped
     * @param {Function} callback optional node-style callback, it is always called with 2 parameters: error (or null) and validating function.
-    * @return {Thenable<ValidateFunction>} validating function
+    * @return {PromiseLike<ValidateFunction>} validating function
     */
-    compileAsync(schema: object | boolean, meta?: Boolean, callback?: (err: Error, validate: ValidateFunction) => any): Thenable<ValidateFunction>;
+    compileAsync(schema: object | boolean, meta?: Boolean, callback?: (err: Error, validate: ValidateFunction) => any): PromiseLike<ValidateFunction>;
     /**
     * Adds schema to the instance.
     * @param {object|Array} schema schema or array of schemas. If array is passed, `key` and other parameters will be ignored.
@@ -107,10 +107,6 @@ declare namespace ajv {
     errors?: Array<ErrorObject>;
   }
 
-  interface Thenable <R> {
-    then <U> (onFulfilled?: (value: R) => U | Thenable<U>, onRejected?: (error: any) => U | Thenable<U>): Thenable<U>;
-  }
-
   interface ValidateFunction {
     (
       data: any,
@@ -118,7 +114,7 @@ declare namespace ajv {
       parentData?: object | Array<any>,
       parentDataProperty?: string | number,
       rootData?: object | Array<any>
-    ): boolean | Thenable<any>;
+    ): boolean | PromiseLike<any>;
     schema?: object | boolean;
     errors?: null | Array<ErrorObject>;
     refs?: object;
@@ -142,7 +138,7 @@ declare namespace ajv {
     schemaId?: '$id' | 'id' | 'auto';
     missingRefs?: true | 'ignore' | 'fail';
     extendRefs?: true | 'ignore' | 'fail';
-    loadSchema?: (uri: string, cb?: (err: Error, schema: object) => void) => Thenable<object | boolean>;
+    loadSchema?: (uri: string, cb?: (err: Error, schema: object) => void) => PromiseLike<object | boolean>;
     removeAdditional?: boolean | 'all' | 'failing';
     useDefaults?: boolean | 'shared';
     coerceTypes?: boolean | 'array';
@@ -163,7 +159,7 @@ declare namespace ajv {
     cache?: object;
   }
 
-  type FormatValidator = string | RegExp | ((data: string) => boolean | Thenable<any>);
+  type FormatValidator = string | RegExp | ((data: string) => boolean | PromiseLike<any>);
 
   interface FormatDefinition {
     validate: FormatValidator;
@@ -227,7 +223,7 @@ declare namespace ajv {
       parentData?: object | Array<any>,
       parentDataProperty?: string | number,
       rootData?: object | Array<any>
-    ): boolean | Thenable<any>;
+    ): boolean | PromiseLike<any>;
     errors?: Array<ErrorObject>;
   }
 
