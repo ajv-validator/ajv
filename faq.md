@@ -8,6 +8,27 @@ layout: main
 The purpose of this document is to help find answers quicker. I am happy to continue the discussion about these issues, so please comment on some of the issues mentioned below or create a new issue if it seems more appropriate.
 
 
+
+## Using JSON schema
+
+Ajv implements JSON schema specification. Before submitting the issue about the behaviour of any validation keywords please review them in:
+
+- [JSON Schema specification](https://tools.ietf.org/html/draft-handrews-json-schema-validation-00) (draft-07)
+- [Validation keywords](keywords.html) in Ajv documentation
+- [JSON Schema tutorial](https://spacetelescope.github.io/understanding-json-schema/) (for draft-04)
+
+
+##### Why Ajv validates empty object as valid?
+
+"properties" keyword does not require the presence of any properties, you need to use "required" keyword. It also doesn't require that the data is an object, so any other type of data will also be valid. To require a specific type use "type" keyword.
+
+
+##### Why Ajv validates only the first item of the array?
+
+"items" keyword support [two syntaxes](keywords.html#items) - 1) when the schema applies to all items; 2) when there is a different schema for each item in the beginning of the array. This problem means you are using the second syntax.
+
+
+
 ## Ajv API for returning validation errors
 
 See [#65](https://github.com/epoberezkin/ajv/issues/65), [#212](https://github.com/epoberezkin/ajv/issues/212), [#236](https://github.com/epoberezkin/ajv/issues/236), [#242](https://github.com/epoberezkin/ajv/issues/242), [#256](https://github.com/epoberezkin/ajv/issues/256).
@@ -35,6 +56,7 @@ No. In many cases there is a module responsible for the validation in the applic
 Doing this would create a precedent where validated data is used in error messages, creating a vulnerability (e.g., when ajv is used to validate API data/parameters and error messages are logged).
 
 Since the property name is already in the params object, in an application you can modify messages in any way you need. ajv-errors package allows modifying messages as well.
+
 
 
 ## Additional properties inside compound keywords anyOf, oneOf, etc.
@@ -69,6 +91,7 @@ There are several ways to implement the described logic that would allow two pro
 This problem is related to the problem explained above - properties treated as additional in the sence of `additionalProperties` keyword, based on `properties`/`patternProperties` keyword in the same schema object.
 
 See the exemple in [Filtering Data](/ajv#filtering-data) section of readme.
+
 
 
 ## Generating schemas with resolved references ($ref)
