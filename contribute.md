@@ -48,7 +48,7 @@ Please make sure to include the following information in the issue:
 
 #### <a name="changes"></a>Change proposals
 
-[Create a proposal](https://github.com/epoberezkin/ajv/issues/new?labels=suggestion&body=**What%20version%20of%20Ajv%20you%20are%20you%20using%3F**%0A%0A**What%20problem%20do%20you%20want%20to%20solve%3F**%0A%0A**What%20do%20you%20think%20is%20the%20correct%20solution%20to%20problem?**%0A%0A**Will%20you%20be%20able%20to%20implement%20it%3F**%0A%0A) for a new feature, option or some other improvement.
+[Create a proposal](https://github.com/epoberezkin/ajv/issues/new?template=change.md) for a new feature, option or some other improvement.
 
 Please include this information:
 
@@ -68,7 +68,7 @@ Please include as much details as possible.
 
 #### <a name="compatibility"></a>Browser and compatibility issues
 
-[Create an issue](https://github.com/epoberezkin/ajv/issues/new?labels=compatibility&body=**The%20version%20of%20Ajv%20you%20are%20using**%0A%0A**The%20environment%20you%20have%20the%20problem%20with.**%0A%0A**Your%20code%20(please%20make%20it%20as%20small%20as%20possible%20to%20reproduce%20the%20issue).**%0A%0A**If%20your%20issue%20is%20in%20the%20browser,%20please%20list%20the%20other%20packages%20loaded%20in%20the%20page%20in%20the%20order%20they%20are%20loaded.%20Please%20check%20if%20the%20issue%20gets%20resolved%20(or%20results%20change)%20if%20you%20move%20Ajv%20bundle%20closer%20to%20the%20top.**%0A%0A**Results%20in%20node.js%20v4.**%0A%0A**Results%20and%20error%20messages%20in%20your%20platform.**%0A%0A) to report a compatibility problem that only happens in a particular environment (when your code works correctly in node.js v4 in linux systems but fails in some other environment).
+[Create an issue](https://github.com/epoberezkin/ajv/issues/new?template=compatibility.md) to report a compatibility problem that only happens in a particular environment (when your code works correctly in node.js v4 in linux systems but fails in some other environment).
 
 Please include this information:
 
