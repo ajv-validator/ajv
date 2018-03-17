@@ -102,8 +102,8 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 - [assigning defaults](#assigning-defaults) to missing properties and items
 - [coercing data](#coercing-data-types) to the types specified in `type` keywords
 - [custom keywords](#defining-custom-keywords)
-- draft-6 keywords `const`, `contains` and `propertyNames`
-- draft-6 boolean schemas (`true`/`false` as a schema to always pass/fail).
+- draft-06/07 keywords `const`, `contains`, `propertyNames` and `if/then/else`
+- draft-06 boolean schemas (`true`/`false` as a schema to always pass/fail).
 - keywords `switch`, `patternRequired`, `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` from [JSON Schema extension proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package
 - [$data reference](#data-reference) to use values from the validated data as values for the schema keywords
 - [asynchronous validation](#asynchronous-validation) of custom formats and keywords
@@ -241,9 +241,10 @@ The following formats are supported for string validation with "format" keyword:
 - _date_: full-date according to [RFC3339](http://tools.ietf.org/html/rfc3339#section-5.6).
 - _time_: time with optional time-zone.
 - _date-time_: date-time from the same source (time-zone is mandatory). `date`, `time` and `date-time` validate ranges in `full` mode and only regexp in `fast` mode (see [options](#options)).
-- _uri_: full uri with optional protocol.
-- _url_: [URL record](https://url.spec.whatwg.org/#concept-url).
+- _uri_: full URI.
+- _uri-reference_: URI reference, including full and relative URIs.
 - _uri-template_: URI template according to [RFC6570](https://tools.ietf.org/html/rfc6570)
+- _url_: [URL record](https://url.spec.whatwg.org/#concept-url).
 - _email_: email address.
 - _hostname_: host name according to [RFC1034](http://tools.ietf.org/html/rfc1034#section-3.5).
 - _ipv4_: IP address v4.
@@ -253,9 +254,9 @@ The following formats are supported for string validation with "format" keyword:
 - _json-pointer_: JSON-pointer according to [RFC6901](https://tools.ietf.org/html/rfc6901).
 - _relative-json-pointer_: relative JSON-pointer according to [this draft](http://tools.ietf.org/html/draft-luff-relative-json-pointer-00).
 
-__Please note__: JSON Schema draft-07 also defines formats `iri`, `iri-reference`, `idn-hostname` and `idn-email` for URLs, hostnames and emails with international characters. Ajv does not implement these formats. If you create Ajv plugin that implements them please make a PR here to mention this plugin.
+__Please note__: JSON Schema draft-07 also defines formats `iri`, `iri-reference`, `idn-hostname` and `idn-email` for URLs, hostnames and emails with international characters. Ajv does not implement these formats. If you create Ajv plugin that implements them please make a PR to mention this plugin here.
 
-There are two modes of format validation: `fast` and `full`. This mode affects formats `date`, `time`, `date-time`, `uri`, `email`, and `hostname`. See [Options](#options) for details.
+There are two modes of format validation: `fast` and `full`. This mode affects formats `date`, `time`, `date-time`, `uri`, `uri-reference`, `email`, and `hostname`. See [Options](#options) for details.
 
 You can add additional formats and replace any of the formats above using [addFormat](#api-addformat) method.
 
