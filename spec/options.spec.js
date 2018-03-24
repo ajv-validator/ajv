@@ -46,6 +46,46 @@ describe('Ajv Options', function () {
     });
 
 
+    it('should remove properties that would error when `additionalProperties = false` (many properties, boolean schema)', function() {
+      var ajv = new Ajv({removeAdditional: true});
+
+      var schema = {
+        properties: {
+          obj: {
+            additionalProperties: false,
+            properties: {
+              a: { type: 'string' },
+              b: false,
+              c: { type: 'string' },
+              d: { type: 'string' },
+              e: { type: 'string' },
+              f: { type: 'string' },
+              g: { type: 'string' },
+              h: { type: 'string' },
+              i: { type: 'string' }
+            }
+          }
+        }
+      };
+
+      var data = {
+        obj: {
+          a: 'valid',
+          b: 'should not be removed',
+          additional: 'will be removed'
+        }
+      };
+
+      ajv.validate(schema, data) .should.equal(false);
+      data .should.eql({
+        obj: {
+          a: 'valid',
+          b: 'should not be removed'
+        }
+      });
+    });
+
+
     it('should remove properties that would error when `additionalProperties` is a schema', function() {
       var ajv = new Ajv({ removeAdditional: 'failing' });
 

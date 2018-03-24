@@ -58,8 +58,8 @@ var {{=$nextValid}} = true;
     {{? $someProperties }}
       var isAdditional{{=$lvl}} = !(false
         {{? $schemaKeys.length }}
-          {{? $schemaKeys.length > 5 }}
-            || validate.schema{{=$schemaPath}}[{{=$key}}]
+          {{? $schemaKeys.length > 8 }}
+            || validate.schema{{=$schemaPath}}.hasOwnProperty({{=$key}})
           {{??}}
             {{~ $schemaKeys:$propertyKey }}
               || {{=$key}} == {{= it.util.toQuotedString($propertyKey) }}
