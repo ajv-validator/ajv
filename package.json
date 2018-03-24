@@ -12,9 +12,9 @@
     ".tonic_example.js"
   ],
   "scripts": {
-    "eslint": "if-node-version \">=4\" eslint lib/*.js lib/compile/*.js spec/*.js scripts",
+    "eslint": "eslint lib/*.js lib/compile/*.js spec/*.js scripts",
     "jshint": "jshint lib/*.js lib/**/*.js --exclude lib/dotjs/**/*",
-    "test-spec": "mocha spec/*.spec.js -R spec $(if-node-version 7 echo --harmony-async-await)",
+    "test-spec": "mocha spec/*.spec.js -R spec",
     "test-fast": "AJV_FAST_TEST=true npm run test-spec",
     "test-debug": "mocha spec/*.spec.js --debug-brk -R spec",
     "test-cov": "nyc npm run test-spec",
