@@ -42,7 +42,7 @@
     , $currentBaseId = it.baseId;
 
   var $required = it.schema.required;
-  if ($required && !(it.opts.v5 && $required.$data) && $required.length < it.opts.loopRequired)
+  if ($required && !(it.opts.$data && $required.$data) && $required.length < it.opts.loopRequired)
     var $requiredHash = it.util.toHash($required);
 }}
 
