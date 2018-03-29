@@ -349,4 +349,4 @@ declare class MissingRefError extends Error {
   missingSchema: string;
 }
 
-export = ajv;
+export default ajv;
