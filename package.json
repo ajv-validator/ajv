@@ -63,7 +63,7 @@
     "fast-deep-equal": "^1.0.0",
     "fast-json-stable-stringify": "^2.0.0",
     "json-schema-traverse": "^0.3.0",
-    "uri-js": "^3.0.2"
+    "uri-js": "^4.2.0"
   },
   "devDependencies": {
     "ajv-async": "^1.0.0",
