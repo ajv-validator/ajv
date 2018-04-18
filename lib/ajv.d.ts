@@ -1,4 +1,4 @@
-declare var ajv: { 
+declare var ajv: {
   (options?: ajv.Options): ajv.Ajv;
   new (options?: ajv.Options): ajv.Ajv;
   ValidationError: ValidationError;
@@ -160,12 +160,23 @@ declare namespace ajv {
   }
 
   type FormatValidator = string | RegExp | ((data: string) => boolean | PromiseLike<any>);
+  type NumberFormatValidator = ((data: number) => boolean | PromiseLike<any>);
 
-  interface FormatDefinition {
-    validate: FormatValidator;
-    compare: (data1: string, data2: string) => number;
+  interface NumberFormatDefinition {
+    type: "number",
+    validate: NumberFormatValidator;
+    compare?: (data1: number, data2: number) => number;
     async?: boolean;
   }
+
+  interface StringFormatDefinition {
+    type?: "string",
+    validate: FormatValidator;
+    compare?: (data1: string, data2: string) => number;
+    async?: boolean;
+  }
+
+  type FormatDefinition = NumberFormatDefinition | StringFormatDefinition;
 
   interface KeywordDefinition {
     type?: string | Array<string>;
