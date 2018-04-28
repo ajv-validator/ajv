@@ -60,7 +60,7 @@
   "homepage": "https://github.com/epoberezkin/ajv",
   "tonicExampleFilename": ".tonic_example.js",
   "dependencies": {
-    "fast-deep-equal": "^1.0.0",
+    "fast-deep-equal": "^2.0.0",
     "fast-json-stable-stringify": "^2.0.0",
     "json-schema-traverse": "^0.3.0",
     "uri-js": "^3.0.2"
