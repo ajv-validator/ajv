@@ -37,7 +37,7 @@ I would really appreciate the time you spend providing all the information and r
 Please make sure to include the following information in the issue:
 
 1. What version of Ajv are you using? Does the issue happen if you use the latest version?
-2. Ajv options object (see /ajv#options).
+2. Ajv options object (see /#options).
 3. JSON Schema and the data you are validating (please make it as small as possible to reproduce the issue).
 4. Your code (please use `options`, `schema` and `data` as variables).
 5. Validation result, data AFTER validation, error messages.
