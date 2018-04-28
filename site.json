@@ -2,8 +2,7 @@
   "repository": "https://github.com/epoberezkin/ajv",
   "folders": {
     "source": "_source",
-    "target": ".",
-    "site": "ajv"
+    "target": "."
   },
   "layout": "main",
   "navigation": [
