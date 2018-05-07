@@ -267,7 +267,7 @@ The value of the keyword should be an object or an array of objects.
 
 If the keyword value is an object, then for the data array to be valid each item of the array should be valid according to the schema in this value. In this case the "additionalItems" keyword is ignored.
 
-If the keyword value is an array, then items with indeces less than the number of items in the keyword should be valid according to the schemas with the same indeces. Whether additional items are valid will depend on "additionalItems" keyword.
+If the keyword value is an array, then items with indices less than the number of items in the keyword should be valid according to the schemas with the same indices. Whether additional items are valid will depend on "additionalItems" keyword.
 
 
 __Examples__
@@ -307,7 +307,7 @@ If the length of data array is bigger than the length of "items" keyword value t
 
 - `false`: data is invalid
 - `true`: data is valid
-- an object: data is valid if all additional items (i.e. items with indeces greater or equal than "items" keyword value length) are valid according to the schema in "assitionalItems" keyword.
+- an object: data is valid if all additional items (i.e. items with indices greater or equal than "items" keyword value length) are valid according to the schema in "additionalItems" keyword.
 
 
 __Examples__
