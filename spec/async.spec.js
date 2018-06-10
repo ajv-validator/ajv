@@ -430,7 +430,7 @@ describe('compileAsync method', function() {
   });
 
 
-  describe.skip('schema with multiple remote properties, the first is recursive schema (#801)', function() {
+  describe('schema with multiple remote properties, the first is recursive schema (#801)', function() {
     it('should validate data', function() {
       var schema = {
         "$id": "http://example.com/list.json",
