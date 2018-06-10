@@ -60,6 +60,24 @@ describe('compileAsync method', function() {
           "enum": ["foo", "bar"]
         }
       }
+    },
+    "http://example.com/foo.json": {
+      "$id": "http://example.com/foo.json",
+      "type": "object",
+      "properties": {
+        "bar": {"$ref": "bar.json"},
+        "other": {"$ref": "other.json"}
+      }
+    },
+    "http://example.com/bar.json": {
+      "$id": "http://example.com/bar.json",
+      "type": "object",
+      "properties": {
+        "foo": {"$ref": "foo.json"}
+      }
+    },
+    "http://example.com/other.json": {
+      "$id": "http://example.com/other.json"
     }
   };
 
@@ -409,6 +427,23 @@ describe('compileAsync method', function() {
         }
       );
     }
+  });
+
+
+  describe.skip('schema with multiple remote properties, the first is recursive schema (#801)', function() {
+    it('should validate data', function() {
+      var schema = {
+        "$id": "http://example.com/list.json",
+        "type": "object",
+        "properties": {
+          "foo": {"$ref": "foo.json"}
+        }
+      };
+
+      return ajv.compileAsync(schema).then(function (validate) {
+        validate({foo: {}}) .should.equal(true);
+      });
+    });
   });
 
 
