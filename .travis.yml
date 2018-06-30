@@ -3,7 +3,6 @@ before_script:
   - git submodule update --init
   - npm install -g codeclimate-test-reporter
 node_js:
-  - "4"
   - "6"
   - "8"
   - "9"
