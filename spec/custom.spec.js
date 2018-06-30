@@ -209,6 +209,44 @@ describe('Custom keywords', function () {
       testMultipleRangeKeyword({ type: 'number', macro: macroRange }, 2);
     });
 
+    it('should support resolving $ref without id or $id', function () {
+      instances.forEach(function (_ajv) {
+        _ajv.addKeyword('macroRef', {
+          macro: function (schema, parentSchema, it) {
+            it.baseId .should.equal('#');
+            var ref = schema.$ref;
+            var validate = _ajv.getSchema(ref);
+            if (validate) return validate.schema;
+            throw new ajv.constructor.MissingRefError(it.baseId, ref);
+          },
+          metaSchema: {
+            "type": "object",
+            "required": [ "$ref" ],
+            "additionalProperties": false,
+            "properties": {
+              "$ref": {
+                "type": "string"
+              }
+            }
+          }
+        });
+        var schema = {
+          "macroRef": {
+            "$ref": "#/definitions/schema"
+          },
+          "definitions": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        };
+        var validate;
+        (function compileMacroRef () { validate = _ajv.compile(schema); }).should.not.throw();
+        shouldBeValid(validate, 'foo');
+        shouldBeInvalid(validate, 1, 2);
+      });
+    });
+
     it('should recursively expand macro keywords', function() {
       instances.forEach(function (_ajv) {
         _ajv.addKeyword('deepProperties', { type: 'object', macro: macroDeepProperties });
