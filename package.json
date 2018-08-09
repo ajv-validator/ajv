@@ -81,7 +81,7 @@
     "js-beautify": "^1.7.3",
     "jshint": "^2.9.4",
     "json-schema-test": "^2.0.0",
-    "karma": "^2.0.2",
+    "karma": "^3.0.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-mocha": "^1.1.1",
     "karma-phantomjs-launcher": "^1.0.0",
