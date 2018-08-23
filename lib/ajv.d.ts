@@ -11,14 +11,14 @@ declare namespace ajv {
     /**
     * Validate data using schema
     * Schema will be compiled and cached (using serialized JSON as key, [fast-json-stable-stringify](https://github.com/epoberezkin/fast-json-stable-stringify) is used to serialize by default).
-    * @param  {string|object|Boolean} schemaKeyRef key, ref or schema object
-    * @param  {Any} data to be validated
-    * @return {Boolean} validation result. Errors from the last validation will be available in `ajv.errors` (and also in compiled schema: `schema.errors`).
+    * @param  {string|object|boolean} schemaKeyRef key, ref or schema object
+    * @param  {any} data to be validated
+    * @return {boolean} validation result. Errors from the last validation will be available in `ajv.errors` (and also in compiled schema: `schema.errors`).
     */
     validate(schemaKeyRef: object | string | boolean, data: any): boolean | PromiseLike<any>;
     /**
     * Create validating function for passed schema.
-    * @param  {object|Boolean} schema schema object
+    * @param  {object|boolean} schema schema object
     * @return {Function} validating function
     */
     compile(schema: object | boolean): ValidateFunction;
@@ -26,19 +26,19 @@ declare namespace ajv {
     * Creates validating function for passed schema with asynchronous loading of missing schemas.
     * `loadSchema` option should be a function that accepts schema uri and node-style callback.
     * @this  Ajv
-    * @param {object|Boolean} schema schema object
-    * @param {Boolean} meta optional true to compile meta-schema; this parameter can be skipped
+    * @param {object|boolean} schema schema object
+    * @param {boolean} meta optional true to compile meta-schema; this parameter can be skipped
     * @param {Function} callback optional node-style callback, it is always called with 2 parameters: error (or null) and validating function.
     * @return {PromiseLike<ValidateFunction>} validating function
     */
-    compileAsync(schema: object | boolean, meta?: Boolean, callback?: (err: Error, validate: ValidateFunction) => any): PromiseLike<ValidateFunction>;
+    compileAsync(schema: object | boolean, meta?: boolean, callback?: (err: Error, validate: ValidateFunction) => void): PromiseLike<ValidateFunction>;
     /**
     * Adds schema to the instance.
     * @param {object|Array} schema schema or array of schemas. If array is passed, `key` and other parameters will be ignored.
     * @param {string} key Optional schema key. Can be passed to `validate` method instead of schema object or id/ref. One schema per instance can have empty `id` and `key`.
     * @return {Ajv} this for method chaining
     */
-    addSchema(schema: Array<object> | object, key?: string): Ajv;
+    addSchema(schema: object[] | object, key?: string): Ajv;
     /**
     * Add schema that will be used to validate other schemas
     * options in META_IGNORE_OPTIONS are alway set to false
@@ -49,8 +49,8 @@ declare namespace ajv {
     addMetaSchema(schema: object, key?: string): Ajv;
     /**
     * Validate schema
-    * @param {object|Boolean} schema schema to validate
-    * @return {Boolean} true if schema is valid
+    * @param {object|boolean} schema schema to validate
+    * @return {boolean} true if schema is valid
     */
     validateSchema(schema: object | boolean): boolean;
     /**
@@ -64,7 +64,7 @@ declare namespace ajv {
     * If no parameter is passed all schemas but meta-schemas are removed.
     * If RegExp is passed all schemas with key/id matching pattern but meta-schemas are removed.
     * Even if schema is referenced by other schemas it still can be removed as other schemas have local references.
-    * @param  {string|object|RegExp|Boolean} schemaKeyRef key, ref, pattern to match key/ref or schema object
+    * @param  {string|object|RegExp|boolean} schemaKeyRef key, ref, pattern to match key/ref or schema object
     * @return {Ajv} this for method chaining
     */
     removeSchema(schemaKeyRef?: object | string | RegExp | boolean): Ajv;
@@ -87,7 +87,7 @@ declare namespace ajv {
     * Get keyword definition
     * @this  Ajv
     * @param {string} keyword pre-defined or custom keyword.
-    * @return {object|Boolean} custom keyword definition, `true` if it is a predefined keyword, `false` otherwise.
+    * @return {object|boolean} custom keyword definition, `true` if it is a predefined keyword, `false` otherwise.
     */
     getKeyword(keyword: string): object | boolean;
     /**
@@ -99,26 +99,26 @@ declare namespace ajv {
     removeKeyword(keyword: string): Ajv;
     /**
     * Convert array of error message objects to string
-    * @param  {Array<object>} errors optional array of validation errors, if not passed errors from the instance are used.
+    * @param  {object[]} errors optional array of validation errors, if not passed errors from the instance are used.
     * @param  {object} options optional options with properties `separator` and `dataVar`.
     * @return {string} human readable string with all errors descriptions
     */
-    errorsText(errors?: Array<ErrorObject> | null, options?: ErrorsTextOptions): string;
-    errors?: Array<ErrorObject>;
+    errorsText(errors?: ErrorObject[] | null, options?: ErrorsTextOptions): string;
+    errors?: ErrorObject[];
   }
 
   interface ValidateFunction {
     (
       data: any,
       dataPath?: string,
-      parentData?: object | Array<any>,
+      parentData?: object | any[],
       parentDataProperty?: string | number,
-      rootData?: object | Array<any>
+      rootData?: object | any[]
     ): boolean | PromiseLike<any>;
     schema?: object | boolean;
-    errors?: null | Array<ErrorObject>;
+    errors?: null | ErrorObject[];
     refs?: object;
-    refVal?: Array<any>;
+    refVal?: any[];
     root?: ValidateFunction | object;
     $async?: true;
     source?: object;
@@ -134,7 +134,7 @@ declare namespace ajv {
     format?: string;
     formats?: object;
     unknownFormats?: true | string[] | 'ignore';
-    schemas?: Array<object> | object;
+    schemas?: object[] | object;
     schemaId?: '$id' | 'id' | 'auto';
     missingRefs?: true | 'ignore' | 'fail';
     extendRefs?: true | 'ignore' | 'fail';
@@ -179,7 +179,7 @@ declare namespace ajv {
   type FormatDefinition = NumberFormatDefinition | StringFormatDefinition;
 
   interface KeywordDefinition {
-    type?: string | Array<string>;
+    type?: string | string[];
     async?: boolean;
     $data?: boolean;
     errors?: boolean | string;
@@ -231,11 +231,11 @@ declare namespace ajv {
       data: any,
       parentSchema?: object,
       dataPath?: string,
-      parentData?: object | Array<any>,
+      parentData?: object | any[],
       parentDataProperty?: string | number,
-      rootData?: object | Array<any>
+      rootData?: object | any[]
     ): boolean | PromiseLike<any>;
-    errors?: Array<ErrorObject>;
+    errors?: ErrorObject[];
   }
 
   interface ErrorsTextOptions {
@@ -338,7 +338,7 @@ declare namespace ajv {
   interface NoParams {}
 
   interface EnumParams {
-    allowedValues: Array<any>;
+    allowedValues: any[];
   }
 }
 
