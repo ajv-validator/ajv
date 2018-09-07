@@ -1,0 +1,20 @@
+language: node_js
+
+node_js:
+  - 10.8
+
+env:
+  - XUNIT_FILE=shippable/testresults/result.xml
+
+runtime:
+  nodePool: shippable_shared_aarch64
+
+notifications:
+  email:
+    recipients:
+    - pruthvi.reddy@puresoftware.com
+
+build:
+  ci:
+    - npm install
+    - npm test
