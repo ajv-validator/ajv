@@ -23,7 +23,7 @@
     "bundle-beautify": "node ./scripts/bundle.js js-beautify",
     "build": "del-cli lib/dotjs/*.js '!lib/dotjs/index.js' && node scripts/compile-dots.js",
     "test-karma": "karma start",
-    "test-browser": "del-cli .browser && npm run bundle && scripts/prepare-tests && npm run test-karma",
+    "test-browser": "del-cli .browser && npm run bundle && scripts/prepare-tests",
     "test": "npm run jshint && npm run eslint && npm run test-ts && npm run build && npm run test-cov && if-node-version 8 npm run test-browser",
     "prepublish": "npm run build && npm run bundle",
     "watch": "watch 'npm run build' ./lib/dot"
