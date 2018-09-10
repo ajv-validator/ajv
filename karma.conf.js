@@ -53,8 +53,13 @@ module.exports = function(config) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: ['Chrome'],
-
+    browsers: ['Chrome_sandbox'],
+    customLaunchers: {
+        Chrome_sandbox:{
+        base: 'Chrome',
+        flags: ['--no-sandbox','--disable-setuid-sandbox']
+      }
+    },
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
