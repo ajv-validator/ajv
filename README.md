@@ -300,7 +300,7 @@ var validate = ajv.getSchema('http://example.com/schemas/schema.json');
 or use `addSchema` method:
 
 ```javascript
-var ajv = new Ajv;
+var ajv = new Ajv();
 var validate = ajv.addSchema(defsSchema)
                   .compile(schema);
 ```
