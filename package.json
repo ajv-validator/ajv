@@ -67,7 +67,7 @@
   },
   "devDependencies": {
     "ajv-async": "^1.0.0",
-    "bluebird": "^3.1.5",
+    "bluebird": "3.5.1",
     "brfs": "^2.0.0",
     "browserify": "^16.2.0",
     "chai": "^4.0.1",
