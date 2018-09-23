@@ -1,0 +1,23 @@
+[
+  {
+    "description": "propertyNames with empty schema (#861)",
+    "schema": {
+      "properties": {
+        "foo": {"type": "string"}
+      },
+      "propertyNames": {}
+    },
+    "tests": [
+      {
+        "description": "valid",
+        "data": {"foo": "bar"},
+        "valid": true
+      },
+      {
+        "description": "invalid",
+        "data": {"foo": 1},
+        "valid": false
+      }
+    ]
+  }
+]
