@@ -16,7 +16,7 @@
 
 {{
   var $async = it.schema.$async === true
-    , $refKeywords = it.util.schemaHasRulesExcept(it.schema, it.RULES.all, '$ref')
+    , $refKeywords = it.util.schemaHasRulesExcept(it.schema, it.RULES.all, (it.opts.allowRefComments ? ['$ref', '$comment'] : ['$ref']))
     , $id = it.self._getId(it.schema);
 }}
 
