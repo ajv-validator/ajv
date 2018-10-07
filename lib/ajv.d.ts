@@ -1,13 +1,9 @@
-declare var ajv: {
-  (options?: ajv.Options): ajv.Ajv;
-  new (options?: ajv.Options): ajv.Ajv;
-  ValidationError: ValidationError;
-  MissingRefError: MissingRefError;
-  $dataMetaSchema: object;
-}
+declare function ajv(options?: ajv.Options): ajv.Ajv;
 
 declare namespace ajv {
-  interface Ajv {
+  export type $dataMetaSchema = object;
+
+  export interface Ajv {
     /**
     * Validate data using schema
     * Schema will be compiled and cached (using serialized JSON as key, [fast-json-stable-stringify](https://github.com/epoberezkin/fast-json-stable-stringify) is used to serialize by default).
@@ -107,7 +103,7 @@ declare namespace ajv {
     errors?: Array<ErrorObject>;
   }
 
-  interface ValidateFunction {
+  export interface ValidateFunction {
     (
       data: any,
       dataPath?: string,
@@ -124,7 +120,7 @@ declare namespace ajv {
     source?: object;
   }
 
-  interface Options {
+  export interface Options {
     $data?: boolean;
     allErrors?: boolean;
     verbose?: boolean;
@@ -159,26 +155,26 @@ declare namespace ajv {
     cache?: object;
   }
 
-  type FormatValidator = string | RegExp | ((data: string) => boolean | PromiseLike<any>);
-  type NumberFormatValidator = ((data: number) => boolean | PromiseLike<any>);
+  export type FormatValidator = string | RegExp | ((data: string) => boolean | PromiseLike<any>);
+  export type NumberFormatValidator = ((data: number) => boolean | PromiseLike<any>);
 
-  interface NumberFormatDefinition {
+  export interface NumberFormatDefinition {
     type: "number",
     validate: NumberFormatValidator;
     compare?: (data1: number, data2: number) => number;
     async?: boolean;
   }
 
-  interface StringFormatDefinition {
+  export interface StringFormatDefinition {
     type?: "string",
     validate: FormatValidator;
     compare?: (data1: string, data2: string) => number;
     async?: boolean;
   }
 
-  type FormatDefinition = NumberFormatDefinition | StringFormatDefinition;
+  export type FormatDefinition = NumberFormatDefinition | StringFormatDefinition;
 
-  interface KeywordDefinition {
+  export interface KeywordDefinition {
     type?: string | Array<string>;
     async?: boolean;
     $data?: boolean;
@@ -195,7 +191,7 @@ declare namespace ajv {
     inline?: (it: CompilationContext, keyword: string, schema: any, parentSchema: object) => string;
   }
 
-  interface CompilationContext {
+  export interface CompilationContext {
     level: number;
     dataLevel: number;
     schema: any;
@@ -225,7 +221,7 @@ declare namespace ajv {
     self: Ajv;
   }
 
-  interface SchemaValidateFunction {
+  export interface SchemaValidateFunction {
     (
       schema: any,
       data: any,
@@ -238,12 +234,12 @@ declare namespace ajv {
     errors?: Array<ErrorObject>;
   }
 
-  interface ErrorsTextOptions {
+  export interface ErrorsTextOptions {
     separator?: string;
     dataVar?: string;
   }
 
-  interface ErrorObject {
+  export interface ErrorObject {
     keyword: string;
     dataPath: string;
     schemaPath: string;
@@ -258,106 +254,106 @@ declare namespace ajv {
     data?: any;
   }
 
-  type ErrorParameters = RefParams | LimitParams | AdditionalPropertiesParams |
+  export type ErrorParameters = RefParams | LimitParams | AdditionalPropertiesParams |
                           DependenciesParams | FormatParams | ComparisonParams |
                           MultipleOfParams | PatternParams | RequiredParams |
                           TypeParams | UniqueItemsParams | CustomParams |
                           PatternRequiredParams | PropertyNamesParams |
                           IfParams | SwitchParams | NoParams | EnumParams;
 
-  interface RefParams {
+  export interface RefParams {
     ref: string;
   }
 
-  interface LimitParams {
+  export interface LimitParams {
     limit: number;
   }
 
-  interface AdditionalPropertiesParams {
+  export interface AdditionalPropertiesParams {
     additionalProperty: string;
   }
 
-  interface DependenciesParams {
+  export interface DependenciesParams {
     property: string;
     missingProperty: string;
     depsCount: number;
     deps: string;
   }
 
-  interface FormatParams {
+  export interface FormatParams {
     format: string
   }
 
-  interface ComparisonParams {
+  export interface ComparisonParams {
     comparison: string;
     limit: number | string;
     exclusive: boolean;
   }
 
-  interface MultipleOfParams {
+  export interface MultipleOfParams {
     multipleOf: number;
   }
 
-  interface PatternParams {
+  export interface PatternParams {
     pattern: string;
   }
 
-  interface RequiredParams {
+  export interface RequiredParams {
     missingProperty: string;
   }
 
-  interface TypeParams {
+  export interface TypeParams {
     type: string;
   }
 
-  interface UniqueItemsParams {
+  export interface UniqueItemsParams {
     i: number;
     j: number;
   }
 
-  interface CustomParams {
+  export interface CustomParams {
     keyword: string;
   }
 
-  interface PatternRequiredParams {
+  export interface PatternRequiredParams {
     missingPattern: string;
   }
 
-  interface PropertyNamesParams {
+  export interface PropertyNamesParams {
     propertyName: string;
   }
 
-  interface IfParams {
+  export interface IfParams {
     failingKeyword: string;
   }
 
-  interface SwitchParams {
+  export interface SwitchParams {
     caseIndex: number;
   }
 
-  interface NoParams {}
+  export interface NoParams {}
 
-  interface EnumParams {
+  export interface EnumParams {
     allowedValues: Array<any>;
   }
-}
 
-declare class ValidationError extends Error {
-  constructor(errors: Array<ajv.ErrorObject>);
+  export class ValidationError extends Error {
+    constructor(errors: Array<ajv.ErrorObject>);
 
-  message: string;
-  errors: Array<ajv.ErrorObject>;
-  ajv: true;
-  validation: true;
-}
+    message: string;
+    errors: Array<ajv.ErrorObject>;
+    ajv: true;
+    validation: true;
+  }
 
-declare class MissingRefError extends Error {
-  constructor(baseId: string, ref: string, message?: string);
-  static message: (baseId: string, ref: string) => string;
+  export class MissingRefError extends Error {
+    constructor(baseId: string, ref: string, message?: string);
+    static message: (baseId: string, ref: string) => string;
 
-  message: string;
-  missingRef: string;
-  missingSchema: string;
+    message: string;
+    missingRef: string;
+    missingSchema: string;
+  }
 }
 
 export = ajv;
