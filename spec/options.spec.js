@@ -893,22 +893,32 @@ describe('Ajv Options', function () {
     describe('= true', function() {
       it('should allow extending $ref with other keywords', function() {
         test(new Ajv({ extendRefs: true }), true);
+        test(new Ajv({ extendRefs: true, allowRefComments: true }), true);
       });
 
       it('should NOT log warning if extendRefs is true', function() {
         testWarning(new Ajv({ extendRefs: true }));
+        testWarning(new Ajv({ extendRefs: true, allowRefComments: true }));
       });
     });
 
     describe('= "ignore" and default', function() {
       it('should ignore other keywords when $ref is used', function() {
-        test(new Ajv);
+        test(new Ajv, false);
+        test(new Ajv({ allowRefComments: true }), false);
         test(new Ajv({ extendRefs: 'ignore' }), false);
+        test(new Ajv({ extendRefs: 'ignore', allowRefComments: true }), false);
       });
 
       it('should log warning when other keywords are used with $ref', function() {
         testWarning(new Ajv, /keywords\signored/);
         testWarning(new Ajv({ extendRefs: 'ignore' }), /keywords\signored/);
+      });
+
+      // see https://github.com/epoberezkin/ajv/issues/686
+      it('should NOT log a warning if only $comment is used alongside $ref and allowRefComments is true', function() {
+        testWarning(new Ajv({ allowRefComments: true }));
+        testWarning(new Ajv({ extendRefs: 'ignore', allowRefComments: true }));
       });
     });
 
@@ -937,6 +947,24 @@ describe('Ajv Options', function () {
                 { "$ref": "#/definitions/int" },
                 { "minimum": 10 }
               ]
+            };
+            ajv.compile(schema);
+          });
+        }
+      });
+
+      it('should NOT fail schema compilation if only $comment is used alongside $ref and allowRefComments is true', function() {
+        testNoFail(new Ajv({ extendRefs: 'fail', allowRefComments: true }));
+
+        function testNoFail(ajv) {
+          should.not.throw(function() {
+            var schema = {
+              "definitions": {
+                "int": { "type": "integer" }
+              },
+              // using $ref in the schema root would cause another error
+              "$ref": "#/definitions/int",
+              "$comment": "Use the integer definition"
             };
             ajv.compile(schema);
           });
@@ -986,7 +1014,7 @@ describe('Ajv Options', function () {
       var oldConsole;
       try {
         oldConsole = console.warn;
-        var consoleMsg;
+        var consoleMsg = '';
         console.warn = function() {
           consoleMsg = Array.prototype.join.call(arguments, ' ');
         };
@@ -996,12 +1024,12 @@ describe('Ajv Options', function () {
             "int": { "type": "integer" }
           },
           "$ref": "#/definitions/int",
-          "minimum": 10
+          "$comment": "Use the integer definition"
         };
 
         ajv.compile(schema);
         if (msgPattern) consoleMsg .should.match(msgPattern);
-        else should.not.exist(consoleMsg);
+        else consoleMsg.should.equal('');
       } finally {
         console.warn = oldConsole;
       }
