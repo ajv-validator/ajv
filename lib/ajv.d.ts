@@ -157,7 +157,7 @@ declare namespace ajv {
     sourceCode?: boolean;
     processCode?: (code: string) => string;
     cache?: object;
-    logger?: boolean | {
+    logger?: false | {
       log: (msg: string) => void;
       warn: (msg: string) => void;
       error: (msg: string) => void;
