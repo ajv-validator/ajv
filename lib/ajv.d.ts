@@ -165,6 +165,7 @@ declare namespace ajv {
     cache?: object;
     logger?: CustomLogger | false;
     nullable?: boolean;
+    serialize?: ((schema: object | boolean) => any) | false;
   }
 
   type FormatValidator = string | RegExp | ((data: string) => boolean | PromiseLike<any>);
