@@ -1412,4 +1412,91 @@ describe('Ajv Options', function () {
       }).should.throw(Error, /logger must implement log, warn and error methods/);
     });
   });
+
+
+  describe('nullable', function() {
+    var ajv;
+
+    describe('= true', function() {
+      beforeEach(function () {
+        ajv = new Ajv({
+          nullable: true
+        });
+      });
+
+      it('should add keyword "nullable"', function() {
+        testNullable({
+          type: 'number',
+          nullable: true
+        });
+
+        testNullable({
+          type: ['number'],
+          nullable: true
+        });
+
+        testNullable({
+          type: ['number', 'null']
+        });
+
+        testNullable({
+          type: ['number', 'null'],
+          nullable: true
+        });
+
+        testNotNullable({type: 'number'});
+
+        testNotNullable({type: ['number']});
+      });
+
+      it('"nullable" keyword must be "true" if present', function() {
+        should.throw(function() {
+          ajv.compile({nullable: false});
+        });
+      });
+    });
+
+    describe('without option "nullable"', function() {
+      it('should ignore keyword nullable', function() {
+        ajv = new Ajv;
+
+        testNotNullable({
+          type: 'number',
+          nullable: true
+        });
+
+        testNotNullable({
+          type: ['number'],
+          nullable: true
+        });
+
+        testNullable({
+          type: ['number', 'null'],
+        });
+
+        testNullable({
+          type: ['number', 'null'],
+          nullable: true
+        });
+
+        should.not.throw(function () {
+          ajv.compile({nullable: false});
+        });
+      });
+    });
+
+    function testNullable(schema) {
+      var validate = ajv.compile(schema);
+      validate(1) .should.equal(true);
+      validate(null) .should.equal(true);
+      validate('1') .should.equal(false);
+    }
+
+    function testNotNullable(schema) {
+      var validate = ajv.compile(schema);
+      validate(1) .should.equal(true);
+      validate(null) .should.equal(false);
+      validate('1') .should.equal(false);
+    }
+  });
 });

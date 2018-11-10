@@ -163,7 +163,8 @@ declare namespace ajv {
     sourceCode?: boolean;
     processCode?: (code: string) => string;
     cache?: object;
-    logger?: CustomLogger | false
+    logger?: CustomLogger | false;
+    nullable?: boolean;
   }
 
   type FormatValidator = string | RegExp | ((data: string) => boolean | PromiseLike<any>);
