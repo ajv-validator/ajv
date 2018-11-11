@@ -298,7 +298,7 @@ describe('Ajv Options', function () {
   });
 
   describe('meta and validateSchema', function() {
-    it('should add draft-6 meta schema by default', function() {
+    it('should add draft-7 meta schema by default', function() {
       testOptionMeta(new Ajv);
       testOptionMeta(new Ajv({ meta: true }));
 
