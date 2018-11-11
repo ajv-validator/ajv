@@ -104,7 +104,7 @@ declare namespace ajv {
     * @return {string} human readable string with all errors descriptions
     */
     errorsText(errors?: Array<ErrorObject> | null, options?: ErrorsTextOptions): string;
-    errors?: Array<ErrorObject>;
+    errors?: Array<ErrorObject> | null;
   }
 
   interface CustomLogger {
