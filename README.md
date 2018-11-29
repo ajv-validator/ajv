@@ -1256,6 +1256,7 @@ If you have published a useful plugin please submit a PR to add it to the next s
 - [addons-linter](https://github.com/mozilla/addons-linter) - Mozilla Add-ons Linter
 - [gh-pages-generator](https://github.com/epoberezkin/gh-pages-generator) - multi-page site generator converting markdown files to GitHub pages
 - [ESLint](https://github.com/eslint/eslint) - the pluggable linting utility for JavaScript and JSX
+- [Typewriter](https://github.com/segmentio/typewriter) - A compiler for generating strongly typed analytics clients from a tracking spec
 
 
 ## Tests
