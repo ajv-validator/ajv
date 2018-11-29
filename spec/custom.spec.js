@@ -2,7 +2,7 @@
 
 var getAjvInstances = require('./ajv_instances')
   , should = require('./chai').should()
-  , equal = require('fast-deep-equal')
+  , equal = require('../lib/compile/equal')
   , customRules = require('./custom_rules');
 
 
