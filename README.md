@@ -1112,7 +1112,7 @@ Defaults:
   - `false` (default) - not to remove additional properties
   - `"all"` - all additional properties are removed, regardless of `additionalProperties` keyword in schema (and no validation is made for them).
   - `true` - only additional properties with `additionalProperties` keyword equal to `false` are removed.
-  - `"failing"` - additional properties that fail schema validation will be removed (where `additionalProperties` keyword is `false` or schema).
+  - `"failing"` - additional properties that fail schema validation will be removed (where `additionalProperties` keyword is `false` or schema). Note that for invalid data with `allErrors: false` removing additional properties is not guaranteed.
 - _useDefaults_: replace missing properties and items with the values from corresponding `default` keywords. Default behaviour is to ignore `default` keywords. This option is not used if schema is added with `addMetaSchema` method. See examples in [Assigning defaults](#assigning-defaults). Option values:
   - `false` (default) - do not use defaults
   - `true` - insert defaults by value (safer and slower, object literal is used).

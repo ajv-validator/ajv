@@ -107,11 +107,12 @@ var {{=$nextValid}} = true;
 
           if (!{{=$nextValid}}) {
             errors = {{=$errs}};
-            if (validate.errors !== null) {
-              if (errors) validate.errors.length = errors;
-              else validate.errors = null;
+            if (vErrors !== null) {
+              if (errors) vErrors.length = errors;
+              else vErrors = null;
             }
             delete {{=$data}}[{{=$key}}];
+            {{=$nextValid}} = true;
           }
 
           {{# def.resetCompositeRule }}

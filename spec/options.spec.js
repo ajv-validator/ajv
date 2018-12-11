@@ -121,6 +121,86 @@ describe('Ajv Options', function () {
       object.should.have.property('baz');
       object.should.not.have.property('fizz');
     });
+
+    it('should remove properties that would error when `additionalProperties` is a schema and fail when data is invalid (issue #897)', function() {
+      test({ removeAdditional: 'failing', allErrors: false});
+      test({ removeAdditional: 'failing', allErrors: true});
+
+      function test(options) {
+        var ajv = new Ajv(options);
+
+        ajv.addSchema({
+          $id: '//test/fooBar',
+          properties: {
+            foo: { type: 'string' },
+            bar: {
+              properties: {
+                notRequired: {type: 'string'}
+              },
+              additionalProperties: {
+                type: "boolean"
+              }
+            },
+          },
+          additionalProperties: { type: 'string', pattern: '^to-be-', maxLength: 10 }
+        });
+
+        var object = {
+          foo: 'foo', bar: {add: 0}, baz: 'to-be-kept', quux: 'to-be-removed', fizz: 1000
+        };
+
+        ajv.validate('//test/fooBar', object).should.equal(true);
+        object.should.have.property('foo');
+        object.should.have.property('bar');
+        object.should.not.have.nested.property('bar.add');
+        object.should.have.property('baz');
+        object.should.not.have.property('quux');
+        object.should.not.have.property('fizz');
+
+          //For invalid data with `allErrors: false` removing additional properties is not guaranteed.
+        object = {
+          foo: 0, bar: {add: 0}, baz: 'to-be-kept', quux: 'to-be-removed', fizz: 1000
+        };
+
+        ajv.validate('//test/fooBar', object).should.equal(false);
+        ajv.errors.should.be.an('array').with.lengthOf(1).have.nested.property('[0].dataPath').equal('.foo');
+        object.should.have.property('foo');
+        object.should.have.property('bar');
+        if (options.allErrors) object.should.not.have.nested.property('bar.add');
+        object.should.have.property('baz');
+        if (options.allErrors) object.should.not.have.property('quux');
+        if (options.allErrors) object.should.not.have.property('fizz');
+
+        object = {
+          foo: 'foo', bar: {notRequired: 0, add: 0}, baz: 'to-be-kept', quux: 'to-be-removed', fizz: 1000
+        };
+
+        ajv.validate('//test/fooBar', object).should.equal(false);
+        ajv.errors.should.be.an('array').with.lengthOf(1).have.nested.property('[0].dataPath').equal('.bar.notRequired');
+        object.should.have.property('foo');
+        object.should.have.property('bar');
+        object.should.have.nested.property('bar.notRequired');
+        if (options.allErrors) object.should.not.have.nested.property('bar.add');
+        object.should.have.property('baz');
+        if (options.allErrors) object.should.not.have.property('quux');
+        if (options.allErrors) object.should.not.have.property('fizz');
+
+        object = {
+          foo: 0, bar: {notRequired: 0, add: 0}, baz: 'to-be-kept', quux: 'to-be-removed', fizz: 1000
+        };
+
+        ajv.validate('//test/fooBar', object).should.equal(false);
+        ajv.errors.should.be.an('array').with.lengthOf((options.allErrors) ? 2 : 1).have.nested.property('[0].dataPath').equal('.foo');
+        if (ajv.errors.length === 2) ajv.errors.should.have.nested.property('[1].dataPath').equal('.bar.notRequired');
+        object.should.have.property('foo');
+        object.should.have.property('bar');
+        object.should.have.nested.property('bar.notRequired');
+        if (options.allErrors) object.should.not.have.nested.property('bar.add');
+        object.should.have.property('baz');
+        if (options.allErrors) object.should.not.have.property('quux');
+        if (options.allErrors) object.should.not.have.property('fizz');
+      }
+    });
   });
 
 
