@@ -34,21 +34,6 @@ var ajv = new Ajv({schemaId: 'id'});
 ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
 ```
 
-In case the above meta schema gives you validation error on `id` or `$schema` see [issue](https://github.com/epoberezkin/ajv/issues/904) you can load the official meta schema json instead. Example with `axios` (feel free to replace `axios` with the your preferred http request package):
-
-```javascript
-// inside an async function.
-const axios = require('axios');
-const util = require('util');
-
-const response = await axios.get('http://json-schema.org/draft-04/schema#');
-if (response.status != 200) {
-  throw new Error(util.format('could not load draft-04 schema. status=%s', response.status));
-}
-
-ajv.addMetaSchema(response.data);
-```
-
 
 ## Contents
 
