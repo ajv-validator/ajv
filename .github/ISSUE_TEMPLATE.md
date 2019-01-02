@@ -1,12 +1,3 @@
----
-name: Bug or error report
-about: Please use for issues related to incorrect validation behaviour
-title: ''
-labels: ''
-assignees: ''
-
----
-
 <!--
 Frequently Asked Questions: https://github.com/epoberezkin/ajv/blob/master/FAQ.md
 Please provide all info and reduce your schema and data to the smallest possible size.
