@@ -1,11 +1,19 @@
 ---
 name: Bug or error report
-about: Please use for issues with incorrect validation behaviour
+about: Please use for issues related to incorrect validation behaviour
 title: ''
 labels: ''
 assignees: ''
 
 ---
+
+<!--
+Frequently Asked Questions: https://github.com/epoberezkin/ajv/blob/master/FAQ.md
+Please provide all info and reduce your schema and data to the smallest possible size.
+
+This template is for bug or error reports.
+For other issues please see https://github.com/epoberezkin/ajv/blob/master/CONTRIBUTING.md
+-->
 
 **What version of Ajv are you using? Does the issue happen if you use the latest version?**
 
