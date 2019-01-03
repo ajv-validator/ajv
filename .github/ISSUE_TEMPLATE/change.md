@@ -1,3 +1,12 @@
+---
+name: Feature or change proposal
+about: For proposals of new features, options or some other improvements
+title: ''
+labels: 'enhancement'
+assignees: ''
+
+---
+
 <!--
 Frequently Asked Questions: https://github.com/epoberezkin/ajv/blob/master/FAQ.md
 Please provide all info and reduce your schema and data to the smallest possible size.
