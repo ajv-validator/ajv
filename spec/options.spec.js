@@ -751,7 +751,7 @@ describe('Ajv Options', function () {
         }
       });
 
-      it.skip('should assign defaults when useDefaults = "empty"', function() {
+      it('should assign defaults when useDefaults = "empty"', function() {
         var ajv = new Ajv({useDefaults: 'empty'});
         var validate = ajv.compile(schema);
         validate(data) .should.equal(true);
