@@ -39,7 +39,7 @@ declare namespace ajv {
     * @param  {Any} data to be validated
     * @return {Boolean} validation result. Errors from the last validation will be available in `ajv.errors` (and also in compiled schema: `schema.errors`).
     */
-    validate<T>(schemaKeyRef: object | string | boolean, data: T): boolean | PromiseLike<T>;
+    validate(schemaKeyRef: object | string | boolean, data: any): boolean | PromiseLike<any>;
     /**
     * Create validating function for passed schema.
     * @param  {object|Boolean} schema schema object
@@ -138,13 +138,13 @@ declare namespace ajv {
   }
 
   interface ValidateFunction {
-    <T>(
-      data: T,
+    (
+      data: any,
       dataPath?: string,
       parentData?: object | Array<any>,
       parentDataProperty?: string | number,
       rootData?: object | Array<any>
-    ): boolean | PromiseLike<T>;
+    ): boolean | PromiseLike<any>;
     schema?: object | boolean;
     errors?: null | Array<ErrorObject>;
     refs?: object;
