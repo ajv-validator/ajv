@@ -68,7 +68,7 @@ ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
   - [Validation errors](#validation-errors)
 - [Plugins](#plugins)
 - [Related packages](#related-packages)
-- [Packages using Ajv](#some-packages-using-ajv)
+- [Some packages using Ajv](#some-packages-using-ajv)
 - [Tests, Contributing, History, License](#tests)
 
 
@@ -1233,7 +1233,7 @@ If you have published a useful plugin please submit a PR to add it to the next s
 - [ajv-errors](https://github.com/epoberezkin/ajv-errors) - plugin for custom error messages
 - [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) - internationalised error messages
 - [ajv-istanbul](https://github.com/epoberezkin/ajv-istanbul) - plugin to instrument generated validation code to measure test coverage of your schemas
-- [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) - plugin with custom validation keywords (if/then/else, select, typeof, etc.)
+- [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) - plugin with custom validation keywords (select, typeof, etc.)
 - [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) - plugin with keywords $merge and $patch
 - [ajv-pack](https://github.com/epoberezkin/ajv-pack) - produces a compact module exporting validation functions
 
