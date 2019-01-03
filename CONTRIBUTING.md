@@ -7,6 +7,7 @@ Thank you for your help making Ajv better! Every contribution is appreciated. If
   - [Bug reports](#bug-reports)
   - [Change proposals](#changes)
   - [Browser and compatibility issues](#compatibility)
+  - [Installation and dependency issues](#installation)
   - [JSON Schema standard](#json-schema)
   - [Ajv usage questions](#usage)
 - [Code](#code)
@@ -63,7 +64,7 @@ Please include as much details as possible.
 
 #### <a name="compatibility"></a>Browser and compatibility issues
 
-[Create an issue](https://github.com/epoberezkin/ajv/issues/new?template=compatibility.md) to report a compatibility problem that only happens in a particular environment (when your code works correctly in node.js v4 in linux systems but fails in some other environment).
+[Create an issue](https://github.com/epoberezkin/ajv/issues/new?template=compatibility.md) to report a compatibility problem that only happens in a particular environment (when your code works correctly in node.js v8+ in linux systems but fails in some other environment).
 
 Please include this information:
 
@@ -71,8 +72,27 @@ Please include this information:
 2. The environment you have the problem with.
 3. Your code (please make it as small as possible to reproduce the issue).
 4. If your issue is in the browser, please list the other packages loaded in the page in the order they are loaded. Please check if the issue gets resolved (or results change) if you move Ajv bundle closer to the top.
-5. Results in node.js v4.
+5. Results in node.js v8+.
 6. Results and error messages in your platform.
+
+
+#### <a name="installation"></a>Installation and dependency issues
+
+[Create an issue](https://github.com/epoberezkin/ajv/issues/new?template=installation.md) to report problems that happen during Ajv installation or when Ajv is missing some dependency.
+
+Before submitting the issue, please try the following:
+- use the latest stable Node.js and `npm`
+- use `yarn` instead of `npm` - the issue can be related to https://github.com/npm/npm/issues/19877
+- remove `node_modules` and `package-lock.json` and run install again
+
+If nothing helps, please submit:
+
+1. The version of Ajv you are using
+2. Operating system and node.js version
+3. Package manager and its version
+4. Link to (or contents of) package.json
+5. Error messages
+6. The output of `npm ls`
 
 
 #### <a name="json-schema"></a>Using JSON Schema standard
