@@ -695,6 +695,77 @@ describe('Ajv Options', function () {
           throw new Error('unknown useDefaults mode');
       }
     });
+
+
+    describe('defaults with "empty" values', function() {
+      var schema, data;
+
+      beforeEach(function() {
+        schema = {
+          properties: {
+            obj: {
+              properties: {
+                str: {default: 'foo'},
+                n1: {default: 1},
+                n2: {default: 2},
+                n3: {default: 3}
+              }
+            },
+            arr: {
+              items: [
+                {default: 'foo'},
+                {default: 1},
+                {default: 2},
+                {default: 3}
+              ]
+            }
+          }
+        };
+
+        data = {
+          obj: {
+            str: '',
+            n1: null,
+            n2: undefined
+          },
+          arr: ['', null, undefined]
+        };
+      });
+
+      it('should NOT assign defaults when useDefaults is true/"shared"', function() {
+        test(new Ajv({useDefaults: true}));
+        test(new Ajv({useDefaults: 'shared'}));
+
+        function test(ajv) {
+          var validate = ajv.compile(schema);
+          validate(data) .should.equal(true);
+          data .should.eql({
+            obj: {
+              str: '',
+              n1: null,
+              n2: 2,
+              n3: 3
+            },
+            arr: ['', null, 2, 3]
+          });
+        }
+      });
+
+      it.skip('should assign defaults when useDefaults = "empty"', function() {
+        var ajv = new Ajv({useDefaults: 'empty'});
+        var validate = ajv.compile(schema);
+        validate(data) .should.equal(true);
+        data .should.eql({
+          obj: {
+            str: 'foo',
+            n1: 1,
+            n2: 2,
+            n3: 3
+          },
+          arr: ['foo', 1, 2, 3]
+        });
+      });
+    });
   });
 
 
