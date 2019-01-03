@@ -704,13 +704,11 @@ The schema above is also more efficient - it will compile into a faster function
 
 With [option `useDefaults`](#options) Ajv will assign values from `default` keyword in the schemas of `properties` and `items` (when it is the array of schemas) to the missing properties and items.
 
+With the option value `"empty"` properties and items equal to `null` or `""` (empty string) will be considered missing and assigned defaults.
+
 This option modifies original data.
 
-__Please note__: by default the default value is inserted in the generated validation code as a literal (starting from v4.0), so the value inserted in the data will be the deep clone of the default in the schema.
-
-If you need to insert the default value in the data by reference pass the option `useDefaults: "shared"`.
-
-Inserting defaults by reference can be faster (in case you have an object in `default`) and it allows to have dynamic values in defaults, e.g. timestamp, without recompiling the schema. The side effect is that modifying the default value in any validated data instance will change the default in the schema and in other validated data instances. See example 3 below.
+__Please note__: the default value is inserted in the generated validation code as a literal, so the value inserted in the data will be the deep clone of the default in the schema.
 
 
 Example 1 (`default` in `properties`):
@@ -751,32 +749,6 @@ var validate = ajv.compile(schema);
 
 console.log(validate(data)); // true
 console.log(data); // [ 1, "foo" ]
-```
-
-Example 3 (inserting "defaults" by reference):
-
-```javascript
-var ajv = new Ajv({ useDefaults: 'shared' });
-
-var schema = {
-  properties: {
-    foo: {
-      default: { bar: 1 }
-    }
-  }
-}
-
-var validate = ajv.compile(schema);
-
-var data = {};
-console.log(validate(data)); // true
-console.log(data); // { foo: { bar: 1 } }
-
-data.foo.bar = 2;
-
-var data2 = {};
-console.log(validate(data2)); // true
-console.log(data2); // { foo: { bar: 2 } }
 ```
 
 `default` keywords in other cases are ignored:
@@ -1120,8 +1092,9 @@ Defaults:
   - `"failing"` - additional properties that fail schema validation will be removed (where `additionalProperties` keyword is `false` or schema).
 - _useDefaults_: replace missing properties and items with the values from corresponding `default` keywords. Default behaviour is to ignore `default` keywords. This option is not used if schema is added with `addMetaSchema` method. See examples in [Assigning defaults](#assigning-defaults). Option values:
   - `false` (default) - do not use defaults
-  - `true` - insert defaults by value (safer and slower, object literal is used).
-  - `"shared"` - insert defaults by reference (faster). If the default is an object, it will be shared by all instances of validated data. If you modify the inserted default in the validated data, it will be modified in the schema as well.
+  - `true` - insert defaults by value (object literal is used).
+  - `"empty"` - use defaults for properties and items that are present and equal to `null` or `""` (an empty string).
+  - `"shared"` (deprecated) - insert defaults by reference. If the default is an object, it will be shared by all instances of validated data. If you modify the inserted default in the validated data, it will be modified in the schema as well.
 - _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](#coercing-data-types) and [coercion rules](coercion.html). Option values:
   - `false` (default) - no type coercion.
   - `true` - coerce scalar data types.
