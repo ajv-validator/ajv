@@ -9,7 +9,6 @@ layout: main
 
 The fastest JSON Schema validator for Node.js and browser. Supports draft-04/06/07.
 
-
 [![Build Status](https://travis-ci.org/epoberezkin/ajv.svg?branch=master)](https://travis-ci.org/epoberezkin/ajv)
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
@@ -17,6 +16,7 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-04/06/
 [![Greenkeeper badge](https://badges.greenkeeper.io/epoberezkin/ajv.svg)](https://greenkeeper.io/)
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 
+### _Ajv and [related repositories](#related-packages) will be transfered to [ajv-validator](https://github.com/ajv-validator) org_
 
 ## Using version 6
 
