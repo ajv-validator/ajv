@@ -31,16 +31,20 @@
         "required": ["uniqueItems"],
         "properties": {
           "uniqueItems": {"const": true},
-          "type": {
-            "anyOf": [
-              {
-                "enum": ["object", "array"]
-              },
-              {
-                "type": "array",
-                "contains": {"enum": ["object", "array"]}
+          "items": {
+            "properties": {
+              "type": {
+                "anyOf": [
+                  {
+                    "enum": ["object", "array"]
+                  },
+                  {
+                    "type": "array",
+                    "contains": {"enum": ["object", "array"]}
+                  }
+                ]
               }
-            ]
+            }
           }
         }
       },

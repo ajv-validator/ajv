@@ -1,0 +1,29 @@
+[
+  {
+    "description": "patternProperties keyword should be used together with propertyNames",
+    "schema": { "$ref": "https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-secure.json#" },
+    "tests": [
+      {
+        "description": "patternProperties keyword used without propertyNames is unsafe",
+        "data": {
+          "patternProperties": {
+            ".*": {}
+          }
+        },
+        "valid": false
+      },
+      {
+        "description": "patternProperties keyword used with propertyNames is safe",
+        "data": {
+          "patternProperties": {
+            ".*": {}
+          },
+          "propertyNames": {
+            "maxLength": "256"
+          }
+        },
+        "valid": true
+      }
+    ]
+  }
+]

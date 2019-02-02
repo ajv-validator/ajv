@@ -608,16 +608,19 @@ See [Options](#options).
 
 ## Security considerations
 
+JSON Schema, if properly used, can replace data sanitisation. It doesn't replace other API security considerations. It also introduces additional security aspects to consider.
+
+
 ##### Untrusted schemas
 
 Ajv treats JSON schemas as trusted as your application code. This security model is based on the most common use case, when the schemas are static and bundled together with the application.
 
-If your schemas are received from untrusted sources (or generated from untrusted data) there may be several scenarios you may want to prevent:
+If your schemas are received from untrusted sources (or generated from untrusted data) there are several scenarios you need to prevent:
 - compiling schemas can cause stack overflow (if they are too deep)
 - compiling schemas can be slow (e.g. [#557](https://github.com/epoberezkin/ajv/issues/557))
 - validating certain data can be slow
 
-It is difficult to predict all the scenarios, but at the very least it is recommended to limit the size of untrusted JSON Schemas (e.g. as JSON string length) and the maximum schema object depth (that can be high for relatively small JSON strings). Even that would not prevent slow regular expressions in schemas.
+It is difficult to predict all the scenarios, but at the very least it may help to limit the size of untrusted schemas (e.g. limit JSON string length) and also the maximum schema object depth (that can be high for relatively small JSON strings). You also may want to mitigate slow regular expressions in `pattern` and `patternProperties` keywords.
 
 Regardless the measures you take, using untrusted schemas increases security risks.
 
@@ -626,12 +629,12 @@ Regardless the measures you take, using untrusted schemas increases security ris
 
 Ajv does not support schemas and validated data that have circular references in objects. See [issue #802](https://github.com/epoberezkin/ajv/issues/802).
 
-An attempt to compile such schemas or validate such data would cause stack overflow (or will not complete in case of asynchronous validation). Untrusted data can lead to circular references, depending on the parser you use.
+An attempt to compile such schemas or validate such data would cause stack overflow (or will not complete in case of asynchronous validation). Depending on the parser you use, untrusted data can lead to circular references.
 
 
 ##### Security risks of trusted schemas
 
-Some keywords in JSON Schemas can lead to very slow validation for certain data. These keywords include (but, most likely, not limited to):
+Some keywords in JSON Schemas can lead to very slow validation for certain data. These keywords include (but may be not limited to):
 
 - `pattern` and `format` for large strings - use `maxLength` to mitigate
 - `uniqueItems` for large non-scalar arrays - use `maxItems` to mitigate
@@ -651,7 +654,7 @@ const schema2 = {format: 'email', maxLength: 256};
 isSchemaSecure(schema2); // true
 ```
 
-__Please note__: even following all these recommendation is not a guarantee that validation of untrusted data is absolutely safe - it can still lead to some undesirable situations.
+__Please note__: even following all these recommendation is not a guarantee that validation of untrusted data is absolutely safe - it can still lead to some undesirable results.
 
 
 ## Filtering data

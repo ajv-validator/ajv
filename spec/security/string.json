@@ -1,0 +1,44 @@
+[
+  {
+    "description": "pattern keyword should be used together with maxLength",
+    "schema": { "$ref": "https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-secure.json#" },
+    "tests": [
+      {
+        "description": "pattern keyword used without maxLength is unsafe",
+        "data": {
+          "pattern": ".*"
+        },
+        "valid": false
+      },
+      {
+        "description": "pattern keyword used with maxLength is safe",
+        "data": {
+          "pattern": ".*",
+          "maxLength": "256"
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "format keyword should be used together with maxLength",
+    "schema": { "$ref": "https://raw.githubusercontent.com/epoberezkin/ajv/master/lib/refs/json-schema-secure.json#" },
+    "tests": [
+      {
+        "description": "format keyword used without maxLength is unsafe",
+        "data": {
+          "format": "email"
+        },
+        "valid": false
+      },
+      {
+        "description": "format keyword used with maxLength is safe",
+        "data": {
+          "format": "email",
+          "maxLength": "256"
+        },
+        "valid": true
+      }
+    ]
+  }
+]
