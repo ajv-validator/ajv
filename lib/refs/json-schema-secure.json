@@ -10,25 +10,19 @@
       "items": {"$ref": "#"}
     }
   },
-  "allOf": [
-    {
+  "dependencies": {
+    "patternProperties": {
       "description": "prevent slow validation of large property names",
-      "if": {
-        "required": ["patternProperties"]
-      },
-      "then": {
-        "required": ["propertyNames"],
-        "properties": {
-          "propertyNames": {
-            "required": ["maxLength"]
-          }
+      "required": ["propertyNames"],
+      "properties": {
+        "propertyNames": {
+          "required": ["maxLength"]
         }
       }
     },
-    {
+    "uniqueItems": {
       "description": "prevent slow validation of large non-scalar arrays",
       "if": {
-        "required": ["uniqueItems"],
         "properties": {
           "uniqueItems": {"const": true},
           "items": {
@@ -52,19 +46,15 @@
         "required": ["maxItems"]
       }
     },
-    {
-      "description": "prevent slow validation of large strings",
-      "if": {
-        "anyOf": [
-          {"required": ["pattern"]},
-          {"required": ["format"]}
-        ]
-      },
-      "then": {
-        "required": ["maxLength"]
-      }
+    "pattern": {
+      "description": "prevent slow pattern matching of large strings",
+      "required": ["maxLength"]
+    },
+    "format": {
+      "description": "prevent slow format validation of large strings",
+      "required": ["maxLength"]
     }
-  ],
+  },
   "properties": {
     "additionalItems": {"$ref": "#"},
     "additionalProperties": {"$ref": "#"},
