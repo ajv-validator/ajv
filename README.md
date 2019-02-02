@@ -644,7 +644,7 @@ __Please note__: The suggestions above to prevent slow validation would only wor
 
 You can validate your JSON schemas against [this meta-schema](https://github.com/epoberezkin/ajv/blob/master/lib/refs/json-schema-secure.json) to check that these recommendations are followed:
 
-```
+```javascript
 const isSchemaSecure = ajv.compile(require('ajv/lib/refs/json-schema-secure.json'));
 
 const schema1 = {format: 'email'};
