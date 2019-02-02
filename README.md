@@ -654,7 +654,7 @@ const schema2 = {format: 'email', maxLength: 256};
 isSchemaSecure(schema2); // true
 ```
 
-__Please note__: even following all these recommendation is not a guarantee that validation of untrusted data is absolutely safe - it can still lead to some undesirable results.
+__Please note__: following all these recommendation is not a guarantee that validation of untrusted data is safe - it can still lead to some undesirable results.
 
 
 ## Filtering data
