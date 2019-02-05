@@ -6,6 +6,23 @@
 
 {{ var $vSchema = 'schema' + $lvl; }}
 
+{{? !it.compositeRule }}
+  {{# def.setupLoop }}
+  {{? $isData }}
+    if ({{=$vSchema}} && !Array.isArray({{=$vSchema}})) {
+      {{# def.addError:'required' }}
+      self.allrequired = (self.allrequired || []).concat(vErrors.pop());
+      errors--;
+    } else if ({{=$vSchema}} !== undefined) {
+  {{?}}
+
+  for (var {{=$i}} = 0; {{=$i}} < {{=$vSchema}}.length; {{=$i}}++) {
+    {{# def.addError:'required' }}
+    self.allrequired = (self.allrequired || []).concat(vErrors.pop());
+    errors--;
+  }
+{{?}}
+
 {{## def.setupLoop:
   {{? !$isData }}
     var {{=$vSchema}} = validate.schema{{=$schemaPath}};
