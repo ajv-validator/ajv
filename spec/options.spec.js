@@ -1519,12 +1519,6 @@ describe('Ajv Options', function () {
 
         testNotNullable({type: ['number']});
       });
-
-      it('"nullable" keyword must be "true" if present', function() {
-        should.throw(function() {
-          ajv.compile({nullable: false});
-        });
-      });
     });
 
     describe('without option "nullable"', function() {
