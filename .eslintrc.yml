@@ -5,7 +5,7 @@ env:
 rules:
   block-scoped-var: 2
   callback-return: 2
-  complexity: [2, 18]
+  complexity: [2, 16]
   curly: [2, multi-or-nest, consistent]
   dot-location: [2, property]
   dot-notation: 2
