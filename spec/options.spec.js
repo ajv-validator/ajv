@@ -1519,7 +1519,7 @@ describe('Ajv Options', function () {
 
         testNotNullable({type: ['number']});
       });
-      
+
       it('should respect "nullable" == false with opts.nullable == true', function() {
         testNotNullable({
           type: 'number',
