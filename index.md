@@ -268,7 +268,7 @@ You can add additional formats and replace any of the formats above using [addFo
 
 The option `unknownFormats` allows changing the default behaviour when an unknown format is encountered. In this case Ajv can either fail schema compilation (default) or ignore it (default in versions before 5.0.0). You also can whitelist specific format(s) to be ignored. See [Options](#options) for details.
 
-You can find patterns used for format validation and the sources that were used in [formats.js](https://github.com/epoberezkin/ajv/blob/master/lib/compile/formats.js).
+You can find regular expressions used for format validation and the sources that were used in [formats.js](https://github.com/epoberezkin/ajv/blob/master/lib/compile/formats.js).
 
 
 ## <a name="ref"></a>Combining schemas with $ref
@@ -1106,7 +1106,10 @@ Defaults:
 - _uniqueItems_: validate `uniqueItems` keyword (true by default).
 - _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.
 - _nullable_: support keyword "nullable" from [Open API 3 specification](https://swagger.io/docs/specification/data-models/data-types/).
-- _format_: formats validation mode ('fast' by default). Pass 'full' for more correct and slow validation or `false` not to validate formats at all. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
+- _format_: formats validation mode. Option values:
+  - `'fast'` (default) - simplified and fast validation (see [Formats](#formats) for details of which formats are available and affected by this option).
+  - `'full'` - more restrictive and slow validation. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
+  - `false` - ignore all format keywords.
 - _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
 - _unknownFormats_: handling of unknown formats. Option values:
   - `true` (default) - if an unknown format is encountered the exception is thrown during schema compilation. If `format` keyword value is [$data reference](#data-reference) and it is unknown the validation will fail.
