@@ -1217,13 +1217,13 @@ describe('Custom keywords', function () {
     it("'dependencies'should be array of valid strings", function() {
       ajv.addKeyword('newKeyword1', {
         metaSchema: {type: 'boolean'},
-        dependencies: ['dep1', 'dep-2']
+        dependencies: ['dep1']
       });
 
       should.throw(function () {
         ajv.addKeyword('newKeyword2', {
           metaSchema: {type: 'boolean'},
-          dependencies: ['dep.1']
+          dependencies: [1]
         });
       });
     });
