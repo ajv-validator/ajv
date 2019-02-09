@@ -1107,8 +1107,8 @@ Defaults:
 - _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.
 - _nullable_: support keyword "nullable" from [Open API 3 specification](https://swagger.io/docs/specification/data-models/data-types/).
 - _format_: formats validation mode. Option values:
-  - `'fast'` (default) - simplified and fast validation (see [Formats](#formats) for details of which formats are available and affected by this option).
-  - `'full'` - more restrictive and slow validation. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
+  - `"fast"` (default) - simplified and fast validation (see [Formats](#formats) for details of which formats are available and affected by this option).
+  - `"full"` - more restrictive and slow validation. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
   - `false` - ignore all format keywords.
 - _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
 - _unknownFormats_: handling of unknown formats. Option values:
