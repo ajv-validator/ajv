@@ -97,6 +97,8 @@ In some cases it is the best approach to define keywords, but it has the perform
 
 All custom keywords types can have an optional `metaSchema` property in their definitions. It is a schema against which the value of keyword will be validated during schema compilation.
 
+Custom keyword can also have an optional `dependencies` property in their definitions - it is a list of required keywords in a containing (parent) schema.
+
 Example. `range` and `exclusiveRange` keywords using compiled schema:
 
 ```javascript
