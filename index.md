@@ -1012,6 +1012,7 @@ Keyword definition is an object with the following properties:
 - _metaSchema_: an optional meta-schema for keyword schema
 - _dependencies_: an optional list of properties that must be present in the parent schema - it will be checked during schema compilation
 - _modifying_: `true` MUST be passed if keyword modifies data
+- _statements_: `true` can be passed in case inline keyword generates statements (as opposed to expression)
 - _valid_: pass `true`/`false` to pre-define validation result, the result returned from validation function will be ignored. This option cannot be used with macro keywords.
 - _$data_: an optional `true` value to support [$data reference](#data-reference) as the value of custom keyword. The reference will be resolved at validation time. If the keyword has meta-schema it would be extended to allow $data and it will be used to validate the resolved value. Supporting $data reference requires that keyword has validating function (as the only option or in addition to compile, macro or inline function).
 - _async_: an optional `true` value if the validation function is asynchronous (whether it is compiled or passed in _validate_ property); in this case it should return a promise that resolves with a value `true` or `false`. This option is ignored in case of "macro" and "inline" keywords.
