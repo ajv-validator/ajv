@@ -6,6 +6,16 @@ var getAjvInstances = require('./ajv_instances')
   , customRules = require('./custom_rules');
 
 
+function throwOnLogError(logger) {
+  var originalLogError = logger.error;
+  logger.error = function(msg) {
+    throw new Error(msg);
+  };
+  return function() {
+    logger.error = originalLogError;
+  };
+}
+
 describe('Custom keywords', function () {
   var ajv, instances;
 
@@ -707,6 +717,7 @@ describe('Custom keywords', function () {
     });
 
     it('should fail if keyword definition has "$data" but no "validate"', function() {
+      var restore = throwOnLogError(ajv.logger);
       should.throw(function() {
         ajv.addKeyword('even', {
           type: 'number',
@@ -714,6 +725,7 @@ describe('Custom keywords', function () {
           macro: function() { return {}; }
         });
       });
+      restore();
     });
   });
 
@@ -985,6 +997,7 @@ describe('Custom keywords', function () {
     });
 
     it('should throw if unknown type is passed', function() {
+      var restore = throwOnLogError(ajv.logger);
       should.throw(function() {
         addKeyword('custom1', 'wrongtype');
       });
@@ -996,6 +1009,7 @@ describe('Custom keywords', function () {
       should.throw(function() {
         addKeyword('custom3', ['number', undefined]);
       });
+      restore();
     });
 
     function addKeyword(keyword, dataType) {
@@ -1167,6 +1181,7 @@ describe('Custom keywords', function () {
     });
 
     it('should throw exception if used with macro keyword', function() {
+      var restore = throwOnLogError(ajv.logger);
       should.throw(function() {
         ajv.addKeyword('pass', {
           macro: function() { return {}; },
@@ -1180,6 +1195,7 @@ describe('Custom keywords', function () {
           valid: false
         });
       });
+      restore();
     });
   });
 
@@ -1215,6 +1231,7 @@ describe('Custom keywords', function () {
     });
 
     it("'dependencies'should be array of valid strings", function() {
+      var restore = throwOnLogError(ajv.logger);
       ajv.addKeyword('newKeyword1', {
         metaSchema: {type: 'boolean'},
         dependencies: ['dep1']
@@ -1226,6 +1243,7 @@ describe('Custom keywords', function () {
           dependencies: [1]
         });
       });
+      restore();
     });
   });
 });
