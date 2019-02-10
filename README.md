@@ -1011,7 +1011,7 @@ Keyword definition is an object with the following properties:
 - _valid_: pass `true`/`false` to pre-define validation result, the result returned from validation function will be ignored. This option cannot be used with macro keywords.
 - _$data_: an optional `true` value to support [$data reference](#data-reference) as the value of custom keyword. The reference will be resolved at validation time. If the keyword has meta-schema it would be extended to allow $data and it will be used to validate the resolved value. Supporting $data reference requires that keyword has validating function (as the only option or in addition to compile, macro or inline function).
 - _async_: an optional `true` value if the validation function is asynchronous (whether it is compiled or passed in _validate_ property); in this case it should return a promise that resolves with a value `true` or `false`. This option is ignored in case of "macro" and "inline" keywords.
-- _errors_: an optional boolean indicating whether keyword returns errors. If this property is not set Ajv will determine if the errors were set in case of failed validation.
+- _errors_: an optional boolean or string `"full"` indicating whether keyword returns errors. If this property is not set Ajv will determine if the errors were set in case of failed validation.
 
 _compile_, _macro_ and _inline_ are mutually exclusive, only one should be used at a time. _validate_ can be used separately or in addition to them to support $data reference.
 
