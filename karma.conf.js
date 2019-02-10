@@ -53,8 +53,13 @@ module.exports = function(config) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: ['Chrome'],
-
+    browsers: ['HeadlessChrome'],
+    customLaunchers: {
+        HeadlessChrome:{
+          base: 'ChromeHeadless',
+          flags: ['--no-sandbox']
+        },
+    },
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits

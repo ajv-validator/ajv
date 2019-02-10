@@ -1182,4 +1182,50 @@ describe('Custom keywords', function () {
       });
     });
   });
+
+
+  describe('"dependencies" in keyword definition', function() {
+    it("should require properties in the parent schema", function() {
+      ajv.addKeyword('allRequired', {
+        macro: function(schema, parentSchema) {
+          return schema ? {required: Object.keys(parentSchema.properties)} : true;
+        },
+        metaSchema: {type: 'boolean'},
+        dependencies: ['properties']
+      });
+
+      var invalidSchema = {
+        allRequired: true
+      };
+
+      should.throw(function () {
+        ajv.compile(invalidSchema);
+      });
+
+      var schema = {
+        properties: {
+          foo: true
+        },
+        allRequired: true
+      };
+
+      var v = ajv.compile(schema);
+      v({foo: 1}) .should.equal(true);
+      v({}) .should.equal(false);
+    });
+
+    it("'dependencies'should be array of valid strings", function() {
+      ajv.addKeyword('newKeyword1', {
+        metaSchema: {type: 'boolean'},
+        dependencies: ['dep1']
+      });
+
+      should.throw(function () {
+        ajv.addKeyword('newKeyword2', {
+          metaSchema: {type: 'boolean'},
+          dependencies: [1]
+        });
+      });
+    });
+  });
 });
