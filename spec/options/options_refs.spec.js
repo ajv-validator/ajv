@@ -6,25 +6,47 @@ var should = require('../chai').should();
 
 describe('referenced schema options', function() {
   describe('extendRefs', function() {
+    var schemaExtendRefMinimum = {
+      "definitions": {
+        "int": { "type": "integer" }
+      },
+      "$ref": "#/definitions/int",
+      "minimum": 10
+    };
+
+    var schemaExtendRefComment = {
+      "definitions": {
+        "int": { "type": "integer" }
+      },
+      "$ref": "#/definitions/int",
+      "$comment": "Use the integer definition"
+    };
+
     describe('= true', function() {
       it('should allow extending $ref with other keywords', function() {
         test(new Ajv({ extendRefs: true }), true);
       });
 
       it('should NOT log warning if extendRefs is true', function() {
-        testWarning(new Ajv({ extendRefs: true }));
+        testWarning(new Ajv({ extendRefs: true }), schemaExtendRefMinimum);
       });
     });
 
     describe('= "ignore" and default', function() {
       it('should ignore other keywords when $ref is used', function() {
-        test(new Ajv);
+        test(new Ajv, false);
         test(new Ajv({ extendRefs: 'ignore' }), false);
       });
 
       it('should log warning when other keywords are used with $ref', function() {
-        testWarning(new Ajv, /keywords\signored/);
-        testWarning(new Ajv({ extendRefs: 'ignore' }), /keywords\signored/);
+        testWarning(new Ajv, schemaExtendRefMinimum, /keywords\signored/);
+        testWarning(new Ajv({ extendRefs: 'ignore' }), schemaExtendRefMinimum, /keywords\signored/);
+      });
+
+      // see https://github.com/epoberezkin/ajv/issues/686
+      it('should NOT log a warning if only $comment is used alongside $ref', function() {
+        testWarning(new Ajv, schemaExtendRefComment);
+        testWarning(new Ajv({ extendRefs: 'ignore' }), schemaExtendRefComment);
       });
     });
 
@@ -34,14 +56,7 @@ describe('referenced schema options', function() {
 
         function testFail(ajv) {
           should.throw(function() {
-            var schema = {
-              "definitions": {
-                "int": { "type": "integer" }
-              },
-              "$ref": "#/definitions/int",
-              "minimum": 10
-            };
-            ajv.compile(schema);
+            ajv.compile(schemaExtendRefMinimum);
           });
 
           should.not.throw(function() {
@@ -55,6 +70,16 @@ describe('referenced schema options', function() {
               ]
             };
             ajv.compile(schema);
+          });
+        }
+      });
+
+      it('should NOT fail schema compilation if only $comment is used alongside $ref', function() {
+        testNoFail(new Ajv({ extendRefs: 'fail' }));
+
+        function testNoFail(ajv) {
+          should.not.throw(function() {
+            ajv.compile(schemaExtendRefComment);
           });
         }
       });
@@ -98,26 +123,18 @@ describe('referenced schema options', function() {
       validate({ foo: 10, bar: 1 }) .should.equal(false);
     }
 
-    function testWarning(ajv, msgPattern) {
+    function testWarning(ajv, schema, msgPattern) {
       var oldConsole;
       try {
         oldConsole = console.warn;
-        var consoleMsg;
+        var consoleMsg = '';
         console.warn = function() {
           consoleMsg = Array.prototype.join.call(arguments, ' ');
         };
 
-        var schema = {
-          "definitions": {
-            "int": { "type": "integer" }
-          },
-          "$ref": "#/definitions/int",
-          "minimum": 10
-        };
-
         ajv.compile(schema);
-        if (msgPattern) consoleMsg .should.match(msgPattern);
-        else should.not.exist(consoleMsg);
+        if (msgPattern) consoleMsg.should.match(msgPattern);
+        else consoleMsg.should.equal('');
       } finally {
         console.warn = oldConsole;
       }

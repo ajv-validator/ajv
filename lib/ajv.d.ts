@@ -168,7 +168,6 @@ declare namespace ajv {
     schemaId?: '$id' | 'id' | 'auto';
     missingRefs?: true | 'ignore' | 'fail';
     extendRefs?: true | 'ignore' | 'fail';
-    allowRefComments?: boolean;
     loadSchema?: (uri: string, cb?: (err: Error, schema: object) => void) => PromiseLike<object | boolean>;
     removeAdditional?: boolean | 'all' | 'failing';
     useDefaults?: boolean | 'shared';
