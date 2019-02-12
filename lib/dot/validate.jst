@@ -28,7 +28,7 @@
     {{?}}
 {{?}}
 
-{{? typeof it.schema == 'boolean' || !($refKeywords || it.schema.$ref) }}
+{{? typeof it.schema == 'boolean' || !($refKeywords || it.schema.$ref || it.schema.$comment) }}
   {{ var $keyword = 'false schema'; }}
   {{# def.setupKeyword }}
   {{? it.schema === false}}
