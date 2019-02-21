@@ -12,6 +12,7 @@ after_script:
   - coveralls < coverage/lcov.info
   - scripts/travis-gh-pages
   - scripts/publish-built-version
+  - scripts/test-deps-release
 notifications:
   webhooks:
     urls:

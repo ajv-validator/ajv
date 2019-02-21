@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+set -ev
+
+if [[ "$TRAVIS_BRANCH" == "test-dependents" && $TRAVIS_JOB_NUMBER =~ ".4" ]]; then
+  yarn unlink
+  yarn link
+
+  cd ..
+  rm -rf test-deps
+  mkdir test-deps
+  cd test-deps
+
+  echo "Testing ajv-keywords"
+  git clone -b master --single-branch https://${GITHUB_TOKEN}@github.com/epoberezkin/ajv-keywords.git ajv-keywords
+  cd ajv-keywords
+  yarn install
+  yarn link ajv
+  yarn test
+
+  cd ..
+  echo "Testing webpack"
+  git clone -b master --single-branch https://${GITHUB_TOKEN}@github.com/webpack/webpack.git webpack
+  cd webpack
+  yarn install
+  yarn link ajv
+  yarn travis:basic
+fi
