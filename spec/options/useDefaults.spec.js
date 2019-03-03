@@ -2,7 +2,7 @@
 
 var Ajv = require('../ajv');
 var getAjvInstances = require('../ajv_instances');
-require('../chai').should();
+var should = require('../chai').should();
 
 
 describe('useDefaults options', function() {
@@ -218,6 +218,92 @@ describe('useDefaults options', function() {
         },
         arr: ['foo', 1, 2, 3]
       });
+    });
+  });
+
+  describe('strictDefaults option', function() {
+    it('should throw an error given an ignored default in the schema root when strictDefaults is true', function() {
+      var ajv = new Ajv({useDefaults: true, strictDefaults: true});
+      var schema = {
+        default: 5,
+        properties: {}
+      };
+      should.throw(function() { ajv.compile(schema); });
+    });
+
+    it('should throw an error given an ignored default in oneOf when strictDefaults is true', function() {
+      var ajv = new Ajv({useDefaults: true, strictDefaults: true});
+      var schema = {
+        oneOf: [
+          { enum: ['foo', 'bar'] },
+          {
+            properties: {
+              foo: {
+                default: true
+              }
+            }
+          }
+        ]
+      };
+      should.throw(function() { ajv.compile(schema); });
+    });
+
+    it('should log a warning given an ignored default in the schema root when strictDefaults is "log"', function() {
+      var warnArg = null;
+      var ajv = new Ajv({
+        useDefaults: true,
+        strictDefaults: 'log',
+        logger: {
+          log: function() {
+            throw new Error('should not be called');
+          },
+          warn: function(warning) {
+            warnArg = warning;
+          },
+          error: function() {
+            throw new Error('should not be called');
+          }
+        }
+      });
+      var schema = {
+        default: 5,
+        properties: {}
+      };
+      ajv.compile(schema);
+      should.equal(warnArg, 'default is ignored in the schema root');
+    });
+
+    it('should log a warning given an ignored default in oneOf when strictDefaults is "log"', function() {
+      var warnArg = null;
+      var ajv = new Ajv({
+        useDefaults: true,
+        strictDefaults: 'log',
+        logger: {
+          log: function() {
+            throw new Error('should not be called');
+          },
+          warn: function(warning) {
+            warnArg = warning;
+          },
+          error: function() {
+            throw new Error('should not be called');
+          }
+        }
+      });
+      var schema = {
+        oneOf: [
+          { enum: ['foo', 'bar'] },
+          {
+            properties: {
+              foo: {
+                default: true
+              }
+            }
+          }
+        ]
+      };
+      ajv.compile(schema);
+      should.equal(warnArg, 'default is ignored for: data.foo');
     });
   });
 });

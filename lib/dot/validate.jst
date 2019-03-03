@@ -72,6 +72,14 @@
 
     it.dataPathArr = [undefined];
   }}
+  {{? it.schema.default !== undefined && it.opts.useDefaults && it.opts.strictDefaults }}
+    {{ var $defaultMsg = 'default is ignored in the schema root'; }}
+    {{? it.opts.strictDefaults === 'log' }}
+      {{ it.logger.warn($defaultMsg); }}
+    {{??}}
+      {{ throw new Error($defaultMsg); }}
+    {{?}}
+  {{?}}
 
   var vErrors = null; {{ /* don't edit, used in replace */ }}
   var errors = 0;     {{ /* don't edit, used in replace */ }}
@@ -177,7 +185,7 @@
       {{? $rulesGroup.type }}
         if ({{= it.util.checkDataType($rulesGroup.type, $data) }}) {
       {{?}}
-        {{? it.opts.useDefaults && !it.compositeRule }}
+        {{? it.opts.useDefaults }}
           {{? $rulesGroup.type == 'object' && it.schema.properties }}
             {{# def.defaultProperties }}
           {{?? $rulesGroup.type == 'array' && Array.isArray(it.schema.items) }}
