@@ -221,9 +221,9 @@ describe('useDefaults options', function() {
     });
   });
 
-  describe('invalidDefaults option', function() {
-    it('should throw an error given an invalid default in the schema root when invalidDefaults is true', function() {
-      var ajv = new Ajv({useDefaults: true, invalidDefaults: true});
+  describe('strictDefaults option', function() {
+    it('should throw an error given an ignored default in the schema root when strictDefaults is true', function() {
+      var ajv = new Ajv({useDefaults: true, strictDefaults: true});
       var schema = {
         default: 5,
         properties: {}
@@ -231,8 +231,8 @@ describe('useDefaults options', function() {
       should.throw(function() { ajv.compile(schema); });
     });
 
-    it('should throw an error given an invalid default in oneOf when invalidDefaults is true', function() {
-      var ajv = new Ajv({useDefaults: true, invalidDefaults: true});
+    it('should throw an error given an ignored default in oneOf when strictDefaults is true', function() {
+      var ajv = new Ajv({useDefaults: true, strictDefaults: true});
       var schema = {
         oneOf: [
           { enum: ['foo', 'bar'] },
@@ -248,11 +248,11 @@ describe('useDefaults options', function() {
       should.throw(function() { ajv.compile(schema); });
     });
 
-    it('should log a warning given an invalid default in the schema root when invalidDefaults is "log"', function() {
+    it('should log a warning given an ignored default in the schema root when strictDefaults is "log"', function() {
       var warnArg = null;
       var ajv = new Ajv({
         useDefaults: true,
-        invalidDefaults: 'log',
+        strictDefaults: 'log',
         logger: {
           log: function() {
             throw new Error('should not be called');
@@ -273,11 +273,11 @@ describe('useDefaults options', function() {
       should.equal(warnArg, 'default is ignored in the schema root');
     });
 
-    it('should log a warning given an invalid default in oneOf when invalidDefaults is "log"', function() {
+    it('should log a warning given an ignored default in oneOf when strictDefaults is "log"', function() {
       var warnArg = null;
       var ajv = new Ajv({
         useDefaults: true,
-        invalidDefaults: 'log',
+        strictDefaults: 'log',
         logger: {
           log: function() {
             throw new Error('should not be called');

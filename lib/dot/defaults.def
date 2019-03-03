@@ -1,10 +1,11 @@
 {{## def.assignDefault:
   {{? it.compositeRule }}
-    {{? it.opts.invalidDefaults }}
-      {{? it.opts.invalidDefaults === 'log' }}
-        {{ it.logger.warn('default is ignored for: ' + $passData); }}
+    {{? it.opts.strictDefaults }}
+      {{ var $defaultMsg = 'default is ignored for: ' + $passData; }}
+      {{? it.opts.strictDefaults === 'log' }}
+        {{ it.logger.warn($defaultMsg); }}
       {{??}}
-        {{ throw new Error('default is ignored for: ' + $passData); }}
+        {{ throw new Error($defaultMsg); }}
       {{?}}
     {{?}}
   {{??}}

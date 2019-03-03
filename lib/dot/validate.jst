@@ -72,11 +72,12 @@
 
     it.dataPathArr = [undefined];
   }}
-  {{? it.opts.invalidDefaults && it.schema.default !== undefined }}
-    {{? it.opts.invalidDefaults === 'log' }}
-      {{ it.logger.warn('default is ignored in the schema root'); }}
+  {{? it.schema.default !== undefined && it.opts.useDefaults && it.opts.strictDefaults }}
+    {{ var $defaultMsg = 'default is ignored in the schema root'; }}
+    {{? it.opts.strictDefaults === 'log' }}
+      {{ it.logger.warn($defaultMsg); }}
     {{??}}
-      {{ throw new Error('default is ignored in the schema root'); }}
+      {{ throw new Error($defaultMsg); }}
     {{?}}
   {{?}}
 

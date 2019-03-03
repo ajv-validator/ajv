@@ -180,7 +180,7 @@ declare namespace ajv {
     removeAdditional?: boolean | 'all' | 'failing';
     useDefaults?: boolean | 'shared';
     coerceTypes?: boolean | 'array';
-    invalidDefaults?: boolean | 'log';
+    strictDefaults?: boolean | 'log';
     async?: boolean | string;
     transpile?: string | ((code: string) => string);
     meta?: boolean | object;
