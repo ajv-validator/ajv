@@ -20,6 +20,17 @@
     , $id = it.self._getId(it.schema);
 }}
 
+{{
+  if (it.opts.strictKeywords) {
+    var $unknownKwd = it.util.schemaUnknownRules(it.schema, it.RULES.keywords);
+    if ($unknownKwd) {
+      var $keywordsMsg = 'unknown keyword: ' + $unknownKwd;
+      if (it.opts.strictKeywords === 'log') it.logger.warn($keywordsMsg);
+      else throw new Error($keywordsMsg);
+    }
+  }
+}}
+
 {{? it.isTop }}
   var validate = {{?$async}}{{it.async = true;}}async {{?}}function(data, dataPath, parentData, parentDataProperty, rootData) {
     'use strict';
