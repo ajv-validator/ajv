@@ -2,7 +2,7 @@
 
 var Ajv = require('../ajv');
 var getAjvInstances = require('../ajv_instances');
-var should = require('../chai').should();
+require('../chai').should();
 
 
 describe('useDefaults options', function() {

@@ -1,7 +1,6 @@
 'use strict';
 
 var Ajv = require('../ajv');
-var getAjvInstances = require('../ajv_instances');
 var should = require('../chai').should();
 
 
@@ -43,7 +42,7 @@ describe('strictDefaults option', function() {
             }
           ]
         };
-        
+
         ajv.compile(schema);
         should.not.exist(output.warning);
       });
@@ -161,6 +160,6 @@ describe('strictDefaults option', function() {
       error: function() {
         throw new Error('error should not be called');
       }
-    }
+    };
   }
 });
