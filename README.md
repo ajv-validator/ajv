@@ -227,7 +227,7 @@ JSON Schema specification defines several annotation keywords that describe sche
 - `title` and `description`: information about the data represented by that schema
 - `$comment` (NEW in draft-07): information for developers. With option `$comment` Ajv logs or passes the comment string to the user-supplied function. See [Options](#options).
 - `default`: a default value of the data instance, see [Assigning defaults](#assigning-defaults).
-- `examples` (NEW in draft-07): an array of data instances. Ajv does not check the validity of these instances against the schema.
+- `examples` (NEW in draft-06): an array of data instances. Ajv does not check the validity of these instances against the schema.
 - `readOnly` and `writeOnly` (NEW in draft-07): marks data-instance as read-only or write-only in relation to the source of the data (database, api, etc.).
 - `contentEncoding`: [RFC 2045](https://tools.ietf.org/html/rfc2045#section-6.1 ), e.g., "base64".
 - `contentMediaType`: [RFC 2046](https://tools.ietf.org/html/rfc2046), e.g., "image/png".
