@@ -1077,7 +1077,9 @@ Defaults:
   removeAdditional: false,
   useDefaults:      false,
   coerceTypes:      false,
+  // strict mode options
   strictDefaults:   false,
+  strictKeywords:   false,
   // asynchronous validation options:
   transpile:        undefined, // requires ajv-async package
   // advanced options:
@@ -1159,10 +1161,18 @@ Defaults:
   - `false` (default) - no type coercion.
   - `true` - coerce scalar data types.
   - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
-- _strictDefaults_: specify behavior for ignored `default` keywords in schemas. Option values:
+
+
+##### Strict mode options
+
+- _strictDefaults_: report ignored `default` keywords in schemas. Option values:
   - `false` (default) - ignored defaults are not reported
   - `true` - if an ignored default is present, throw an error
   - `"log"` - if an ignored default is present, log warning
+- _strictKeywords_: report unknown keywords in schemas. Option values:
+  - `false` (default) - unknown keywords are not reported
+  - `true` - if an unknown keyword is present, throw an error
+  - `"log"` - if an unknown keyword is present, log warning
 
 
 ##### Asynchronous validation options
