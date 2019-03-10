@@ -415,6 +415,7 @@ describe('Custom keywords', function () {
     it('should correctly expand macros in macro expansions', function() {
       instances.forEach(function (_ajv) {
         _ajv.addKeyword('range', { type: 'number', macro: macroRange });
+        _ajv.addKeyword('exclusiveRange', { metaSchema: {type: 'boolean'} });
         _ajv.addKeyword('myContains', { type: 'array', macro: macroContains });
 
         var schema = {
@@ -811,6 +812,7 @@ describe('Custom keywords', function () {
   function testRangeKeyword(definition, customErrors, numErrors) {
     instances.forEach(function (_ajv) {
       _ajv.addKeyword('x-range', definition);
+      _ajv.addKeyword('exclusiveRange', {metaSchema: {type: 'boolean'}});
 
       var schema = { "x-range": [2, 4] };
       var validate = _ajv.compile(schema);
@@ -849,6 +851,7 @@ describe('Custom keywords', function () {
   function testMultipleRangeKeyword(definition, numErrors) {
     instances.forEach(function (_ajv) {
       _ajv.addKeyword('x-range', definition);
+      _ajv.addKeyword('exclusiveRange', {metaSchema: {type: 'boolean'}});
 
       var schema = {
         "properties": {
