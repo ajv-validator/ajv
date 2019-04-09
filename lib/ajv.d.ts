@@ -181,6 +181,7 @@ declare namespace ajv {
     useDefaults?: boolean | 'shared';
     coerceTypes?: boolean | 'array';
     strictDefaults?: boolean | 'log';
+    strictKeywords?: boolean | 'log';
     async?: boolean | string;
     transpile?: string | ((code: string) => string);
     meta?: boolean | object;
