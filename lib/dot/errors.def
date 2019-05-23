@@ -166,7 +166,7 @@
   $ref:            "{ ref: '{{=it.util.escapeQuotes($schema)}}' }",
   additionalItems: "{ limit: {{=$schema.length}} }",
   additionalProperties: "{ additionalProperty: '{{=$additionalProperty}}' }",
-  anyOf:           "{}",
+  anyOf:           "{ errors: anyOf_errors_{{=$dataLvl}}}",
   const:           "{ allowedValue: schema{{=$lvl}} }",
   contains:        "{}",
   dependencies:    "{ property: '{{= it.util.escapeQuotes($property) }}', missingProperty: '{{=$missingProperty}}', depsCount: {{=$deps.length}}, deps: '{{= it.util.escapeQuotes($deps.length==1 ? $deps[0] : $deps.join(\", \")) }}' }",

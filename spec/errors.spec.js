@@ -597,7 +597,8 @@ describe('Validation errors', function () {
       function test(_ajv) {
         var validate = _ajv.compile(schema);
         validate('foo') .should.equal(false);
-        validate.errors.length .should.equal(3);
+        validate.errors.length .should.equal(1);
+        validate.errors[0].params.errors.length .should.equal(2);
         validate(1) .should.equal(true);
         validate(1.5) .should.equal(true);
       }
