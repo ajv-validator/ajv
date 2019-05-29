@@ -74,7 +74,7 @@
     "browserify": "^16.2.0",
     "chai": "^4.0.1",
     "coveralls": "^3.0.1",
-    "del-cli": "^1.1.0",
+    "del-cli": "^2.0.0",
     "dot": "^1.0.3",
     "eslint": "^5.0.0",
     "gh-pages-generator": "^0.2.3",
