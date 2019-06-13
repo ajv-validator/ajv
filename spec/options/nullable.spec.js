@@ -74,6 +74,12 @@ describe('nullable option', function() {
         nullable: true
       });
 
+      testNotNullable({
+        type: 'number',
+        nullable: true,
+        enum: [1]
+      });
+
       testNullable({
         type: ['number', 'null'],
       });
