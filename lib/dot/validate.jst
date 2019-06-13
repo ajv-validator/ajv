@@ -2,6 +2,7 @@
 {{# def.errors }}
 {{# def.defaults }}
 {{# def.coerce }}
+{{# def.$nullable }}
 
 {{ /**
     * schema compilation (render) time:
@@ -117,7 +118,7 @@
   var $typeSchema = it.schema.type
     , $typeIsArray = Array.isArray($typeSchema);
 
-  if ($typeSchema && it.opts.nullable && it.schema.nullable === true) {
+  if ($typeSchema && $isNullable) {
     if ($typeIsArray) {
       if ($typeSchema.indexOf('null') == -1)
         $typeSchema = $typeSchema.concat('null');
