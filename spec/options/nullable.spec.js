@@ -50,6 +50,12 @@ describe('nullable option', function() {
         nullable: true,
         enum: [1]
       });
+
+      testNullable({
+        type: 'number',
+        nullable: true,
+        enum: [1, null]
+      });
     });
 
     it('should respect "nullable" == false with opts.nullable == true', function() {
