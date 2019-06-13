@@ -130,6 +130,13 @@
 #}}
 
 
+{{## def.$nullable:
+  {{
+    var $isNullable = it.opts.nullable && it.schema.nullable === true;
+  }}
+#}}
+
+
 {{## def.$dataNotType:_type:
   {{?$isData}} ({{=$schemaValue}} !== undefined && typeof {{=$schemaValue}} != _type) || {{?}}
 #}}

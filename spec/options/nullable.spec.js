@@ -39,6 +39,14 @@ describe('nullable option', function() {
       testNotNullable({type: ['number']});
     });
 
+    it('should add null to enums', function() {
+      testNullable({
+        type: 'number',
+        nullable: true,
+        enum: [1]
+      });
+    });
+
     it('should respect "nullable" == false with opts.nullable == true', function() {
       testNotNullable({
         type: 'number',

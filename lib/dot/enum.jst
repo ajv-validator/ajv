@@ -2,6 +2,7 @@
 {{# def.errors }}
 {{# def.setupKeyword }}
 {{# def.$data }}
+{{# def.$nullable }}
 
 {{
   var $i = 'i' + $lvl
@@ -16,6 +17,10 @@ var {{=$valid}};
 {{?$isData}}{{# def.check$dataIsArray }}{{?}}
 
 {{=$valid}} = false;
+
+{{? $isNullable }}
+{{=$vSchema}}.push(null);
+{{?}}
 
 for (var {{=$i}}=0; {{=$i}}<{{=$vSchema}}.length; {{=$i}}++)
   if (equal({{=$data}}, {{=$vSchema}}[{{=$i}}])) {
