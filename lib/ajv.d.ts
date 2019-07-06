@@ -178,7 +178,7 @@ declare namespace ajv {
     extendRefs?: true | 'ignore' | 'fail';
     loadSchema?: (uri: string, cb?: (err: Error, schema: object) => void) => PromiseLike<object | boolean>;
     removeAdditional?: boolean | 'all' | 'failing';
-    useDefaults?: boolean | 'shared';
+    useDefaults?: boolean | 'empty' | 'shared';
     coerceTypes?: boolean | 'array';
     strictDefaults?: boolean | 'log';
     strictKeywords?: boolean | 'log';
