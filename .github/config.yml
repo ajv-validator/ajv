@@ -22,7 +22,11 @@ githubLabels:
     Please use JSON Schema reference materials or [submit the question to Stack Overflow](https://stackoverflow.com/questions/ask?tags=jsonschema,ajv).
 
     - [JSON Schema specification](http://json-schema.org/)
+
     - [Tutorial by Space Telescope Science Institute](http://json-schema.org/understanding-json-schema/)
+
     - [validation keywords](https://github.com/epoberezkin/ajv#validation-keywords) (in Ajv docs)
+
     - [combining schemas](https://github.com/epoberezkin/ajv#ref) (in Ajv docs)
+
     - [Tutorial by @epoberezkin](https://code.tutsplus.com/tutorials/validating-data-with-json-schema-part-1--cms-25343)
