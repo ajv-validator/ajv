@@ -5,6 +5,7 @@ Thank you for your help making Ajv better! Every contribution is appreciated. If
 - [Documentation](#documentation)
 - [Issues](#issues)
   - [Bug reports](#bug-reports)
+  - [Security vulnerabilities](#security-vulnerabilities)
   - [Change proposals](#changes)
   - [Browser and compatibility issues](#compatibility)
   - [Installation and dependency issues](#installation)
@@ -42,6 +43,15 @@ Please make sure to include the following information in the issue:
 Please include the link to the working code sample at Runkit.com (please clone https://runkit.com/esp/ajv-issue) - it will speed up investigation and fixing.
 
 [Create bug report](https://github.com/epoberezkin/ajv/issues/new?template=bug-or-error-report.md).
+
+
+#### Security vulnerabilities
+
+To report a security vulnerability, please use the
+[Tidelift security contact](https://tidelift.com/security).
+Tidelift will coordinate the fix and disclosure.
+
+Please do NOT report security vulnerability via GitHub issues.
 
 
 #### <a name="changes"></a>Change proposals

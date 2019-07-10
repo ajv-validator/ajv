@@ -53,7 +53,11 @@ ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
   - [Defining custom keywords](#defining-custom-keywords)
   - [Asynchronous schema compilation](#asynchronous-schema-compilation)
   - [Asynchronous validation](#asynchronous-validation)
-  - [Security considerations](#security-considerations)
+- [Security considerations](#security-considerations)
+  - [Security contact](#security-contact)
+  - [Untrusted schemas](#untrusted-schemas)
+  - [Circular references in objects](#circular-references-in-javascript-objects)
+  - [Trusted schemas](#security-risks-of-trusted-schemas)
 - Modifying data during validation
   - [Filtering data](#filtering-data)
   - [Assigning defaults](#assigning-defaults)
@@ -609,6 +613,13 @@ See [Options](#options).
 ## Security considerations
 
 JSON Schema, if properly used, can replace data sanitisation. It doesn't replace other API security considerations. It also introduces additional security aspects to consider.
+
+
+##### Security contact
+
+To report a security vulnerability, please use the
+[Tidelift security contact](https://tidelift.com/security).
+Tidelift will coordinate the fix and disclosure. Please do NOT report security vulnerability via GitHub issues.
 
 
 ##### Untrusted schemas
