@@ -1356,7 +1356,7 @@ __Please note__: [Changes in version 6.0.0](https://github.com/epoberezkin/ajv/r
 
 ## Open-source software support
 
-Ajv is a part of [Tidelift subscription]((https://tidelift.com/subscription/pkg/npm-ajv?utm_source=npm-ajv&utm_medium=referral&utm_campaign=readme)) - it provides a centralised support to open-source software users, in addition to the support provided by software maintainers.
+Ajv is a part of [Tidelift subscription](https://tidelift.com/subscription/pkg/npm-ajv?utm_source=npm-ajv&utm_medium=referral&utm_campaign=readme) - it provides a centralised support to open-source software users, in addition to the support provided by software maintainers.
 
 
 ## License
