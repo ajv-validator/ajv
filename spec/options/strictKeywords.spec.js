@@ -49,6 +49,19 @@ describe('strictKeywords option', function() {
     });
   });
 
+  describe('unknown keyword inside schema that has no known keyword in compound keyword', function() {
+    it('should throw an error given an unknown keyword when strictKeywords is true', function() {
+      var ajv = new Ajv({strictKeywords: true});
+      var schema = {
+        anyOf: [
+          {
+            unknownKeyword: 1
+          }
+        ]
+      };
+      should.throw(function() { ajv.compile(schema); });
+    });
+  });
 
   function getLogger(output) {
     return {
