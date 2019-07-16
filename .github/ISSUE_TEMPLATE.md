@@ -3,6 +3,7 @@ Frequently Asked Questions: https://github.com/epoberezkin/ajv/blob/master/FAQ.m
 Please provide all info and reduce your schema and data to the smallest possible size.
 
 This template is for bug or error reports. For other issues please use:
+- security vulnerability: https://tidelift.com/security)
 - a new feature/improvement: http://epoberezkin.github.io/ajv/contribute.html#changes
 - browser/compatibility issues: http://epoberezkin.github.io/ajv/contribute.html#compatibility
 - JSON-Schema standard: http://epoberezkin.github.io/ajv/contribute.html#json-schema

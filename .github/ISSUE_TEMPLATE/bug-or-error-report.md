@@ -2,7 +2,7 @@
 name: Bug or error report
 about: Please use for issues related to incorrect validation behaviour
 title: ''
-labels: ''
+labels: 'bug report'
 assignees: ''
 
 ---

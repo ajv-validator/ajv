@@ -1,0 +1,32 @@
+# Please supply comments to be used for GitHub labels 
+githubLabels:
+  bug: >
+    Bug confirmed - to be fixed. PR is welcome!
+
+#  duplicate: >
+#  enhancement: >    
+#  good first issue: >    
+#  help wanted: >
+#  invalid: >
+#  question: >    
+#  wont fix: >
+  
+  bug report: >
+    Thank you for the report! If you didn't post a code sample to RunKit yet,
+    please clone this notebook https://runkit.com/esp/ajv-issue,
+    post the code sample that demonstrates the bug and post the link here.
+    It will speed up the investigation and fixing!
+
+  json schema: >
+    This question is about the usage of JSON Schema specification - it is not specific to Ajv.
+    Please use JSON Schema reference materials or [submit the question to Stack Overflow](https://stackoverflow.com/questions/ask?tags=jsonschema,ajv).
+
+    - [JSON Schema specification](http://json-schema.org/)
+
+    - [Tutorial by Space Telescope Science Institute](http://json-schema.org/understanding-json-schema/)
+
+    - [validation keywords](https://github.com/epoberezkin/ajv#validation-keywords) (in Ajv docs)
+
+    - [combining schemas](https://github.com/epoberezkin/ajv#ref) (in Ajv docs)
+
+    - [Tutorial by @epoberezkin](https://code.tutsplus.com/tutorials/validating-data-with-json-schema-part-1--cms-25343)

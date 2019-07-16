@@ -11,7 +11,6 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-04/06/
 [![Greenkeeper badge](https://badges.greenkeeper.io/epoberezkin/ajv.svg)](https://greenkeeper.io/)
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 
-### _Ajv and [related repositories](#related-packages) will be transfered to [ajv-validator](https://github.com/ajv-validator) org_
 
 ## Using version 6
 
@@ -53,7 +52,11 @@ ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
   - [Defining custom keywords](#defining-custom-keywords)
   - [Asynchronous schema compilation](#asynchronous-schema-compilation)
   - [Asynchronous validation](#asynchronous-validation)
-  - [Security considerations](#security-considerations)
+- [Security considerations](#security-considerations)
+  - [Security contact](#security-contact)
+  - [Untrusted schemas](#untrusted-schemas)
+  - [Circular references in objects](#circular-references-in-javascript-objects)
+  - [Trusted schemas](#security-risks-of-trusted-schemas)
 - Modifying data during validation
   - [Filtering data](#filtering-data)
   - [Assigning defaults](#assigning-defaults)
@@ -65,7 +68,7 @@ ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
 - [Plugins](#plugins)
 - [Related packages](#related-packages)
 - [Some packages using Ajv](#some-packages-using-ajv)
-- [Tests, Contributing, History, License](#tests)
+- [Tests, Contributing, History, Support, License](#tests)
 
 
 ## Performance
@@ -609,6 +612,13 @@ See [Options](#options).
 ## Security considerations
 
 JSON Schema, if properly used, can replace data sanitisation. It doesn't replace other API security considerations. It also introduces additional security aspects to consider.
+
+
+##### Security contact
+
+To report a security vulnerability, please use the
+[Tidelift security contact](https://tidelift.com/security).
+Tidelift will coordinate the fix and disclosure. Please do NOT report security vulnerabilities via GitHub issues.
 
 
 ##### Untrusted schemas
@@ -1337,6 +1347,11 @@ __Please note__: [Changes in version 6.0.0](https://github.com/epoberezkin/ajv/r
 [Version 3.0.0](https://github.com/epoberezkin/ajv/releases/tag/3.0.0).
 
 [Version 2.0.0](https://github.com/epoberezkin/ajv/releases/tag/2.0.0).
+
+
+## Open-source software support
+
+Ajv is a part of [Tidelift subscription](https://tidelift.com/subscription/pkg/npm-ajv?utm_source=npm-ajv&utm_medium=referral&utm_campaign=readme) - it provides a centralised support to open-source software users, in addition to the support provided by software maintainers.
 
 
 ## License
