@@ -687,7 +687,7 @@ __Please note__: some formats that Ajv implements use [regular expressions](http
 
 - making assessment of "format" implementations in Ajv.
 - using `format: 'fast'` option that simplifies some of the regular expressions (although it does not guarantee that they are safe).
-- replacing format implementations provided by Ajv with your own implementations of "format" keyword that either uses different regular expressions or another approach to format validation.
+- replacing format implementations provided by Ajv with your own implementations of "format" keyword that either uses different regular expressions or another approach to format validation. Please see [addFormat](#api-addformat) method.
 - disabling format validation by ignoring "format" keyword with option `format: false`
 
 Whatever mitigation you choose, please assume all formats provided by Ajv as potentially unsafe and make your own assessment of their suitability for your validation scenarios.
