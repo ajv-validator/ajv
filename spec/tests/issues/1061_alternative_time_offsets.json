@@ -1,0 +1,74 @@
+[
+  {
+    "description": "Support for alternative ISO-8601 timezone offset formats (#1061)",
+    "schema": {"format": "date-time"},
+    "tests": [
+      {
+        "description": "valid positiive two digit",
+        "data": "2016-01-31T02:31:17+01",
+        "valid": true
+      },
+      {
+        "description": "valid negative two digit",
+        "data": "2016-01-31T02:31:17-01",
+        "valid": true
+      },
+      {
+        "description": "valid positiive four digit no colon",
+        "data": "2016-01-31T02:31:17+0130",
+        "valid": true
+      },
+      {
+        "description": "valid negative four digit no colon",
+        "data": "2016-01-31T02:31:17-0130",
+        "valid": true
+      },
+      {
+        "description": "invalid positiive three digit no colon",
+        "data": "2016-01-31T02:31:17+013",
+        "valid": false
+      },
+      {
+        "description": "invalid negative three digit no colon",
+        "data": "2016-01-31T02:31:17-013",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "Support for alternative ISO-8601 timezone offset formats (#1061)",
+    "schema": {"format": "time"},
+    "tests": [
+      {
+        "description": "valid positiive two digit",
+        "data": "02:31:17+01",
+        "valid": true
+      },
+      {
+        "description": "valid negative two digit",
+        "data": "02:31:17-01",
+        "valid": true
+      },
+      {
+        "description": "valid positiive four digit no colon",
+        "data": "02:31:17+0130",
+        "valid": true
+      },
+      {
+        "description": "valid negative four digit no colon",
+        "data": "02:31:17-0130",
+        "valid": true
+      },
+      {
+        "description": "invalid positiive three digit no colon",
+        "data": "02:31:17+013",
+        "valid": false
+      },
+      {
+        "description": "invalid negative three digit no colon",
+        "data": "02:31:17-013",
+        "valid": false
+      }
+    ]
+  }
+]
