@@ -28,7 +28,8 @@
     "test-all": "npm run test-ts && npm run test-cov && if-node-version 10 npm run test-browser",
     "test": "npm run lint && npm run build && npm run test-all",
     "prepublish": "npm run build && npm run bundle",
-    "watch": "watch \"npm run build\" ./lib/dot"
+    "watch": "watch \"npm run build\" ./lib/dot",
+    "postinstall": "opencollective-postinstall || true"
   },
   "nyc": {
     "exclude": [
@@ -65,6 +66,7 @@
     "fast-deep-equal": "^2.0.1",
     "fast-json-stable-stringify": "^2.0.0",
     "json-schema-traverse": "^0.4.1",
+    "opencollective-postinstall": "^2.0.2",
     "uri-js": "^4.2.2"
   },
   "devDependencies": {
@@ -94,5 +96,9 @@
     "typescript": "^2.8.3",
     "uglify-js": "^3.3.24",
     "watch": "^1.0.0"
+  },
+  "collective": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/ajv"
   }
 }
