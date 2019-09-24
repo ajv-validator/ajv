@@ -131,7 +131,11 @@ Try it in the Node.js REPL: https://tonicdev.com/npm/ajv
 The fastest validation call:
 
 ```javascript
+// Node.js require:
 var Ajv = require('ajv');
+// or ESM/TypeScript import
+import Ajv from 'ajv';
+
 var ajv = new Ajv(); // options can be passed, e.g. {allErrors: true}
 var validate = ajv.compile(schema);
 var valid = validate(data);
@@ -164,6 +168,10 @@ Ajv compiles schemas to functions and caches them in all cases (using schema ser
 The best performance is achieved when using compiled functions returned by `compile` or `getSchema` methods (there is no additional function call).
 
 __Please note__: every time a validation function or `ajv.validate` are called `errors` property is overwritten. You need to copy `errors` array reference to another variable if you want to use it later (e.g., in the callback). See [Validation errors](#validation-errors)
+
+__Note for TypeScript users__: `ajv` provides its own TypeScript declarations
+out of the box, so you don't need to install the deprecated `@types/ajv`
+module.
 
 
 ## Using in browser
