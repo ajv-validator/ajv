@@ -57,6 +57,7 @@ ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
   - [Untrusted schemas](#untrusted-schemas)
   - [Circular references in objects](#circular-references-in-javascript-objects)
   - [Trusted schemas](#security-risks-of-trusted-schemas)
+  - [ReDoS attack](#redos-attack)
 - Modifying data during validation
   - [Filtering data](#filtering-data)
   - [Assigning defaults](#assigning-defaults)
@@ -240,7 +241,11 @@ __Please note__:  Ajv does not implement validation of the keywords `examples`, 
 
 ## Formats
 
-The following formats are supported for string validation with "format" keyword:
+Ajv implements formats defined by JSON Schema specification and several other formats. It is recommended NOT to use "format" keyword implementations with untrusted data, as they use potentially unsafe regular expressions - see [ReDoS attack](#redos-attack).
+
+__Please note__: if you need to use "format" keyword to validate untrusted data, you MUST assess their suitability and safety for your validation scenarios.
+
+The following formats are implemented for string validation with "format" keyword:
 
 - _date_: full-date according to [RFC3339](http://tools.ietf.org/html/rfc3339#section-5.6).
 - _time_: time with optional time-zone.
@@ -646,9 +651,9 @@ An attempt to compile such schemas or validate such data would cause stack overf
 
 Some keywords in JSON Schemas can lead to very slow validation for certain data. These keywords include (but may be not limited to):
 
-- `pattern` and `format` for large strings - use `maxLength` to mitigate
+- `pattern` and `format` for large strings - in some cases using `maxLength` can help mitigate it, but certain regular expressions can lead to exponential validation time even with relatively short strings (see [ReDoS attack](#redos-attack)).
+- `patternProperties` for large property names - use `propertyNames` to mitigate, but some regular expressions can have exponential evaluation time as well.
 - `uniqueItems` for large non-scalar arrays - use `maxItems` to mitigate
-- `patternProperties` for large property names - use `propertyNames` to mitigate
 
 __Please note__: The suggestions above to prevent slow validation would only work if you do NOT use `allErrors: true` in production code (using it would continue validation after validation errors).
 
@@ -660,11 +665,27 @@ const isSchemaSecure = ajv.compile(require('ajv/lib/refs/json-schema-secure.json
 const schema1 = {format: 'email'};
 isSchemaSecure(schema1); // false
 
-const schema2 = {format: 'email', maxLength: 256};
+const schema2 = {format: 'email', maxLength: MAX_LENGTH};
 isSchemaSecure(schema2); // true
 ```
 
 __Please note__: following all these recommendation is not a guarantee that validation of untrusted data is safe - it can still lead to some undesirable results.
+
+
+## ReDoS attack
+
+Certain regular expressions can lead to the exponential evaluation time even with relatively short strings.
+
+Please assess the regular expressions you use in the schemas on their vulnerability to this attack - see [safe-regex](https://github.com/substack/safe-regex), for example.
+
+__Please note__: some formats that Ajv implements use [regular expressions](https://github.com/epoberezkin/ajv/blob/master/lib/compile/formats.js) that can be vulnerable to ReDoS attack, so if you use Ajv to validate data from untrusted sources __it is strongly recommended__ to consider the following:
+
+- making assessment of "format" implementations in Ajv.
+- using `format: 'fast'` option that simplifies some of the regular expressions (although it does not guarantee that they are safe).
+- replacing format implementations provided by Ajv with your own implementations of "format" keyword that either uses different regular expressions or another approach to format validation. Please see [addFormat](#api-addformat) method.
+- disabling format validation by ignoring "format" keyword with option `format: false`
+
+Whatever mitigation you choose, please assume all formats provided by Ajv as potentially unsafe and make your own assessment of their suitability for your validation scenarios.
 
 
 ## Filtering data
