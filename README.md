@@ -1309,6 +1309,7 @@ If you have published a useful plugin please submit a PR to add it to the next s
 - [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) - plugin with custom validation keywords (select, typeof, etc.)
 - [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) - plugin with keywords $merge and $patch
 - [ajv-pack](https://github.com/epoberezkin/ajv-pack) - produces a compact module exporting validation functions
+- [ajv-content-encoding](https://github.com/remko/ajv-content-encoding) - plugin to validate contentEncoding keywords
 
 
 ## Some packages using Ajv
