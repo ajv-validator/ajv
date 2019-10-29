@@ -88,7 +88,7 @@ There are several ways to implement the described logic that would allow two pro
 
 ##### Why the validation fails when I use option `removeAdditional` with the keyword `anyOf`/etc.?
 
-This problem is related to the problem explained above - properties treated as additional in the sence of `additionalProperties` keyword, based on `properties`/`patternProperties` keyword in the same schema object.
+This problem is related to the problem explained above - properties treated as additional in the sense of `additionalProperties` keyword, based on `properties`/`patternProperties` keyword in the same schema object.
 
 See the exemple in [Filtering Data](/#filtering-data) section of readme.
 
