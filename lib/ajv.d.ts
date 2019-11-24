@@ -243,6 +243,7 @@ declare namespace ajv {
   interface CompilationContext {
     level: number;
     dataLevel: number;
+    dataPathArr: string[];
     schema: any;
     schemaPath: string;
     baseId: string;
