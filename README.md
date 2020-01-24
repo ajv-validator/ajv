@@ -1309,7 +1309,7 @@ If you have published a useful plugin please submit a PR to add it to the next s
 - [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) - plugin with custom validation keywords (select, typeof, etc.)
 - [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) - plugin with keywords $merge and $patch
 - [ajv-pack](https://github.com/epoberezkin/ajv-pack) - produces a compact module exporting validation functions
-
+- [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) - format validators for draft2019 that aren't already included in ajv (ie. `idn-hostname`, `idn-email`, `iri`, `iri-reference` and `duration`).
 
 ## Some packages using Ajv
 
