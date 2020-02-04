@@ -1151,6 +1151,15 @@ Defaults:
 - _schemas_: an array or object of schemas that will be added to the instance. In case you pass the array the schemas must have IDs in them. When the object is passed the method `addSchema(value, key)` will be called for each schema in this object.
 - _logger_: sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. Option values:
   - custom logger - it should have methods `log`, `warn` and `error`. If any of these methods is missing an exception will be thrown.
+    ```javascript
+    var ajv = new AJV.default({
+      logger: {
+        log: log => console.log(log),
+        warn: () => null,
+        error: error => console.error(error),
+      },
+    });
+    ```
   - `false` - logging is disabled.
 
 
