@@ -1152,12 +1152,18 @@ Defaults:
 - _logger_: sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. Option values:
   - custom logger - it should have methods `log`, `warn` and `error`. If any of these methods is missing an exception will be thrown.
     ```javascript
-    var ajv = new AJV.default({
+    var ajv = new Ajv({
       logger: {
-        log: log => console.log(log),
-        warn: () => null,
-        error: error => console.error(error),
-      },
+        log: function log(_log) {
+          return console.log(_log);
+        },
+        warn: function warn(_warn) {
+          return console.warn("Custom Warning: ".concat(_warn));
+        },
+        error: function error(_error) {
+          return console.error(_error);
+        }
+      }
     });
     ```
   - `false` - logging is disabled.
