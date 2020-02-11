@@ -80,9 +80,9 @@ declare namespace ajv {
     /**
     * Get compiled schema from the instance by `key` or `ref`.
     * @param  {string} keyRef `key` that was passed to `addSchema` or full schema reference (`schema.id` or resolved id).
-    * @return {Function} schema validating function (with property `schema`).
+    * @return {Function} schema validating function (with property `schema`). Returns undefined if keyRef can't be resolved to an existing schema.
     */
-    getSchema(keyRef: string): ValidateFunction;
+    getSchema(keyRef: string): ValidateFunction | undefined;
     /**
     * Remove cached schema(s).
     * If no parameter is passed all schemas but meta-schemas are removed.
