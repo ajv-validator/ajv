@@ -1151,21 +1151,6 @@ Defaults:
 - _schemas_: an array or object of schemas that will be added to the instance. In case you pass the array the schemas must have IDs in them. When the object is passed the method `addSchema(value, key)` will be called for each schema in this object.
 - _logger_: sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. Option values:
   - custom logger - it should have methods `log`, `warn` and `error`. If any of these methods is missing an exception will be thrown.
-    ```javascript
-    var ajv = new Ajv({
-      logger: {
-        log: function log(_log) {
-          return console.log(_log);
-        },
-        warn: function warn(_warn) {
-          return console.warn("Custom Warning: ".concat(_warn));
-        },
-        error: function error(_error) {
-          return console.error(_error);
-        }
-      }
-    });
-    ```
   - `false` - logging is disabled.
 
 
@@ -1300,6 +1285,30 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - `$ref` - property `ref` with the referenced schema URI.
 - `oneOf` - property `passingSchemas` (array of indices of passing schemas, null if no schema passes).
 - custom keywords (in case keyword definition doesn't create errors) - property `keyword` (the keyword name).
+
+
+### Error Logging
+
+Using the `logger` option when initiallizing Ajv will allow you to define custom logging. Here you can build upon the exisiting logging. The use of other logging packages is supported as long as the package or its associated wrapper exposes the required methods. If any of the required methods are missing an exception will be thrown.
+- **Required Methods**: `log`, `warn`, `error`
+
+```javascript
+var otherLogger = new OtherLogger();
+var ajv = new Ajv({
+  logger: {
+    log: function log(_log) {
+      return console.log(_log);
+    },
+    warn: function warn(_warn) {
+      return otherLogger.logWarn(_warn);
+    },
+    error: function error(_error) {
+      otherLogger.logError(_error);
+      return console.error(_error);
+    }
+  }
+});
+```
 
 
 ## Plugins
