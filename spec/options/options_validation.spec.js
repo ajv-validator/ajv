@@ -26,9 +26,32 @@ describe('validation options', function() {
       }});
 
       var validate = ajv.compile({ format: 'identifier' });
+
       validate('Abc1') .should.equal(true);
       validate('123') .should.equal(false);
       validate(123) .should.equal(true);
+    });
+  });
+
+  describe('keywords', function() {
+    it('should add keywords from options', function() {
+      var ajv = new Ajv({ keywords: {
+        string: {
+          validate: function (schema, data ) {
+
+            console.log(">>", data);
+            return /^[a-z_$][a-z0-9_$]*$/i.test(data);
+          }
+        }
+      }});
+
+      var validate = ajv.compile({ string: true });
+
+      validate('Abc1') .should.equal(true);
+      validate('foo bar').should.equal(false);
+      validate('123').should.equal(false);
+      validate(123).should.equal(false);
+      validate(123).should.equal(false);
     });
   });
 
