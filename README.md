@@ -1144,6 +1144,7 @@ Defaults:
   - `"full"` - more restrictive and slow validation. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
   - `false` - ignore all format keywords.
 - _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
+- _keywords_: an object with custom keywords. Keys and values will be passed to `addKeyword` method.
 - _unknownFormats_: handling of unknown formats. Option values:
   - `true` (default) - if an unknown format is encountered the exception is thrown during schema compilation. If `format` keyword value is [$data reference](#data-reference) and it is unknown the validation will fail.
   - `[String]` - an array of unknown format names that will be ignored. This option can be used to allow usage of third party schemas with format(s) for which you don't have definitions, but still fail if another unknown format is used. If `format` keyword value is [$data reference](#data-reference) and it is not in this array the validation will fail.
