@@ -169,7 +169,7 @@ declare namespace ajv {
     jsonPointers?: boolean;
     uniqueItems?: boolean;
     unicode?: boolean;
-    format?: string;
+    format?: false | string;
     formats?: object;
     unknownFormats?: true | string[] | 'ignore';
     schemas?: Array<object> | object;
