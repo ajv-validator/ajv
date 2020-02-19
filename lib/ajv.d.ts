@@ -132,7 +132,7 @@ declare namespace ajv {
     /**
     * Convert array of error message objects to string
     * @param  {Array<object>} errors optional array of validation errors, if not passed errors from the instance are used.
-    * @param  {object} options optional options with properties `separator` and `dataVar`.
+    * @param  {object} options optional options with properties `separator`, `dataVar` and `extraInfo`.
     * @return {string} human readable string with all errors descriptions
     */
     errorsText(errors?: Array<ErrorObject> | null, options?: ErrorsTextOptions): string;
@@ -287,6 +287,7 @@ declare namespace ajv {
   interface ErrorsTextOptions {
     separator?: string;
     dataVar?: string;
+    extraInfo?: boolean;
   }
 
   interface ErrorObject {
