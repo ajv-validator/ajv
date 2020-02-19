@@ -1079,7 +1079,7 @@ __Please note__: schemas compiled before the keyword is removed will continue to
 
 Returns the text with all errors in a String.
 
-Options can have properties `separator` (string used to separate errors, ", " by default) and `dataVar` (the variable name that dataPaths are prefixed with, "data" by default).
+Options can have properties `separator` (string used to separate errors, ", " by default) `dataVar` (the variable name that dataPaths are prefixed with, "data" by default) and `extraInfo` (should the error message be more detailed).
 
 
 ## Options
