@@ -1158,7 +1158,7 @@ Defaults:
   - `[String]` - an array of unknown format names that will be ignored. This option can be used to allow usage of third party schemas with format(s) for which you don't have definitions, but still fail if another unknown format is used. If `format` keyword value is [$data reference](#data-reference) and it is not in this array the validation will fail.
   - `"ignore"` - to log warning during schema compilation and always pass validation (the default behaviour in versions before 5.0.0). This option is not recommended, as it allows to mistype format name and it won't be validated without any error message. This behaviour is required by JSON Schema specification.
 - _schemas_: an array or object of schemas that will be added to the instance. In case you pass the array the schemas must have IDs in them. When the object is passed the method `addSchema(value, key)` will be called for each schema in this object.
-- _logger_: sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. Option values:
+- _logger_: sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. See [Error logging](#error-logging). Option values:
   - custom logger - it should have methods `log`, `warn` and `error`. If any of these methods is missing an exception will be thrown.
   - `false` - logging is disabled.
 
@@ -1296,7 +1296,7 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - custom keywords (in case keyword definition doesn't create errors) - property `keyword` (the keyword name).
 
 
-### Error Logging
+### Error logging
 
 Using the `logger` option when initiallizing Ajv will allow you to define custom logging. Here you can build upon the exisiting logging. The use of other logging packages is supported as long as the package or its associated wrapper exposes the required methods. If any of the required methods are missing an exception will be thrown.
 - **Required Methods**: `log`, `warn`, `error`
@@ -1305,15 +1305,13 @@ Using the `logger` option when initiallizing Ajv will allow you to define custom
 var otherLogger = new OtherLogger();
 var ajv = new Ajv({
   logger: {
-    log: function log(_log) {
-      return console.log(_log);
+    log: console.log.bind(console),
+    warn: function warn() {
+      otherLogger.logWarn.apply(otherLogger, arguments);
     },
-    warn: function warn(_warn) {
-      return otherLogger.logWarn(_warn);
-    },
-    error: function error(_error) {
-      otherLogger.logError(_error);
-      return console.error(_error);
+    error: function error() {
+      otherLogger.logError.apply(otherLogger, arguments);
+      console.error.apply(console, arguments);
     }
   }
 });
