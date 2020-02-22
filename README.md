@@ -1296,6 +1296,30 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - custom keywords (in case keyword definition doesn't create errors) - property `keyword` (the keyword name).
 
 
+### Error Logging
+
+Using the `logger` option when initiallizing Ajv will allow you to define custom logging. Here you can build upon the exisiting logging. The use of other logging packages is supported as long as the package or its associated wrapper exposes the required methods. If any of the required methods are missing an exception will be thrown.
+- **Required Methods**: `log`, `warn`, `error`
+
+```javascript
+var otherLogger = new OtherLogger();
+var ajv = new Ajv({
+  logger: {
+    log: function log(_log) {
+      return console.log(_log);
+    },
+    warn: function warn(_warn) {
+      return otherLogger.logWarn(_warn);
+    },
+    error: function error(_error) {
+      otherLogger.logError(_error);
+      return console.error(_error);
+    }
+  }
+});
+```
+
+
 ## Plugins
 
 Ajv can be extended with plugins that add custom keywords, formats or functions to process generated code. When such plugin is published as npm package it is recommended that it follows these conventions:
