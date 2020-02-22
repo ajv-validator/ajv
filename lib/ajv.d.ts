@@ -171,6 +171,7 @@ declare namespace ajv {
     unicode?: boolean;
     format?: false | string;
     formats?: object;
+    keywords?: object;
     unknownFormats?: true | string[] | 'ignore';
     schemas?: Array<object> | object;
     schemaId?: '$id' | 'id' | 'auto';
@@ -251,6 +252,9 @@ declare namespace ajv {
     opts: Options;
     formats: {
       [index: string]: FormatDefinition | undefined;
+    };
+    keywords: {
+      [index: string]: KeywordDefinition | undefined;
     };
     compositeRule: boolean;
     validate: (schema: object) => boolean;
