@@ -131,7 +131,11 @@ Try it in the Node.js REPL: https://tonicdev.com/npm/ajv
 The fastest validation call:
 
 ```javascript
+// Node.js require:
 var Ajv = require('ajv');
+// or ESM/TypeScript import
+import Ajv from 'ajv';
+
 var ajv = new Ajv(); // options can be passed, e.g. {allErrors: true}
 var validate = ajv.compile(schema);
 var valid = validate(data);
@@ -164,6 +168,10 @@ Ajv compiles schemas to functions and caches them in all cases (using schema ser
 The best performance is achieved when using compiled functions returned by `compile` or `getSchema` methods (there is no additional function call).
 
 __Please note__: every time a validation function or `ajv.validate` are called `errors` property is overwritten. You need to copy `errors` array reference to another variable if you want to use it later (e.g., in the callback). See [Validation errors](#validation-errors)
+
+__Note for TypeScript users__: `ajv` provides its own TypeScript declarations
+out of the box, so you don't need to install the deprecated `@types/ajv`
+module.
 
 
 ## Using in browser
@@ -328,7 +336,7 @@ __Please note__:
 
 ## $data reference
 
-With `$data` option you can use values from the validated data as the values for the schema keywords. See [proposal](https://github.com/json-schema/json-schema/wiki/$data-(v5-proposal)) for more information about how it works.
+With `$data` option you can use values from the validated data as the values for the schema keywords. See [proposal](https://github.com/json-schema-org/json-schema-spec/issues/51) for more information about how it works.
 
 `$data` reference is supported in the keywords: const, enum, format, maximum/minimum, exclusiveMaximum / exclusiveMinimum, maxLength / minLength, maxItems / minItems, maxProperties / minProperties, formatMaximum / formatMinimum, formatExclusiveMaximum / formatExclusiveMinimum, multipleOf, pattern, required, uniqueItems.
 
@@ -1144,12 +1152,13 @@ Defaults:
   - `"full"` - more restrictive and slow validation. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
   - `false` - ignore all format keywords.
 - _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
+- _keywords_: an object with custom keywords. Keys and values will be passed to `addKeyword` method.
 - _unknownFormats_: handling of unknown formats. Option values:
   - `true` (default) - if an unknown format is encountered the exception is thrown during schema compilation. If `format` keyword value is [$data reference](#data-reference) and it is unknown the validation will fail.
   - `[String]` - an array of unknown format names that will be ignored. This option can be used to allow usage of third party schemas with format(s) for which you don't have definitions, but still fail if another unknown format is used. If `format` keyword value is [$data reference](#data-reference) and it is not in this array the validation will fail.
   - `"ignore"` - to log warning during schema compilation and always pass validation (the default behaviour in versions before 5.0.0). This option is not recommended, as it allows to mistype format name and it won't be validated without any error message. This behaviour is required by JSON Schema specification.
 - _schemas_: an array or object of schemas that will be added to the instance. In case you pass the array the schemas must have IDs in them. When the object is passed the method `addSchema(value, key)` will be called for each schema in this object.
-- _logger_: sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. Option values:
+- _logger_: sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. See [Error logging](#error-logging). Option values:
   - custom logger - it should have methods `log`, `warn` and `error`. If any of these methods is missing an exception will be thrown.
   - `false` - logging is disabled.
 
@@ -1285,6 +1294,28 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - `$ref` - property `ref` with the referenced schema URI.
 - `oneOf` - property `passingSchemas` (array of indices of passing schemas, null if no schema passes).
 - custom keywords (in case keyword definition doesn't create errors) - property `keyword` (the keyword name).
+
+
+### Error logging
+
+Using the `logger` option when initiallizing Ajv will allow you to define custom logging. Here you can build upon the exisiting logging. The use of other logging packages is supported as long as the package or its associated wrapper exposes the required methods. If any of the required methods are missing an exception will be thrown.
+- **Required Methods**: `log`, `warn`, `error`
+
+```javascript
+var otherLogger = new OtherLogger();
+var ajv = new Ajv({
+  logger: {
+    log: console.log.bind(console),
+    warn: function warn() {
+      otherLogger.logWarn.apply(otherLogger, arguments);
+    },
+    error: function error() {
+      otherLogger.logError.apply(otherLogger, arguments);
+      console.error.apply(console, arguments);
+    }
+  }
+});
+```
 
 
 ## Plugins

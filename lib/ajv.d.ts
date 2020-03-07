@@ -80,9 +80,9 @@ declare namespace ajv {
     /**
     * Get compiled schema from the instance by `key` or `ref`.
     * @param  {string} keyRef `key` that was passed to `addSchema` or full schema reference (`schema.id` or resolved id).
-    * @return {Function} schema validating function (with property `schema`).
+    * @return {Function} schema validating function (with property `schema`). Returns undefined if keyRef can't be resolved to an existing schema.
     */
-    getSchema(keyRef: string): ValidateFunction;
+    getSchema(keyRef: string): ValidateFunction | undefined;
     /**
     * Remove cached schema(s).
     * If no parameter is passed all schemas but meta-schemas are removed.
@@ -169,8 +169,9 @@ declare namespace ajv {
     jsonPointers?: boolean;
     uniqueItems?: boolean;
     unicode?: boolean;
-    format?: string;
+    format?: false | string;
     formats?: object;
+    keywords?: object;
     unknownFormats?: true | string[] | 'ignore';
     schemas?: Array<object> | object;
     schemaId?: '$id' | 'id' | 'auto';
@@ -243,6 +244,7 @@ declare namespace ajv {
   interface CompilationContext {
     level: number;
     dataLevel: number;
+    dataPathArr: string[];
     schema: any;
     schemaPath: string;
     baseId: string;
@@ -250,6 +252,9 @@ declare namespace ajv {
     opts: Options;
     formats: {
       [index: string]: FormatDefinition | undefined;
+    };
+    keywords: {
+      [index: string]: KeywordDefinition | undefined;
     };
     compositeRule: boolean;
     validate: (schema: object) => boolean;
