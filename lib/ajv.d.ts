@@ -45,7 +45,8 @@ declare namespace ajv {
     * @param  {object|Boolean} schema schema object
     * @return {Function} validating function
     */
-    compile(schema: object | boolean): ValidateFunction;
+   compile<T extends object = any>(schema: { $async: true } & object): ValidateFunctionAsync<T>;
+   compile<T extends object = any>(schema: object | boolean): ValidateFunctionSync<T>;
     /**
     * Creates validating function for passed schema with asynchronous loading of missing schemas.
     * `loadSchema` option should be a function that accepts schema uri and node-style callback.
@@ -55,7 +56,7 @@ declare namespace ajv {
     * @param {Function} callback optional node-style callback, it is always called with 2 parameters: error (or null) and validating function.
     * @return {PromiseLike<ValidateFunction>} validating function
     */
-    compileAsync(schema: object | boolean, meta?: Boolean, callback?: (err: Error, validate: ValidateFunction) => any): PromiseLike<ValidateFunction>;
+    compileAsync<T>(schema: object | boolean, meta?: Boolean, callback?: (err: Error, validate: ValidateFunction<T>) => any): PromiseLike<ValidateFunction<T>>;
     /**
     * Adds schema to the instance.
     * @param {object|Array} schema schema or array of schemas. If array is passed, `key` and other parameters will be ignored.
@@ -82,7 +83,7 @@ declare namespace ajv {
     * @param  {string} keyRef `key` that was passed to `addSchema` or full schema reference (`schema.id` or resolved id).
     * @return {Function} schema validating function (with property `schema`). Returns undefined if keyRef can't be resolved to an existing schema.
     */
-    getSchema(keyRef: string): ValidateFunction | undefined;
+    getSchema<T>(keyRef: string): ValidateFunction<T> | undefined;
     /**
     * Remove cached schema(s).
     * If no parameter is passed all schemas but meta-schemas are removed.
@@ -106,7 +107,7 @@ declare namespace ajv {
     * @param {object} definition keyword definition object with properties `type` (type(s) which the keyword applies to), `validate` or `compile`.
     * @return {Ajv} this for method chaining
     */
-    addKeyword(keyword: string, definition: KeywordDefinition): Ajv;
+    addKeyword<T>(keyword: string, definition: KeywordDefinition<T>): Ajv;
     /**
     * Get keyword definition
     * @this  Ajv
@@ -128,7 +129,7 @@ declare namespace ajv {
     * @param {boolean} throwError true to throw exception if definition is invalid
     * @return {boolean} validation result
     */
-    validateKeyword(definition: KeywordDefinition, throwError: boolean): boolean;
+    validateKeyword<T>(definition: KeywordDefinition<T>, throwError: boolean): boolean;
     /**
     * Convert array of error message objects to string
     * @param  {Array<object>} errors optional array of validation errors, if not passed errors from the instance are used.
@@ -145,19 +146,53 @@ declare namespace ajv {
     error(...args: any[]): any;
   }
 
-  interface ValidateFunction {
+  interface ValidateFunction<T> {
     (
       data: any,
       dataPath?: string,
       parentData?: object | Array<any>,
       parentDataProperty?: string | number,
       rootData?: object | Array<any>
-    ): boolean | PromiseLike<any>;
+    ): data is T | PromiseLike<T>;
     schema?: object | boolean;
     errors?: null | Array<ErrorObject>;
     refs?: object;
     refVal?: Array<any>;
-    root?: ValidateFunction | object;
+    root?: ValidateFunction<T> | object;
+    $async?: true;
+    source?: object;
+  }
+
+  interface ValidateFunctionAsync<T> {
+    (
+      data: any,
+      dataPath?: string,
+      parentData?: object | Array<any>,
+      parentDataProperty?: string | number,
+      rootData?: object | Array<any>
+    ): PromiseLike<T>;
+    schema?: object | boolean;
+    errors?: null | Array<ErrorObject>;
+    refs?: object;
+    refVal?: Array<any>;
+    root?: ValidateFunction<T> | object;
+    $async?: true;
+    source?: object;
+  }
+
+  interface ValidateFunctionSync<T> {
+    (
+      data: any,
+      dataPath?: string,
+      parentData?: object | Array<any>,
+      parentDataProperty?: string | number,
+      rootData?: object | Array<any>
+    ): data is T;
+    schema?: object | boolean;
+    errors?: null | Array<ErrorObject>;
+    refs?: object;
+    refVal?: Array<any>;
+    root?: ValidateFunction<T> | object;
     $async?: true;
     source?: object;
   }
@@ -222,7 +257,7 @@ declare namespace ajv {
 
   type FormatDefinition = NumberFormatDefinition | StringFormatDefinition;
 
-  interface KeywordDefinition {
+  interface KeywordDefinition<T> {
     type?: string | Array<string>;
     async?: boolean;
     $data?: boolean;
@@ -235,13 +270,13 @@ declare namespace ajv {
     modifying?: boolean;
     valid?: boolean;
     // one and only one of the following properties should be present
-    validate?: SchemaValidateFunction | ValidateFunction;
-    compile?: (schema: any, parentSchema: object, it: CompilationContext) => ValidateFunction;
-    macro?: (schema: any, parentSchema: object, it: CompilationContext) => object | boolean;
-    inline?: (it: CompilationContext, keyword: string, schema: any, parentSchema: object) => string;
+    validate?: SchemaValidateFunction<T> | ValidateFunction<T>;
+    compile?: (schema: any, parentSchema: object, it: CompilationContext<T>) => ValidateFunction<T>;
+    macro?: (schema: any, parentSchema: object, it: CompilationContext<T>) => object | boolean;
+    inline?: (it: CompilationContext<T>, keyword: string, schema: any, parentSchema: object) => string;
   }
 
-  interface CompilationContext {
+  interface CompilationContext<T> {
     level: number;
     dataLevel: number;
     dataPathArr: string[];
@@ -254,7 +289,7 @@ declare namespace ajv {
       [index: string]: FormatDefinition | undefined;
     };
     keywords: {
-      [index: string]: KeywordDefinition | undefined;
+      [index: string]: KeywordDefinition<T> | undefined;
     };
     compositeRule: boolean;
     validate: (schema: object) => boolean;
@@ -275,7 +310,7 @@ declare namespace ajv {
     self: Ajv;
   }
 
-  interface SchemaValidateFunction {
+  interface SchemaValidateFunction<T> {
     (
       schema: any,
       data: any,
@@ -284,7 +319,7 @@ declare namespace ajv {
       parentData?: object | Array<any>,
       parentDataProperty?: string | number,
       rootData?: object | Array<any>
-    ): boolean | PromiseLike<any>;
+    ): data is T | PromiseLike<any>;
     errors?: Array<ErrorObject>;
   }
 
