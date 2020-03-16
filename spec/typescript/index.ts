@@ -1,8 +1,8 @@
-import ajv = require("../..");
+import ajv = require('../..');
 
 // #region new()
 const options: ajv.Options = {
-    verbose: true,
+	verbose: true,
 };
 
 let instance: ajv.Ajv;
@@ -16,19 +16,19 @@ instance = new ajv(options);
 
 // #region validate()
 let data = {
-    foo: 42,
-}
+	foo: 42,
+};
 
-let result = instance.validate("", data);
+let result = instance.validate('', data);
 
-if (typeof result === "boolean") {
-    // sync
-    console.log(result);
+if (typeof result === 'boolean') {
+	// sync
+	console.log(result);
 } else {
-    // async
-    result.then(value => {
-        data = value;
-    });
+	// async
+	result.then(value => {
+		data = value;
+	});
 }
 // #endregion validate()
 
@@ -36,14 +36,35 @@ if (typeof result === "boolean") {
 const validator = instance.compile({});
 result = validator(data);
 
-if (typeof result === "boolean") {
-    // sync
-    console.log(result);
-} else {
-    // async
-    result.then(value => {
-        data = value;
-    });
+// async
+const validatorAsync = instance.compile({ $async: true });
+const resultAsync = validatorAsync(data);
+resultAsync.then(value => {
+	data = value;
+});
+
+// sync
+const validatorSync = instance.compile({});
+const resultSync = validatorSync(data);
+if (resultSync) {
+	console.log(resultSync);
+}
+
+
+// generic
+const dataGeneric = <any>{};
+
+const validatorGeneric = instance.compile<{ foo: number }>({
+	type: 'object',
+	properties: {
+		foo: {
+			type: 'number',
+		},
+	},
+});
+
+if (validatorGeneric(dataGeneric)) {
+    data = dataGeneric;
 }
 // #endregion compile()
 
@@ -53,8 +74,12 @@ validationError instanceof ajv.ValidationError;
 validationError.ajv === true;
 validationError.validation === true;
 
-ajv.MissingRefError.message("", "");
-const missingRefError: ajv.MissingRefError = new ajv.MissingRefError("", "", "");
+ajv.MissingRefError.message('', '');
+const missingRefError: ajv.MissingRefError = new ajv.MissingRefError(
+	'',
+	'',
+	''
+);
 missingRefError instanceof ajv.MissingRefError;
 missingRefError.missingRef;
 // #endregion
