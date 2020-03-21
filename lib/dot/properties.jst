@@ -215,7 +215,7 @@ var {{=$nextValid}} = true;
       }}
 
       {{# def.iterateProperties }}
-        if ({{= it.usePattern($pProperty) }}.test({{=$key}})) {
+        if ({{=$data}}[{{=$key}}] !== undefined && {{= it.usePattern($pProperty) }}.test({{=$key}})) {
           {{
             $it.errorPath = it.util.getPathExpr(it.errorPath, $key, it.opts.jsonPointers);
             var $passData = $data + '[' + $key + ']';
