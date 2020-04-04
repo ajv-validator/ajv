@@ -8,8 +8,49 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-04/06/
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![Coverage Status](https://coveralls.io/repos/epoberezkin/ajv/badge.svg?branch=master&service=github)](https://coveralls.io/github/epoberezkin/ajv?branch=master)
-[![Greenkeeper badge](https://badges.greenkeeper.io/epoberezkin/ajv.svg)](https://greenkeeper.io/)
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
+[![GitHub Sponsors](https://img.shields.io/badge/$-sponsors-brightgreen)](https://github.com/sponsors/epoberezkin)
+
+## Please sponsor Ajv development
+
+Dear Ajv users! ❤️
+
+I ask you to support the development of Ajv with donations. 🙏
+
+Since 2015 Ajv has become widely used, thanks to your help and contributions:
+
+- **90** contributors 🏗
+- **5,000** dependent npm packages ⚙️
+- **7,000** github stars, from GitHub users [all over the world](https://www.google.com/maps/d/u/0/viewer?mid=1MGRV8ciFUGIbO1l0EKFWNJGYE7iSkDxP&ll=-3.81666561775622e-14%2C4.821737100000007&z=2) ⭐️
+- **5,000,000** dependent repositories on GitHub 🚀
+- **120,000,000** npm downloads per month! 💯
+
+Your donations will fund futher development - small and large improvements, support of the next versions of JSON Schema specification, and, possibly, the code should be migrated to TypeScript to make it more maintainable.
+
+I will greatly appreciate anything you can help with to make it happen:
+
+- a **personal** donation - from $2 ☕️
+- your **company** donation - from $10 🍔
+- a **sponsorship** to get promoted on Ajv or related packages - from $50 💰
+- an **introduction** to a sponsor who would benefit from the promotion on Ajv page 🤝
+
+| ‼️ Please make donations via [my GitHub sponsors page](https://github.com/sponsors/epoberezkin) - **GitHub pledged to DOUBLE them** ‼️ |
+|---|
+
+#### Open Collective sponsors
+
+<a href="https://opencollective.com/ajv"><img src="https://opencollective.com/ajv/individuals.svg?width=890"></a>
+
+<a href="https://opencollective.com/ajv/organization/0/website"><img src="https://opencollective.com/ajv/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/1/website"><img src="https://opencollective.com/ajv/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/2/website"><img src="https://opencollective.com/ajv/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/3/website"><img src="https://opencollective.com/ajv/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/4/website"><img src="https://opencollective.com/ajv/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/5/website"><img src="https://opencollective.com/ajv/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/6/website"><img src="https://opencollective.com/ajv/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/7/website"><img src="https://opencollective.com/ajv/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/8/website"><img src="https://opencollective.com/ajv/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/9/website"><img src="https://opencollective.com/ajv/organization/9/avatar.svg"></a>
 
 
 ## Using version 6
