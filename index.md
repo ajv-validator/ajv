@@ -16,7 +16,7 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-04/06/
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 [![GitHub Sponsors](https://img.shields.io/badge/$-sponsors-brightgreen)](https://github.com/sponsors/epoberezkin)
 
-## Please sponsor Ajv development
+## Please [sponsor Ajv](https://github.com/sponsors/epoberezkin)
 
 Dear Ajv users! ❤️
 
@@ -39,7 +39,7 @@ I will greatly appreciate anything you can help with to make it happen:
 - a **sponsorship** to get promoted on Ajv or related packages - from $50 💰
 - an **introduction** to a sponsor who would benefit from the promotion on Ajv page 🤝
 
-| ‼️ Please make donations via [my GitHub sponsors page](https://github.com/sponsors/epoberezkin) - **GitHub pledged to DOUBLE them** ‼️ |
+| Please [make donations via my GitHub sponsors page](https://github.com/sponsors/epoberezkin)<br>‼️ **GitHub will DOUBLE them** ‼️ |
 |---|
 
 #### Open Collective sponsors
