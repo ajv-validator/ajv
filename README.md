@@ -8,8 +8,49 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-04/06/
 [![Financial Contributors on Open Collective](https://opencollective.com/ajv/all/badge.svg?label=financial+contributors)](https://opencollective.com/ajv) [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![Coverage Status](https://coveralls.io/repos/epoberezkin/ajv/badge.svg?branch=master&service=github)](https://coveralls.io/github/epoberezkin/ajv?branch=master)
-[![Greenkeeper badge](https://badges.greenkeeper.io/epoberezkin/ajv.svg)](https://greenkeeper.io/)
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
+[![GitHub Sponsors](https://img.shields.io/badge/$-sponsors-brightgreen)](https://github.com/sponsors/epoberezkin)
+
+## Please [sponsor Ajv](https://github.com/sponsors/epoberezkin)
+
+Dear Ajv users! ❤️
+
+I ask you to support the development of Ajv with donations. 🙏
+
+Since 2015 Ajv has become widely used, thanks to your help and contributions:
+
+- **90** contributors 🏗
+- **5,000** dependent npm packages ⚙️
+- **7,000** github stars, from GitHub users [all over the world](https://www.google.com/maps/d/u/0/viewer?mid=1MGRV8ciFUGIbO1l0EKFWNJGYE7iSkDxP&ll=-3.81666561775622e-14%2C4.821737100000007&z=2) ⭐️
+- **5,000,000** dependent repositories on GitHub 🚀
+- **120,000,000** npm downloads per month! 💯
+
+Your donations will fund futher development - small and large improvements, support of the next versions of JSON Schema specification, and, possibly, the code should be migrated to TypeScript to make it more maintainable.
+
+I will greatly appreciate anything you can help with to make it happen:
+
+- a **personal** donation - from $2 ☕️
+- your **company** donation - from $10 🍔
+- a **sponsorship** to get promoted on Ajv or related packages - from $50 💰
+- an **introduction** to a sponsor who would benefit from the promotion on Ajv page 🤝
+
+| Please [make donations via my GitHub sponsors page](https://github.com/sponsors/epoberezkin)<br>‼️ **GitHub will DOUBLE them** ‼️ |
+|---|
+
+#### Open Collective sponsors
+
+<a href="https://opencollective.com/ajv"><img src="https://opencollective.com/ajv/individuals.svg?width=890"></a>
+
+<a href="https://opencollective.com/ajv/organization/0/website"><img src="https://opencollective.com/ajv/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/1/website"><img src="https://opencollective.com/ajv/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/2/website"><img src="https://opencollective.com/ajv/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/3/website"><img src="https://opencollective.com/ajv/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/4/website"><img src="https://opencollective.com/ajv/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/5/website"><img src="https://opencollective.com/ajv/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/6/website"><img src="https://opencollective.com/ajv/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/7/website"><img src="https://opencollective.com/ajv/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/8/website"><img src="https://opencollective.com/ajv/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/9/website"><img src="https://opencollective.com/ajv/organization/9/avatar.svg"></a>
 
 
 ## Using version 6
@@ -131,7 +172,11 @@ Try it in the Node.js REPL: https://tonicdev.com/npm/ajv
 The fastest validation call:
 
 ```javascript
+// Node.js require:
 var Ajv = require('ajv');
+// or ESM/TypeScript import
+import Ajv from 'ajv';
+
 var ajv = new Ajv(); // options can be passed, e.g. {allErrors: true}
 var validate = ajv.compile(schema);
 var valid = validate(data);
@@ -164,6 +209,10 @@ Ajv compiles schemas to functions and caches them in all cases (using schema ser
 The best performance is achieved when using compiled functions returned by `compile` or `getSchema` methods (there is no additional function call).
 
 __Please note__: every time a validation function or `ajv.validate` are called `errors` property is overwritten. You need to copy `errors` array reference to another variable if you want to use it later (e.g., in the callback). See [Validation errors](#validation-errors)
+
+__Note for TypeScript users__: `ajv` provides its own TypeScript declarations
+out of the box, so you don't need to install the deprecated `@types/ajv`
+module.
 
 
 ## Using in browser
@@ -328,7 +377,7 @@ __Please note__:
 
 ## $data reference
 
-With `$data` option you can use values from the validated data as the values for the schema keywords. See [proposal](https://github.com/json-schema/json-schema/wiki/$data-(v5-proposal)) for more information about how it works.
+With `$data` option you can use values from the validated data as the values for the schema keywords. See [proposal](https://github.com/json-schema-org/json-schema-spec/issues/51) for more information about how it works.
 
 `$data` reference is supported in the keywords: const, enum, format, maximum/minimum, exclusiveMaximum / exclusiveMinimum, maxLength / minLength, maxItems / minItems, maxProperties / minProperties, formatMaximum / formatMinimum, formatExclusiveMaximum / formatExclusiveMinimum, multipleOf, pattern, required, uniqueItems.
 
@@ -1144,12 +1193,13 @@ Defaults:
   - `"full"` - more restrictive and slow validation. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
   - `false` - ignore all format keywords.
 - _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
+- _keywords_: an object with custom keywords. Keys and values will be passed to `addKeyword` method.
 - _unknownFormats_: handling of unknown formats. Option values:
   - `true` (default) - if an unknown format is encountered the exception is thrown during schema compilation. If `format` keyword value is [$data reference](#data-reference) and it is unknown the validation will fail.
   - `[String]` - an array of unknown format names that will be ignored. This option can be used to allow usage of third party schemas with format(s) for which you don't have definitions, but still fail if another unknown format is used. If `format` keyword value is [$data reference](#data-reference) and it is not in this array the validation will fail.
   - `"ignore"` - to log warning during schema compilation and always pass validation (the default behaviour in versions before 5.0.0). This option is not recommended, as it allows to mistype format name and it won't be validated without any error message. This behaviour is required by JSON Schema specification.
 - _schemas_: an array or object of schemas that will be added to the instance. In case you pass the array the schemas must have IDs in them. When the object is passed the method `addSchema(value, key)` will be called for each schema in this object.
-- _logger_: sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. Option values:
+- _logger_: sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. See [Error logging](#error-logging). Option values:
   - custom logger - it should have methods `log`, `warn` and `error`. If any of these methods is missing an exception will be thrown.
   - `false` - logging is disabled.
 
@@ -1287,6 +1337,28 @@ Properties of `params` object in errors depend on the keyword that failed valida
 - custom keywords (in case keyword definition doesn't create errors) - property `keyword` (the keyword name).
 
 
+### Error logging
+
+Using the `logger` option when initiallizing Ajv will allow you to define custom logging. Here you can build upon the exisiting logging. The use of other logging packages is supported as long as the package or its associated wrapper exposes the required methods. If any of the required methods are missing an exception will be thrown.
+- **Required Methods**: `log`, `warn`, `error`
+
+```javascript
+var otherLogger = new OtherLogger();
+var ajv = new Ajv({
+  logger: {
+    log: console.log.bind(console),
+    warn: function warn() {
+      otherLogger.logWarn.apply(otherLogger, arguments);
+    },
+    error: function error() {
+      otherLogger.logError.apply(otherLogger, arguments);
+      console.error.apply(console, arguments);
+    }
+  }
+});
+```
+
+
 ## Plugins
 
 Ajv can be extended with plugins that add custom keywords, formats or functions to process generated code. When such plugin is published as npm package it is recommended that it follows these conventions:
@@ -1309,7 +1381,7 @@ If you have published a useful plugin please submit a PR to add it to the next s
 - [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) - plugin with custom validation keywords (select, typeof, etc.)
 - [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) - plugin with keywords $merge and $patch
 - [ajv-pack](https://github.com/epoberezkin/ajv-pack) - produces a compact module exporting validation functions
-
+- [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) - format validators for draft2019 that aren't already included in ajv (ie. `idn-hostname`, `idn-email`, `iri`, `iri-reference` and `duration`).
 
 ## Some packages using Ajv
 

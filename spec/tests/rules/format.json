@@ -83,9 +83,54 @@
         "valid": true
       },
       {
+        "description": "valid hostname - trailing dot",
+        "data": "123.example.com.",
+        "valid": true
+      },
+      {
+        "description": "valid hostname - single label",
+        "data": "localhost",
+        "valid": true
+      },
+      {
+        "description": "valid hostname - single label with trailing dot",
+        "data": "localhost.",
+        "valid": true
+      },
+      {
         "description": "valid hostname #312",
         "data": "lead-routing-qa.lvuucj.0001.use1.cache.amazonaws.com",
         "valid": true
+      },
+      {
+        "description": "valid hostname - maximum length label (63 chars)",
+        "data": "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.example.com",
+        "valid": true
+      },
+      {
+        "description": "invalid hostname - label too long (64 chars)",
+        "data": "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl.example.com",
+        "valid": false
+      },
+      {
+        "description": "valid hostname - maximum length hostname (255 octets)",
+        "data": "abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxy.example.com",
+        "valid": true
+      },
+      {
+        "description": "valid hostname - maximum length hostname (255 octets) with trailing dot",
+        "data": "abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxy.example.com.",
+        "valid": true
+      },
+      {
+        "description": "invalid hostname - hostname too long (256 octets)",
+        "data": "abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.example.com",
+        "valid": false
+      },
+      {
+        "description": "invalid hostname - hostname too long (256 octets) with trailing dot",
+        "data": "abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.example.com.",
+        "valid": false
       }
     ]
   },
