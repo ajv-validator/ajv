@@ -85,7 +85,7 @@
     "json-schema-test": "^2.0.0",
     "karma": "^4.0.1",
     "karma-chrome-launcher": "^3.0.0",
-    "karma-mocha": "^1.1.1",
+    "karma-mocha": "^2.0.0",
     "karma-sauce-launcher": "^2.0.0",
     "mocha": "^7.0.1",
     "nyc": "^15.0.0",
