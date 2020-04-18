@@ -319,7 +319,7 @@ The following formats are implemented for string validation with "format" keywor
 
 __Please note__: JSON Schema draft-07 also defines formats `iri`, `iri-reference`, `idn-hostname` and `idn-email` for URLs, hostnames and emails with international characters. Ajv does not implement these formats. If you create Ajv plugin that implements them please make a PR to mention this plugin here.
 
-There are two modes of format validation: `fast` and `full`. This mode affects formats `date`, `time`, `date-time`, `uri`, `uri-reference`, `email`, and `hostname`. See [Options](#options) for details.
+There are two modes of format validation: `fast` and `full`. This mode affects formats `date`, `time`, `date-time`, `uri`, `uri-reference`, and `email`. See [Options](#options) for details.
 
 You can add additional formats and replace any of the formats above using [addFormat](#api-addformat) method.
 
