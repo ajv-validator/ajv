@@ -1169,7 +1169,7 @@ Defaults:
   errorDataPath:    'object', // deprecated
   messages:         true,
   sourceCode:       false,
-  processCode:      undefined, // function (str: string): string {}
+  processCode:      undefined, // function (str: string, schema: object): string {}
   cache:            new Cache,
   serialize:        undefined
 }

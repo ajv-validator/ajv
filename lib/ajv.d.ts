@@ -196,7 +196,7 @@ declare namespace ajv {
     errorDataPath?: string,
     messages?: boolean;
     sourceCode?: boolean;
-    processCode?: (code: string) => string;
+    processCode?: (code: string, schema: object) => string;
     cache?: object;
     logger?: CustomLogger | false;
     nullable?: boolean;
