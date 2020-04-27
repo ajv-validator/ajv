@@ -98,5 +98,9 @@
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/ajv"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/epoberezkin"
   }
 }
