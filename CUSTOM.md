@@ -294,7 +294,7 @@ The first parameter passed to inline keyword compilation function (and the 3rd p
 - _opts_ - Ajv instance option. You should not be changing them.
 - _formats_ - all formats available in Ajv instance, including the custom ones.
 - _compositeRule_ - boolean indicating that the current schema is inside the compound keyword where failing some rule doesn't mean validation failure (`anyOf`, `oneOf`, `not`, `if` in `switch`). This flag is used to determine whether you can return validation result immediately after any error in case the option `allErrors` is not `true. You only need to do it if you have many steps in your keywords and potentially can define multiple errors.
-- _validate_ - the function you need to use to compile subschemas in your keywords (see the [implementation](https://github.com/epoberezkin/ajv/blob/master/lib/dot/v5/switch.jst) of `switch` keyword for example).
+- _validate_ - the function you need to use to compile subschemas in your keywords (see the [implementation](https://github.com/epoberezkin/ajv-keywords/blob/master/keywords/dot/switch.jst) of `switch` keyword for example).
 - _util_ - [Ajv utilities](#ajv-utilities) you can use in your inline compilation functions.
 - _self_ - Ajv instance.
 
