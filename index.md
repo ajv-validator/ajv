@@ -115,7 +115,8 @@ ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
 - [Plugins](#plugins)
 - [Related packages](#related-packages)
 - [Some packages using Ajv](#some-packages-using-ajv)
-- [Tests, Contributing, History, Support, License](#tests)
+- [Tests, Contributing, Changes history](#tests)
+- [Support, Code of conduct, License](#open-source-software-support)
 
 
 ## Performance
@@ -1445,6 +1446,13 @@ __Please note__: [Changes in version 6.0.0](https://github.com/epoberezkin/ajv/r
 [Version 3.0.0](https://github.com/epoberezkin/ajv/releases/tag/3.0.0).
 
 [Version 2.0.0](https://github.com/epoberezkin/ajv/releases/tag/2.0.0).
+
+
+## Code of conduct
+
+Please review and follow the [Code of conduct](https://github.com/epoberezkin/ajv/blob/master/CODE_OF_CONDUCT.md).
+
+Please report any unacceptable behaviour to ajv.validator@gmail.com - it will be reviewed by the project team.
 
 
 ## Open-source software support
