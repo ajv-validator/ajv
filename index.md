@@ -16,11 +16,18 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-04/06/
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 [![GitHub Sponsors](https://img.shields.io/badge/$-sponsors-brightgreen)](https://github.com/sponsors/epoberezkin)
 
-## Please [sponsor Ajv](https://github.com/sponsors/epoberezkin)
 
-Dear Ajv users! ❤️
+## Please [sponsor Ajv development](https://github.com/sponsors/epoberezkin)
 
-I ask you to support the development of Ajv with donations. 🙏
+I will get straight to the point - I need your support to ensure that the development of Ajv continues.
+
+I have developed Ajv for 5 years in my free time, but it is not  sustainable. I'd appreciate if you consider supporting its further development with donations:
+- [GitHub sponsors page](https://github.com/sponsors/epoberezkin) (GitHub will match it)
+- [Ajv Open Collective️](https://opencollective.com/ajv)
+
+There are many small and large improvements that are long due, including the support of the next versions of JSON Schema specification, improving website and documentation, and making Ajv more modular and maintainable to address its limitations - what Ajv needs to evolve is much more than what I can contribute in my free time.
+
+I would also really appreciate any advice you could give on how to raise funds for Ajv development - whether some suitable open-source fund I could apply to or some sponsor I should approach.
 
 Since 2015 Ajv has become widely used, thanks to your help and contributions:
 
@@ -30,17 +37,10 @@ Since 2015 Ajv has become widely used, thanks to your help and contributions:
 - **5,000,000** dependent repositories on GitHub 🚀
 - **120,000,000** npm downloads per month! 💯
 
-Your donations will fund futher development - small and large improvements, support of the next versions of JSON Schema specification, and, possibly, the code should be migrated to TypeScript to make it more maintainable.
+I believe it would benefit all Ajv users to help put together the fund that will be used for its further development - it would allow to bring some additional maintainers to the project.
 
-I will greatly appreciate anything you can help with to make it happen:
+Thank you
 
-- a **personal** donation - from $2 ☕️
-- your **company** donation - from $10 🍔
-- a **sponsorship** to get promoted on Ajv or related packages - from $50 💰
-- an **introduction** to a sponsor who would benefit from the promotion on Ajv page 🤝
-
-| Please [make donations via my GitHub sponsors page](https://github.com/sponsors/epoberezkin)<br>‼️ **GitHub will DOUBLE them** ‼️ |
-|---|
 
 #### Open Collective sponsors
 
