@@ -57,7 +57,7 @@ Thank you
 
 [JSON Schema draft-07](http://json-schema.org/latest/json-schema-validation.html) is published.
 
-[Ajv version 6.0.0](https://github.com/epoberezkin/ajv/releases/tag/v6.0.0) that supports draft-07 is released. It may require either migrating your schemas or updating your code (to continue using draft-04 and v5 schemas, draft-06 schemas will be supported without changes).
+[Ajv version 6.0.0](https://github.com/ajv-validator/ajv/releases/tag/v6.0.0) that supports draft-07 is released. It may require either migrating your schemas or updating your code (to continue using draft-04 and v5 schemas, draft-06 schemas will be supported without changes).
 
 __Please note__: To use Ajv with draft-06 schemas you need to explicitly add the meta-schema to the validator instance:
 
@@ -80,7 +80,7 @@ ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
 - [Performance](#performance)
 - [Features](#features)
 - [Getting started](#getting-started)
-- [Frequently Asked Questions](https://github.com/epoberezkin/ajv/blob/master/FAQ.md)
+- [Frequently Asked Questions](https://github.com/ajv-validator/ajv/blob/master/FAQ.md)
 - [Using in browser](#using-in-browser)
 - [Command line interface](#command-line-interface)
 - Validation
@@ -134,7 +134,7 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 ## Features
 
 - Ajv implements full JSON Schema [draft-06/07](http://json-schema.org/) and draft-04 standards:
-  - all validation keywords (see [JSON Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md))
+  - all validation keywords (see [JSON Schema validation keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md))
   - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
   - support of circular references between schemas
   - correct string lengths for strings with unicode pairs (can be turned off)
@@ -144,14 +144,14 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 - [asynchronous loading](#asynchronous-schema-compilation) of referenced schemas during compilation
 - "All errors" validation mode with [option allErrors](#options)
 - [error messages with parameters](#validation-errors) describing error reasons to allow creating custom error messages
-- i18n error messages support with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package
+- i18n error messages support with [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) package
 - [filtering data](#filtering-data) from additional properties
 - [assigning defaults](#assigning-defaults) to missing properties and items
 - [coercing data](#coercing-data-types) to the types specified in `type` keywords
 - [custom keywords](#defining-custom-keywords)
 - draft-06/07 keywords `const`, `contains`, `propertyNames` and `if/then/else`
 - draft-06 boolean schemas (`true`/`false` as a schema to always pass/fail).
-- keywords `switch`, `patternRequired`, `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` from [JSON Schema extension proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package
+- keywords `switch`, `patternRequired`, `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` from [JSON Schema extension proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package
 - [$data reference](#data-reference) to use values from the validated data as values for the schema keywords
 - [asynchronous validation](#asynchronous-validation) of custom formats and keywords
 
@@ -235,15 +235,15 @@ Ajv is tested with these browsers:
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/epoberezkin.svg)](https://saucelabs.com/u/epoberezkin)
 
-__Please note__: some frameworks, e.g. Dojo, may redefine global require in such way that is not compatible with CommonJS module format. In such case Ajv bundle has to be loaded before the framework and then you can use global Ajv (see issue [#234](https://github.com/epoberezkin/ajv/issues/234)).
+__Please note__: some frameworks, e.g. Dojo, may redefine global require in such way that is not compatible with CommonJS module format. In such case Ajv bundle has to be loaded before the framework and then you can use global Ajv (see issue [#234](https://github.com/ajv-validator/ajv/issues/234)).
 
 
 ## Command line interface
 
-CLI is available as a separate npm package [ajv-cli](https://github.com/jessedc/ajv-cli). It supports:
+CLI is available as a separate npm package [ajv-cli](https://github.com/ajv-validator/ajv-cli). It supports:
 
 - compiling JSON Schemas to test their validity
-- BETA: generating standalone module exporting a validation function to be used without Ajv (using [ajv-pack](https://github.com/epoberezkin/ajv-pack))
+- BETA: generating standalone module exporting a validation function to be used without Ajv (using [ajv-pack](https://github.com/ajv-validator/ajv-pack))
 - migrate schemas to draft-07 (using [json-schema-migrate](https://github.com/epoberezkin/json-schema-migrate))
 - validating data file(s) against JSON Schema
 - testing expected validity of data against JSON Schema
@@ -258,20 +258,20 @@ CLI is available as a separate npm package [ajv-cli](https://github.com/jessedc/
 
 Ajv supports all validation keywords from draft-07 of JSON Schema standard:
 
-- [type](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#type)
-- [for numbers](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-numbers) - maximum, minimum, exclusiveMaximum, exclusiveMinimum, multipleOf
-- [for strings](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-strings) - maxLength, minLength, pattern, format
-- [for arrays](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-arrays) - maxItems, minItems, uniqueItems, items, additionalItems, [contains](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#contains)
-- [for objects](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-objects) - maxProperties, minProperties, required, properties, patternProperties, additionalProperties, dependencies, [propertyNames](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#propertynames)
-- [for all types](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#keywords-for-all-types) - enum, [const](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#const)
-- [compound keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#compound-keywords) - not, oneOf, anyOf, allOf, [if/then/else](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#ifthenelse)
+- [type](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#type)
+- [for numbers](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#keywords-for-numbers) - maximum, minimum, exclusiveMaximum, exclusiveMinimum, multipleOf
+- [for strings](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#keywords-for-strings) - maxLength, minLength, pattern, format
+- [for arrays](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#keywords-for-arrays) - maxItems, minItems, uniqueItems, items, additionalItems, [contains](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#contains)
+- [for objects](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#keywords-for-objects) - maxProperties, minProperties, required, properties, patternProperties, additionalProperties, dependencies, [propertyNames](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#propertynames)
+- [for all types](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#keywords-for-all-types) - enum, [const](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#const)
+- [compound keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#compound-keywords) - not, oneOf, anyOf, allOf, [if/then/else](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#ifthenelse)
 
-With [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package Ajv also supports validation keywords from [JSON Schema extension proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) for JSON Schema standard:
+With [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package Ajv also supports validation keywords from [JSON Schema extension proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) for JSON Schema standard:
 
-- [patternRequired](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#patternrequired-proposed) - like `required` but with patterns that some property should match.
-- [formatMaximum, formatMinimum, formatExclusiveMaximum, formatExclusiveMinimum](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-proposed) - setting limits for date, time, etc.
+- [patternRequired](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#patternrequired-proposed) - like `required` but with patterns that some property should match.
+- [formatMaximum, formatMinimum, formatExclusiveMaximum, formatExclusiveMinimum](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-proposed) - setting limits for date, time, etc.
 
-See [JSON Schema validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md) for more details.
+See [JSON Schema validation keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md) for more details.
 
 
 ## Annotation keywords
@@ -321,7 +321,7 @@ You can add additional formats and replace any of the formats above using [addFo
 
 The option `unknownFormats` allows changing the default behaviour when an unknown format is encountered. In this case Ajv can either fail schema compilation (default) or ignore it (default in versions before 5.0.0). You also can whitelist specific format(s) to be ignored. See [Options](#options) for details.
 
-You can find regular expressions used for format validation and the sources that were used in [formats.js](https://github.com/epoberezkin/ajv/blob/master/lib/compile/formats.js).
+You can find regular expressions used for format validation and the sources that were used in [formats.js](https://github.com/ajv-validatorv/ajv/blob/master/lib/compile/formats.js).
 
 
 ## <a name="ref"></a>Combining schemas with $ref
@@ -430,7 +430,7 @@ var validData = {
 
 ## $merge and $patch keywords
 
-With the package [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) you can use the keywords `$merge` and `$patch` that allow extending JSON Schemas with patches using formats [JSON Merge Patch (RFC 7396)](https://tools.ietf.org/html/rfc7396) and [JSON Patch (RFC 6902)](https://tools.ietf.org/html/rfc6902).
+With the package [ajv-merge-patch](https://github.com/ajv-validator/ajv-merge-patch) you can use the keywords `$merge` and `$patch` that allow extending JSON Schemas with patches using formats [JSON Merge Patch (RFC 7396)](https://tools.ietf.org/html/rfc7396) and [JSON Patch (RFC 6902)](https://tools.ietf.org/html/rfc6902).
 
 To add keywords `$merge` and `$patch` to Ajv instance use this code:
 
@@ -489,7 +489,7 @@ The schemas above are equivalent to this schema:
 
 The properties `source` and `with` in the keywords `$merge` and `$patch` can use absolute or relative `$ref` to point to other schemas previously added to the Ajv instance or to the fragments of the current schema.
 
-See the package [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) for more information.
+See the package [ajv-merge-patch](https://github.com/ajv-validator/ajv-merge-patch) for more information.
 
 
 ## Defining custom keywords
@@ -537,9 +537,9 @@ console.log(validate(2)); // false
 console.log(validate(4)); // false
 ```
 
-Several custom keywords (typeof, instanceof, range and propertyNames) are defined in [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package - they can be used for your schemas and as a starting point for your own custom keywords.
+Several custom keywords (typeof, instanceof, range and propertyNames) are defined in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package - they can be used for your schemas and as a starting point for your own custom keywords.
 
-See [Defining custom keywords](https://github.com/epoberezkin/ajv/blob/master/CUSTOM.md) for more details.
+See [Defining custom keywords](https://github.com/ajv-validator/ajv/blob/master/CUSTOM.md) for more details.
 
 
 ## Asynchronous schema compilation
@@ -638,7 +638,7 @@ validate({ userId: 1, postId: 19 })
 
 ### Using transpilers with asynchronous validation functions.
 
-[ajv-async](https://github.com/epoberezkin/ajv-async) uses [nodent](https://github.com/MatAtBread/nodent) to transpile async functions. To use another transpiler you should separately install it (or load its bundle in the browser).
+[ajv-async](https://github.com/ajv-validator/ajv-async) uses [nodent](https://github.com/MatAtBread/nodent) to transpile async functions. To use another transpiler you should separately install it (or load its bundle in the browser).
 
 
 #### Using nodent
@@ -682,7 +682,7 @@ Ajv treats JSON schemas as trusted as your application code. This security model
 
 If your schemas are received from untrusted sources (or generated from untrusted data) there are several scenarios you need to prevent:
 - compiling schemas can cause stack overflow (if they are too deep)
-- compiling schemas can be slow (e.g. [#557](https://github.com/epoberezkin/ajv/issues/557))
+- compiling schemas can be slow (e.g. [#557](https://github.com/ajv-validator/ajv/issues/557))
 - validating certain data can be slow
 
 It is difficult to predict all the scenarios, but at the very least it may help to limit the size of untrusted schemas (e.g. limit JSON string length) and also the maximum schema object depth (that can be high for relatively small JSON strings). You also may want to mitigate slow regular expressions in `pattern` and `patternProperties` keywords.
@@ -692,7 +692,7 @@ Regardless the measures you take, using untrusted schemas increases security ris
 
 ##### Circular references in JavaScript objects
 
-Ajv does not support schemas and validated data that have circular references in objects. See [issue #802](https://github.com/epoberezkin/ajv/issues/802).
+Ajv does not support schemas and validated data that have circular references in objects. See [issue #802](https://github.com/ajv-validator/ajv/issues/802).
 
 An attempt to compile such schemas or validate such data would cause stack overflow (or will not complete in case of asynchronous validation). Depending on the parser you use, untrusted data can lead to circular references.
 
@@ -707,7 +707,7 @@ Some keywords in JSON Schemas can lead to very slow validation for certain data.
 
 __Please note__: The suggestions above to prevent slow validation would only work if you do NOT use `allErrors: true` in production code (using it would continue validation after validation errors).
 
-You can validate your JSON schemas against [this meta-schema](https://github.com/epoberezkin/ajv/blob/master/lib/refs/json-schema-secure.json) to check that these recommendations are followed:
+You can validate your JSON schemas against [this meta-schema](https://github.com/ajv-validator/ajv/blob/master/lib/refs/json-schema-secure.json) to check that these recommendations are followed:
 
 ```javascript
 const isSchemaSecure = ajv.compile(require('ajv/lib/refs/json-schema-secure.json'));
@@ -728,7 +728,7 @@ Certain regular expressions can lead to the exponential evaluation time even wit
 
 Please assess the regular expressions you use in the schemas on their vulnerability to this attack - see [safe-regex](https://github.com/substack/safe-regex), for example.
 
-__Please note__: some formats that Ajv implements use [regular expressions](https://github.com/epoberezkin/ajv/blob/master/lib/compile/formats.js) that can be vulnerable to ReDoS attack, so if you use Ajv to validate data from untrusted sources __it is strongly recommended__ to consider the following:
+__Please note__: some formats that Ajv implements use [regular expressions](https://github.com/ajv-validator/ajv/blob/master/lib/compile/formats.js) that can be vulnerable to ReDoS attack, so if you use Ajv to validate data from untrusted sources __it is strongly recommended__ to consider the following:
 
 - making assessment of "format" implementations in Ajv.
 - using `format: 'fast'` option that simplifies some of the regular expressions (although it does not guarantee that they are safe).
@@ -808,7 +808,7 @@ The intention of the schema above is to allow objects with either the string pro
 
 With the option `removeAdditional: true` the validation will pass for the object `{ "foo": "abc"}` but will fail for the object `{"bar": 1}`. It happens because while the first subschema in `oneOf` is validated, the property `bar` is removed because it is an additional property according to the standard (because it is not included in `properties` keyword in the same schema).
 
-While this behaviour is unexpected (issues [#129](https://github.com/epoberezkin/ajv/issues/129), [#134](https://github.com/epoberezkin/ajv/issues/134)), it is correct. To have the expected behaviour (both objects are allowed and additional properties are removed) the schema has to be refactored in this way:
+While this behaviour is unexpected (issues [#129](https://github.com/ajv-validator/ajv/issues/129), [#134](https://github.com/ajv-validator/ajv/issues/134)), it is correct. To have the expected behaviour (both objects are allowed and additional properties are removed) the schema has to be refactored in this way:
 
 ```json
 {
@@ -882,7 +882,7 @@ console.log(data); // [ 1, "foo" ]
 `default` keywords in other cases are ignored:
 
 - not in `properties` or `items` subschemas
-- in schemas inside `anyOf`, `oneOf` and `not` (see [#42](https://github.com/epoberezkin/ajv/issues/42))
+- in schemas inside `anyOf`, `oneOf` and `not` (see [#42](https://github.com/ajv-validator/ajv/issues/42))
 - in `if` subschema of `switch` keyword
 - in schemas generated by custom macro keywords
 
@@ -940,7 +940,7 @@ console.log(data); // { "foo": [1], "bar": false }
 
 The coercion rules, as you can see from the example, are different from JavaScript both to validate user input as expected and to have the coercion reversible (to correctly validate cases where different types are defined in subschemas of "anyOf" and other compound keywords).
 
-See [Coercion rules](https://github.com/epoberezkin/ajv/blob/master/COERCION.md) for details.
+See [Coercion rules](https://github.com/ajv-validator/ajv/blob/master/COERCION.md) for details.
 
 
 ## API
@@ -1058,9 +1058,9 @@ Function should return validation result as `true` or `false`.
 If object is passed it should have properties `validate`, `compare` and `async`:
 
 - _validate_: a string, RegExp or a function as described above.
-- _compare_: an optional comparison function that accepts two strings and compares them according to the format meaning. This function is used with keywords `formatMaximum`/`formatMinimum` (defined in [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package). It should return `1` if the first value is bigger than the second value, `-1` if it is smaller and `0` if it is equal.
+- _compare_: an optional comparison function that accepts two strings and compares them according to the format meaning. This function is used with keywords `formatMaximum`/`formatMinimum` (defined in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package). It should return `1` if the first value is bigger than the second value, `-1` if it is smaller and `0` if it is equal.
 - _async_: an optional `true` value if `validate` is an asynchronous function; in this case it should return a promise that resolves with a value `true` or `false`.
-- _type_: an optional type of data that the format applies to. It can be `"string"` (default) or `"number"` (see https://github.com/epoberezkin/ajv/issues/291#issuecomment-259923858). If the type of data is different, the validation will pass.
+- _type_: an optional type of data that the format applies to. It can be `"string"` (default) or `"number"` (see https://github.com/ajv-validator/ajv/issues/291#issuecomment-259923858). If the type of data is different, the validation will pass.
 
 Custom formats can be also added via `formats` option.
 
@@ -1234,7 +1234,7 @@ Defaults:
   - `true` - insert defaults by value (object literal is used).
   - `"empty"` - in addition to missing or undefined, use defaults for properties and items that are equal to `null` or `""` (an empty string).
   - `"shared"` (deprecated) - insert defaults by reference. If the default is an object, it will be shared by all instances of validated data. If you modify the inserted default in the validated data, it will be modified in the schema as well.
-- _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](#coercing-data-types) and [coercion rules](https://github.com/epoberezkin/ajv/blob/master/COERCION.md). Option values:
+- _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](#coercing-data-types) and [coercion rules](https://github.com/ajv-validator/ajv/blob/master/COERCION.md). Option values:
   - `false` (default) - no type coercion.
   - `true` - coerce scalar data types.
   - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
@@ -1254,7 +1254,7 @@ Defaults:
 
 ##### Asynchronous validation options
 
-- _transpile_: Requires [ajv-async](https://github.com/epoberezkin/ajv-async) package. It determines whether Ajv transpiles compiled asynchronous validation function. Option values:
+- _transpile_: Requires [ajv-async](https://github.com/ajv-validator/ajv-async) package. It determines whether Ajv transpiles compiled asynchronous validation function. Option values:
   - `undefined` (default) - transpile with [nodent](https://github.com/MatAtBread/nodent) if async functions are not supported.
   - `true` - always transpile with nodent.
   - `false` - do not transpile; if async functions are not supported an exception will be thrown.
@@ -1275,13 +1275,13 @@ Defaults:
 - _passContext_: pass validation context to custom keyword functions. If this option is `true` and you pass some context to the compiled validation function with `validate.call(context, data)`, the `context` will be available as `this` in your custom keywords. By default `this` is Ajv instance.
 - _loopRequired_: by default `required` keyword is compiled into a single expression (or a sequence of statements in `allErrors` mode). In case of a very large number of properties in this keyword it may result in a very big validation function. Pass integer to set the number of properties above which `required` keyword will be validated in a loop - smaller validation function size but also worse performance.
 - _ownProperties_: by default Ajv iterates over all enumerable object properties; when this option is `true` only own enumerable object properties (i.e. found directly on the object rather than on its prototype) are iterated. Contributed by @mbroadst.
-- _multipleOfPrecision_: by default `multipleOf` keyword is validated by comparing the result of division with parseInt() of that result. It works for dividers that are bigger than 1. For small dividers such as 0.01 the result of the division is usually not integer (even when it should be integer, see issue [#84](https://github.com/epoberezkin/ajv/issues/84)). If you need to use fractional dividers set this option to some positive integer N to have `multipleOf` validated using this formula: `Math.abs(Math.round(division) - division) < 1e-N` (it is slower but allows for float arithmetics deviations).
+- _multipleOfPrecision_: by default `multipleOf` keyword is validated by comparing the result of division with parseInt() of that result. It works for dividers that are bigger than 1. For small dividers such as 0.01 the result of the division is usually not integer (even when it should be integer, see issue [#84](https://github.com/ajv-validator/ajv/issues/84)). If you need to use fractional dividers set this option to some positive integer N to have `multipleOf` validated using this formula: `Math.abs(Math.round(division) - division) < 1e-N` (it is slower but allows for float arithmetics deviations).
 - _errorDataPath_ (deprecated): set `dataPath` to point to 'object' (default) or to 'property' when validating keywords `required`, `additionalProperties` and `dependencies`.
-- _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when custom messages are used (e.g. with [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)).
+- _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when custom messages are used (e.g. with [ajv-i18n](https://github.com/ajv-validator/ajv-i18n)).
 - _sourceCode_: add `sourceCode` property to validating function (for debugging; this code can be different from the result of toString call).
 - _processCode_: an optional function to process generated code before it is passed to Function constructor. It can be used to either beautify (the validating function is generated without line-breaks) or to transpile code. Starting from version 5.0.0 this option replaced options:
   - `beautify` that formatted the generated function using [js-beautify](https://github.com/beautify-web/js-beautify). If you want to beautify the generated code pass a function calling `require('js-beautify').js_beautify` as `processCode: code => js_beautify(code)`.
-  - `transpile` that transpiled asynchronous validation function. You can still use `transpile` option with [ajv-async](https://github.com/epoberezkin/ajv-async) package. See [Asynchronous validation](#asynchronous-validation) for more information.
+  - `transpile` that transpiled asynchronous validation function. You can still use `transpile` option with [ajv-async](https://github.com/ajv-validator/ajv-async) package. See [Asynchronous validation](#asynchronous-validation) for more information.
 - _cache_: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache [sacjs](https://github.com/epoberezkin/sacjs) can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods `put(key, value)`, `get(key)`, `del(key)` and `clear()`.
 - _serialize_: an optional function to serialize schema to cache key. Pass `false` to use schema itself as a key (e.g., if WeakMap used as a cache). By default [fast-json-stable-stringify](https://github.com/epoberezkin/fast-json-stable-stringify) is used.
 
@@ -1298,7 +1298,7 @@ Each error is an object with the following properties:
 - _keyword_: validation keyword.
 - _dataPath_: the path to the part of the data that was validated. By default `dataPath` uses JavaScript property access notation (e.g., `".prop[1].subProp"`). When the option `jsonPointers` is true (see [Options](#options)) `dataPath` will be set using JSON pointer standard (e.g., `"/prop/1/subProp"`).
 - _schemaPath_: the path (JSON-pointer as a URI fragment) to the schema of the keyword that failed validation.
-- _params_: the object with the additional information about error that can be used to create custom error messages (e.g., using [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) package). See below for parameters set by all keywords.
+- _params_: the object with the additional information about error that can be used to create custom error messages (e.g., using [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) package). See below for parameters set by all keywords.
 - _message_: the standard error message (can be excluded with option `messages` set to false).
 - _schema_: the schema of the keyword (added with `verbose` option).
 - _parentSchema_: the schema containing the keyword (added with `verbose` option)
@@ -1373,15 +1373,15 @@ If you have published a useful plugin please submit a PR to add it to the next s
 
 ## Related packages
 
-- [ajv-async](https://github.com/epoberezkin/ajv-async) - plugin to configure async validation mode
+- [ajv-async](https://github.com/ajv-validator/ajv-async) - plugin to configure async validation mode
 - [ajv-bsontype](https://github.com/BoLaMN/ajv-bsontype) - plugin to validate mongodb's bsonType formats
 - [ajv-cli](https://github.com/jessedc/ajv-cli) - command line interface
-- [ajv-errors](https://github.com/epoberezkin/ajv-errors) - plugin for custom error messages
-- [ajv-i18n](https://github.com/epoberezkin/ajv-i18n) - internationalised error messages
-- [ajv-istanbul](https://github.com/epoberezkin/ajv-istanbul) - plugin to instrument generated validation code to measure test coverage of your schemas
-- [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) - plugin with custom validation keywords (select, typeof, etc.)
-- [ajv-merge-patch](https://github.com/epoberezkin/ajv-merge-patch) - plugin with keywords $merge and $patch
-- [ajv-pack](https://github.com/epoberezkin/ajv-pack) - produces a compact module exporting validation functions
+- [ajv-errors](https://github.com/ajv-validator/ajv-errors) - plugin for custom error messages
+- [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) - internationalised error messages
+- [ajv-istanbul](https://github.com/ajv-validator/ajv-istanbul) - plugin to instrument generated validation code to measure test coverage of your schemas
+- [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) - plugin with custom validation keywords (select, typeof, etc.)
+- [ajv-merge-patch](https://github.com/ajv-validator/ajv-merge-patch) - plugin with keywords $merge and $patch
+- [ajv-pack](https://github.com/ajv-validator/ajv-pack) - produces a compact module exporting validation functions
 - [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) - format validators for draft2019 that aren't already included in ajv (ie. `idn-hostname`, `idn-email`, `iri`, `iri-reference` and `duration`).
 
 ## Some packages using Ajv
@@ -1419,33 +1419,33 @@ npm test
 
 ## Contributing
 
-All validation functions are generated using doT templates in [dot](https://github.com/epoberezkin/ajv/tree/master/lib/dot) folder. Templates are precompiled so doT is not a run-time dependency.
+All validation functions are generated using doT templates in [dot](https://github.com/ajv-validator/ajv/tree/master/lib/dot) folder. Templates are precompiled so doT is not a run-time dependency.
 
-`npm run build` - compiles templates to [dotjs](https://github.com/epoberezkin/ajv/tree/master/lib/dotjs) folder.
+`npm run build` - compiles templates to [dotjs](https://github.com/ajv-validator/ajv/tree/master/lib/dotjs) folder.
 
 `npm run watch` - automatically compiles templates when files in dot folder change
 
-Please see [Contributing guidelines](https://github.com/epoberezkin/ajv/blob/master/CONTRIBUTING.md)
+Please see [Contributing guidelines](https://github.com/ajv-validator/ajv/blob/master/CONTRIBUTING.md)
 
 
 ## Changes history
 
-See https://github.com/epoberezkin/ajv/releases
+See https://github.com/ajv-validator/ajv/releases
 
-__Please note__: [Changes in version 6.0.0](https://github.com/epoberezkin/ajv/releases/tag/v6.0.0).
+__Please note__: [Changes in version 6.0.0](https://github.com/ajv-validator/ajv/releases/tag/v6.0.0).
 
-[Version 5.0.0](https://github.com/epoberezkin/ajv/releases/tag/5.0.0).
+[Version 5.0.0](https://github.com/ajv-validator/ajv/releases/tag/5.0.0).
 
-[Version 4.0.0](https://github.com/epoberezkin/ajv/releases/tag/4.0.0).
+[Version 4.0.0](https://github.com/ajv-validator/ajv/releases/tag/4.0.0).
 
-[Version 3.0.0](https://github.com/epoberezkin/ajv/releases/tag/3.0.0).
+[Version 3.0.0](https://github.com/ajv-validator/ajv/releases/tag/3.0.0).
 
-[Version 2.0.0](https://github.com/epoberezkin/ajv/releases/tag/2.0.0).
+[Version 2.0.0](https://github.com/ajv-validator/ajv/releases/tag/2.0.0).
 
 
 ## Code of conduct
 
-Please review and follow the [Code of conduct](https://github.com/epoberezkin/ajv/blob/master/CODE_OF_CONDUCT.md).
+Please review and follow the [Code of conduct](https://github.com/ajv-validator/ajv/blob/master/CODE_OF_CONDUCT.md).
 
 Please report any unacceptable behaviour to ajv.validator@gmail.com - it will be reviewed by the project team.
 
@@ -1457,4 +1457,4 @@ Ajv is a part of [Tidelift subscription](https://tidelift.com/subscription/pkg/n
 
 ## License
 
-[MIT](https://github.com/epoberezkin/ajv/blob/master/LICENSE)
+[MIT](https://github.com/ajv-validator/ajv/blob/master/LICENSE)

@@ -42,7 +42,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/epoberezkin/ajv.git"
+    "url": "https://github.com/ajv-validator/ajv.git"
   },
   "keywords": [
     "JSON",
@@ -57,9 +57,9 @@
   "author": "Evgeny Poberezkin",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/epoberezkin/ajv/issues"
+    "url": "https://github.com/ajv-validator/ajv/issues"
   },
-  "homepage": "https://github.com/epoberezkin/ajv",
+  "homepage": "https://github.com/ajv-validator/ajv",
   "tonicExampleFilename": ".tonic_example.js",
   "dependencies": {
     "fast-deep-equal": "^3.1.1",

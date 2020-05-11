@@ -1,12 +1,12 @@
 <!--
-Frequently Asked Questions: https://github.com/epoberezkin/ajv/blob/master/FAQ.md
+Frequently Asked Questions: https://github.com/ajv-validator/ajv/blob/master/FAQ.md
 Please provide all info and reduce your schema and data to the smallest possible size.
 
 This template is for bug or error reports. For other issues please use:
 - security vulnerability: https://tidelift.com/security)
-- a new feature/improvement: http://epoberezkin.github.io/ajv/contribute.html#changes
-- browser/compatibility issues: http://epoberezkin.github.io/ajv/contribute.html#compatibility
-- JSON-Schema standard: http://epoberezkin.github.io/ajv/contribute.html#json-schema
+- a new feature/improvement: https://ajv.js.org/contribute.html#changes
+- browser/compatibility issues: https://ajv.js.org/contribute.html#compatibility
+- JSON-Schema standard: https://ajv.js.org/contribute.html#json-schema
 - Ajv usage questions: https://gitter.im/ajv-validator/ajv
 -->
 
@@ -16,7 +16,7 @@ This template is for bug or error reports. For other issues please use:
 
 **Ajv options object**
 
-<!-- See https://github.com/epoberezkin/ajv#options -->
+<!-- See https://github.com/ajv-validator/ajv#options -->
 
 ```javascript
 
@@ -49,7 +49,7 @@ This template is for bug or error reports. For other issues please use:
 <!--
 Please:
 - make it as small as posssible to reproduce the issue
-- use one of the usage patterns from https://github.com/epoberezkin/ajv#getting-started
+- use one of the usage patterns from https://github.com/ajv-validator/ajv#getting-started
 - use `options`, `schema` and `data` as variables, do not repeat their values here
 - post a working code sample in RunKit notebook cloned from https://runkit.com/esp/ajv-issue and include the link here.
 

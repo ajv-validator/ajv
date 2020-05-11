@@ -202,7 +202,7 @@ _invalid_: `"abc"`
 
 ### `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` (proposed)
 
-Defined in [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package.
+Defined in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package.
 
 The value of keyword `formatMaximum` (`formatMinimum`) should be a string. This value is the maximum (minimum) allowed value for the data to be valid as determined by `format` keyword.
 
@@ -618,7 +618,7 @@ _invalid_: `{"foo": "any value"}`
 
 ### `patternRequired` (proposed)
 
-Defined in [ajv-keywords](https://github.com/epoberezkin/ajv-keywords) package.
+Defined in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package.
 
 The value of this keyword should be an array of strings, each string being a regular expression. For data object to be valid each regular expression in this array should match at least one property name in the data object.
 
@@ -670,7 +670,7 @@ _valid_: `"foo"`
 _invalid_: any other value
 
 
-The same can be achieved with `enum` keyword using the array with one item. But `const` keyword is more than just a syntax sugar for `enum`. In combination with the [$data reference](https://github.com/epoberezkin/ajv#data-reference) it allows to define equality relations between different parts of the data. This cannot be achieved with `enum` keyword even with `$data` reference because `$data` cannot be used in place of one item - it can only be used in place of the whole array in `enum` keyword.
+The same can be achieved with `enum` keyword using the array with one item. But `const` keyword is more than just a syntax sugar for `enum`. In combination with the [$data reference](https://github.com/ajv-validator/ajv#data-reference) it allows to define equality relations between different parts of the data. This cannot be achieved with `enum` keyword even with `$data` reference because `$data` cannot be used in place of one item - it can only be used in place of the whole array in `enum` keyword.
 
 
 __Example__
