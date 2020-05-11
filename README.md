@@ -139,7 +139,7 @@ Performance of different validators by [json-schema-benchmark](https://github.co
   - correct string lengths for strings with unicode pairs (can be turned off)
   - [formats](#formats) defined by JSON Schema draft-07 standard and custom formats (can be turned off)
   - [validates schemas against meta-schema](#api-validateschema)
-- supports [browsers](#using-in-browser) and Node.js 0.10+
+- supports [browsers](#using-in-browser) and Node.js 0.10-14.x
 - [asynchronous loading](#asynchronous-schema-compilation) of referenced schemas during compilation
 - "All errors" validation mode with [option allErrors](#options)
 - [error messages with parameters](#validation-errors) describing error reasons to allow creating custom error messages
