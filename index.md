@@ -85,7 +85,7 @@ ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
 - [Performance](#performance)
 - [Features](#features)
 - [Getting started](#getting-started)
-- [Frequently Asked Questions](https://github.com/ajv-validator/ajv/blob/master/FAQ.md)
+- [Frequently Asked Questions](faq.html)
 - [Using in browser](#using-in-browser)
 - [Command line interface](#command-line-interface)
 - Validation
@@ -139,7 +139,7 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 ## Features
 
 - Ajv implements full JSON Schema [draft-06/07](http://json-schema.org/) and draft-04 standards:
-  - all validation keywords (see [JSON Schema validation keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md))
+  - all validation keywords (see [JSON Schema validation keywords](keywords.html))
   - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
   - support of circular references between schemas
   - correct string lengths for strings with unicode pairs (can be turned off)
@@ -263,20 +263,20 @@ CLI is available as a separate npm package [ajv-cli](https://github.com/ajv-vali
 
 Ajv supports all validation keywords from draft-07 of JSON Schema standard:
 
-- [type](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#type)
-- [for numbers](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#keywords-for-numbers) - maximum, minimum, exclusiveMaximum, exclusiveMinimum, multipleOf
-- [for strings](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#keywords-for-strings) - maxLength, minLength, pattern, format
-- [for arrays](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#keywords-for-arrays) - maxItems, minItems, uniqueItems, items, additionalItems, [contains](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#contains)
-- [for objects](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#keywords-for-objects) - maxProperties, minProperties, required, properties, patternProperties, additionalProperties, dependencies, [propertyNames](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#propertynames)
-- [for all types](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#keywords-for-all-types) - enum, [const](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#const)
-- [compound keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#compound-keywords) - not, oneOf, anyOf, allOf, [if/then/else](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#ifthenelse)
+- [type](keywords.html#type)
+- [for numbers](keywords.html#keywords-for-numbers) - maximum, minimum, exclusiveMaximum, exclusiveMinimum, multipleOf
+- [for strings](keywords.html#keywords-for-strings) - maxLength, minLength, pattern, format
+- [for arrays](keywords.html#keywords-for-arrays) - maxItems, minItems, uniqueItems, items, additionalItems, [contains](keywords.html#contains)
+- [for objects](keywords.html#keywords-for-objects) - maxProperties, minProperties, required, properties, patternProperties, additionalProperties, dependencies, [propertyNames](keywords.html#propertynames)
+- [for all types](keywords.html#keywords-for-all-types) - enum, [const](keywords.html#const)
+- [compound keywords](keywords.html#compound-keywords) - not, oneOf, anyOf, allOf, [if/then/else](keywords.html#ifthenelse)
 
 With [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package Ajv also supports validation keywords from [JSON Schema extension proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) for JSON Schema standard:
 
-- [patternRequired](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#patternrequired-proposed) - like `required` but with patterns that some property should match.
-- [formatMaximum, formatMinimum, formatExclusiveMaximum, formatExclusiveMinimum](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-proposed) - setting limits for date, time, etc.
+- [patternRequired](keywords.html#patternrequired-proposed) - like `required` but with patterns that some property should match.
+- [formatMaximum, formatMinimum, formatExclusiveMaximum, formatExclusiveMinimum](keywords.html#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-proposed) - setting limits for date, time, etc.
 
-See [JSON Schema validation keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md) for more details.
+See [JSON Schema validation keywords](keywords.html) for more details.
 
 
 ## Annotation keywords
@@ -544,7 +544,7 @@ console.log(validate(4)); // false
 
 Several custom keywords (typeof, instanceof, range and propertyNames) are defined in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package - they can be used for your schemas and as a starting point for your own custom keywords.
 
-See [Defining custom keywords](https://github.com/ajv-validator/ajv/blob/master/CUSTOM.md) for more details.
+See [Defining custom keywords](custom.html) for more details.
 
 
 ## Asynchronous schema compilation
@@ -945,7 +945,7 @@ console.log(data); // { "foo": [1], "bar": false }
 
 The coercion rules, as you can see from the example, are different from JavaScript both to validate user input as expected and to have the coercion reversible (to correctly validate cases where different types are defined in subschemas of "anyOf" and other compound keywords).
 
-See [Coercion rules](https://github.com/ajv-validator/ajv/blob/master/COERCION.md) for details.
+See [Coercion rules](coercion.html) for details.
 
 
 ## API
@@ -1239,7 +1239,7 @@ Defaults:
   - `true` - insert defaults by value (object literal is used).
   - `"empty"` - in addition to missing or undefined, use defaults for properties and items that are equal to `null` or `""` (an empty string).
   - `"shared"` (deprecated) - insert defaults by reference. If the default is an object, it will be shared by all instances of validated data. If you modify the inserted default in the validated data, it will be modified in the schema as well.
-- _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](#coercing-data-types) and [coercion rules](https://github.com/ajv-validator/ajv/blob/master/COERCION.md). Option values:
+- _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](#coercing-data-types) and [coercion rules](coercion.html). Option values:
   - `false` (default) - no type coercion.
   - `true` - coerce scalar data types.
   - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
@@ -1430,7 +1430,7 @@ All validation functions are generated using doT templates in [dot](https://gith
 
 `npm run watch` - automatically compiles templates when files in dot folder change
 
-Please see [Contributing guidelines](https://github.com/ajv-validator/ajv/blob/master/CONTRIBUTING.md)
+Please see [Contributing guidelines](contribute.html)
 
 
 ## Changes history
@@ -1462,4 +1462,4 @@ Ajv is a part of [Tidelift subscription](https://tidelift.com/subscription/pkg/n
 
 ## License
 
-[MIT](https://github.com/ajv-validator/ajv/blob/master/LICENSE)
+[MIT](license.html)

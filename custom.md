@@ -39,7 +39,7 @@ This way to define keywords is useful for:
 - testing your keywords before converting them to compiled/inlined keywords
 - defining keywords that do not depend on the schema value (e.g., when the value is always `true`). In this case you can add option `schema: false` to the keyword definition and the schemas won't be passed to the validation function, it will only receive the same 4 parameters as compiled validation function (see the next section).
 - defining keywords where the schema is a value used in some expression.
-- defining keywords that support [$data reference](https://github.com/ajv-validator/ajv#data-reference) - in this case validation function is required, either as the only option or in addition to compile, macro or inline function (see below).
+- defining keywords that support [$data reference](/#data-reference) - in this case validation function is required, either as the only option or in addition to compile, macro or inline function (see below).
 
 __Please note__: In cases when validation flow is different depending on the schema and you have to use `if`s, this way to define keywords will have worse performance than compiled keyword returning different validation functions depending on the schema.
 
@@ -316,8 +316,8 @@ There is a number of variables and expressions you can use in the generated (val
 - `'validate.schema' + it.schemaPath` - current level schema available at validation time (the same schema at compile time is `it.schema`).
 - `'validate.schema' + it.schemaPath + '.' + keyword` - the value of your custom keyword at validation-time. Keyword is passed as the second parameter to the inline compilation function to allow using the same function to compile multiple keywords.
 - `'valid' + it.level` - the variable that you have to declare and to assign the validation result to if your keyword returns statements rather than expression (`statements: true`).
-- `'errors'` - the number of encountered errors. See [Reporting errors in custom keywords](https://github.com/ajv-validator/ajv/blob/master/CUSTOM.md#reporting-errors-in-custom-keywords).
-- `'vErrors'` - the array with errors collected so far. See [Reporting errors in custom keywords](https://github.com/ajv-validator/ajv/blob/master/CUSTOM.md#reporting-errors-in-custom-keywords).
+- `'errors'` - the number of encountered errors. See [Reporting errors in custom keywords](custom.html#reporting-errors-in-custom-keywords).
+- `'vErrors'` - the array with errors collected so far. See [Reporting errors in custom keywords](custom.html#reporting-errors-in-custom-keywords).
 
 
 ## Ajv utilities
@@ -434,7 +434,7 @@ Each error object should at least have properties `keyword`, `message` and `para
 
 Inlined keywords can optionally define `dataPath` and `schemaPath` properties in error objects, that will be assigned by Ajv unless `errors` option of the keyword is `"full"`.
 
-If custom keyword doesn't create errors, the default error will be created in case the keyword fails validation (see [Validation errors](https://github.com/ajv-validator/ajv#validation-errors)).
+If custom keyword doesn't create errors, the default error will be created in case the keyword fails validation (see [Validation errors](/#validation-errors)).
 
 
 ## Short-circuit validation

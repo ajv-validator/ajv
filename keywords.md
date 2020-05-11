@@ -675,7 +675,7 @@ _valid_: `"foo"`
 _invalid_: any other value
 
 
-The same can be achieved with `enum` keyword using the array with one item. But `const` keyword is more than just a syntax sugar for `enum`. In combination with the [$data reference](https://github.com/ajv-validator/ajv#data-reference) it allows to define equality relations between different parts of the data. This cannot be achieved with `enum` keyword even with `$data` reference because `$data` cannot be used in place of one item - it can only be used in place of the whole array in `enum` keyword.
+The same can be achieved with `enum` keyword using the array with one item. But `const` keyword is more than just a syntax sugar for `enum`. In combination with the [$data reference](/#data-reference) it allows to define equality relations between different parts of the data. This cannot be achieved with `enum` keyword even with `$data` reference because `$data` cannot be used in place of one item - it can only be used in place of the whole array in `enum` keyword.
 
 
 __Example__

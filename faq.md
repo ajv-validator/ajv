@@ -14,7 +14,7 @@ The purpose of this document is to help find answers quicker. I am happy to cont
 Ajv implements JSON schema specification. Before submitting the issue about the behaviour of any validation keywords please review them in:
 
 - [JSON Schema specification](https://tools.ietf.org/html/draft-handrews-json-schema-validation-00) (draft-07)
-- [Validation keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md) in Ajv documentation
+- [Validation keywords](keywords.html) in Ajv documentation
 - [JSON Schema tutorial](https://spacetelescope.github.io/understanding-json-schema/) (for draft-04)
 
 
@@ -25,7 +25,7 @@ Ajv implements JSON schema specification. Before submitting the issue about the 
 
 ##### Why Ajv validates only the first item of the array?
 
-"items" keyword support [two syntaxes](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#items) - 1) when the schema applies to all items; 2) when there is a different schema for each item in the beginning of the array. This problem means you are using the second syntax.
+"items" keyword support [two syntaxes](keywords.html#items) - 1) when the schema applies to all items; 2) when there is a different schema for each item in the beginning of the array. This problem means you are using the second syntax.
 
 
 
@@ -90,7 +90,7 @@ There are several ways to implement the described logic that would allow two pro
 
 This problem is related to the problem explained above - properties treated as additional in the sense of `additionalProperties` keyword, based on `properties`/`patternProperties` keyword in the same schema object.
 
-See the exemple in [Filtering Data](https://github.com/ajv-validator/ajv#filtering-data) section of readme.
+See the exemple in [Filtering Data](/#filtering-data) section of readme.
 
 
 
@@ -113,4 +113,4 @@ There were many conversations about the meaning of `$ref` in [JSON Schema GitHub
 There are two possible approaches:
 
 1. Traverse schema (e.g. with json-schema-traverse) and replace every `$ref` with the referenced schema.
-2. Use a specially constructed JSON Schema with a [custom keyword](https://github.com/ajv-validator/ajv/blob/master/CUSTOM.md) to traverse and modify your schema.
+2. Use a specially constructed JSON Schema with a [custom keyword](custom.html) to traverse and modify your schema.
