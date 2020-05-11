@@ -24,7 +24,7 @@ Ajv has a lot of features and maintaining documentation takes time. I appreciate
 
 ## Issues
 
-Before submitting the issue please search the existing issues and also review [Frequently Asked Questions](https://github.com/epoberezkin/ajv/blob/master/FAQ.md).
+Before submitting the issue please search the existing issues and also review [Frequently Asked Questions](https://github.com/ajv-validator/ajv/blob/master/FAQ.md).
 
 I would really appreciate the time you spend providing all the information and reducing both your schema and data to the smallest possible size when they still have the issue. Simplifying the issue also makes it more valuable for other users (in cases it turns out to be an incorrect usage rather than a bug).
 
@@ -34,7 +34,7 @@ I would really appreciate the time you spend providing all the information and r
 Please make sure to include the following information in the issue:
 
 1. What version of Ajv are you using? Does the issue happen if you use the latest version?
-2. Ajv options object (see https://github.com/epoberezkin/ajv#options).
+2. Ajv options object (see https://github.com/ajv-validator/ajv#options).
 3. JSON Schema and the data you are validating (please make it as small as possible to reproduce the issue).
 4. Your code (please use `options`, `schema` and `data` as variables).
 5. Validation result, data AFTER validation, error messages.
@@ -42,7 +42,7 @@ Please make sure to include the following information in the issue:
 
 Please include the link to the working code sample at Runkit.com (please clone https://runkit.com/esp/ajv-issue) - it will speed up investigation and fixing.
 
-[Create bug report](https://github.com/epoberezkin/ajv/issues/new?template=bug-or-error-report.md).
+[Create bug report](https://github.com/ajv-validator/ajv/issues/new?template=bug-or-error-report.md).
 
 
 #### Security vulnerabilities
@@ -56,7 +56,7 @@ Please do NOT report security vulnerabilities via GitHub issues.
 
 #### <a name="changes"></a>Change proposals
 
-[Create a proposal](https://github.com/epoberezkin/ajv/issues/new?template=change.md) for a new feature, option or some other improvement.
+[Create a proposal](https://github.com/ajv-validator/ajv/issues/new?template=change.md) for a new feature, option or some other improvement.
 
 Please include this information:
 
@@ -76,7 +76,7 @@ Please include as much details as possible.
 
 #### <a name="compatibility"></a>Browser and compatibility issues
 
-[Create an issue](https://github.com/epoberezkin/ajv/issues/new?template=compatibility.md) to report a compatibility problem that only happens in a particular environment (when your code works correctly in node.js v8+ in linux systems but fails in some other environment).
+[Create an issue](https://github.com/ajv-validator/ajv/issues/new?template=compatibility.md) to report a compatibility problem that only happens in a particular environment (when your code works correctly in node.js v8+ in linux systems but fails in some other environment).
 
 Please include this information:
 
@@ -90,7 +90,7 @@ Please include this information:
 
 #### <a name="installation"></a>Installation and dependency issues
 
-[Create an issue](https://github.com/epoberezkin/ajv/issues/new?template=installation.md) to report problems that happen during Ajv installation or when Ajv is missing some dependency.
+[Create an issue](https://github.com/ajv-validator/ajv/issues/new?template=installation.md) to report problems that happen during Ajv installation or when Ajv is missing some dependency.
 
 Before submitting the issue, please try the following:
 - use the latest stable Node.js and `npm`
@@ -143,9 +143,9 @@ npm run test-fast
 git commit -nm 'type: message'
 ```
 
-All validation functions are generated using doT templates in [dot](https://github.com/epoberezkin/ajv/tree/master/lib/dot) folder. Templates are precompiled so doT is not a run-time dependency.
+All validation functions are generated using doT templates in [dot](https://github.com/ajv-validator/ajv/tree/master/lib/dot) folder. Templates are precompiled so doT is not a run-time dependency.
 
-`npm run build` - compiles templates to [dotjs](https://github.com/epoberezkin/ajv/tree/master/lib/dotjs) folder.
+`npm run build` - compiles templates to [dotjs](https://github.com/ajv-validator/ajv/tree/master/lib/dotjs) folder.
 
 `npm run watch` - automatically compiles templates when files in dot folder change
 
@@ -154,7 +154,7 @@ All validation functions are generated using doT templates in [dot](https://gith
 
 To make accepting your changes faster please follow these steps:
 
-1. Submit an [issue with the bug](https://github.com/epoberezkin/ajv/issues/new) or with the proposed change (unless the contribution is to fix the documentation typos and mistakes).
+1. Submit an [issue with the bug](https://github.com/ajv-validator/ajv/issues/new) or with the proposed change (unless the contribution is to fix the documentation typos and mistakes).
 2. Please describe the proposed api and implementation plan (unless the issue is a relatively simple bug and fixing it doesn't change any api).
 3. Once agreed, please write as little code as possible to achieve the desired result.
 4. Please avoid unnecessary changes, refactoring or changing coding styles as part of your change (unless the change was proposed as refactoring).

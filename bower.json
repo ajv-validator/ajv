@@ -11,7 +11,7 @@
     "schema",
     "validator"
   ],
-  "homepage": "https://github.com/epoberezkin/ajv",
+  "homepage": "https://github.com/ajv-validator/ajv",
   "moduleType": [
     "amd",
     "globals",
