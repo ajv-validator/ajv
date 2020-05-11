@@ -1,5 +1,5 @@
 {
-  "repository": "https://github.com/epoberezkin/ajv",
+  "repository": "https://github.com/ajv-validator/ajv",
   "folders": {
     "source": "_source",
     "target": "."

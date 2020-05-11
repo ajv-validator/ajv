@@ -5,3 +5,9 @@ lib/
 
 _site/
 _source/
+
+.browser/
+.nyc_output/
+coverage/
+package-lock.json
+spec/
