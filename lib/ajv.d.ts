@@ -74,9 +74,10 @@ declare namespace ajv {
     /**
     * Validate schema
     * @param {object|Boolean} schema schema to validate
+    * @param {Boolean} throwOrLogError pass true to throw (or log) an error if invalid
     * @return {Boolean} true if schema is valid
     */
-    validateSchema(schema: object | boolean): boolean;
+    validateSchema(schema: object | boolean, throwOrLogError?: boolean): boolean;
     /**
     * Get compiled schema from the instance by `key` or `ref`.
     * @param  {string} keyRef `key` that was passed to `addSchema` or full schema reference (`schema.id` or resolved id).
