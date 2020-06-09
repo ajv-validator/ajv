@@ -183,6 +183,7 @@ declare namespace ajv {
     coerceTypes?: boolean | 'array';
     strictDefaults?: boolean | 'log';
     strictKeywords?: boolean | 'log';
+    strictNumbers?: boolean;
     async?: boolean | string;
     transpile?: string | ((code: string) => string);
     meta?: boolean | object;
