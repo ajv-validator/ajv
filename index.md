@@ -254,7 +254,7 @@ CLI is available as a separate npm package [ajv-cli](https://github.com/ajv-vali
 - testing expected validity of data against JSON Schema
 - referenced schemas
 - custom meta-schemas
-- files in JSON and JavaScript format
+- files in JSON, JSON5, YAML, and JavaScript format
 - all Ajv options
 - reporting changes in data after validation in [JSON-patch](https://tools.ietf.org/html/rfc6902) format
 
