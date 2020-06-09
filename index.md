@@ -1161,6 +1161,7 @@ Defaults:
   // strict mode options
   strictDefaults:   false,
   strictKeywords:   false,
+  strictNumbers:    false,
   // asynchronous validation options:
   transpile:        undefined, // requires ajv-async package
   // advanced options:
@@ -1255,7 +1256,9 @@ Defaults:
   - `false` (default) - unknown keywords are not reported
   - `true` - if an unknown keyword is present, throw an error
   - `"log"` - if an unknown keyword is present, log warning
-
+- _strictNumbers_: validate numbers strictly, failing validation for NaN and Infinity. Option values:
+  - `false` (default) - NaN or Infinity will pass validation for numeric types
+  - `true` - NaN or Infinity will not pass validation for numeric types
 
 ##### Asynchronous validation options
 
