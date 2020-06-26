@@ -115,6 +115,7 @@ export interface CurrentOptions {
   schemas?: AnySchema[] | {[Key in string]?: AnySchema}
   logger?: Logger | false
   loadSchema?: (uri: string) => Promise<AnySchemaObject>
+  loadSchemaSync?: (base: string, $ref: string, id: string) => AnySchemaObject | boolean
   // options to modify validated data:
   removeAdditional?: boolean | "all" | "failing"
   useDefaults?: boolean | "empty"

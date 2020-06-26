@@ -206,9 +206,9 @@ export function resolveRef(
   this: Ajv,
   root: SchemaEnv,
   baseId: string,
-  ref: string
+  origRef: string
 ): AnySchema | SchemaEnv | undefined {
-  ref = resolveUrl(this.opts.uriResolver, baseId, ref)
+  const ref = resolveUrl(this.opts.uriResolver, baseId, origRef)
   const schOrFunc = root.refs[ref]
   if (schOrFunc) return schOrFunc
 
@@ -217,6 +217,15 @@ export function resolveRef(
     const schema = root.localRefs?.[ref] // TODO maybe localRefs should hold SchemaEnv
     const {schemaId} = this.opts
     if (schema) _sch = new SchemaEnv({schema, schemaId, root, baseId})
+  }
+
+  if (_sch === undefined && this.opts.loadSchemaSync) {
+    const remoteSchema = this.opts.loadSchemaSync(baseId, origRef, ref)
+
+    if (remoteSchema && !(this.refs[ref] || this.schemas[ref])) {
+      this.addSchema(remoteSchema, ref, undefined)
+      _sch = resolve.call(this, root, ref)
+    }
   }
 
   if (_sch === undefined) return
