@@ -321,7 +321,7 @@ You can add additional formats and replace any of the formats above using [addFo
 
 The option `unknownFormats` allows changing the default behaviour when an unknown format is encountered. In this case Ajv can either fail schema compilation (default) or ignore it (default in versions before 5.0.0). You also can whitelist specific format(s) to be ignored. See [Options](#options) for details.
 
-You can find regular expressions used for format validation and the sources that were used in [formats.js](https://github.com/ajv-validatorv/ajv/blob/master/lib/compile/formats.js).
+You can find regular expressions used for format validation and the sources that were used in [formats.js](https://github.com/ajv-validator/ajv/blob/master/lib/compile/formats.js).
 
 
 ## <a name="ref"></a>Combining schemas with $ref
