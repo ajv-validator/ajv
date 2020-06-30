@@ -254,12 +254,6 @@
   var {{=$valid}} = errors === errs_{{=$lvl}};
 {{?}}
 
-{{# def.cleanUp }}
-
-{{? $top }}
-  {{# def.finalCleanUp }}
-{{?}}
-
 {{
   function $shouldUseGroup($rulesGroup) {
     var rules = $rulesGroup.rules;

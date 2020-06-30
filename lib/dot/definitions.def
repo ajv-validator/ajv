@@ -112,12 +112,6 @@
 #}}
 
 
-{{## def.cleanUp: {{ out = it.util.cleanUpCode(out); }} #}}
-
-
-{{## def.finalCleanUp: {{ out = it.util.finalCleanUpCode(out, $async); }} #}}
-
-
 {{## def.$data:
   {{
     var $isData = it.opts.$data && $schema && $schema.$data
