@@ -733,6 +733,10 @@ isSchemaSecure(schema2); // true
 __Please note__: following all these recommendation is not a guarantee that validation of untrusted data is safe - it can still lead to some undesirable results.
 
 
+##### Content Security Policies (CSP)
+See [Ajv and Content Security Policies (CSP)](#ajv-and-content-security-policies-csp)
+
+
 ## ReDoS attack
 
 Certain regular expressions can lead to the exponential evaluation time even with relatively short strings.
