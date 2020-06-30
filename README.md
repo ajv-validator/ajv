@@ -82,6 +82,7 @@ ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
 - [Getting started](#getting-started)
 - [Frequently Asked Questions](https://github.com/ajv-validator/ajv/blob/master/FAQ.md)
 - [Using in browser](#using-in-browser)
+  - [Ajv and Content Security Policies (CSP)](#ajv-and-content-security-policies-csp)
 - [Command line interface](#command-line-interface)
 - Validation
   - [Keywords](#validation-keywords)
