@@ -549,6 +549,13 @@ describe('Ajv', function () {
         });
       });
 
+      it('multipleOf', function() {
+        passValidationThrowCompile({
+          $ref: '#/foo',
+          foo: {maxProperties: 'bar'}
+        });
+      });
+
       function passValidationThrowCompile(schema) {
         ajv.validateSchema(schema) .should.equal(true);
         should.throw(function() {
