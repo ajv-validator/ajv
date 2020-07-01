@@ -512,5 +512,49 @@ describe('Ajv', function () {
         });
       });
     });
+
+    describe('sub-schema validation outside of definitions during compilation', function() {
+      it('maximum', function() {
+        passValidationThrowCompile({
+          $ref: '#/foo',
+          foo: {maximum: 'bar'}
+        });
+      });
+
+      it('exclusiveMaximum', function() {
+        passValidationThrowCompile({
+          $ref: '#/foo',
+          foo: {exclusiveMaximum: 'bar'}
+        });
+      });
+
+      it('maxItems', function() {
+        passValidationThrowCompile({
+          $ref: '#/foo',
+          foo: {maxItems: 'bar'}
+        });
+      });
+
+      it('maxLength', function() {
+        passValidationThrowCompile({
+          $ref: '#/foo',
+          foo: {maxLength: 'bar'}
+        });
+      });
+
+      it('maxProperties', function() {
+        passValidationThrowCompile({
+          $ref: '#/foo',
+          foo: {maxProperties: 'bar'}
+        });
+      });
+
+      function passValidationThrowCompile(schema) {
+        ajv.validateSchema(schema) .should.equal(true);
+        should.throw(function() {
+          ajv.compile(schema);
+        });
+      }
+    });
   });
 });
