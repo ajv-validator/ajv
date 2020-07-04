@@ -76,7 +76,7 @@
     "coveralls": "^3.0.1",
     "del-cli": "^3.0.0",
     "dot": "^1.0.3",
-    "eslint": "^6.0.0",
+    "eslint": "^7.3.1",
     "gh-pages-generator": "^0.2.3",
     "glob": "^7.0.0",
     "if-node-version": "^1.0.0",
