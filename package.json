@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "6.12.0",
+  "version": "6.12.2",
   "description": "Another JSON Schema Validator",
   "main": "lib/ajv.js",
   "typings": "lib/ajv.d.ts",
@@ -42,7 +42,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/epoberezkin/ajv.git"
+    "url": "https://github.com/ajv-validator/ajv.git"
   },
   "keywords": [
     "JSON",
@@ -57,9 +57,9 @@
   "author": "Evgeny Poberezkin",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/epoberezkin/ajv/issues"
+    "url": "https://github.com/ajv-validator/ajv/issues"
   },
-  "homepage": "https://github.com/epoberezkin/ajv",
+  "homepage": "https://github.com/ajv-validator/ajv",
   "tonicExampleFilename": ".tonic_example.js",
   "dependencies": {
     "fast-deep-equal": "^3.1.1",
@@ -83,16 +83,24 @@
     "js-beautify": "^1.7.3",
     "jshint": "^2.10.2",
     "json-schema-test": "^2.0.0",
-    "karma": "^4.0.1",
+    "karma": "^5.0.0",
     "karma-chrome-launcher": "^3.0.0",
-    "karma-mocha": "^1.1.1",
-    "karma-sauce-launcher": "^2.0.0",
+    "karma-mocha": "^2.0.0",
+    "karma-sauce-launcher": "^4.1.3",
     "mocha": "^7.0.1",
     "nyc": "^15.0.0",
     "pre-commit": "^1.1.1",
     "require-globify": "^1.3.0",
-    "typescript": "^2.8.3",
+    "typescript": "^3.9.5",
     "uglify-js": "^3.6.9",
     "watch": "^1.0.0"
+  },
+  "collective": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/ajv"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/epoberezkin"
   }
 }

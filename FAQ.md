@@ -9,7 +9,7 @@ The purpose of this document is to help find answers quicker. I am happy to cont
 Ajv implements JSON schema specification. Before submitting the issue about the behaviour of any validation keywords please review them in:
 
 - [JSON Schema specification](https://tools.ietf.org/html/draft-handrews-json-schema-validation-00) (draft-07)
-- [Validation keywords](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md) in Ajv documentation
+- [Validation keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md) in Ajv documentation
 - [JSON Schema tutorial](https://spacetelescope.github.io/understanding-json-schema/) (for draft-04)
 
 
@@ -20,13 +20,13 @@ Ajv implements JSON schema specification. Before submitting the issue about the 
 
 ##### Why Ajv validates only the first item of the array?
 
-"items" keyword support [two syntaxes](https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md#items) - 1) when the schema applies to all items; 2) when there is a different schema for each item in the beginning of the array. This problem means you are using the second syntax.
+"items" keyword support [two syntaxes](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#items) - 1) when the schema applies to all items; 2) when there is a different schema for each item in the beginning of the array. This problem means you are using the second syntax.
 
 
 
 ## Ajv API for returning validation errors
 
-See [#65](https://github.com/epoberezkin/ajv/issues/65), [#212](https://github.com/epoberezkin/ajv/issues/212), [#236](https://github.com/epoberezkin/ajv/issues/236), [#242](https://github.com/epoberezkin/ajv/issues/242), [#256](https://github.com/epoberezkin/ajv/issues/256).
+See [#65](https://github.com/ajv-validator/ajv/issues/65), [#212](https://github.com/ajv-validator/ajv/issues/212), [#236](https://github.com/ajv-validator/ajv/issues/236), [#242](https://github.com/ajv-validator/ajv/issues/242), [#256](https://github.com/ajv-validator/ajv/issues/256).
 
 
 ##### Why Ajv assigns errors as a property of validation function (or instance) instead of returning an object with validation results and errors?
@@ -56,7 +56,7 @@ Since the property name is already in the params object, in an application you c
 
 ## Additional properties inside compound keywords anyOf, oneOf, etc.
 
-See [#127](https://github.com/epoberezkin/ajv/issues/127), [#129](https://github.com/epoberezkin/ajv/issues/129), [#134](https://github.com/epoberezkin/ajv/issues/134), [#140](https://github.com/epoberezkin/ajv/issues/140), [#193](https://github.com/epoberezkin/ajv/issues/193), [#205](https://github.com/epoberezkin/ajv/issues/205), [#238](https://github.com/epoberezkin/ajv/issues/238), [#264](https://github.com/epoberezkin/ajv/issues/264).
+See [#127](https://github.com/ajv-validator/ajv/issues/127), [#129](https://github.com/ajv-validator/ajv/issues/129), [#134](https://github.com/ajv-validator/ajv/issues/134), [#140](https://github.com/ajv-validator/ajv/issues/140), [#193](https://github.com/ajv-validator/ajv/issues/193), [#205](https://github.com/ajv-validator/ajv/issues/205), [#238](https://github.com/ajv-validator/ajv/issues/238), [#264](https://github.com/ajv-validator/ajv/issues/264).
 
 
 ##### Why the keyword `additionalProperties: false` fails validation when some properties are "declared" inside a subschema in `anyOf`/etc.?
@@ -85,13 +85,13 @@ There are several ways to implement the described logic that would allow two pro
 
 This problem is related to the problem explained above - properties treated as additional in the sense of `additionalProperties` keyword, based on `properties`/`patternProperties` keyword in the same schema object.
 
-See the exemple in [Filtering Data](https://github.com/epoberezkin/ajv#filtering-data) section of readme.
+See the exemple in [Filtering Data](https://github.com/ajv-validator/ajv#filtering-data) section of readme.
 
 
 
 ## Generating schemas with resolved references ($ref)
 
-See [#22](https://github.com/epoberezkin/ajv/issues/22), [#125](https://github.com/epoberezkin/ajv/issues/125), [#146](https://github.com/epoberezkin/ajv/issues/146), [#228](https://github.com/epoberezkin/ajv/issues/228), [#336](https://github.com/epoberezkin/ajv/issues/336), [#454](https://github.com/epoberezkin/ajv/issues/454).
+See [#22](https://github.com/ajv-validator/ajv/issues/22), [#125](https://github.com/ajv-validator/ajv/issues/125), [#146](https://github.com/ajv-validator/ajv/issues/146), [#228](https://github.com/ajv-validator/ajv/issues/228), [#336](https://github.com/ajv-validator/ajv/issues/336), [#454](https://github.com/ajv-validator/ajv/issues/454).
 
 
 ##### Why Ajv does not replace references ($ref) with the actual referenced schemas as some validators do?
@@ -108,4 +108,4 @@ There were many conversations about the meaning of `$ref` in [JSON Schema GitHub
 There are two possible approaches:
 
 1. Traverse schema (e.g. with json-schema-traverse) and replace every `$ref` with the referenced schema.
-2. Use a specially constructed JSON Schema with a [custom keyword](https://github.com/epoberezkin/ajv/blob/master/CUSTOM.md) to traverse and modify your schema.
+2. Use a specially constructed JSON Schema with a [custom keyword](https://github.com/ajv-validator/ajv/blob/master/CUSTOM.md) to traverse and modify your schema.

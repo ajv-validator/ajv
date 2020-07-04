@@ -8,11 +8,11 @@ assignees: ''
 ---
 
 <!--
-Frequently Asked Questions: https://github.com/epoberezkin/ajv/blob/master/FAQ.md
+Frequently Asked Questions: https://github.com/ajv-validator/ajv/blob/master/FAQ.md
 Please provide all info and reduce your schema and data to the smallest possible size.
 
 This template is for bug or error reports.
-For other issues please see https://github.com/epoberezkin/ajv/blob/master/CONTRIBUTING.md
+For other issues please see https://github.com/ajv-validator/ajv/blob/master/CONTRIBUTING.md
 -->
 
 **What version of Ajv are you using? Does the issue happen if you use the latest version?**
@@ -21,7 +21,7 @@ For other issues please see https://github.com/epoberezkin/ajv/blob/master/CONTR
 
 **Ajv options object**
 
-<!-- See https://github.com/epoberezkin/ajv#options -->
+<!-- See https://github.com/ajv-validator/ajv#options -->
 
 ```javascript
 
@@ -54,7 +54,7 @@ For other issues please see https://github.com/epoberezkin/ajv/blob/master/CONTR
 <!--
 Please:
 - make it as small as posssible to reproduce the issue
-- use one of the usage patterns from https://github.com/epoberezkin/ajv#getting-started
+- use one of the usage patterns from https://github.com/ajv-validator/ajv#getting-started
 - use `options`, `schema` and `data` as variables, do not repeat their values here
 - post a working code sample in RunKit notebook cloned from https://runkit.com/esp/ajv-issue and include the link here.
 
