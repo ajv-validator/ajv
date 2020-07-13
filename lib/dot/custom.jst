@@ -180,7 +180,9 @@ var {{=$valid}};
           if (vErrors === null) vErrors = {{=$ruleErrs}};
           else vErrors = vErrors.concat({{=$ruleErrs}});
           errors = vErrors.length;
-          {{# def.extendErrors:false }}
+          {{? $rDef.errors != 'full' }}
+            {{# def.extendErrors:false }}
+          {{?}}
         } else {
           {{= def_customError }}
         }
