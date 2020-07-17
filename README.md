@@ -330,7 +330,7 @@ There are two modes of format validation: `fast` and `full`. This mode affects f
 
 You can add additional formats and replace any of the formats above using [addFormat](#api-addformat) method.
 
-The option `unknownFormats` allows changing the default behaviour when an unknown format is encountered. In this case Ajv can either fail schema compilation (default) or ignore it (default in versions before 5.0.0). You also can whitelist specific format(s) to be ignored. See [Options](#options) for details.
+The option `unknownFormats` allows changing the default behaviour when an unknown format is encountered. In this case Ajv can either fail schema compilation (default) or ignore it (default in versions before 5.0.0). You also can allowlist specific format(s) to be ignored. See [Options](#options) for details.
 
 You can find regular expressions used for format validation and the sources that were used in [formats.js](https://github.com/ajv-validator/ajv/blob/master/lib/compile/formats.js).
 

@@ -49,7 +49,7 @@
         "valid": false
       },
       {
-        "description": "whitelisted unknown format is valid",
+        "description": "allowlisted unknown format is valid",
         "data": {
           "str": "any value",
           "strFormat": "allowedUnknown"
@@ -57,7 +57,7 @@
         "valid": true
       },
       {
-        "description": "not whitelisted unknown format is invalid",
+        "description": "not allowlisted unknown format is invalid",
         "data": {
           "str": "any value",
           "strFormat": "completelyUnknown"
