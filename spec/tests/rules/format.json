@@ -1,6 +1,6 @@
 [
   {
-    "description": "alloylisted unknown format is valid",
+    "description": "allowed unknown format is valid",
     "schema": {
       "format": "allowedUnknown"
     },

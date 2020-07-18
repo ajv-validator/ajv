@@ -3,7 +3,11 @@
     "description": "one property has format set in another property",
     "schema": {
       "properties": {
-        "str": { "format": { "$data": "1/strFormat" } },
+        "str": {
+          "format": {
+            "$data": "1/strFormat"
+          }
+        },
         "strFormat": {}
       }
     },
@@ -49,7 +53,7 @@
         "valid": false
       },
       {
-        "description": "allowlisted unknown format is valid",
+        "description": "allowed unknown format is valid",
         "data": {
           "str": "any value",
           "strFormat": "allowedUnknown"
@@ -57,7 +61,7 @@
         "valid": true
       },
       {
-        "description": "not allowlisted unknown format is invalid",
+        "description": "unknown format is invalid",
         "data": {
           "str": "any value",
           "strFormat": "completelyUnknown"
@@ -85,7 +89,9 @@
     "description": "property name is the format for the property value",
     "schema": {
       "additionalProperties": {
-        "format": { "$data": "0#" }
+        "format": {
+          "$data": "0#"
+        }
       }
     },
     "tests": [

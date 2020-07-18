@@ -70,7 +70,7 @@ describe('unknownFormats option', function() {
   });
 
   describe('= [String]', function() {
-    it('should pass schema compilation and be valid if alloylisted unknown format is used', function() {
+    it('should pass schema compilation and be valid if allowed unknown format is used', function() {
       test(new Ajv({unknownFormats: ['allowed']}));
 
       function test(ajv) {
@@ -83,7 +83,7 @@ describe('unknownFormats option', function() {
       }
     });
 
-    it('should be valid if alloylisted unknown format is used via $data', function() {
+    it('should be valid if allowed unknown format is used via $data', function() {
       test(new Ajv({$data: true, unknownFormats: ['allowed']}));
 
       function test(ajv) {
