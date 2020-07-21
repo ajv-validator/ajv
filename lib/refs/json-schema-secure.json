@@ -60,17 +60,11 @@
     "additionalProperties": {"$ref": "#"},
     "dependencies": {
       "additionalProperties": {
-        "anyOf": [
-          {"type": "array"},
-          {"$ref": "#"}
-        ]
+        "anyOf": [{"type": "array"}, {"$ref": "#"}]
       }
     },
     "items": {
-      "anyOf": [
-        {"$ref": "#"},
-        {"$ref": "#/definitions/schemaArray"}
-      ]
+      "anyOf": [{"$ref": "#"}, {"$ref": "#/definitions/schemaArray"}]
     },
     "definitions": {
       "additionalProperties": {"$ref": "#"}

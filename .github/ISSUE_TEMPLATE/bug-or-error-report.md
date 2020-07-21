@@ -1,10 +1,9 @@
 ---
 name: Bug or error report
 about: Please use for issues related to incorrect validation behaviour
-title: ''
-labels: 'bug report'
-assignees: ''
-
+title: ""
+labels: "bug report"
+assignees: ""
 ---
 
 <!--
@@ -17,17 +16,12 @@ For other issues please see https://github.com/ajv-validator/ajv/blob/master/CON
 
 **What version of Ajv are you using? Does the issue happen if you use the latest version?**
 
-
-
 **Ajv options object**
 
 <!-- See https://github.com/ajv-validator/ajv#options -->
 
 ```javascript
-
-
 ```
-
 
 **JSON Schema**
 
@@ -38,7 +32,6 @@ For other issues please see https://github.com/ajv-validator/ajv/blob/master/CON
 
 ```
 
-
 **Sample data**
 
 <!-- Please make it as small as posssible to reproduce the issue -->
@@ -47,7 +40,6 @@ For other issues please see https://github.com/ajv-validator/ajv/blob/master/CON
 
 
 ```
-
 
 **Your code**
 
@@ -63,10 +55,7 @@ Thank you!
 -->
 
 ```javascript
-
-
 ```
-
 
 **Validation result, data AFTER validation, error messages**
 
@@ -76,6 +65,5 @@ Thank you!
 ```
 
 **What results did you expect?**
-
 
 **Are you going to resolve the issue?**

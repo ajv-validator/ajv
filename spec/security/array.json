@@ -1,7 +1,9 @@
 [
   {
     "description": "uniqueItems without type keyword should be used together with maxItems",
-    "schema": {"$ref": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#"},
+    "schema": {
+      "$ref": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#"
+    },
     "tests": [
       {
         "description": "uniqueItems keyword used without maxItems is unsafe",
@@ -29,7 +31,9 @@
   },
   {
     "description": "uniqueItems with scalar type(s) is safe to use without maxItems",
-    "schema": {"$ref": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#"},
+    "schema": {
+      "$ref": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#"
+    },
     "tests": [
       {
         "description": "uniqueItems keyword with a single scalar type is safe",
@@ -55,7 +59,9 @@
   },
   {
     "description": "uniqueItems with compound type(s) should be used together with maxItems",
-    "schema": {"$ref": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#"},
+    "schema": {
+      "$ref": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#"
+    },
     "tests": [
       {
         "description": "uniqueItems keyword with a single compound type and without maxItems is unsafe",
@@ -83,7 +89,7 @@
         "data": {
           "uniqueItems": true,
           "items": {
-            "type": ["array","number"]
+            "type": ["array", "number"]
           }
         },
         "valid": false
@@ -94,7 +100,7 @@
           "uniqueItems": true,
           "maxItems": "10",
           "items": {
-            "type": ["array","number"]
+            "type": ["array", "number"]
           }
         },
         "valid": true

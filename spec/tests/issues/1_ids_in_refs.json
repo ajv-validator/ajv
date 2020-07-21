@@ -22,8 +22,8 @@
       }
     ],
     "tests": [
-      { "description": "valid", "data": 1, "valid": true },
-      { "description": "invalid", "data": "foo", "valid": false }
+      {"description": "valid", "data": 1, "valid": true},
+      {"description": "invalid", "data": "foo", "valid": false}
     ]
   },
   {
@@ -51,8 +51,8 @@
       }
     ],
     "tests": [
-      { "description": "valid", "data": 1, "valid": true },
-      { "description": "invalid", "data": "foo", "valid": false }
+      {"description": "valid", "data": 1, "valid": true},
+      {"description": "invalid", "data": "foo", "valid": false}
     ]
   },
   {
@@ -66,8 +66,8 @@
       "$ref": "#/definitions/int"
     },
     "tests": [
-      { "description": "valid", "data": 1, "valid": true },
-      { "description": "invalid", "data": "foo", "valid": false }
+      {"description": "valid", "data": 1, "valid": true},
+      {"description": "invalid", "data": "foo", "valid": false}
     ]
   }
 ]

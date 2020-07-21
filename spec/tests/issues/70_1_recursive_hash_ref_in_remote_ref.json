@@ -5,9 +5,9 @@
       "$ref": "http://json-schema.org/draft-07/schema#/definitions/nonNegativeIntegerDefault0"
     },
     "tests": [
-      { "data": 1, "valid": true, "description": "positive integer is valid" },
-      { "data": 0, "valid": true, "description": "zero is valid" },
-      { "data": -1, "valid": false, "description": "negative integer is invalid" }
+      {"data": 1, "valid": true, "description": "positive integer is valid"},
+      {"data": 0, "valid": true, "description": "zero is valid"},
+      {"data": -1, "valid": false, "description": "negative integer is invalid"}
     ]
   },
   {
@@ -17,41 +17,61 @@
       "$ref": "http://json-schema.org/draft-07/schema#/definitions/nonNegativeIntegerDefault0"
     },
     "tests": [
-      { "data": 1, "valid": true, "description": "positive integer is valid" },
-      { "data": 0, "valid": true, "description": "zero is valid" },
-      { "data": -1, "valid": false, "description": "negative integer is invalid" }
+      {"data": 1, "valid": true, "description": "positive integer is valid"},
+      {"data": 0, "valid": true, "description": "zero is valid"},
+      {"data": -1, "valid": false, "description": "negative integer is invalid"}
     ]
   },
   {
     "description": "local hash ref with remote hash ref without inner hash ref (#70, was passing)",
     "schema": {
       "definitions": {
-        "a": { "$ref": "http://json-schema.org/draft-07/schema#/definitions/nonNegativeIntegerDefault0" }
+        "a": {
+          "$ref": "http://json-schema.org/draft-07/schema#/definitions/nonNegativeIntegerDefault0"
+        }
       },
       "properties": {
-        "b": { "$ref": "#/definitions/a" }
+        "b": {"$ref": "#/definitions/a"}
       }
     },
     "tests": [
-      { "data": { "b": 1 }, "valid": true, "description": "positive integer is valid" },
-      { "data": { "b": 0 }, "valid": true, "description": "zero is valid" },
-      { "data": { "b": -1 }, "valid": false, "description": "negative integer is invalid" }
+      {
+        "data": {"b": 1},
+        "valid": true,
+        "description": "positive integer is valid"
+      },
+      {"data": {"b": 0}, "valid": true, "description": "zero is valid"},
+      {
+        "data": {"b": -1},
+        "valid": false,
+        "description": "negative integer is invalid"
+      }
     ]
   },
   {
     "description": "local hash ref with remote hash ref that has inner hash ref (#70)",
     "schema": {
       "definitions": {
-        "a": { "$ref": "http://json-schema.org/draft-07/schema#/definitions/nonNegativeIntegerDefault0" }
+        "a": {
+          "$ref": "http://json-schema.org/draft-07/schema#/definitions/nonNegativeIntegerDefault0"
+        }
       },
       "properties": {
-        "b": { "$ref": "#/definitions/a" }
+        "b": {"$ref": "#/definitions/a"}
       }
     },
     "tests": [
-      { "data": { "b": 1 }, "valid": true, "description": "positive integer is valid" },
-      { "data": { "b": 0 }, "valid": true, "description": "zero is valid" },
-      { "data": { "b": -1 }, "valid": false, "description": "negative integer is invalid" }
+      {
+        "data": {"b": 1},
+        "valid": true,
+        "description": "positive integer is valid"
+      },
+      {"data": {"b": 0}, "valid": true, "description": "zero is valid"},
+      {
+        "data": {"b": -1},
+        "valid": false,
+        "description": "negative integer is invalid"
+      }
     ]
   }
 ]

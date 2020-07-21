@@ -3,7 +3,7 @@
     "description": "propertyNames validation",
     "schema": {
       "type": "object",
-      "propertyNames": { "format": "email" }
+      "propertyNames": {"format": "email"}
     },
     "tests": [
       {

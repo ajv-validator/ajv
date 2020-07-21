@@ -4,7 +4,7 @@
     "buu": {
       "type": "object",
       "properties": {
-        "bar": { "$ref": "bar.json" }
+        "bar": {"$ref": "bar.json"}
       }
     }
   }

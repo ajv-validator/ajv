@@ -12,17 +12,12 @@ This template is for bug or error reports. For other issues please use:
 
 **What version of Ajv are you using? Does the issue happen if you use the latest version?**
 
-
-
 **Ajv options object**
 
 <!-- See https://github.com/ajv-validator/ajv#options -->
 
 ```javascript
-
-
 ```
-
 
 **JSON Schema**
 
@@ -33,7 +28,6 @@ This template is for bug or error reports. For other issues please use:
 
 ```
 
-
 **Sample data**
 
 <!-- Please make it as small as posssible to reproduce the issue -->
@@ -42,7 +36,6 @@ This template is for bug or error reports. For other issues please use:
 
 
 ```
-
 
 **Your code**
 
@@ -58,10 +51,7 @@ Thank you!
 -->
 
 ```javascript
-
-
 ```
-
 
 **Validation result, data AFTER validation, error messages**
 
@@ -71,6 +61,5 @@ Thank you!
 ```
 
 **What results did you expect?**
-
 
 **Are you going to resolve the issue?**

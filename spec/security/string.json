@@ -1,7 +1,9 @@
 [
   {
     "description": "pattern keyword should be used together with maxLength",
-    "schema": { "$ref": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#" },
+    "schema": {
+      "$ref": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#"
+    },
     "tests": [
       {
         "description": "pattern keyword used without maxLength is unsafe",
@@ -22,7 +24,9 @@
   },
   {
     "description": "format keyword should be used together with maxLength",
-    "schema": { "$ref": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#" },
+    "schema": {
+      "$ref": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#"
+    },
     "tests": [
       {
         "description": "format keyword used without maxLength is unsafe",

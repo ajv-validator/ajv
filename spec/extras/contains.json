@@ -2,7 +2,7 @@
   {
     "description": "contains keyword requires the item matching schema to be present",
     "schema": {
-        "contains": { "minimum": 5 }
+      "contains": {"minimum": 5}
     },
     "tests": [
       {
@@ -35,7 +35,7 @@
   {
     "description": "contains keyword with const keyword requires a specific item to be present",
     "schema": {
-        "contains": { "const": 5 }
+      "contains": {"const": 5}
     },
     "tests": [
       {

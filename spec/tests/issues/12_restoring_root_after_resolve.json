@@ -3,13 +3,10 @@
     "description": "restoring root after ref resolution (#12)",
     "schema": {
       "definitions": {
-        "int": { "$ref": "http://localhost:1234/integer.json" },
-        "str": { "type": "string" }
+        "int": {"$ref": "http://localhost:1234/integer.json"},
+        "str": {"type": "string"}
       },
-      "anyOf": [
-        { "$ref": "#/definitions/int" },
-        { "$ref": "#/definitions/str" }
-      ]
+      "anyOf": [{"$ref": "#/definitions/int"}, {"$ref": "#/definitions/str"}]
     },
     "tests": [
       {
@@ -33,13 +30,10 @@
     "description": "all refs are in the same place",
     "schema": {
       "definitions": {
-        "int": { "type": "integer" },
-        "str": { "type": "string" }
+        "int": {"type": "integer"},
+        "str": {"type": "string"}
       },
-      "anyOf": [
-        { "$ref": "#/definitions/int" },
-        { "$ref": "#/definitions/str" }
-      ]
+      "anyOf": [{"$ref": "#/definitions/int"}, {"$ref": "#/definitions/str"}]
     },
     "tests": [
       {

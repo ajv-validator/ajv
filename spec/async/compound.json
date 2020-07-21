@@ -5,7 +5,7 @@
       "$async": true,
       "allOf": [
         {
-          "idExists": { "table": "users" }
+          "idExists": {"table": "users"}
         },
         {
           "type": "integer",
@@ -42,7 +42,7 @@
       "$async": true,
       "anyOf": [
         {
-          "idExists": { "table": "users" }
+          "idExists": {"table": "users"}
         },
         {
           "type": "integer",
@@ -79,7 +79,7 @@
       "$async": true,
       "oneOf": [
         {
-          "idExists": { "table": "users" }
+          "idExists": {"table": "users"}
         },
         {
           "type": "integer",
@@ -115,7 +115,7 @@
     "schema": {
       "$async": true,
       "not": {
-        "idExists": { "table": "users" }
+        "idExists": {"table": "users"}
       }
     },
     "tests": [

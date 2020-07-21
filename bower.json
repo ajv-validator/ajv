@@ -2,24 +2,10 @@
   "name": "ajv",
   "description": "Another JSON Schema Validator",
   "main": "dist/ajv.min.js",
-  "authors": [
-    "Evgeny Poberezkin"
-  ],
+  "authors": ["Evgeny Poberezkin"],
   "license": "MIT",
-  "keywords": [
-    "JSON",
-    "schema",
-    "validator"
-  ],
+  "keywords": ["JSON", "schema", "validator"],
   "homepage": "https://github.com/ajv-validator/ajv",
-  "moduleType": [
-    "amd",
-    "globals",
-    "node"
-  ],
-  "ignore": [
-    "node_modules",
-    "bower_components",
-    "spec"
-  ]
+  "moduleType": ["amd", "globals", "node"],
+  "ignore": ["node_modules", "bower_components", "spec"]
 }

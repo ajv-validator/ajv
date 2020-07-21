@@ -5,7 +5,7 @@
       "properties": {
         "smaller": {},
         "largerOrEqual": {
-          "minimum": { "$data": "1/smaller" }
+          "minimum": {"$data": "1/smaller"}
         }
       }
     },
@@ -58,7 +58,7 @@
       "properties": {
         "number": {
           "minimum": 3,
-          "exclusiveMinimum": { "$data": "1/minIsExclusive" }
+          "exclusiveMinimum": {"$data": "1/minIsExclusive"}
         },
         "minIsExclusive": {}
       }
@@ -149,8 +149,8 @@
       "properties": {
         "smaller": {},
         "largerOrEqual": {
-          "minimum": { "$data": "1/smaller" },
-          "exclusiveMinimum": { "$data": "1/minIsExclusive" }
+          "minimum": {"$data": "1/smaller"},
+          "exclusiveMinimum": {"$data": "1/minIsExclusive"}
         },
         "minIsExclusive": {}
       }
@@ -249,7 +249,7 @@
     "description": "items in array are >= than their indeces",
     "schema": {
       "items": {
-        "minimum": { "$data": "0#" }
+        "minimum": {"$data": "0#"}
       }
     },
     "tests": [

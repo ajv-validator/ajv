@@ -61,11 +61,7 @@
     "schema": {
       "properties": {
         "arr": {
-          "items": [
-            {},
-            {},
-            {}
-          ],
+          "items": [{}, {}, {}],
           "additionalItems": false
         },
         "sameArr": {
@@ -155,9 +151,7 @@
         "description": "1 item array containing property is valid",
         "data": {
           "name": "foo",
-          "list": [
-            "foo"
-          ]
+          "list": ["foo"]
         },
         "valid": true
       },
@@ -165,10 +159,7 @@
         "description": "2 item array containing property is valid",
         "data": {
           "name": "foo",
-          "list": [
-            "foo",
-            "bar"
-          ]
+          "list": ["foo", "bar"]
         },
         "valid": true
       },
@@ -176,9 +167,7 @@
         "description": "array not containing property is invalid",
         "data": {
           "name": "foo",
-          "list": [
-            "bar"
-          ]
+          "list": ["bar"]
         },
         "valid": false
       },
@@ -208,11 +197,7 @@
       {
         "description": "one of the enum is valid",
         "data": {
-          "allowedValues": [
-            1,
-            2,
-            3
-          ],
+          "allowedValues": [1, 2, 3],
           "value": 1
         },
         "valid": true
@@ -220,11 +205,7 @@
       {
         "description": "something else is invalid",
         "data": {
-          "allowedValues": [
-            1,
-            2,
-            3
-          ],
+          "allowedValues": [1, 2, 3],
           "value": 4
         },
         "valid": false
@@ -280,10 +261,7 @@
       {
         "description": "properties are valid",
         "data": {
-          "allowedValues": [
-            "foo",
-            "bar"
-          ],
+          "allowedValues": ["foo", "bar"],
           "a": "foo",
           "b": "bar"
         },
@@ -292,10 +270,7 @@
       {
         "description": "properties are invalid",
         "data": {
-          "allowedValues": [
-            "foo",
-            "bar"
-          ],
+          "allowedValues": ["foo", "bar"],
           "a": "foo",
           "b": "baz"
         },
@@ -320,9 +295,7 @@
         "description": "present required property is valid",
         "data": {
           "foo": 1,
-          "requiredProperties": [
-            "foo"
-          ]
+          "requiredProperties": ["foo"]
         },
         "valid": true
       },
@@ -330,9 +303,7 @@
         "description": "non-present required property is invalid",
         "data": {
           "bar": 2,
-          "requiredProperties": [
-            "foo"
-          ]
+          "requiredProperties": ["foo"]
         },
         "valid": false
       },
@@ -340,10 +311,7 @@
         "description": "non-present second required property is invalid",
         "data": {
           "foo": 1,
-          "requiredProperties": [
-            "foo",
-            "bar"
-          ]
+          "requiredProperties": ["foo", "bar"]
         },
         "valid": false
       },
@@ -352,10 +320,7 @@
         "data": {
           "foo": 1,
           "bar": 2,
-          "requiredProperties": [
-            "foo",
-            "bar"
-          ]
+          "requiredProperties": ["foo", "bar"]
         },
         "valid": true
       },

@@ -4,7 +4,7 @@
     "schema": {
       "properties": {
         "minArrayLength": {},
-        "array": { "minItems": { "$data": "1/minArrayLength" } }
+        "array": {"minItems": {"$data": "1/minArrayLength"}}
       }
     },
     "tests": [

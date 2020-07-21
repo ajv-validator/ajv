@@ -1,10 +1,9 @@
 ---
 name: Feature or change proposal
 about: For proposals of new features, options or some other improvements
-title: ''
-labels: 'enhancement'
-assignees: ''
-
+title: ""
+labels: "enhancement"
+assignees: ""
 ---
 
 <!--

@@ -2,9 +2,11 @@
   {
     "description": "id property in referenced schema in object that is not a schema (#63)",
     "schema": {
-      "type" : "object",
+      "type": "object",
       "properties": {
-        "title": { "$ref": "http://json-schema.org/draft-07/schema#/properties/title" }
+        "title": {
+          "$ref": "http://json-schema.org/draft-07/schema#/properties/title"
+        }
       }
     },
     "tests": [
@@ -15,12 +17,12 @@
       },
       {
         "description": "string is valid",
-        "data": { "title": "foo" },
+        "data": {"title": "foo"},
         "valid": true
       },
       {
         "description": "number is invalid",
-        "data": { "title": 1 },
+        "data": {"title": 1},
         "valid": false
       }
     ]

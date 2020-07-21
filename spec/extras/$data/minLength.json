@@ -4,7 +4,7 @@
     "schema": {
       "properties": {
         "minimumLength": {},
-        "string": { "minLength": { "$data": "1/minimumLength" } }
+        "string": {"minLength": {"$data": "1/minimumLength"}}
       }
     },
     "tests": [

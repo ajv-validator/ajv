@@ -1,10 +1,9 @@
 ---
 name: Installation and dependency issue
 about: For issues that happen during installation
-title: ''
-labels: 'installation'
-assignees: ''
-
+title: ""
+labels: "installation"
+assignees: ""
 ---
 
 <!--

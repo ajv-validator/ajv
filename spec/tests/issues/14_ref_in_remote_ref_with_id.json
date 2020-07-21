@@ -4,7 +4,7 @@
     "schema": {
       "$id": "http://localhost:1234/issue14a.json",
       "type": "array",
-      "items": { "$ref": "foo.json" }
+      "items": {"$ref": "foo.json"}
     },
     "tests": [
       {
@@ -32,7 +32,7 @@
     "schema": {
       "$id": "http://localhost:1234/issue14b.json",
       "type": "array",
-      "items": { "$ref": "buu.json#/definitions/buu" }
+      "items": {"$ref": "buu.json#/definitions/buu"}
     },
     "tests": [
       {

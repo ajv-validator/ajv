@@ -3,7 +3,7 @@
     "description": "items with empty schema",
     "schema": {
       "items": [{}],
-      "additionalItems": { "type": "string" }
+      "additionalItems": {"type": "string"}
     },
     "tests": [
       {
@@ -26,13 +26,13 @@
           "type": "array",
           "additionalItems": false,
           "items": [
-            { "$ref": "#/definitions/sub-child" },
-            { "$ref": "#/definitions/sub-child" }
+            {"$ref": "#/definitions/sub-child"},
+            {"$ref": "#/definitions/sub-child"}
           ]
         },
         "sub-child": {
           "type": "object",
-          "properties": { "foo": {} },
+          "properties": {"foo": {}},
           "required": ["foo"],
           "additionalProperties": false
         }
@@ -40,37 +40,37 @@
       "type": "array",
       "additionalItems": false,
       "items": [
-        { "$ref": "#/definitions/child" },
-        { "$ref": "#/definitions/child" },
-        { "$ref": "#/definitions/child" }
+        {"$ref": "#/definitions/child"},
+        {"$ref": "#/definitions/child"},
+        {"$ref": "#/definitions/child"}
       ]
     },
     "tests": [
       {
         "description": "valid items",
         "data": [
-          [ {"foo": null}, {"foo": null} ],
-          [ {"foo": null}, {"foo": null} ],
-          [ {"foo": null}, {"foo": null} ]
+          [{"foo": null}, {"foo": null}],
+          [{"foo": null}, {"foo": null}],
+          [{"foo": null}, {"foo": null}]
         ],
         "valid": true
       },
       {
         "description": "too many children",
         "data": [
-          [ {"foo": null}, {"foo": null} ],
-          [ {"foo": null}, {"foo": null} ],
-          [ {"foo": null}, {"foo": null} ],
-          [ {"foo": null}, {"foo": null} ]
+          [{"foo": null}, {"foo": null}],
+          [{"foo": null}, {"foo": null}],
+          [{"foo": null}, {"foo": null}],
+          [{"foo": null}, {"foo": null}]
         ],
         "valid": false
       },
       {
         "description": "too many sub-children",
         "data": [
-          [ {"foo": null}, {"foo": null}, {"foo": null} ],
-          [ {"foo": null}, {"foo": null} ],
-          [ {"foo": null}, {"foo": null} ]
+          [{"foo": null}, {"foo": null}, {"foo": null}],
+          [{"foo": null}, {"foo": null}],
+          [{"foo": null}, {"foo": null}]
         ],
         "valid": false
       },
@@ -78,26 +78,23 @@
         "description": "wrong child",
         "data": [
           {"foo": null},
-          [ {"foo": null}, {"foo": null} ],
-          [ {"foo": null}, {"foo": null} ]
+          [{"foo": null}, {"foo": null}],
+          [{"foo": null}, {"foo": null}]
         ],
         "valid": false
       },
       {
         "description": "wrong sub-child",
         "data": [
-          [ {"bar": null}, {"foo": null} ],
-          [ {"foo": null}, {"foo": null} ],
-          [ {"foo": null}, {"foo": null} ]
+          [{"bar": null}, {"foo": null}],
+          [{"foo": null}, {"foo": null}],
+          [{"foo": null}, {"foo": null}]
         ],
         "valid": false
       },
       {
         "description": "fewer children is valid",
-        "data": [
-          [ {"foo": null} ],
-          [ {"foo": null} ]
-        ],
+        "data": [[{"foo": null}], [{"foo": null}]],
         "valid": true
       }
     ]
@@ -122,17 +119,20 @@
     "tests": [
       {
         "description": "valid nested array",
-        "data": [[[[1]], [[2],[3]]], [[[4], [5], [6]]]],
+        "data": [[[[1]], [[2], [3]]], [[[4], [5], [6]]]],
         "valid": true
       },
       {
         "description": "nested array with invalid type",
-        "data": [[[["1"]], [[2],[3]]], [[[4], [5], [6]]]],
+        "data": [[[["1"]], [[2], [3]]], [[[4], [5], [6]]]],
         "valid": false
       },
       {
         "description": "not deep enough",
-        "data": [[[1], [2],[3]], [[4], [5], [6]]],
+        "data": [
+          [[1], [2], [3]],
+          [[4], [5], [6]]
+        ],
         "valid": false
       }
     ]

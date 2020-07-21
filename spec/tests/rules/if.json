@@ -2,8 +2,8 @@
   {
     "description": "if/then keyword validation",
     "schema": {
-      "if": { "minimum": 10 },
-      "then": { "multipleOf": 2 }
+      "if": {"minimum": 10},
+      "then": {"multipleOf": 2}
     },
     "tests": [
       {
@@ -26,9 +26,9 @@
   {
     "description": "if/then/else keyword validation",
     "schema": {
-      "if": { "maximum": 10 },
-      "then": { "multipleOf": 2 },
-      "else": { "multipleOf": 5 }
+      "if": {"maximum": 10},
+      "then": {"multipleOf": 2},
+      "else": {"multipleOf": 5}
     },
     "tests": [
       {
@@ -61,9 +61,9 @@
         "$id": "http://example.com/if",
         "minimum": 10
       },
-      "then": { "$ref": "#/definitions/def" },
+      "then": {"$ref": "#/definitions/def"},
       "definitions": {
-        "def": { "multipleOf": 2 }
+        "def": {"multipleOf": 2}
       }
     },
     "tests": [
@@ -87,8 +87,8 @@
   {
     "description": "then/else without if should be ignored",
     "schema": {
-      "then": { "multipleOf": 2 },
-      "else": { "multipleOf": 5 }      
+      "then": {"multipleOf": 2},
+      "else": {"multipleOf": 5}
     },
     "tests": [
       {
@@ -116,7 +116,7 @@
   {
     "description": "if without then/else should be ignored",
     "schema": {
-      "if": { "maximum": 10 }
+      "if": {"maximum": 10}
     },
     "tests": [
       {

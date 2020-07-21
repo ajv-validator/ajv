@@ -4,14 +4,14 @@
     "schema": {
       "definitions": {
         "arr": {
-           "type": "array",
-           "items": { "$ref": "#" }
+          "type": "array",
+          "items": {"$ref": "#"}
         }
       },
       "type": "object",
       "properties": {
-        "name": { "type": "string" },
-        "children": { "$ref": "#/definitions/arr" }
+        "name": {"type": "string"},
+        "children": {"$ref": "#/definitions/arr"}
       }
     },
     "tests": [
@@ -19,10 +19,7 @@
         "description": "valid",
         "data": {
           "name": "foo",
-          "children": [
-            { "name": "bar" },
-            { "name": "baz" }
-          ]
+          "children": [{"name": "bar"}, {"name": "baz"}]
         },
         "valid": true
       },
@@ -30,10 +27,7 @@
         "description": "child numbers are invalid",
         "data": {
           "name": "foo",
-          "children": [
-            { "name": 1 },
-            { "name": 2 }
-          ]
+          "children": [{"name": 1}, {"name": 2}]
         },
         "valid": false
       },
@@ -41,10 +35,7 @@
         "description": "child arrays are invalid",
         "data": {
           "name": "foo",
-          "children": [
-            [ ],
-            [ ]
-          ]
+          "children": [[], []]
         },
         "valid": false
       }
@@ -55,16 +46,13 @@
     "schema": {
       "definitions": {
         "orNull": {
-          "anyOf": [
-            { "type": "null" },
-            { "$ref": "#" }
-          ]
+          "anyOf": [{"type": "null"}, {"$ref": "#"}]
         }
       },
       "type": "object",
       "properties": {
-        "name": { "type": "string" },
-        "parent": { "$ref": "#/definitions/orNull" }
+        "name": {"type": "string"},
+        "parent": {"$ref": "#/definitions/orNull"}
       }
     },
     "tests": [

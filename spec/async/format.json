@@ -35,43 +35,43 @@
       "$async": true,
       "additionalProperties": {
         "type": "string",
-        "format": { "$data": "0#" }
+        "format": {"$data": "0#"}
       }
     },
     "tests": [
       {
         "description": "'tomorrow' is a valid english word",
-        "data": { "english_word": "tomorrow" },
+        "data": {"english_word": "tomorrow"},
         "valid": true
       },
       {
         "description": "'manana' is an invalid english word",
-        "data": { "english_word": "manana" },
+        "data": {"english_word": "manana"},
         "valid": false
       },
       {
         "description": "number is invalid",
-        "data": { "english_word": 1 },
+        "data": {"english_word": 1},
         "valid": false
       },
       {
         "description": "'today' throws an exception, not in the dictionary",
-        "data": { "english_word": "today" },
+        "data": {"english_word": "today"},
         "error": "unknown word"
       },
       {
         "description": "valid date",
-        "data": { "date": "2016-01-25" },
+        "data": {"date": "2016-01-25"},
         "valid": true
       },
       {
         "description": "invalid date",
-        "data": { "date": "01/25/2016" },
+        "data": {"date": "01/25/2016"},
         "valid": false
       },
       {
         "description": "number is invalid",
-        "data": { "date": 1 },
+        "data": {"date": 1},
         "valid": false
       }
     ]
