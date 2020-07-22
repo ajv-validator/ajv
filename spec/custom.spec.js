@@ -905,7 +905,7 @@ describe("Custom keywords", function () {
       shouldBeValid(validate, {foo: 3.99})
 
       shouldBeInvalid(validate, {foo: 2}, numErrors)
-      if (customErrors)
+      if (customErrors) {
         shouldBeRangeError(
           validate.errors[0],
           ".foo",
@@ -914,8 +914,9 @@ describe("Custom keywords", function () {
           2,
           true
         )
+      }
       shouldBeInvalid(validate, {foo: 4}, numErrors)
-      if (customErrors)
+      if (customErrors) {
         shouldBeRangeError(
           validate.errors[0],
           ".foo",
@@ -924,6 +925,7 @@ describe("Custom keywords", function () {
           4,
           true
         )
+      }
     })
   }
 
@@ -982,18 +984,20 @@ describe("Custom keywords", function () {
       schema.length == 2 &&
       typeof schema[0] == "number" &&
       typeof schema[1] == "number"
-    if (!schemaValid)
+    if (!schemaValid) {
       throw new Error(
         "Invalid schema for range keyword, should be array of 2 numbers"
       )
+    }
 
     var exclusiveRangeSchemaValid =
       parentSchema.exclusiveRange === undefined ||
       typeof parentSchema.exclusiveRange == "boolean"
-    if (!exclusiveRangeSchemaValid)
+    if (!exclusiveRangeSchemaValid) {
       throw new Error(
-        "Invalid schema for exclusiveRange keyword, should be bolean"
+        "Invalid schema for exclusiveRange keyword, should be boolean"
       )
+    }
   }
 
   function shouldBeValid(validate, data) {

@@ -13,8 +13,7 @@
   ],
   "scripts": {
     "eslint": "eslint lib/{compile/,}*.js spec/{**/,}*.js scripts --ignore-pattern spec/JSON-Schema-Test-Suite",
-    "jshint": "jshint lib/{compile/,}*.js",
-    "lint": "npm run jshint && npm run eslint",
+    "lint": "npm run eslint",
     "prettier:write": "prettier --write './**/*.{md,json,yaml,js,ts}'",
     "prettier:check": "prettier --list-different './**/*.{md,json,yaml,js,ts}'",
     "test-spec": "mocha spec/{**/,}*.spec.js -R spec",

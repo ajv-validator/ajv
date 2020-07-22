@@ -361,10 +361,11 @@ describe("async schemas, formats and keywords", function () {
       return repeat(function () {
         return Promise.all(
           instances.map(function (_ajv) {
-            if (refSchema)
+            if (refSchema) {
               try {
                 _ajv.addSchema(refSchema)
               } catch (e) {}
+            }
             var validate = _ajv.compile(schema)
             var data
 
