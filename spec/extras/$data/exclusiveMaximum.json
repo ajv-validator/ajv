@@ -5,7 +5,7 @@
       "properties": {
         "larger": {},
         "smaller": {
-          "exclusiveMaximum": { "$data": "1/larger" }
+          "exclusiveMaximum": {"$data": "1/larger"}
         }
       }
     },
@@ -59,7 +59,7 @@
       }
     ]
   },
-  
+
   {
     "description": "exclusiveMaximum as number and maximum as $data, exclusiveMaximum > maximum",
     "schema": {
@@ -67,7 +67,7 @@
         "larger": {},
         "smaller": {
           "exclusiveMaximum": 3.5,
-          "maximum": { "$data": "1/larger" }
+          "maximum": {"$data": "1/larger"}
         }
       }
     },
@@ -105,7 +105,7 @@
         "larger": {},
         "smaller": {
           "exclusiveMaximum": 3,
-          "maximum": { "$data": "1/larger" }
+          "maximum": {"$data": "1/larger"}
         }
       }
     },
@@ -143,7 +143,7 @@
         "larger": {},
         "smaller": {
           "exclusiveMaximum": 2.5,
-          "maximum": { "$data": "1/larger" }
+          "maximum": {"$data": "1/larger"}
         }
       }
     },
@@ -182,8 +182,8 @@
         "larger": {},
         "largerExclusive": {},
         "smaller": {
-          "exclusiveMaximum": { "$data": "1/largerExclusive" },
-          "maximum": { "$data": "1/larger" }
+          "exclusiveMaximum": {"$data": "1/largerExclusive"},
+          "maximum": {"$data": "1/larger"}
         }
       }
     },
@@ -224,8 +224,8 @@
         "larger": {},
         "largerExclusive": {},
         "smaller": {
-          "exclusiveMaximum": { "$data": "1/largerExclusive" },
-          "maximum": { "$data": "1/larger" }
+          "exclusiveMaximum": {"$data": "1/largerExclusive"},
+          "maximum": {"$data": "1/larger"}
         }
       }
     },
@@ -266,8 +266,8 @@
         "larger": {},
         "largerExclusive": {},
         "smaller": {
-          "exclusiveMaximum": { "$data": "1/largerExclusive" },
-          "maximum": { "$data": "1/larger" }
+          "exclusiveMaximum": {"$data": "1/largerExclusive"},
+          "maximum": {"$data": "1/larger"}
         }
       }
     },
@@ -306,7 +306,7 @@
     "description": "items in array are < than their indeces",
     "schema": {
       "items": {
-        "exclusiveMaximum": { "$data": "0#" }
+        "exclusiveMaximum": {"$data": "0#"}
       }
     },
     "tests": [

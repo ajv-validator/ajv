@@ -3,10 +3,10 @@
     "description": "quotes in refs (#311)",
     "schema": {
       "properties": {
-        "foo\"bar": { "$ref": "#/definitions/foo\"bar" }
+        "foo\"bar": {"$ref": "#/definitions/foo\"bar"}
       },
       "definitions": {
-        "foo\"bar": { "type": "number" }
+        "foo\"bar": {"type": "number"}
       }
     },
     "tests": [

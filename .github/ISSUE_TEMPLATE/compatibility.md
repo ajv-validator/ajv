@@ -1,10 +1,9 @@
 ---
 name: Browser and compatibility issue
 about: For issues that only happen in a specific environment
-title: ''
-labels: 'compatibility'
-assignees: ''
-
+title: ""
+labels: "compatibility"
+assignees: ""
 ---
 
 <!--

@@ -1,0 +1,6 @@
+spec/JSON-Schema-Test-Suite
+.browser
+coverage
+dist
+.nyc_output
+lib/dotjs

@@ -2,7 +2,7 @@
   {
     "description": "escaping pattern error (#28)",
     "schema": {
-      "type" : "object",
+      "type": "object",
       "properties": {
         "mediaType": {
           "type": "string",

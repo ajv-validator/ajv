@@ -4,7 +4,7 @@
     "schema": {
       "properties": {
         "maxArrayLength": {},
-        "array": { "maxItems": { "$data": "1/maxArrayLength" } }
+        "array": {"maxItems": {"$data": "1/maxArrayLength"}}
       }
     },
     "tests": [

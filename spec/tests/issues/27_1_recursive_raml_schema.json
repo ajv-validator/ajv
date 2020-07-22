@@ -5,9 +5,7 @@
       "title": "A JSON Schema for a standard RAML object",
       "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
-      "required": [
-        "title"
-      ],
+      "required": ["title"],
       "properties": {
         "title": {
           "type": "string",
@@ -184,9 +182,7 @@
           "oneOf": [
             {
               "type": "object",
-              "required": [
-                "type"
-              ],
+              "required": ["type"],
               "properties": {
                 "type": {
                   "enum": ["OAuth 1.0"]
@@ -217,9 +213,7 @@
             },
             {
               "type": "object",
-              "required": [
-                "type"
-              ],
+              "required": ["type"],
               "properties": {
                 "type": {
                   "enum": ["OAuth 2.0"]
@@ -258,17 +252,12 @@
             },
             {
               "type": "object",
-              "required": [
-                "type"
-              ],
+              "required": ["type"],
               "properties": {
                 "type": {
                   "oneOf": [
                     {
-                      "enum": [
-                        "Basic Authentication",
-                        "Digest Authentication"
-                      ]
+                      "enum": ["Basic Authentication", "Digest Authentication"]
                     },
                     {
                       "type": "string",

@@ -1,7 +1,9 @@
 [
   {
     "description": "patternProperties keyword should be used together with propertyNames",
-    "schema": { "$ref": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#" },
+    "schema": {
+      "$ref": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#"
+    },
     "tests": [
       {
         "description": "patternProperties keyword used without propertyNames is unsafe",

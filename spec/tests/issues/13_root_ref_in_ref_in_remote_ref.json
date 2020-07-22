@@ -5,7 +5,7 @@
       "$id": "http://localhost:1234/issue13",
       "type": "object",
       "properties": {
-        "name": { "$ref": "name.json#/definitions/orNull" }
+        "name": {"$ref": "name.json#/definitions/orNull"}
       }
     },
     "tests": [

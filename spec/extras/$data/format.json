@@ -13,46 +13,6 @@
     },
     "tests": [
       {
-        "description": "a valid date-time string",
-        "data": {
-          "str": "1963-06-19T08:30:06.283185Z",
-          "strFormat": "date-time"
-        },
-        "valid": true
-      },
-      {
-        "description": "an invalid date-time string",
-        "data": {
-          "str": "06/19/1963 08:30:06 PST",
-          "strFormat": "date-time"
-        },
-        "valid": false
-      },
-      {
-        "description": "only RFC3339 not all of ISO 8601 are valid",
-        "data": {
-          "str": "2013-350T01:01:01",
-          "strFormat": "date-time"
-        },
-        "valid": false
-      },
-      {
-        "description": "a valid e-mail address",
-        "data": {
-          "str": "joe.bloggs@example.com",
-          "strFormat": "email"
-        },
-        "valid": true
-      },
-      {
-        "description": "an invalid e-mail address",
-        "data": {
-          "str": "2962",
-          "strFormat": "email"
-        },
-        "valid": false
-      },
-      {
         "description": "allowed unknown format is valid",
         "data": {
           "str": "any value",
@@ -80,42 +40,6 @@
         "data": {
           "str": "1963-06-19T08:30:06.283185Z",
           "strFormat": 1963
-        },
-        "valid": false
-      }
-    ]
-  },
-  {
-    "description": "property name is the format for the property value",
-    "schema": {
-      "additionalProperties": {
-        "format": {
-          "$data": "0#"
-        }
-      }
-    },
-    "tests": [
-      {
-        "description": "valid formats",
-        "data": {
-          "date-time": "1963-06-19T08:30:06.283185Z",
-          "email": "joe.bloggs@example.com"
-        },
-        "valid": true
-      },
-      {
-        "description": "invalid date-time",
-        "data": {
-          "date-time": "06/19/1963 08:30:06 PST",
-          "email": "joe.bloggs@example.com"
-        },
-        "valid": false
-      },
-      {
-        "description": "invalid e-mail",
-        "data": {
-          "date-time": "1963-06-19T08:30:06.283185Z",
-          "email": "2962"
         },
         "valid": false
       }

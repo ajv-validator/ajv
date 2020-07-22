@@ -4,7 +4,7 @@
     "schema": {
       "dependencies": {
         "foo'bar": {
-          "not": { "required": ["bar"] }
+          "not": {"required": ["bar"]}
         }
       }
     },

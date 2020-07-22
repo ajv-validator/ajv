@@ -2,14 +2,14 @@
   {
     "description": "escaping pattern property (#17)",
     "schema": {
-      "type" : "object",
+      "type": "object",
       "patternProperties": {
-        "^.+$" : {
-          "type" : "object",
-          "required" : ["unit"]
+        "^.+$": {
+          "type": "object",
+          "required": ["unit"]
         }
       },
-      "additionalProperties" : false
+      "additionalProperties": false
     },
     "tests": [
       {

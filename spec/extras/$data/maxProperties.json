@@ -4,7 +4,7 @@
     "schema": {
       "properties": {
         "maxKeys": {},
-        "object": { "maxProperties": { "$data": "1/maxKeys" } }
+        "object": {"maxProperties": {"$data": "1/maxKeys"}}
       }
     },
     "tests": [

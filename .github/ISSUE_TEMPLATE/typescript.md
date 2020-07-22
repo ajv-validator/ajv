@@ -1,10 +1,9 @@
 ---
 name: Missing or incorrect type definition
 about: Please use for issues related to typescript types
-title: ''
-labels: 'typescript'
-assignees: ''
-
+title: ""
+labels: "typescript"
+assignees: ""
 ---
 
 <!--
@@ -16,7 +15,6 @@ For other issues please see https://github.com/ajv-validator/ajv/blob/master/CON
 
 **What version of Ajv are you using? Does the issue happen if you use the latest version?**
 
-
 **Your typescript code**
 
 <!--
@@ -24,10 +22,7 @@ Please make it as small as posssible to reproduce the issue
 -->
 
 ```typescript
-
-
 ```
-
 
 **Typescript compiler error messages**
 
@@ -37,6 +32,5 @@ Please make it as small as posssible to reproduce the issue
 ```
 
 **Describe the change that should be made to address the issue?**
-
 
 **Are you going to resolve the issue?**

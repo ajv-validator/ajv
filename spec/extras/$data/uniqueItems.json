@@ -4,7 +4,7 @@
     "schema": {
       "properties": {
         "list": {
-          "uniqueItems": { "$data": "1/unique" }
+          "uniqueItems": {"$data": "1/unique"}
         },
         "unique": {}
       }

@@ -1,3 +1,3 @@
-'use strict';
+"use strict"
 
-module.exports = typeof window == 'object' ? window.chai : require('' + 'chai');
+module.exports = typeof window == "object" ? window.chai : require("" + "chai")

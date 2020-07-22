@@ -4,7 +4,7 @@
     "schema": {
       "properties": {
         "allowedValues": {},
-        "value": { "enum": { "$data": "1/allowedValues" } }
+        "value": {"enum": {"$data": "1/allowedValues"}}
       }
     },
     "tests": [
@@ -56,7 +56,7 @@
         "allowedValues": {}
       },
       "additionalProperties": {
-        "enum": { "$data": "1/allowedValues" }
+        "enum": {"$data": "1/allowedValues"}
       }
     },
     "tests": [

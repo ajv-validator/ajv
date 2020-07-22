@@ -3,8 +3,8 @@
   "description": "node",
   "type": "object",
   "properties": {
-    "value": { "type": "number" },
-    "subtree": { "$ref": "tree.json" }
+    "value": {"type": "number"},
+    "subtree": {"$ref": "tree.json"}
   },
   "required": ["value"]
 }

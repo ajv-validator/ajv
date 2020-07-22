@@ -1,4 +1,4 @@
 {
-    "$id": "http://localhost:1234/first.json",
-    "type": "string"
+  "$id": "http://localhost:1234/first.json",
+  "type": "string"
 }

@@ -4,7 +4,7 @@
     "schema": {
       "properties": {
         "shouldMatch": {},
-        "string": { "pattern": { "$data": "1/shouldMatch" } }
+        "string": {"pattern": {"$data": "1/shouldMatch"}}
       }
     },
     "tests": [
@@ -53,18 +53,18 @@
     "description": "property values should contain their names",
     "schema": {
       "additionalProperties": {
-        "pattern": { "$data": "0#" }
+        "pattern": {"$data": "0#"}
       }
     },
     "tests": [
       {
         "description": "valid property values",
-        "data": { "foo": "1foo", "bar": "bar2", "baz": "3baz4" },
+        "data": {"foo": "1foo", "bar": "bar2", "baz": "3baz4"},
         "valid": true
       },
       {
         "description": "invalid property values",
-        "data": { "foo": "fo" },
+        "data": {"foo": "fo"},
         "valid": false
       }
     ]

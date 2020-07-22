@@ -3,7 +3,7 @@
     "description": "property is equal to another property",
     "schema": {
       "properties": {
-        "sameAs": { "const": { "$data": "1/thisOne" } },
+        "sameAs": {"const": {"$data": "1/thisOne"}},
         "thisOne": {}
       }
     },
@@ -19,16 +19,16 @@
       {
         "description": "same object is valid",
         "data": {
-          "sameAs": { "foo": 1, "bar": 2 },
-          "thisOne": { "bar": 2, "foo": 1 }
+          "sameAs": {"foo": 1, "bar": 2},
+          "thisOne": {"bar": 2, "foo": 1}
         },
         "valid": true
       },
       {
         "description": "another value is invalid",
         "data": {
-          "sameAs": { "foo": 1 },
-          "thisOne": { "foo": 2 }
+          "sameAs": {"foo": 1},
+          "thisOne": {"foo": 2}
         },
         "valid": false
       },
@@ -46,18 +46,18 @@
     "description": "property values are equal to property names",
     "schema": {
       "additionalProperties": {
-        "const": { "$data": "0#" }
+        "const": {"$data": "0#"}
       }
     },
     "tests": [
       {
         "description": "valid object",
-        "data": { "foo": "foo", "bar": "bar", "baz": "baz" },
+        "data": {"foo": "foo", "bar": "bar", "baz": "baz"},
         "valid": true
       },
       {
         "description": "invalid object",
-        "data": { "foo": "bar" },
+        "data": {"foo": "bar"},
         "valid": false
       }
     ]
@@ -66,18 +66,18 @@
     "description": "items are equal to their indeces",
     "schema": {
       "items": {
-        "const": { "$data": "0#" }
+        "const": {"$data": "0#"}
       }
     },
     "tests": [
       {
         "description": "valid array",
-        "data": [ 0, 1, 2, 3 ],
+        "data": [0, 1, 2, 3],
         "valid": true
       },
       {
         "description": "invalid array",
-        "data": [ 0, 2 ],
+        "data": [0, 2],
         "valid": false
       }
     ]
@@ -87,14 +87,14 @@
     "schema": {
       "properties": {
         "arr": {
-          "items": [{},{},{}],
+          "items": [{}, {}, {}],
           "additionalItems": false
         },
         "sameArr": {
           "items": [
-            { "const": { "$data": "2/arr/0" } },
-            { "const": { "$data": "2/arr/1" } },
-            { "const": { "$data": "2/arr/2" } }
+            {"const": {"$data": "2/arr/0"}},
+            {"const": {"$data": "2/arr/1"}},
+            {"const": {"$data": "2/arr/2"}}
           ],
           "additionalItems": false
         }
@@ -104,16 +104,16 @@
       {
         "description": "equal arrays are valid",
         "data": {
-          "arr": [ 1, "abc", {"foo": "bar"} ],
-          "sameArr": [ 1, "abc", {"foo": "bar"} ]
+          "arr": [1, "abc", {"foo": "bar"}],
+          "sameArr": [1, "abc", {"foo": "bar"}]
         },
         "valid": true
       },
       {
         "description": "different arrays are invalid",
         "data": {
-          "arr": [ 1, "abc", {"foo": "bar"} ],
-          "sameArr": [ 1, "abc", {"foo": "foo"} ]
+          "arr": [1, "abc", {"foo": "bar"}],
+          "sameArr": [1, "abc", {"foo": "foo"}]
         },
         "valid": false
       }
@@ -122,7 +122,7 @@
   {
     "description": "any data is equal to itself",
     "schema": {
-      "const": { "$data": "0" }
+      "const": {"$data": "0"}
     },
     "tests": [
       {
@@ -137,12 +137,12 @@
       },
       {
         "description": "object is equal to itself",
-        "data": { "foo": "bar" },
+        "data": {"foo": "bar"},
         "valid": true
       },
       {
         "description": "array is equal to itself",
-        "data": [ 1, 2, 3 ],
+        "data": [1, 2, 3],
         "valid": true
       }
     ]
@@ -151,10 +151,10 @@
     "description": "property value is contained in array",
     "schema": {
       "properties": {
-        "name": { "type": "string" },
+        "name": {"type": "string"},
         "list": {
           "type": "array",
-          "contains": { "const": { "$data": "2/name" } }
+          "contains": {"const": {"$data": "2/name"}}
         }
       }
     },
@@ -163,7 +163,7 @@
         "description": "1 item array containing property is valid",
         "data": {
           "name": "foo",
-          "list": [ "foo" ]
+          "list": ["foo"]
         },
         "valid": true
       },
@@ -171,7 +171,7 @@
         "description": "2 item array containing property is valid",
         "data": {
           "name": "foo",
-          "list": [ "foo", "bar" ]
+          "list": ["foo", "bar"]
         },
         "valid": true
       },
@@ -179,7 +179,7 @@
         "description": "array not containing property is invalid",
         "data": {
           "name": "foo",
-          "list": [ "bar" ]
+          "list": ["bar"]
         },
         "valid": false
       },
