@@ -2,7 +2,7 @@
 
 var Ajv = require("../ajv")
 var should = require("../chai").should()
-const DATE_FORMAT = /^\d\d\d\d-[0-1]\d-[0-3]\d$/
+var DATE_FORMAT = /^\d\d\d\d-[0-1]\d-[0-3]\d$/
 
 describe("unknownFormats option", function () {
   describe("= true (default)", function () {

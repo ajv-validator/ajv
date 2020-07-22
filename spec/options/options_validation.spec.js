@@ -1,8 +1,8 @@
 "use strict"
 
-const Ajv = require("../ajv")
+var Ajv = require("../ajv")
 require("../chai").should()
-const DATE_FORMAT = /^\d\d\d\d-[0-1]\d-[0-3]\d$/
+var DATE_FORMAT = /^\d\d\d\d-[0-1]\d-[0-3]\d$/
 
 describe("validation options", function () {
   describe("format", function () {
