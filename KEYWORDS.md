@@ -160,7 +160,7 @@ _invalid_: `"def"`, `""`
 
 The value of the keyword should be a string. The data to be valid should match the format with this name.
 
-Ajv defines these formats: date, date-time, uri, email, hostname, ipv4, ipv6, regex.
+Ajv does not include any formats, they can be added with [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin.
 
 **Example**
 
@@ -536,7 +536,7 @@ For data object to be valid each property name in this object should be valid ac
 
 **Example**
 
-_schema_:
+_schema_ (requires `email` format from [ajv-formats](https://github.com/ajv-validator/ajv-formats)):
 
 ```json
 {

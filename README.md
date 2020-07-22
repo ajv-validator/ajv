@@ -133,7 +133,7 @@ Performance of different validators by [json-schema-benchmark](https://github.co
   - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
   - support of circular references between schemas
   - correct string lengths for strings with unicode pairs (can be turned off)
-  - [formats](#formats) defined by JSON Schema draft-07 standard and custom formats (can be turned off)
+  - [formats](#formats) defined by JSON Schema draft-07 standard (with [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin) and custom formats (can be turned off)
   - [validates schemas against meta-schema](#api-validateschema)
 - supports [browsers](#using-in-browser) and Node.js 0.10-14.x
 - [asynchronous loading](#asynchronous-schema-compilation) of referenced schemas during compilation
@@ -287,11 +287,22 @@ JSON Schema specification defines several annotation keywords that describe sche
 
 ## Formats
 
-Ajv implements formats defined by JSON Schema specification and several other formats. It is recommended NOT to use "format" keyword implementations with untrusted data, as they use potentially unsafe regular expressions - see [ReDoS attack](#redos-attack).
+From version 7 Ajv does not include formats defined by JSON Schema specification - these and several others formats are provided by [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin.
+
+To add all formats from this plugin:
+
+```javascript
+const ajv = new Ajv()
+require("ajv-formats")(ajv)
+```
+
+See ajv-formats documentation for further details.
+
+It is recommended NOT to use "format" keyword implementations with untrusted data, as they use potentially unsafe regular expressions - see [ReDoS attack](#redos-attack).
 
 **Please note**: if you need to use "format" keyword to validate untrusted data, you MUST assess their suitability and safety for your validation scenarios.
 
-The following formats are implemented for string validation with "format" keyword:
+The following formats are defined in [ajv-formats](https://github.com/ajv-validator/ajv-formats) for string validation with "format" keyword:
 
 - _date_: full-date according to [RFC3339](http://tools.ietf.org/html/rfc3339#section-5.6).
 - _time_: time with optional time-zone.
@@ -309,11 +320,9 @@ The following formats are implemented for string validation with "format" keywor
 - _json-pointer_: JSON-pointer according to [RFC6901](https://tools.ietf.org/html/rfc6901).
 - _relative-json-pointer_: relative JSON-pointer according to [this draft](http://tools.ietf.org/html/draft-luff-relative-json-pointer-00).
 
-**Please note**: JSON Schema draft-07 also defines formats `iri`, `iri-reference`, `idn-hostname` and `idn-email` for URLs, hostnames and emails with international characters. Ajv does not implement these formats. If you create Ajv plugin that implements them please make a PR to mention this plugin here.
+**Please note**: JSON Schema draft-07 also defines formats `iri`, `iri-reference`, `idn-hostname` and `idn-email` for URLs, hostnames and emails with international characters. These formats are available in [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) plugin.
 
-There are two modes of format validation: `fast` and `full`. This mode affects formats `date`, `time`, `date-time`, `uri`, `uri-reference`, and `email`. See [Options](#options) for details.
-
-You can add additional formats and replace any of the formats above using [addFormat](#api-addformat) method.
+You can add (and replace) any formats using [addFormat](#api-addformat) method.
 
 The option `unknownFormats` allows changing the default behaviour when an unknown format is encountered. In this case Ajv can either fail schema compilation (default) or ignore it (default in versions before 5.0.0). You also can allow specific format(s) that will be ignored. See [Options](#options) for details.
 
@@ -1107,7 +1116,7 @@ Defaults:
   uniqueItems:      true,
   unicode:          true,
   nullable:         false,
-  format:           false,
+  format:           true,
   formats:          {},
   unknownFormats:   true,
   schemas:          {},
@@ -1159,8 +1168,7 @@ Defaults:
 - _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.
 - _nullable_: support keyword "nullable" from [Open API 3 specification](https://swagger.io/docs/specification/data-models/data-types/).
 - _format_: formats validation mode. Option values:
-  - `"fast"` (default) - simplified and fast validation (see [Formats](#formats) for details of which formats are available and affected by this option).
-  - `"full"` - more restrictive and slow validation. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.
+  - `true` (default) - validate added formats (see [Formats](#formats)).
   - `false` - ignore all format keywords.
 - _formats_: an object with custom formats. Keys and values will be passed to `addFormat` method.
 - _keywords_: an object with custom keywords. Keys and values will be passed to `addKeyword` method.
@@ -1335,16 +1343,17 @@ If you have published a useful plugin please submit a PR to add it to the next s
 
 ## Related packages
 
-- [ajv-async](https://github.com/ajv-validator/ajv-async) - plugin to configure async validation mode
+- [ajv-async](https://github.com/ajv-validator/ajv-async) - plugin to configure async validation mode (DEPRECATED)
 - [ajv-bsontype](https://github.com/BoLaMN/ajv-bsontype) - plugin to validate mongodb's bsonType formats
 - [ajv-cli](https://github.com/jessedc/ajv-cli) - command line interface
+- [ajv-formats](https://github.com/ajv-validator/ajv-formats) - formats defined in JSON Schema specification.
 - [ajv-errors](https://github.com/ajv-validator/ajv-errors) - plugin for custom error messages
 - [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) - internationalised error messages
 - [ajv-istanbul](https://github.com/ajv-validator/ajv-istanbul) - plugin to instrument generated validation code to measure test coverage of your schemas
 - [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) - plugin with custom validation keywords (select, typeof, etc.)
 - [ajv-merge-patch](https://github.com/ajv-validator/ajv-merge-patch) - plugin with keywords $merge and $patch
 - [ajv-pack](https://github.com/ajv-validator/ajv-pack) - produces a compact module exporting validation functions
-- [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) - format validators for draft2019 that aren't already included in ajv (ie. `idn-hostname`, `idn-email`, `iri`, `iri-reference` and `duration`).
+- [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) - format validators for draft2019 that aren't included in [ajv-formats](https://github.com/ajv-validator/ajv-formats) (ie. `idn-hostname`, `idn-email`, `iri`, `iri-reference` and `duration`).
 
 ## Some packages using Ajv
 
