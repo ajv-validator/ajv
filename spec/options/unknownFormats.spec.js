@@ -2,6 +2,7 @@
 
 var Ajv = require("../ajv")
 var should = require("../chai").should()
+const DATE_FORMAT = /^\d\d\d\d-[0-1]\d-[0-3]\d$/
 
 describe("unknownFormats option", function () {
   describe("= true (default)", function () {
@@ -21,6 +22,7 @@ describe("unknownFormats option", function () {
       test(new Ajv({$data: true, unknownFormats: true}))
 
       function test(ajv) {
+        ajv.addFormat("date", DATE_FORMAT)
         var validate = ajv.compile({
           properties: {
             foo: {format: {$data: "1/bar"}},
@@ -52,6 +54,7 @@ describe("unknownFormats option", function () {
       test(new Ajv({$data: true, unknownFormats: "ignore"}))
 
       function test(ajv) {
+        ajv.addFormat("date", DATE_FORMAT)
         var validate = ajv.compile({
           properties: {
             foo: {format: {$data: "1/bar"}},
@@ -86,6 +89,7 @@ describe("unknownFormats option", function () {
       test(new Ajv({$data: true, unknownFormats: ["allowed"]}))
 
       function test(ajv) {
+        ajv.addFormat("date", DATE_FORMAT)
         var validate = ajv.compile({
           properties: {
             foo: {format: {$data: "1/bar"}},

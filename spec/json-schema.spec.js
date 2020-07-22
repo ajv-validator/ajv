@@ -14,13 +14,35 @@ var remoteRefs = {
 }
 
 var SKIP = {
-  4: ["optional/zeroTerminatedFloats"],
+  4: [
+    "optional/zeroTerminatedFloats",
+    "optional/ecmascript-regex", // TODO only format needs to be skipped, too much is skipped here
+    "optional/format",
+  ],
+  6: [
+    "optional/ecmascript-regex", // TODO only format needs to be skipped, too much is skipped here
+    "optional/format",
+  ],
   7: [
+    "optional/ecmascript-regex", // TODO only format needs to be skipped, too much is skipped here
     "optional/content",
+    "format/date",
+    "format/date-time",
+    "format/email",
+    "format/hostname",
     "format/idn-email",
     "format/idn-hostname",
+    "format/ipv4",
+    "format/ipv6",
     "format/iri",
     "format/iri-reference",
+    "format/json-pointer",
+    "format/regex",
+    "format/relative-json-pointer",
+    "format/time",
+    "format/uri",
+    "format/uri-reference",
+    "format/uri-template",
   ],
 }
 

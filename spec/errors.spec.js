@@ -765,17 +765,19 @@ describe("Validation errors", function () {
     it("should add propertyName to errors", function () {
       var schema = {
         type: "object",
-        propertyNames: {format: "email"},
+        propertyNames: {pattern: "bar"},
       }
 
       var data = {
+        bar: {},
         "bar.baz@email.example.com": {},
       }
 
       var invalidData = {
-        foo: {},
         bar: {},
         "bar.baz@email.example.com": {},
+        foo: {},
+        quux: {},
       }
 
       test(ajv, 2)
@@ -788,10 +790,10 @@ describe("Validation errors", function () {
         shouldBeInvalid(validate, invalidData, numErrors)
         shouldBeError(
           validate.errors[0],
-          "format",
-          "#/propertyNames/format",
+          "pattern",
+          "#/propertyNames/pattern",
           "",
-          'should match format "email"'
+          'should match pattern "bar"'
         )
         shouldBeError(
           validate.errors[1],
@@ -803,17 +805,17 @@ describe("Validation errors", function () {
         if (numErrors == 4) {
           shouldBeError(
             validate.errors[2],
-            "format",
-            "#/propertyNames/format",
+            "pattern",
+            "#/propertyNames/pattern",
             "",
-            'should match format "email"'
+            'should match pattern "bar"'
           )
           shouldBeError(
             validate.errors[3],
             "propertyNames",
             "#/propertyNames",
             "",
-            "property name 'bar' is invalid"
+            "property name 'quux' is invalid"
           )
         }
       }

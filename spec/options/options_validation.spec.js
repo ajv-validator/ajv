@@ -1,16 +1,17 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
+const DATE_FORMAT = /^\d\d\d\d-[0-1]\d-[0-3]\d$/
 
 describe("validation options", function () {
   describe("format", function () {
     it("should not validate formats if option format == false", function () {
-      var ajv = new Ajv(),
-        ajvFF = new Ajv({format: false})
+      var ajv = new Ajv({formats: {date: DATE_FORMAT}}),
+        ajvFF = new Ajv({formats: {date: DATE_FORMAT}, format: false})
 
-      var schema = {format: "date-time"}
-      var invalideDateTime = "06/19/1963 08:30:06 PST"
+      var schema = {format: "date"}
+      var invalideDateTime = "06/19/1963" // expects hyphens
 
       ajv.validate(schema, invalideDateTime).should.equal(false)
       ajvFF.validate(schema, invalideDateTime).should.equal(true)

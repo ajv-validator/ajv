@@ -2,6 +2,5 @@ spec/JSON-Schema-Test-Suite
 .browser
 coverage
 dist
-node
 .nyc_output
 lib/dotjs

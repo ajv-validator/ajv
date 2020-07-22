@@ -34,6 +34,8 @@ jsonSchemaTest(instances, {
 })
 
 function addAsyncFormatsAndKeywords(ajv) {
+  ajv.addFormat("date", /^\d\d\d\d-[0-1]\d-[0-3]\d$/)
+
   ajv.addFormat("english_word", {
     async: true,
     validate: checkWordOnServer,

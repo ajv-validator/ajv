@@ -97,7 +97,7 @@ describe("resolve", function () {
           ip1: {
             $id: "urn:some:ip:prop",
             type: "string",
-            format: "ipv4",
+            pattern: "^(\\d+\\.){3}\\d+$",
           },
           ip2: {
             $ref: "urn:some:ip:prop",

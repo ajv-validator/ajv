@@ -144,12 +144,12 @@ describe("ownProperties option", function () {
   it("should only validate own properties with propertyNames", function () {
     var schema = {
       propertyNames: {
-        format: "email",
+        pattern: "foo",
       },
     }
 
-    var obj = {"e@example.com": 2}
-    var proto = {"not email": 1}
+    var obj = {foo: 2}
+    var proto = {bar: 1}
     test(schema, obj, proto, 2)
   })
 

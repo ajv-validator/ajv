@@ -1,6 +1,7 @@
 "use strict"
 
 var jsonSchemaTest = require("json-schema-test"),
+  addFormats = require("ajv-formats"),
   getAjvInstances = require("./ajv_instances"),
   options = require("./ajv_options"),
   suite = require("./browser_test_suite"),
@@ -25,7 +26,7 @@ var remoteRefsWithIds = [
   require("./remotes/scope_change.json"),
 ]
 
-instances.forEach(addRemoteRefs)
+instances.forEach(addRemoteRefsAndFormats)
 
 jsonSchemaTest(instances, {
   description:
@@ -46,7 +47,8 @@ jsonSchemaTest(instances, {
   timeout: 120000,
 })
 
-function addRemoteRefs(ajv) {
+function addRemoteRefsAndFormats(ajv) {
   for (var id in remoteRefs) ajv.addSchema(remoteRefs[id], id)
   ajv.addSchema(remoteRefsWithIds)
+  addFormats(ajv)
 }
