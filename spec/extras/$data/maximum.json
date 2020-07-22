@@ -64,49 +64,57 @@
     "schema": {
       "properties": {
         "number": {
-          "maximum": 3,
-          "exclusiveMaximum": {"$data": "1/maxIsExclusive"}
+          "maximum": 5,
+          "exclusiveMaximum": {"$data": "1/exclusiveMaximum"}
         },
-        "maxIsExclusive": {}
+        "exclusiveMaximum": {}
       }
     },
     "tests": [
       {
-        "description": "below the maximum is valid when exclusiveMaximum is true",
+        "description": "exclusiveMaximum boolean no longer supported",
         "data": {
-          "number": 2,
-          "maxIsExclusive": true
-        },
-        "valid": true
-      },
-      {
-        "description": "below the maximum is valid when exclusiveMaximum is false",
-        "data": {
-          "number": 2,
-          "maxIsExclusive": false
-        },
-        "valid": true
-      },
-      {
-        "description": "below the maximum is valid when exclusiveMaximum is undefined",
-        "data": {
-          "number": 2
-        },
-        "valid": true
-      },
-      {
-        "description": "boundary point is invalid when exclusiveMaximum is true",
-        "data": {
-          "number": 3,
-          "maxIsExclusive": true
+          "number": 4,
+          "exclusiveMaximum": true
         },
         "valid": false
       },
       {
-        "description": "boundary point is valid when exclusiveMaximum is false",
+        "description": "below the maximum is valid when exclusiveMaximum is strictly larger",
+        "data": {
+          "number": 4,
+          "exclusiveMaximum": 4.1
+        },
+        "valid": true
+      },
+      {
+        "description": "below the maximum is NOT valid when exclusiveMaximum is equal",
+        "data": {
+          "number": 4,
+          "exclusiveMaximum": 4
+        },
+        "valid": false
+      },
+      {
+        "description": "below the maximum is valid when exclusiveMaximum is undefined",
+        "data": {
+          "number": 4
+        },
+        "valid": true
+      },
+      {
+        "description": "boundary point is invalid when exclusiveMaximum is equal",
         "data": {
           "number": 3,
-          "maxIsExclusive": false
+          "exclusiveMaximum": 3
+        },
+        "valid": false
+      },
+      {
+        "description": "boundary point is valid when exclusiveMaximum is smaller",
+        "data": {
+          "number": 3,
+          "exclusiveMaximum": 3.1
         },
         "valid": true
       },
@@ -118,68 +126,61 @@
         "valid": true
       },
       {
-        "description": "above the maximum is invalid when exclusiveMaximum is true",
+        "description": "above the maximum is invalid",
+        "data": {
+          "number": 6
+        },
+        "valid": false
+      },
+      {
+        "description": "fails if value of exclusiveMaximum is not number",
         "data": {
           "number": 4,
-          "maxIsExclusive": true
-        },
-        "valid": false
-      },
-      {
-        "description": "above the maximum is invalid when exclusiveMaximum is false",
-        "data": {
-          "number": 4,
-          "maxIsExclusive": false
-        },
-        "valid": false
-      },
-      {
-        "description": "above the maximum is invalid when exclusiveMaximum is undefined",
-        "data": {
-          "number": 4
-        },
-        "valid": false
-      },
-      {
-        "description": "fails if value of exclusiveMaximum is not boolean",
-        "data": {
-          "number": 2,
-          "maxIsExclusive": "false"
+          "exclusiveMaximum": "5"
         },
         "valid": false
       }
     ]
   },
   {
-    "description": "one property is maximum for another and exclusiveMaximum is $data",
+    "description": "maximum and exclusiveMaximum are $data",
     "schema": {
       "properties": {
         "larger": {},
         "smallerOrEqual": {
           "maximum": {"$data": "1/larger"},
-          "exclusiveMaximum": {"$data": "1/maxIsExclusive"}
+          "exclusiveMaximum": {"$data": "1/exclusiveMaximum"}
         },
-        "maxIsExclusive": {}
+        "exclusiveMaximum": {}
       }
     },
     "tests": [
       {
-        "description": "below the maximum is valid when exclusiveMaximum is true",
+        "description": "exclusiveMaximum boolean no longer supported",
         "data": {
           "larger": 3,
           "smallerOrEqual": 2,
-          "maxIsExclusive": true
+          "exclusiveMaximum": true
+        },
+        "valid": false
+      },
+      {
+        "description": "below the maximum is valid when exclusiveMaximum is strictly larger",
+        "data": {
+          "larger": 3,
+          "smallerOrEqual": 2,
+          "exclusiveMaximum": 2.1
         },
         "valid": true
       },
       {
-        "description": "below the maximum is valid when exclusiveMaximum is false",
+        "description": "below the maximum is NOT valid when exclusiveMaximum is equal",
         "data": {
           "larger": 3,
           "smallerOrEqual": 2,
-          "maxIsExclusive": false
+          "exclusiveMaximum": 2
         },
-        "valid": true
+        "valid": false
       },
       {
         "description": "below the maximum is valid when exclusiveMaximum is undefined",
@@ -190,46 +191,11 @@
         "valid": true
       },
       {
-        "description": "boundary point is invalid when exclusiveMaximum is true",
-        "data": {
-          "larger": 3,
-          "smallerOrEqual": 3,
-          "maxIsExclusive": true
-        },
-        "valid": false
-      },
-      {
-        "description": "boundary point is valid when exclusiveMaximum is false",
-        "data": {
-          "larger": 3,
-          "smallerOrEqual": 3,
-          "maxIsExclusive": false
-        },
-        "valid": true
-      },
-      {
-        "description": "boundary point is valid when exclusiveMaximum is undefined",
-        "data": {
-          "larger": 3,
-          "smallerOrEqual": 3
-        },
-        "valid": true
-      },
-      {
-        "description": "above the maximum is invalid when exclusiveMaximum is true",
+        "description": "above the maximum is invalid",
         "data": {
           "larger": 3,
           "smallerOrEqual": 4,
-          "maxIsExclusive": true
-        },
-        "valid": false
-      },
-      {
-        "description": "above the maximum is invalid when exclusiveMaximum is false",
-        "data": {
-          "larger": 3,
-          "smallerOrEqual": 4,
-          "maxIsExclusive": false
+          "exclusiveMaximum": 5
         },
         "valid": false
       },
@@ -242,13 +208,39 @@
         "valid": false
       },
       {
-        "description": "fails if value of exclusiveMaximum is not boolean",
+        "description": "fails if value of exclusiveMaximum is not number",
         "data": {
           "larger": 3,
           "smallerOrEqual": 2,
-          "maxIsExclusive": "false"
+          "exclusiveMaximum": "5"
         },
         "valid": false
+      },
+      {
+        "description": "boundary point is valid when exclusiveMaximum is strictly larger",
+        "data": {
+          "larger": 3,
+          "smallerOrEqual": 3,
+          "exclusiveMaximum": 3.1
+        },
+        "valid": true
+      },
+      {
+        "description": "boundary point is invalid when exclusiveMaximum is equal",
+        "data": {
+          "larger": 3,
+          "smallerOrEqual": 3,
+          "exclusiveMaximum": 3
+        },
+        "valid": false
+      },
+      {
+        "description": "boundary point is valid when exclusiveMaximum is undefined",
+        "data": {
+          "larger": 3,
+          "smallerOrEqual": 3
+        },
+        "valid": true
       }
     ]
   },

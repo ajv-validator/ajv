@@ -14,12 +14,6 @@ var remoteRefs = {
 }
 
 var SKIP = {
-  4: [
-    "optional/zeroTerminatedFloats",
-    "optional/ecmascript-regex", // TODO only format needs to be skipped, too much is skipped here
-    "optional/format",
-    "format",
-  ],
   6: [
     "optional/ecmascript-regex", // TODO only format needs to be skipped, too much is skipped here
     "optional/format",
@@ -49,18 +43,6 @@ var SKIP = {
 }
 
 runTest(
-  getAjvInstances(options, {meta: false, schemaId: "id"}),
-  4,
-  typeof window == "object"
-    ? suite(
-        require("./JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json", {
-          mode: "list",
-        })
-      )
-    : "./JSON-Schema-Test-Suite/tests/draft4/{**/,}*.json"
-)
-
-runTest(
   getAjvInstances(options, {meta: false}),
   6,
   typeof window == "object"
@@ -87,10 +69,6 @@ runTest(
 function runTest(instances, draft, tests) {
   instances.forEach(function (ajv) {
     switch (draft) {
-      case 4:
-        ajv.addMetaSchema(require("../lib/refs/json-schema-draft-04.json"))
-        ajv._opts.defaultMeta = "http://json-schema.org/draft-04/schema#"
-        break
       case 6:
         ajv.addMetaSchema(require("../lib/refs/json-schema-draft-06.json"))
         ajv._opts.defaultMeta = "http://json-schema.org/draft-06/schema#"
