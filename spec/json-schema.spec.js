@@ -18,10 +18,12 @@ var SKIP = {
     "optional/zeroTerminatedFloats",
     "optional/ecmascript-regex", // TODO only format needs to be skipped, too much is skipped here
     "optional/format",
+    "format",
   ],
   6: [
     "optional/ecmascript-regex", // TODO only format needs to be skipped, too much is skipped here
     "optional/format",
+    "format",
   ],
   7: [
     "optional/ecmascript-regex", // TODO only format needs to be skipped, too much is skipped here
