@@ -17,7 +17,7 @@
 {{
   var $async = it.schema.$async === true
     , $refKeywords = it.util.schemaHasRulesExcept(it.schema, it.RULES.all, '$ref')
-    , $id = it.self._getId(it.schema);
+    , $id = it.schema.$id;
 }}
 
 {{
@@ -77,7 +77,7 @@
       , $lvl = it.level = 0
       , $dataLvl = it.dataLevel = 0
       , $data = 'data';
-    it.rootId = it.resolve.fullPath(it.self._getId(it.root.schema));
+    it.rootId = it.resolve.fullPath(it.root.schema.$id);
     it.baseId = it.baseId || it.rootId;
     delete it.isTop;
 

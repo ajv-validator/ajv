@@ -984,14 +984,12 @@ describe("Validation errors", function () {
         testError("exclusiveMinimum", "should be > 2", {
           comparison: ">",
           limit: 2,
-          exclusive: true,
         })
 
         shouldBeInvalid(validate, 5)
         testError("exclusiveMaximum", "should be < 5", {
           comparison: "<",
           limit: 5,
-          exclusive: true,
         })
 
         function testError(keyword, message, params) {
@@ -1038,7 +1036,7 @@ describe("Validation errors", function () {
             "#/properties/smaller/exclusiveMaximum",
             _ajv._opts.jsonPointers ? "/smaller" : ".smaller",
             "should be < 4",
-            {comparison: "<", limit: 4, exclusive: true}
+            {comparison: "<", limit: 4}
           )
         }
       })

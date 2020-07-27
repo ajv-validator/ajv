@@ -2,7 +2,7 @@
 
 # Ajv: Another JSON Schema Validator
 
-The fastest JSON Schema validator for Node.js and browser. Supports draft-04/06/07.
+The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07 (draft-04 is supported in v6).
 
 [![Build Status](https://travis-ci.org/ajv-validator/ajv.svg?branch=master)](https://travis-ci.org/ajv-validator/ajv)
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
@@ -63,14 +63,7 @@ Thank you
 ajv.addMetaSchema(require("ajv/lib/refs/json-schema-draft-06.json"))
 ```
 
-To use Ajv with draft-04 schemas in addition to explicitly adding meta-schema you also need to use option schemaId:
-
-```javascript
-var ajv = new Ajv({schemaId: "id"})
-// If you want to use both draft-04 and draft-06/07 schemas:
-// var ajv = new Ajv({schemaId: 'auto'});
-ajv.addMetaSchema(require("ajv/lib/refs/json-schema-draft-04.json"))
-```
+**Please note**: use Ajv v6 if you need draft-04 support - v7 does NOT support it.
 
 ## Contents
 
@@ -128,7 +121,7 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 
 ## Features
 
-- Ajv implements full JSON Schema [draft-06/07](http://json-schema.org/) and draft-04 standards:
+- Ajv implements full JSON Schema [draft-06/07](http://json-schema.org/) standards (draft-04 is supported in v6):
   - all validation keywords (see [JSON Schema validation keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md))
   - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
   - support of circular references between schemas
@@ -1122,7 +1115,6 @@ Defaults:
   schemas:          {},
   logger:           undefined,
   // referenced schema options:
-  schemaId:         '$id',
   missingRefs:      true,
   extendRefs:       'ignore', // recommended 'fail'
   loadSchema:       undefined, // function(uri: string): Promise {}
@@ -1183,10 +1175,6 @@ Defaults:
 
 ##### Referenced schema options
 
-- _schemaId_: this option defines which keywords are used as schema URI. Option value:
-  - `"$id"` (default) - only use `$id` keyword as schema URI (as specified in JSON Schema draft-06/07), ignore `id` keyword (if it is present a warning will be logged).
-  - `"id"` - only use `id` keyword as schema URI (as specified in JSON Schema draft-04), ignore `$id` keyword (if it is present a warning will be logged).
-  - `"auto"` - use both `$id` and `id` keywords as schema URI. If both are present (in the same schema object) and different the exception will be thrown during schema compilation.
 - _missingRefs_: handling of missing referenced schemas. Option values:
   - `true` (default) - if the reference cannot be resolved during compilation the exception is thrown. The thrown error has properties `missingRef` (with hash fragment) and `missingSchema` (without it). Both properties are resolved relative to the current base id (usually schema id, unless it was substituted).
   - `"ignore"` - to log error during compilation and always pass validation.

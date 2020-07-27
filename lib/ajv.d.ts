@@ -184,7 +184,6 @@ declare namespace ajv {
     keywords?: object
     unknownFormats?: true | string[] | "ignore"
     schemas?: Array<object> | object
-    schemaId?: "$id" | "id" | "auto"
     missingRefs?: true | "ignore" | "fail"
     extendRefs?: true | "ignore" | "fail"
     loadSchema?: (
