@@ -1,4 +1,4 @@
-const {appendSchema, dataNotType} = require("../compile/util")
+import {appendSchema, dataNotType} from "../util"
 
 const OPS = {
   maximum: {fail: ">", ok: "<="},
@@ -7,20 +7,20 @@ const OPS = {
   exclusiveMinimum: {fail: "<=", ok: ">"},
 }
 
-const SCHEMA_TYPE = "number"
+const SCH_TYPE = "number"
 
 module.exports = {
   keywords: ["maximum", "minimum", "exclusiveMaximum", "exclusiveMinimum"],
   type: "number",
-  schemaType: SCHEMA_TYPE,
+  schemaType: SCH_TYPE,
   $data: true,
   code({fail, keyword, data, $data, schemaCode}) {
-    const dnt = dataNotType($data, schemaCode, SCHEMA_TYPE)
+    const dnt = dataNotType(schemaCode, SCH_TYPE, $data)
     fail(dnt + data + OPS[keyword].fail + schemaCode + ` || ${data}!==${data}`)
   },
   error: {
     message: ({keyword, $data, schemaCode}) =>
-      `"should be ${OPS[keyword].ok} ${appendSchema($data, schemaCode)}`,
+      `"should be ${OPS[keyword].ok} ${appendSchema(schemaCode, $data)}`,
     params: ({keyword, schemaCode}) =>
       `{comparison: "${OPS[keyword].ok}", limit: ${schemaCode}}`,
   },
