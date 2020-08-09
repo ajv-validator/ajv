@@ -69,15 +69,6 @@
 #}}
 
 
-{{## def.strLength:
-  {{? it.opts.unicode === false }}
-    {{=$data}}.length
-  {{??}}
-    ucs2length({{=$data}})
-  {{?}}
-#}}
-
-
 {{## def.willOptimize:
   it.util.varOccurences($code, $nextData) < 2
 #}}
