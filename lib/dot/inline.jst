@@ -1,0 +1,27 @@
+{{# def.definitions }}
+{{# def.errors }}
+{{# def.setupKeyword }}
+{{# def.$data }}
+
+{{
+  var $rule = this
+    , $definition = 'definition' + $lvl
+    , $rDef = $rule.definition;
+
+  var $ruleValidate = it.useCustomRule($rule, $schema, it.schema, it);
+  if (!$ruleValidate) return;
+  $schemaValue = 'validate.schema' + $schemaPath;
+  var $validateCode = $ruleValidate.code;
+}}
+
+{{
+  var $ruleErrs = $validateCode + '.errors'
+    , $i = 'i' + $lvl
+    , $ruleErr = 'ruleErr' + $lvl;
+}}
+
+var {{=$valid}};
+
+{{= $ruleValidate.validate }}
+
+{{? $breakOnError }} if ({{=$valid}}) { {{?}}
