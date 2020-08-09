@@ -4,7 +4,9 @@
   "compilerOptions": {
     "outDir": "dist",
     "lib": ["ES2018", "DOM"],
+    "types": ["node"],
     "noImplicitAny": false,
+    "noImplicitThis": false,
     "allowJs": true,
     "declaration": false
   }

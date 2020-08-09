@@ -1,6 +1,7 @@
 extends: eslint:recommended
 parserOptions:
   ecmaVersion: 6
+  sourceType: module
 env:
   node: true
   browser: true
@@ -24,7 +25,6 @@ rules:
   no-trailing-spaces: 2
   no-use-before-define: [2, nofunc]
   semi: 0
-  strict: [2, global]
   valid-jsdoc: [2, requireReturn: false]
   no-control-regex: 0
   no-useless-escape: 2

@@ -24,7 +24,7 @@
     "bundle": "del-cli dist && node ./scripts/bundle.js . Ajv pure_getters",
     "bundle-beautify": "node ./scripts/bundle.js js-beautify",
     "dot": "del-cli lib/dotjs/*.js \"!lib/dotjs/index.js\" && node scripts/compile-dots.js",
-    "tsc": "tsc && cp -r lib/refs dist/refs",
+    "tsc": "tsc || true && cp -r lib/refs dist/refs",
     "build": "npm run dot && npm run tsc",
     "test-karma": "karma start",
     "test-browser": "del-cli .browser && npm run bundle && scripts/prepare-tests && npm run test-karma",
@@ -72,6 +72,7 @@
   },
   "devDependencies": {
     "@ajv-validator/config": "^0.1.0",
+    "@types/node": "^14.0.27",
     "ajv-async": "^1.0.0",
     "ajv-formats": "^0.1.0",
     "bluebird": "^3.5.3",
