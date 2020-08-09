@@ -27,7 +27,7 @@
     "test-karma": "karma start",
     "test-browser": "del-cli .browser && npm run bundle && scripts/prepare-tests && npm run test-karma",
     "test-all": "npm run test-cov && if-node-version 12 npm run test-browser",
-    "test": "npm run lint && npm run build && npm run test-all",
+    "test": "npm run lint && npm run build && npm run test-cov",
     "prepublish": "npm run build && npm run bundle",
     "watch": "watch \"npm run build\" ./lib/dot"
   },
