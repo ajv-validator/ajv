@@ -1,5 +1,4 @@
 "use strict"
-/* global Promise */
 
 var Ajv = require("./ajv"),
   should = require("./chai").should()

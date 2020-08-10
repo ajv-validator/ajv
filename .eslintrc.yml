@@ -1,30 +1,48 @@
-extends: eslint:recommended
-parserOptions:
-  ecmaVersion: 6
-  sourceType: module
 env:
+  es6: true
   node: true
   browser: true
+extends:
+  - "eslint:recommended"
+  - prettier
+parserOptions:
+  ecmaVersion: 2018
+  sourceType: module
 rules:
-  block-scoped-var: 2
-  callback-return: 2
-  complexity: [2, 16]
-  curly: [2, multi-or-nest, consistent]
-  dot-location: [2, property]
-  dot-notation: 2
-  linebreak-style: [2, unix]
-  new-cap: 2
-  no-console: [2, allow: [warn, error]]
-  no-else-return: 2
-  no-eq-null: 2
-  no-extra-semi: 0
-  no-fallthrough: 2
-  no-invalid-this: 2
-  no-return-assign: 2
-  no-shadow: 1
-  no-trailing-spaces: 2
-  no-use-before-define: [2, nofunc]
+  block-scoped-var: error
+  callback-return: error
+  complexity: [error, 16]
+  curly: [error, multi-or-nest, consistent]
+  dot-location: [error, property]
+  dot-notation: error
+  id-match: error
+  linebreak-style: [error, unix]
+  new-cap: error
+  no-console: [error, allow: [warn, error]]
+  no-debugger: error
+  no-duplicate-imports: error
+  no-else-return: error
+  no-eq-null: error
+  no-eval: error
+  no-fallthrough: error
+  no-invalid-this: error
+  no-new-wrappers: error
+  no-path-concat: error
+  no-redeclare: error
+  no-return-assign: error
+  no-sequences: error
+  no-shadow: warn
+  no-template-curly-in-string: error
+  no-trailing-spaces: error
+  no-undef-init: error
+  no-use-before-define: [error, nofunc]
+  prefer-const: error
+  radix: error
   semi: 0
-  valid-jsdoc: [2, requireReturn: false]
+  valid-jsdoc: [error, requireReturn: false]
   no-control-regex: 0
-  no-useless-escape: 2
+  no-useless-escape: error
+  no-void: error
+  # eqeqeq: [error, smart]
+  # no-var: error
+  # prefer-arrow-callback: error
