@@ -6,6 +6,7 @@ const validation: Vocabulary = [
   require("./multipleOf"),
   // string
   require("./limitLength"),
+  require("./pattern"),
   // object
   require("./limitProperties"),
   // array

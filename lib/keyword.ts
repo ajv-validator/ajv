@@ -7,6 +7,7 @@ import {
 } from "./types"
 
 import {getData, getProperty, toQuotedString} from "./compile/util"
+import {quotedString} from "./vocabularies/util"
 
 const IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i
 const customRuleCode = require("./dotjs/custom")
@@ -141,7 +142,7 @@ function ruleCode(
     $data: $defData,
   }: KeywordDefinition = this.definition
   if (!code) throw new Error('"code" must be defined')
-  let schemaCode: string | number
+  let schemaCode: string | number | boolean
   let out = ""
   const $data = $defData && it.opts.$data && schema && schema.$data
   if ($data) {
@@ -166,7 +167,9 @@ function ruleCode(
     keyword,
     data,
     $data,
+    schema,
     schemaCode,
+    usePattern: it.usePattern,
     level: it.level,
     opts: it.opts,
   }
@@ -218,10 +221,12 @@ function ruleCode(
     return out + "}"
   }
 
-  function schemaRefOrVal(): string | number {
-    return schemaType === "number" && !$data
-      ? schema
-      : `validate.schema${it.schemaPath + getProperty(keyword)}`
+  function schemaRefOrVal(): string | number | boolean {
+    if (!$data) {
+      if (schemaType === "number" || schemaType === "boolean") return schema
+      if (schemaType === "string") return quotedString(schema)
+    }
+    return `validate.schema${it.schemaPath + getProperty(keyword)}`
   }
 }
 

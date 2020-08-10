@@ -115,6 +115,7 @@ export interface CompilationContext {
   }
   compositeRule: boolean
   validate: (schema: object) => boolean
+  usePattern: (str: string) => string
   util: object // TODO
   self: object // TODO
 }
@@ -164,10 +165,12 @@ export type Vocabulary = KeywordDefinition[]
 export interface KeywordContext {
   fail: (condition: string) => void
   write: (str: string) => void
+  usePattern: (str: string) => string
   keyword: string
   data: string
   $data?: string | false
-  schemaCode: string | number
+  schema: any
+  schemaCode: string | number | boolean
   // TODO replace level with namespace
   level: number
   opts: Options
