@@ -146,11 +146,8 @@ function ruleCode(
   let out = ""
   const $data = $defData && it.opts.$data && schema && schema.$data
   if ($data) {
-    // TODO stop using it.level and maybe it.dataLevel
-    // schemaCode = it.getName("schema")
-    schemaCode = `schema${it.level}`
-    // TODO replace with const once it.level replaced with unique names
-    out += `var ${schemaCode} = ${getData(
+    schemaCode = it.scope.getName("schema")
+    out += `const ${schemaCode} = ${getData(
       $data,
       it.dataLevel,
       it.dataPathArr
@@ -169,8 +166,8 @@ function ruleCode(
     $data,
     schema,
     schemaCode,
+    scope: it.scope,
     usePattern: it.usePattern,
-    level: it.level,
     opts: it.opts,
   }
   // TODO check that code called "fail" or another valid way to return code

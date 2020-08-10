@@ -1,4 +1,5 @@
 import Cache from "./cache"
+import Scope from "./compile/scope"
 
 interface Options {
   $data?: boolean
@@ -103,6 +104,7 @@ export interface CompilationContext {
   schemaPath: string
   errorPath: string
   errSchemaPath: string
+  scope: Scope
   createErrors?: boolean // TODO maybe remove later
   baseId: string
   async: boolean
@@ -166,13 +168,12 @@ export interface KeywordContext {
   fail: (condition: string) => void
   write: (str: string) => void
   usePattern: (str: string) => string
+  scope: Scope
   keyword: string
   data: string
   $data?: string | false
   schema: any
   schemaCode: string | number | boolean
-  // TODO replace level with namespace
-  level: number
   opts: Options
 }
 

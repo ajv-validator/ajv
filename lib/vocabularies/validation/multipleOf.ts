@@ -1,26 +1,3 @@
-// {{# def.definitions }}
-// {{# def.errors }}
-// {{# def.setupKeyword }}
-// {{# def.$data }}
-
-// {{# def.numberKeyword }}
-
-// var division{{=$lvl}};
-// if ({{?$isData}}
-//       {{=$schemaValue}} !== undefined && (
-//       typeof {{=$schemaValue}} != 'number' ||
-//     {{?}}
-//       (division{{=$lvl}} = {{=$data}} / {{=$schemaValue}},
-//       {{? it.opts.multipleOfPrecision }}
-//         Math.abs(Math.round(division{{=$lvl}}) - division{{=$lvl}}) > 1e-{{=it.opts.multipleOfPrecision}}
-//       {{??}}
-//         division{{=$lvl}} !== parseInt(division{{=$lvl}})
-//       {{?}}
-//       )
-//     {{?$isData}}  )  {{?}} ) {
-//   {{# def.error:'multipleOf' }}
-// } {{? $breakOnError }} else { {{?}}
-
 import {KeywordDefinition} from "../../types"
 import {appendSchema, dataNotType} from "../util"
 
@@ -31,15 +8,14 @@ const def: KeywordDefinition = {
   type: "number",
   schemaType: SCH_TYPE,
   $data: true,
-  code({write, fail, data, $data, schemaCode, level, opts}) {
+  code({write, fail, scope, data, $data, schemaCode, opts}) {
     const dnt = dataNotType(schemaCode, SCH_TYPE, $data)
-    const res = `division${level}`
+    const res = scope.getName("res")
     const prec = opts.multipleOfPrecision
     const invalid = prec
       ? `Math.abs(Math.round(${res}) - ${res}) > 1e-${prec}`
       : `${res} !== parseInt(${res})`
-    // TODO replace with let
-    write(`var ${res};`)
+    write(`let ${res};`)
     fail(dnt + `(${res} = ${data}/${schemaCode}, ${invalid})`)
   },
   error: {
