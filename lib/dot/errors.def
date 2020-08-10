@@ -86,8 +86,6 @@
 #}}
 
 
-{{## def.concatSchema:{{?$isData}}' + {{=$schemaValue}} + '{{??}}{{=$schema}}{{?}}#}}
-{{## def.appendSchema:{{?$isData}}' + {{=$schemaValue}}{{??}}{{=$schemaValue}}'{{?}}#}}
 {{## def.concatSchemaEQ:{{?$isData}}' + {{=$schemaValue}} + '{{??}}{{=it.util.escapeQuotes($schema)}}{{?}}#}}
 
 {{## def._errorMessages = {
@@ -101,7 +99,6 @@
   'enum':          "'should be equal to one of the allowed values'",
   format:          "'should match format \"{{#def.concatSchemaEQ}}\"'",
   'if':            "'should match \"' + {{=$ifClause}} + '\" schema'",
-  multipleOf:      "'should be multiple of {{#def.appendSchema}}",
   not:             "'should NOT be valid'",
   oneOf:           "'should match exactly one schema in oneOf'",
   pattern:         "'should match pattern \"{{#def.concatSchemaEQ}}\"'",
@@ -131,7 +128,6 @@
   'enum':          "validate.schema{{=$schemaPath}}",
   format:          "{{#def.schemaRefOrQS}}",
   'if':            "validate.schema{{=$schemaPath}}",
-  multipleOf:      "{{#def.schemaRefOrVal}}",
   not:             "validate.schema{{=$schemaPath}}",
   oneOf:           "validate.schema{{=$schemaPath}}",
   pattern:         "{{#def.schemaRefOrQS}}",
@@ -160,7 +156,6 @@
   'enum':          "{ allowedValues: schema{{=$lvl}} }",
   format:          "{ format: {{#def.schemaValueQS}} }",
   'if':            "{ failingKeyword: {{=$ifClause}} }",
-  multipleOf:      "{ multipleOf: {{=$schemaValue}} }",
   not:             "{}",
   oneOf:           "{ passingSchemas: {{=$passingSchemas}} }",
   pattern:         "{ pattern: {{#def.schemaValueQS}} }",

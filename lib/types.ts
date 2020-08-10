@@ -161,10 +161,13 @@ export type Vocabulary = KeywordDefinition[]
 
 export interface KeywordContext {
   fail: (condition: string) => void
+  write: (str: string) => void
   keyword: string
   data: string
   $data?: string | false
   schemaCode: string | number
+  // TODO replace level with namespace
+  level: number
   opts: Options
 }
 

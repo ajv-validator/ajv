@@ -156,12 +156,25 @@ function ruleCode(
     schemaCode = schemaRefOrVal()
   }
   const data = "data" + (it.dataLevel || "")
-  const cxt = {fail, keyword, data, $data, schemaCode, opts: it.opts}
+  const cxt = {
+    fail,
+    write,
+    keyword,
+    data,
+    $data,
+    schemaCode,
+    level: it.level,
+    opts: it.opts,
+  }
   // TODO check that code called "fail" or another valid way to return code
   code(cxt)
   return out
 
-  function fail(condition: string) {
+  function write(str: string): void {
+    out += str
+  }
+
+  function fail(condition: string): void {
     out += `if (${condition}) { ${reportError()} }`
     if (!it.opts.allErrors) out += `else {`
   }
