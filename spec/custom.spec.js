@@ -2,7 +2,7 @@
 
 var getAjvInstances = require("./ajv_instances"),
   should = require("./chai").should(),
-  equal = require("../lib/compile/equal"),
+  equal = require("../dist/compile/equal"),
   customRules = require("./custom_rules")
 
 describe("Custom keywords", function () {
