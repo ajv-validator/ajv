@@ -1,37 +1,32 @@
-// TODO switch to exports
-
+// TODO switch to exports - below are used in dot templates
 module.exports = {
-  checkDataType: checkDataType,
-  checkDataTypes: checkDataTypes,
+  checkDataType,
+  checkDataTypes,
   coerceToTypes,
   toHash,
-  escapeQuotes: escapeQuotes,
-  equal: require("fast-deep-equal"),
-  ucs2length: require("./ucs2length"),
-  varOccurences: varOccurences,
-  varReplace: varReplace,
+  escapeQuotes,
+  varOccurrences,
+  varReplace,
   schemaHasRules,
-  schemaHasRulesExcept: schemaHasRulesExcept,
-  schemaUnknownRules: schemaUnknownRules,
+  schemaHasRulesExcept,
+  schemaUnknownRules,
   toQuotedString,
-  getPathExpr: getPathExpr,
-  getPath: getPath,
-  getData: getData,
+  getPathExpr,
+  getPath,
+  getData,
   getProperty,
-  unescapeFragment: unescapeFragment,
-  unescapeJsonPointer: unescapeJsonPointer,
-  escapeFragment: escapeFragment,
-  escapeJsonPointer: escapeJsonPointer,
+  unescapeFragment,
+  escapeFragment,
 }
 
-function checkDataType(
+export function checkDataType(
   dataType: string,
   data: string,
   strictNumbers: boolean,
   negate: boolean
 ): string {
-  var EQ = negate ? " !== " : " === ",
-    OK = negate ? "!" : ""
+  const EQ = negate ? " !== " : " === "
+  const OK = negate ? "!" : ""
   switch (dataType) {
     case "null":
       return data + EQ + "null"
@@ -59,32 +54,30 @@ function checkDataType(
   }
 }
 
-function checkDataTypes(dataTypes, data, strictNumbers) {
-  switch (dataTypes.length) {
-    case 1:
-      return checkDataType(dataTypes[0], data, strictNumbers, true)
-    default:
-      var code = ""
-      var types = toHash(dataTypes)
-      if (types.array && types.object) {
-        code = types.null ? "(" : "(!" + data + " || "
-        code += "typeof " + data + ' !== "object")'
-        delete types.null
-        delete types.array
-        delete types.object
-      }
-      if (types.number) delete types.integer
-      for (var t in types) {
-        code +=
-          (code ? " && " : "") + checkDataType(t, data, strictNumbers, true)
-      }
-
-      return code
+export function checkDataTypes(
+  dataTypes: string[],
+  data: string,
+  strictNumbers: boolean
+): string {
+  if (dataTypes.length === 1)
+    return checkDataType(dataTypes[0], data, strictNumbers, true)
+  let code = ""
+  const types = toHash(dataTypes)
+  if (types.array && types.object) {
+    code = types.null ? "(" : `(!${data} || `
+    code += `typeof ${data} !== "object")`
+    delete types.null
+    delete types.array
+    delete types.object
   }
+  if (types.number) delete types.integer
+  for (const t in types)
+    code += (code ? " && " : "") + checkDataType(t, data, strictNumbers, true)
+  return code
 }
 
 const COERCE_TYPES = toHash(["string", "number", "integer", "boolean", "null"])
-function coerceToTypes(
+export function coerceToTypes(
   optionCoerceTypes: undefined | boolean | "array",
   dataTypes: string[]
 ): string[] | void {
@@ -101,9 +94,9 @@ function coerceToTypes(
   if (optionCoerceTypes === "array" && dataTypes === "array") return ["array"]
 }
 
-function toHash(arr: string[]): {[key: string]: true} {
-  var hash = {}
-  for (var i = 0; i < arr.length; i++) hash[arr[i]] = true
+export function toHash(arr: string[]): {[key: string]: true} {
+  const hash = {}
+  for (const item of arr) hash[item] = true
   return hash
 }
 
@@ -117,7 +110,7 @@ export function getProperty(key: string | number): string {
     : `['${escapeQuotes(key)}']`
 }
 
-function escapeQuotes(str: string): string {
+export function escapeQuotes(str: string): string {
   return str
     .replace(SINGLE_QUOTE, "\\$&")
     .replace(/\n/g, "\\n")
@@ -126,72 +119,91 @@ function escapeQuotes(str: string): string {
     .replace(/\t/g, "\\t")
 }
 
-function varOccurences(str, dataVar) {
+export function varOccurrences(str: string, dataVar: string): number {
   dataVar += "[^0-9]"
-  var matches = str.match(new RegExp(dataVar, "g"))
+  /* eslint-disable @typescript-eslint/prefer-regexp-exec */
+  const matches = str.match(new RegExp(dataVar, "g"))
   return matches ? matches.length : 0
 }
 
-function varReplace(str, dataVar, expr) {
+export function varReplace(str: string, dataVar: string, expr: string): string {
   dataVar += "([^0-9])"
   expr = expr.replace(/\$/g, "$$$$")
   return str.replace(new RegExp(dataVar, "g"), expr + "$1")
 }
 
-function schemaHasRules(
+// TODO rules, schema?
+export function schemaHasRules(
   schema: object | boolean,
   rules: object
 ): boolean | undefined {
   if (typeof schema == "boolean") return !schema
-  for (var key in schema) if (rules[key]) return true
+  for (const key in schema) if (rules[key]) return true
 }
 
-function schemaHasRulesExcept(schema, rules, exceptKeyword) {
-  if (typeof schema == "boolean") return !schema && exceptKeyword != "not"
-  for (var key in schema) if (key != exceptKeyword && rules[key]) return true
+// TODO rules, schema?
+export function schemaHasRulesExcept(
+  schema: object,
+  rules: object,
+  exceptKeyword: string
+): boolean | undefined {
+  if (typeof schema == "boolean") return !schema && exceptKeyword !== "not"
+  for (const key in schema) if (key != exceptKeyword && rules[key]) return true
 }
 
-function schemaUnknownRules(schema, rules) {
-  if (typeof schema == "boolean") return
-  for (var key in schema) if (!rules[key]) return key
+// TODO rules, schema?
+export function schemaUnknownRules(
+  schema: object,
+  rules: object
+): string | undefined {
+  if (typeof schema === "boolean") return
+  for (const key in schema) if (!rules[key]) return key
 }
 
 export function toQuotedString(str: string): string {
   return `'${escapeQuotes(str)}'`
 }
 
-function getPathExpr(currentPath, expr, jsonPointers, isNumber) {
-  var path = jsonPointers // false by default
-    ? "'/' + " +
-      expr +
+export function getPathExpr(
+  currentPath: string,
+  expr: string,
+  jsonPointers?: boolean,
+  isNumber?: boolean
+): string {
+  const path = jsonPointers // false by default
+    ? `'/' + ${expr}` +
       (isNumber ? "" : ".replace(/~/g, '~0').replace(/\\//g, '~1')")
     : isNumber
-    ? "'[' + " + expr + " + ']'"
-    : "'[\\'' + " + expr + " + '\\']'"
+    ? `'[' + ${expr} + ']'`
+    : `'[\\'' + ${expr} + '\\']'`
   return joinPaths(currentPath, path)
 }
 
-function getPath(currentPath, prop, jsonPointers) {
-  var path = jsonPointers // false by default
+export function getPath(
+  currentPath: string,
+  prop: string,
+  jsonPointers?: boolean
+): string {
+  const path = jsonPointers // false by default
     ? toQuotedString("/" + escapeJsonPointer(prop))
     : toQuotedString(getProperty(prop))
   return joinPaths(currentPath, path)
 }
 
-var JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/
-var RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/
+const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/
+const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/
 export function getData($data: string, lvl: number, paths: string[]): string {
-  var up, jsonPointer, data, matches
+  let jsonPointer, data
   if ($data === "") return "rootData"
-  if ($data[0] == "/") {
+  if ($data[0] === "/") {
     if (!JSON_POINTER.test($data))
       throw new Error("Invalid JSON-pointer: " + $data)
     jsonPointer = $data
     data = "rootData"
   } else {
-    matches = RELATIVE_JSON_POINTER.exec($data)
+    const matches = RELATIVE_JSON_POINTER.exec($data)
     if (!matches) throw new Error("Invalid JSON-pointer: " + $data)
-    up = +matches[1]
+    const up: number = +matches[1]
     jsonPointer = matches[2]
     if (jsonPointer == "#") {
       if (up >= lvl) {
@@ -214,10 +226,9 @@ export function getData($data: string, lvl: number, paths: string[]): string {
     if (!jsonPointer) return data
   }
 
-  var expr = data
-  var segments = jsonPointer.split("/")
-  for (var i = 0; i < segments.length; i++) {
-    var segment = segments[i]
+  let expr = data
+  const segments = jsonPointer.split("/")
+  for (const segment of segments) {
     if (segment) {
       data += getProperty(unescapeJsonPointer(segment))
       expr += " && " + data
@@ -226,23 +237,23 @@ export function getData($data: string, lvl: number, paths: string[]): string {
   return expr
 }
 
-function joinPaths(a, b) {
-  if (a == '""') return b
-  return (a + " + " + b).replace(/([^\\])' \+ '/g, "$1")
+export function joinPaths(a: string, b: string): string {
+  if (a === '""' || a === "''") return b
+  return `${a} + ${b}`.replace(/([^\\])' \+ '/g, "$1")
 }
 
-function unescapeFragment(str) {
+export function unescapeFragment(str: string): string {
   return unescapeJsonPointer(decodeURIComponent(str))
 }
 
-function escapeFragment(str) {
+export function escapeFragment(str: string): string {
   return encodeURIComponent(escapeJsonPointer(str))
 }
 
-function escapeJsonPointer(str) {
+export function escapeJsonPointer(str: string): string {
   return str.replace(/~/g, "~0").replace(/\//g, "~1")
 }
 
-function unescapeJsonPointer(str) {
+export function unescapeJsonPointer(str: string): string {
   return str.replace(/~1/g, "/").replace(/~0/g, "~")
 }

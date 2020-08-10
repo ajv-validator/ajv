@@ -70,7 +70,7 @@
 
 
 {{## def.willOptimize:
-  it.util.varOccurences($code, $nextData) < 2
+  it.util.varOccurrences($code, $nextData) < 2
 #}}
 
 

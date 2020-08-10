@@ -200,8 +200,7 @@ function ruleCode(
 
   function errorObjectCode() {
     if (it.createErrors === false) return "{}"
-    if (!(error && error.message && error.params))
-      throw new Error('"error" must have "message" and "params" functions')
+    if (!error) throw new Error('keyword definition must have "error" property')
     // TODO trim whitespace
     let out = `{
       keyword: "${keyword}",
