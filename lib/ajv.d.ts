@@ -1,11 +1,3 @@
-declare var ajv: {
-  (options?: ajv.Options): ajv.Ajv
-  new (options?: ajv.Options): ajv.Ajv
-  ValidationError: typeof AjvErrors.ValidationError
-  MissingRefError: typeof AjvErrors.MissingRefError
-  $dataMetaSchema: object
-}
-
 declare namespace AjvErrors {
   class ValidationError extends Error {
     constructor(errors: Array<ajv.ErrorObject>)
@@ -24,6 +16,14 @@ declare namespace AjvErrors {
     missingRef: string
     missingSchema: string
   }
+}
+
+declare const ajv: {
+  (options?: ajv.Options): ajv.Ajv
+  new (options?: ajv.Options): ajv.Ajv
+  ValidationError: typeof AjvErrors.ValidationError
+  MissingRefError: typeof AjvErrors.MissingRefError
+  $dataMetaSchema: object
 }
 
 declare namespace ajv {
