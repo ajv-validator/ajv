@@ -1,3 +1,5 @@
+import Cache from "./cache"
+
 interface Options {
   $data?: boolean
   allErrors?: boolean
@@ -36,7 +38,7 @@ interface Options {
   messages?: boolean
   sourceCode?: boolean
   processCode?: (code: string, schema: object) => string
-  cache?: object
+  cache?: Cache
   logger?: Logger | false
   nullable?: boolean
   serialize?: ((schema: object | boolean) => any) | false
