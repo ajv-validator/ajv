@@ -1,3 +1,4 @@
+import {KeywordDefinition} from "../../types"
 import {appendSchema, dataNotType} from "../util"
 
 const OPS = {
@@ -9,7 +10,7 @@ const OPS = {
 
 const SCH_TYPE = "number"
 
-module.exports = {
+const def: KeywordDefinition = {
   keywords: ["maximum", "minimum", "exclusiveMaximum", "exclusiveMinimum"],
   type: "number",
   schemaType: SCH_TYPE,
@@ -25,3 +26,5 @@ module.exports = {
       `{comparison: "${OPS[keyword].ok}", limit: ${schemaCode}}`,
   },
 }
+
+module.exports = def

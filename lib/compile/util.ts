@@ -1,91 +1,61 @@
+// TODO switch to exports
+
 module.exports = {
-  copy: copy,
   checkDataType: checkDataType,
   checkDataTypes: checkDataTypes,
-  coerceToTypes: coerceToTypes,
-  toHash: toHash,
-  getProperty: getProperty,
+  coerceToTypes,
+  toHash,
   escapeQuotes: escapeQuotes,
   equal: require("fast-deep-equal"),
   ucs2length: require("./ucs2length"),
   varOccurences: varOccurences,
   varReplace: varReplace,
-  schemaHasRules: schemaHasRules,
+  schemaHasRules,
   schemaHasRulesExcept: schemaHasRulesExcept,
   schemaUnknownRules: schemaUnknownRules,
-  toQuotedString: toQuotedString,
+  toQuotedString,
   getPathExpr: getPathExpr,
   getPath: getPath,
   getData: getData,
+  getProperty,
   unescapeFragment: unescapeFragment,
   unescapeJsonPointer: unescapeJsonPointer,
   escapeFragment: escapeFragment,
   escapeJsonPointer: escapeJsonPointer,
 }
 
-function copy(o, to) {
-  to = to || {}
-  for (var key in o) to[key] = o[key]
-  return to
-}
-
-function checkDataType(dataType, data, strictNumbers, negate) {
-  var EQUAL = negate ? " !== " : " === ",
-    AND = negate ? " || " : " && ",
-    OK = negate ? "!" : "",
-    NOT = negate ? "" : "!"
+function checkDataType(
+  dataType: string,
+  data: string,
+  strictNumbers: boolean,
+  negate: boolean
+): string {
+  var EQ = negate ? " !== " : " === ",
+    OK = negate ? "!" : ""
   switch (dataType) {
     case "null":
-      return data + EQUAL + "null"
+      return data + EQ + "null"
     case "array":
-      return OK + "Array.isArray(" + data + ")"
+      return OK + `Array.isArray(${data})`
     case "object":
       return (
-        "(" +
         OK +
-        data +
-        AND +
-        "typeof " +
-        data +
-        EQUAL +
-        '"object"' +
-        AND +
-        NOT +
-        "Array.isArray(" +
-        data +
-        "))"
+        `(${data} && typeof ${data} === "object" && !Array.isArray(${data}))`
       )
     case "integer":
       return (
-        "(typeof " +
-        data +
-        EQUAL +
-        '"number"' +
-        AND +
-        NOT +
-        "(" +
-        data +
-        " % 1)" +
-        AND +
-        data +
-        EQUAL +
-        data +
-        (strictNumbers ? AND + OK + "isFinite(" + data + ")" : "") +
-        ")"
+        OK +
+        `(typeof ${data} === "number" && !(${data} % 1) && !isNaN(${data})` +
+        (strictNumbers ? ` && isFinite(${data}))` : ")")
       )
     case "number":
       return (
-        "(typeof " +
-        data +
-        EQUAL +
-        '"' +
-        dataType +
-        '"' +
-        (strictNumbers ? AND + OK + "isFinite(" + data + ")" : "") +
-        ")"
+        OK +
+        `(typeof ${data} === "number"` +
+        (strictNumbers ? `&& isFinite(${data}))` : ")")
       )
     default:
-      return "typeof " + data + EQUAL + '"' + dataType + '"'
+      return `typeof ${data} ${EQ} "${dataType}"`
   }
 }
 
@@ -113,41 +83,41 @@ function checkDataTypes(dataTypes, data, strictNumbers) {
   }
 }
 
-var COERCE_TO_TYPES = toHash(["string", "number", "integer", "boolean", "null"])
-function coerceToTypes(optionCoerceTypes, dataTypes) {
+const COERCE_TYPES = toHash(["string", "number", "integer", "boolean", "null"])
+function coerceToTypes(
+  optionCoerceTypes: undefined | boolean | "array",
+  dataTypes: string[]
+): string[] | void {
   if (Array.isArray(dataTypes)) {
-    var types = []
-    for (var i = 0; i < dataTypes.length; i++) {
-      var t = dataTypes[i]
-      if (COERCE_TO_TYPES[t]) types[types.length] = t
-      else if (optionCoerceTypes === "array" && t === "array")
-        types[types.length] = t
+    const types: string[] = []
+    for (const t of dataTypes) {
+      if (COERCE_TYPES[t] || (optionCoerceTypes === "array" && t === "array"))
+        types.push(t)
     }
     if (types.length) return types
-  } else if (COERCE_TO_TYPES[dataTypes]) {
-    return [dataTypes]
-  } else if (optionCoerceTypes === "array" && dataTypes === "array") {
-    return ["array"]
+    return
   }
+  if (COERCE_TYPES[dataTypes]) return [dataTypes]
+  if (optionCoerceTypes === "array" && dataTypes === "array") return ["array"]
 }
 
-function toHash(arr) {
+function toHash(arr: string[]): {[key: string]: true} {
   var hash = {}
   for (var i = 0; i < arr.length; i++) hash[arr[i]] = true
   return hash
 }
 
-var IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i
-var SINGLE_QUOTE = /'|\\/g
-function getProperty(key) {
-  return typeof key == "number"
-    ? "[" + key + "]"
+const IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i
+const SINGLE_QUOTE = /'|\\/g
+export function getProperty(key: string | number): string {
+  return typeof key === "number"
+    ? `[${key}]`
     : IDENTIFIER.test(key)
-    ? "." + key
-    : "['" + escapeQuotes(key) + "']"
+    ? `.${key}`
+    : `['${escapeQuotes(key)}']`
 }
 
-function escapeQuotes(str) {
+function escapeQuotes(str: string): string {
   return str
     .replace(SINGLE_QUOTE, "\\$&")
     .replace(/\n/g, "\\n")
@@ -168,7 +138,10 @@ function varReplace(str, dataVar, expr) {
   return str.replace(new RegExp(dataVar, "g"), expr + "$1")
 }
 
-function schemaHasRules(schema, rules) {
+function schemaHasRules(
+  schema: object | boolean,
+  rules: object
+): boolean | undefined {
   if (typeof schema == "boolean") return !schema
   for (var key in schema) if (rules[key]) return true
 }
@@ -183,8 +156,8 @@ function schemaUnknownRules(schema, rules) {
   for (var key in schema) if (!rules[key]) return key
 }
 
-function toQuotedString(str) {
-  return "'" + escapeQuotes(str) + "'"
+export function toQuotedString(str: string): string {
+  return `'${escapeQuotes(str)}'`
 }
 
 function getPathExpr(currentPath, expr, jsonPointers, isNumber) {
@@ -207,7 +180,7 @@ function getPath(currentPath, prop, jsonPointers) {
 
 var JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/
 var RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/
-function getData($data, lvl, paths) {
+export function getData($data: string, lvl: number, paths: string[]): string {
   var up, jsonPointer, data, matches
   if ($data === "") return "rootData"
   if ($data[0] == "/") {
@@ -216,7 +189,7 @@ function getData($data, lvl, paths) {
     jsonPointer = $data
     data = "rootData"
   } else {
-    matches = $data.match(RELATIVE_JSON_POINTER)
+    matches = RELATIVE_JSON_POINTER.exec($data)
     if (!matches) throw new Error("Invalid JSON-pointer: " + $data)
     up = +matches[1]
     jsonPointer = matches[2]

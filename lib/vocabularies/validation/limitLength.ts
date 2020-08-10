@@ -1,8 +1,9 @@
+import {KeywordDefinition} from "../../types"
 import {concatSchema, dataNotType} from "../util"
 
 const SCH_TYPE = "number"
 
-module.exports = {
+const def: KeywordDefinition = {
   keywords: ["maxLength", "minLength"],
   type: "string",
   schemaType: SCH_TYPE,
@@ -23,3 +24,5 @@ module.exports = {
     params: ({schemaCode}) => `{limit: ${schemaCode}}`,
   },
 }
+
+module.exports = def

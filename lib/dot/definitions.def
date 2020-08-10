@@ -30,7 +30,7 @@
 
 {{## def.setupNextLevel:
   {{
-    var $it = it.util.copy(it);
+    var $it = {...it};
     var $closingBraces = '';
     $it.level++;
     var $nextValid = 'valid' + $it.level;

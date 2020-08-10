@@ -1,41 +1,16 @@
-var IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i
-var customRuleCode = require("./dotjs/custom")
-var definitionSchema = require("./definition_schema")
-var util = require("./compile/util")
+import {
+  KeywordDefinition,
+  Vocabulary,
+  ErrorObject,
+  ValidateFunction,
+  CompilationContext,
+} from "./types"
 
-// export interface KeywordDefinition {
-//   type?: string | string[]
-//   async?: boolean
-//   $data?: boolean
-//   errors?: boolean | "full"
-//   metaSchema?: object
-//   // schema: false makes validate not to expect schema (ValidateFunction)
-//   schema?: boolean
-//   statements?: boolean
-//   dependencies?: string[]
-//   modifying?: boolean
-//   valid?: boolean
-//   // at least one of the following properties should be present
-//   validate?: SchemaValidateFunction | ValidateFunction
-//   compile?: (
-//     schema: any,
-//     parentSchema: object,
-//     it: CompilationContext
-//   ) => ValidateFunction
-//   macro?: (
-//     schema: any,
-//     parentSchema: object,
-//     it: CompilationContext
-//   ) => object | boolean
-//   inline?: (
-//     it: CompilationContext,
-//     keyword: string,
-//     schema: any,
-//     parentSchema: object
-//   ) => string
-//   code?: {
-//   }
-// }
+import {getData, getProperty, toQuotedString} from "./compile/util"
+
+const IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i
+const customRuleCode = require("./dotjs/custom")
+const definitionSchema = require("./definition_schema")
 
 /**
  * Define vocabulary
@@ -44,8 +19,17 @@ var util = require("./compile/util")
  * @param {Boolean} _skipValidation skip definition validation
  * @return {Ajv} this for method chaining
  */
-export function addVocabulary(definitions, _skipValidation) {
+export function addVocabulary(
+  definitions: Vocabulary,
+  _skipValidation?: boolean
+): object {
+  // TODO return Ajv
   for (const def of definitions) {
+    if (!def.keywords) {
+      throw new Error(
+        'Vocabulary keywords must have "keywords" property in definition'
+      )
+    }
     for (const keyword of def.keywords)
       this.addKeyword(keyword, def, _skipValidation)
   }
@@ -61,7 +45,12 @@ export function addVocabulary(definitions, _skipValidation) {
  * @param {Boolean} _skipValidation of keyword definition
  * @return {Ajv} this for method chaining
  */
-export function addKeyword(keyword, definition, _skipValidation) {
+export function addKeyword(
+  keyword: string,
+  definition: KeywordDefinition,
+  _skipValidation?: boolean
+): object {
+  // TODO return type Ajv
   /* eslint no-shadow: 0 */
   var RULES = this.RULES
   if (RULES.keywords[keyword])
@@ -136,10 +125,19 @@ export function addKeyword(keyword, definition, _skipValidation) {
  * @param {String} keyword pre-defined or custom keyword.
  * @return {String} compiled rule code.
  */
-function ruleCode(it, keyword /*, ruleType */) {
+function ruleCode(
+  it: CompilationContext,
+  keyword: string /*, ruleType */
+): string {
   const schema = it.schema[keyword]
-  const {schemaType, code, error, $data: $defData} = this.definition
-  let schemaCode
+  const {
+    schemaType,
+    code,
+    error,
+    $data: $defData,
+  }: KeywordDefinition = this.definition
+  if (!code) throw new Error('"code" must be defined')
+  let schemaCode: string | number
   let out = ""
   const $data = $defData && it.opts.$data && schema && schema.$data
   if ($data) {
@@ -147,7 +145,7 @@ function ruleCode(it, keyword /*, ruleType */) {
     // schemaCode = it.getName("schema")
     schemaCode = `schema${it.level}`
     // TODO replace with const once it.level replaced with unique names
-    out += `var ${schemaCode} = ${util.getData(
+    out += `var ${schemaCode} = ${getData(
       $data,
       it.dataLevel,
       it.dataPathArr
@@ -163,12 +161,12 @@ function ruleCode(it, keyword /*, ruleType */) {
   code(cxt)
   return out
 
-  function fail(condition) {
+  function fail(condition: string) {
     out += `if (${condition}) { ${reportError()} }`
     if (!it.opts.allErrors) out += `else {`
   }
 
-  function reportError() {
+  function reportError(): string {
     const errCode = errorObjectCode()
     if (!it.compositeRule && !it.opts.allErrors) {
       // TODO trim whitespace
@@ -185,11 +183,13 @@ function ruleCode(it, keyword /*, ruleType */) {
 
   function errorObjectCode() {
     if (it.createErrors === false) return "{}"
+    if (!(error && error.message && error.params))
+      throw new Error('"error" must have "message" and "params" functions')
     // TODO trim whitespace
     let out = `{
       keyword: "${keyword}",
       dataPath: (dataPath || "") + ${it.errorPath},
-      schemaPath: ${util.toQuotedString(it.errSchemaPath + "/" + keyword)},
+      schemaPath: ${toQuotedString(it.errSchemaPath + "/" + keyword)},
       params: ${error.params(cxt)},`
     if (it.opts.messages !== false) out += `message: ${error.message(cxt)},`
     if (it.opts.verbose) {
@@ -202,10 +202,10 @@ function ruleCode(it, keyword /*, ruleType */) {
     return out + "}"
   }
 
-  function schemaRefOrVal() {
+  function schemaRefOrVal(): string | number {
     return schemaType === "number" && !$data
       ? schema
-      : `validate.schema${it.schemaPath + util.getProperty(keyword)}`
+      : `validate.schema${it.schemaPath + getProperty(keyword)}`
   }
 }
 
@@ -215,7 +215,7 @@ function ruleCode(it, keyword /*, ruleType */) {
  * @param {String} keyword pre-defined or custom keyword.
  * @return {Object|Boolean} custom keyword definition, `true` if it is a predefined keyword, `false` otherwise.
  */
-export function getKeyword(keyword) {
+export function getKeyword(keyword: string): KeywordDefinition | boolean {
   /* jshint validthis: true */
   var rule = this.RULES.custom[keyword]
   return rule ? rule.definition : this.RULES.keywords[keyword] || false
@@ -227,7 +227,8 @@ export function getKeyword(keyword) {
  * @param {String} keyword pre-defined or custom keyword.
  * @return {Ajv} this for method chaining
  */
-export function removeKeyword(keyword) {
+export function removeKeyword(keyword: string): object {
+  // TODO return type should be Ajv
   /* jshint validthis: true */
   var RULES = this.RULES
   delete RULES.keywords[keyword]
@@ -245,6 +246,11 @@ export function removeKeyword(keyword) {
   return this
 }
 
+export interface KeywordValidator {
+  (definition: KeywordDefinition, throwError: boolean): boolean
+  errors?: ErrorObject[] | null
+}
+
 /**
  * Validate keyword definition
  * @this  Ajv
@@ -252,9 +258,12 @@ export function removeKeyword(keyword) {
  * @param {Boolean} throwError true to throw exception if definition is invalid
  * @return {boolean} validation result
  */
-export function validateKeyword(definition, throwError) {
+export const validateKeyword: KeywordValidator = function (
+  definition,
+  throwError
+) {
   validateKeyword.errors = null
-  var v = (this._validateKeyword =
+  var v: ValidateFunction = (this._validateKeyword =
     this._validateKeyword || this.compile(definitionSchema, true))
 
   if (v(definition)) return true

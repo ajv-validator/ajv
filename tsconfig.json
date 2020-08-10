@@ -7,6 +7,7 @@
     "types": ["node"],
     "noImplicitAny": false,
     "noImplicitThis": false,
+    "noImplicitReturns": false,
     "allowJs": true,
     "declaration": false
   }

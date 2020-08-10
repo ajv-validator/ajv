@@ -1,7 +1,6 @@
 "use strict"
 
 var Ajv = require("./ajv"),
-  util = require("../lib/compile/util"),
   setupAsync = require("./ajv-async")
 
 module.exports = getAjvInstances
@@ -19,7 +18,7 @@ function getAjvInstances(opts) {
   ]
 
   options.forEach(function (_opts) {
-    util.copy(opts, _opts)
+    Object.assign(_opts, opts)
     var ajv = getAjv(_opts)
     if (ajv) instances.push(ajv)
   })

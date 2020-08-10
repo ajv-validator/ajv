@@ -1,4 +1,6 @@
-module.exports = {
+import {KeywordDefinition} from "../../types"
+
+const def: KeywordDefinition = {
   keywords: ["const"],
   $data: true,
   code: ({fail, data, schemaCode}) => fail(`!equal(${data}, ${schemaCode})`),
@@ -7,3 +9,5 @@ module.exports = {
     params: ({schemaCode}) => `{allowedValue: ${schemaCode}}`,
   },
 }
+
+module.exports = def

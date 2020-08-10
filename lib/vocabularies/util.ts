@@ -1,19 +1,19 @@
 export function appendSchema(
-  schemaCode: string,
+  schemaCode: string | number,
   $data?: string | false
 ): string {
   return $data ? `" + ${schemaCode}` : `${schemaCode}"`
 }
 
 export function concatSchema(
-  schemaCode: string,
+  schemaCode: string | number,
   $data?: string | false
-): string {
+): string | number {
   return $data ? `" + ${schemaCode} + "` : schemaCode
 }
 
 export function dataNotType(
-  schemaCode: string,
+  schemaCode: string | number,
   schemaType?: string,
   $data?: string | false
 ): string {
