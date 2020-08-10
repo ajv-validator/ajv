@@ -3,8 +3,8 @@
 module.exports = ucs2length
 
 export default function ucs2length(str: string): number {
+  const len = str.length
   let length = 0
-  let len = str.length
   let pos = 0
   let value: number
   while (pos < len) {
