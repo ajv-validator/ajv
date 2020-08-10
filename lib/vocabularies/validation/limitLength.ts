@@ -4,7 +4,7 @@ import {concatSchema, dataNotType} from "../util"
 const SCH_TYPE = "number"
 
 const def: KeywordDefinition = {
-  keywords: ["maxLength", "minLength"],
+  keyword: ["maxLength", "minLength"],
   type: "string",
   schemaType: SCH_TYPE,
   $data: true,

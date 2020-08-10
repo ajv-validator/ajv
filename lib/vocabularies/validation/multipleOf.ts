@@ -27,7 +27,7 @@ import {appendSchema, dataNotType} from "../util"
 const SCH_TYPE = "number"
 
 const def: KeywordDefinition = {
-  keywords: ["multipleOf"],
+  keyword: "multipleOf",
   type: "number",
   schemaType: SCH_TYPE,
   $data: true,

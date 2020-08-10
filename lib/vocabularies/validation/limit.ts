@@ -11,7 +11,7 @@ const OPS = {
 const SCH_TYPE = "number"
 
 const def: KeywordDefinition = {
-  keywords: ["maximum", "minimum", "exclusiveMaximum", "exclusiveMinimum"],
+  keyword: ["maximum", "minimum", "exclusiveMaximum", "exclusiveMinimum"],
   type: "number",
   schemaType: SCH_TYPE,
   $data: true,

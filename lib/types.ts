@@ -120,7 +120,7 @@ export interface CompilationContext {
 }
 
 export interface KeywordDefinition {
-  keywords?: string[]
+  keyword?: string | string[]
   type?: string | string[]
   schemaType?: string
   async?: boolean

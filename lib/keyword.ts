@@ -23,15 +23,19 @@ export function addVocabulary(
   definitions: Vocabulary,
   _skipValidation?: boolean
 ): object {
-  // TODO return Ajv
+  // TODO return type Ajv
   for (const def of definitions) {
-    if (!def.keywords) {
+    if (!def.keyword) {
       throw new Error(
-        'Vocabulary keywords must have "keywords" property in definition'
+        'Vocabulary keywords must have "keyword" property in definition'
       )
     }
-    for (const keyword of def.keywords)
-      this.addKeyword(keyword, def, _skipValidation)
+    if (Array.isArray(def.keyword)) {
+      for (const keyword of def.keyword)
+        this.addKeyword(keyword, def, _skipValidation)
+    } else {
+      this.addKeyword(def.keyword, def, _skipValidation)
+    }
   }
   return this
 }
