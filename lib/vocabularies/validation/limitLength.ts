@@ -9,8 +9,7 @@ const def: KeywordDefinition = {
   code({fail, keyword, data, $data, schemaCode, opts}) {
     const op = keyword == "maxLength" ? ">" : "<"
     const dnt = dataNotType(schemaCode, def.schemaType, $data)
-    const len =
-      opts.unicode === false ? `${data}.length` : `ucs2length(${data})`
+    const len = opts.unicode === false ? `${data}.length` : `ucs2length(${data})`
     fail(dnt + len + op + schemaCode)
   },
   error: {

@@ -4,6 +4,7 @@ import {
   ErrorObject,
   ValidateFunction,
   CompilationContext,
+  KeywordContext,
 } from "./types"
 
 import {getData, getProperty, toQuotedString} from "./compile/util"
@@ -20,16 +21,11 @@ const definitionSchema = require("./definition_schema")
  * @param {Boolean} _skipValidation skip definition validation
  * @return {Ajv} this for method chaining
  */
-export function addVocabulary(
-  definitions: Vocabulary,
-  _skipValidation?: boolean
-): object {
+export function addVocabulary(definitions: Vocabulary, _skipValidation?: boolean): object {
   // TODO return type Ajv
   for (const def of definitions) {
     if (!def.keyword) {
-      throw new Error(
-        'Vocabulary keywords must have "keyword" property in definition'
-      )
+      throw new Error('Vocabulary keywords must have "keyword" property in definition')
     }
     if (Array.isArray(def.keyword)) {
       for (const keyword of def.keyword) {
@@ -134,47 +130,36 @@ export function addKeyword(
  * @param {String} keyword pre-defined or custom keyword.
  * @return {String} compiled rule code.
  */
-function ruleCode(
-  it: CompilationContext,
-  keyword: string /*, ruleType */
-): string {
+function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): string {
   const schema = it.schema[keyword]
-  const {
-    schemaType,
-    code,
-    error,
-    $data: $defData,
-  }: KeywordDefinition = this.definition
+  const {schemaType, code, error, $data: $defData}: KeywordDefinition = this.definition
   if (!code) throw new Error('"code" must be defined')
   let schemaCode: string | number | boolean
   let out = ""
   const $data = $defData && it.opts.$data && schema && schema.$data
   if ($data) {
     schemaCode = it.scope.getName("schema")
-    out += `const ${schemaCode} = ${getData(
-      $data,
-      it.dataLevel,
-      it.dataPathArr
-    )};`
+    out += `const ${schemaCode} = ${getData($data, it.dataLevel, it.dataPathArr)};`
   } else {
     if (
       schemaType &&
-      !(schemaType === "array"
-        ? Array.isArray(schema)
-        : typeof schema === schemaType)
+      !(schemaType === "array" ? Array.isArray(schema) : typeof schema === schemaType)
     ) {
       throw new Error(`${keyword} must be ${schemaType}`)
     }
     schemaCode = schemaRefOrVal()
   }
   const data = "data" + (it.dataLevel || "")
-  const cxt = {
-    fail,
+  const cxt: KeywordContext = {
     write,
+    fail,
+    ok,
+    errorParams,
     keyword,
     data,
     $data,
     schema,
+    parentSchema: it.schema,
     schemaCode,
     scope: it.scope,
     usePattern: it.usePattern,
@@ -185,12 +170,23 @@ function ruleCode(
   return out
 
   function write(str: string): void {
-    out += str
+    out += str + "\n"
   }
 
   function fail(condition: string): void {
     out += `if (${condition}) { ${reportError()} }`
     if (!it.opts.allErrors) out += `else {`
+    out += "\n"
+  }
+
+  function ok(condition?: string): void {
+    if (condition) out += `if (!(${condition})) { ${reportError()} }`
+    if (!it.opts.allErrors) out += condition ? `else {` : `if (true) {`
+    out += "\n"
+  }
+
+  function errorParams(obj: any) {
+    cxt.params = obj
   }
 
   function reportError(): string {
@@ -286,10 +282,7 @@ export interface KeywordValidator {
  * @param {Boolean} throwError true to throw exception if definition is invalid
  * @return {boolean} validation result
  */
-export const validateKeyword: KeywordValidator = function (
-  definition,
-  throwError
-) {
+export const validateKeyword: KeywordValidator = function (definition, throwError) {
   validateKeyword.errors = null
   var v: ValidateFunction = (this._validateKeyword =
     this._validateKeyword || this.compile(definitionSchema, true))
@@ -297,9 +290,7 @@ export const validateKeyword: KeywordValidator = function (
   if (v(definition)) return true
   validateKeyword.errors = v.errors
   if (throwError) {
-    throw new Error(
-      "custom keyword definition is invalid: " + this.errorsText(v.errors)
-    )
+    throw new Error("custom keyword definition is invalid: " + this.errorsText(v.errors))
   }
   return false
 }

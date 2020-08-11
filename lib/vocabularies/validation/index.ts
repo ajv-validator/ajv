@@ -11,6 +11,7 @@ const validation: Vocabulary = [
   require("./limitProperties"),
   // array
   require("./limitItems"),
+  require("./uniqueItems"),
   // any
   require("./const"),
   require("./enum"),

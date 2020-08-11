@@ -17,8 +17,7 @@ const def: KeywordDefinition = {
     fail(dnt + `(${res} = ${data}/${schemaCode}, ${invalid})`)
   },
   error: {
-    message: ({$data, schemaCode}) =>
-      `"should be multiple of ${appendSchema(schemaCode, $data)}`,
+    message: ({$data, schemaCode}) => `"should be multiple of ${appendSchema(schemaCode, $data)}`,
     params: ({schemaCode}) => `{multipleOf: ${schemaCode}}`,
   },
 }

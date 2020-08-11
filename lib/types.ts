@@ -139,26 +139,13 @@ export interface KeywordDefinition {
   valid?: boolean
   // at least one of the following properties should be present
   validate?: SchemaValidateFunction | ValidateFunction
-  compile?: (
-    schema: any,
-    parentSchema: object,
-    it: CompilationContext
-  ) => ValidateFunction
-  macro?: (
-    schema: any,
-    parentSchema: object,
-    it: CompilationContext
-  ) => object | boolean
-  inline?: (
-    it: CompilationContext,
-    keyword: string,
-    schema: any,
-    parentSchema: object
-  ) => string
+  compile?: (schema: any, parentSchema: object, it: CompilationContext) => ValidateFunction
+  macro?: (schema: any, parentSchema: object, it: CompilationContext) => object | boolean
+  inline?: (it: CompilationContext, keyword: string, schema: any, parentSchema: object) => string
   code?: (cxt: KeywordContext) => string | void
   error?: {
-    message: (cxt: KeywordContext) => string
-    params: (cxt: KeywordContext) => string
+    message: (cxt: KeywordContext, params?: any) => string
+    params: (cxt: KeywordContext, params?: any) => string
   }
   validateSchema?: ValidateFunction
 }
@@ -167,15 +154,19 @@ export type Vocabulary = KeywordDefinition[]
 
 export interface KeywordContext {
   fail: (condition: string) => void
+  ok: (condition?: string) => void
   write: (str: string) => void
   usePattern: (str: string) => string
+  errorParams: (obj: any) => void
   scope: Scope
   keyword: string
   data: string
   $data?: string | false
   schema: any
+  parentSchema: any
   schemaCode: string | number | boolean
   opts: Options
+  params?: any
 }
 
 export type FormatMode = "fast" | "full"
@@ -186,9 +177,7 @@ export type FormatValidator<T extends SN> = (data: T) => boolean
 
 export type FormatCompare<T extends SN> = (data1: T, data2: T) => boolean
 
-export type AsyncFormatValidator<T extends SN> = (
-  data: T
-) => PromiseLike<boolean>
+export type AsyncFormatValidator<T extends SN> = (data: T) => PromiseLike<boolean>
 
 export interface FormatDefinition<T extends SN> {
   type: T extends string ? "string" : "number"

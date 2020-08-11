@@ -15,13 +15,12 @@ const def: KeywordDefinition = {
   $data: true,
   code({fail, keyword, data, $data, schemaCode}) {
     const dnt = dataNotType(schemaCode, def.schemaType, $data)
-    fail(dnt + data + OPS[keyword].fail + schemaCode + ` || ${data}!==${data}`)
+    fail(dnt + data + OPS[keyword].fail + schemaCode + ` || isNaN(${data})`)
   },
   error: {
     message: ({keyword, $data, schemaCode}) =>
       `"should be ${OPS[keyword].ok} ${appendSchema(schemaCode, $data)}`,
-    params: ({keyword, schemaCode}) =>
-      `{comparison: "${OPS[keyword].ok}", limit: ${schemaCode}}`,
+    params: ({keyword, schemaCode}) => `{comparison: "${OPS[keyword].ok}", limit: ${schemaCode}}`,
   },
 }
 

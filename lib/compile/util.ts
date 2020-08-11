@@ -22,8 +22,8 @@ module.exports = {
 export function checkDataType(
   dataType: string,
   data: string,
-  strictNumbers: boolean,
-  negate: boolean
+  strictNumbers?: boolean,
+  negate?: boolean
 ): string {
   const EQ = negate ? " !== " : " === "
   const OK = negate ? "!" : ""
@@ -33,10 +33,7 @@ export function checkDataType(
     case "array":
       return OK + `Array.isArray(${data})`
     case "object":
-      return (
-        OK +
-        `(${data} && typeof ${data} === "object" && !Array.isArray(${data}))`
-      )
+      return OK + `(${data} && typeof ${data} === "object" && !Array.isArray(${data}))`
     case "integer":
       return (
         OK +
@@ -44,21 +41,13 @@ export function checkDataType(
         (strictNumbers ? ` && isFinite(${data}))` : ")")
       )
     case "number":
-      return (
-        OK +
-        `(typeof ${data} === "number"` +
-        (strictNumbers ? `&& isFinite(${data}))` : ")")
-      )
+      return OK + `(typeof ${data} === "number"` + (strictNumbers ? `&& isFinite(${data}))` : ")")
     default:
       return `typeof ${data} ${EQ} "${dataType}"`
   }
 }
 
-export function checkDataTypes(
-  dataTypes: string[],
-  data: string,
-  strictNumbers: boolean
-): string {
+export function checkDataTypes(dataTypes: string[], data: string, strictNumbers?: boolean): string {
   if (dataTypes.length === 1) {
     return checkDataType(dataTypes[0], data, strictNumbers, true)
   }
@@ -136,10 +125,7 @@ export function varReplace(str: string, dataVar: string, expr: string): string {
 }
 
 // TODO rules, schema?
-export function schemaHasRules(
-  schema: object | boolean,
-  rules: object
-): boolean | undefined {
+export function schemaHasRules(schema: object | boolean, rules: object): boolean | undefined {
   if (typeof schema == "boolean") return !schema
   for (const key in schema) if (rules[key]) return true
 }
@@ -155,10 +141,7 @@ export function schemaHasRulesExcept(
 }
 
 // TODO rules, schema?
-export function schemaUnknownRules(
-  schema: object,
-  rules: object
-): string | undefined {
+export function schemaUnknownRules(schema: object, rules: object): string | undefined {
   if (typeof schema === "boolean") return
   for (const key in schema) if (!rules[key]) return key
 }
@@ -174,19 +157,14 @@ export function getPathExpr(
   isNumber?: boolean
 ): string {
   const path = jsonPointers // false by default
-    ? `'/' + ${expr}` +
-      (isNumber ? "" : ".replace(/~/g, '~0').replace(/\\//g, '~1')")
+    ? `'/' + ${expr}` + (isNumber ? "" : ".replace(/~/g, '~0').replace(/\\//g, '~1')")
     : isNumber
     ? `'[' + ${expr} + ']'`
     : `'[\\'' + ${expr} + '\\']'`
   return joinPaths(currentPath, path)
 }
 
-export function getPath(
-  currentPath: string,
-  prop: string,
-  jsonPointers?: boolean
-): string {
+export function getPath(currentPath: string, prop: string, jsonPointers?: boolean): string {
   const path = jsonPointers // false by default
     ? toQuotedString("/" + escapeJsonPointer(prop))
     : toQuotedString(getProperty(prop))
@@ -212,19 +190,14 @@ export function getData($data: string, lvl: number, paths: string[]): string {
     if (jsonPointer === "#") {
       if (up >= lvl) {
         throw new Error(
-          "Cannot access property/index " +
-            up +
-            " levels up, current level is " +
-            lvl
+          "Cannot access property/index " + up + " levels up, current level is " + lvl
         )
       }
       return paths[lvl - up]
     }
 
     if (up > lvl) {
-      throw new Error(
-        "Cannot access data " + up + " levels up, current level is " + lvl
-      )
+      throw new Error("Cannot access data " + up + " levels up, current level is " + lvl)
     }
     data = "data" + (lvl - up || "")
     if (!jsonPointer) return data
