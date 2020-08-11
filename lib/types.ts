@@ -33,6 +33,7 @@ interface Options {
   inlineRefs?: boolean | number
   passContext?: boolean
   loopRequired?: number
+  loopEnum?: number
   ownProperties?: boolean
   multipleOfPrecision?: boolean | number
   errorDataPath?: string

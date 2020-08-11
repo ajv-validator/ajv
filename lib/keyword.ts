@@ -153,7 +153,12 @@ function ruleCode(
       it.dataPathArr
     )};`
   } else {
-    if (schemaType && typeof schema !== schemaType)
+    if (
+      schemaType &&
+      !(schemaType === "array"
+        ? Array.isArray(schema)
+        : typeof schema === schemaType)
+    )
       throw new Error(`${keyword} must be ${schemaType}`)
     schemaCode = schemaRefOrVal()
   }

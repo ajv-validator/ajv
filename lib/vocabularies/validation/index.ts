@@ -13,6 +13,7 @@ const validation: Vocabulary = [
   require("./limitItems"),
   // any
   require("./const"),
+  require("./enum"),
 ]
 
 module.exports = validation
