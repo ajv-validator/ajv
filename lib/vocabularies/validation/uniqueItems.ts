@@ -1,65 +1,3 @@
-// {{# def.definitions }}
-// {{# def.errors }}
-// {{# def.setupKeyword }}
-// {{# def.$data }}
-
-// {{? ($schema || $isData) && it.opts.uniqueItems !== false }}
-//   {{? $isData }}
-//     var {{=$valid}};
-//     if ({{=$schemaValue}} === false || {{=$schemaValue}} === undefined)
-//       {{=$valid}} = true;
-//     else if (typeof {{=$schemaValue}} != 'boolean')
-//       {{=$valid}} = false;
-//     else {
-//   {{?}}
-
-//   var i = {{=$data}}.length
-//     , {{=$valid}} = true
-//     , j;
-//   if (i > 1) {
-//     {{
-//       var $itemType = it.schema.items && it.schema.items.type
-//         , $typeIsArray = Array.isArray($itemType);
-//     }}
-//     {{? !$itemType || $itemType == 'object' || $itemType == 'array' ||
-//         ($typeIsArray && ($itemType.indexOf('object') >= 0 || $itemType.indexOf('array') >= 0)) }}
-//       outer:
-//       for (;i--;) {
-//         for (j = i; j--;) {
-//           if (equal({{=$data}}[i], {{=$data}}[j])) {
-//             {{=$valid}} = false;
-//             break outer;
-//           }
-//         }
-//       }
-//     {{??}}
-//       var itemIndices = {}, item;
-//       for (;i--;) {
-//         var item = {{=$data}}[i];
-//         {{ var $method = 'checkDataType' + ($typeIsArray ? 's' : ''); }}
-//         if ({{= it.util[$method]($itemType, 'item', it.opts.strictNumbers, true) }}) continue;
-//         {{? $typeIsArray}}
-//           if (typeof item == 'string') item = '"' + item;
-//         {{?}}
-//         if (typeof itemIndices[item] == 'number') {
-//           {{=$valid}} = false;
-//           j = itemIndices[item];
-//           break;
-//         }
-//         itemIndices[item] = i;
-//       }
-//     {{?}}
-//   }
-
-//   {{? $isData }}  }  {{?}}
-
-//   if (!{{=$valid}}) {
-//     {{# def.error:'uniqueItems' }}
-//   } {{? $breakOnError }} else { {{?}}
-// {{??}}
-//   {{? $breakOnError }} if (true) { {{?}}
-// {{?}}
-
 import {KeywordDefinition} from "../../types"
 import {checkDataType, checkDataTypes} from "../../compile/util"
 
@@ -87,7 +25,6 @@ const def: KeywordDefinition = {
     const itemType = parentSchema.items?.type
     write(
       `${i} = ${data}.length;
-      ${j};
       ${valid} = true;
       if (${i} > 1) {
         ${canOptimize() ? loopN() : loopN2()}
@@ -137,9 +74,14 @@ const def: KeywordDefinition = {
     }
   },
   error: {
-    message: ({params: {i, j}}) =>
-      `"should NOT have duplicate items (items ## " + ${j} + " and " + ${i} + " are identical)"`,
-    params: ({params: {i, j}}) => `{i: ${i}, j: ${j}}`,
+    message: ({$data, params: {i, j}}) => {
+      const msg = `"should NOT have duplicate items (items ## " + ${j} + " and " + ${i} + " are identical)"`
+      return $data ? `(${i} === undefined ? "uniqueItems must be boolean ($data)" : ${msg})` : msg
+    },
+    params: ({$data, params: {i, j}}) => {
+      const obj = `{i: ${i}, j: ${j}}`
+      return $data ? `(${i} === undefined ? {} : ${obj})` : obj
+    },
   },
 }
 
