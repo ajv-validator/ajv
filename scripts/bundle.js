@@ -10,7 +10,7 @@ var pkg = process.argv[2],
   compress = process.argv[4]
 
 var packageDir = path.join(__dirname, "..")
-if (pkg != ".") packageDir = path.join(packageDir, "node_modules", pkg)
+if (pkg !== ".") packageDir = path.join(packageDir, "node_modules", pkg)
 
 var json = require(path.join(packageDir, "package.json"))
 
@@ -47,7 +47,7 @@ browserify(bOpts)
       var compressOpts = compress.split(",")
       for (var i = 0, il = compressOpts.length; i < il; ++i) {
         var pair = compressOpts[i].split("=")
-        uglifyOpts.compress[pair[0]] = pair.length < 1 || pair[1] != "false"
+        uglifyOpts.compress[pair[0]] = pair.length < 1 || pair[1] !== "false"
       }
     }
     if (standalone) {

@@ -67,7 +67,7 @@ files.forEach((f) => {
     v = v.replace(/\$/g, "\\$$")
     var regexp = new RegExp(v + "[^A-Za-z0-9_$]", "g")
     var count = occurrences(regexp)
-    if (count == 1) {
+    if (count === 1) {
       regexp = new RegExp("var\\s+" + v + "\\s*=[^;]+;|var\\s+" + v + ";")
       code = code.replace(regexp, "")
     }
@@ -76,7 +76,7 @@ files.forEach((f) => {
   function removeAlwaysFalsyInOr() {
     var countUsed = occurrences(ERROR_KEYWORD)
     var countOr = occurrences(ERROR_KEYWORD_OR)
-    if (countUsed == countOr + 1) code = code.replace(ERROR_KEYWORD_OR, "")
+    if (countUsed === countOr + 1) code = code.replace(ERROR_KEYWORD_OR, "")
   }
 
   function occurrences(regexp) {

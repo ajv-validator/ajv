@@ -102,7 +102,7 @@ export function addKeyword(
     var ruleGroup
     for (var i = 0; i < RULES.length; i++) {
       var rg = RULES[i]
-      if (rg.type == dataType) {
+      if (rg.type === dataType) {
         ruleGroup = rg
         break
       }
@@ -265,7 +265,7 @@ export function removeKeyword(keyword: string): object {
   for (var i = 0; i < RULES.length; i++) {
     var rules = RULES[i].rules
     for (var j = 0; j < rules.length; j++) {
-      if (rules[j].keyword == keyword) {
+      if (rules[j].keyword === keyword) {
         rules.splice(j, 1)
         break
       }

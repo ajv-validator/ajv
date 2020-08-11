@@ -151,7 +151,7 @@ export function schemaHasRulesExcept(
   exceptKeyword: string
 ): boolean | undefined {
   if (typeof schema == "boolean") return !schema && exceptKeyword !== "not"
-  for (const key in schema) if (key != exceptKeyword && rules[key]) return true
+  for (const key in schema) if (key !== exceptKeyword && rules[key]) return true
 }
 
 // TODO rules, schema?
@@ -209,7 +209,7 @@ export function getData($data: string, lvl: number, paths: string[]): string {
     if (!matches) throw new Error("Invalid JSON-pointer: " + $data)
     const up: number = +matches[1]
     jsonPointer = matches[2]
-    if (jsonPointer == "#") {
+    if (jsonPointer === "#") {
       if (up >= lvl) {
         throw new Error(
           "Cannot access property/index " +

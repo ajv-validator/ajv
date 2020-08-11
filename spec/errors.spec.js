@@ -118,9 +118,9 @@ describe("Validation errors", () => {
         {additionalProperty: "quux"}
       )
 
-      if (errorDataPath == "property") {
+      if (errorDataPath === "property") {
         fullValidate.errors
-          .filter((err) => err.keyword == "additionalProperties")
+          .filter((err) => err.keyword === "additionalProperties")
           .map((err) =>
             fullAjv._opts.jsonPointers
               ? err.dataPath.substr(1)
@@ -607,20 +607,20 @@ describe("Validation errors", () => {
 
   function pathFunc(errorDataPath) {
     return function (dataPath) {
-      return errorDataPath == "property" ? dataPath : ""
+      return errorDataPath === "property" ? dataPath : ""
     }
   }
 
   function requiredFunc(errorDataPath) {
     return function (prop) {
-      return errorDataPath == "property"
+      return errorDataPath === "property"
         ? "is a required property"
         : "should have required property '" + prop + "'"
     }
   }
 
   function additionalFunc(errorDataPath) {
-    return errorDataPath == "property"
+    return errorDataPath === "property"
       ? "is an invalid additional property"
       : "should NOT have additional properties"
   }
@@ -798,7 +798,7 @@ describe("Validation errors", () => {
           "",
           "property name 'foo' is invalid"
         )
-        if (numErrors == 4) {
+        if (numErrors === 4) {
           shouldBeError(
             validate.errors[2],
             "pattern",
@@ -1112,7 +1112,7 @@ describe("Validation errors", () => {
         {multipleOf: multipleOf}
       )
 
-      if (numErrors == 2) {
+      if (numErrors === 2) {
         err = validate.errors[1]
         shouldBeError(
           err,
@@ -1150,7 +1150,7 @@ describe("Validation errors", () => {
         var expectedErrors = _ajv._opts.allErrors ? 2 : 1
         shouldBeInvalid(validate, [1, "2", "2", 2], expectedErrors)
         testTypeError(0, "/1")
-        if (expectedErrors == 2) testTypeError(1, "/2")
+        if (expectedErrors === 2) testTypeError(1, "/2")
 
         function testTypeError(i, dataPath) {
           var err = validate.errors[i]

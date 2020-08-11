@@ -39,6 +39,7 @@ rules:
   curly: [error, multi-line, consistent]
   dot-location: [error, property]
   dot-notation: error
+  eqeqeq: [error, smart]
   id-match: error
   linebreak-style: [error, unix]
   new-cap: error
@@ -68,5 +69,4 @@ rules:
   no-control-regex: 0
   no-useless-escape: error
   no-void: error
-  # eqeqeq: [error, smart]
   # no-var: error

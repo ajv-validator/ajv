@@ -406,9 +406,9 @@ describe("async schemas, formats and keywords", function () {
 })
 
 function checkWordOnServer(str) {
-  return str == "tomorrow"
+  return str === "tomorrow"
     ? Promise.resolve(true)
-    : str == "manana"
+    : str === "manana"
     ? Promise.resolve(false)
     : Promise.reject(new Error("unknown word"))
 }
@@ -455,7 +455,7 @@ function checkNotValid(p) {
     })
     .catch((err) => {
       err.should.be.instanceof(Error)
-      if (err.message == SHOULD_BE_INVALID) throw err
+      if (err.message === SHOULD_BE_INVALID) throw err
       return err
     })
 }

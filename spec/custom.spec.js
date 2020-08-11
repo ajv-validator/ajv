@@ -364,7 +364,7 @@ describe("Custom keywords", () => {
           for (var prop in _schema) {
             var path = prop.split(".")
             var properties = {}
-            if (path.length == 1) {
+            if (path.length === 1) {
               properties[prop] = _schema[prop]
             } else {
               var deepProperties = {}
@@ -374,7 +374,7 @@ describe("Custom keywords", () => {
             expanded.push({properties: properties})
           }
 
-          return expanded.length == 1 ? expanded[0] : {allOf: expanded}
+          return expanded.length === 1 ? expanded[0] : {allOf: expanded}
         }
       })
     })
@@ -983,7 +983,7 @@ describe("Custom keywords", () => {
   function validateRangeSchema(schema, parentSchema) {
     var schemaValid =
       Array.isArray(schema) &&
-      schema.length == 2 &&
+      schema.length === 2 &&
       typeof schema[0] == "number" &&
       typeof schema[1] == "number"
     if (!schemaValid) {

@@ -196,7 +196,7 @@ describe("compileAsync method", () => {
       ajv.addKeyword("myFooBar", {
         type: "string",
         validate: function (sch, data) {
-          return sch == data
+          return sch === data
         },
       })
 

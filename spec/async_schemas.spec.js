@@ -63,9 +63,9 @@ function addAsyncFormatsAndKeywords(ajv) {
 }
 
 function checkWordOnServer(str) {
-  return str == "tomorrow"
+  return str === "tomorrow"
     ? Promise.resolve(true)
-    : str == "manana"
+    : str === "manana"
     ? Promise.resolve(false)
     : Promise.reject(new Error("unknown word"))
 }
