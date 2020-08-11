@@ -3,8 +3,8 @@
 var Ajv = require("../ajv")
 require("../chai").should()
 
-describe("issue #743, property __proto__ should be removed with removeAdditional option", function () {
-  it("should remove additional properties", function () {
+describe("issue #743, property __proto__ should be removed with removeAdditional option", () => {
+  it("should remove additional properties", () => {
     var ajv = new Ajv({removeAdditional: true})
 
     var schema = {

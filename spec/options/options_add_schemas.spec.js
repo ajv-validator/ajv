@@ -3,9 +3,9 @@
 var Ajv = require("../ajv")
 var should = require("../chai").should()
 
-describe("options to add schemas", function () {
-  describe("schemas", function () {
-    it("should add schemas from object", function () {
+describe("options to add schemas", () => {
+  describe("schemas", () => {
+    it("should add schemas from object", () => {
       var ajv = new Ajv({
         schemas: {
           int: {type: "integer"},
@@ -19,7 +19,7 @@ describe("options to add schemas", function () {
       ajv.validate("str", 123).should.equal(false)
     })
 
-    it("should add schemas from array", function () {
+    it("should add schemas from array", () => {
       var ajv = new Ajv({
         schemas: [
           {$id: "int", type: "integer"},
@@ -34,17 +34,17 @@ describe("options to add schemas", function () {
     })
   })
 
-  describe("addUsedSchema", function () {
-    ;[true, undefined].forEach(function (optionValue) {
-      describe("= " + optionValue, function () {
+  describe("addUsedSchema", () => {
+    ;[true, undefined].forEach((optionValue) => {
+      describe("= " + optionValue, () => {
         var ajv
 
-        beforeEach(function () {
+        beforeEach(() => {
           ajv = new Ajv({addUsedSchema: optionValue})
         })
 
-        describe("compile and validate", function () {
-          it("should add schema", function () {
+        describe("compile and validate", () => {
+          it("should add schema", () => {
             var schema = {$id: "str", type: "string"}
             var validate = ajv.compile(schema)
             validate("abc").should.equal(true)
@@ -57,16 +57,16 @@ describe("options to add schemas", function () {
             ajv.getSchema("int").should.be.a("function")
           })
 
-          it("should throw with duplicate ID", function () {
+          it("should throw with duplicate ID", () => {
             ajv.compile({$id: "str", type: "string"})
-            should.throw(function () {
+            should.throw(() => {
               ajv.compile({$id: "str", minLength: 2})
             })
 
             var schema = {$id: "int", type: "integer"}
             var schema2 = {$id: "int", minimum: 0}
             ajv.validate(schema, 1).should.equal(true)
-            should.throw(function () {
+            should.throw(() => {
               ajv.validate(schema2, 1)
             })
           })
@@ -74,15 +74,15 @@ describe("options to add schemas", function () {
       })
     })
 
-    describe("= false", function () {
+    describe("= false", () => {
       var ajv
 
-      beforeEach(function () {
+      beforeEach(() => {
         ajv = new Ajv({addUsedSchema: false})
       })
 
-      describe("compile and validate", function () {
-        it("should NOT add schema", function () {
+      describe("compile and validate", () => {
+        it("should NOT add schema", () => {
           var schema = {$id: "str", type: "string"}
           var validate = ajv.compile(schema)
           validate("abc").should.equal(true)
@@ -95,16 +95,16 @@ describe("options to add schemas", function () {
           should.equal(ajv.getSchema("int"), undefined)
         })
 
-        it("should NOT throw with duplicate ID", function () {
+        it("should NOT throw with duplicate ID", () => {
           ajv.compile({$id: "str", type: "string"})
-          should.not.throw(function () {
+          should.not.throw(() => {
             ajv.compile({$id: "str", minLength: 2})
           })
 
           var schema = {$id: "int", type: "integer"}
           var schema2 = {$id: "int", minimum: 0}
           ajv.validate(schema, 1).should.equal(true)
-          should.not.throw(function () {
+          should.not.throw(() => {
             ajv.validate(schema2, 1).should.equal(true)
           })
         })
@@ -112,10 +112,10 @@ describe("options to add schemas", function () {
     })
   })
 
-  describe("serialize", function () {
+  describe("serialize", () => {
     var serializeCalled
 
-    it("should use custom function to serialize schema to string", function () {
+    it("should use custom function to serialize schema to string", () => {
       serializeCalled = undefined
       var ajv = new Ajv({serialize: serialize})
       ajv.addSchema({type: "string"})

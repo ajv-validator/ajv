@@ -9,20 +9,20 @@ describe("async schemas, formats and keywords", function () {
   this.timeout(30000)
   var ajv, instances
 
-  beforeEach(function () {
+  beforeEach(() => {
     instances = getAjvInstances()
     ajv = instances[0]
   })
 
-  describe("async schemas without async elements", function () {
-    it("should return result as promise", function () {
+  describe("async schemas without async elements", () => {
+    it("should return result as promise", () => {
       var schema = {
         $async: true,
         type: "string",
         maxLength: 3,
       }
 
-      return repeat(function () {
+      return repeat(() => {
         return Promise.all(instances.map(test))
       })
 
@@ -37,7 +37,7 @@ describe("async schemas, formats and keywords", function () {
       }
     })
 
-    it("should fail compilation if async schema is inside sync schema", function () {
+    it("should fail compilation if async schema is inside sync schema", () => {
       var schema = {
         properties: {
           foo: {
@@ -48,7 +48,7 @@ describe("async schemas, formats and keywords", function () {
         },
       }
 
-      shouldThrowFunc("async schema in sync schema", function () {
+      shouldThrowFunc("async schema in sync schema", () => {
         ajv.compile(schema)
       })
 
@@ -58,17 +58,17 @@ describe("async schemas, formats and keywords", function () {
     })
   })
 
-  describe("async formats", function () {
+  describe("async formats", () => {
     beforeEach(addFormatEnglishWord)
 
-    it("should fail compilation if async format is inside sync schema", function () {
-      instances.forEach(function (_ajv) {
+    it("should fail compilation if async format is inside sync schema", () => {
+      instances.forEach((_ajv) => {
         var schema = {
           type: "string",
           format: "english_word",
         }
 
-        shouldThrowFunc("async format in sync schema", function () {
+        shouldThrowFunc("async format in sync schema", () => {
           _ajv.compile(schema)
         })
         schema.$async = true
@@ -77,9 +77,9 @@ describe("async schemas, formats and keywords", function () {
     })
   })
 
-  describe("async custom keywords", function () {
-    beforeEach(function () {
-      instances.forEach(function (_ajv) {
+  describe("async custom keywords", () => {
+    beforeEach(() => {
+      instances.forEach((_ajv) => {
         _ajv.addKeyword("idExists", {
           async: true,
           type: "number",
@@ -96,8 +96,8 @@ describe("async schemas, formats and keywords", function () {
       })
     })
 
-    it("should fail compilation if async keyword is inside sync schema", function () {
-      instances.forEach(function (_ajv) {
+    it("should fail compilation if async keyword is inside sync schema", () => {
+      instances.forEach((_ajv) => {
         var schema = {
           type: "object",
           properties: {
@@ -108,7 +108,7 @@ describe("async schemas, formats and keywords", function () {
           },
         }
 
-        shouldThrowFunc("async keyword in sync schema", function () {
+        shouldThrowFunc("async keyword in sync schema", () => {
           _ajv.compile(schema)
         })
 
@@ -117,9 +117,9 @@ describe("async schemas, formats and keywords", function () {
       })
     })
 
-    it("should return custom error", function () {
+    it("should return custom error", () => {
       return Promise.all(
-        instances.map(function (_ajv) {
+        instances.map((_ajv) => {
           var schema = {
             $async: true,
             type: "object",
@@ -186,13 +186,13 @@ describe("async schemas, formats and keywords", function () {
     }
   })
 
-  describe("async referenced schemas", function () {
-    beforeEach(function () {
+  describe("async referenced schemas", () => {
+    beforeEach(() => {
       instances = getAjvInstances({inlineRefs: false, extendRefs: "ignore"})
       addFormatEnglishWord()
     })
 
-    it("should validate referenced async schema", function () {
+    it("should validate referenced async schema", () => {
       var schema = {
         $async: true,
         definitions: {
@@ -207,9 +207,9 @@ describe("async schemas, formats and keywords", function () {
         },
       }
 
-      return repeat(function () {
+      return repeat(() => {
         return Promise.all(
-          instances.map(function (_ajv) {
+          instances.map((_ajv) => {
             var validate = _ajv.compile(schema)
             var validData = {word: "tomorrow"}
 
@@ -224,7 +224,7 @@ describe("async schemas, formats and keywords", function () {
       })
     })
 
-    it("should validate recursive async schema", function () {
+    it("should validate recursive async schema", () => {
       var schema = {
         $async: true,
         definitions: {
@@ -245,7 +245,7 @@ describe("async schemas, formats and keywords", function () {
       return recursiveTest(schema)
     })
 
-    it("should validate recursive ref to async sub-schema, issue #612", function () {
+    it("should validate recursive ref to async sub-schema, issue #612", () => {
       var schema = {
         $async: true,
         type: "object",
@@ -271,7 +271,7 @@ describe("async schemas, formats and keywords", function () {
       return recursiveTest(schema)
     })
 
-    it("should validate ref from referenced async schema to root schema", function () {
+    it("should validate ref from referenced async schema to root schema", () => {
       var schema = {
         $async: true,
         definitions: {
@@ -295,7 +295,7 @@ describe("async schemas, formats and keywords", function () {
       return recursiveTest(schema)
     })
 
-    it("should validate refs between two async schemas", function () {
+    it("should validate refs between two async schemas", () => {
       var schemaObj = {
         $id: "http://e.com/obj.json#",
         $async: true,
@@ -320,7 +320,7 @@ describe("async schemas, formats and keywords", function () {
       return recursiveTest(schemaObj, schemaWord)
     })
 
-    it("should fail compilation if sync schema references async schema", function () {
+    it("should fail compilation if sync schema references async schema", () => {
       var schema = {
         $id: "http://e.com/obj.json#",
         type: "object",
@@ -347,7 +347,7 @@ describe("async schemas, formats and keywords", function () {
         validate: checkWordOnServer,
       })
 
-      shouldThrowFunc("async schema referenced by sync schema", function () {
+      shouldThrowFunc("async schema referenced by sync schema", () => {
         ajv.compile(schema)
       })
 
@@ -358,9 +358,9 @@ describe("async schemas, formats and keywords", function () {
     })
 
     function recursiveTest(schema, refSchema) {
-      return repeat(function () {
+      return repeat(() => {
         return Promise.all(
-          instances.map(function (_ajv) {
+          instances.map((_ajv) => {
             if (refSchema) {
               try {
                 _ajv.addSchema(refSchema)
@@ -396,7 +396,7 @@ describe("async schemas, formats and keywords", function () {
   })
 
   function addFormatEnglishWord() {
-    instances.forEach(function (_ajv) {
+    instances.forEach((_ajv) => {
       _ajv.addFormat("english_word", {
         async: true,
         validate: checkWordOnServer,
@@ -415,7 +415,7 @@ function checkWordOnServer(str) {
 
 function shouldThrowFunc(message, func) {
   var err
-  should.throw(function () {
+  should.throw(() => {
     try {
       func()
     } catch (e) {
@@ -428,38 +428,32 @@ function shouldThrowFunc(message, func) {
 }
 
 function shouldBeValid(p, data) {
-  return p.then(function (valid) {
-    valid.should.equal(data)
-  })
+  return p.then((valid) => valid.should.equal(data))
 }
 
 var SHOULD_BE_INVALID = "test: should be invalid"
 function shouldBeInvalid(p, expectedMessages) {
-  return checkNotValid(p).then(function (err) {
+  return checkNotValid(p).then((err) => {
     err.should.be.instanceof(Ajv.ValidationError)
     err.errors.should.be.an("array")
     err.validation.should.equal(true)
     if (expectedMessages) {
-      var messages = err.errors.map(function (e) {
-        return e.message
-      })
+      var messages = err.errors.map((e) => e.message)
       messages.should.eql(expectedMessages)
     }
   })
 }
 
 function shouldThrow(p, exception) {
-  return checkNotValid(p).then(function (err) {
-    err.message.should.equal(exception)
-  })
+  return checkNotValid(p).then((err) => err.message.should.equal(exception))
 }
 
 function checkNotValid(p) {
   return p
-    .then(function (/* valid */) {
+    .then((/* valid */) => {
       throw new Error(SHOULD_BE_INVALID)
     })
-    .catch(function (err) {
+    .catch((err) => {
       err.should.be.instanceof(Error)
       if (err.message == SHOULD_BE_INVALID) throw err
       return err

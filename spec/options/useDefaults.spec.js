@@ -4,8 +4,8 @@ var Ajv = require("../ajv")
 var getAjvInstances = require("../ajv_instances")
 require("../chai").should()
 
-describe("useDefaults options", function () {
-  it("should replace undefined property with default value", function () {
+describe("useDefaults options", () => {
+  it("should replace undefined property with default value", () => {
     var instances = getAjvInstances(
       {
         allErrors: true,
@@ -56,7 +56,7 @@ describe("useDefaults options", function () {
     }
   })
 
-  it("should replace undefined item with default value", function () {
+  it("should replace undefined item with default value", () => {
     test(new Ajv({useDefaults: true}))
     test(new Ajv({useDefaults: true, allErrors: true}))
 
@@ -87,7 +87,7 @@ describe("useDefaults options", function () {
     }
   })
 
-  it('should apply default in "then" subschema (issue #635)', function () {
+  it('should apply default in "then" subschema (issue #635)', () => {
     test(new Ajv({useDefaults: true}))
     test(new Ajv({useDefaults: true, allErrors: true}))
 
@@ -118,16 +118,16 @@ describe("useDefaults options", function () {
     }
   })
 
-  describe("useDefaults: by value / by reference", function () {
-    describe("using by value", function () {
-      it("should NOT modify underlying defaults when modifying validated data", function () {
+  describe("useDefaults: by value / by reference", () => {
+    describe("using by value", () => {
+      it("should NOT modify underlying defaults when modifying validated data", () => {
         test("value", new Ajv({useDefaults: true}))
         test("value", new Ajv({useDefaults: true, allErrors: true}))
       })
     })
 
-    describe("using by reference", function () {
-      it("should modify underlying defaults when modifying validated data", function () {
+    describe("using by reference", () => {
+      it("should modify underlying defaults when modifying validated data", () => {
         test("reference", new Ajv({useDefaults: "shared"}))
         test("reference", new Ajv({useDefaults: "shared", allErrors: true}))
       })
@@ -165,10 +165,10 @@ describe("useDefaults options", function () {
     }
   })
 
-  describe('defaults with "empty" values', function () {
+  describe('defaults with "empty" values', () => {
     var schema, data
 
-    beforeEach(function () {
+    beforeEach(() => {
       schema = {
         properties: {
           obj: {
@@ -195,7 +195,7 @@ describe("useDefaults options", function () {
       }
     })
 
-    it('should NOT assign defaults when useDefaults is true/"shared"', function () {
+    it('should NOT assign defaults when useDefaults is true/"shared"', () => {
       test(new Ajv({useDefaults: true}))
       test(new Ajv({useDefaults: "shared"}))
 
@@ -214,7 +214,7 @@ describe("useDefaults options", function () {
       }
     })
 
-    it('should assign defaults when useDefaults = "empty"', function () {
+    it('should assign defaults when useDefaults = "empty"', () => {
       var ajv = new Ajv({useDefaults: "empty"})
       var validate = ajv.compile(schema)
       validate(data).should.equal(true)

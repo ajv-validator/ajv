@@ -3,10 +3,10 @@
 var Ajv = require("../ajv")
 var should = require("../chai").should()
 
-describe("code generation options", function () {
-  describe("sourceCode", function () {
-    describe("= true", function () {
-      it("should add source.code property", function () {
+describe("code generation options", () => {
+  describe("sourceCode", () => {
+    describe("= true", () => {
+      it("should add source.code property", () => {
         test(new Ajv({sourceCode: true}))
 
         function test(ajv) {
@@ -16,8 +16,8 @@ describe("code generation options", function () {
       })
     })
 
-    describe("= false and default", function () {
-      it("should not add source and sourceCode properties", function () {
+    describe("= false and default", () => {
+      it("should not add source and sourceCode properties", () => {
         test(new Ajv())
         test(new Ajv({sourceCode: false}))
 
@@ -30,8 +30,8 @@ describe("code generation options", function () {
     })
   })
 
-  describe("processCode", function () {
-    it("should process generated code", function () {
+  describe("processCode", () => {
+    it("should process generated code", () => {
       var ajv = new Ajv()
       var validate = ajv.compile({type: "string"})
       validate.toString().split("\n").length.should.equal(1)
@@ -45,34 +45,30 @@ describe("code generation options", function () {
     })
   })
 
-  describe("passContext option", function () {
+  describe("passContext option", () => {
     var ajv, contexts
 
-    beforeEach(function () {
+    beforeEach(() => {
       contexts = []
     })
 
-    describe("= true", function () {
-      it("should pass this value as context to custom keyword validation function", function () {
+    describe("= true", () => {
+      it("should pass this value as context to custom keyword validation function", () => {
         var validate = getValidate(true)
         var self = {}
         validate.call(self, {})
         contexts.should.have.length(4)
-        contexts.forEach(function (ctx) {
-          ctx.should.equal(self)
-        })
+        contexts.forEach((ctx) => ctx.should.equal(self))
       })
     })
 
-    describe("= false", function () {
-      it("should pass ajv instance as context to custom keyword validation function", function () {
+    describe("= false", () => {
+      it("should pass ajv instance as context to custom keyword validation function", () => {
         var validate = getValidate(false)
         var self = {}
         validate.call(self, {})
         contexts.should.have.length(4)
-        contexts.forEach(function (ctx) {
-          ctx.should.equal(ajv)
-        })
+        contexts.forEach((ctx) => ctx.should.equal(ajv))
       })
     })
 

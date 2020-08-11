@@ -4,9 +4,9 @@ var Ajv = require("../ajv")
 require("../chai").should()
 var DATE_FORMAT = /^\d\d\d\d-[0-1]\d-[0-3]\d$/
 
-describe("validation options", function () {
-  describe("format", function () {
-    it("should not validate formats if option format == false", function () {
+describe("validation options", () => {
+  describe("format", () => {
+    it("should not validate formats if option format == false", () => {
       var ajv = new Ajv({formats: {date: DATE_FORMAT}}),
         ajvFF = new Ajv({formats: {date: DATE_FORMAT}, format: false})
 
@@ -18,8 +18,8 @@ describe("validation options", function () {
     })
   })
 
-  describe("formats", function () {
-    it("should add formats from options", function () {
+  describe("formats", () => {
+    it("should add formats from options", () => {
       var ajv = new Ajv({
         formats: {
           identifier: /^[a-z_$][a-z0-9_$]*$/i,
@@ -35,8 +35,8 @@ describe("validation options", function () {
     })
   })
 
-  describe("keywords", function () {
-    it("should add keywords from options", function () {
+  describe("keywords", () => {
+    it("should add keywords from options", () => {
       var ajv = new Ajv({
         keywords: {
           identifier: {
@@ -57,8 +57,8 @@ describe("validation options", function () {
     })
   })
 
-  describe("uniqueItems", function () {
-    it("should not validate uniqueItems with uniqueItems option == false", function () {
+  describe("uniqueItems", () => {
+    it("should not validate uniqueItems with uniqueItems option == false", () => {
       testUniqueItems(new Ajv({uniqueItems: false}))
       testUniqueItems(new Ajv({uniqueItems: false, allErrors: true}))
 
@@ -70,8 +70,8 @@ describe("validation options", function () {
     })
   })
 
-  describe("unicode", function () {
-    it("should use String.prototype.length with unicode option == false", function () {
+  describe("unicode", () => {
+    it("should use String.prototype.length with unicode option == false", () => {
       var ajvUnicode = new Ajv()
       testUnicode(new Ajv({unicode: false}))
       testUnicode(new Ajv({unicode: false, allErrors: true}))
@@ -92,8 +92,8 @@ describe("validation options", function () {
     })
   })
 
-  describe("multipleOfPrecision", function () {
-    it("should allow for some deviation from 0 when validating multipleOf with value < 1", function () {
+  describe("multipleOfPrecision", () => {
+    it("should allow for some deviation from 0 when validating multipleOf with value < 1", () => {
       test(new Ajv({multipleOfPrecision: 7}))
       test(new Ajv({multipleOfPrecision: 7, allErrors: true}))
 

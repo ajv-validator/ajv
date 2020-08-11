@@ -4,20 +4,20 @@ var Ajv = require("../ajv")
 var should = require("../chai").should()
 var DATE_FORMAT = /^\d\d\d\d-[0-1]\d-[0-3]\d$/
 
-describe("unknownFormats option", function () {
-  describe("= true (default)", function () {
-    it("should fail schema compilation if unknown format is used", function () {
+describe("unknownFormats option", () => {
+  describe("= true (default)", () => {
+    it("should fail schema compilation if unknown format is used", () => {
       test(new Ajv())
       test(new Ajv({unknownFormats: true}))
 
       function test(ajv) {
-        should.throw(function () {
+        should.throw(() => {
           ajv.compile({format: "unknown"})
         })
       }
     })
 
-    it("should fail validation if unknown format is used via $data", function () {
+    it("should fail validation if unknown format is used via $data", () => {
       test(new Ajv({$data: true}))
       test(new Ajv({$data: true, unknownFormats: true}))
 
@@ -40,8 +40,8 @@ describe("unknownFormats option", function () {
     })
   })
 
-  describe('= "ignore (default before 5.0.0)"', function () {
-    it("should pass schema compilation and be valid if unknown format is used", function () {
+  describe('= "ignore (default before 5.0.0)"', () => {
+    it("should pass schema compilation and be valid if unknown format is used", () => {
       test(new Ajv({unknownFormats: "ignore"}))
 
       function test(ajv) {
@@ -50,7 +50,7 @@ describe("unknownFormats option", function () {
       }
     })
 
-    it("should be valid if unknown format is used via $data", function () {
+    it("should be valid if unknown format is used via $data", () => {
       test(new Ajv({$data: true, unknownFormats: "ignore"}))
 
       function test(ajv) {
@@ -71,21 +71,21 @@ describe("unknownFormats option", function () {
     })
   })
 
-  describe("= [String]", function () {
-    it("should pass schema compilation and be valid if allowed unknown format is used", function () {
+  describe("= [String]", () => {
+    it("should pass schema compilation and be valid if allowed unknown format is used", () => {
       test(new Ajv({unknownFormats: ["allowed"]}))
 
       function test(ajv) {
         var validate = ajv.compile({format: "allowed"})
         validate("anything").should.equal(true)
 
-        should.throw(function () {
+        should.throw(() => {
           ajv.compile({format: "unknown"})
         })
       }
     })
 
-    it("should be valid if allowed unknown format is used via $data", function () {
+    it("should be valid if allowed unknown format is used via $data", () => {
       test(new Ajv({$data: true, unknownFormats: ["allowed"]}))
 
       function test(ajv) {

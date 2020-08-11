@@ -3,8 +3,8 @@
 var Ajv = require("../ajv")
 require("../chai").should()
 
-describe("issue #210, mutual recursive $refs that are schema fragments", function () {
-  it("should compile and validate schema when one ref is fragment", function () {
+describe("issue #210, mutual recursive $refs that are schema fragments", () => {
+  it("should compile and validate schema when one ref is fragment", () => {
     var ajv = new Ajv()
 
     ajv.addSchema({
@@ -35,7 +35,7 @@ describe("issue #210, mutual recursive $refs that are schema fragments", functio
     validate({baz: {quux: {baz: "foo"}}}).should.equal(false)
   })
 
-  it("should compile and validate schema when both refs are fragments", function () {
+  it("should compile and validate schema when both refs are fragments", () => {
     var ajv = new Ajv()
 
     ajv.addSchema({

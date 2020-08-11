@@ -17,7 +17,7 @@ function getAjvInstances(opts) {
     {transpile: true, allErrors: true},
   ]
 
-  options.forEach(function (_opts) {
+  options.forEach((_opts) => {
     Object.assign(_opts, opts)
     var ajv = getAjv(_opts)
     if (ajv) instances.push(ajv)

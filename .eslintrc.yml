@@ -60,6 +60,7 @@ rules:
   no-trailing-spaces: error
   no-undef-init: error
   no-use-before-define: [error, nofunc]
+  prefer-arrow-callback: error
   prefer-const: error
   radix: error
   semi: 0
@@ -69,4 +70,3 @@ rules:
   no-void: error
   # eqeqeq: [error, smart]
   # no-var: error
-  # prefer-arrow-callback: error

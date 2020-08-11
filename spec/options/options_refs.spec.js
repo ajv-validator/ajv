@@ -3,36 +3,36 @@
 var Ajv = require("../ajv")
 var should = require("../chai").should()
 
-describe("referenced schema options", function () {
-  describe("extendRefs", function () {
-    describe("= true", function () {
-      it("should allow extending $ref with other keywords", function () {
+describe("referenced schema options", () => {
+  describe("extendRefs", () => {
+    describe("= true", () => {
+      it("should allow extending $ref with other keywords", () => {
         test(new Ajv({extendRefs: true}), true)
       })
 
-      it("should NOT log warning if extendRefs is true", function () {
+      it("should NOT log warning if extendRefs is true", () => {
         testWarning(new Ajv({extendRefs: true}))
       })
     })
 
-    describe('= "ignore" and default', function () {
-      it("should ignore other keywords when $ref is used", function () {
+    describe('= "ignore" and default', () => {
+      it("should ignore other keywords when $ref is used", () => {
         test(new Ajv())
         test(new Ajv({extendRefs: "ignore"}), false)
       })
 
-      it("should log warning when other keywords are used with $ref", function () {
+      it("should log warning when other keywords are used with $ref", () => {
         testWarning(new Ajv(), /keywords\signored/)
         testWarning(new Ajv({extendRefs: "ignore"}), /keywords\signored/)
       })
     })
 
-    describe('= "fail"', function () {
-      it("should fail schema compilation if other keywords are used with $ref", function () {
+    describe('= "fail"', () => {
+      it("should fail schema compilation if other keywords are used with $ref", () => {
         testFail(new Ajv({extendRefs: "fail"}))
 
         function testFail(ajv) {
-          should.throw(function () {
+          should.throw(() => {
             var schema = {
               definitions: {
                 int: {type: "integer"},
@@ -43,7 +43,7 @@ describe("referenced schema options", function () {
             ajv.compile(schema)
           })
 
-          should.not.throw(function () {
+          should.not.throw(() => {
             var schema = {
               definitions: {
                 int: {type: "integer"},
@@ -117,15 +117,15 @@ describe("referenced schema options", function () {
     }
   })
 
-  describe("missingRefs", function () {
-    it("should throw if ref is missing without this option", function () {
+  describe("missingRefs", () => {
+    it("should throw if ref is missing without this option", () => {
       var ajv = new Ajv()
-      should.throw(function () {
+      should.throw(() => {
         ajv.compile({$ref: "missing_reference"})
       })
     })
 
-    it('should not throw and pass validation with missingRef == "ignore"', function () {
+    it('should not throw and pass validation with missingRef == "ignore"', () => {
       testMissingRefsIgnore(new Ajv({missingRefs: "ignore"}))
       testMissingRefsIgnore(new Ajv({missingRefs: "ignore", allErrors: true}))
 
@@ -135,7 +135,7 @@ describe("referenced schema options", function () {
       }
     })
 
-    it('should not throw and fail validation with missingRef == "fail" if the ref is used', function () {
+    it('should not throw and fail validation with missingRef == "fail" if the ref is used', () => {
       testMissingRefsFail(new Ajv({missingRefs: "fail"}))
       testMissingRefsFail(new Ajv({missingRefs: "fail", verbose: true}))
       testMissingRefsFail(new Ajv({missingRefs: "fail", allErrors: true}))

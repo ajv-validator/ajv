@@ -3,56 +3,48 @@
 var Ajv = require("../ajv")
 require("../chai").should()
 
-describe("issue #768, fix passContext in recursive $ref", function () {
+describe("issue #768, fix passContext in recursive $ref", () => {
   var ajv, contexts
 
-  beforeEach(function () {
+  beforeEach(() => {
     contexts = []
   })
 
-  describe("passContext = true", function () {
-    it("should pass this value as context to custom keyword validation function", function () {
+  describe("passContext = true", () => {
+    it("should pass this value as context to custom keyword validation function", () => {
       var validate = getValidate(true)
       var self = {}
       validate.call(self, {bar: "a", baz: {bar: "b"}})
       contexts.should.have.length(2)
-      contexts.forEach(function (ctx) {
-        ctx.should.equal(self)
-      })
+      contexts.forEach((ctx) => ctx.should.equal(self))
     })
   })
 
-  describe("passContext = false", function () {
-    it("should pass ajv instance as context to custom keyword validation function", function () {
+  describe("passContext = false", () => {
+    it("should pass ajv instance as context to custom keyword validation function", () => {
       var validate = getValidate(false)
       validate({bar: "a", baz: {bar: "b"}})
       contexts.should.have.length(2)
-      contexts.forEach(function (ctx) {
-        ctx.should.equal(ajv)
-      })
+      contexts.forEach((ctx) => ctx.should.equal(ajv))
     })
   })
 
-  describe("ref is fragment and passContext = true", function () {
-    it("should pass this value as context to custom keyword validation function", function () {
+  describe("ref is fragment and passContext = true", () => {
+    it("should pass this value as context to custom keyword validation function", () => {
       var validate = getValidateFragments(true)
       var self = {}
       validate.call(self, {baz: {corge: "a", quux: {baz: {corge: "b"}}}})
       contexts.should.have.length(2)
-      contexts.forEach(function (ctx) {
-        ctx.should.equal(self)
-      })
+      contexts.forEach((ctx) => ctx.should.equal(self))
     })
   })
 
-  describe("ref is fragment and passContext = false", function () {
-    it("should pass ajv instance as context to custom keyword validation function", function () {
+  describe("ref is fragment and passContext = false", () => {
+    it("should pass ajv instance as context to custom keyword validation function", () => {
       var validate = getValidateFragments(false)
       validate({baz: {corge: "a", quux: {baz: {corge: "b"}}}})
       contexts.should.have.length(2)
-      contexts.forEach(function (ctx) {
-        ctx.should.equal(ajv)
-      })
+      contexts.forEach((ctx) => ctx.should.equal(ajv))
     })
   })
 

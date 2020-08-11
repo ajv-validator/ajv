@@ -159,22 +159,22 @@ coercionArrayRules.array = {
   object: [{from: {}, to: undefined}],
 }
 
-describe("Type coercion", function () {
+describe("Type coercion", () => {
   var ajv, fullAjv, instances
 
-  beforeEach(function () {
+  beforeEach(() => {
     ajv = new Ajv({coerceTypes: true, verbose: true})
     fullAjv = new Ajv({coerceTypes: true, verbose: true, allErrors: true})
     instances = [ajv, fullAjv]
   })
 
-  it("should coerce scalar values", function () {
-    testRules(coercionRules, function (
+  it("should coerce scalar values", () => {
+    testRules(coercionRules, (
       test,
       schema,
       canCoerce /*, toType, fromType*/
-    ) {
-      instances.forEach(function (_ajv) {
+    ) => {
+      instances.forEach((_ajv) => {
         var valid = _ajv.validate(schema, test.from)
         //if (valid !== canCoerce) console.log('true', toType, fromType, test, ajv.errors);
         valid.should.equal(canCoerce)
@@ -182,34 +182,31 @@ describe("Type coercion", function () {
     })
   })
 
-  it("should coerce scalar values (coerceTypes = array)", function () {
+  it("should coerce scalar values (coerceTypes = array)", () => {
     ajv = new Ajv({coerceTypes: "array", verbose: true})
     fullAjv = new Ajv({coerceTypes: "array", verbose: true, allErrors: true})
     instances = [ajv, fullAjv]
 
-    testRules(coercionArrayRules, function (
-      test,
-      schema,
-      canCoerce,
-      toType,
-      fromType
-    ) {
-      instances.forEach(function (_ajv) {
-        var valid = _ajv.validate(schema, test.from)
-        if (valid !== canCoerce) {
-          console.log(toType, ".", fromType, test, schema, ajv.errors)
-        }
-        valid.should.equal(canCoerce)
-      })
-    })
+    testRules(
+      coercionArrayRules,
+      (test, schema, canCoerce, toType, fromType) => {
+        instances.forEach((_ajv) => {
+          var valid = _ajv.validate(schema, test.from)
+          if (valid !== canCoerce) {
+            console.log(toType, ".", fromType, test, schema, ajv.errors)
+          }
+          valid.should.equal(canCoerce)
+        })
+      }
+    )
   })
 
-  it("should coerce values in objects/arrays and update properties/items", function () {
-    testRules(coercionRules, function (
+  it("should coerce values in objects/arrays and update properties/items", () => {
+    testRules(coercionRules, (
       test,
       schema,
       canCoerce /*, toType, fromType*/
-    ) {
+    ) => {
       var schemaObject = {
         type: "object",
         properties: {
@@ -227,7 +224,7 @@ describe("Type coercion", function () {
         items: schemaObject,
       }
 
-      instances.forEach(function (_ajv) {
+      instances.forEach((_ajv) => {
         testCoercion(_ajv, schemaArray, [test.from], [test.to])
         testCoercion(_ajv, schemaObject, {foo: test.from}, {foo: test.to})
         testCoercion(_ajv, schemaArrObj, [{foo: test.from}], [{foo: test.to}])
@@ -242,7 +239,7 @@ describe("Type coercion", function () {
     })
   })
 
-  it("should coerce to multiple types in order with number type", function () {
+  it("should coerce to multiple types in order with number type", () => {
     var schema = {
       type: "object",
       properties: {
@@ -252,7 +249,7 @@ describe("Type coercion", function () {
       },
     }
 
-    instances.forEach(function (_ajv) {
+    instances.forEach((_ajv) => {
       var data
 
       _ajv.validate(schema, (data = {foo: "1"})).should.equal(true)
@@ -284,7 +281,7 @@ describe("Type coercion", function () {
     })
   })
 
-  it("should coerce to multiple types in order with integer type", function () {
+  it("should coerce to multiple types in order with integer type", () => {
     var schema = {
       type: "object",
       properties: {
@@ -294,7 +291,7 @@ describe("Type coercion", function () {
       },
     }
 
-    instances.forEach(function (_ajv) {
+    instances.forEach((_ajv) => {
       var data
 
       _ajv.validate(schema, (data = {foo: "1"})).should.equal(true)
@@ -323,7 +320,7 @@ describe("Type coercion", function () {
     })
   })
 
-  it("should fail to coerce non-number if multiple properties/items are coerced (issue #152)", function () {
+  it("should fail to coerce non-number if multiple properties/items are coerced (issue #152)", () => {
     var schema = {
       type: "object",
       properties: {
@@ -337,7 +334,7 @@ describe("Type coercion", function () {
       items: {type: "number"},
     }
 
-    instances.forEach(function (_ajv) {
+    instances.forEach((_ajv) => {
       var data = {foo: "123", bar: "bar"}
       _ajv.validate(schema, data).should.equal(false)
       data.should.eql({foo: 123, bar: "bar"})
@@ -348,7 +345,7 @@ describe("Type coercion", function () {
     })
   })
 
-  it("should update data if the schema is in ref that is not inlined", function () {
+  it("should update data if the schema is in ref that is not inlined", () => {
     instances.push(new Ajv({coerceTypes: true, inlineRefs: false}))
 
     var schema = {
@@ -399,7 +396,7 @@ describe("Type coercion", function () {
       },
     }
 
-    instances.forEach(function (_ajv) {
+    instances.forEach((_ajv) => {
       testCoercion(schema, {foo: "1"}, {foo: 1})
       testCoercion(schema2, {foo: "1"}, {foo: 1})
       testCoercion(schemaRecursive, {foo: {foo: "1"}}, {foo: {foo: 1}})
@@ -418,13 +415,13 @@ describe("Type coercion", function () {
     })
   })
 
-  it("should generate one error for type with coerceTypes option (issue #469)", function () {
+  it("should generate one error for type with coerceTypes option (issue #469)", () => {
     var schema = {
       type: "number",
       minimum: 10,
     }
 
-    instances.forEach(function (_ajv) {
+    instances.forEach((_ajv) => {
       var validate = _ajv.compile(schema)
       validate(9).should.equal(false)
       validate.errors.length.should.equal(1)
@@ -436,13 +433,13 @@ describe("Type coercion", function () {
     })
   })
 
-  it('should check "uniqueItems" after coercion', function () {
+  it('should check "uniqueItems" after coercion', () => {
     var schema = {
       items: {type: "number"},
       uniqueItems: true,
     }
 
-    instances.forEach(function (_ajv) {
+    instances.forEach((_ajv) => {
       var validate = _ajv.compile(schema)
       validate([1, "2", 3]).should.equal(true)
 
@@ -452,13 +449,13 @@ describe("Type coercion", function () {
     })
   })
 
-  it('should check "contains" after coercion', function () {
+  it('should check "contains" after coercion', () => {
     var schema = {
       items: {type: "number"},
       contains: {const: 2},
     }
 
-    instances.forEach(function (_ajv) {
+    instances.forEach((_ajv) => {
       var validate = _ajv.compile(schema)
       validate([1, "2", 3]).should.equal(true)
 
@@ -471,7 +468,7 @@ describe("Type coercion", function () {
     for (var toType in rules) {
       for (var fromType in rules[toType]) {
         var tests = rules[toType][fromType]
-        tests.forEach(function (test) {
+        tests.forEach((test) => {
           var canCoerce = test.to !== undefined
           var schema = canCoerce
             ? Array.isArray(test.to)

@@ -22,7 +22,7 @@ if (standalone) bOpts.standalone = standalone
 
 browserify(bOpts)
   .require(path.join(packageDir, json.main), {expose: json.name})
-  .bundle(function (err, buf) {
+  .bundle((err, buf) => {
     if (err) {
       console.error("browserify error:", err)
       process.exit(1)

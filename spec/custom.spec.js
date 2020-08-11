@@ -5,10 +5,10 @@ var getAjvInstances = require("./ajv_instances"),
   equal = require("../dist/compile/equal"),
   customRules = require("./custom_rules")
 
-describe("Custom keywords", function () {
+describe("Custom keywords", () => {
   var ajv, instances
 
-  beforeEach(function () {
+  beforeEach(() => {
     instances = getAjvInstances({
       allErrors: true,
       verbose: true,
@@ -17,9 +17,9 @@ describe("Custom keywords", function () {
     ajv = instances[0]
   })
 
-  describe("custom rules", function () {
-    describe('rule with "interpreted" keyword validation', function () {
-      it("should add and validate rule", function () {
+  describe("custom rules", () => {
+    describe('rule with "interpreted" keyword validation', () => {
+      it("should add and validate rule", () => {
         testEvenKeyword({type: "number", validate: validateEven})
 
         function validateEven(schema, data) {
@@ -30,7 +30,7 @@ describe("Custom keywords", function () {
         }
       })
 
-      it("should add, validate keyword schema and validate rule", function () {
+      it("should add, validate keyword schema and validate rule", () => {
         testEvenKeyword({
           type: "number",
           validate: validateEven,
@@ -44,7 +44,7 @@ describe("Custom keywords", function () {
         }
       })
 
-      it('should pass parent schema to "interpreted" keyword validation', function () {
+      it('should pass parent schema to "interpreted" keyword validation', () => {
         testRangeKeyword({
           type: "number",
           validate: validateRange,
@@ -59,7 +59,7 @@ describe("Custom keywords", function () {
         }
       })
 
-      it('should validate meta schema and pass parent schema to "interpreted" keyword validation', function () {
+      it('should validate meta schema and pass parent schema to "interpreted" keyword validation', () => {
         testRangeKeyword({
           type: "number",
           validate: validateRange,
@@ -80,7 +80,7 @@ describe("Custom keywords", function () {
         }
       })
 
-      it('should allow defining custom errors for "interpreted" keyword', function () {
+      it('should allow defining custom errors for "interpreted" keyword', () => {
         testRangeKeyword({type: "number", validate: validateRange}, true)
 
         function validateRange(schema, data, parentSchema) {
@@ -117,8 +117,8 @@ describe("Custom keywords", function () {
       })
     })
 
-    describe('rule with "compiled" keyword validation', function () {
-      it("should add and validate rule", function () {
+    describe('rule with "compiled" keyword validation', () => {
+      it("should add and validate rule", () => {
         testEvenKeyword({type: "number", compile: compileEven})
         shouldBeInvalidSchema({"x-even": "not_boolean"})
 
@@ -137,7 +137,7 @@ describe("Custom keywords", function () {
         }
       })
 
-      it("should add, validate keyword schema and validate rule", function () {
+      it("should add, validate keyword schema and validate rule", () => {
         testEvenKeyword({
           type: "number",
           compile: compileEven,
@@ -157,19 +157,19 @@ describe("Custom keywords", function () {
         }
       })
 
-      it("should compile keyword validating function only once per schema", function () {
+      it("should compile keyword validating function only once per schema", () => {
         testConstantKeyword({compile: compileConstant})
       })
 
-      it("should allow multiple schemas for the same keyword", function () {
+      it("should allow multiple schemas for the same keyword", () => {
         testMultipleConstantKeyword({compile: compileConstant})
       })
 
-      it('should pass parent schema to "compiled" keyword validation', function () {
+      it('should pass parent schema to "compiled" keyword validation', () => {
         testRangeKeyword({type: "number", compile: compileRange})
       })
 
-      it("should allow multiple parent schemas for the same keyword", function () {
+      it("should allow multiple parent schemas for the same keyword", () => {
         testMultipleRangeKeyword({type: "number", compile: compileRange})
       })
     })
@@ -194,38 +194,34 @@ describe("Custom keywords", function () {
       var max = schema[1]
 
       return parentSchema.exclusiveRange === true
-        ? function (data) {
-            return data > min && data < max
-          }
-        : function (data) {
-            return data >= min && data <= max
-          }
+        ? (data) => data > min && data < max
+        : (data) => data >= min && data <= max
     }
   })
 
-  describe("macro rules", function () {
-    it('should add and validate rule with "macro" keyword', function () {
+  describe("macro rules", () => {
+    it('should add and validate rule with "macro" keyword', () => {
       testEvenKeyword({type: "number", macro: macroEven}, 2)
     })
 
-    it("should add and expand macro rule", function () {
+    it("should add and expand macro rule", () => {
       testConstantKeyword({macro: macroConstant}, 2)
     })
 
-    it("should allow multiple schemas for the same macro keyword", function () {
+    it("should allow multiple schemas for the same macro keyword", () => {
       testMultipleConstantKeyword({macro: macroConstant}, 2)
     })
 
-    it('should pass parent schema to "macro" keyword', function () {
+    it('should pass parent schema to "macro" keyword', () => {
       testRangeKeyword({type: "number", macro: macroRange}, undefined, 2)
     })
 
-    it("should allow multiple parent schemas for the same macro keyword", function () {
+    it("should allow multiple parent schemas for the same macro keyword", () => {
       testMultipleRangeKeyword({type: "number", macro: macroRange}, 2)
     })
 
-    it("should support resolving $ref without id or $id", function () {
-      instances.forEach(function (_ajv) {
+    it("should support resolving $ref without id or $id", () => {
+      instances.forEach((_ajv) => {
         _ajv.addKeyword("macroRef", {
           macro: function (schema, parentSchema, it) {
             it.baseId.should.equal("#")
@@ -264,8 +260,8 @@ describe("Custom keywords", function () {
       })
     })
 
-    it("should recursively expand macro keywords", function () {
-      instances.forEach(function (_ajv) {
+    it("should recursively expand macro keywords", () => {
+      instances.forEach((_ajv) => {
         _ajv.addKeyword("deepProperties", {
           type: "object",
           macro: macroDeepProperties,
@@ -383,8 +379,8 @@ describe("Custom keywords", function () {
       })
     })
 
-    it("should correctly expand multiple macros on the same level", function () {
-      instances.forEach(function (_ajv) {
+    it("should correctly expand multiple macros on the same level", () => {
+      instances.forEach((_ajv) => {
         _ajv.addKeyword("range", {type: "number", macro: macroRange})
         _ajv.addKeyword("even", {type: "number", macro: macroEven})
 
@@ -406,8 +402,8 @@ describe("Custom keywords", function () {
       })
     })
 
-    it("should validate macro keyword when it resolves to the same keyword as exists", function () {
-      instances.forEach(function (_ajv) {
+    it("should validate macro keyword when it resolves to the same keyword as exists", () => {
+      instances.forEach((_ajv) => {
         _ajv.addKeyword("range", {type: "number", macro: macroRange})
 
         var schema = {
@@ -422,8 +418,8 @@ describe("Custom keywords", function () {
       })
     })
 
-    it("should correctly expand macros in subschemas", function () {
-      instances.forEach(function (_ajv) {
+    it("should correctly expand macros in subschemas", () => {
+      instances.forEach((_ajv) => {
         _ajv.addKeyword("range", {type: "number", macro: macroRange})
 
         var schema = {
@@ -442,8 +438,8 @@ describe("Custom keywords", function () {
       })
     })
 
-    it("should correctly expand macros in macro expansions", function () {
-      instances.forEach(function (_ajv) {
+    it("should correctly expand macros in macro expansions", () => {
+      instances.forEach((_ajv) => {
         _ajv.addKeyword("range", {type: "number", macro: macroRange})
         _ajv.addKeyword("exclusiveRange", {metaSchema: {type: "boolean"}})
         _ajv.addKeyword("myContains", {type: "array", macro: macroContains})
@@ -471,11 +467,11 @@ describe("Custom keywords", function () {
       })
     })
 
-    it("should throw exception if macro expansion is an invalid schema", function () {
+    it("should throw exception if macro expansion is an invalid schema", () => {
       ajv.addKeyword("invalid", {macro: macroInvalid})
       var schema = {invalid: true}
 
-      should.throw(function () {
+      should.throw(() => {
         ajv.compile(schema)
       })
 
@@ -504,16 +500,16 @@ describe("Custom keywords", function () {
     }
   })
 
-  describe("inline rules", function () {
-    it('should add and validate rule with "inline" code keyword', function () {
+  describe("inline rules", () => {
+    it('should add and validate rule with "inline" code keyword', () => {
       testEvenKeyword({type: "number", inline: inlineEven})
     })
 
-    it('should pass parent schema to "inline" keyword', function () {
+    it('should pass parent schema to "inline" keyword', () => {
       testRangeKeyword({type: "number", inline: inlineRange, statements: true})
     })
 
-    it('should define "inline" keyword as template', function () {
+    it('should define "inline" keyword as template', () => {
       var inlineRangeTemplate = customRules.range
 
       testRangeKeyword({
@@ -523,7 +519,7 @@ describe("Custom keywords", function () {
       })
     })
 
-    it('should define "inline" keyword without errors', function () {
+    it('should define "inline" keyword without errors', () => {
       var inlineRangeTemplate = customRules.range
 
       testRangeKeyword({
@@ -534,7 +530,7 @@ describe("Custom keywords", function () {
       })
     })
 
-    it("should allow defining optional errors", function () {
+    it("should allow defining optional errors", () => {
       var inlineRangeTemplate = customRules.rangeWithErrors
 
       testRangeKeyword(
@@ -547,7 +543,7 @@ describe("Custom keywords", function () {
       )
     })
 
-    it("should allow defining required errors", function () {
+    it("should allow defining required errors", () => {
       var inlineRangeTemplate = customRules.rangeWithErrors
 
       testRangeKeyword(
@@ -588,8 +584,8 @@ describe("Custom keywords", function () {
     }
   })
 
-  describe("$data reference support with custom keywords (with $data option)", function () {
-    beforeEach(function () {
+  describe("$data reference support with custom keywords (with $data option)", () => {
+    beforeEach(() => {
       instances = getAjvInstances(
         {
           allErrors: true,
@@ -601,7 +597,7 @@ describe("Custom keywords", function () {
       ajv = instances[0]
     })
 
-    it('should validate "interpreted" rule', function () {
+    it('should validate "interpreted" rule', () => {
       testEvenKeyword$data({
         type: "number",
         $data: true,
@@ -614,7 +610,7 @@ describe("Custom keywords", function () {
       }
     })
 
-    it('should validate rule with "compile" and "validate" funcs', function () {
+    it('should validate rule with "compile" and "validate" funcs', () => {
       var compileCalled
       testEvenKeyword$data({
         type: "number",
@@ -645,7 +641,7 @@ describe("Custom keywords", function () {
       }
     })
 
-    it('should validate with "compile" and "validate" funcs with meta-schema', function () {
+    it('should validate with "compile" and "validate" funcs with meta-schema', () => {
       var compileCalled
       testEvenKeyword$data({
         type: "number",
@@ -674,7 +670,7 @@ describe("Custom keywords", function () {
       }
     })
 
-    it('should validate rule with "macro" and "validate" funcs', function () {
+    it('should validate rule with "macro" and "validate" funcs', () => {
       var macroCalled
       testEvenKeyword$data(
         {
@@ -700,7 +696,7 @@ describe("Custom keywords", function () {
       }
     })
 
-    it('should validate with "macro" and "validate" funcs with meta-schema', function () {
+    it('should validate with "macro" and "validate" funcs with meta-schema', () => {
       var macroCalled
       testEvenKeyword$data(
         {
@@ -726,7 +722,7 @@ describe("Custom keywords", function () {
       }
     })
 
-    it('should validate rule with "inline" and "validate" funcs', function () {
+    it('should validate rule with "inline" and "validate" funcs', () => {
       var inlineCalled
       testEvenKeyword$data({
         type: "number",
@@ -748,7 +744,7 @@ describe("Custom keywords", function () {
       }
     })
 
-    it('should validate with "inline" and "validate" funcs with meta-schema', function () {
+    it('should validate with "inline" and "validate" funcs with meta-schema', () => {
       var inlineCalled
       testEvenKeyword$data({
         type: "number",
@@ -771,12 +767,12 @@ describe("Custom keywords", function () {
       }
     })
 
-    it('should fail if keyword definition has "$data" but no "validate"', function () {
-      should.throw(function () {
+    it('should fail if keyword definition has "$data" but no "validate"', () => {
+      should.throw(() => {
         ajv.addKeyword("even", {
           type: "number",
           $data: true,
-          macro: function () {
+          macro: () => {
             return {}
           },
         })
@@ -785,7 +781,7 @@ describe("Custom keywords", function () {
   })
 
   function testEvenKeyword(definition, numErrors) {
-    instances.forEach(function (_ajv) {
+    instances.forEach((_ajv) => {
       _ajv.addKeyword("x-even", definition)
       var schema = {"x-even": true}
       var validate = _ajv.compile(schema)
@@ -798,7 +794,7 @@ describe("Custom keywords", function () {
   }
 
   function testEvenKeyword$data(definition, numErrors) {
-    instances.forEach(function (_ajv) {
+    instances.forEach((_ajv) => {
       _ajv.addKeyword("x-even-$data", definition)
 
       var schema = {"x-even-$data": true}
@@ -835,7 +831,7 @@ describe("Custom keywords", function () {
   }
 
   function testConstantKeyword(definition, numErrors) {
-    instances.forEach(function (_ajv) {
+    instances.forEach((_ajv) => {
       _ajv.addKeyword("myConstant", definition)
 
       var schema = {myConstant: "abc"}
@@ -848,7 +844,7 @@ describe("Custom keywords", function () {
   }
 
   function testMultipleConstantKeyword(definition, numErrors) {
-    instances.forEach(function (_ajv) {
+    instances.forEach((_ajv) => {
       _ajv.addKeyword("x-constant", definition)
 
       var schema = {
@@ -875,7 +871,7 @@ describe("Custom keywords", function () {
   }
 
   function testRangeKeyword(definition, customErrors, numErrors) {
-    instances.forEach(function (_ajv) {
+    instances.forEach((_ajv) => {
       _ajv.addKeyword("x-range", definition)
       _ajv.addKeyword("exclusiveRange", {metaSchema: {type: "boolean"}})
 
@@ -936,7 +932,7 @@ describe("Custom keywords", function () {
   }
 
   function testMultipleRangeKeyword(definition, numErrors) {
-    instances.forEach(function (_ajv) {
+    instances.forEach((_ajv) => {
       _ajv.addKeyword("x-range", definition)
       _ajv.addKeyword("exclusiveRange", {metaSchema: {type: "boolean"}})
 
@@ -1017,14 +1013,14 @@ describe("Custom keywords", function () {
   }
 
   function shouldBeInvalidSchema(schema) {
-    instances.forEach(function (_ajv) {
-      should.throw(function () {
+    instances.forEach((_ajv) => {
+      should.throw(() => {
         _ajv.compile(schema)
       })
     })
   }
 
-  describe("addKeyword method", function () {
+  describe("addKeyword method", () => {
     var TEST_TYPES = [
       undefined,
       "number",
@@ -1033,13 +1029,13 @@ describe("Custom keywords", function () {
       ["number", "string"],
     ]
 
-    it("should throw if defined keyword is passed", function () {
+    it("should throw if defined keyword is passed", () => {
       testThrow(["minimum", "maximum", "multipleOf", "minLength", "maxLength"])
       testThrowDuplicate("custom")
 
       function testThrow(keywords) {
-        TEST_TYPES.forEach(function (dataType, index) {
-          should.throw(function () {
+        TEST_TYPES.forEach((dataType, index) => {
+          should.throw(() => {
             addKeyword(keywords[index], dataType)
           })
         })
@@ -1047,11 +1043,11 @@ describe("Custom keywords", function () {
 
       function testThrowDuplicate(keywordPrefix) {
         var index = 0
-        TEST_TYPES.forEach(function (dataType1) {
-          TEST_TYPES.forEach(function (dataType2) {
+        TEST_TYPES.forEach((dataType1) => {
+          TEST_TYPES.forEach((dataType2) => {
             var keyword = keywordPrefix + index++
             addKeyword(keyword, dataType1)
-            should.throw(function () {
+            should.throw(() => {
               addKeyword(keyword, dataType2)
             })
           })
@@ -1059,67 +1055,67 @@ describe("Custom keywords", function () {
       }
     })
 
-    it("should throw if keyword is not a valid name", function () {
-      should.not.throw(function () {
+    it("should throw if keyword is not a valid name", () => {
+      should.not.throw(() => {
         ajv.addKeyword("mykeyword", {
-          validate: function () {
+          validate: () => {
             return true
           },
         })
       })
 
-      should.not.throw(function () {
+      should.not.throw(() => {
         ajv.addKeyword("hyphens-are-valid", {
-          validate: function () {
+          validate: () => {
             return true
           },
         })
       })
 
-      should.throw(function () {
+      should.throw(() => {
         ajv.addKeyword("3-start-with-number-not-valid`", {
-          validate: function () {
+          validate: () => {
             return true
           },
         })
       })
 
-      should.throw(function () {
+      should.throw(() => {
         ajv.addKeyword("-start-with-hyphen-not-valid`", {
-          validate: function () {
+          validate: () => {
             return true
           },
         })
       })
 
-      should.throw(function () {
+      should.throw(() => {
         ajv.addKeyword("spaces not valid`", {
-          validate: function () {
+          validate: () => {
             return true
           },
         })
       })
     })
 
-    it("should return instance of itself", function () {
+    it("should return instance of itself", () => {
       var res = ajv.addKeyword("any", {
-        validate: function () {
+        validate: () => {
           return true
         },
       })
       res.should.equal(ajv)
     })
 
-    it("should throw if unknown type is passed", function () {
-      should.throw(function () {
+    it("should throw if unknown type is passed", () => {
+      should.throw(() => {
         addKeyword("custom1", "wrongtype")
       })
 
-      should.throw(function () {
+      should.throw(() => {
         addKeyword("custom2", ["number", "wrongtype"])
       })
 
-      should.throw(function () {
+      should.throw(() => {
         addKeyword("custom3", ["number", undefined])
       })
     })
@@ -1127,22 +1123,22 @@ describe("Custom keywords", function () {
     function addKeyword(keyword, dataType) {
       ajv.addKeyword(keyword, {
         type: dataType,
-        validate: function () {},
+        validate: () => {},
       })
     }
   })
 
-  describe("getKeyword", function () {
-    it("should return boolean for pre-defined and unknown keywords", function () {
+  describe("getKeyword", () => {
+    it("should return boolean for pre-defined and unknown keywords", () => {
       ajv.getKeyword("type").should.equal(true)
       ajv.getKeyword("properties").should.equal(true)
       ajv.getKeyword("additionalProperties").should.equal(true)
       ajv.getKeyword("unknown").should.equal(false)
     })
 
-    it("should return keyword definition for custom keywords", function () {
+    it("should return keyword definition for custom keywords", () => {
       var definition = {
-        validate: function () {
+        validate: () => {
           return true
         },
       }
@@ -1152,8 +1148,8 @@ describe("Custom keywords", function () {
     })
   })
 
-  describe("removeKeyword", function () {
-    it("should remove and allow redefining custom keyword", function () {
+  describe("removeKeyword", () => {
+    it("should remove and allow redefining custom keyword", () => {
       ajv.addKeyword("positive", {
         type: "number",
         validate: function (schema, data) {
@@ -1167,7 +1163,7 @@ describe("Custom keywords", function () {
       validate(0).should.equal(false)
       validate(1).should.equal(true)
 
-      should.throw(function () {
+      should.throw(() => {
         ajv.addKeyword("positive", {
           type: "number",
           validate: function (sch, data) {
@@ -1191,7 +1187,7 @@ describe("Custom keywords", function () {
       validate(1).should.equal(true)
     })
 
-    it("should remove and allow redefining standard keyword", function () {
+    it("should remove and allow redefining standard keyword", () => {
       var schema = {minimum: 1}
       var validate = ajv.compile(schema)
       validate(0).should.equal(false)
@@ -1221,10 +1217,10 @@ describe("Custom keywords", function () {
       validate(2).should.equal(true)
     })
 
-    it("should return instance of itself", function () {
+    it("should return instance of itself", () => {
       var res = ajv
         .addKeyword("any", {
-          validate: function () {
+          validate: () => {
             return true
           },
         })
@@ -1233,14 +1229,14 @@ describe("Custom keywords", function () {
     })
   })
 
-  describe("custom keywords mutating data", function () {
-    it("should NOT update data without option modifying", function () {
-      should.throw(function () {
+  describe("custom keywords mutating data", () => {
+    it("should NOT update data without option modifying", () => {
+      should.throw(() => {
         testModifying(false)
       })
     })
 
-    it("should update data with option modifying", function () {
+    it("should update data with option modifying", () => {
       testModifying(true)
     })
 
@@ -1286,17 +1282,17 @@ describe("Custom keywords", function () {
     }
   })
 
-  describe("custom keywords with predefined validation result", function () {
-    it("should ignore result from validation function", function () {
+  describe("custom keywords with predefined validation result", () => {
+    it("should ignore result from validation function", () => {
       ajv.addKeyword("pass", {
-        validate: function () {
+        validate: () => {
           return false
         },
         valid: true,
       })
 
       ajv.addKeyword("fail", {
-        validate: function () {
+        validate: () => {
           return true
         },
         valid: false,
@@ -1306,19 +1302,19 @@ describe("Custom keywords", function () {
       ajv.validate({fail: ""}, 1).should.equal(false)
     })
 
-    it("should throw exception if used with macro keyword", function () {
-      should.throw(function () {
+    it("should throw exception if used with macro keyword", () => {
+      should.throw(() => {
         ajv.addKeyword("pass", {
-          macro: function () {
+          macro: () => {
             return {}
           },
           valid: true,
         })
       })
 
-      should.throw(function () {
+      should.throw(() => {
         ajv.addKeyword("fail", {
-          macro: function () {
+          macro: () => {
             return {not: {}}
           },
           valid: false,
@@ -1327,8 +1323,8 @@ describe("Custom keywords", function () {
     })
   })
 
-  describe('"dependencies" in keyword definition', function () {
-    it("should require properties in the parent schema", function () {
+  describe('"dependencies" in keyword definition', () => {
+    it("should require properties in the parent schema", () => {
       ajv.addKeyword("allRequired", {
         macro: function (schema, parentSchema) {
           return schema
@@ -1343,7 +1339,7 @@ describe("Custom keywords", function () {
         allRequired: true,
       }
 
-      should.throw(function () {
+      should.throw(() => {
         ajv.compile(invalidSchema)
       })
 
@@ -1359,13 +1355,13 @@ describe("Custom keywords", function () {
       v({}).should.equal(false)
     })
 
-    it("'dependencies'should be array of valid strings", function () {
+    it("'dependencies'should be array of valid strings", () => {
       ajv.addKeyword("newKeyword1", {
         metaSchema: {type: "boolean"},
         dependencies: ["dep1"],
       })
 
-      should.throw(function () {
+      should.throw(() => {
         ajv.addKeyword("newKeyword2", {
           metaSchema: {type: "boolean"},
           dependencies: [1],

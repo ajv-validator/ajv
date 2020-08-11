@@ -67,7 +67,7 @@ runTest(
 )
 
 function runTest(instances, draft, tests) {
-  instances.forEach(function (ajv) {
+  instances.forEach((ajv) => {
     switch (draft) {
       case 6:
         ajv.addMetaSchema(require("../dist/refs/json-schema-draft-06.json"))

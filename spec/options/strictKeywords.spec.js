@@ -3,9 +3,9 @@
 var Ajv = require("../ajv")
 var should = require("../chai").should()
 
-describe("strictKeywords option", function () {
-  describe("strictKeywords = false", function () {
-    it("should NOT throw an error or log a warning given an unknown keyword", function () {
+describe("strictKeywords option", () => {
+  describe("strictKeywords = false", () => {
+    it("should NOT throw an error or log a warning given an unknown keyword", () => {
       var output = {}
       var ajv = new Ajv({
         strictKeywords: false,
@@ -21,21 +21,21 @@ describe("strictKeywords option", function () {
     })
   })
 
-  describe("strictKeywords = true", function () {
-    it("should throw an error given an unknown keyword in the schema root when strictKeywords is true", function () {
+  describe("strictKeywords = true", () => {
+    it("should throw an error given an unknown keyword in the schema root when strictKeywords is true", () => {
       var ajv = new Ajv({strictKeywords: true})
       var schema = {
         properties: {},
         unknownKeyword: 1,
       }
-      should.throw(function () {
+      should.throw(() => {
         ajv.compile(schema)
       })
     })
   })
 
-  describe('strictKeywords = "log"', function () {
-    it('should log a warning given an unknown keyword in the schema root when strictKeywords is "log"', function () {
+  describe('strictKeywords = "log"', () => {
+    it('should log a warning given an unknown keyword in the schema root when strictKeywords is "log"', () => {
       var output = {}
       var ajv = new Ajv({
         strictKeywords: "log",
@@ -50,8 +50,8 @@ describe("strictKeywords option", function () {
     })
   })
 
-  describe("unknown keyword inside schema that has no known keyword in compound keyword", function () {
-    it("should throw an error given an unknown keyword when strictKeywords is true", function () {
+  describe("unknown keyword inside schema that has no known keyword in compound keyword", () => {
+    it("should throw an error given an unknown keyword when strictKeywords is true", () => {
       var ajv = new Ajv({strictKeywords: true})
       var schema = {
         anyOf: [
@@ -60,7 +60,7 @@ describe("strictKeywords option", function () {
           },
         ],
       }
-      should.throw(function () {
+      should.throw(() => {
         ajv.compile(schema)
       })
     })
@@ -68,13 +68,13 @@ describe("strictKeywords option", function () {
 
   function getLogger(output) {
     return {
-      log: function () {
+      log: () => {
         throw new Error("log should not be called")
       },
       warn: function (warning) {
         output.warning = warning
       },
-      error: function () {
+      error: () => {
         throw new Error("error should not be called")
       },
     }

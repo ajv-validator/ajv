@@ -3,8 +3,8 @@
 var Ajv = require("../ajv")
 require("../chai").should()
 
-describe("issue #955: option removeAdditional breaks custom keywords", function () {
-  it("should support custom keywords with option removeAdditional", function () {
+describe("issue #955: option removeAdditional breaks custom keywords", () => {
+  it("should support custom keywords with option removeAdditional", () => {
     var ajv = new Ajv({removeAdditional: "all"})
 
     ajv.addKeyword("minTrimmedLength", {

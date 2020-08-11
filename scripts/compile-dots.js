@@ -11,7 +11,7 @@ var defsRootPath = process.argv[2] || path.join(__dirname, "../lib")
 
 var defs = {}
 var defFiles = glob.sync("./dot/**/*.def", {cwd: defsRootPath})
-defFiles.forEach(function (f) {
+defFiles.forEach((f) => {
   var name = path.basename(f, ".def")
   defs[name] = fs.readFileSync(path.join(defsRootPath, f))
 })
@@ -43,7 +43,7 @@ var VARS = [
   "$validate",
 ]
 
-files.forEach(function (f) {
+files.forEach((f) => {
   var keyword = path.basename(f, ".jst")
   var targetPath = path.join(dotjsPath, keyword + ".js")
   var template = fs.readFileSync(path.join(filesRootPath, f))

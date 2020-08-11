@@ -3,9 +3,9 @@
 var Ajv = require("../ajv")
 var should = require("../chai").should()
 
-describe("reporting options", function () {
-  describe("verbose", function () {
-    it("should add schema, parentSchema and data to errors with verbose option == true", function () {
+describe("reporting options", () => {
+  describe("verbose", () => {
+    it("should add schema, parentSchema and data to errors with verbose option == true", () => {
       testVerbose(new Ajv({verbose: true}))
       testVerbose(new Ajv({verbose: true, allErrors: true}))
 
@@ -26,8 +26,8 @@ describe("reporting options", function () {
     })
   })
 
-  describe("allErrors", function () {
-    it('should be disabled inside "not" keyword', function () {
+  describe("allErrors", () => {
+    it('should be disabled inside "not" keyword', () => {
       test(new Ajv(), false)
       test(new Ajv({allErrors: true}), true)
 
@@ -35,12 +35,12 @@ describe("reporting options", function () {
         var format1called = false,
           format2called = false
 
-        ajv.addFormat("format1", function () {
+        ajv.addFormat("format1", () => {
           format1called = true
           return false
         })
 
-        ajv.addFormat("format2", function () {
+        ajv.addFormat("format2", () => {
           format2called = true
           return false
         })
@@ -67,7 +67,7 @@ describe("reporting options", function () {
     })
   })
 
-  describe("logger", function () {
+  describe("logger", () => {
     /**
      * The logger option tests are based on the meta scenario which writes into the logger.warn
      */
@@ -75,18 +75,18 @@ describe("reporting options", function () {
     var origConsoleWarn = console.warn
     var consoleCalled
 
-    beforeEach(function () {
+    beforeEach(() => {
       consoleCalled = false
-      console.warn = function () {
+      console.warn = () => {
         consoleCalled = true
       }
     })
 
-    afterEach(function () {
+    afterEach(() => {
       console.warn = origConsoleWarn
     })
 
-    it("no custom logger is given - global console should be used", function () {
+    it("no custom logger is given - global console should be used", () => {
       var ajv = new Ajv({
         meta: false,
       })
@@ -99,7 +99,7 @@ describe("reporting options", function () {
       should.equal(consoleCalled, true)
     })
 
-    it("custom logger is an object - logs should only report to it", function () {
+    it("custom logger is an object - logs should only report to it", () => {
       var loggerCalled = false
 
       var logger = {
@@ -126,7 +126,7 @@ describe("reporting options", function () {
       }
     })
 
-    it("logger option is false - no logs should be reported", function () {
+    it("logger option is false - no logs should be reported", () => {
       var ajv = new Ajv({
         meta: false,
         logger: false,
@@ -140,16 +140,16 @@ describe("reporting options", function () {
       should.equal(consoleCalled, false)
     })
 
-    it("logger option is an object without required methods - an error should be thrown", function () {
-      ;(function () {
+    it("logger option is an object without required methods - an error should be thrown", () => {
+      ;(() => {
         new Ajv({
           meta: false,
           logger: {},
         })
-      }.should.throw(
+      }).should.throw(
         Error,
         /logger must implement log, warn and error methods/
-      ))
+      )
     })
   })
 })

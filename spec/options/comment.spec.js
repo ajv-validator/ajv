@@ -3,16 +3,16 @@
 var Ajv = require("../ajv")
 require("../chai").should()
 
-describe("$comment option", function () {
-  describe("= true", function () {
+describe("$comment option", () => {
+  describe("= true", () => {
     var logCalls, consoleLog
 
-    beforeEach(function () {
+    beforeEach(() => {
       consoleLog = console.log
       console.log = log
     })
 
-    afterEach(function () {
+    afterEach(() => {
       console.log = consoleLog
     })
 
@@ -20,7 +20,7 @@ describe("$comment option", function () {
       logCalls.push(Array.prototype.slice.call(arguments))
     }
 
-    it("should log the text from $comment keyword", function () {
+    it("should log the text from $comment keyword", () => {
       var schema = {
         properties: {
           foo: {$comment: "property foo"},
@@ -31,7 +31,7 @@ describe("$comment option", function () {
       var ajv = new Ajv({$comment: true})
       var fullAjv = new Ajv({allErrors: true, $comment: true})
 
-      ;[ajv, fullAjv].forEach(function (_ajv) {
+      ;[ajv, fullAjv].forEach((_ajv) => {
         var validate = _ajv.compile(schema)
 
         test({}, true, [])
@@ -50,14 +50,14 @@ describe("$comment option", function () {
     })
   })
 
-  describe("function hook", function () {
+  describe("function hook", () => {
     var hookCalls
 
     function hook() {
       hookCalls.push(Array.prototype.slice.call(arguments))
     }
 
-    it("should pass the text from $comment keyword to the hook", function () {
+    it("should pass the text from $comment keyword to the hook", () => {
       var schema = {
         properties: {
           foo: {$comment: "property foo"},
@@ -68,7 +68,7 @@ describe("$comment option", function () {
       var ajv = new Ajv({$comment: hook})
       var fullAjv = new Ajv({allErrors: true, $comment: hook})
 
-      ;[ajv, fullAjv].forEach(function (_ajv) {
+      ;[ajv, fullAjv].forEach((_ajv) => {
         var validate = _ajv.compile(schema)
 
         test({}, true, [])

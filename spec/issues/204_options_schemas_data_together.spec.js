@@ -3,8 +3,8 @@
 var Ajv = require("../ajv")
 require("../chai").should()
 
-describe("issue #204, options schemas and $data used together", function () {
-  it("should use v5 metaschemas by default", function () {
+describe("issue #204, options schemas and $data used together", () => {
+  it("should use v5 metaschemas by default", () => {
     var ajv = new Ajv({
       schemas: [{$id: "str", type: "string"}],
       $data: true,

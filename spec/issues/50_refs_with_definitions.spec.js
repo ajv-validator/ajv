@@ -3,13 +3,13 @@
 var Ajv = require("../ajv")
 var should = require("../chai").should()
 
-describe('issue #50: references with "definitions"', function () {
+describe('issue #50: references with "definitions"', () => {
   it("should be supported by addSchema", spec("addSchema"))
 
   it("should be supported by compile", spec("addSchema"))
 
   function spec(method) {
-    return function () {
+    return () => {
       var result
 
       var ajv = new Ajv()

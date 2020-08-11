@@ -3,8 +3,8 @@
 var Ajv = require("../ajv")
 require("../chai").should()
 
-describe("issue #485, order of type validation", function () {
-  it("should validate types before keywords", function () {
+describe("issue #485, order of type validation", () => {
+  it("should validate types before keywords", () => {
     var ajv = new Ajv({allErrors: true})
     var validate = ajv.compile({
       type: ["integer", "string"],
@@ -23,9 +23,9 @@ describe("issue #485, order of type validation", function () {
 
     function checkErrors(expectedErrs) {
       validate.errors.should.have.length(expectedErrs.length)
-      expectedErrs.forEach(function (keyword, i) {
+      expectedErrs.forEach((keyword, i) =>
         validate.errors[i].keyword.should.equal(keyword)
-      })
+      )
     }
   })
 })
