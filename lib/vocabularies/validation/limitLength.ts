@@ -1,16 +1,14 @@
 import {KeywordDefinition} from "../../types"
 import {concatSchema, dataNotType} from "../util"
 
-const SCH_TYPE = "number"
-
 const def: KeywordDefinition = {
   keyword: ["maxLength", "minLength"],
   type: "string",
-  schemaType: SCH_TYPE,
+  schemaType: "number",
   $data: true,
   code({fail, keyword, data, $data, schemaCode, opts}) {
     const op = keyword == "maxLength" ? ">" : "<"
-    const dnt = dataNotType(schemaCode, SCH_TYPE, $data)
+    const dnt = dataNotType(schemaCode, def.schemaType, $data)
     const len =
       opts.unicode === false ? `${data}.length` : `ucs2length(${data})`
     fail(dnt + len + op + schemaCode)

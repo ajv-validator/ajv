@@ -1,15 +1,13 @@
 import {KeywordDefinition} from "../../types"
 import {dataNotType} from "../util"
 
-const SCH_TYPE = "string"
-
 const def: KeywordDefinition = {
   keyword: "pattern",
   type: "string",
-  schemaType: SCH_TYPE,
+  schemaType: "string",
   $data: true,
   code({fail, usePattern, data, $data, schema, schemaCode}) {
-    const dnt = dataNotType(schemaCode, SCH_TYPE, $data)
+    const dnt = dataNotType(schemaCode, def.schemaType, $data)
     const regExp = $data ? `(new RegExp(${schemaCode}))` : usePattern(schema)
     fail(dnt + `!${regExp}.test(${data})`)
   },

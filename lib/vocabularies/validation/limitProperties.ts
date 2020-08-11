@@ -1,16 +1,14 @@
 import {KeywordDefinition} from "../../types"
 import {concatSchema, dataNotType} from "../util"
 
-const SCH_TYPE = "number"
-
 const def: KeywordDefinition = {
   keyword: ["maxProperties", "minProperties"],
   type: "object",
-  schemaType: SCH_TYPE,
+  schemaType: "number",
   $data: true,
   code({fail, keyword, data, $data, schemaCode}) {
     const op = keyword == "maxProperties" ? ">" : "<"
-    const dnt = dataNotType(schemaCode, SCH_TYPE, $data)
+    const dnt = dataNotType(schemaCode, def.schemaType, $data)
     fail(dnt + `Object.keys(${data}).length` + op + schemaCode)
   },
   error: {

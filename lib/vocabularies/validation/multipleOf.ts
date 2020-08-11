@@ -1,15 +1,13 @@
 import {KeywordDefinition} from "../../types"
 import {appendSchema, dataNotType} from "../util"
 
-const SCH_TYPE = "number"
-
 const def: KeywordDefinition = {
   keyword: "multipleOf",
   type: "number",
-  schemaType: SCH_TYPE,
+  schemaType: "number",
   $data: true,
   code({write, fail, scope, data, $data, schemaCode, opts}) {
-    const dnt = dataNotType(schemaCode, SCH_TYPE, $data)
+    const dnt = dataNotType(schemaCode, def.schemaType, $data)
     const res = scope.getName("res")
     const prec = opts.multipleOfPrecision
     const invalid = prec

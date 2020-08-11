@@ -8,15 +8,13 @@ const OPS = {
   exclusiveMinimum: {fail: "<=", ok: ">"},
 }
 
-const SCH_TYPE = "number"
-
 const def: KeywordDefinition = {
   keyword: ["maximum", "minimum", "exclusiveMaximum", "exclusiveMinimum"],
   type: "number",
-  schemaType: SCH_TYPE,
+  schemaType: "number",
   $data: true,
   code({fail, keyword, data, $data, schemaCode}) {
-    const dnt = dataNotType(schemaCode, SCH_TYPE, $data)
+    const dnt = dataNotType(schemaCode, def.schemaType, $data)
     fail(dnt + data + OPS[keyword].fail + schemaCode + ` || ${data}!==${data}`)
   },
   error: {
