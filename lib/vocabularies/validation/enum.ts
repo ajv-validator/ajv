@@ -6,8 +6,8 @@ const def: KeywordDefinition = {
   schemaType: "array",
   $data: true,
   code({write, fail, scope, data, $data, schema, schemaCode, opts}) {
-    const valid = scope.getName("valid")
     if ($data) {
+      const valid = scope.getName("valid")
       write(`let ${valid};`)
       // TODO trim whitespace
       write(
@@ -16,7 +16,7 @@ const def: KeywordDefinition = {
           ${valid} = false;
           if (Array.isArray(${schemaCode})) {`
       )
-      loopEnum(<string>schemaCode)
+      loopEnum(<string>schemaCode, valid)
       write("}}")
       fail(`!${valid}`)
     } else {
@@ -24,8 +24,9 @@ const def: KeywordDefinition = {
       const vSchema = scope.getName("schema")
       write(`const ${vSchema} = ${schemaCode};`)
       if (schema.length > (opts.loopEnum as number)) {
+        const valid = scope.getName("valid")
         write(`let ${valid} = false;`)
-        loopEnum(vSchema)
+        loopEnum(vSchema, valid)
         fail(`!${valid}`)
       } else {
         let cond: string = schema.reduce(
@@ -36,7 +37,7 @@ const def: KeywordDefinition = {
       }
     }
 
-    function loopEnum(sch: string): void {
+    function loopEnum(sch: string, valid: string): void {
       // TODO trim whitespace
       write(
         `for (const v of ${sch}) {
