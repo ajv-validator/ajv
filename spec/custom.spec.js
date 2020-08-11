@@ -23,8 +23,9 @@ describe("Custom keywords", function () {
         testEvenKeyword({type: "number", validate: validateEven})
 
         function validateEven(schema, data) {
-          if (typeof schema != "boolean")
+          if (typeof schema != "boolean") {
             throw new Error('The value of "even" keyword must be boolean')
+          }
           return data % 2 ? !schema : schema
         }
       })
@@ -122,8 +123,9 @@ describe("Custom keywords", function () {
         shouldBeInvalidSchema({"x-even": "not_boolean"})
 
         function compileEven(schema) {
-          if (typeof schema != "boolean")
+          if (typeof schema != "boolean") {
             throw new Error('The value of "even" keyword must be boolean')
+          }
           return schema ? isEven : isOdd
         }
 
@@ -357,8 +359,9 @@ describe("Custom keywords", function () {
         )
 
         function macroDeepProperties(_schema) {
-          if (typeof _schema != "object")
+          if (typeof _schema != "object") {
             throw new Error("schema of deepProperty should be an object")
+          }
 
           var expanded = []
 
@@ -628,8 +631,9 @@ describe("Custom keywords", function () {
 
       function compileEven(schema) {
         compileCalled = true
-        if (typeof schema != "boolean")
+        if (typeof schema != "boolean") {
           throw new Error('The value of "even" keyword must be boolean')
+        }
         return schema ? isEven : isOdd
       }
 
@@ -884,11 +888,13 @@ describe("Custom keywords", function () {
       shouldBeValid(validate, "abc")
 
       shouldBeInvalid(validate, 1.99, numErrors)
-      if (customErrors)
+      if (customErrors) {
         shouldBeRangeError(validate.errors[0], "", "#/x-range", ">=", 2)
+      }
       shouldBeInvalid(validate, 4.01, numErrors)
-      if (customErrors)
+      if (customErrors) {
         shouldBeRangeError(validate.errors[0], "", "#/x-range", "<=", 4)
+      }
 
       schema = {
         properties: {

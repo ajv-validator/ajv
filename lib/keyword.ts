@@ -32,8 +32,9 @@ export function addVocabulary(
       )
     }
     if (Array.isArray(def.keyword)) {
-      for (const keyword of def.keyword)
+      for (const keyword of def.keyword) {
         this.addKeyword(keyword, def, _skipValidation)
+      }
     } else {
       this.addKeyword(def.keyword, def, _skipValidation)
     }
@@ -58,19 +59,22 @@ export function addKeyword(
   // TODO return type Ajv
   /* eslint no-shadow: 0 */
   var RULES = this.RULES
-  if (RULES.keywords[keyword])
+  if (RULES.keywords[keyword]) {
     throw new Error("Keyword " + keyword + " is already defined")
+  }
 
-  if (!IDENTIFIER.test(keyword))
+  if (!IDENTIFIER.test(keyword)) {
     throw new Error("Keyword " + keyword + " is not a valid identifier")
+  }
 
   if (definition) {
     if (!_skipValidation) this.validateKeyword(definition, true)
 
     var dataType = definition.type
     if (Array.isArray(dataType)) {
-      for (var i = 0; i < dataType.length; i++)
+      for (var i = 0; i < dataType.length; i++) {
         _addRule(keyword, dataType[i], definition)
+      }
     } else {
       _addRule(keyword, dataType, definition)
     }
@@ -158,8 +162,9 @@ function ruleCode(
       !(schemaType === "array"
         ? Array.isArray(schema)
         : typeof schema === schemaType)
-    )
+    ) {
       throw new Error(`${keyword} must be ${schemaType}`)
+    }
     schemaCode = schemaRefOrVal()
   }
   const data = "data" + (it.dataLevel || "")

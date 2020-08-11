@@ -62,7 +62,8 @@ browserify(bOpts)
     if (result.map) fs.writeFileSync(outputFile + ".min.js.map", result.map)
     if (standalone) fs.writeFileSync(outputFile + ".bundle.js", buf)
     if (result.warnings) {
-      for (var j = 0, jl = result.warnings.length; j < jl; ++j)
+      for (var j = 0, jl = result.warnings.length; j < jl; ++j) {
         console.warn("UglifyJS warning:", result.warnings[j])
+      }
     }
   })

@@ -155,10 +155,13 @@ describe("useDefaults options", function () {
       var data2 = {}
       validate(data2).should.equal(true)
 
-      if (useDefaultsMode == "reference")
+      if (useDefaultsMode == "reference") {
         data2.items.should.eql(["a-default", "another-value"])
-      else if (useDefaultsMode == "value") data2.items.should.eql(["a-default"])
-      else throw new Error("unknown useDefaults mode")
+      } else if (useDefaultsMode == "value") {
+        data2.items.should.eql(["a-default"])
+      } else {
+        throw new Error("unknown useDefaults mode")
+      }
     }
   })
 

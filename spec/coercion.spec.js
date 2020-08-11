@@ -196,8 +196,9 @@ describe("Type coercion", function () {
     ) {
       instances.forEach(function (_ajv) {
         var valid = _ajv.validate(schema, test.from)
-        if (valid !== canCoerce)
+        if (valid !== canCoerce) {
           console.log(toType, ".", fromType, test, schema, ajv.errors)
+        }
         valid.should.equal(canCoerce)
       })
     })

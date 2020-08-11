@@ -36,7 +36,7 @@ rules:
   block-scoped-var: error
   callback-return: error
   complexity: [error, 16]
-  curly: [error, multi-or-nest, consistent]
+  curly: [error, multi-line, consistent]
   dot-location: [error, property]
   dot-notation: error
   id-match: error

@@ -59,8 +59,9 @@ export function checkDataTypes(
   data: string,
   strictNumbers: boolean
 ): string {
-  if (dataTypes.length === 1)
+  if (dataTypes.length === 1) {
     return checkDataType(dataTypes[0], data, strictNumbers, true)
+  }
   let code = ""
   const types = toHash(dataTypes)
   if (types.array && types.object) {
@@ -71,8 +72,9 @@ export function checkDataTypes(
     delete types.object
   }
   if (types.number) delete types.integer
-  for (const t in types)
+  for (const t in types) {
     code += (code ? " && " : "") + checkDataType(t, data, strictNumbers, true)
+  }
   return code
 }
 
@@ -84,8 +86,9 @@ export function coerceToTypes(
   if (Array.isArray(dataTypes)) {
     const types: string[] = []
     for (const t of dataTypes) {
-      if (COERCE_TYPES[t] || (optionCoerceTypes === "array" && t === "array"))
+      if (COERCE_TYPES[t] || (optionCoerceTypes === "array" && t === "array")) {
         types.push(t)
+      }
     }
     if (types.length) return types
     return
@@ -196,8 +199,9 @@ export function getData($data: string, lvl: number, paths: string[]): string {
   let jsonPointer, data
   if ($data === "") return "rootData"
   if ($data[0] === "/") {
-    if (!JSON_POINTER.test($data))
+    if (!JSON_POINTER.test($data)) {
       throw new Error("Invalid JSON-pointer: " + $data)
+    }
     jsonPointer = $data
     data = "rootData"
   } else {

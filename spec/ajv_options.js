@@ -14,7 +14,8 @@ var options = fullTest
     }
   : {allErrors: true}
 
-if (fullTest && !isBrowser)
+if (fullTest && !isBrowser) {
   options.processCode = require("js-beautify").js_beautify
+}
 
 module.exports = options
