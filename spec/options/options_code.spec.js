@@ -106,4 +106,21 @@ describe("code generation options", function () {
       return storeContext
     }
   })
+
+  describe("loopEnum option", () => {
+    it("should use loop if more values than specified", () => {
+      const ajv1 = new Ajv()
+      const ajv2 = new Ajv({loopEnum: 2})
+      test(ajv1, {enum: ["foo", "bar"]})
+      test(ajv2, {enum: ["foo", "bar"]})
+      test(ajv1, {enum: ["foo", "bar", "baz"]})
+      test(ajv2, {enum: ["foo", "bar", "baz"]})
+
+      function test(ajv, schema) {
+        ajv.validate(schema, "foo").should.equal(true)
+        ajv.validate(schema, "boo").should.equal(false)
+        ajv.validate(schema, 1).should.equal(false)
+      }
+    })
+  })
 })
