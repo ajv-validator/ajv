@@ -9,6 +9,7 @@
     "noImplicitThis": false,
     "noImplicitReturns": false,
     "allowJs": true,
-    "declaration": false
+    "declaration": false,
+    "target": "ES2018"
   }
 }

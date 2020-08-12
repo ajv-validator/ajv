@@ -47,7 +47,12 @@ export function checkDataType(
   }
 }
 
-export function checkDataTypes(dataTypes: string[], data: string, strictNumbers?: boolean): string {
+export function checkDataTypes(
+  dataTypes: string[],
+  data: string,
+  strictNumbers?: boolean,
+  negate?: true
+): string {
   if (dataTypes.length === 1) {
     return checkDataType(dataTypes[0], data, strictNumbers, true)
   }
@@ -62,7 +67,7 @@ export function checkDataTypes(dataTypes: string[], data: string, strictNumbers?
   }
   if (types.number) delete types.integer
   for (const t in types) {
-    code += (code ? " && " : "") + checkDataType(t, data, strictNumbers, true)
+    code += (code ? " && " : "") + checkDataType(t, data, strictNumbers, negate)
   }
   return code
 }
@@ -173,7 +178,7 @@ export function getPath(currentPath: string, prop: string, jsonPointers?: boolea
 
 const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/
 const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/
-export function getData($data: string, lvl: number, paths: string[]): string {
+export function getData($data: string, lvl: number, paths: (string | undefined)[]): string {
   let jsonPointer, data
   if ($data === "") return "rootData"
   if ($data[0] === "/") {
@@ -193,7 +198,7 @@ export function getData($data: string, lvl: number, paths: string[]): string {
           "Cannot access property/index " + up + " levels up, current level is " + lvl
         )
       }
-      return paths[lvl - up]
+      return paths[lvl - up] || ""
     }
 
     if (up > lvl) {

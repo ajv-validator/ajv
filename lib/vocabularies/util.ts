@@ -1,3 +1,5 @@
+import {getProperty} from "../compile/util"
+
 export function appendSchema(
   schemaCode: string | number | boolean,
   $data?: string | false
@@ -23,7 +25,14 @@ export function dataNotType(
   schemaType?: string,
   $data?: string | false
 ): string {
-  return $data
-    ? `(${schemaCode}!==undefined && typeof ${schemaCode}!=="${schemaType}") || `
-    : ""
+  return $data ? `(${schemaCode}!==undefined && typeof ${schemaCode}!=="${schemaType}") || ` : ""
+}
+
+export function schemaRefOrVal(schema, schemaPath, keyword, $data): string | number | boolean {
+  const t = typeof schema
+  if (!$data) {
+    if (t === "number" || t === "boolean") return schema
+    if (t === "string") return quotedString(schema)
+  }
+  return `validate.schema${schemaPath + getProperty(keyword)}`
 }

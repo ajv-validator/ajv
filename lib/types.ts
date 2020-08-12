@@ -1,7 +1,7 @@
 import Cache from "./cache"
-import Scope from "./compile/scope"
+import CodeGen from "./compile/codegen"
 
-interface Options {
+export interface Options {
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
@@ -43,7 +43,8 @@ interface Options {
   cache?: Cache
   logger?: Logger | false
   nullable?: boolean
-  serialize?: ((schema: object | boolean) => any) | false
+  serialize?: false | ((schema: object | boolean) => any)
+  $comment?: true | ((comment: string, schemaPath?: string, rootSchema?: any) => any)
 }
 
 interface Logger {
@@ -100,14 +101,15 @@ export interface ErrorObject {
 export interface CompilationContext {
   level: number
   dataLevel: number
-  dataPathArr: string[]
+  data: string
+  dataPathArr: (string | undefined)[]
   schema: any
   schemaPath: string
   errorPath: string
   errSchemaPath: string
-  scope: Scope
+  gen: CodeGen
   createErrors?: boolean // TODO maybe remove later
-  baseId: string
+  baseId?: string // TODO probably not optional
   async: boolean
   opts: Options
   formats: {
@@ -121,6 +123,17 @@ export interface CompilationContext {
   usePattern: (str: string) => string
   util: object // TODO
   self: object // TODO
+  RULES: any // TODO replace?
+  logger: Logger // TODO ?
+  isTop: boolean // TODO ?
+  root: SchemaRoot // TODO ?
+  rootId?: string // TODO ?
+}
+
+interface SchemaRoot {
+  schema: any
+  refVal: (string | undefined)[] // TODO
+  refs: {[key: string]: any} // TODO
 }
 
 export interface KeywordDefinition {
@@ -143,30 +156,31 @@ export interface KeywordDefinition {
   macro?: (schema: any, parentSchema: object, it: CompilationContext) => object | boolean
   inline?: (it: CompilationContext, keyword: string, schema: any, parentSchema: object) => string
   code?: (cxt: KeywordContext) => string | void
-  error?: {
-    message: (cxt: KeywordContext, params?: any) => string
-    params: (cxt: KeywordContext, params?: any) => string
-  }
+  error?: KeywordErrorDefinition
   validateSchema?: ValidateFunction
+}
+
+export interface KeywordErrorDefinition {
+  message: (cxt: KeywordContext, params?: any) => string
+  params: (cxt: KeywordContext, params?: any) => string
 }
 
 export type Vocabulary = KeywordDefinition[]
 
 export interface KeywordContext {
+  gen: CodeGen
   fail: (condition: string) => void
   ok: (condition?: string) => void
-  write: (str: string) => void
-  usePattern: (str: string) => string
   errorParams: (obj: any) => void
-  scope: Scope
   keyword: string
   data: string
   $data?: string | false
   schema: any
   parentSchema: any
   schemaCode: string | number | boolean
-  opts: Options
+  schemaValue: string | number | boolean
   params?: any
+  it: CompilationContext
 }
 
 export type FormatMode = "fast" | "full"

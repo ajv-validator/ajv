@@ -5,27 +5,26 @@ const def: KeywordDefinition = {
   keyword: "enum",
   schemaType: "array",
   $data: true,
-  code({write, fail, scope, data, $data, schema, schemaCode, opts}) {
+  code({gen, fail, data, $data, schema, schemaCode, it: {opts}}) {
     if ($data) {
-      const valid = scope.getName("valid")
-      write(`let ${valid};`)
-      // TODO trim whitespace
-      write(
-        `if (${schemaCode} === undefined) ${valid} = true;
+      const valid = gen.name("valid")
+      gen.code(
+        `let ${valid};
+        if (${schemaCode} === undefined) ${valid} = true;
         else {
           ${valid} = false;
           if (Array.isArray(${schemaCode})) {`
       )
       loopEnum(<string>schemaCode, valid)
-      write("}}")
+      gen.code("}}")
       fail(`!${valid}`)
     } else {
       if (schema.length === 0) throw new Error("enum must have non-empty array")
-      const vSchema = scope.getName("schema")
-      write(`const ${vSchema} = ${schemaCode};`)
+      const vSchema = gen.name("schema")
+      gen.code(`const ${vSchema} = ${schemaCode};`)
       if (schema.length > (opts.loopEnum as number)) {
-        const valid = scope.getName("valid")
-        write(`let ${valid} = false;`)
+        const valid = gen.name("valid")
+        gen.code(`let ${valid} = false;`)
         loopEnum(vSchema, valid)
         fail(`!${valid}`)
       } else {
@@ -39,7 +38,7 @@ const def: KeywordDefinition = {
 
     function loopEnum(sch: string, valid: string): void {
       // TODO trim whitespace
-      write(
+      gen.code(
         `for (const v of ${sch}) {
           if (equal(${data}, v)) {
             ${valid} = true;

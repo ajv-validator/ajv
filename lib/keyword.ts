@@ -1,5 +1,6 @@
 import {
   KeywordDefinition,
+  KeywordErrorDefinition,
   Vocabulary,
   ErrorObject,
   ValidateFunction,
@@ -7,8 +8,9 @@ import {
   KeywordContext,
 } from "./types"
 
-import {getData, getProperty, toQuotedString} from "./compile/util"
-import {quotedString} from "./vocabularies/util"
+import {reportError} from "./compile/errors"
+import {getData} from "./compile/util"
+import {schemaRefOrVal} from "./vocabularies/util"
 
 const IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i
 const customRuleCode = require("./dotjs/custom")
@@ -133,25 +135,15 @@ export function addKeyword(
 function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): string {
   const schema = it.schema[keyword]
   const {schemaType, code, error, $data: $defData}: KeywordDefinition = this.definition
-  if (!code) throw new Error('"code" must be defined')
-  let schemaCode: string | number | boolean
-  let out = ""
-  const $data = $defData && it.opts.$data && schema && schema.$data
-  if ($data) {
-    schemaCode = it.scope.getName("schema")
-    out += `const ${schemaCode} = ${getData($data, it.dataLevel, it.dataPathArr)};`
-  } else {
-    if (
-      schemaType &&
-      !(schemaType === "array" ? Array.isArray(schema) : typeof schema === schemaType)
-    ) {
-      throw new Error(`${keyword} must be ${schemaType}`)
-    }
-    schemaCode = schemaRefOrVal()
-  }
-  const data = "data" + (it.dataLevel || "")
+  const {gen, opts, dataLevel, schemaPath, dataPathArr} = it
+  if (!code) throw new Error('"code" and "error" must be defined')
+  // TODO _out
+  gen._out = ""
+  const $data = $defData && opts.$data && schema && schema.$data
+  const data = "data" + (dataLevel || "")
+  const schemaValue = schemaRefOrVal(schema, schemaPath, keyword, $data)
   const cxt: KeywordContext = {
-    write,
+    gen,
     fail,
     ok,
     errorParams,
@@ -159,77 +151,39 @@ function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): stri
     data,
     $data,
     schema,
+    schemaCode: $data ? gen.name("schema") : schemaValue,
+    schemaValue,
     parentSchema: it.schema,
-    schemaCode,
-    scope: it.scope,
-    usePattern: it.usePattern,
-    opts: it.opts,
+    it,
+  }
+  if ($data) {
+    gen.code(`const ${cxt.schemaCode} = ${getData($data, dataLevel, dataPathArr)};`)
+  } else {
+    if (
+      schemaType &&
+      !(schemaType === "array" ? Array.isArray(schema) : typeof schema === schemaType)
+    ) {
+      throw new Error(`${keyword} must be ${schemaType}`)
+    }
   }
   // TODO check that code called "fail" or another valid way to return code
   code(cxt)
-  return out
-
-  function write(str: string): void {
-    out += str + "\n"
-  }
+  // TODO
+  return gen._out
 
   function fail(condition: string): void {
-    out += `if (${condition}) { ${reportError()} }`
-    if (!it.opts.allErrors) out += `else {`
-    out += "\n"
+    gen.code(`if (${condition}) {`)
+    reportError(cxt, error as KeywordErrorDefinition)
+    gen.code(opts.allErrors ? "}" : "} else {")
   }
 
   function ok(condition?: string): void {
-    if (condition) out += `if (!(${condition})) { ${reportError()} }`
-    if (!it.opts.allErrors) out += condition ? `else {` : `if (true) {`
-    out += "\n"
+    if (condition) fail(`!(${condition})`)
+    else if (!opts.allErrors) gen.code("if (true) {")
   }
 
   function errorParams(obj: any) {
     cxt.params = obj
-  }
-
-  function reportError(): string {
-    const errCode = errorObjectCode()
-    if (!it.compositeRule && !it.opts.allErrors) {
-      // TODO trim whitespace
-      return it.async
-        ? `throw new ValidationError([${errCode}]);`
-        : `validate.errors = [${errCode}];
-          return false;`
-    }
-    return `const err = ${errCode};
-    if (vErrors === null) vErrors = [err];
-    else vErrors.push(err);
-    errors++;`
-  }
-
-  function errorObjectCode() {
-    if (it.createErrors === false) return "{}"
-    if (!error) throw new Error('keyword definition must have "error" property')
-    // TODO trim whitespace
-    let out = `{
-      keyword: "${keyword}",
-      dataPath: (dataPath || "") + ${it.errorPath},
-      schemaPath: ${toQuotedString(it.errSchemaPath + "/" + keyword)},
-      params: ${error.params(cxt)},`
-    if (it.opts.messages !== false) out += `message: ${error.message(cxt)},`
-    if (it.opts.verbose) {
-      // TODO trim whitespace
-      out += `
-        schema: ${schemaRefOrVal()},
-        parentSchema: validate.schema${it.schemaPath},
-        data: ${data},`
-    }
-    return out + "}"
-  }
-
-  function schemaRefOrVal(): string | number | boolean {
-    if (!$data) {
-      if (schemaType === "number" || schemaType === "boolean") return schema
-      if (schemaType === "string") return quotedString(schema)
-    }
-    return `validate.schema${it.schemaPath + getProperty(keyword)}`
   }
 }
 

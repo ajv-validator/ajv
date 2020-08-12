@@ -6,14 +6,14 @@ const def: KeywordDefinition = {
   type: "number",
   schemaType: "number",
   $data: true,
-  code({write, fail, scope, data, $data, schemaCode, opts}) {
+  code({gen, fail, data, $data, schemaCode, it: {opts}}) {
     const dnt = dataNotType(schemaCode, def.schemaType, $data)
-    const res = scope.getName("res")
+    const res = gen.name("res")
     const prec = opts.multipleOfPrecision
     const invalid = prec
       ? `Math.abs(Math.round(${res}) - ${res}) > 1e-${prec}`
       : `${res} !== parseInt(${res})`
-    write(`let ${res};`)
+    gen.code(`let ${res};`)
     fail(dnt + `(${res} = ${data}/${schemaCode}, ${invalid})`)
   },
   error: {

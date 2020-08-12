@@ -6,15 +6,15 @@ const def: KeywordDefinition = {
   type: "array",
   schemaType: "boolean",
   $data: true,
-  code({write, fail, ok, errorParams, scope, data, $data, schema, parentSchema, schemaCode, opts}) {
+  code({gen, fail, ok, errorParams, data, $data, schema, parentSchema, schemaCode, it: {opts}}) {
     if (opts.uniqueItems === false || !($data || schema)) return ok()
-    const i = scope.getName("i")
-    const j = scope.getName("j")
+    const i = gen.name("i")
+    const j = gen.name("j")
     errorParams({i, j})
-    const valid = scope.getName("valid")
-    write(`let ${valid}, ${i}, ${j};`)
+    const valid = gen.name("valid")
+    gen.code(`let ${valid}, ${i}, ${j};`)
     if ($data) {
-      write(
+      gen.code(
         `if (${schemaCode} === false || ${schemaCode} === undefined)
           ${valid} = true;
         else if (typeof ${schemaCode} != "boolean")
@@ -23,14 +23,14 @@ const def: KeywordDefinition = {
       )
     }
     const itemType = parentSchema.items?.type
-    write(
+    gen.code(
       `${i} = ${data}.length;
       ${valid} = true;
       if (${i} > 1) {
         ${canOptimize() ? loopN() : loopN2()}
       }`
     )
-    if ($data) write("}")
+    if ($data) gen.code("}")
     fail(`!${valid}`)
 
     function canOptimize(): boolean {
@@ -46,7 +46,7 @@ const def: KeywordDefinition = {
         opts.strictNumbers,
         true
       )
-      const indices = scope.getName("indices")
+      const indices = gen.name("indices")
       return `const ${indices} = {};
         for (;${i}--;) {
           let item = ${data}[${i}];
