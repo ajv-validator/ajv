@@ -178,7 +178,7 @@ export function getPath(currentPath: string, prop: string, jsonPointers?: boolea
 
 const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/
 const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/
-export function getData($data: string, lvl: number, paths: (string | undefined)[]): string {
+export function getData($data: string, lvl: number, paths: string[]): string {
   let jsonPointer, data
   if ($data === "") return "rootData"
   if ($data[0] === "/") {
@@ -198,7 +198,7 @@ export function getData($data: string, lvl: number, paths: (string | undefined)[
           "Cannot access property/index " + up + " levels up, current level is " + lvl
         )
       }
-      return paths[lvl - up] || ""
+      return paths[lvl - up]
     }
 
     if (up > lvl) {

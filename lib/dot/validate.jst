@@ -1,7 +1,6 @@
 {{# def.definitions }}
 {{# def.errors }}
 {{# def.defaults }}
-{{# def.coerce }}
 
 {{ /**
     * schema compilation (render) time:
@@ -172,7 +171,12 @@
     }}
     {{# def.checkType }}
       {{? $coerceToTypes }}
-        {{# def.coerceType }}
+        {{
+          /* TODO do not clear _out */
+          it.gen._out = "";
+          it.coerceData(it, $coerceToTypes);
+        }}
+        {{= it.gen._out }}
       {{??}}
         {{# def.error:'type' }}
       {{?}}

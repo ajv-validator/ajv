@@ -137,7 +137,7 @@ function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): stri
   const {schemaType, code, error, $data: $defData}: KeywordDefinition = this.definition
   const {gen, opts, dataLevel, schemaPath, dataPathArr} = it
   if (!code) throw new Error('"code" and "error" must be defined')
-  // TODO _out
+  // TODO do not clear _out
   gen._out = ""
   const $data = $defData && opts.$data && schema && schema.$data
   const data = "data" + (dataLevel || "")

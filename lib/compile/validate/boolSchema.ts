@@ -60,7 +60,6 @@ function falseSchemaError(it: CompilationContext, allErrors?: boolean) {
     errorParams: exception,
     keyword: "false schema",
     data: "data" + (dataLevel || ""),
-    $data: false,
     schema: false,
     schemaCode: false,
     schemaValue: false,
@@ -70,6 +69,7 @@ function falseSchemaError(it: CompilationContext, allErrors?: boolean) {
   reportError(cxt, boolError, allErrors)
 }
 
+// TODO combine with exception from dataType
 function exception() {
   throw new Error("this function can only be used in keyword")
 }

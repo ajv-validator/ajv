@@ -102,7 +102,7 @@ export interface CompilationContext {
   level: number
   dataLevel: number
   data: string
-  dataPathArr: (string | undefined)[]
+  dataPathArr: string[]
   schema: any
   schemaPath: string
   errorPath: string

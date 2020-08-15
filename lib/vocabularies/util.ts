@@ -28,7 +28,12 @@ export function dataNotType(
   return $data ? `(${schemaCode}!==undefined && typeof ${schemaCode}!=="${schemaType}") || ` : ""
 }
 
-export function schemaRefOrVal(schema, schemaPath, keyword, $data): string | number | boolean {
+export function schemaRefOrVal(
+  schema,
+  schemaPath: string,
+  keyword: string,
+  $data?: string | false
+): string | number | boolean {
   const t = typeof schema
   if (!$data) {
     if (t === "number" || t === "boolean") return schema

@@ -74,7 +74,7 @@ function updateTopContext(it: CompilationContext): void {
   it.baseId = it.baseId || it.rootId
   delete it.isTop
 
-  it.dataPathArr = [undefined]
+  it.dataPathArr = [""]
 }
 
 function checkNoDefault({

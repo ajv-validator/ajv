@@ -1,6 +1,8 @@
-import {CompilationContext} from "../../types"
-import {toHash, checkDataTypes} from "../util"
+import {CompilationContext, KeywordContext, KeywordErrorDefinition} from "../../types"
+import {toHash, checkDataType, checkDataTypes} from "../util"
+import {schemaRefOrVal} from "../../vocabularies/util"
 import {schemaHasRulesForType} from "./applicability"
+import {reportError} from "../errors"
 
 export function getSchemaTypes({schema, opts}: CompilationContext): string[] {
   const t = schema.type
@@ -46,127 +48,111 @@ function coerceToTypes(types: string[], coerceTypes?: boolean | "array"): string
 }
 
 const coerceCode = {
+  string: ({dataType, data, coerced}) =>
+    `else if (${dataType} == "number" || ${dataType} == "boolean")
+      ${coerced} = "" + ${data};
+    else if (${data} === null)
+      ${coerced} = "";`,
   number: ({dataType, data, coerced}) =>
-    `if (${dataType} === "boolean" || ${data} === null
-        || (${dataType} === "string' && ${data} && ${data} == +${data})) {
-      ${coerced} = +${data};
-    }`,
+    `else if (${dataType} == "boolean" || ${data} === null
+      || (${dataType} == "string" && ${data} && ${data} == +${data}))
+      ${coerced} = +${data};`,
   integer: ({dataType, data, coerced}) =>
-    `if (${dataType} === "boolean" || ${data} === null
-        || (${dataType} === "string' && ${data} && ${data} == +${data} && !(${data} % 1))) {
-      ${coerced} = +${data};
-    }`,
+    `else if (${dataType} === "boolean" || ${data} === null
+      || (${dataType} === "string" && ${data} && ${data} == +${data} && !(${data} % 1)))
+      ${coerced} = +${data};`,
   boolean: ({data, coerced}) =>
-    `if (${data} === "false" || ${data} === 0 || ${data} === null) {
+    `else if (${data} === "false" || ${data} === 0 || ${data} === null)
       ${coerced} = false;
-    } else if (${data} === "true" || ${data} === 1) {
-      ${coerced} = true;
-    }`,
+    else if (${data} === "true" || ${data} === 1)
+      ${coerced} = true;`,
   null: ({data, coerced}) =>
-    `if (${data} === "" || ${data} === 0 || ${data} === false) {
-      ${coerced} = null;
-    }`,
+    `else if (${data} === "" || ${data} === 0 || ${data} === false)
+      ${coerced} = null;`,
   array: ({dataType, data, coerced}) =>
-    `if (${dataType} == 'string' || ${dataType} == 'number' || ${dataType} == 'boolean' || ${data} == null) {
-      ${coerced} = [${data}];
-    }`,
+    `else if (${dataType} === "string" || ${dataType} === "number" || ${dataType} === "boolean" || ${data} === null)
+      ${coerced} = [${data}];`,
 }
 
-export function coerceData(
-  {gen, dataLevel, opts: {coerceTypes}}: CompilationContext,
-  coerceTo: string[]
-): void {
-  // TODO add "data" to CompilationContext
+export function coerceData(it: CompilationContext, coerceTo: string[]): void {
+  const {
+    gen,
+    schema,
+    dataLevel,
+    opts: {coerceTypes, strictNumbers},
+  } = it
+  // TODO use "data" to CompilationContext
   const data = `data${dataLevel || ""}`
   const dataType = gen.name("dataType")
   const coerced = gen.name("coerced")
-  gen.code(`let coerced;`)
+  gen.code(`let ${coerced};`)
   gen.code(`let ${dataType} = typeof ${data};`)
-  if (coerceTypes === "array" && !coerceTo.includes("array")) {
+  if (coerceTypes === "array") {
     gen.code(
-      `if (${dataType} === "object" && Array.isArray(${data}) && ${data}.length === 1) {
-        ${coerced} = ${data} = ${data}[0];
+      `if (${dataType} == 'object' && Array.isArray(${data}) && ${data}.length == 1) {
+        ${data} = ${data}[0];
         ${dataType} = typeof ${data};
+        if (${checkDataType(schema.type, data, strictNumbers)})
+          ${coerced} = ${data};
       }`
     )
   }
-  let closeBraces = ""
-  coerceTo.forEach((t, i) => {
-    if (i) {
-      gen.code(`if (${coerced} === undefined) {`)
-      closeBraces += "}"
-    }
-    if (coerceTypes === "array" && t !== "array") {
-      gen.code(
-        `if (${dataType} === "array" && ${data}.length === 1) {
-          ${coerced} = ${data} = ${data}[0];
-          ${dataType} = typeof ${data};
-          /*if (${dataType} == 'object' && Array.isArray(${data})) ${dataType} = 'array';*/
-        }`
-      )
-    }
+  gen.code(`if (${coerced} !== undefined) ;`)
+  const args = {dataType, data, coerced}
+  for (const t of coerceTo) {
     if (t in coerceCode && (t !== "array" || coerceTypes === "array")) {
-      gen.code(coerceCode[t]({dataType, data, coerced}))
+      gen.code(coerceCode[t](args))
     }
-  })
+  }
+  gen.code(`else {`)
+  reportTypeError(it)
+  gen.code(`}`)
+
+  gen.code(
+    `if (${coerced} !== undefined) {
+      ${data} = ${coerced};
+      ${assignParentData(it, coerced)}
+    }`
+  )
 }
 
-// {{## def.coerceType:
-//   {{
-//     var $dataType = 'dataType' + $lvl
-//       , $coerced = 'coerced' + $lvl;
-//   }}
-// var {{=$dataType}} = typeof {{=$data}};
-// var {{=$coerced}} = undefined;
+function assignParentData({dataLevel, dataPathArr}: CompilationContext, expr: string): string {
+  // TODO replace dataLevel
+  if (dataLevel) {
+    const parentData = "data" + (dataLevel - 1 || "")
+    return `${parentData}[${dataPathArr[dataLevel]}] = ${expr};`
+  }
+  return `if (parentData !== undefined) parentData[parentDataProperty] = ${expr};`
+}
 
-//   {{? it.opts.coerceTypes == 'array' && !$coerceToTypes.includes('array') }}
-//     if ({{=$dataType}} == 'object' && Array.isArray({{=$data}}) && {{=$data}}.length == 1) {
-//       {{=$coerced}} = {{=$data}} = {{=$data}}[0];
-//       {{=$dataType}} = typeof {{=$data}};
-//       /*if ({{=$dataType}} == 'object' && Array.isArray({{=$data}})) {{=$dataType}} = 'array';*/
-//     }
-//   {{?}}
+const typeError: KeywordErrorDefinition = {
+  message: ({schema}) => `"should be ${Array.isArray(schema) ? schema.join(",") : schema}"`,
+  // TODO change: return type as array here
+  params: ({schema}) => `{type: "${Array.isArray(schema) ? schema.join(",") : schema}"}`,
+}
 
-//   {{ var $bracesCoercion = ''; }}
-//   {{~ $coerceToTypes:$type:$i }}
-//     {{? $i }}
-//       if (${coerced} === undefined) {
-//       {{ $bracesCoercion += '}'; }}
-//     {{?}}
+// TODO maybe combine with boolSchemaError
+// TODO refactor type keyword context creation
+function reportTypeError(it: CompilationContext) {
+  const {gen, schema, schemaPath, dataLevel} = it
+  const schemaCode = schemaRefOrVal(schema, schemaPath, "type")
+  const cxt: KeywordContext = {
+    gen,
+    fail: exception,
+    ok: exception,
+    errorParams: exception,
+    keyword: "type",
+    data: "data" + (dataLevel || ""),
+    schema: schema.type,
+    schemaCode,
+    schemaValue: schemaCode,
+    parentSchema: schema,
+    it,
+  }
+  reportError(cxt, typeError)
+}
 
-//     {{? $type == 'string' }}
-//       if (${dataType} == 'number' || ${dataType} == 'boolean')
-//         ${coerced} = '' + ${data};
-//       else if (${data} === null) ${coerced} = '';
-//     {{?? $type == 'number' || $type == 'integer' }}
-//       if (${dataType} == 'boolean' || ${data} === null
-//           || (${dataType} == 'string' && ${data} && ${data} == +${data}
-//           {{? $type == 'integer' }} && !(${data} % 1){{?}}))
-//         ${coerced} = +${data};
-//     {{?? $type == 'boolean' }}
-//       if (${data} === 'false' || ${data} === 0 || ${data} === null)
-//         ${coerced} = false;
-//       else if (${data} === 'true' || ${data} === 1)
-//         ${coerced} = true;
-//     {{?? $type == 'null' }}
-//       if (${data} === '' || ${data} === 0 || ${data} === false)
-//         ${coerced} = null;
-//     {{?? it.opts.coerceTypes == 'array' && $type == 'array' }}
-//       if (${dataType} == 'string' || ${dataType} == 'number' || ${dataType} == 'boolean' || ${data} == null)
-//         ${coerced} = [${data}];
-//     {{?}}
-//   {{~}}
-
-//   {{= $bracesCoercion }}
-
-//   if (${coerced} === undefined) {
-//     {{# def.error:'type' }}
-//   } else {
-//     {{# def.setParentData }}
-//     ${data} = ${coerced};
-//     {{? !$dataLvl }}if ({{=$parentData}} !== undefined){{?}}
-//       {{=$parentData}}[{{=$parentDataProperty}}] = ${coerced};
-//   }
-// #}}
-
-function reportTypeError(_: CompilationContext) {}
+// TODO combine with exception from boolSchema
+function exception() {
+  throw new Error("this function can only be used in keyword")
+}
