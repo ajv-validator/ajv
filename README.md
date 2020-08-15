@@ -11,30 +11,30 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07 
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 [![GitHub Sponsors](https://img.shields.io/badge/$-sponsors-brightgreen)](https://github.com/sponsors/epoberezkin)
 
+## Mozilla MOSS grant and OpenJS Foundation
+
+[<img src="https://www.poberezkin.com/images/mozilla.png" width="240" height="68">](https://www.mozilla.org/en-US/moss/) &nbsp;&nbsp;&nbsp; [<img src="https://www.poberezkin.com/images/openjs.png" width="220" height="68">](https://openjsf.org/blog/2020/08/14/ajv-joins-openjs-foundation-as-an-incubation-project/)
+
+Ajv has been awarded a grant from Mozilla’s [Open Source Support (MOSS) program](https://www.mozilla.org/en-US/moss/) in the “Foundational Technology” track! It will sponsor the development of Ajv support of [JSON Schema version 2019-09](https://tools.ietf.org/html/draft-handrews-json-schema-02) and of [JSON Type Definition](https://tools.ietf.org/html/draft-ucarion-json-type-definition-04).
+
+Ajv also joined [OpenJS Foundation](https://openjsf.org/) – having this support will help ensure the longevity and stability of Ajv for all its users.
+
+This [blog post](https://www.poberezkin.com/posts/2020-08-14-ajv-json-validator-mozilla-open-source-grant-openjs-foundation.html) has more details.
+
+I am looking for the long term maintainers of Ajv – working with [ReadySet](https://www.thereadyset.co/), also sponsored by Mozilla, to establish clear guidelines for the role of a "maintainer" and the contribution standards, and to encourage a wider, more inclusive, contribution from the community.
+
 ## Please [sponsor Ajv development](https://github.com/sponsors/epoberezkin)
 
-I will get straight to the point - I need your support to ensure that the development of Ajv continues.
+Since I asked to support Ajv development 40 people and 6 organizations contributed via GitHub and OpenCollective - this support helped receiving the MOSS grant!
 
-I have developed Ajv for 5 years in my free time, but it is not sustainable. I'd appreciate if you consider supporting its further development with donations:
+Your continuing support is very important - the funds will be used to develop and maintain Ajv once the next major version is released.
+
+Please sponsor Ajv via:
 
 - [GitHub sponsors page](https://github.com/sponsors/epoberezkin) (GitHub will match it)
 - [Ajv Open Collective️](https://opencollective.com/ajv)
 
-There are many small and large improvements that are long due, including the support of the next versions of JSON Schema specification, improving website and documentation, and making Ajv more modular and maintainable to address its limitations - what Ajv needs to evolve is much more than what I can contribute in my free time.
-
-I would also really appreciate any advice you could give on how to raise funds for Ajv development - whether some suitable open-source fund I could apply to or some sponsor I should approach.
-
-Since 2015 Ajv has become widely used, thanks to your help and contributions:
-
-- **90** contributors 🏗
-- **5,000** dependent npm packages ⚙️
-- **7,000** github stars, from GitHub users [all over the world](https://www.google.com/maps/d/u/0/viewer?mid=1MGRV8ciFUGIbO1l0EKFWNJGYE7iSkDxP&ll=-3.81666561775622e-14%2C4.821737100000007&z=2) ⭐️
-- **5,000,000** dependent repositories on GitHub 🚀
-- **120,000,000** npm downloads per month! 💯
-
-I believe it would benefit all Ajv users to help put together the fund that will be used for its further development - it would allow to bring some additional maintainers to the project.
-
-Thank you
+Thank you.
 
 #### Open Collective sponsors
 
@@ -142,8 +142,6 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 - keywords `switch`, `patternRequired`, `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` from [JSON Schema extension proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) with [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package
 - [\$data reference](#data-reference) to use values from the validated data as values for the schema keywords
 - [asynchronous validation](#asynchronous-validation) of custom formats and keywords
-
-Currently Ajv is the only validator that passes all the tests from [JSON Schema Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite) (according to [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark), apart from the test that requires that `1.0` is not an integer that is impossible to satisfy in JavaScript).
 
 ## Install
 
@@ -462,9 +460,7 @@ Using `$patch`:
       "properties": {"p": {"type": "string"}},
       "additionalProperties": false
     },
-    "with": [
-      {"op": "add", "path": "/properties/q", "value": {"type": "number"}}
-    ]
+    "with": [{"op": "add", "path": "/properties/q", "value": {"type": "number"}}]
   }
 }
 ```
@@ -556,8 +552,7 @@ ajv.compileAsync(schema).then(function (validate) {
 
 function loadSchema(uri) {
   return request.json(uri).then(function (res) {
-    if (res.statusCode >= 400)
-      throw new Error("Loading error: " + res.statusCode)
+    if (res.statusCode >= 400) throw new Error("Loading error: " + res.statusCode)
     return res.body
   })
 }
@@ -699,9 +694,7 @@ Some keywords in JSON Schemas can lead to very slow validation for certain data.
 You can validate your JSON schemas against [this meta-schema](https://github.com/ajv-validator/ajv/blob/master/lib/refs/json-schema-secure.json) to check that these recommendations are followed:
 
 ```javascript
-const isSchemaSecure = ajv.compile(
-  require("ajv/lib/refs/json-schema-secure.json")
-)
+const isSchemaSecure = ajv.compile(require("ajv/lib/refs/json-schema-secure.json"))
 
 const schema1 = {format: "email"}
 isSchemaSecure(schema1) // false

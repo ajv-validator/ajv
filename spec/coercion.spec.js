@@ -125,29 +125,47 @@ var coercionArrayRules = JSON.parse(JSON.stringify(coercionRules))
 coercionArrayRules.string.array = [
   {from: ["abc"], to: "abc"},
   {from: [123], to: "123"},
+  {from: [true], to: "true"},
+  {from: [null], to: ""},
+  {from: [{}], to: undefined},
   {from: ["abc", "def"], to: undefined},
   {from: [], to: undefined},
 ]
 coercionArrayRules.number.array = [
   {from: [1.5], to: 1.5},
   {from: ["1.5"], to: 1.5},
+  {from: [true], to: 1},
+  {from: [null], to: 0},
+  {from: ["abc"], to: undefined},
+  {from: [{}], to: undefined},
 ]
 coercionArrayRules.integer.array = [
   {from: [1], to: 1},
   {from: ["1"], to: 1},
   {from: [true], to: 1},
   {from: [null], to: 0},
+  {from: [1.5], to: undefined},
+  {from: ["abc"], to: undefined},
+  {from: [{}], to: undefined},
 ]
 coercionArrayRules.boolean.array = [
   {from: [true], to: true},
   {from: ["true"], to: true},
   {from: [1], to: true},
+  {from: [null], to: false},
+  {from: ["abc"], to: undefined},
+  {from: [2], to: undefined},
+  {from: [{}], to: undefined},
 ]
 coercionArrayRules.null.array = [
   {from: [null], to: null},
   {from: [""], to: null},
   {from: [0], to: null},
   {from: [false], to: null},
+  {from: ["abc"], to: undefined},
+  {from: [1], to: undefined},
+  {from: [true], to: undefined},
+  {from: [{}], to: undefined},
 ]
 coercionArrayRules.object.array = [{from: [{}], to: undefined}]
 
@@ -169,11 +187,7 @@ describe("Type coercion", function () {
   })
 
   it("should coerce scalar values", function () {
-    testRules(coercionRules, function (
-      test,
-      schema,
-      canCoerce /*, toType, fromType*/
-    ) {
+    testRules(coercionRules, function (test, schema, canCoerce /*, toType, fromType*/) {
       instances.forEach(function (_ajv) {
         var valid = _ajv.validate(schema, test.from)
         //if (valid !== canCoerce) console.log('true', toType, fromType, test, ajv.errors);
@@ -187,28 +201,17 @@ describe("Type coercion", function () {
     fullAjv = new Ajv({coerceTypes: "array", verbose: true, allErrors: true})
     instances = [ajv, fullAjv]
 
-    testRules(coercionArrayRules, function (
-      test,
-      schema,
-      canCoerce,
-      toType,
-      fromType
-    ) {
+    testRules(coercionArrayRules, function (test, schema, canCoerce, toType, fromType) {
       instances.forEach(function (_ajv) {
         var valid = _ajv.validate(schema, test.from)
-        if (valid !== canCoerce)
-          console.log(toType, ".", fromType, test, schema, ajv.errors)
+        if (valid !== canCoerce) console.log(toType, ".", fromType, test, schema, ajv.errors)
         valid.should.equal(canCoerce)
       })
     })
   })
 
   it("should coerce values in objects/arrays and update properties/items", function () {
-    testRules(coercionRules, function (
-      test,
-      schema,
-      canCoerce /*, toType, fromType*/
-    ) {
+    testRules(coercionRules, function (test, schema, canCoerce /*, toType, fromType*/) {
       var schemaObject = {
         type: "object",
         properties: {
@@ -402,11 +405,7 @@ describe("Type coercion", function () {
       testCoercion(schema, {foo: "1"}, {foo: 1})
       testCoercion(schema2, {foo: "1"}, {foo: 1})
       testCoercion(schemaRecursive, {foo: {foo: "1"}}, {foo: {foo: 1}})
-      testCoercion(
-        schemaRecursive2,
-        {foo: {foo: {foo: "1"}}},
-        {foo: {foo: {foo: 1}}}
-      )
+      testCoercion(schemaRecursive2, {foo: {foo: {foo: "1"}}}, {foo: {foo: {foo: 1}}})
 
       function testCoercion(_schema, fromData, toData) {
         var valid = _ajv.validate(_schema, fromData)
