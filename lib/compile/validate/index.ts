@@ -15,7 +15,6 @@ export default function validateCode(it: CompilationContext): void {
     gen,
     opts: {$comment},
   } = it
-  if (schema.$async === true) it.async = true
   checkUnknownKeywords(it)
   if (isTop) startFunction(it)
   if (typeof schema == "boolean" || !schemaHasRules(schema, RULES)) {
@@ -32,12 +31,12 @@ export default function validateCode(it: CompilationContext): void {
     gen.code(`let errs_${level} = errors;`)
   }
   checkRefsAndKeywords(it)
-  if ($comment) commentKeyword(it)
+  if ($comment && schema.$comment) commentKeyword(it)
   const types = getSchemaTypes(it)
   coerceAndCheckDataType(it, types)
 }
 
-function checkUnknownKeywords({
+export function checkUnknownKeywords({
   schema,
   RULES,
   opts: {strictKeywords},
@@ -53,7 +52,7 @@ function checkUnknownKeywords({
   }
 }
 
-function startFunction({
+export function startFunction({
   gen,
   schema,
   async,
@@ -89,7 +88,7 @@ export function checkNoDefault({
   }
 }
 
-function initializeTop({gen}: CompilationContext): void {
+export function initializeTop({gen}: CompilationContext): void {
   // TODO old comment: "don't edit, used in replace". Should be removed?
   gen.code(
     `let vErrors = null;
@@ -106,7 +105,7 @@ export function checkAsync(it: CompilationContext): void {
   if (it.schema.$async && !it.async) throw new Error("async schema in sync schema")
 }
 
-function checkRefsAndKeywords({
+export function checkRefsAndKeywords({
   schema,
   errSchemaPath,
   RULES,
@@ -122,7 +121,12 @@ function checkRefsAndKeywords({
   }
 }
 
-function commentKeyword({gen, schema, errSchemaPath, opts: {$comment}}: CompilationContext): void {
+export function commentKeyword({
+  gen,
+  schema,
+  errSchemaPath,
+  opts: {$comment},
+}: CompilationContext): void {
   const msg = quotedString(schema.$comment)
   if ($comment === true) {
     gen.code(`console.log(${msg})`)

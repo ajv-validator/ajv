@@ -46,7 +46,7 @@ describe("strictKeywords option", () => {
         unknownKeyword: 1,
       }
       ajv.compile(schema)
-      should.equal(output.warning, "unknown keyword: unknownKeyword")
+      should.equal(output.warning, 'unknown keyword: "unknownKeyword"')
     })
   })
 

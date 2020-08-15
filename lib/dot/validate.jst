@@ -19,23 +19,14 @@
     , $id = it.schema.$id;
 }}
 
-{{
-  if (it.opts.strictKeywords) {
-    var $unknownKwd = it.util.schemaUnknownRules(it.schema, it.RULES.keywords);
-    if ($unknownKwd) {
-      var $keywordsMsg = 'unknown keyword: ' + $unknownKwd;
-      if (it.opts.strictKeywords === 'log') it.logger.warn($keywordsMsg);
-      else throw new Error($keywordsMsg);
-    }
-  }
-}}
+{{ it.checkUnknownKeywords(it); }}
 
 {{? it.isTop }}
-  var validate = {{?$async}}{{it.async = true;}}async {{?}}function(data, dataPath, parentData, parentDataProperty, rootData) {
-    'use strict';
-    {{? $id && (it.opts.sourceCode || it.opts.processCode) }}
-      {{= '/\*# sourceURL=' + $id + ' */' }}
-    {{?}}
+  {{
+    it.gen._out = "";
+    it.startFunction(it);
+  }}
+  {{=it.gen._out}}
 {{?}}
 
 {{? typeof it.schema == 'boolean' || !($refKeywords || it.schema.$ref) }}
@@ -59,9 +50,11 @@
     it.checkNoDefault(it);
   }}
 
-  var vErrors = null; {{ /* don't edit, used in replace */ }}
-  var errors = 0;     {{ /* don't edit, used in replace */ }}
-  if (rootData === undefined) rootData = data; {{ /* don't edit, used in replace */ }}
+  {{
+    it.gen._out = "";
+    it.initializeTop(it);
+  }}
+  {{=it.gen._out}}
 {{??}}
   {{
     var $lvl = it.level
@@ -111,21 +104,16 @@
   if ({{= it.util[$method]($typeSchema, $data, it.opts.strictNumbers, true) }}) {
 #}}
 
-{{? it.schema.$ref && $refKeywords }}
-  {{? it.opts.extendRefs == 'fail' }}
-    {{ throw new Error('$ref: validation keywords used in schema at path "' + it.errSchemaPath + '" (see option extendRefs)'); }}
-  {{?? it.opts.extendRefs !== true }}
-    {{
-      $refKeywords = false;
-      it.logger.warn('$ref: keywords ignored in schema at path "' + it.errSchemaPath + '"');
-    }}
-  {{?}}
-{{?}}
-
-{{? it.schema.$comment && it.opts.$comment }}
-  {{= it.RULES.all.$comment.code(it, '$comment') }}
-{{?}}
-
+{{
+  it.gen._out = "";
+  it.checkRefsAndKeywords(it);
+  /* TODO remove below once $refKeywords no longer used */
+  if (it.opts.extendRefs !== true) $refKeywords = false;
+  if (it.opts.$comment && it.schema.$comment) {
+    it.commentKeyword(it)
+  }
+}}
+{{=it.gen._out}}
 
 {{
   const types = it.getSchemaTypes(it);
