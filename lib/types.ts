@@ -121,6 +121,7 @@ export interface CompilationContext {
   compositeRule: boolean
   validate: (schema: object) => boolean
   usePattern: (str: string) => string
+  useDefault: (value: any) => string
   util: object // TODO
   self: object // TODO
   RULES: any // TODO replace?

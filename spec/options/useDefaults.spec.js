@@ -4,7 +4,7 @@ var Ajv = require("../ajv")
 var getAjvInstances = require("../ajv_instances")
 require("../chai").should()
 
-describe("useDefaults options", () => {
+describe("useDefaults option", () => {
   it("should replace undefined property with default value", () => {
     var instances = getAjvInstances(
       {
