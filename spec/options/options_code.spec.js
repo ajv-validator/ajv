@@ -34,12 +34,14 @@ describe("code generation options", () => {
     it("should process generated code", () => {
       var ajv = new Ajv()
       var validate = ajv.compile({type: "string"})
-      validate.toString().split("\n").length.should.equal(1)
+      // TODO re-enable this test when option to strip whitespace is added
+      // validate.toString().split("\n").length.should.equal(1)
+      const unprocessedLines = validate.toString().split("\n").length
 
       var beautify = require("js-beautify").js_beautify
       var ajvPC = new Ajv({processCode: beautify})
       validate = ajvPC.compile({type: "string"})
-      validate.toString().split("\n").length.should.be.above(1)
+      validate.toString().split("\n").length.should.be.above(unprocessedLines)
       validate("foo").should.equal(true)
       validate(1).should.equal(false)
     })

@@ -69,7 +69,7 @@ function startFunction({
   )
 }
 
-function updateTopContext(it: CompilationContext): void {
+export function updateTopContext(it: CompilationContext): void {
   it.rootId = resolve.fullPath(it.root.schema.$id)
   it.baseId = it.baseId || it.rootId
   delete it.isTop
@@ -77,7 +77,7 @@ function updateTopContext(it: CompilationContext): void {
   it.dataPathArr = [""]
 }
 
-function checkNoDefault({
+export function checkNoDefault({
   schema,
   opts: {useDefaults, strictDefaults},
   logger,
@@ -98,11 +98,11 @@ function initializeTop({gen}: CompilationContext): void {
   )
 }
 
-function updateContext(it: CompilationContext): void {
+export function updateContext(it: CompilationContext): void {
   if (it.schema.$id) it.baseId = resolve.url(it.baseId, it.schema.$id)
 }
 
-function checkAsync(it: CompilationContext): void {
+export function checkAsync(it: CompilationContext): void {
   if (it.schema.$async && !it.async) throw new Error("async schema in sync schema")
 }
 

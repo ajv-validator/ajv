@@ -5,8 +5,8 @@ export function schemaHasRulesForType({RULES, schema}: CompilationContext, ty: s
   return group && group !== true && shouldUseGroup(schema, group)
 }
 
-function shouldUseGroup(schema, rulesGroup): boolean {
-  return rulesGroup.some((rule) => shouldUseRule(schema, rule))
+function shouldUseGroup(schema, group): boolean {
+  return group.rules.some((rule) => shouldUseRule(schema, rule))
 }
 
 function shouldUseRule(schema, rule): boolean {

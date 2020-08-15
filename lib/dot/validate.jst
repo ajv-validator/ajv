@@ -39,34 +39,12 @@
 {{?}}
 
 {{? typeof it.schema == 'boolean' || !($refKeywords || it.schema.$ref) }}
-  {{ var $keyword = 'false schema'; }}
-  {{# def.setupKeyword }}
-  {{? it.schema === false}}
-    {{? it.isTop}}
-      {{ $breakOnError = true; }}
-    {{??}}
-      var {{=$valid}} = false;
-    {{?}}
-    {{# def.error:'false schema' }}
-  {{??}}
-    {{? it.isTop}}
-      {{? $async }}
-        return data;
-      {{??}}
-        validate.errors = null;
-        return true;
-      {{?}}
-    {{??}}
-      var {{=$valid}} = true;
-    {{?}}
-  {{?}}
-
-  {{? it.isTop}}
-    };
-    return validate;
-  {{?}}
-
-  {{ return out; }}
+  {{
+    /* TODO do not clear _out */
+    it.gen._out = "";
+    it.booleanOrEmptySchema(it);
+    return out + it.gen._out;
+  }}
 {{?}}
 
 
@@ -76,17 +54,9 @@
       , $lvl = it.level = 0
       , $dataLvl = it.dataLevel = 0
       , $data = 'data';
-    it.rootId = it.resolve.fullPath(it.root.schema.$id);
-    it.baseId = it.baseId || it.rootId;
-    delete it.isTop;
 
-    it.dataPathArr = [undefined];
-
-    if (it.schema.default !== undefined && it.opts.useDefaults && it.opts.strictDefaults) {
-      var $defaultMsg = 'default is ignored in the schema root';
-      if (it.opts.strictDefaults === 'log') it.logger.warn($defaultMsg);
-      else throw new Error($defaultMsg);
-    }
+    it.updateTopContext(it);
+    it.checkNoDefault(it);
   }}
 
   var vErrors = null; {{ /* don't edit, used in replace */ }}
@@ -98,9 +68,8 @@
       , $dataLvl = it.dataLevel
       , $data = 'data' + ($dataLvl || '');
 
-    if ($id) it.baseId = it.resolve.url(it.baseId, $id);
-
-    if ($async && !it.async) throw new Error('async schema in sync schema');
+    it.updateContext(it);
+    it.checkAsync(it);
   }}
 
   var errs_{{=$lvl}} = errors;
@@ -157,33 +126,14 @@
   {{= it.RULES.all.$comment.code(it, '$comment') }}
 {{?}}
 
-{{? $typeSchema }}
-  {{? it.opts.coerceTypes }}
-    {{ var $coerceToTypes = it.util.coerceToTypes(it.opts.coerceTypes, $typeSchema); }}
-  {{?}}
 
-  {{ var $rulesGroup = it.RULES.types[$typeSchema]; }}
-  {{? $coerceToTypes || $typeIsArray || $rulesGroup === true ||
-    ($rulesGroup && !$shouldUseGroup($rulesGroup)) }}
-    {{
-      var $schemaPath = it.schemaPath + '.type'
-        , $errSchemaPath = it.errSchemaPath + '/type';
-    }}
-    {{# def.checkType }}
-      {{? $coerceToTypes }}
-        {{
-          /* TODO do not clear _out */
-          it.gen._out = "";
-          it.coerceData(it, $coerceToTypes);
-        }}
-        {{= it.gen._out }}
-      {{??}}
-        {{# def.error:'type' }}
-      {{?}}
-    }
-  {{?}}
-{{?}}
-
+{{
+  const types = it.getSchemaTypes(it);
+  /* TODO do not clear _out */
+  it.gen._out = "";
+  it.coerceAndCheckDataType(it, types);
+}}
+{{= it.gen._out }}
 
 {{? it.schema.$ref && !$refKeywords }}
   {{= it.RULES.all.$ref.code(it, '$ref') }}
@@ -222,7 +172,7 @@
         {{?}}
       {{? $rulesGroup.type }}
         }
-        {{? $typeSchema && $typeSchema === $rulesGroup.type && !$coerceToTypes }}
+        {{? $typeSchema && $typeSchema === $rulesGroup.type && !(it.opts.coerceTypes && it.util.coerceToTypes(it.opts.coerceTypes, $typeSchema)) }}
           else {
             {{
               var $schemaPath = it.schemaPath + '.type'

@@ -5,8 +5,8 @@ import {schemaHasRulesForType} from "./applicability"
 import {reportError} from "../errors"
 
 export function getSchemaTypes({schema, opts}: CompilationContext): string[] {
-  const t = schema.type
-  const types: string[] = Array.isArray(t) ? t : t || []
+  const t: undefined | string | string[] = schema.type
+  const types: string[] = Array.isArray(t) ? t : t ? [t] : []
   types.forEach(checkType)
   if (opts.nullable) {
     const hasNull = types.includes("null")
@@ -20,7 +20,7 @@ export function getSchemaTypes({schema, opts}: CompilationContext): string[] {
 
   function checkType(t: string): void {
     // TODO check that type is allowed
-    if (typeof t != "string") throw new Error('"type" keyword must be string or string[]')
+    if (typeof t != "string") throw new Error('"type" keyword must be string or string[]: ' + t)
   }
 }
 
@@ -31,7 +31,10 @@ export function coerceAndCheckDataType(it: CompilationContext, types: string[]):
     opts: {coerceTypes, strictNumbers},
   } = it
   let coerceTo = coerceToTypes(types, coerceTypes)
-  if (coerceTo.length || types.length > 1 || !schemaHasRulesForType(it, types[0])) {
+  if (
+    types.length &&
+    (coerceTo.length || types.length > 1 || !schemaHasRulesForType(it, types[0]))
+  ) {
     const wrongType = checkDataTypes(types, `data${dataLevel || ""}`, strictNumbers, true)
     gen.code(`if (${wrongType}) {`)
     if (coerceTo.length) coerceData(it, coerceTo)

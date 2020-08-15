@@ -9,10 +9,11 @@ export function reportError(
   const {gen, compositeRule, opts, async} = cxt.it
   const errObj = errorObjectCode(cxt, error)
   if (allErrors ?? (compositeRule || opts.allErrors)) {
+    const err = gen.name("err")
     gen.code(
-      `const err = ${errObj};
-      if (vErrors === null) vErrors = [err];
-      else vErrors.push(err);
+      `const ${err} = ${errObj};
+      if (vErrors === null) vErrors = [${err}];
+      else vErrors.push(${err});
       errors++;`
     )
   } else {

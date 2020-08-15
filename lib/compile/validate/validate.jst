@@ -40,34 +40,34 @@
 // {{?}}
 
 // {{? typeof it.schema == 'boolean' || !($refKeywords || it.schema.$ref) }}
-//   {{ var $keyword = 'false schema'; }}
-//   {{# def.setupKeyword }}
-//   {{? it.schema === false}}
-//     {{? it.isTop}}
-//       {{ $breakOnError = true; }}
-//     {{??}}
-//       var {{=$valid}} = false;
-//     {{?}}
-//     {{# def.error:'false schema' }}
-//   {{??}}
-//     {{? it.isTop}}
-//       {{? $async }}
-//         return data;
-//       {{??}}
-//         validate.errors = null;
-//         return true;
-//       {{?}}
-//     {{??}}
-//       var {{=$valid}} = true;
-//     {{?}}
-//   {{?}}
+  // {{ var $keyword = 'false schema'; }}
+  // {{# def.setupKeyword }}
+  // {{? it.schema === false}}
+  //   {{? it.isTop}}
+  //     {{ $breakOnError = true; }}
+  //   {{??}}
+  //     var {{=$valid}} = false;
+  //   {{?}}
+  //   {{# def.error:'false schema' }}
+  // {{??}}
+  //   {{? it.isTop}}
+  //     {{? $async }}
+  //       return data;
+  //     {{??}}
+  //       validate.errors = null;
+  //       return true;
+  //     {{?}}
+  //   {{??}}
+  //     var {{=$valid}} = true;
+  //   {{?}}
+  // {{?}}
 
-//   {{? it.isTop}}
-//     };
-//     return validate;
-//   {{?}}
+  // {{? it.isTop}}
+  //   };
+  //   return validate;
+  // {{?}}
 
-//   {{ return out; }}
+  // {{ return out; }}
 // {{?}}
 
 {{? it.isTop }}

@@ -2,6 +2,7 @@
 module.exports = {
   checkDataType,
   checkDataTypes,
+  // TODO remove when validate is refactored
   coerceToTypes,
   toHash,
   escapeQuotes,
@@ -72,6 +73,7 @@ export function checkDataTypes(
   return code
 }
 
+// TODO remove when validate is refactored
 const COERCE_TYPES = toHash(["string", "number", "integer", "boolean", "null"])
 export function coerceToTypes(
   optionCoerceTypes: undefined | boolean | "array",
