@@ -89,7 +89,6 @@
 {{## def.concatSchemaEQ:{{?$isData}}' + {{=$schemaValue}} + '{{??}}{{=it.util.escapeQuotes($schema)}}{{?}}#}}
 
 {{## def._errorMessages = {
-  'false schema':  "'boolean schema is false'",
   $ref:            "'can\\\'t resolve reference {{=it.util.escapeQuotes($schema)}}'",
   additionalItems: "'should NOT have more than {{=$schema.length}} items'",
   additionalProperties: "'{{? it.opts._errorDataPathProperty }}is an invalid additional property{{??}}should NOT have additional properties{{?}}'",
@@ -102,7 +101,6 @@
   oneOf:           "'should match exactly one schema in oneOf'",
   propertyNames:   "'property name \\'{{=$invalidName}}\\' is invalid'",
   required:        "'{{? it.opts._errorDataPathProperty }}is a required property{{??}}should have required property \\'{{=$missingProperty}}\\'{{?}}'",
-  type:            "'should be {{? $typeIsArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}'",
   custom:          "'should pass \"{{=$rule.keyword}}\" keyword validation'",
   patternRequired: "'should have property matching pattern \\'{{=$missingPattern}}\\''",
   switch:          "'should pass \"switch\" keyword validation'",
@@ -115,7 +113,6 @@
 {{## def.schemaRefOrQS: {{?$isData}}validate.schema{{=$schemaPath}}{{??}}{{=it.util.toQuotedString($schema)}}{{?}} #}}
 
 {{## def._errorSchemas = {
-  'false schema':  "false",
   $ref:            "{{=it.util.toQuotedString($schema)}}",
   additionalItems: "false",
   additionalProperties: "false",
@@ -128,7 +125,6 @@
   oneOf:           "validate.schema{{=$schemaPath}}",
   propertyNames:   "validate.schema{{=$schemaPath}}",
   required:        "validate.schema{{=$schemaPath}}",
-  type:            "validate.schema{{=$schemaPath}}",
   custom:          "validate.schema{{=$schemaPath}}",
   patternRequired: "validate.schema{{=$schemaPath}}",
   switch:          "validate.schema{{=$schemaPath}}",
@@ -140,7 +136,6 @@
 {{## def.schemaValueQS: {{?$isData}}{{=$schemaValue}}{{??}}{{=it.util.toQuotedString($schema)}}{{?}} #}}
 
 {{## def._errorParams = {
-  'false schema':  "{}",
   $ref:            "{ ref: '{{=it.util.escapeQuotes($schema)}}' }",
   additionalItems: "{ limit: {{=$schema.length}} }",
   additionalProperties: "{ additionalProperty: '{{=$additionalProperty}}' }",
@@ -153,7 +148,6 @@
   oneOf:           "{ passingSchemas: {{=$passingSchemas}} }",
   propertyNames:   "{ propertyName: '{{=$invalidName}}' }",
   required:        "{ missingProperty: '{{=$missingProperty}}' }",
-  type:            "{ type: '{{? $typeIsArray }}{{= $typeSchema.join(\",\") }}{{??}}{{=$typeSchema}}{{?}}' }",
   custom:          "{ keyword: '{{=$rule.keyword}}' }",
   patternRequired: "{ missingPattern: '{{=$missingPattern}}' }",
   switch:          "{ caseIndex: {{=$caseIndex}} }",

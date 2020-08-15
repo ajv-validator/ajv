@@ -14,7 +14,6 @@
 
 {{
   var $async = it.schema.$async === true
-    , $refKeywords = it.util.schemaHasRulesExcept(it.schema, it.RULES.all, '$ref')
     , $id = it.schema.$id;
 }}
 
@@ -28,7 +27,7 @@
   {{=it.gen._out}}
 {{?}}
 
-{{? typeof it.schema == 'boolean' || !($refKeywords || it.schema.$ref) }}
+{{? typeof it.schema == 'boolean' || !it.util.schemaHasRules(it.schema, it.RULES.all) }}
   {{
     /* TODO do not clear _out */
     it.gen._out = "";
@@ -67,47 +66,11 @@
   var errs_{{=$lvl}} = errors;
 {{?}}
 
-{{
-  var $valid = 'valid' + $lvl
-    , $breakOnError = !it.opts.allErrors
-    , $closingBraces1 = ''
-    , $closingBraces2 = '';
-
-  var $errorKeyword;
-  var $typeSchema = it.schema.type
-    , $typeIsArray = Array.isArray($typeSchema);
-
-  if ($typeSchema && it.opts.nullable && it.schema.nullable === true) {
-    if ($typeIsArray) {
-      if ($typeSchema.indexOf('null') == -1)
-        $typeSchema = $typeSchema.concat('null');
-    } else if ($typeSchema != 'null') {
-      $typeSchema = [$typeSchema, 'null'];
-      $typeIsArray = true;
-    }
-  }
-
-  if ($typeIsArray && $typeSchema.length == 1) {
-    $typeSchema = $typeSchema[0];
-    $typeIsArray = false;
-  }
-}}
-
-{{## def.checkType:
-  {{
-    var $schemaPath = it.schemaPath + '.type'
-      , $errSchemaPath = it.errSchemaPath + '/type'
-      , $method = $typeIsArray ? 'checkDataTypes' : 'checkDataType';
-  }}
-
-  if ({{= it.util[$method]($typeSchema, $data, it.opts.strictNumbers, true) }}) {
-#}}
+{{ var $valid = 'valid' + $lvl; }}
 
 {{
   it.gen._out = "";
   it.checkRefsAndKeywords(it);
-  /* TODO remove below once $refKeywords no longer used */
-  if (it.opts.extendRefs !== true) $refKeywords = false;
   if (it.opts.$comment && it.schema.$comment) {
     it.commentKeyword(it)
   }
@@ -118,67 +81,10 @@
   const types = it.getSchemaTypes(it);
   /* TODO do not clear _out */
   it.gen._out = "";
-  it.coerceAndCheckDataType(it, types);
+  const checkedTypes = it.coerceAndCheckDataType(it, types);
+  it.schemaKeywords(it, types, !checkedTypes, $top);
 }}
 {{= it.gen._out }}
-
-{{? it.schema.$ref && !$refKeywords }}
-  {{= it.RULES.all.$ref.code(it, '$ref') }}
-  {{? $breakOnError }}
-    }
-    if (errors === {{?$top}}0{{??}}errs_{{=$lvl}}{{?}}) {
-    {{ $closingBraces2 += '}'; }}
-  {{?}}
-{{??}}
-  {{~ it.RULES:$rulesGroup }}
-    {{? $shouldUseGroup($rulesGroup) }}
-      {{? $rulesGroup.type }}
-        if ({{= it.util.checkDataType($rulesGroup.type, $data, it.opts.strictNumbers) }}) {
-      {{?}}
-        {{? it.opts.useDefaults }}
-          {{
-            it.gen._out = "";
-            it.assignDefaults(it, $rulesGroup);
-          }}
-          {{=it.gen._out}}
-        {{?}}
-        {{~ $rulesGroup.rules:$rule }}
-          {{? $shouldUseRule($rule) }}
-            {{ var $code = $rule.code(it, $rule.keyword, $rulesGroup.type); }}
-            {{? $code }}
-              {{= $code }}
-              {{? $breakOnError }}
-                {{ $closingBraces1 += '}'; }}
-              {{?}}
-            {{?}}
-          {{?}}
-        {{~}}
-        {{? $breakOnError }}
-          {{= $closingBraces1 }}
-          {{ $closingBraces1 = ''; }}
-        {{?}}
-      {{? $rulesGroup.type }}
-        }
-        {{? $typeSchema && $typeSchema === $rulesGroup.type && !(it.opts.coerceTypes && it.util.coerceToTypes(it.opts.coerceTypes, $typeSchema)) }}
-          else {
-            {{
-              var $schemaPath = it.schemaPath + '.type'
-                , $errSchemaPath = it.errSchemaPath + '/type';
-            }}
-            {{# def.error:'type' }}
-          }
-        {{?}}
-      {{?}}
-
-      {{? $breakOnError }}
-        if (errors === {{?$top}}0{{??}}errs_{{=$lvl}}{{?}}) {
-        {{ $closingBraces2 += '}'; }}
-      {{?}}
-    {{?}}
-  {{~}}
-{{?}}
-
-{{? $breakOnError }} {{= $closingBraces2 }} {{?}}
 
 {{? $top }}
     {{? $async }}
@@ -194,24 +100,3 @@
 {{??}}
   var {{=$valid}} = errors === errs_{{=$lvl}};
 {{?}}
-
-{{
-  function $shouldUseGroup($rulesGroup) {
-    var rules = $rulesGroup.rules;
-    for (var i=0; i < rules.length; i++)
-      if ($shouldUseRule(rules[i]))
-        return true;
-  }
-
-  function $shouldUseRule($rule) {
-    return it.schema[$rule.keyword] !== undefined ||
-           ($rule.implements && $ruleImplementsSomeKeyword($rule));
-  }
-
-  function $ruleImplementsSomeKeyword($rule) {
-    var impl = $rule.implements;
-    for (var i=0; i < impl.length; i++)
-      if (it.schema[impl[i]] !== undefined)
-        return true;
-  }
-}}

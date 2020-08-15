@@ -9,7 +9,7 @@ export function shouldUseGroup(schema, group): boolean {
   return group.rules.some((rule) => shouldUseRule(schema, rule))
 }
 
-function shouldUseRule(schema, rule): boolean {
+export function shouldUseRule(schema, rule): boolean {
   return schema[rule.keyword] !== undefined || ruleImplementsSomeKeyword(schema, rule)
 }
 

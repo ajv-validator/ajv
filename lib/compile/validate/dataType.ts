@@ -24,23 +24,25 @@ export function getSchemaTypes({schema, opts}: CompilationContext): string[] {
   }
 }
 
-export function coerceAndCheckDataType(it: CompilationContext, types: string[]): void {
+export function coerceAndCheckDataType(it: CompilationContext, types: string[]): boolean {
   const {
     gen,
     dataLevel,
     opts: {coerceTypes, strictNumbers},
   } = it
   let coerceTo = coerceToTypes(types, coerceTypes)
-  if (
-    types.length &&
-    (coerceTo.length || types.length > 1 || !schemaHasRulesForType(it, types[0]))
-  ) {
+  const checkTypes =
+    types.length > 0 &&
+    (coerceTo.length > 0 || types.length > 1 || !schemaHasRulesForType(it, types[0]))
+  if (checkTypes) {
+    // TODO refactor `data${dataLevel || ""}`
     const wrongType = checkDataTypes(types, `data${dataLevel || ""}`, strictNumbers, true)
     gen.code(`if (${wrongType}) {`)
     if (coerceTo.length) coerceData(it, coerceTo)
     else reportTypeError(it)
     gen.code("}")
   }
+  return checkTypes
 }
 
 const COERCIBLE = toHash(["string", "number", "integer", "boolean", "null"])
@@ -136,7 +138,7 @@ const typeError: KeywordErrorDefinition = {
 
 // TODO maybe combine with boolSchemaError
 // TODO refactor type keyword context creation
-function reportTypeError(it: CompilationContext) {
+export function reportTypeError(it: CompilationContext) {
   const {gen, schema, schemaPath, dataLevel} = it
   const schemaCode = schemaRefOrVal(schema, schemaPath, "type")
   const cxt: KeywordContext = {

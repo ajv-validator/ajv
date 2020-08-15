@@ -139,9 +139,7 @@ describe("referenced schema options", () => {
       testMissingRefsFail(new Ajv({missingRefs: "fail"}))
       testMissingRefsFail(new Ajv({missingRefs: "fail", verbose: true}))
       testMissingRefsFail(new Ajv({missingRefs: "fail", allErrors: true}))
-      testMissingRefsFail(
-        new Ajv({missingRefs: "fail", allErrors: true, verbose: true})
-      )
+      testMissingRefsFail(new Ajv({missingRefs: "fail", allErrors: true, verbose: true}))
 
       function testMissingRefsFail(ajv) {
         var validate = ajv.compile({
