@@ -1,5 +1,6 @@
 import Cache from "./cache"
 import CodeGen from "./compile/codegen"
+import {ValidationRules} from "./compile/rules"
 
 export interface Options {
   $data?: boolean
@@ -124,7 +125,7 @@ export interface CompilationContext {
   useDefault: (value: any) => string
   util: object // TODO
   self: object // TODO
-  RULES: any // TODO replace?
+  RULES: ValidationRules
   logger: Logger // TODO ?
   isTop: boolean // TODO ?
   root: SchemaRoot // TODO ?

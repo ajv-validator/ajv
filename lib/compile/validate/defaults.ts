@@ -1,13 +1,13 @@
 import {CompilationContext} from "../../types"
 import {getProperty} from "../util"
 
-export function assignDefaults(it: CompilationContext, group) {
+export function assignDefaults(it: CompilationContext, ty?: string): void {
   const {properties, items} = it.schema
-  if (group.type === "object" && properties) {
+  if (ty === "object" && properties) {
     for (const key in properties) {
       assignDefault(it, key, properties[key].default)
     }
-  } else if (group.type === "array" && Array.isArray(items)) {
+  } else if (ty === "array" && Array.isArray(items)) {
     items.forEach((sch, i: number) => assignDefault(it, i, sch.default))
   }
 }
@@ -23,7 +23,7 @@ function assignDefault(
   }: CompilationContext,
   prop: string | number,
   defaultValue: any
-) {
+): void {
   if (defaultValue === undefined) return
   // TODO refactor `data${dataLevel || ""}`
   const data = "data" + (dataLevel || "") + getProperty(prop)

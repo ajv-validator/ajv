@@ -4,14 +4,14 @@ import {CompilationContext, KeywordDefinition} from "../types"
 const ruleModules = require("../dotjs")
 
 export interface ValidationRules {
-  rules: GroupOfRules[]
+  rules: RuleGroup[]
   all: {[key: string]: boolean | Rule}
   keywords: {[key: string]: boolean}
-  types: {[key: string]: boolean | GroupOfRules}
+  types: {[key: string]: boolean | RuleGroup}
   custom: {[key: string]: Rule}
 }
 
-interface GroupOfRules {
+export interface RuleGroup {
   type?: string
   rules: RuleDef[]
 }

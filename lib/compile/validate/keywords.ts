@@ -3,6 +3,7 @@ import {shouldUseGroup, shouldUseRule} from "./applicability"
 import {checkDataType, schemaHasRulesExcept} from "../util"
 import {assignDefaults} from "./defaults"
 import {reportTypeError} from "./dataType"
+import {RuleGroup, Rule} from "../rules"
 
 export function schemaKeywords(
   it: CompilationContext,
@@ -16,56 +17,58 @@ export function schemaKeywords(
     level,
     dataLevel,
     RULES,
-    opts: {allErrors, extendRefs, strictNumbers, useDefaults},
+    opts: {allErrors, extendRefs, strictNumbers},
   } = it
-  let closingBraces2 = ""
   if (schema.$ref && !(extendRefs === true && schemaHasRulesExcept(schema, RULES.all, "$ref"))) {
-    RULES.all.$ref.code(it, "$ref")
-    if (!allErrors) {
-      // TODO refactor with below
-      const errCount = top ? "0" : `errs_${level}`
-      gen.code(
-        `}
-        if (errors === ${errCount}) {`
-      )
-      closingBraces2 += "}"
+    // TODO remove Rule type cast
+    ;(RULES.all.$ref as Rule).code(it, "$ref")
+    if (!allErrors) gen.code("}")
+    return
+  }
+  let closeBlocks = ""
+  const ruleGroups = RULES.rules.filter((group) => shouldUseGroup(schema, group))
+  const last = ruleGroups.length - 1
+  ruleGroups.forEach((group, i) => {
+    if (group.type) {
+      // TODO refactor `data${dataLevel || ""}`
+      const checkType = checkDataType(group.type, `data${dataLevel || ""}`, strictNumbers)
+      gen.code(`if (${checkType}) {`)
+      iterateKeywords(it, group)
+      if (types.length === 1 && types[0] === group.type && typeErrors) {
+        gen.code(`} else {`)
+        reportTypeError(it)
+      }
+      gen.code("}")
+    } else {
+      iterateKeywords(it, group)
     }
-  } else {
-    for (const group of RULES.rules) {
-      if (shouldUseGroup(schema, group)) {
-        if (group.type) {
-          // TODO refactor `data${dataLevel || ""}`
-          const checkType = checkDataType(group.type, `data${dataLevel || ""}`, strictNumbers)
-          gen.code(`if (${checkType}) {`)
-        }
-        if (useDefaults) assignDefaults(it, group)
-        let closingBraces1 = ""
-        for (const rule of group.rules) {
-          if (shouldUseRule(schema, rule)) {
-            // TODO _outLen
-            const _outLen = gen._out.length
-            rule.code(it, rule.keyword, group.type)
-            if (_outLen < gen._out.length) {
-              if (!allErrors) closingBraces1 += "}"
-            }
-          }
-        }
-        if (!allErrors) gen.code(closingBraces1)
-        if (group.type) {
-          gen.code("}")
-          if (types.length === 1 && types[0] === group.type && typeErrors) {
-            gen.code(`else {`)
-            reportTypeError(it)
-            gen.code(`}`)
-          }
-        }
-        if (!allErrors) {
-          const errCount = top ? "0" : `errs_${level}`
-          gen.code(`if (errors === ${errCount}) {`)
-          closingBraces2 += "}"
-        }
+    if (!allErrors && i < last) {
+      const errCount = top ? "0" : `errs_${level}`
+      gen.code(`if (errors === ${errCount}) {`)
+      closeBlocks += "}"
+    }
+  })
+  if (!allErrors) gen.code(closeBlocks)
+}
+
+function iterateKeywords(it: CompilationContext, group: RuleGroup) {
+  const {
+    gen,
+    schema,
+    opts: {allErrors, useDefaults},
+  } = it
+  if (useDefaults) assignDefaults(it, group.type)
+  let closeBlocks = ""
+  // TODO remove Rule type cast
+  for (const rule of group.rules as Rule[]) {
+    if (shouldUseRule(schema, rule)) {
+      // TODO _outLen
+      const _outLen = gen._out.length
+      rule.code(it, rule.keyword, group.type)
+      if (_outLen < gen._out.length) {
+        if (!allErrors) closeBlocks += "}"
       }
     }
   }
-  if (!allErrors) gen.code(closingBraces2)
+  if (!allErrors) gen.code(closeBlocks)
 }
