@@ -47,7 +47,7 @@ const META_SUPPORT_DATA = ["/properties"]
  * @param {Object} opts optional options
  * @return {Object} ajv instance
  */
-function Ajv(opts) {
+function Ajv(opts): void {
   if (!(this instanceof Ajv)) return new Ajv(opts)
   opts = this._opts = {...(opts || {})}
   setLogger(this)
@@ -280,7 +280,7 @@ function removeSchema(schemaKeyRef) {
   return this
 }
 
-function _removeAllSchemas(self, schemas, regex) {
+function _removeAllSchemas(self, schemas, regex?: RegExp) {
   for (var keyRef in schemas) {
     var schemaObj = schemas[keyRef]
     if (!schemaObj.meta && (!regex || regex.test(keyRef))) {
@@ -365,10 +365,10 @@ function _compile(schemaObj, root) {
   return v
 
   /* @this   {*} - custom context, see passContext option */
-  function callValidate() {
+  function callValidate(...args) {
     /* jshint validthis: true */
     var _validate = schemaObj.validate
-    var result = _validate.apply(this, arguments)
+    var result = _validate.apply(this, args)
     callValidate.errors = _validate.errors
     return result
   }
@@ -438,7 +438,7 @@ function addInitialFormats(self) {
   }
 }
 
-function addInitialKeywords(self, keywords, skipValidation) {
+function addInitialKeywords(self, keywords, skipValidation?: boolean) {
   for (var name in keywords) {
     var keyword = keywords[name]
     self.addKeyword(name, keyword, skipValidation)

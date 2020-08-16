@@ -12,7 +12,7 @@
     ".tonic_example.js"
   ],
   "scripts": {
-    "eslint": "eslint lib/{compile/,}*.{js,ts} spec/{**/,}*.js scripts --ignore-pattern spec/JSON-Schema-Test-Suite",
+    "eslint": "eslint lib/{compile/,}*.ts spec/{**/,}*.js scripts --ignore-pattern spec/JSON-Schema-Test-Suite",
     "lint": "npm run eslint",
     "prettier:write": "prettier --write './**/*.{md,json,yaml,js,ts}'",
     "prettier:check": "prettier --list-different './**/*.{md,json,yaml,js,ts}'",

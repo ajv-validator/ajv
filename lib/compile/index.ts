@@ -2,6 +2,8 @@ import CodeGen from "./codegen"
 import {toQuotedString} from "./util"
 import {MissingRefError} from "./error_classes"
 import validateCode from "./validate"
+import {Rule} from "./rules"
+import {CompilationContext, KeywordDefinition, ErrorObject} from "../types"
 
 const equal = require("fast-deep-equal")
 const ucs2length = require("./ucs2length")
@@ -35,16 +37,31 @@ function compile(schema, root, localRefs, baseId) {
     opts = this._opts,
     refVal = [undefined],
     refs = {},
-    patterns = [],
+    patterns: string[] = [],
     patternsHash = {},
-    defaults = [],
+    defaults: any[] = [],
     defaultsHash = {},
-    customRules = []
+    customRules: any[] = []
 
   root = root || {schema: schema, refVal: refVal, refs: refs}
 
+  interface CallValidate {
+    (): any
+    errors?: null | ErrorObject[]
+  }
+
   var c = checkCompiling.call(this, schema, root, baseId)
-  var compilation = this._compilations[c.index]
+  const compilation = this._compilations[c.index]
+
+  /* @this   {*} - custom context, see passContext option */
+  const callValidate: CallValidate = function (...args) {
+    var validate = compilation.validate
+    /* eslint-disable no-invalid-this */
+    var result = validate.apply(this, args)
+    callValidate.errors = validate.errors
+    return result
+  }
+
   if (c.compiling) return (compilation.callValidate = callValidate)
 
   var formats = this._formats
@@ -68,15 +85,6 @@ function compile(schema, root, localRefs, baseId) {
     endCompiling.call(this, schema, root, baseId)
   }
 
-  /* @this   {*} - custom context, see passContext option */
-  function callValidate() {
-    /* jshint validthis: true */
-    var validate = compilation.validate
-    var result = validate.apply(this, arguments)
-    callValidate.errors = validate.errors
-    return result
-  }
-
   function localCompile(_schema, _root, localRefs, baseId) {
     var isRoot = !_root || (_root && _root.schema === _schema)
     if (_root.schema !== root.schema) {
@@ -95,6 +103,7 @@ function compile(schema, root, localRefs, baseId) {
       schemaPath: "",
       errSchemaPath: "#",
       errorPath: '""',
+      dataPathArr: [""],
       level: 0,
       dataLevel: 0,
       data: "data", // TODO get unique name when passed from applicator keywords
@@ -175,7 +184,7 @@ function compile(schema, root, localRefs, baseId) {
     return validate
   }
 
-  function resolveRef(baseId, ref, isRoot) {
+  function resolveRef(baseId: string, ref: string, isRoot: boolean) {
     ref = resolve.url(baseId, ref)
     var refIndex = refs[ref]
     var _refVal, refCode
@@ -212,7 +221,7 @@ function compile(schema, root, localRefs, baseId) {
     }
   }
 
-  function addLocalRef(ref, v) {
+  function addLocalRef(ref, v?: any): string {
     var refId = refVal.length
     refVal[refId] = v
     refs[ref] = refId
@@ -243,7 +252,7 @@ function compile(schema, root, localRefs, baseId) {
     return "pattern" + index
   }
 
-  function useDefault(value) {
+  function useDefault(value: any): string {
     switch (typeof value) {
       case "boolean":
       case "number":
@@ -259,12 +268,20 @@ function compile(schema, root, localRefs, baseId) {
           defaults[index] = value
         }
         return "default" + index
+      default:
+        throw new Error(`unsupported default type "${typeof value}"`)
     }
   }
 
-  function useCustomRule(rule, schema, parentSchema, it) {
+  function useCustomRule(
+    rule: Rule,
+    schema: any,
+    parentSchema: object,
+    it: CompilationContext
+  ): any {
+    const ruleDef = rule.definition as KeywordDefinition
     if (self._opts.validateSchema !== false) {
-      var deps = rule.definition.dependencies
+      var deps = ruleDef.dependencies
       if (
         deps &&
         !deps.every((keyword) => Object.prototype.hasOwnProperty.call(parentSchema, keyword))
@@ -272,7 +289,7 @@ function compile(schema, root, localRefs, baseId) {
         throw new Error("parent schema must have all required keywords: " + deps.join(","))
       }
 
-      var validateSchema = rule.definition.validateSchema
+      var validateSchema = ruleDef.validateSchema
       if (validateSchema) {
         var valid = validateSchema(schema)
         if (!valid) {
@@ -283,9 +300,9 @@ function compile(schema, root, localRefs, baseId) {
       }
     }
 
-    var compile = rule.definition.compile,
-      inline = rule.definition.inline,
-      macro = rule.definition.macro
+    var compile = ruleDef.compile,
+      inline = ruleDef.inline,
+      macro = ruleDef.macro
 
     var validate
     if (compile) {
@@ -296,7 +313,7 @@ function compile(schema, root, localRefs, baseId) {
     } else if (inline) {
       validate = inline.call(self, it, rule.keyword, schema, parentSchema)
     } else {
-      validate = rule.definition.validate
+      validate = ruleDef.validate
       if (!validate) return
     }
 
@@ -309,7 +326,7 @@ function compile(schema, root, localRefs, baseId) {
 
     return {
       code: "customRule" + index,
-      validate: validate,
+      validate,
     }
   }
 }

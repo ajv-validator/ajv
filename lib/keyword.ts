@@ -12,10 +12,10 @@ import {ValidationRules, Rule} from "./compile/rules"
 import {reportError} from "./compile/errors"
 import {getData} from "./compile/util"
 import {schemaRefOrVal} from "./vocabularies/util"
+import {definitionSchema} from "./definition_schema"
 
 const IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i
 const customRuleCode = require("./dotjs/custom")
-const definitionSchema = require("./definition_schema")
 
 /**
  * Define vocabulary

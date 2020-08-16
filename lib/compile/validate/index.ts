@@ -98,8 +98,6 @@ function updateTopContext(it: CompilationContext): void {
   it.rootId = resolve.fullPath(it.root.schema.$id)
   it.baseId = it.baseId || it.rootId
   delete it.isTop
-
-  it.dataPathArr = [""]
 }
 
 function checkNoDefault({

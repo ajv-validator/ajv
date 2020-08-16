@@ -1,6 +1,7 @@
 import Cache from "./cache"
 import CodeGen from "./compile/codegen"
-import {ValidationRules} from "./compile/rules"
+import {ValidationRules, Rule} from "./compile/rules"
+import {MissingRefError} from "./compile/error_classes"
 
 export interface Options {
   $data?: boolean
@@ -105,6 +106,7 @@ export interface CompilationContext {
   data: string
   dataPathArr: string[]
   schema: any
+  isRoot: boolean
   schemaPath: string
   errorPath: string
   errSchemaPath: string
@@ -116,13 +118,14 @@ export interface CompilationContext {
   formats: {
     [index: string]: Format | undefined
   }
-  keywords: {
-    [index: string]: KeywordDefinition | undefined
-  }
-  compositeRule: boolean
-  validate: (schema: object) => boolean
+  // keywords: {
+  //   [index: string]: KeywordDefinition | undefined
+  // }
+  compositeRule?: boolean
+  validate: (it: CompilationContext) => string
   usePattern: (str: string) => string
   useDefault: (value: any) => string
+  useCustomRule: (rule: Rule, schema: any, parentSchema: object, it: CompilationContext) => any
   util: object // TODO
   self: object // TODO
   RULES: ValidationRules
@@ -130,6 +133,9 @@ export interface CompilationContext {
   isTop: boolean // TODO ?
   root: SchemaRoot // TODO ?
   rootId?: string // TODO ?
+  MissingRefError: typeof MissingRefError
+  resolve: any
+  resolveRef: (...args: any[]) => any
 }
 
 interface SchemaRoot {

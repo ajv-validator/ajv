@@ -26,7 +26,7 @@ export interface Rule {
   custom?: true
 }
 
-export default function rules() {
+export default function rules(): ValidationRules {
   const ALL = ["type", "$comment"]
   const KEYWORDS = [
     "$schema",

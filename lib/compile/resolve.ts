@@ -44,9 +44,7 @@ function resolve(compile, root, ref) {
   }
 
   if (schema instanceof SchemaObject) {
-    v =
-      schema.validate ||
-      compile.call(this, schema.schema, root, undefined, baseId)
+    v = schema.validate || compile.call(this, schema.schema, root, undefined, baseId)
   } else if (schema !== undefined) {
     v = inlineRef(schema, this._opts.inlineRefs)
       ? schema
@@ -213,7 +211,7 @@ function countKeys(schema) {
   return count
 }
 
-export function getFullPath(id, normalize) {
+export function getFullPath(id: string, normalize?: boolean): string {
   if (normalize !== false) id = normalizeId(id)
   var p = URI.parse(id)
   return _getFullPath(p)
@@ -224,11 +222,11 @@ function _getFullPath(p) {
 }
 
 var TRAILING_SLASH_HASH = /#\/?$/
-export function normalizeId(id) {
+export function normalizeId(id: string): string {
   return id ? id.replace(TRAILING_SLASH_HASH, "") : ""
 }
 
-export function resolveUrl(baseId, id) {
+export function resolveUrl(baseId: string, id: string): string {
   id = normalizeId(id)
   return URI.resolve(baseId, id)
 }
@@ -244,23 +242,13 @@ function resolveIds(schema) {
   traverse(
     schema,
     {allKeys: true},
-    (
-      sch,
-      jsonPtr,
-      rootSchema,
-      parentJsonPtr,
-      parentKeyword,
-      parentSchema,
-      keyIndex
-    ) => {
+    (sch, jsonPtr, _1, parentJsonPtr, parentKeyword, _2, keyIndex) => {
       if (jsonPtr === "") return
       var id = sch.$id
       var baseId = baseIds[parentJsonPtr]
       var fullPath = fullPaths[parentJsonPtr] + "/" + parentKeyword
       if (keyIndex !== undefined) {
-        fullPath +=
-          "/" +
-          (typeof keyIndex == "number" ? keyIndex : escapeFragment(keyIndex))
+        fullPath += "/" + (typeof keyIndex == "number" ? keyIndex : escapeFragment(keyIndex))
       }
 
       if (typeof id == "string") {
@@ -275,9 +263,7 @@ function resolveIds(schema) {
         } else if (id !== normalizeId(fullPath)) {
           if (id[0] === "#") {
             if (localRefs[id] && !equal(sch, localRefs[id])) {
-              throw new Error(
-                'id "' + id + '" resolves to more than one schema'
-              )
+              throw new Error('id "' + id + '" resolves to more than one schema')
             }
             localRefs[id] = sch
           } else {

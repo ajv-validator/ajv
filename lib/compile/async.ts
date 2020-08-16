@@ -2,6 +2,8 @@ import {MissingRefError} from "./error_classes"
 
 module.exports = compileAsync
 
+type Callback = (...args: any[]) => void
+
 /**
  * Creates validating function for passed schema with asynchronous loading of missing schemas.
  * `loadSchema` option should be a function that accepts schema uri and returns promise that resolves with the schema.
@@ -11,7 +13,7 @@ module.exports = compileAsync
  * @param {Function} callback an optional node-style callback, it is called with 2 parameters: error (or null) and validating function.
  * @return {Promise} promise that resolves with a validating function.
  */
-function compileAsync(schema, meta, callback) {
+function compileAsync(schema, meta?: boolean | Callback, callback?: Callback) {
   /* eslint no-shadow: 0 */
   /* jshint validthis: true */
   var self = this
@@ -25,12 +27,12 @@ function compileAsync(schema, meta, callback) {
   }
 
   var p = loadMetaSchemaOf(schema).then(() => {
-    var schemaObj = self._addSchema(schema, undefined, meta)
+    var schemaObj = this._addSchema(schema, undefined, meta)
     return schemaObj.validate || _compileAsync(schemaObj)
   })
 
   if (callback) {
-    p.then((v) => callback(null, v), callback)
+    p.then((v) => (<Callback>callback)(null, v), callback)
   }
 
   return p
@@ -53,13 +55,7 @@ function compileAsync(schema, meta, callback) {
     function loadMissingSchema(e) {
       var ref = e.missingSchema
       if (added(ref)) {
-        throw new Error(
-          "Schema " +
-            ref +
-            " is loaded but " +
-            e.missingRef +
-            " cannot be resolved"
-        )
+        throw new Error("Schema " + ref + " is loaded but " + e.missingRef + " cannot be resolved")
       }
 
       var schemaPromise = self._loadingSchemas[ref]

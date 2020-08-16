@@ -1,8 +1,7 @@
-var metaSchema = require("./refs/json-schema-draft-07.json")
+const metaSchema = require("./refs/json-schema-draft-07.json")
 
-module.exports = {
-  $id:
-    "https://github.com/ajv-validator/ajv/blob/master/lib/definition_schema.js",
+export const definitionSchema: object = {
+  $id: "https://github.com/ajv-validator/ajv/blob/master/lib/definition_schema.js",
   definitions: {
     simpleTypes: metaSchema.definitions.simpleTypes,
   },
