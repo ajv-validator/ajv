@@ -20,11 +20,7 @@ export function schemaKeywords(
   } = it
   let closingBraces2 = ""
   if (schema.$ref && !(extendRefs === true && schemaHasRulesExcept(schema, RULES.all, "$ref"))) {
-    // TODO _out
-    const _out = gen._out
-    const code = RULES.all.$ref.code(it, "$ref")
-    gen._out = _out
-    gen.code(code)
+    RULES.all.$ref.code(it, "$ref")
     if (!allErrors) {
       // TODO refactor with below
       const errCount = top ? "0" : `errs_${level}`
@@ -46,13 +42,10 @@ export function schemaKeywords(
         let closingBraces1 = ""
         for (const rule of group.rules) {
           if (shouldUseRule(schema, rule)) {
-            // TODO _out
-            const _out = gen._out
-            gen._out = ""
-            const code = rule.code(it, rule.keyword, group.type)
-            gen._out = _out
-            if (code) {
-              gen.code(code)
+            // TODO _outLen
+            const _outLen = gen._out.length
+            rule.code(it, rule.keyword, group.type)
+            if (_outLen < gen._out.length) {
               if (!allErrors) closingBraces1 += "}"
             }
           }

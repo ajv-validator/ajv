@@ -7,6 +7,16 @@ import {schemaKeywords} from "./keywords"
 
 const resolve = require("../resolve")
 
+/**
+ * schema compilation (render) time:
+ * it = { schema, RULES, _validate, opts }
+ * it.validate - this function (validateCode),
+ *   it is used recursively to generate code for sub-schemas
+ *
+ * runtime:
+ * "validate" is a variable name to which this function will be assigned
+ * validateRef etc. are defined in the parent scope in index.js
+ */
 export default function validateCode(it: CompilationContext): string {
   const {
     isTop,
@@ -17,13 +27,15 @@ export default function validateCode(it: CompilationContext): string {
     opts: {$comment},
   } = it
   // TODO _out
+  let _out = gen._out
   gen._out = ""
   checkUnknownKeywords(it)
   if (isTop) startFunction(it)
   if (typeof schema == "boolean" || !schemaHasRules(schema, RULES.all)) {
     booleanOrEmptySchema(it)
     // TODO _out
-    return gen._out
+    ;[_out, gen._out] = [gen._out, _out]
+    return _out
   }
   if (isTop) {
     updateTopContext(it)
@@ -39,13 +51,18 @@ export default function validateCode(it: CompilationContext): string {
   const types = getSchemaTypes(it)
   const checkedTypes = coerceAndCheckDataType(it, types)
   schemaKeywords(it, types, !checkedTypes, isTop)
-  if (isTop) endFunction(it)
-  else gen.code(`var valid${level} = errors === errs_${level};`)
+  if (isTop) {
+    endFunction(it)
+  } else {
+    gen.code(`var valid${level} = errors === errs_${level};`)
+  }
+
   // TODO _out
-  return gen._out
+  ;[_out, gen._out] = [gen._out, _out]
+  return _out
 }
 
-export function checkUnknownKeywords({
+function checkUnknownKeywords({
   schema,
   RULES,
   opts: {strictKeywords},
@@ -61,7 +78,7 @@ export function checkUnknownKeywords({
   }
 }
 
-export function startFunction({
+function startFunction({
   gen,
   schema,
   async,
@@ -77,7 +94,7 @@ export function startFunction({
   )
 }
 
-export function updateTopContext(it: CompilationContext): void {
+function updateTopContext(it: CompilationContext): void {
   it.rootId = resolve.fullPath(it.root.schema.$id)
   it.baseId = it.baseId || it.rootId
   delete it.isTop
@@ -85,7 +102,7 @@ export function updateTopContext(it: CompilationContext): void {
   it.dataPathArr = [""]
 }
 
-export function checkNoDefault({
+function checkNoDefault({
   schema,
   opts: {useDefaults, strictDefaults},
   logger,
@@ -97,7 +114,7 @@ export function checkNoDefault({
   }
 }
 
-export function initializeTop({gen}: CompilationContext): void {
+function initializeTop({gen}: CompilationContext): void {
   // TODO old comment: "don't edit, used in replace". Should be removed?
   gen.code(
     `let vErrors = null;
@@ -106,15 +123,15 @@ export function initializeTop({gen}: CompilationContext): void {
   )
 }
 
-export function updateContext(it: CompilationContext): void {
+function updateContext(it: CompilationContext): void {
   if (it.schema.$id) it.baseId = resolve.url(it.baseId, it.schema.$id)
 }
 
-export function checkAsync(it: CompilationContext): void {
+function checkAsync(it: CompilationContext): void {
   if (it.schema.$async && !it.async) throw new Error("async schema in sync schema")
 }
 
-export function checkRefsAndKeywords({
+function checkRefsAndKeywords({
   schema,
   errSchemaPath,
   RULES,
@@ -130,12 +147,7 @@ export function checkRefsAndKeywords({
   }
 }
 
-export function commentKeyword({
-  gen,
-  schema,
-  errSchemaPath,
-  opts: {$comment},
-}: CompilationContext): void {
+function commentKeyword({gen, schema, errSchemaPath, opts: {$comment}}: CompilationContext): void {
   const msg = quotedString(schema.$comment)
   if ($comment === true) {
     gen.code(`console.log(${msg})`)
@@ -145,7 +157,7 @@ export function commentKeyword({
   }
 }
 
-export function endFunction({gen, async}: CompilationContext) {
+function endFunction({gen, async}: CompilationContext) {
   // TODO old comment: "don't edit, used in replace". Should be removed?
   gen.code(
     async

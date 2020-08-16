@@ -9,9 +9,9 @@ export default class CodeGen {
     return `${prefix}_${num}`
   }
 
-  code(str: string): CodeGen {
+  code(str?: string): CodeGen {
     // TODO optionally strip whitespace
-    this._out += str + "\n"
+    if (str) this._out += str + "\n"
     return this
   }
 }

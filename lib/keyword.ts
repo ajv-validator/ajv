@@ -130,15 +130,12 @@ export function addKeyword(
  * @this rule
  * @param {Object} it schema compilation context.
  * @param {String} keyword pre-defined or custom keyword.
- * @return {String} compiled rule code.
  */
-function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): string {
+function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): void {
   const schema = it.schema[keyword]
   const {schemaType, code, error, $data: $defData}: KeywordDefinition = this.definition
   const {gen, opts, dataLevel, schemaPath, dataPathArr} = it
   if (!code) throw new Error('"code" and "error" must be defined')
-  // TODO do not clear _out
-  gen._out = ""
   const $data = $defData && opts.$data && schema && schema.$data
   const data = "data" + (dataLevel || "")
   const schemaValue = schemaRefOrVal(schema, schemaPath, keyword, $data)
@@ -168,8 +165,6 @@ function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): stri
   }
   // TODO check that code called "fail" or another valid way to return code
   code(cxt)
-  // TODO
-  return gen._out
 
   function fail(condition: string): void {
     gen.code(`if (${condition}) {`)
