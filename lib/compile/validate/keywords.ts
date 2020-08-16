@@ -31,7 +31,7 @@ export function schemaKeywords(
       closingBraces2 += "}"
     }
   } else {
-    for (const group of RULES) {
+    for (const group of RULES.rules) {
       if (shouldUseGroup(schema, group)) {
         if (group.type) {
           // TODO refactor `data${dataLevel || ""}`

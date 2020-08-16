@@ -8,6 +8,7 @@ import {
   KeywordContext,
 } from "./types"
 
+import {ValidationRules, Rule} from "./compile/rules"
 import {reportError} from "./compile/errors"
 import {getData} from "./compile/util"
 import {schemaRefOrVal} from "./vocabularies/util"
@@ -56,7 +57,7 @@ export function addKeyword(
 ): object {
   // TODO return type Ajv
   /* eslint no-shadow: 0 */
-  var RULES = this.RULES
+  const RULES: ValidationRules = this.RULES
   if (RULES.keywords[keyword]) {
     throw new Error("Keyword " + keyword + " is already defined")
   }
@@ -68,16 +69,16 @@ export function addKeyword(
   if (definition) {
     if (!_skipValidation) this.validateKeyword(definition, true)
 
-    var dataType = definition.type
+    const dataType = definition.type
     if (Array.isArray(dataType)) {
-      for (var i = 0; i < dataType.length; i++) {
-        _addRule(keyword, dataType[i], definition)
+      for (const t of dataType) {
+        _addRule(keyword, t, definition)
       }
     } else {
       _addRule(keyword, dataType, definition)
     }
 
-    var metaSchema = definition.metaSchema
+    let metaSchema = definition.metaSchema
     if (metaSchema) {
       if (definition.$data && this._opts.$data) {
         metaSchema = {
@@ -96,24 +97,17 @@ export function addKeyword(
 
   RULES.keywords[keyword] = RULES.all[keyword] = true
 
-  function _addRule(keyword, dataType, definition) {
-    var ruleGroup
-    for (var i = 0; i < RULES.length; i++) {
-      var rg = RULES[i]
-      if (rg.type === dataType) {
-        ruleGroup = rg
-        break
-      }
-    }
+  function _addRule(keyword: string, dataType: string | undefined, definition: KeywordDefinition) {
+    let ruleGroup = RULES.rules.find(({type: t}) => t === dataType)
 
     if (!ruleGroup) {
       ruleGroup = {type: dataType, rules: []}
-      RULES.push(ruleGroup)
+      RULES.rules.push(ruleGroup)
     }
 
-    var rule = {
-      keyword: keyword,
-      definition: definition,
+    const rule: Rule = {
+      keyword,
+      definition,
       custom: true,
       code: definition.code ? ruleCode : customRuleCode,
       implements: definition.implements,
@@ -190,7 +184,7 @@ function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): void
  */
 export function getKeyword(keyword: string): KeywordDefinition | boolean {
   /* jshint validthis: true */
-  var rule = this.RULES.custom[keyword]
+  const rule = this.RULES.custom[keyword]
   return rule ? rule.definition : this.RULES.keywords[keyword] || false
 }
 
@@ -203,18 +197,14 @@ export function getKeyword(keyword: string): KeywordDefinition | boolean {
 export function removeKeyword(keyword: string): object {
   // TODO return type should be Ajv
   /* jshint validthis: true */
-  var RULES = this.RULES
+  const RULES: ValidationRules = this.RULES
   delete RULES.keywords[keyword]
   delete RULES.all[keyword]
   delete RULES.custom[keyword]
-  for (var i = 0; i < RULES.length; i++) {
-    var rules = RULES[i].rules
-    for (var j = 0; j < rules.length; j++) {
-      if (rules[j].keyword === keyword) {
-        rules.splice(j, 1)
-        break
-      }
-    }
+  for (const group of RULES.rules) {
+    // TODO remove <Rule> type cast once all rules migrated
+    const i = group.rules.findIndex((rule) => (<Rule>rule).keyword === keyword)
+    if (i >= 0) group.rules.splice(i, 1)
   }
   return this
 }
@@ -233,7 +223,7 @@ export interface KeywordValidator {
  */
 export const validateKeyword: KeywordValidator = function (definition, throwError) {
   validateKeyword.errors = null
-  var v: ValidateFunction = (this._validateKeyword =
+  const v: ValidateFunction = (this._validateKeyword =
     this._validateKeyword || this.compile(definitionSchema, true))
 
   if (v(definition)) return true

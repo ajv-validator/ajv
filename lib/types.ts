@@ -159,6 +159,7 @@ export interface KeywordDefinition {
   code?: (cxt: KeywordContext) => string | void
   error?: KeywordErrorDefinition
   validateSchema?: ValidateFunction
+  implements?: string[]
 }
 
 export interface KeywordErrorDefinition {
