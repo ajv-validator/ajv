@@ -191,3 +191,5 @@
 {{## def.isOwnProperty:
   Object.prototype.hasOwnProperty.call({{=$data}}, '{{=it.util.escapeQuotes($propertyKey)}}')
 #}}
+
+{{ it.gen.code(out); }}

@@ -1,6 +1,3 @@
-{{# def.definitions }}
-{{# def.errors }}
-
 {{ /**
     * schema compilation (render) time:
     * it = { schema, RULES, _validate, opts }
@@ -10,93 +7,46 @@
     * runtime:
     * "validate" is a variable name to which this function will be assigned
     * validateRef etc. are defined in the parent scope in index.js
-    */ }}
+    */ 
 
-{{
-  var $async = it.schema.$async === true
-    , $id = it.schema.$id;
-}}
+  /* TODO do not clear _out */
+  it.gen._out = "";
 
-{{ it.checkUnknownKeywords(it); }}
+  it.checkUnknownKeywords(it);
 
-{{? it.isTop }}
-  {{
-    it.gen._out = "";
-    it.startFunction(it);
-  }}
-  {{=it.gen._out}}
-{{?}}
+  if (it.isTop) it.startFunction(it);
 
-{{? typeof it.schema == 'boolean' || !it.util.schemaHasRules(it.schema, it.RULES.all) }}
-  {{
-    /* TODO do not clear _out */
-    it.gen._out = "";
+  if (typeof it.schema == 'boolean' || !it.util.schemaHasRules(it.schema, it.RULES.all)) {
     it.booleanOrEmptySchema(it);
-    return out + it.gen._out;
-  }}
-{{?}}
+    return it.gen._out;
+  }
 
-
-{{? it.isTop }}
-  {{
+  if (it.isTop) {
     var $top = it.isTop
-      , $lvl = it.level = 0
-      , $dataLvl = it.dataLevel = 0
-      , $data = 'data';
+      , $lvl = it.level;
 
     it.updateTopContext(it);
     it.checkNoDefault(it);
-  }}
-
-  {{
-    it.gen._out = "";
     it.initializeTop(it);
-  }}
-  {{=it.gen._out}}
-{{??}}
-  {{
-    var $lvl = it.level
-      , $dataLvl = it.dataLevel
-      , $data = 'data' + ($dataLvl || '');
+  } else {
+    var $lvl = it.level;
 
     it.updateContext(it);
     it.checkAsync(it);
-  }}
+    it.gen.code(`var errs_${$lvl} = errors;`);
+  }
 
-  var errs_{{=$lvl}} = errors;
-{{?}}
-
-{{ var $valid = 'valid' + $lvl; }}
-
-{{
-  it.gen._out = "";
   it.checkRefsAndKeywords(it);
   if (it.opts.$comment && it.schema.$comment) {
     it.commentKeyword(it)
   }
-}}
-{{=it.gen._out}}
 
-{{
   const types = it.getSchemaTypes(it);
-  /* TODO do not clear _out */
-  it.gen._out = "";
   const checkedTypes = it.coerceAndCheckDataType(it, types);
   it.schemaKeywords(it, types, !checkedTypes, $top);
+
+  if ($top) it.endFunction(it);
+  else it.gen.code(`var valid${$lvl} = errors === errs_${$lvl};`);
+
+  return it.gen._out;
 }}
-{{= it.gen._out }}
-
-{{? $top }}
-    {{? $async }}
-      if (errors === 0) return data;           {{ /* don't edit, used in replace */ }}
-      else throw new ValidationError(vErrors); {{ /* don't edit, used in replace */ }}
-    {{??}}
-      validate.errors = vErrors; {{ /* don't edit, used in replace */ }}
-      return errors === 0;       {{ /* don't edit, used in replace */ }}
-    {{?}}
-  };
-
-  return validate;
-{{??}}
-  var {{=$valid}} = errors === errs_{{=$lvl}};
-{{?}}

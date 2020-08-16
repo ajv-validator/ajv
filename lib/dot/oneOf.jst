@@ -52,3 +52,5 @@ if (!{{=$valid}}) {
 } else {
   {{# def.resetErrors }}
 {{? it.opts.allErrors }} } {{?}}
+
+{{ it.gen.code(out); }}

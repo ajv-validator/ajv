@@ -4,7 +4,7 @@ import {checkDataType, schemaHasRulesExcept} from "../util"
 import {assignDefaults} from "./defaults"
 import {reportTypeError} from "./dataType"
 
-export default function schemaKeywords(
+export function schemaKeywords(
   it: CompilationContext,
   types: string[],
   typeErrors: boolean,

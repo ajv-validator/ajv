@@ -3,10 +3,11 @@ import {schemaUnknownRules, schemaHasRules, schemaHasRulesExcept} from "../util"
 import {quotedString} from "../../vocabularies/util"
 import {booleanOrEmptySchema} from "./boolSchema"
 import {getSchemaTypes, coerceAndCheckDataType} from "./dataType"
+import {schemaKeywords} from "./keywords"
 
 const resolve = require("../resolve")
 
-export default function validateCode(it: CompilationContext): void {
+export default function validateCode(it: CompilationContext): string {
   const {
     isTop,
     schema,
@@ -15,11 +16,14 @@ export default function validateCode(it: CompilationContext): void {
     gen,
     opts: {$comment},
   } = it
+  // TODO _out
+  gen._out = ""
   checkUnknownKeywords(it)
   if (isTop) startFunction(it)
-  if (typeof schema == "boolean" || !schemaHasRules(schema, RULES)) {
+  if (typeof schema == "boolean" || !schemaHasRules(schema, RULES.all)) {
     booleanOrEmptySchema(it)
-    return
+    // TODO _out
+    return gen._out
   }
   if (isTop) {
     updateTopContext(it)
@@ -28,12 +32,17 @@ export default function validateCode(it: CompilationContext): void {
   } else {
     updateContext(it)
     checkAsync(it)
-    gen.code(`let errs_${level} = errors;`)
+    gen.code(`var errs_${level} = errors;`)
   }
   checkRefsAndKeywords(it)
   if ($comment && schema.$comment) commentKeyword(it)
   const types = getSchemaTypes(it)
-  coerceAndCheckDataType(it, types)
+  const checkedTypes = coerceAndCheckDataType(it, types)
+  schemaKeywords(it, types, !checkedTypes, isTop)
+  if (isTop) endFunction(it)
+  else gen.code(`var valid${level} = errors === errs_${level};`)
+  // TODO _out
+  return gen._out
 }
 
 export function checkUnknownKeywords({
@@ -134,4 +143,19 @@ export function commentKeyword({
     const schemaPath = quotedString(errSchemaPath + "/$comment")
     gen.code(`self._opts.$comment(${msg}, ${schemaPath}, validate.root.schema)`)
   }
+}
+
+export function endFunction({gen, async}: CompilationContext) {
+  // TODO old comment: "don't edit, used in replace". Should be removed?
+  gen.code(
+    async
+      ? `if (errors === 0) return data;
+        else throw new ValidationError(vErrors);`
+      : `validate.errors = vErrors;
+        return errors === 0;`
+  )
+  gen.code(
+    `};
+    return validate;`
+  )
 }
