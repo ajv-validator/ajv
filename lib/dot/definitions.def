@@ -76,14 +76,14 @@
 
 {{## def.generateSubschemaCode:
   {{
-    var $code = it.validate($it);
+    var $code = it.validateCode($it);
     $it.baseId = $currentBaseId;
   }}
 #}}
 
 
 {{## def.insertSubschemaCode:
-  {{= it.validate($it) }}
+  {{= it.validateCode($it) }}
   {{ $it.baseId = $currentBaseId; }}
 #}}
 

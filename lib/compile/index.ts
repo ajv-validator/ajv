@@ -2,6 +2,7 @@ import CodeGen from "./codegen"
 import {toQuotedString} from "./util"
 import {MissingRefError} from "./error_classes"
 import validateCode from "./validate"
+import {applySchema} from "./subschema"
 import {Rule} from "./rules"
 import {CompilationContext, KeywordDefinition, ErrorObject} from "../types"
 
@@ -93,12 +94,13 @@ function compile(schema, root, localRefs, baseId) {
 
     var $async = _schema.$async === true
 
-    var sourceCode = validateCode({
+    // TODO refactor to extract code from gen
+    let sourceCode = <string>validateCode({
       isTop: true,
       async: _schema.$async === true,
       schema: _schema,
-      isRoot: isRoot,
-      baseId: baseId,
+      isRoot,
+      baseId,
       root: _root,
       schemaPath: "",
       errSchemaPath: "#",
@@ -109,18 +111,19 @@ function compile(schema, root, localRefs, baseId) {
       data: "data", // TODO get unique name when passed from applicator keywords
       gen: new CodeGen(),
       MissingRefError,
-      RULES: RULES,
-      validate: validateCode,
-      util: util,
-      resolve: resolve,
-      resolveRef: resolveRef,
-      usePattern: usePattern,
-      useDefault: useDefault,
-      useCustomRule: useCustomRule,
-      opts: opts,
-      formats: formats,
+      RULES,
+      validateCode,
+      applySchema, // TODO remove to imports
+      util, // TODO remove to imports
+      resolve, // TODO remove to imports
+      resolveRef, // TODO remove to imports
+      usePattern, // TODO remove to imports
+      useDefault, // TODO remove to imports
+      useCustomRule, // TODO remove to imports
+      opts,
+      formats,
       logger: self.logger,
-      self: self,
+      self,
     })
 
     sourceCode =

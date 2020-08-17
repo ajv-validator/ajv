@@ -103,7 +103,7 @@ var {{=$valid}};
     $it.schemaPath = '';
   }}
   {{# def.setCompositeRule }}
-  {{ var $code = it.validate($it).replace(/validate\.schema/g, $validateCode); }}
+  {{ var $code = it.validateCode($it).replace(/validate\.schema/g, $validateCode); }}
   {{# def.resetCompositeRule }}
   {{= $code }}
 {{??}}

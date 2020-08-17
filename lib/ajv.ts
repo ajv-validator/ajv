@@ -3,11 +3,14 @@ import Cache from "./cache"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
 import rules from "./compile/rules"
 import $dataMetaSchema from "./data"
+import {Vocabulary, Options} from "./types"
 
 var compileSchema = require("./compile"),
   resolve = require("./compile/resolve"),
-  stableStringify = require("fast-json-stable-stringify"),
-  validationVocabulary = require("./vocabularies/validation")
+  stableStringify = require("fast-json-stable-stringify")
+
+const validationVocabulary: Vocabulary = require("./vocabularies/validation")
+const applicatorVocabulary: Vocabulary = require("./vocabularies/applicator")
 
 module.exports = Ajv
 
@@ -47,7 +50,7 @@ const META_SUPPORT_DATA = ["/properties"]
  * @param {Object} opts optional options
  * @return {Object} ajv instance
  */
-function Ajv(opts): void {
+export default function Ajv(opts: Options): void {
   if (!(this instanceof Ajv)) return new Ajv(opts)
   opts = this._opts = {...(opts || {})}
   setLogger(this)
@@ -74,6 +77,7 @@ function Ajv(opts): void {
 
   if (opts.formats) addInitialFormats(this)
   this.addVocabulary(validationVocabulary, true)
+  this.addVocabulary(applicatorVocabulary, true)
   if (opts.keywords) addInitialKeywords(this, opts.keywords)
   addDefaultMetaSchema(this)
   if (typeof opts.meta == "object") this.addMetaSchema(opts.meta)

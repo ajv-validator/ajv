@@ -2,6 +2,7 @@ import Cache from "./cache"
 import CodeGen from "./compile/codegen"
 import {ValidationRules, Rule} from "./compile/rules"
 import {MissingRefError} from "./compile/error_classes"
+import {Subschema} from "./compile/subschema"
 
 export interface Options {
   $data?: boolean
@@ -47,6 +48,8 @@ export interface Options {
   nullable?: boolean
   serialize?: false | ((schema: object | boolean) => any)
   $comment?: true | ((comment: string, schemaPath?: string, rootSchema?: any) => any)
+  schemaId?: string // not supported
+  _errorDataPathProperty?: boolean // private
 }
 
 interface Logger {
@@ -122,7 +125,8 @@ export interface CompilationContext {
   //   [index: string]: KeywordDefinition | undefined
   // }
   compositeRule?: boolean
-  validate: (it: CompilationContext) => string
+  validateCode: (it: CompilationContext) => string | void // TODO remove string
+  applySchema: (it: CompilationContext, subSchema: Subschema) => string
   usePattern: (str: string) => string
   useDefault: (value: any) => string
   useCustomRule: (rule: Rule, schema: any, parentSchema: object, it: CompilationContext) => any

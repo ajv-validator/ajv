@@ -43,7 +43,7 @@
       $it.schemaPath = '';
       $it.errSchemaPath = $schema;
     }}
-    {{ var $code = it.validate($it).replace(/validate\.schema/g, $refVal.code); }}
+    {{ var $code = it.validateCode($it).replace(/validate\.schema/g, $refVal.code); }}
     {{= $code }}
     {{? $breakOnError}}
       if ({{=$nextValid}}) {

@@ -17,7 +17,11 @@ const resolve = require("../resolve")
  * "validate" is a variable name to which this function will be assigned
  * validateRef etc. are defined in the parent scope in index.js
  */
-export default function validateCode(it: CompilationContext): string {
+export default function validateCode(
+  it: CompilationContext,
+  valid?: string,
+  appendGen?: true // TODO remove once all callers pass true
+): string | void {
   const {
     isTop,
     schema,
@@ -26,9 +30,17 @@ export default function validateCode(it: CompilationContext): string {
     gen,
     opts: {$comment},
   } = it
-  // TODO _out
-  let _out = gen._out
-  gen._out = ""
+
+  let _out
+  if (!appendGen) {
+    // TODO _out
+    _out = gen._out
+    gen._out = ""
+  }
+
+  // TODO valid must be non-optional or maybe it must be returned
+  if (!valid) valid = `valid${level}`
+
   checkUnknownKeywords(it)
   checkRefsAndKeywords(it)
 
@@ -47,18 +59,25 @@ export default function validateCode(it: CompilationContext): string {
     checkAsync(it)
     gen.code(`var errs_${level} = errors;`)
     typeAndKeywords()
-    gen.code(`var valid${level} = errors === errs_${level};`)
+    // TODO level, var
+    gen.code(`var ${valid} = errors === errs_${level};`)
   }
 
-  // TODO _out
-  ;[_out, gen._out] = [gen._out, _out]
-  return _out
+  if (!appendGen) {
+    // TODO _out
+    ;[_out, gen._out] = [gen._out, _out]
+    return _out
+  }
 
   function booleanOrEmpty(): true | void {
     if (typeof schema == "boolean" || !schemaHasRules(schema, RULES.all)) {
-      booleanOrEmptySchema(it)
-      // TODO _out
-      ;[_out, gen._out] = [gen._out, _out]
+      // TODO remove type cast once valid is non optional
+      booleanOrEmptySchema(it, <string>valid)
+
+      if (!appendGen) {
+        // TODO _out
+        ;[_out, gen._out] = [gen._out, _out]
+      }
       return true
     }
   }

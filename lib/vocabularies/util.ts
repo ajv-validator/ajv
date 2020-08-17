@@ -1,4 +1,5 @@
-import {getProperty} from "../compile/util"
+import {getProperty, schemaHasRules} from "../compile/util"
+import {CompilationContext} from "../types"
 
 export function appendSchema(
   schemaCode: string | number | boolean,
@@ -40,4 +41,13 @@ export function schemaRefOrVal(
     if (t === "string") return quotedString(schema)
   }
   return `validate.schema${schemaPath + getProperty(keyword)}`
+}
+
+export function nonEmptySchema(
+  {RULES, opts: {strictKeywords}}: CompilationContext,
+  schema: boolean | object
+): boolean | void {
+  return strictKeywords
+    ? (typeof schema == "object" && Object.keys(schema).length > 0) || schema === false
+    : schemaHasRules(schema, RULES.all)
 }

@@ -6,8 +6,8 @@ const boolError: KeywordErrorDefinition = {
   params: () => "{}",
 }
 
-export function booleanOrEmptySchema(it: CompilationContext): void {
-  const {gen, isTop, schema, level} = it
+export function booleanOrEmptySchema(it: CompilationContext, valid: string): void {
+  const {gen, isTop, schema} = it
   if (isTop) {
     if (schema === false) {
       falseSchemaError(it, false)
@@ -22,10 +22,10 @@ export function booleanOrEmptySchema(it: CompilationContext): void {
     )
   } else {
     if (schema === false) {
-      gen.code(`var valid${level} = false;`) // TODO level, var
+      gen.code(`var ${valid} = false;`) // TODO var
       falseSchemaError(it)
     } else {
-      gen.code(`var valid${level} = true;`) // TODO level, var
+      gen.code(`var ${valid} = true;`) // TODO var
     }
   }
 }

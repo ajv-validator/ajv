@@ -58,6 +58,7 @@ const def: KeywordDefinition = {
     }
   },
   error: {
+    // TODO allow message to be just a string if it is constant?
     message: () => '"should be equal to one of the allowed values"',
     params: ({schemaCode}) => `{allowedValues: ${schemaCode}}`,
   },
