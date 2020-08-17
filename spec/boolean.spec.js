@@ -11,7 +11,8 @@ describe('boolean schemas', function() {
     ajvs = [
       new Ajv,
       new Ajv({allErrors: true}),
-      new Ajv({inlineRefs: false})
+      new Ajv({inlineRefs: false}),
+      new Ajv({strictKeywords: true}),
     ];
   });
 
