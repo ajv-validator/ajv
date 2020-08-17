@@ -149,20 +149,15 @@ function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): void
   }
   if ($data) {
     gen.code(`const ${cxt.schemaCode} = ${getData($data, dataLevel, dataPathArr)};`)
-  } else {
-    if (
-      schemaType &&
-      !(schemaType === "array" ? Array.isArray(schema) : typeof schema === schemaType)
-    ) {
-      throw new Error(`${keyword} must be ${schemaType}`)
-    }
+  } else if (schemaType && !validSchemaType(schema, schemaType)) {
+    throw new Error(`${keyword} must be ${JSON.stringify(schemaType)}`)
   }
   // TODO check that code called "fail" or another valid way to return code
   code(cxt)
 
-  function fail(condition: string): void {
+  function fail(condition: string, context?: KeywordContext): void {
     gen.code(`if (${condition}) {`)
-    reportError(cxt, error as KeywordErrorDefinition)
+    reportError(context || cxt, error as KeywordErrorDefinition)
     gen.code(opts.allErrors ? "}" : "} else {")
   }
 
@@ -174,6 +169,40 @@ function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): void
   function errorParams(obj: any) {
     cxt.params = obj
   }
+}
+
+function validSchemaType(schema: any, schemaType: string | string[]): boolean {
+  // TODO add tests
+  if (Array.isArray(schemaType)) {
+    return schemaType.some((st) => validSchemaType(schema, st))
+  }
+  return schemaType === "array"
+    ? Array.isArray(schema)
+    : schemaType === "object"
+    ? schema && typeof schema == "object" && !Array.isArray(schema)
+    : typeof schema == schemaType
+}
+
+export function getKeywordContext(it: CompilationContext, keyword: string): KeywordContext {
+  const {gen, schema, schemaPath, dataLevel} = it
+  const schemaCode = schemaRefOrVal(schema, schemaPath, keyword)
+  return {
+    gen,
+    fail: exception,
+    ok: exception,
+    errorParams: exception,
+    keyword,
+    data: "data" + (dataLevel || ""),
+    schema: schema[keyword],
+    schemaCode,
+    schemaValue: schemaCode,
+    parentSchema: schema,
+    it,
+  }
+}
+
+function exception() {
+  throw new Error("this function can only be used in keyword")
 }
 
 /**

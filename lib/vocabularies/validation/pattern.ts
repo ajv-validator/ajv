@@ -7,7 +7,7 @@ const def: KeywordDefinition = {
   schemaType: "string",
   $data: true,
   code({fail, data, $data, schema, schemaCode, it: {usePattern}}) {
-    const dnt = dataNotType(schemaCode, def.schemaType, $data)
+    const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
     const regExp = $data ? `(new RegExp(${schemaCode}))` : usePattern(schema)
     fail(dnt + `!${regExp}.test(${data})`)
   },

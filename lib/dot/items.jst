@@ -55,7 +55,7 @@ var {{=$valid}};
           $it.schema = $sch;
           $it.schemaPath = $schemaPath + '[' + $i + ']';
           $it.errSchemaPath = $errSchemaPath + '/' + $i;
-          $it.errorPath = it.util.getPathExpr(it.errorPath, $i, it.opts.jsonPointers, true);
+          $it.errorPath = it.util.getPath(it.errorPath, $i, it.opts.jsonPointers);
           $it.dataPathArr[$dataNxt] = $i;
         }}
 
@@ -63,7 +63,11 @@ var {{=$valid}};
         {{# def.optimizeValidate }}
       }
 
-      {{# def.ifResultValid }}
+      {{ /* def.ifResultValid */ }}
+      {{? $breakOnError }}
+        if ({{=$nextValid}}) {
+        {{ $closingBraces += '}'; }}
+      {{?}}
     {{?}}
   {{~}}
 

@@ -1,8 +1,8 @@
-import {CompilationContext, KeywordContext, KeywordErrorDefinition} from "../../types"
+import {CompilationContext, KeywordErrorDefinition} from "../../types"
 import {toHash, checkDataType, checkDataTypes} from "../util"
-import {schemaRefOrVal} from "../../vocabularies/util"
 import {schemaHasRulesForType} from "./applicability"
 import {reportError} from "../errors"
+import {getKeywordContext} from "../../keyword"
 
 export function getSchemaTypes({schema, opts}: CompilationContext): string[] {
   const t: undefined | string | string[] = schema.type
@@ -136,28 +136,7 @@ const typeError: KeywordErrorDefinition = {
   params: ({schema}) => `{type: "${Array.isArray(schema) ? schema.join(",") : schema}"}`,
 }
 
-// TODO maybe combine with boolSchemaError
-// TODO refactor type keyword context creation
 export function reportTypeError(it: CompilationContext) {
-  const {gen, schema, schemaPath, dataLevel} = it
-  const schemaCode = schemaRefOrVal(schema, schemaPath, "type")
-  const cxt: KeywordContext = {
-    gen,
-    fail: exception,
-    ok: exception,
-    errorParams: exception,
-    keyword: "type",
-    data: "data" + (dataLevel || ""),
-    schema: schema.type,
-    schemaCode,
-    schemaValue: schemaCode,
-    parentSchema: schema,
-    it,
-  }
+  const cxt = getKeywordContext(it, "type")
   reportError(cxt, typeError)
-}
-
-// TODO combine with exception from boolSchema
-function exception() {
-  throw new Error("this function can only be used in keyword")
 }

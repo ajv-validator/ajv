@@ -7,7 +7,7 @@ const def: KeywordDefinition = {
   schemaType: "number",
   $data: true,
   code({gen, fail, data, $data, schemaCode, it: {opts}}) {
-    const dnt = dataNotType(schemaCode, def.schemaType, $data)
+    const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
     const res = gen.name("res")
     const prec = opts.multipleOfPrecision
     const invalid = prec

@@ -14,7 +14,7 @@ const def: KeywordDefinition = {
   schemaType: "number",
   $data: true,
   code({fail, keyword, data, $data, schemaCode}) {
-    const dnt = dataNotType(schemaCode, def.schemaType, $data)
+    const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
     fail(dnt + data + OPS[keyword].fail + schemaCode + ` || isNaN(${data})`)
   },
   error: {

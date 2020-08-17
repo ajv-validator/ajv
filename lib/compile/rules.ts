@@ -55,7 +55,7 @@ export default function rules(): ValidationRules {
       {type: "string", rules: ["format"]},
       {
         type: "array",
-        rules: ["items", "contains"],
+        rules: ["contains"],
       },
       {
         type: "object",

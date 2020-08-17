@@ -1,6 +1,6 @@
 import {KeywordDefinition, KeywordErrorDefinition} from "../../types"
 import {nonEmptySchema} from "../util"
-import {applyKeywordSubschema} from "../../compile/subschema"
+import {applySubschema} from "../../compile/subschema"
 import {reportExtraError, resetErrorsCount} from "../../compile/errors"
 
 const def: KeywordDefinition = {
@@ -22,7 +22,11 @@ const def: KeywordDefinition = {
 
     let closeBlocks = ""
     schema.forEach((_, i: number) => {
-      const schValid = applyKeywordSubschema(it, "anyOf", i, true)
+      const schValid = applySubschema(it, {
+        keyword: "anyOf",
+        schemaProp: i,
+        compositeRule: true,
+      })
       gen.code(
         `${valid} = ${valid} || ${schValid};
         if (!${valid}) {`

@@ -23,7 +23,7 @@ export function quotedString(str: string): string {
 
 export function dataNotType(
   schemaCode: string | number | boolean,
-  schemaType?: string,
+  schemaType: string,
   $data?: string | false
 ): string {
   return $data ? `(${schemaCode}!==undefined && typeof ${schemaCode}!=="${schemaType}") || ` : ""

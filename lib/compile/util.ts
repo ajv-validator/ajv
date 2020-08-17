@@ -171,16 +171,22 @@ export function getPathExpr(
   return joinPaths(currentPath, path)
 }
 
-export function getPath(currentPath: string, prop: string, jsonPointers?: boolean): string {
-  const path = jsonPointers // false by default
-    ? toQuotedString("/" + escapeJsonPointer(prop))
-    : toQuotedString(getProperty(prop))
+export function getPath(
+  currentPath: string,
+  prop: string | number,
+  jsonPointers?: boolean
+): string {
+  const path = toQuotedString(
+    jsonPointers // false by default
+      ? "/" + (typeof prop == "number" ? prop : escapeJsonPointer(prop))
+      : getProperty(prop)
+  )
   return joinPaths(currentPath, path)
 }
 
 const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/
 const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/
-export function getData($data: string, lvl: number, paths: string[]): string {
+export function getData($data: string, lvl: number, paths: (number | string)[]): string {
   let jsonPointer, data
   if ($data === "") return "rootData"
   if ($data[0] === "/") {
@@ -200,7 +206,7 @@ export function getData($data: string, lvl: number, paths: string[]): string {
           "Cannot access property/index " + up + " levels up, current level is " + lvl
         )
       }
-      return paths[lvl - up]
+      return "" + paths[lvl - up]
     }
 
     if (up > lvl) {

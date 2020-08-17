@@ -107,7 +107,7 @@ export interface CompilationContext {
   level: number
   dataLevel: number
   data: string
-  dataPathArr: string[]
+  dataPathArr: (string | number)[]
   schema: any
   isRoot: boolean
   schemaPath: string
@@ -151,7 +151,7 @@ interface SchemaRoot {
 export interface KeywordDefinition {
   keyword?: string | string[]
   type?: string | string[]
-  schemaType?: string
+  schemaType?: string | string[]
   async?: boolean
   $data?: boolean
   errors?: boolean | "full"
@@ -182,7 +182,7 @@ export type Vocabulary = KeywordDefinition[]
 
 export interface KeywordContext {
   gen: CodeGen
-  fail: (condition: string) => void
+  fail: (condition: string, context?: KeywordContext) => void
   ok: (condition?: string) => void
   errorParams: (obj: any) => void
   keyword: string
