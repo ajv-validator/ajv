@@ -1,5 +1,6 @@
 import {KeywordContext, KeywordErrorDefinition} from "../types"
 import {toQuotedString} from "./util"
+import CodeGen from "./codegen"
 
 export function reportError(
   cxt: KeywordContext,
@@ -9,21 +10,48 @@ export function reportError(
   const {gen, compositeRule, opts, async} = cxt.it
   const errObj = errorObjectCode(cxt, error)
   if (allErrors ?? (compositeRule || opts.allErrors)) {
-    const err = gen.name("err")
-    gen.code(
-      `const ${err} = ${errObj};
-      if (vErrors === null) vErrors = [${err}];
-      else vErrors.push(${err});
-      errors++;`
-    )
+    addError(gen, errObj)
   } else {
-    gen.code(
-      async
-        ? `throw new ValidationError([${errObj}]);`
-        : `validate.errors = [${errObj}];
-        return false;`
-    )
+    returnErrors(gen, async, `[${errObj}]`)
   }
+}
+
+export function reportExtraError(cxt: KeywordContext, error: KeywordErrorDefinition): void {
+  const {gen, compositeRule, opts, async} = cxt.it
+  const errObj = errorObjectCode(cxt, error)
+  addError(gen, errObj)
+  if (!(compositeRule || opts.allErrors)) {
+    returnErrors(gen, async, "vErrors")
+  }
+}
+
+export function resetErrorsCount(gen: CodeGen, errsCount: string): void {
+  gen.code(
+    `errors = ${errsCount};
+    if (vErrors !== null) {
+      if (${errsCount}) vErrors.length = ${errsCount};
+      else vErrors = null;
+    }`
+  )
+}
+
+function addError(gen: CodeGen, errObj: string): void {
+  const err = gen.name("err")
+  gen.code(
+    `const ${err} = ${errObj};
+    if (vErrors === null) vErrors = [${err}];
+    else vErrors.push(${err});
+    errors++;`
+  )
+}
+
+function returnErrors(gen: CodeGen, async: boolean, errs: string): void {
+  gen.code(
+    async
+      ? `throw new ValidationError(${errs});`
+      : `validate.errors = ${errs};
+        return false;`
+  )
 }
 
 function errorObjectCode(cxt: KeywordContext, error: KeywordErrorDefinition): string {

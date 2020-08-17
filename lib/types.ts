@@ -2,7 +2,7 @@ import Cache from "./cache"
 import CodeGen from "./compile/codegen"
 import {ValidationRules, Rule} from "./compile/rules"
 import {MissingRefError} from "./compile/error_classes"
-import {Subschema} from "./compile/subschema"
+import {SubschemaContext} from "./compile/subschema"
 
 export interface Options {
   $data?: boolean
@@ -126,7 +126,7 @@ export interface CompilationContext {
   // }
   compositeRule?: boolean
   validateCode: (it: CompilationContext) => string | void // TODO remove string
-  applySchema: (it: CompilationContext, subSchema: Subschema) => string
+  applySchema: (it: CompilationContext, subSchema: SubschemaContext) => string
   usePattern: (str: string) => string
   useDefault: (value: any) => string
   useCustomRule: (rule: Rule, schema: any, parentSchema: object, it: CompilationContext) => any
