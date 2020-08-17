@@ -30,36 +30,44 @@ export default function validateCode(it: CompilationContext): string {
   let _out = gen._out
   gen._out = ""
   checkUnknownKeywords(it)
+  checkRefsAndKeywords(it)
+
   if (isTop) startFunction(it)
-  if (typeof schema == "boolean" || !schemaHasRules(schema, RULES.all)) {
-    booleanOrEmptySchema(it)
-    // TODO _out
-    ;[_out, gen._out] = [gen._out, _out]
-    return _out
-  }
+  if (booleanOrEmpty()) return _out
+  if ($comment && schema.$comment) commentKeyword(it)
+
   if (isTop) {
     updateTopContext(it)
     checkNoDefault(it)
     initializeTop(it)
+    typeAndKeywords()
+    endFunction(it)
   } else {
     updateContext(it)
     checkAsync(it)
     gen.code(`var errs_${level} = errors;`)
-  }
-  checkRefsAndKeywords(it)
-  if ($comment && schema.$comment) commentKeyword(it)
-  const types = getSchemaTypes(it)
-  const checkedTypes = coerceAndCheckDataType(it, types)
-  schemaKeywords(it, types, !checkedTypes, isTop)
-  if (isTop) {
-    endFunction(it)
-  } else {
+    typeAndKeywords()
     gen.code(`var valid${level} = errors === errs_${level};`)
   }
 
   // TODO _out
   ;[_out, gen._out] = [gen._out, _out]
   return _out
+
+  function booleanOrEmpty(): true | void {
+    if (typeof schema == "boolean" || !schemaHasRules(schema, RULES.all)) {
+      booleanOrEmptySchema(it)
+      // TODO _out
+      ;[_out, gen._out] = [gen._out, _out]
+      return true
+    }
+  }
+
+  function typeAndKeywords(): void {
+    const types = getSchemaTypes(it)
+    const checkedTypes = coerceAndCheckDataType(it, types)
+    schemaKeywords(it, types, !checkedTypes, isTop)
+  }
 }
 
 function checkUnknownKeywords({
@@ -74,6 +82,22 @@ function checkUnknownKeywords({
       const msg = `unknown keyword: "${unknownKeyword}"`
       if (strictKeywords === "log") logger.warn(msg)
       else throw new Error(msg)
+    }
+  }
+}
+
+function checkRefsAndKeywords({
+  schema,
+  errSchemaPath,
+  RULES,
+  opts: {extendRefs},
+  logger,
+}: CompilationContext): void {
+  if (schema.$ref && schemaHasRulesExcept(schema, RULES.all, "$ref")) {
+    if (extendRefs === "fail") {
+      throw new Error(`$ref: sibling validation keywords at "${errSchemaPath}" (option extendRefs)`)
+    } else if (extendRefs !== true) {
+      logger.warn(`$ref: keywords ignored in schema at path "${errSchemaPath}"`)
     }
   }
 }
@@ -127,22 +151,6 @@ function updateContext(it: CompilationContext): void {
 
 function checkAsync(it: CompilationContext): void {
   if (it.schema.$async && !it.async) throw new Error("async schema in sync schema")
-}
-
-function checkRefsAndKeywords({
-  schema,
-  errSchemaPath,
-  RULES,
-  opts: {extendRefs},
-  logger,
-}: CompilationContext): void {
-  if (schema.$ref && schemaHasRulesExcept(schema, RULES.all, "$ref")) {
-    if (extendRefs === "fail") {
-      throw new Error(`$ref: sibling validation keywords at "${errSchemaPath}" (option extendRefs)`)
-    } else if (extendRefs !== true) {
-      logger.warn(`$ref: keywords ignored in schema at path "${errSchemaPath}"`)
-    }
-  }
 }
 
 function commentKeyword({gen, schema, errSchemaPath, opts: {$comment}}: CompilationContext): void {

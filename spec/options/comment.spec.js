@@ -22,6 +22,7 @@ describe("$comment option", () => {
 
     it("should log the text from $comment keyword", () => {
       var schema = {
+        $comment: "object root",
         properties: {
           foo: {$comment: "property foo"},
           bar: {$comment: "property bar", type: "integer"},
@@ -34,10 +35,10 @@ describe("$comment option", () => {
       ;[ajv, fullAjv].forEach((_ajv) => {
         var validate = _ajv.compile(schema)
 
-        test({}, true, [])
-        test({foo: 1}, true, [["property foo"]])
-        test({foo: 1, bar: 2}, true, [["property foo"], ["property bar"]])
-        test({foo: 1, bar: "baz"}, false, [["property foo"], ["property bar"]])
+        test({}, true, [["object root"]])
+        test({foo: 1}, true, [["object root"], ["property foo"]])
+        test({foo: 1, bar: 2}, true, [["object root"], ["property foo"], ["property bar"]])
+        test({foo: 1, bar: "baz"}, false, [["object root"], ["property foo"], ["property bar"]])
 
         function test(data, valid, expectedLogCalls) {
           logCalls = []
@@ -59,6 +60,7 @@ describe("$comment option", () => {
 
     it("should pass the text from $comment keyword to the hook", () => {
       var schema = {
+        $comment: "object root",
         properties: {
           foo: {$comment: "property foo"},
           bar: {$comment: "property bar", type: "integer"},
@@ -71,15 +73,18 @@ describe("$comment option", () => {
       ;[ajv, fullAjv].forEach((_ajv) => {
         var validate = _ajv.compile(schema)
 
-        test({}, true, [])
+        test({}, true, [["object root", "#/$comment", schema]])
         test({foo: 1}, true, [
+          ["object root", "#/$comment", schema],
           ["property foo", "#/properties/foo/$comment", schema],
         ])
         test({foo: 1, bar: 2}, true, [
+          ["object root", "#/$comment", schema],
           ["property foo", "#/properties/foo/$comment", schema],
           ["property bar", "#/properties/bar/$comment", schema],
         ])
         test({foo: 1, bar: "baz"}, false, [
+          ["object root", "#/$comment", schema],
           ["property foo", "#/properties/foo/$comment", schema],
           ["property bar", "#/properties/bar/$comment", schema],
         ])
