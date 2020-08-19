@@ -90,10 +90,7 @@
 
 {{## def._errorMessages = {
   $ref:            "'can\\\'t resolve reference {{=it.util.escapeQuotes($schema)}}'",
-  additionalItems: "'should NOT have more than {{=$schema.length}} items'",
   additionalProperties: "'{{? it.opts._errorDataPathProperty }}is an invalid additional property{{??}}should NOT have additional properties{{?}}'",
-  anyOf:           "'should match some schema in anyOf'",
-  contains:        "'should contain a valid item'",
   dependencies:    "'should have {{? $deps.length == 1 }}property {{= it.util.escapeQuotes($deps[0]) }}{{??}}properties {{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}} when property {{= it.util.escapeQuotes($property) }} is present'",
   format:          "'should match format \"{{#def.concatSchemaEQ}}\"'",
   'if':            "'should match \"' + {{=$ifClause}} + '\" schema'",
@@ -114,10 +111,7 @@
 
 {{## def._errorSchemas = {
   $ref:            "{{=it.util.toQuotedString($schema)}}",
-  additionalItems: "false",
   additionalProperties: "false",
-  anyOf:           "validate.schema{{=$schemaPath}}",
-  contains:        "validate.schema{{=$schemaPath}}",
   dependencies:    "validate.schema{{=$schemaPath}}",
   format:          "{{#def.schemaRefOrQS}}",
   'if':            "validate.schema{{=$schemaPath}}",
@@ -137,10 +131,7 @@
 
 {{## def._errorParams = {
   $ref:            "{ ref: '{{=it.util.escapeQuotes($schema)}}' }",
-  additionalItems: "{ limit: {{=$schema.length}} }",
   additionalProperties: "{ additionalProperty: '{{=$additionalProperty}}' }",
-  anyOf:           "{}",
-  contains:        "{}",
   dependencies:    "{ property: '{{= it.util.escapeQuotes($property) }}', missingProperty: '{{=$missingProperty}}', depsCount: {{=$deps.length}}, deps: '{{= it.util.escapeQuotes($deps.length==1 ? $deps[0] : $deps.join(\", \")) }}' }",
   format:          "{ format: {{#def.schemaValueQS}} }",
   'if':            "{ failingKeyword: {{=$ifClause}} }",
