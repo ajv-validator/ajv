@@ -44,18 +44,23 @@ const def: KeywordDefinition = {
     }
 
     function validateDefinedItems(): void {
+      const valid = gen.name("valid")
       schema.forEach((sch: any, i: number) => {
         if (nonEmptySchema(it, sch)) {
           gen.code(`if (${len} > ${i}) {`)
-          const schValid = applySubschema(it, {
-            keyword: "items",
-            schemaProp: i,
-            dataProp: i,
-            expr: Expr.Const,
-          })
+          applySubschema(
+            it,
+            {
+              keyword: "items",
+              schemaProp: i,
+              dataProp: i,
+              expr: Expr.Const,
+            },
+            valid
+          )
           gen.code(`}`)
           if (!it.opts.allErrors) {
-            gen.code(`if (${schValid}) {`)
+            gen.code(`if (${valid}) {`)
             closeBlocks += "}"
           }
         }
@@ -65,11 +70,10 @@ const def: KeywordDefinition = {
     function validateItems(keyword: string, startFrom: number): void {
       const i = gen.name("i")
       gen.code(`for (let ${i}=${startFrom}; ${i}<${len}; ${i}++) {`)
-      const schValid = applySubschema(it, {keyword, dataProp: i, expr: Expr.Num})
+      const valid = gen.name("valid")
+      applySubschema(it, {keyword, dataProp: i, expr: Expr.Num}, valid)
       if (!it.opts.allErrors) {
-        gen.code(`if (!${schValid}) {
-          break;
-        }`)
+        gen.code(`if (!${valid}) break;`)
       }
       gen.code("}")
     }

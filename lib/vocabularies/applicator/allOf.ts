@@ -9,10 +9,11 @@ const def: KeywordDefinition = {
     const {opts} = it
     let emptySchemas = true
     let closeBlocks = ""
+    const valid = gen.name("valid")
     schema.forEach((sch: object | boolean, i: number) => {
       if (nonEmptySchema(it, sch)) {
         emptySchemas = false
-        const valid = applySubschema(it, {keyword: "allOf", schemaProp: i})
+        applySubschema(it, {keyword: "allOf", schemaProp: i}, valid)
         if (!opts.allErrors) {
           gen.code(`if (${valid}) {`)
           closeBlocks += "}"

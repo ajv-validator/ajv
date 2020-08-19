@@ -21,12 +21,17 @@ const def: KeywordDefinition = {
     )
 
     let closeBlocks = ""
+    const schValid = gen.name("valid")
     schema.forEach((_, i: number) => {
-      const schValid = applySubschema(it, {
-        keyword: "anyOf",
-        schemaProp: i,
-        compositeRule: true,
-      })
+      applySubschema(
+        it,
+        {
+          keyword: "anyOf",
+          schemaProp: i,
+          compositeRule: true,
+        },
+        schValid
+      )
       gen.code(
         `${valid} = ${valid} || ${schValid};
         if (!${valid}) {`

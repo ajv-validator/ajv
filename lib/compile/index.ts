@@ -2,7 +2,6 @@ import CodeGen from "./codegen"
 import {toQuotedString} from "./util"
 import {MissingRefError} from "./error_classes"
 import validateCode from "./validate"
-import {applySchema} from "./subschema"
 import {Rule} from "./rules"
 import {CompilationContext, KeywordDefinition, ErrorObject} from "../types"
 
@@ -113,7 +112,6 @@ function compile(schema, root, localRefs, baseId) {
       MissingRefError,
       RULES,
       validateCode,
-      applySchema, // TODO remove to imports
       util, // TODO remove to imports
       resolve, // TODO remove to imports
       resolveRef, // TODO remove to imports

@@ -13,21 +13,26 @@ const def: KeywordDefinition = {
     gen.code(`const ${errsCount} = errors;`)
 
     if (nonEmptySchema(it, schema)) {
+      const valid = gen.name("valid")
       const i = gen.name("i")
       gen.code(`for (let ${i}=0; ${i}<${data}.length; ${i}++) {`)
-      const schValid = applySubschema(it, {
-        keyword: "contains",
-        dataProp: i,
-        expr: Expr.Num,
-        compositeRule: true,
-      })
+      applySubschema(
+        it,
+        {
+          keyword: "contains",
+          dataProp: i,
+          expr: Expr.Num,
+          compositeRule: true,
+        },
+        valid
+      )
       gen.code(
-        `if (${schValid}) break;
+        `if (${valid}) break;
         }`
       )
 
       // TODO refactor failCompoundOrReset? It is different from anyOf though
-      gen.code(`if (!${schValid}) {`)
+      gen.code(`if (!${valid}) {`)
       reportError(cxt, def.error as KeywordErrorDefinition)
       gen.code(`} else {`)
       resetErrorsCount(gen, errsCount)
