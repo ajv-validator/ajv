@@ -1,14 +1,14 @@
-import {KeywordDefinition} from "../../types"
+import {KeywordDefinition, KeywordErrorDefinition} from "../../types"
 import {nonEmptySchema} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
+import {fail_} from "../../keyword"
 
 const def: KeywordDefinition = {
   keyword: "items",
   type: "array",
   schemaType: ["object", "array", "boolean"],
   code(cxt) {
-    const {gen, fail, schema, parentSchema, data, it} = cxt
-    let closeBlocks = ""
+    const {gen, /* fail, */ schema, parentSchema, data, it} = cxt
     const errsCount = gen.name("_errs")
     const len = gen.name("len")
     gen.code(
@@ -16,38 +16,49 @@ const def: KeywordDefinition = {
       const ${len} = ${data}.length;`
     )
 
-    if (Array.isArray(schema)) {
-      const addIts = parentSchema.additionalItems
-      if (addIts === false) validateDataLength()
-      validateDefinedItems()
-      if (typeof addIts == "object" && nonEmptySchema(it, addIts)) {
-        gen.code(`if (${len} > ${schema.length}) {`)
-        validateItems("additionalItems", schema.length)
-        gen.code("}")
-      }
-    } else if (nonEmptySchema(it, schema)) {
-      validateItems("items", 0)
-    }
-
-    if (!it.opts.allErrors) {
-      gen.code(closeBlocks)
+    if (it.opts.allErrors) {
+      validateItemsKeyword()
+    } else {
+      gen.startBlock()
+      validateItemsKeyword()
+      gen.endBlock()
+      // TODO refactor ifs
       gen.code(`if (${errsCount} === errors) {`)
     }
 
+    function validateItemsKeyword(): void {
+      if (Array.isArray(schema)) {
+        const addIts = parentSchema.additionalItems
+        if (addIts === false) validateDataLength()
+        validateDefinedItems()
+        if (typeof addIts == "object" && nonEmptySchema(it, addIts)) {
+          gen.if(`${len} > ${schema.length}`)
+          validateItems("additionalItems", schema.length)
+          gen.endIf()
+        }
+      } else if (nonEmptySchema(it, schema)) {
+        validateItems("items", 0)
+      }
+    }
+
     function validateDataLength(): void {
-      fail(`${len} > ${schema.length}`, {
-        ...cxt,
-        keyword: "additionalItems",
-        schemaValue: false,
-      })
-      closeBlocks += "}"
+      // TODO replace with "fail"
+      fail_(
+        `${len} > ${schema.length}`,
+        {
+          ...cxt,
+          keyword: "additionalItems",
+          schemaValue: false,
+        },
+        def.error as KeywordErrorDefinition
+      )
     }
 
     function validateDefinedItems(): void {
       const valid = gen.name("valid")
       schema.forEach((sch: any, i: number) => {
         if (nonEmptySchema(it, sch)) {
-          gen.code(`if (${len} > ${i}) {`)
+          gen.if(`${len} > ${i}`)
           applySubschema(
             it,
             {
@@ -58,24 +69,19 @@ const def: KeywordDefinition = {
             },
             valid
           )
-          gen.code(`}`)
-          if (!it.opts.allErrors) {
-            gen.code(`if (${valid}) {`)
-            closeBlocks += "}"
-          }
+          gen.endIf()
+          if (!it.opts.allErrors) gen.if(valid)
         }
       })
     }
 
     function validateItems(keyword: string, startFrom: number): void {
       const i = gen.name("i")
-      gen.code(`for (let ${i}=${startFrom}; ${i}<${len}; ${i}++) {`)
       const valid = gen.name("valid")
+      gen.for(`let ${i}=${startFrom}; ${i}<${len}; ${i}++`)
       applySubschema(it, {keyword, dataProp: i, expr: Expr.Num}, valid)
-      if (!it.opts.allErrors) {
-        gen.code(`if (!${valid}) break;`)
-      }
-      gen.code("}")
+      if (!it.opts.allErrors) gen.code(`if(!${valid}){break}`)
+      gen.endFor()
     }
   },
   error: {

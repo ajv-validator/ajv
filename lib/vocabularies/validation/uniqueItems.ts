@@ -10,28 +10,35 @@ const def: KeywordDefinition = {
     if (opts.uniqueItems === false || !($data || schema)) return ok()
     const i = gen.name("i")
     const j = gen.name("j")
-    errorParams({i, j})
     const valid = gen.name("valid")
+    errorParams({i, j})
     gen.code(`let ${valid}, ${i}, ${j};`)
+    const itemType = parentSchema.items?.type
+
     if ($data) {
+      gen
+        .if(`${schemaCode} === false || ${schemaCode} === undefined`)
+        .code(`${valid} = true;`)
+        .elseIf(`typeof ${schemaCode} != "boolean"`)
+        .code(`${valid} = false;`)
+        .else()
+      validateUniqueItems()
+      gen.endIf()
+    } else {
+      validateUniqueItems()
+    }
+
+    fail(`!${valid}`)
+
+    function validateUniqueItems() {
       gen.code(
-        `if (${schemaCode} === false || ${schemaCode} === undefined)
-          ${valid} = true;
-        else if (typeof ${schemaCode} != "boolean")
-          ${valid} = false;
-        else {`
+        `${i} = ${data}.length;
+        ${valid} = true;
+        if (${i} > 1) {
+          ${canOptimize() ? loopN() : loopN2()}
+        }`
       )
     }
-    const itemType = parentSchema.items?.type
-    gen.code(
-      `${i} = ${data}.length;
-      ${valid} = true;
-      if (${i} > 1) {
-        ${canOptimize() ? loopN() : loopN2()}
-      }`
-    )
-    if ($data) gen.code("}")
-    fail(`!${valid}`)
 
     function canOptimize(): boolean {
       return Array.isArray(itemType)

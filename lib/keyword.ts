@@ -155,6 +155,7 @@ function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): void
   // TODO check that code called "fail" or another valid way to return code
   code(cxt)
 
+  // TODO replace with fail_ below
   function fail(condition: string, context?: KeywordContext): void {
     gen.code(`if (${condition}) {`)
     reportError(context || cxt, error as KeywordErrorDefinition)
@@ -169,6 +170,15 @@ function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): void
   function errorParams(obj: any) {
     cxt.params = obj
   }
+}
+
+// TODO remove when "fail" replaced
+export function fail_(condition: string, cxt: KeywordContext, error: KeywordErrorDefinition): void {
+  const {gen, opts} = cxt.it
+  gen.if(condition)
+  reportError(cxt, error)
+  if (opts.allErrors) gen.endIf()
+  else gen.else()
 }
 
 function validSchemaType(schema: any, schemaType: string | string[]): boolean {

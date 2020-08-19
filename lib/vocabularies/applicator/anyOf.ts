@@ -14,14 +14,14 @@ const def: KeywordDefinition = {
       return
     }
     const valid = gen.name("valid")
+    const schValid = gen.name("_valid")
     const errsCount = gen.name("_errs")
     gen.code(
       `let ${valid} = false;
       const ${errsCount} = errors;`
     )
 
-    let closeBlocks = ""
-    const schValid = gen.name("valid")
+    gen.startBlock()
     schema.forEach((_, i: number) => {
       applySubschema(
         it,
@@ -32,16 +32,14 @@ const def: KeywordDefinition = {
         },
         schValid
       )
-      gen.code(
-        `${valid} = ${valid} || ${schValid};
-        if (!${valid}) {`
-      )
-      closeBlocks += "}"
+      gen.code(`${valid} = ${valid} || ${schValid};`)
+      gen.if(`!${valid}`)
     })
 
-    gen.code(closeBlocks)
+    gen.endBlock(schema.length)
 
     // TODO refactor failCompoundOrReset?
+    // TODO refactor ifs
     gen.code(`if (!${valid}) {`)
     reportExtraError(cxt, def.error as KeywordErrorDefinition)
     gen.code(`} else {`)

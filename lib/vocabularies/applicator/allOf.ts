@@ -8,31 +8,26 @@ const def: KeywordDefinition = {
   code({gen, ok, schema, it}) {
     const {opts} = it
     let emptySchemas = true
-    let closeBlocks = ""
     const valid = gen.name("valid")
+    let count = 0
     schema.forEach((sch: object | boolean, i: number) => {
       if (nonEmptySchema(it, sch)) {
         emptySchemas = false
         applySubschema(it, {keyword: "allOf", schemaProp: i}, valid)
         if (!opts.allErrors) {
-          gen.code(`if (${valid}) {`)
-          closeBlocks += "}"
+          if (count === 1) gen.startBlock()
+          count++
+          gen.if(`${valid}`)
         }
       }
     })
 
     if (!opts.allErrors) {
       if (emptySchemas) ok()
-      else gen.code(closeBlocks.slice(0, -1)) // TODO refactor
+      else if (count > 1) gen.endBlock(count - 1)
     }
 
     // TODO possibly add allOf error
-    // const valid = gen.name("valid")
-    // gen.code(`let ${valid} = true;`)
-    // ... in the loop:
-    // gen.code(`${valid} = ${valid} && ${schValid};`)
-    //
-    // fail(`!${valid}`)
   },
 }
 
