@@ -5,7 +5,7 @@
     var $schema = it.schema[$keyword];
     var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
     var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-    var $breakOnError = !it.opts.allErrors;
+    var $breakOnError = !it.allErrors;
     var $errorKeyword;
 
     var $data = 'data' + ($dataLvl || '');

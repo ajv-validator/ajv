@@ -6,11 +6,11 @@ import CodeGen from "./codegen"
 export function reportError(
   cxt: KeywordContext,
   error: KeywordErrorDefinition,
-  allErrors?: boolean
+  overrideAllErrors?: boolean
 ): void {
-  const {gen, compositeRule, opts, async} = cxt.it
+  const {gen, compositeRule, allErrors, async} = cxt.it
   const errObj = errorObjectCode(cxt, error)
-  if (allErrors ?? (compositeRule || opts.allErrors)) {
+  if (overrideAllErrors ?? (compositeRule || allErrors)) {
     addError(gen, errObj)
   } else {
     returnErrors(gen, async, `[${errObj}]`)
@@ -18,10 +18,10 @@ export function reportError(
 }
 
 export function reportExtraError(cxt: KeywordContext, error: KeywordErrorDefinition): void {
-  const {gen, compositeRule, opts, async} = cxt.it
+  const {gen, compositeRule, allErrors, async} = cxt.it
   const errObj = errorObjectCode(cxt, error)
   addError(gen, errObj)
-  if (!(compositeRule || opts.allErrors)) {
+  if (!(compositeRule || allErrors)) {
     returnErrors(gen, async, "vErrors")
   }
 }

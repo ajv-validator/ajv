@@ -44,7 +44,7 @@ const def: KeywordDefinition = {
     reportExtraError(cxt, def.error as KeywordErrorDefinition)
     gen.code(`} else {`)
     resetErrorsCount(gen, errsCount)
-    if (it.opts.allErrors) gen.code(`}`)
+    if (it.allErrors) gen.code(`}`)
   },
   error: {
     message: "should match some schema in anyOf",

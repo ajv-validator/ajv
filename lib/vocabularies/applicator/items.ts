@@ -16,7 +16,7 @@ const def: KeywordDefinition = {
       const ${len} = ${data}.length;`
     )
 
-    if (it.opts.allErrors) {
+    if (it.allErrors) {
       validateItemsKeyword()
     } else {
       gen.startBlock()
@@ -70,7 +70,7 @@ const def: KeywordDefinition = {
             valid
           )
           gen.endIf()
-          if (!it.opts.allErrors) gen.if(valid)
+          if (!it.allErrors) gen.if(valid)
         }
       })
     }
@@ -80,7 +80,7 @@ const def: KeywordDefinition = {
       const valid = gen.name("valid")
       gen.for(`let ${i}=${startFrom}; ${i}<${len}; ${i}++`)
       applySubschema(it, {keyword, dataProp: i, expr: Expr.Num}, valid)
-      if (!it.opts.allErrors) gen.code(`if(!${valid}){break}`)
+      if (!it.allErrors) gen.code(`if(!${valid}){break}`)
       gen.endFor()
     }
   },

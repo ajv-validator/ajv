@@ -30,7 +30,7 @@ export function booleanOrEmptySchema(it: CompilationContext, valid: string): voi
   }
 }
 
-function falseSchemaError(it: CompilationContext, allErrors?: boolean) {
+function falseSchemaError(it: CompilationContext, overrideAllErrors?: boolean) {
   const {gen, dataLevel} = it
   // TODO maybe some other interface should be used for non-keyword validation errors...
   const cxt: KeywordContext = {
@@ -46,7 +46,7 @@ function falseSchemaError(it: CompilationContext, allErrors?: boolean) {
     parentSchema: false,
     it,
   }
-  reportError(cxt, boolError, allErrors)
+  reportError(cxt, boolError, overrideAllErrors)
 }
 
 // TODO combine with exception from dataType

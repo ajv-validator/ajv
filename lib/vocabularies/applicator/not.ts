@@ -1,47 +1,41 @@
 import {KeywordDefinition, KeywordErrorDefinition} from "../../types"
 import {nonEmptySchema} from "../util"
-import {applySubschema, Expr} from "../../compile/subschema"
+import {applySubschema} from "../../compile/subschema"
 import {reportError, resetErrorsCount} from "../../compile/errors"
 
 const def: KeywordDefinition = {
-  keyword: "contains",
-  type: "array",
+  keyword: "not",
   schemaType: ["object", "boolean"],
   code(cxt) {
-    const {gen, fail, schema, data, it} = cxt
-    const errsCount = gen.name("_errs")
-    gen.code(`const ${errsCount} = errors;`)
-
+    const {gen, fail, schema, it} = cxt
     if (nonEmptySchema(it, schema)) {
       const valid = gen.name("valid")
-      const i = gen.name("i")
-      gen.for(`let ${i}=0; ${i}<${data}.length; ${i}++`)
+      const errsCount = gen.name("_errs")
+      gen.code(`const ${errsCount} = errors;`)
       applySubschema(
         it,
         {
-          keyword: "contains",
-          dataProp: i,
-          expr: Expr.Num,
+          keyword: "not",
           compositeRule: true,
+          createErrors: false,
+          allErrors: false,
         },
         valid
       )
-      gen.code(`if (${valid}) break;`)
-      gen.endFor()
 
-      // TODO refactor failCompoundOrReset? It is different from anyOf though
+      // TODO refactor failCompoundOrReset?
       // TODO refactor ifs
-      gen.code(`if (!${valid}) {`)
+      gen.code(`if (${valid}) {`)
       reportError(cxt, def.error as KeywordErrorDefinition)
       gen.code(`} else {`)
       resetErrorsCount(gen, errsCount)
       if (it.allErrors) gen.code(`}`)
     } else {
-      fail(`${data}.length === 0`)
+      fail()
     }
   },
   error: {
-    message: "should contain a valid item",
+    message: "should NOT be valid",
   },
 }
 

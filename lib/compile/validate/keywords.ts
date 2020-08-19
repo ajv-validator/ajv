@@ -17,7 +17,8 @@ export function schemaKeywords(
     level,
     dataLevel,
     RULES,
-    opts: {allErrors, extendRefs, strictNumbers},
+    allErrors,
+    opts: {extendRefs, strictNumbers},
   } = it
   if (schema.$ref && !(extendRefs === true && schemaHasRulesExcept(schema, RULES.all, "$ref"))) {
     // TODO remove Rule type cast
@@ -55,7 +56,8 @@ function iterateKeywords(it: CompilationContext, group: RuleGroup) {
   const {
     gen,
     schema,
-    opts: {allErrors, useDefaults},
+    allErrors,
+    opts: {useDefaults},
   } = it
   if (useDefaults) assignDefaults(it, group.type)
   let closeBlocks = ""

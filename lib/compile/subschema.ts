@@ -12,16 +12,6 @@ export interface SubschemaContext {
   compositeRule?: true
 }
 
-export function applySchema(
-  it: CompilationContext,
-  subschema: SubschemaContext,
-  valid: string
-): void {
-  const nextContext = {...it, ...subschema, level: it.level + 1}
-  // TODO remove "true" once appendGen is removed
-  validateCode(nextContext, valid, true)
-}
-
 export enum Expr {
   Const,
   Num,
@@ -31,14 +21,16 @@ export enum Expr {
 interface SubschemaApplication {
   keyword: string
   schemaProp?: string | number
-  compositeRule?: true
   dataProp?: string | number
   expr?: Expr
+  compositeRule?: true
+  createErrors?: boolean
+  allErrors?: boolean
 }
 
 export function applySubschema(
   it: CompilationContext,
-  {keyword, schemaProp, compositeRule, dataProp, expr}: SubschemaApplication,
+  {keyword, schemaProp, dataProp, expr, ...rest}: SubschemaApplication,
   valid: string
 ): void {
   const schema = it.schema[keyword]
@@ -72,6 +64,9 @@ export function applySubschema(
     gen.code(`var data${nextLevel} = data${dataLevel || ""}${passDataProp};`)
   }
 
-  if (compositeRule) subschema.compositeRule = compositeRule
-  applySchema(it, subschema, valid)
+  Object.assign(subschema, rest)
+
+  const nextContext = {...it, ...subschema, level: it.level + 1}
+  // TODO remove "true" once appendGen is removed
+  validateCode(nextContext, valid, true)
 }

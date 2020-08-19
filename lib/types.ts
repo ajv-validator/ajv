@@ -103,6 +103,7 @@ export interface ErrorObject {
 }
 
 export interface CompilationContext {
+  allErrors: boolean
   level: number
   dataLevel: number
   data: string
@@ -180,7 +181,7 @@ export type Vocabulary = KeywordDefinition[]
 
 export interface KeywordContext {
   gen: CodeGen
-  fail: (condition: string, context?: KeywordContext) => void
+  fail: (condition?: string, context?: KeywordContext) => void
   ok: (condition?: string) => void
   errorParams: (obj: any) => void
   keyword: string

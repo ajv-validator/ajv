@@ -95,6 +95,7 @@ function compile(schema, root, localRefs, baseId) {
 
     // TODO refactor to extract code from gen
     let sourceCode = <string>validateCode({
+      allErrors: !!opts.allErrors,
       isTop: true,
       async: _schema.$async === true,
       schema: _schema,

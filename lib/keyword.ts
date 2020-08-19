@@ -128,7 +128,7 @@ export function addKeyword(
 function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): void {
   const schema = it.schema[keyword]
   const {schemaType, code, error, $data: $defData}: KeywordDefinition = this.definition
-  const {gen, opts, dataLevel, schemaPath, dataPathArr} = it
+  const {gen, opts, dataLevel, schemaPath, dataPathArr, allErrors} = it
   if (!code) throw new Error('"code" and "error" must be defined')
   const $data = $defData && opts.$data && schema && schema.$data
   const data = "data" + (dataLevel || "")
@@ -156,15 +156,24 @@ function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): void
   code(cxt)
 
   // TODO replace with fail_ below
-  function fail(condition: string, context?: KeywordContext): void {
-    gen.code(`if (${condition}) {`)
-    reportError(context || cxt, error as KeywordErrorDefinition)
-    gen.code(opts.allErrors ? "}" : "} else {")
+  function fail(condition?: string, context?: KeywordContext): void {
+    if (condition) {
+      gen.code(`if (${condition}) {`)
+      _reportError()
+      gen.code(allErrors ? "}" : "} else {")
+    } else {
+      _reportError()
+      if (!allErrors) gen.code("if (false) {")
+    }
+
+    function _reportError() {
+      reportError(context || cxt, error as KeywordErrorDefinition)
+    }
   }
 
   function ok(condition?: string): void {
     if (condition) fail(`!(${condition})`)
-    else if (!opts.allErrors) gen.code("if (true) {")
+    else if (!allErrors) gen.code("if (true) {")
   }
 
   function errorParams(obj: any) {
@@ -174,10 +183,10 @@ function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): void
 
 // TODO remove when "fail" replaced
 export function fail_(condition: string, cxt: KeywordContext, error: KeywordErrorDefinition): void {
-  const {gen, opts} = cxt.it
+  const {gen, allErrors} = cxt.it
   gen.if(condition)
   reportError(cxt, error)
-  if (opts.allErrors) gen.endIf()
+  if (allErrors) gen.endIf()
   else gen.else()
 }
 

@@ -51,6 +51,6 @@ if (!{{=$valid}}) {
   {{# def.extraError:'oneOf' }}
 } else {
   {{# def.resetErrors }}
-{{? it.opts.allErrors }} } {{?}}
+{{? it.allErrors }} } {{?}}
 
 {{ it.gen.code(out); }}
