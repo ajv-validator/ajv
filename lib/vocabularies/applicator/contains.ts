@@ -37,8 +37,7 @@ const def: KeywordDefinition = {
     }
   },
   error: {
-    message: () => '"should contain a valid item"',
-    params: () => "{}",
+    message: "should contain a valid item",
   },
 }
 

@@ -33,12 +33,6 @@ const def: KeywordDefinition = {
     //
     // fail(`!${valid}`)
   },
-  error: {
-    // TODO allow message to be just a string if it is constant?
-    message: () => '"should match all schemas in allOf"',
-    // TODO make params optional if there are no params?
-    params: () => "{}",
-  },
 }
 
 module.exports = def

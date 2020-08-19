@@ -118,7 +118,7 @@
   "prettier": "@ajv-validator/config/prettierrc.json",
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged && npm test"
     }
   },
   "lint-staged": {

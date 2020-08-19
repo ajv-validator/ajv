@@ -1,5 +1,6 @@
 import {KeywordContext, KeywordErrorDefinition} from "../types"
 import {toQuotedString} from "./util"
+import {quotedString} from "../vocabularies/util"
 import CodeGen from "./codegen"
 
 export function reportError(
@@ -63,13 +64,16 @@ function errorObjectCode(cxt: KeywordContext, error: KeywordErrorDefinition): st
   } = cxt
   if (createErrors === false) return "{}"
   if (!error) throw new Error('keyword definition must have "error" property')
+  const {params, message} = error
   // TODO trim whitespace
   let out = `{
     keyword: "${keyword}",
     dataPath: (dataPath || "") + ${errorPath},
     schemaPath: ${toQuotedString(errSchemaPath + "/" + keyword)},
-    params: ${error.params(cxt)},`
-  if (opts.messages !== false) out += `message: ${error.message(cxt)},`
+    params: ${params ? params(cxt) : "{}"},`
+  if (opts.messages !== false) {
+    out += `message: ${typeof message == "string" ? quotedString(message) : message(cxt)},`
+  }
   if (opts.verbose) {
     // TODO trim whitespace
     out += `

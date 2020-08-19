@@ -44,10 +44,7 @@ const def: KeywordDefinition = {
     if (it.opts.allErrors) gen.code(`}`)
   },
   error: {
-    // TODO allow message to be just a string if it is constant?
-    message: () => '"should match some schema in anyOf"',
-    // TODO make params optional if there are no params?
-    params: () => "{}",
+    message: "should match some schema in anyOf",
   },
 }
 

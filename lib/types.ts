@@ -174,8 +174,8 @@ export interface KeywordDefinition {
 }
 
 export interface KeywordErrorDefinition {
-  message: (cxt: KeywordContext, params?: any) => string
-  params: (cxt: KeywordContext, params?: any) => string
+  message: string | ((cxt: KeywordContext) => string)
+  params?: (cxt: KeywordContext) => string
 }
 
 export type Vocabulary = KeywordDefinition[]
