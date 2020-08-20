@@ -113,6 +113,7 @@ export interface CompilationContext {
   schemaPath: string
   errorPath: string
   errSchemaPath: string
+  propertyName?: string
   gen: CodeGen
   createErrors?: boolean // TODO maybe remove later
   baseId?: string // TODO probably not optional

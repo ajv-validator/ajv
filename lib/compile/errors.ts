@@ -60,7 +60,7 @@ function errorObjectCode(cxt: KeywordContext, error: KeywordErrorDefinition): st
     keyword,
     data,
     schemaValue,
-    it: {createErrors, schemaPath, errorPath, errSchemaPath, opts},
+    it: {createErrors, schemaPath, errorPath, errSchemaPath, propertyName, opts},
   } = cxt
   if (createErrors === false) return "{}"
   if (!error) throw new Error('keyword definition must have "error" property')
@@ -71,6 +71,7 @@ function errorObjectCode(cxt: KeywordContext, error: KeywordErrorDefinition): st
     dataPath: (dataPath || "") + ${errorPath},
     schemaPath: ${toQuotedString(errSchemaPath + "/" + keyword)},
     params: ${params ? params(cxt) : "{}"},`
+  if (propertyName) out += `propertyName: ${propertyName},`
   if (opts.messages !== false) {
     out += `message: ${typeof message == "string" ? quotedString(message) : message(cxt)},`
   }

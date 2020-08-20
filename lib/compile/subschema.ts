@@ -21,7 +21,9 @@ export enum Expr {
 interface SubschemaApplication {
   keyword: string
   schemaProp?: string | number
+  data?: string
   dataProp?: string | number
+  propertyName?: string
   expr?: Expr
   compositeRule?: true
   createErrors?: boolean
@@ -30,7 +32,7 @@ interface SubschemaApplication {
 
 export function applySubschema(
   it: CompilationContext,
-  {keyword, schemaProp, dataProp, expr, ...rest}: SubschemaApplication,
+  {keyword, schemaProp, data, dataProp, expr, ...rest}: SubschemaApplication,
   valid: string
 ): void {
   const schema = it.schema[keyword]
@@ -47,7 +49,9 @@ export function applySubschema(
           errSchemaPath: `${it.errSchemaPath}/${keyword}/${escapeFragment("" + schemaProp)}`,
         }
 
-  if (dataProp !== undefined) {
+  if (data !== undefined && dataProp !== undefined) {
+    throw new Error('both "data" and "dataProp" are passed, only one allowed')
+  } else if (dataProp !== undefined) {
     const {gen, errorPath, dataPathArr, dataLevel, opts} = it
     // TODO possibly refactor getPath and getPathExpr to one function using Expr enum
     const nextLevel = dataLevel + 1
@@ -62,6 +66,11 @@ export function applySubschema(
 
     const passDataProp = Expr.Const ? getProperty(dataProp) : `[${dataProp}]`
     gen.code(`var data${nextLevel} = data${dataLevel || ""}${passDataProp};`)
+  } else if (data !== undefined) {
+    const {gen, dataLevel} = it
+    const nextLevel = dataLevel + 1
+    subschema.dataLevel = nextLevel
+    gen.code(`var data${nextLevel} = ${data};`)
   }
 
   Object.assign(subschema, rest)

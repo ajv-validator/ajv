@@ -53,12 +53,12 @@ export default function rules(): ValidationRules {
     rules: [
       {type: "number", rules: ["format"]},
       {type: "string", rules: ["format"]},
+      {type: "array", rules: []},
       {
         type: "object",
         rules: [
           "required",
           "dependencies",
-          "propertyNames",
           {properties: ["additionalProperties", "patternProperties"]},
         ],
       },
