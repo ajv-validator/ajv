@@ -38,7 +38,6 @@ export interface Options {
   loopEnum?: number
   ownProperties?: boolean
   multipleOfPrecision?: boolean | number
-  errorDataPath?: string
   messages?: boolean
   sourceCode?: boolean
   processCode?: (code: string, schema: object) => string
@@ -48,7 +47,6 @@ export interface Options {
   serialize?: false | ((schema: object | boolean) => any)
   $comment?: true | ((comment: string, schemaPath?: string, rootSchema?: any) => any)
   schemaId?: string // not supported
-  _errorDataPathProperty?: boolean // private
 }
 
 interface Logger {

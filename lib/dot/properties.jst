@@ -9,9 +9,7 @@
     $it.schema = $aProperties;
     $it.schemaPath = it.schemaPath + '.additionalProperties';
     $it.errSchemaPath = it.errSchemaPath + '/additionalProperties';
-    $it.errorPath = it.opts._errorDataPathProperty
-                    ? it.errorPath
-                    : it.util.getPathExpr(it.errorPath, $key, it.opts.jsonPointers);
+    $it.errorPath = it.util.getPathExpr(it.errorPath, $key, it.opts.jsonPointers);
     var $passData = $data + '[' + $key + ']';
     $it.dataPathArr[$dataNxt] = $key;
   }}
@@ -84,9 +82,6 @@ var {{=$nextValid}} = true;
       {{
         var $currentErrorPath = it.errorPath;
         var $additionalProperty = '\' + ' + $key + ' + \'';
-        if (it.opts._errorDataPathProperty) {
-          it.errorPath = it.util.getPathExpr(it.errorPath, $key, it.opts.jsonPointers);
-        }
       }}
       {{? $noAdditional }}
         {{? $removeAdditional }}
@@ -173,9 +168,6 @@ var {{=$nextValid}} = true;
               var $currentErrorPath = it.errorPath
                 , $currErrSchemaPath = $errSchemaPath
                 , $missingProperty = it.util.escapeQuotes($propertyKey);
-              if (it.opts._errorDataPathProperty) {
-                it.errorPath = it.util.getPath($currentErrorPath, $propertyKey, it.opts.jsonPointers);
-              }
               $errSchemaPath = it.errSchemaPath + '/required';
             }}
             {{# def.error:'required' }}

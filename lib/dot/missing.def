@@ -14,11 +14,6 @@
   {{
     var $propertyPath = 'missing' + $lvl
       , $missingProperty = '\' + ' + $propertyPath + ' + \'';
-    if (it.opts._errorDataPathProperty) {
-      it.errorPath = it.opts.jsonPointers
-                      ? it.util.getPathExpr($currentErrorPath,  $propertyPath, true)
-                      : $currentErrorPath + ' + ' + $propertyPath;
-    }
   }}
   {{# def.error:_error }}
 #}}
@@ -29,9 +24,6 @@
     var $prop = it.util.getProperty($propertyKey)
       , $missingProperty = it.util.escapeQuotes($propertyKey)
       , $useData = $data + $prop;
-    if (it.opts._errorDataPathProperty) {
-      it.errorPath = it.util.getPath($currentErrorPath, $propertyKey, it.opts.jsonPointers);
-    }
   }}
   if ({{# def.noPropertyInData }}) {
     {{# def.addError:_error }}

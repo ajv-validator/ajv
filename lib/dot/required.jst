@@ -15,9 +15,6 @@
     var $i = 'i' + $lvl
       , $propertyPath = 'schema' + $lvl + '[' + $i + ']'
       , $missingProperty = '\' + ' + $propertyPath + ' + \'';
-    if (it.opts._errorDataPathProperty) {
-      it.errorPath = it.util.getPathExpr($currentErrorPath, $propertyPath, it.opts.jsonPointers);
-    }
   }}
 #}}
 

@@ -10,15 +10,13 @@ describe("Validation errors", () => {
     createInstances()
   })
 
-  function createInstances(errorDataPath) {
-    ajv = new Ajv({errorDataPath: errorDataPath, loopRequired: 21})
+  function createInstances() {
+    ajv = new Ajv({loopRequired: 21})
     ajvJP = new Ajv({
-      errorDataPath: errorDataPath,
       jsonPointers: true,
       loopRequired: 21,
     })
     fullAjv = new Ajv({
-      errorDataPath: errorDataPath,
       allErrors: true,
       verbose: true,
       jsonPointers: true,
@@ -50,16 +48,11 @@ describe("Validation errors", () => {
   })
 
   describe('"additionalProperties" errors', () => {
-    it('should include property in dataPath with option errorDataPath="property"', () => {
-      createInstances("property")
-      testAdditional("property")
-    })
-
-    it("should NOT include property in dataPath WITHOUT option errorDataPath", () => {
+    it("should NOT include property in dataPath", () => {
       testAdditional()
     })
 
-    function testAdditional(errorDataPath) {
+    function testAdditional() {
       var schema = {
         properties: {
           foo: {},
@@ -71,20 +64,14 @@ describe("Validation errors", () => {
       var data = {foo: 1, bar: 2},
         invalidData = {foo: 1, bar: 2, baz: 3, quux: 4}
 
-      var path = pathFunc(errorDataPath)
-      var msg = additionalFunc(errorDataPath)
+      var msg = "should NOT have additional properties"
 
       var validate = ajv.compile(schema)
       shouldBeValid(validate, data)
       shouldBeInvalid(validate, invalidData)
-      shouldBeError(
-        validate.errors[0],
-        "additionalProperties",
-        "#/additionalProperties",
-        path("['baz']"),
-        msg,
-        {additionalProperty: "baz"}
-      )
+      shouldBeError(validate.errors[0], "additionalProperties", "#/additionalProperties", "", msg, {
+        additionalProperty: "baz",
+      })
 
       var validateJP = ajvJP.compile(schema)
       shouldBeValid(validateJP, data)
@@ -93,7 +80,7 @@ describe("Validation errors", () => {
         validateJP.errors[0],
         "additionalProperties",
         "#/additionalProperties",
-        path("/baz"),
+        "",
         msg,
         {additionalProperty: "baz"}
       )
@@ -105,7 +92,7 @@ describe("Validation errors", () => {
         fullValidate.errors[0],
         "additionalProperties",
         "#/additionalProperties",
-        path("/baz"),
+        "",
         msg,
         {additionalProperty: "baz"}
       )
@@ -113,31 +100,15 @@ describe("Validation errors", () => {
         fullValidate.errors[1],
         "additionalProperties",
         "#/additionalProperties",
-        path("/quux"),
+        "",
         msg,
         {additionalProperty: "quux"}
       )
-
-      if (errorDataPath === "property") {
-        fullValidate.errors
-          .filter((err) => err.keyword === "additionalProperties")
-          .map((err) =>
-            fullAjv._opts.jsonPointers ? err.dataPath.substr(1) : err.dataPath.slice(2, -2)
-          )
-          .forEach((p) => delete invalidData[p])
-
-        invalidData.should.eql({foo: 1, bar: 2})
-      }
     }
   })
 
   describe('errors when "additionalProperties" is schema', () => {
-    it('should include property in dataPath with option errorDataPath="property"', () => {
-      createInstances("property")
-      testAdditionalIsSchema("property")
-    })
-
-    it("should NOT include property in dataPath WITHOUT option errorDataPath", () => {
+    it("should NOT include property in dataPath", () => {
       testAdditionalIsSchema()
     })
 
@@ -187,33 +158,23 @@ describe("Validation errors", () => {
   })
 
   describe('"required" errors', () => {
-    it('should include missing property in dataPath with option errorDataPath="property"', () => {
-      createInstances("property")
-      testRequired("property")
-    })
-
-    it("should NOT include missing property in dataPath WITHOUT option errorDataPath", () => {
+    it("should NOT include missing property in dataPath", () => {
       testRequired()
     })
 
-    function testRequired(errorDataPath) {
+    function testRequired() {
       var schema = {
         required: ["foo", "bar", "baz"],
       }
 
-      _testRequired(errorDataPath, schema, "#", ".")
+      _testRequired(schema, "#", ".")
     }
 
-    it('large data/schemas with option errorDataPath="property"', () => {
-      createInstances("property")
-      testRequiredLargeSchema("property")
-    })
-
-    it("large data/schemas WITHOUT option errorDataPath", () => {
+    it("large data/schemas", () => {
       testRequiredLargeSchema()
     })
 
-    function testRequiredLargeSchema(errorDataPath) {
+    function testRequiredLargeSchema() {
       var schema = {required: []},
         data = {},
         invalidData1 = {},
@@ -227,9 +188,6 @@ describe("Validation errors", () => {
       delete invalidData2[2] // properties '2' and '198' will be missing
       delete invalidData2[98]
 
-      var path = pathFunc(errorDataPath)
-      var msg = requiredFunc(errorDataPath)
-
       test()
 
       schema = {anyOf: [schema]}
@@ -241,51 +199,46 @@ describe("Validation errors", () => {
         var validate = ajv.compile(schema)
         shouldBeValid(validate, data)
         shouldBeInvalid(validate, invalidData1, 1 + extraErrors)
-        shouldBeError(validate.errors[0], "required", schPath, path("['1']"), msg("1"), {
+        shouldBeError(validate.errors[0], "required", schPath, "", requiredMsg("1"), {
           missingProperty: "1",
         })
         shouldBeInvalid(validate, invalidData2, 1 + extraErrors)
-        shouldBeError(validate.errors[0], "required", schPath, path("['2']"), msg("2"), {
+        shouldBeError(validate.errors[0], "required", schPath, "", requiredMsg("2"), {
           missingProperty: "2",
         })
 
         var validateJP = ajvJP.compile(schema)
         shouldBeValid(validateJP, data)
         shouldBeInvalid(validateJP, invalidData1, 1 + extraErrors)
-        shouldBeError(validateJP.errors[0], "required", schPath, path("/1"), msg("1"), {
+        shouldBeError(validateJP.errors[0], "required", schPath, "", requiredMsg("1"), {
           missingProperty: "1",
         })
         shouldBeInvalid(validateJP, invalidData2, 1 + extraErrors)
-        shouldBeError(validateJP.errors[0], "required", schPath, path("/2"), msg("2"), {
+        shouldBeError(validateJP.errors[0], "required", schPath, "", requiredMsg("2"), {
           missingProperty: "2",
         })
 
         var fullValidate = fullAjv.compile(schema)
         shouldBeValid(fullValidate, data)
         shouldBeInvalid(fullValidate, invalidData1, 1 + extraErrors)
-        shouldBeError(fullValidate.errors[0], "required", schPath, path("/1"), msg("1"), {
+        shouldBeError(fullValidate.errors[0], "required", schPath, "", requiredMsg("1"), {
           missingProperty: "1",
         })
         shouldBeInvalid(fullValidate, invalidData2, 2 + extraErrors)
-        shouldBeError(fullValidate.errors[0], "required", schPath, path("/2"), msg("2"), {
+        shouldBeError(fullValidate.errors[0], "required", schPath, "", requiredMsg("2"), {
           missingProperty: "2",
         })
-        shouldBeError(fullValidate.errors[1], "required", schPath, path("/98"), msg("98"), {
+        shouldBeError(fullValidate.errors[1], "required", schPath, "", requiredMsg("98"), {
           missingProperty: "98",
         })
       }
     }
 
-    it('with "properties" with option errorDataPath="property"', () => {
-      createInstances("property")
-      testRequiredAndProperties("property")
-    })
-
-    it('with "properties" WITHOUT option errorDataPath', () => {
+    it('with "properties"', () => {
       testRequiredAndProperties()
     })
 
-    function testRequiredAndProperties(errorDataPath) {
+    function testRequiredAndProperties() {
       var schema = {
         properties: {
           foo: {type: "number"},
@@ -295,24 +248,19 @@ describe("Validation errors", () => {
         required: ["foo", "bar", "baz"],
       }
 
-      _testRequired(errorDataPath, schema)
+      _testRequired(schema)
     }
 
-    it('in "anyOf" with option errorDataPath="property"', () => {
-      createInstances("property")
-      testRequiredInAnyOf("property")
-    })
-
-    it('in "anyOf" WITHOUT option errorDataPath', () => {
+    it('in "anyOf"', () => {
       testRequiredInAnyOf()
     })
 
-    function testRequiredInAnyOf(errorDataPath) {
+    function testRequiredInAnyOf() {
       var schema = {
         anyOf: [{required: ["foo", "bar", "baz"]}],
       }
 
-      _testRequired(errorDataPath, schema, "#/anyOf/0", ".", 1)
+      _testRequired(schema, "#/anyOf/0", ".", 1)
     }
 
     it("should not validate required twice in large schemas with loopRequired option", () => {
@@ -351,16 +299,11 @@ describe("Validation errors", () => {
   })
 
   describe('"dependencies" errors', () => {
-    it('should include missing property in dataPath with option errorDataPath="property"', () => {
-      createInstances("property")
-      testDependencies("property")
-    })
-
-    it("should NOT include missing property in dataPath WITHOUT option errorDataPath", () => {
+    it("should NOT include missing property in dataPath", () => {
       testDependencies()
     })
 
-    function testDependencies(errorDataPath) {
+    function testDependencies() {
       var schema = {
         dependencies: {
           a: ["foo", "bar", "baz"],
@@ -371,50 +314,21 @@ describe("Validation errors", () => {
         invalidData1 = {a: 0, foo: 1, baz: 3},
         invalidData2 = {a: 0, bar: 2}
 
-      var path = pathFunc(errorDataPath)
       var msg = "should have properties foo, bar, baz when property a is present"
 
       var validate = ajv.compile(schema)
       shouldBeValid(validate, data)
       shouldBeInvalid(validate, invalidData1)
-      shouldBeError(
-        validate.errors[0],
-        "dependencies",
-        "#/dependencies",
-        path(".bar"),
-        msg,
-        params(".bar")
-      )
+      shouldBeError(validate.errors[0], "dependencies", "#/dependencies", "", msg, params(".bar"))
       shouldBeInvalid(validate, invalidData2)
-      shouldBeError(
-        validate.errors[0],
-        "dependencies",
-        "#/dependencies",
-        path(".foo"),
-        msg,
-        params(".foo")
-      )
+      shouldBeError(validate.errors[0], "dependencies", "#/dependencies", "", msg, params(".foo"))
 
       var validateJP = ajvJP.compile(schema)
       shouldBeValid(validateJP, data)
       shouldBeInvalid(validateJP, invalidData1)
-      shouldBeError(
-        validateJP.errors[0],
-        "dependencies",
-        "#/dependencies",
-        path("/bar"),
-        msg,
-        params("bar")
-      )
+      shouldBeError(validateJP.errors[0], "dependencies", "#/dependencies", "", msg, params("bar"))
       shouldBeInvalid(validateJP, invalidData2)
-      shouldBeError(
-        validateJP.errors[0],
-        "dependencies",
-        "#/dependencies",
-        path("/foo"),
-        msg,
-        params("foo")
-      )
+      shouldBeError(validateJP.errors[0], "dependencies", "#/dependencies", "", msg, params("foo"))
 
       var fullValidate = fullAjv.compile(schema)
       shouldBeValid(fullValidate, data)
@@ -423,7 +337,7 @@ describe("Validation errors", () => {
         fullValidate.errors[0],
         "dependencies",
         "#/dependencies",
-        path("/bar"),
+        "",
         msg,
         params("bar")
       )
@@ -432,7 +346,7 @@ describe("Validation errors", () => {
         fullValidate.errors[0],
         "dependencies",
         "#/dependencies",
-        path("/foo"),
+        "",
         msg,
         params("foo")
       )
@@ -440,7 +354,7 @@ describe("Validation errors", () => {
         fullValidate.errors[1],
         "dependencies",
         "#/dependencies",
-        path("/baz"),
+        "",
         msg,
         params("baz")
       )
@@ -457,7 +371,7 @@ describe("Validation errors", () => {
     }
   })
 
-  function _testRequired(errorDataPath, schema, schemaPathPrefix, prefix, extraErrors) {
+  function _testRequired(schema, schemaPathPrefix, prefix, extraErrors) {
     var schPath = (schemaPathPrefix || "#") + "/required"
     prefix = prefix || ""
     extraErrors = extraErrors || 0
@@ -466,64 +380,45 @@ describe("Validation errors", () => {
       invalidData1 = {foo: 1, baz: 3},
       invalidData2 = {bar: 2}
 
-    var path = pathFunc(errorDataPath)
-    var msg = requiredFunc(errorDataPath)
-
     var validate = ajv.compile(schema)
     shouldBeValid(validate, data)
     shouldBeInvalid(validate, invalidData1, 1 + extraErrors)
-    shouldBeError(validate.errors[0], "required", schPath, path(".bar"), msg(prefix + "bar"), {
+    shouldBeError(validate.errors[0], "required", schPath, "", requiredMsg(prefix + "bar"), {
       missingProperty: prefix + "bar",
     })
     shouldBeInvalid(validate, invalidData2, 1 + extraErrors)
-    shouldBeError(validate.errors[0], "required", schPath, path(".foo"), msg(prefix + "foo"), {
+    shouldBeError(validate.errors[0], "required", schPath, "", requiredMsg(prefix + "foo"), {
       missingProperty: prefix + "foo",
     })
 
     var validateJP = ajvJP.compile(schema)
     shouldBeValid(validateJP, data)
     shouldBeInvalid(validateJP, invalidData1, 1 + extraErrors)
-    shouldBeError(validateJP.errors[0], "required", schPath, path("/bar"), msg("bar"), {
+    shouldBeError(validateJP.errors[0], "required", schPath, "", requiredMsg("bar"), {
       missingProperty: "bar",
     })
     shouldBeInvalid(validateJP, invalidData2, 1 + extraErrors)
-    shouldBeError(validateJP.errors[0], "required", schPath, path("/foo"), msg("foo"), {
+    shouldBeError(validateJP.errors[0], "required", schPath, "", requiredMsg("foo"), {
       missingProperty: "foo",
     })
 
     var fullValidate = fullAjv.compile(schema)
     shouldBeValid(fullValidate, data)
     shouldBeInvalid(fullValidate, invalidData1, 1 + extraErrors)
-    shouldBeError(fullValidate.errors[0], "required", schPath, path("/bar"), msg("bar"), {
+    shouldBeError(fullValidate.errors[0], "required", schPath, "", requiredMsg("bar"), {
       missingProperty: "bar",
     })
     shouldBeInvalid(fullValidate, invalidData2, 2 + extraErrors)
-    shouldBeError(fullValidate.errors[0], "required", schPath, path("/foo"), msg("foo"), {
+    shouldBeError(fullValidate.errors[0], "required", schPath, "", requiredMsg("foo"), {
       missingProperty: "foo",
     })
-    shouldBeError(fullValidate.errors[1], "required", schPath, path("/baz"), msg("baz"), {
+    shouldBeError(fullValidate.errors[1], "required", schPath, "", requiredMsg("baz"), {
       missingProperty: "baz",
     })
   }
 
-  function pathFunc(errorDataPath) {
-    return function (dataPath) {
-      return errorDataPath === "property" ? dataPath : ""
-    }
-  }
-
-  function requiredFunc(errorDataPath) {
-    return function (prop) {
-      return errorDataPath === "property"
-        ? "is a required property"
-        : "should have required property '" + prop + "'"
-    }
-  }
-
-  function additionalFunc(errorDataPath) {
-    return errorDataPath === "property"
-      ? "is an invalid additional property"
-      : "should NOT have additional properties"
+  function requiredMsg(prop) {
+    return `should have required property '${prop}'`
   }
 
   it('"items" errors should include item index without quotes in dataPath (#48)', () => {

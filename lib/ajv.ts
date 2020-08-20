@@ -71,7 +71,6 @@ export default function Ajv(opts: Options): void {
 
   opts.loopRequired = opts.loopRequired || Infinity
   opts.loopEnum = opts.loopEnum || Infinity
-  if (opts.errorDataPath === "property") opts._errorDataPathProperty = true
   if (opts.serialize === undefined) opts.serialize = stableStringify
   this._metaOpts = getMetaSchemaOptions(this)
 
