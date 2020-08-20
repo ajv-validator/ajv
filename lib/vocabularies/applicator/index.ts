@@ -9,7 +9,7 @@ const applicator: Vocabulary = [
   require("./anyOf"),
   require("./oneOf"),
   require("./allOf"),
-  // TODO require("./if"),
+  require("./if"),
 ]
 
 module.exports = applicator
