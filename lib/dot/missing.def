@@ -29,5 +29,3 @@
     {{# def.addError:_error }}
   }
 #}}
-
-{{ it.gen.code(out); }}

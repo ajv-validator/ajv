@@ -54,6 +54,7 @@ export default class CodeGen {
   }
 
   endIf(): CodeGen {
+    // TODO possibly remove empty branches here
     const b = this._lastBlock
     if (b !== Block.If && b !== Block.Else) throw new Error('CodeGen: "endIf" without "if"')
     this.#blocks.pop()
@@ -89,6 +90,7 @@ export default class CodeGen {
   }
 
   endBlock(expectedToClose?: number): CodeGen {
+    // TODO maybe close blocks one by one, eliminating empty branches
     const len = this.#blockStarts.pop()
     if (len === undefined) throw new Error("CodeGen: not in block sequence")
     const toClose = this.#blocks.length - len

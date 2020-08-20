@@ -55,6 +55,7 @@ export default function validateCode(
   } else {
     updateContext(it)
     checkAsync(it)
+    // TODO level, var - it is coupled with errs count in keyword.ts
     gen.code(`var errs_${level} = errors;`)
     typeAndKeywords()
     // TODO level, var

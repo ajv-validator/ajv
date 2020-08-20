@@ -182,7 +182,7 @@ export interface KeywordContext {
   gen: CodeGen
   fail: (condition?: string, context?: KeywordContext) => void
   ok: (condition?: string) => void
-  errorParams: (obj: any) => void
+  errorParams: (obj: KeywordContextParams, assing?: true) => void
   keyword: string
   data: string
   $data?: string | false
@@ -190,9 +190,11 @@ export interface KeywordContext {
   parentSchema: any
   schemaCode: string | number | boolean
   schemaValue: string | number | boolean
-  params: {[x: string]: string}
+  params: KeywordContextParams
   it: CompilationContext
 }
+
+export type KeywordContextParams = {[x: string]: string}
 
 export type FormatMode = "fast" | "full"
 

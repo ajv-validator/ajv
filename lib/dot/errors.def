@@ -91,7 +91,6 @@
 {{## def._errorMessages = {
   $ref:            "'can\\\'t resolve reference {{=it.util.escapeQuotes($schema)}}'",
   additionalProperties: "'should NOT have additional properties'",
-  dependencies:    "'should have {{? $deps.length == 1 }}property {{= it.util.escapeQuotes($deps[0]) }}{{??}}properties {{= it.util.escapeQuotes($deps.join(\", \")) }}{{?}} when property {{= it.util.escapeQuotes($property) }} is present'",
   format:          "'should match format \"{{#def.concatSchemaEQ}}\"'",
   required:        "'should have required property \\'{{=$missingProperty}}\\''",
   custom:          "'should pass \"{{=$rule.keyword}}\" keyword validation'",
@@ -102,13 +101,11 @@
 } #}}
 
 
-{{## def.schemaRefOrVal: {{?$isData}}validate.schema{{=$schemaPath}}{{??}}{{=$schema}}{{?}} #}}
 {{## def.schemaRefOrQS: {{?$isData}}validate.schema{{=$schemaPath}}{{??}}{{=it.util.toQuotedString($schema)}}{{?}} #}}
 
 {{## def._errorSchemas = {
   $ref:            "{{=it.util.toQuotedString($schema)}}",
   additionalProperties: "false",
-  dependencies:    "validate.schema{{=$schemaPath}}",
   format:          "{{#def.schemaRefOrQS}}",
   required:        "validate.schema{{=$schemaPath}}",
   custom:          "validate.schema{{=$schemaPath}}",
@@ -124,7 +121,6 @@
 {{## def._errorParams = {
   $ref:            "{ ref: '{{=it.util.escapeQuotes($schema)}}' }",
   additionalProperties: "{ additionalProperty: '{{=$additionalProperty}}' }",
-  dependencies:    "{ property: '{{= it.util.escapeQuotes($property) }}', missingProperty: '{{=$missingProperty}}', depsCount: {{=$deps.length}}, deps: '{{= it.util.escapeQuotes($deps.length==1 ? $deps[0] : $deps.join(\", \")) }}' }",
   format:          "{ format: {{#def.schemaValueQS}} }",
   required:        "{ missingProperty: '{{=$missingProperty}}' }",
   custom:          "{ keyword: '{{=$rule.keyword}}' }",

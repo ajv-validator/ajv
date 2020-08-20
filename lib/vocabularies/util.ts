@@ -62,3 +62,19 @@ export function alwaysValidSchema(
     ? Object.keys(schema).length === 0
     : !schemaHasRules(schema, RULES.all)
 }
+
+export function isOwnProperty(data: string, property: string): string {
+  return `Object.prototype.hasOwnProperty.call(${data}, ${quotedString(property)})`
+}
+
+export function propertyInData(data: string, propertry: string, ownProperties?: boolean): string {
+  let cond = `${data}${getProperty(propertry)} !== undefined`
+  if (ownProperties) cond += ` && ${isOwnProperty(data, propertry)}`
+  return cond
+}
+
+export function noPropertyInData(data: string, propertry: string, ownProperties?: boolean): string {
+  let cond = `${data}${getProperty(propertry)} === undefined`
+  if (ownProperties) cond += ` || !${isOwnProperty(data, propertry)}`
+  return cond
+}

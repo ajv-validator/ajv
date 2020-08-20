@@ -6,6 +6,7 @@ import {
   ValidateFunction,
   CompilationContext,
   KeywordContext,
+  KeywordContextParams,
 } from "./types"
 
 import {ValidationRules, Rule} from "./compile/rules"
@@ -177,8 +178,9 @@ function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): void
     else if (!allErrors) gen.code("if (true) {")
   }
 
-  function errorParams(obj: any) {
-    cxt.params = obj
+  function errorParams(obj: KeywordContextParams, assign?: true) {
+    if (assign) Object.assign(cxt.params, obj)
+    else cxt.params = obj
   }
 }
 
