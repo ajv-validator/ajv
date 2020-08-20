@@ -19,19 +19,19 @@ const def: KeywordDefinition = {
 
     const valid = gen.name("valid")
     const i = gen.name("i")
-    gen.for(`let ${i}=0; ${i}<${data}.length; ${i}++`)
-    applySubschema(
-      it,
-      {
-        keyword: "contains",
-        dataProp: i,
-        expr: Expr.Num,
-        compositeRule: true,
-      },
-      valid
-    )
-    gen.code(`if (${valid}) break;`)
-    gen.endFor()
+    gen.for(`let ${i}=0; ${i}<${data}.length; ${i}++`, () => {
+      applySubschema(
+        it,
+        {
+          keyword: "contains",
+          dataProp: i,
+          expr: Expr.Num,
+          compositeRule: true,
+        },
+        valid
+      )
+      gen.code(`if (${valid}) break;`)
+    })
 
     // TODO refactor failCompoundOrReset? It is different from anyOf though
     // TODO refactor ifs

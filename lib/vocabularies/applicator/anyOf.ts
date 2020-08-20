@@ -21,22 +21,21 @@ const def: KeywordDefinition = {
       const ${errsCount} = errors;`
     )
 
-    gen.startBlock()
-    schema.forEach((_, i: number) => {
-      applySubschema(
-        it,
-        {
-          keyword: "anyOf",
-          schemaProp: i,
-          compositeRule: true,
-        },
-        schValid
-      )
-      gen.code(`${valid} = ${valid} || ${schValid};`)
-      gen.if(`!${valid}`)
-    })
-
-    gen.endBlock(schema.length)
+    gen.block(() => {
+      schema.forEach((_, i: number) => {
+        applySubschema(
+          it,
+          {
+            keyword: "anyOf",
+            schemaProp: i,
+            compositeRule: true,
+          },
+          schValid
+        )
+        gen.code(`${valid} = ${valid} || ${schValid};`)
+        gen.if(`!${valid}`)
+      })
+    }, schema.length)
 
     // TODO refactor failCompoundOrReset?
     // TODO refactor ifs

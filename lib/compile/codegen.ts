@@ -23,49 +23,68 @@ export default class CodeGen {
     return this
   }
 
-  if(condition: string): CodeGen {
+  if(condition: string, thenBody?: () => void, elseBody?: () => void): CodeGen {
     this.#blocks.push(Block.If)
     this.code(`if(${condition}){`)
+    if (thenBody && elseBody) {
+      thenBody()
+      this.else()
+      elseBody()
+      this.endIf()
+    } else if (thenBody) {
+      thenBody()
+      this.endIf()
+    } else if (elseBody) {
+      throw new Error("CodeGen: else body without then body")
+    }
     return this
   }
 
   elseIf(condition: string): CodeGen {
-    if (this._block !== Block.If) throw new Error('CodeGen: "else if" without "if"')
+    if (this._lastBlock !== Block.If) throw new Error('CodeGen: "else if" without "if"')
     this.code(`}else if(${condition}){`)
     return this
   }
 
   else(): CodeGen {
-    if (this._block !== Block.If) throw new Error('CodeGen: "else" without "if"')
-    this._block = Block.Else
+    if (this._lastBlock !== Block.If) throw new Error('CodeGen: "else" without "if"')
+    this._lastBlock = Block.Else
     this.code(`}else{`)
     return this
   }
 
   endIf(): CodeGen {
-    const b = this._block
+    const b = this._lastBlock
     if (b !== Block.If && b !== Block.Else) throw new Error('CodeGen: "endIf" without "if"')
     this.#blocks.pop()
     this.code(`}`)
     return this
   }
 
-  for(iteration: string): CodeGen {
+  for(iteration: string, forBody?: () => void): CodeGen {
     this.#blocks.push(Block.For)
     this.code(`for(${iteration}){`)
+    if (forBody) {
+      forBody()
+      this.endFor()
+    }
     return this
   }
 
   endFor(): CodeGen {
-    const b = this._block
+    const b = this._lastBlock
     if (b !== Block.For) throw new Error('CodeGen: "endFor" without "for"')
     this.#blocks.pop()
     this.code(`}`)
     return this
   }
 
-  startBlock(): CodeGen {
+  block(body?: () => void, expectedToClose?: number): CodeGen {
     this.#blockStarts.push(this.#blocks.length)
+    if (body) {
+      body()
+      this.endBlock(expectedToClose)
+    }
     return this
   }
 
@@ -81,13 +100,13 @@ export default class CodeGen {
     return this
   }
 
-  get _block(): Block {
+  get _lastBlock(): Block {
     const len = this.#blocks.length
     if (len === 0) throw new Error("CodeGen: not in block")
     return this.#blocks[len - 1]
   }
 
-  set _block(b: Block) {
+  set _lastBlock(b: Block) {
     const len = this.#blocks.length
     if (len === 0) throw new Error('CodeGen: not in "if" block')
     this.#blocks[len - 1] = b

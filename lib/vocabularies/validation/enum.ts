@@ -8,16 +8,15 @@ const def: KeywordDefinition = {
   code({gen, fail, data, $data, schema, schemaCode, it: {opts}}) {
     if ($data) {
       const valid = gen.name("valid")
-      gen
-        .startBlock()
-        .code(`let ${valid};`)
-        .if(`${schemaCode} === undefined`)
-        .code(`${valid} = true;`)
-        .else()
-        .code(`${valid} = false;`)
-        .if(`Array.isArray(${schemaCode})`)
-      loopEnum(<string>schemaCode, valid)
-      gen.endBlock(2)
+      gen.code(`let ${valid};`)
+      gen.if(
+        `${schemaCode} === undefined`,
+        () => gen.code(`${valid} = true;`),
+        () =>
+          gen
+            .code(`${valid} = false;`)
+            .if(`Array.isArray(${schemaCode})`, () => loopEnum(<string>schemaCode, valid))
+      )
       fail(`!${valid}`)
     } else {
       if (schema.length === 0) throw new Error("enum must have non-empty array")

@@ -33,11 +33,9 @@ const def: KeywordDefinition = {
     function validateUniqueItems() {
       gen.code(
         `${i} = ${data}.length;
-        ${valid} = true;
-        if (${i} > 1) {
-          ${canOptimize() ? loopN() : loopN2()}
-        }`
+        ${valid} = true;`
       )
+      gen.if(`${i} > 1`, canOptimize() ? loopN : loopN2)
     }
 
     function canOptimize(): boolean {
@@ -46,7 +44,7 @@ const def: KeywordDefinition = {
         : itemType && itemType !== "object" && itemType !== "array"
     }
 
-    function loopN(): string {
+    function loopN(): void {
       const wrongType = (Array.isArray(itemType) ? checkDataTypes : checkDataType)(
         itemType,
         "item",
@@ -54,7 +52,8 @@ const def: KeywordDefinition = {
         true
       )
       const indices = gen.name("indices")
-      return `const ${indices} = {};
+      gen.code(
+        `const ${indices} = {};
         for (;${i}--;) {
           let item = ${data}[${i}];
           if (${wrongType}) continue;
@@ -66,10 +65,12 @@ const def: KeywordDefinition = {
           }
           ${indices}[item] = ${i};
         }`
+      )
     }
 
-    function loopN2(): string {
-      return `outer:
+    function loopN2(): void {
+      gen.code(
+        `outer:
         for (;${i}--;) {
           for (${j} = ${i}; ${j}--;) {
             if (equal(${data}[${i}], ${data}[${j}])) {
@@ -78,6 +79,7 @@ const def: KeywordDefinition = {
             }
           }
         }`
+      )
     }
   },
   error: {

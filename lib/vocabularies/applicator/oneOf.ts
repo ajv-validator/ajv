@@ -13,50 +13,15 @@ const def: KeywordDefinition = {
     const errsCount = gen.name("_errs")
     const passing = gen.name("passing")
     errorParams({passing})
+    // TODO possibly fail straight away (with warning or exception) if there are two empty always valid schemas
+
     gen
       .code(
         `const ${errsCount} = errors;
         let ${valid} = false;
         let ${passing} = null;`
       )
-      .startBlock()
-
-    // TODO possibly fail straight away (with warning or exception) if there are two empty always valid schemas
-
-    schema.forEach((sch, i: number) => {
-      if (alwaysValidSchema(it, sch)) {
-        gen.code(`var ${schValid} = true;`)
-      } else {
-        applySubschema(
-          it,
-          {
-            keyword: "oneOf",
-            schemaProp: i,
-            compositeRule: true,
-          },
-          schValid
-        )
-      }
-
-      if (i > 0) {
-        gen
-          .if(`${schValid} && ${valid}`)
-          .code(
-            `${valid} = false;
-            ${passing} = [${passing}, ${i}];`
-          )
-          .else()
-      }
-
-      gen.code(
-        `if (${schValid}) {
-          ${valid} = true;
-          ${passing} = ${i};
-        }`
-      )
-    })
-
-    gen.endBlock()
+      .block(validateOneOf)
 
     // TODO refactor failCompoundOrReset?
     // TODO refactor ifs
@@ -65,6 +30,41 @@ const def: KeywordDefinition = {
     gen.code(`} else {`)
     resetErrorsCount(gen, errsCount)
     if (it.allErrors) gen.code(`}`)
+
+    function validateOneOf() {
+      schema.forEach((sch, i: number) => {
+        if (alwaysValidSchema(it, sch)) {
+          gen.code(`var ${schValid} = true;`)
+        } else {
+          applySubschema(
+            it,
+            {
+              keyword: "oneOf",
+              schemaProp: i,
+              compositeRule: true,
+            },
+            schValid
+          )
+        }
+
+        if (i > 0) {
+          gen
+            .if(`${schValid} && ${valid}`)
+            .code(
+              `${valid} = false;
+              ${passing} = [${passing}, ${i}];`
+            )
+            .else()
+        }
+
+        gen.code(
+          `if (${schValid}) {
+            ${valid} = true;
+            ${passing} = ${i};
+          }`
+        )
+      })
+    }
   },
   error: {
     message: "should match exactly one schema in oneOf",

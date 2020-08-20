@@ -10,14 +10,13 @@ const def: KeywordDefinition = {
     const valid = gen.name("valid")
     let count = 0
     schema.forEach((sch: object | boolean, i: number) => {
-      if (!alwaysValidSchema(it, sch)) {
-        emptySchemas = false
-        applySubschema(it, {keyword: "allOf", schemaProp: i}, valid)
-        if (!it.allErrors) {
-          if (count === 1) gen.startBlock()
-          count++
-          gen.if(`${valid}`)
-        }
+      if (alwaysValidSchema(it, sch)) return
+      emptySchemas = false
+      applySubschema(it, {keyword: "allOf", schemaProp: i}, valid)
+      if (!it.allErrors) {
+        if (count === 1) gen.block()
+        count++
+        gen.if(valid)
       }
     })
 

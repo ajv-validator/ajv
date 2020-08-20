@@ -33,19 +33,11 @@ const def: KeywordDefinition = {
       const ifClause = gen.name("ifClause")
       errorParams({ifClause})
       gen.code(`let ${ifClause};`)
-      gen.if(schValid)
-      validateClause("then", ifClause)
-      gen.else()
-      validateClause("else", ifClause)
-      gen.endIf()
+      gen.if(schValid, validateClause("then", ifClause), validateClause("else", ifClause))
     } else if (hasThen) {
-      gen.if(schValid)
-      validateClause("then")
-      gen.endIf()
+      gen.if(schValid, validateClause("then"))
     } else {
-      gen.if(`!${schValid}`)
-      validateClause("else")
-      gen.endIf()
+      gen.if(`!${schValid}`, validateClause("else"))
     }
 
     // // TODO refactor failCompoundOrReset?
@@ -67,11 +59,13 @@ const def: KeywordDefinition = {
       )
     }
 
-    function validateClause(keyword, ifClause?: string): void {
-      applySubschema(it, {keyword}, schValid)
-      gen.code(`${valid} = ${schValid};`)
-      if (ifClause) gen.code(`${ifClause} = "${keyword}";`)
-      else errorParams({ifClause: `"${keyword}"`})
+    function validateClause(keyword, ifClause?: string): () => void {
+      return () => {
+        applySubschema(it, {keyword}, schValid)
+        gen.code(`${valid} = ${schValid};`)
+        if (ifClause) gen.code(`${ifClause} = "${keyword}";`)
+        else errorParams({ifClause: `"${keyword}"`})
+      }
     }
   },
   error: {
