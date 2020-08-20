@@ -7,7 +7,7 @@ const applicator: Vocabulary = [
   // any
   require("./not"),
   require("./anyOf"),
-  // TODO require("./oneOf"),
+  require("./oneOf"),
   require("./allOf"),
   // TODO require("./if"),
 ]

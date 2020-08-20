@@ -62,7 +62,7 @@ export default function rules(): ValidationRules {
           {properties: ["additionalProperties", "patternProperties"]},
         ],
       },
-      {rules: ["$ref", "oneOf", "if"]},
+      {rules: ["$ref", "if"]},
     ],
     all: toHash(ALL),
     keywords: {},
