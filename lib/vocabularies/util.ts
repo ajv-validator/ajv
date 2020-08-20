@@ -43,11 +43,23 @@ export function schemaRefOrVal(
   return `validate.schema${schemaPath + getProperty(keyword)}`
 }
 
-export function nonEmptySchema(
+// TODO remove
+// export function nonEmptySchema(
+//   {RULES, opts: {strictKeywords}}: CompilationContext,
+//   schema: boolean | object
+// ): boolean | void {
+//   return strictKeywords
+//     ? (typeof schema == "object" && Object.keys(schema).length > 0) || schema === false
+//     : schemaHasRules(schema, RULES.all)
+// }
+
+export function alwaysValidSchema(
   {RULES, opts: {strictKeywords}}: CompilationContext,
   schema: boolean | object
 ): boolean | void {
-  return strictKeywords
-    ? (typeof schema == "object" && Object.keys(schema).length > 0) || schema === false
-    : schemaHasRules(schema, RULES.all)
+  return typeof schema == "boolean"
+    ? schema === true
+    : strictKeywords
+    ? Object.keys(schema).length === 0
+    : !schemaHasRules(schema, RULES.all)
 }

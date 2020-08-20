@@ -1,5 +1,5 @@
 import {KeywordDefinition, KeywordErrorDefinition} from "../../types"
-import {nonEmptySchema} from "../util"
+import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportExtraError, resetErrorsCount} from "../../compile/errors"
 
@@ -24,7 +24,9 @@ const def: KeywordDefinition = {
     // TODO possibly fail straight away (with warning or exception) if there are two empty always valid schemas
 
     schema.forEach((sch, i: number) => {
-      if (nonEmptySchema(it, sch)) {
+      if (alwaysValidSchema(it, sch)) {
+        gen.code(`var ${schValid} = true;`)
+      } else {
         applySubschema(
           it,
           {
@@ -34,8 +36,6 @@ const def: KeywordDefinition = {
           },
           schValid
         )
-      } else {
-        gen.code(`var ${schValid} = true;`)
       }
 
       if (i > 0) {

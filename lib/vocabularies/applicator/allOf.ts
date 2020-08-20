@@ -1,5 +1,5 @@
 import {KeywordDefinition} from "../../types"
-import {nonEmptySchema} from "../util"
+import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 
 const def: KeywordDefinition = {
@@ -10,7 +10,7 @@ const def: KeywordDefinition = {
     const valid = gen.name("valid")
     let count = 0
     schema.forEach((sch: object | boolean, i: number) => {
-      if (nonEmptySchema(it, sch)) {
+      if (!alwaysValidSchema(it, sch)) {
         emptySchemas = false
         applySubschema(it, {keyword: "allOf", schemaProp: i}, valid)
         if (!it.allErrors) {

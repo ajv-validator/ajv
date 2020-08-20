@@ -1,5 +1,5 @@
 import {KeywordDefinition, KeywordErrorDefinition} from "../../types"
-import {nonEmptySchema} from "../util"
+import {alwaysValidSchema} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
 import {fail_} from "../../keyword"
 
@@ -31,12 +31,12 @@ const def: KeywordDefinition = {
         const addIts = parentSchema.additionalItems
         if (addIts === false) validateDataLength()
         validateDefinedItems()
-        if (typeof addIts == "object" && nonEmptySchema(it, addIts)) {
+        if (typeof addIts == "object" && !alwaysValidSchema(it, addIts)) {
           gen.if(`${len} > ${schema.length}`)
           validateItems("additionalItems", schema.length)
           gen.endIf()
         }
-      } else if (nonEmptySchema(it, schema)) {
+      } else if (!alwaysValidSchema(it, schema)) {
         validateItems("items", 0)
       }
     }
@@ -57,21 +57,20 @@ const def: KeywordDefinition = {
     function validateDefinedItems(): void {
       const valid = gen.name("valid")
       schema.forEach((sch: any, i: number) => {
-        if (nonEmptySchema(it, sch)) {
-          gen.if(`${len} > ${i}`)
-          applySubschema(
-            it,
-            {
-              keyword: "items",
-              schemaProp: i,
-              dataProp: i,
-              expr: Expr.Const,
-            },
-            valid
-          )
-          gen.endIf()
-          if (!it.allErrors) gen.if(valid)
-        }
+        if (alwaysValidSchema(it, sch)) return
+        gen.if(`${len} > ${i}`)
+        applySubschema(
+          it,
+          {
+            keyword: "items",
+            schemaProp: i,
+            dataProp: i,
+            expr: Expr.Const,
+          },
+          valid
+        )
+        gen.endIf()
+        if (!it.allErrors) gen.if(valid)
       })
     }
 

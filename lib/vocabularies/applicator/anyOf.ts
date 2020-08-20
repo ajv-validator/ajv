@@ -1,5 +1,5 @@
 import {KeywordDefinition, KeywordErrorDefinition} from "../../types"
-import {nonEmptySchema} from "../util"
+import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportExtraError, resetErrorsCount} from "../../compile/errors"
 
@@ -8,8 +8,8 @@ const def: KeywordDefinition = {
   schemaType: "array",
   code(cxt) {
     const {gen, ok, schema, it} = cxt
-    let hasEmptySchema = !schema.every((sch: object | boolean) => nonEmptySchema(it, sch))
-    if (hasEmptySchema) {
+    let alwaysValid = schema.some((sch: object | boolean) => alwaysValidSchema(it, sch))
+    if (alwaysValid) {
       ok()
       return
     }
