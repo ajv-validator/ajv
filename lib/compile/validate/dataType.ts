@@ -5,8 +5,8 @@ import {reportError} from "../errors"
 import {getKeywordContext} from "../../keyword"
 
 export function getSchemaTypes({schema, opts}: CompilationContext): string[] {
-  const t: undefined | string | string[] = schema.type
-  const types: string[] = Array.isArray(t) ? t : t ? [t] : []
+  const st: undefined | string | string[] = schema.type
+  const types: string[] = Array.isArray(st) ? st : st ? [st] : []
   types.forEach(checkType)
   if (opts.nullable) {
     const hasNull = types.includes("null")
@@ -30,7 +30,7 @@ export function coerceAndCheckDataType(it: CompilationContext, types: string[]):
     dataLevel,
     opts: {coerceTypes, strictNumbers},
   } = it
-  let coerceTo = coerceToTypes(types, coerceTypes)
+  const coerceTo = coerceToTypes(types, coerceTypes)
   const checkTypes =
     types.length > 0 &&
     (coerceTo.length > 0 || types.length > 1 || !schemaHasRulesForType(it, types[0]))
@@ -52,7 +52,13 @@ function coerceToTypes(types: string[], coerceTypes?: boolean | "array"): string
     : []
 }
 
-const coerceCode = {
+interface CoerceArgs {
+  dataType: string
+  data: string
+  coerced: string
+}
+
+const coerceCode: {[x: string]: (arg: CoerceArgs) => string} = {
   string: ({dataType, data, coerced}) =>
     `else if (${dataType} == "number" || ${dataType} == "boolean")
       ${coerced} = "" + ${data};
@@ -103,7 +109,7 @@ export function coerceData(it: CompilationContext, coerceTo: string[]): void {
     )
   }
   gen.code(`if (${coerced} !== undefined) ;`)
-  const args = {dataType, data, coerced}
+  const args: CoerceArgs = {dataType, data, coerced}
   for (const t of coerceTo) {
     if (t in coerceCode && (t !== "array" || coerceTypes === "array")) {
       gen.code(coerceCode[t](args))
@@ -131,12 +137,12 @@ function assignParentData({dataLevel, dataPathArr}: CompilationContext, expr: st
 }
 
 const typeError: KeywordErrorDefinition = {
-  message: ({schema}) => `"should be ${Array.isArray(schema) ? schema.join(",") : schema}"`,
+  message: ({schema}) => `"should be ${Array.isArray(schema) ? schema.join(",") : <string>schema}"`,
   // TODO change: return type as array here
-  params: ({schema}) => `{type: "${Array.isArray(schema) ? schema.join(",") : schema}"}`,
+  params: ({schema}) => `{type: "${Array.isArray(schema) ? schema.join(",") : <string>schema}"}`,
 }
 
-export function reportTypeError(it: CompilationContext) {
+export function reportTypeError(it: CompilationContext): void {
   const cxt = getKeywordContext(it, "type")
   reportError(cxt, typeError)
 }

@@ -27,7 +27,7 @@ const def: KeywordDefinition = {
     function validateItemsKeyword(): void {
       if (Array.isArray(schema)) {
         const addIts = parentSchema.additionalItems
-        if (addIts === false) validateDataLength()
+        if (addIts === false) validateDataLength(schema)
         validateDefinedItems()
         if (typeof addIts == "object" && !alwaysValidSchema(it, addIts)) {
           gen.if(`${len} > ${schema.length}`, () => validateItems("additionalItems", schema.length))
@@ -37,10 +37,10 @@ const def: KeywordDefinition = {
       }
     }
 
-    function validateDataLength(): void {
+    function validateDataLength(sch: any[]): void {
       // TODO replace with "fail"
       fail_(
-        `${len} > ${schema.length}`,
+        `${len} > ${sch.length}`,
         {
           ...cxt,
           keyword: "additionalItems",
@@ -80,8 +80,8 @@ const def: KeywordDefinition = {
     }
   },
   error: {
-    message: ({schema}) => `"should NOT have more than ${schema.length} items"`,
-    params: ({schema}) => `{limit: ${schema.length}}`,
+    message: ({schema}) => `"should NOT have more than ${schema.length as number} items"`,
+    params: ({schema}) => `{limit: ${schema.length as number}}`,
   },
 }
 

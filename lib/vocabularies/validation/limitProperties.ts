@@ -7,13 +7,13 @@ const def: KeywordDefinition = {
   schemaType: "number",
   $data: true,
   code({fail, keyword, data, $data, schemaCode}) {
-    const op = keyword == "maxProperties" ? ">" : "<"
+    const op = keyword === "maxProperties" ? ">" : "<"
     const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
     fail(dnt + `Object.keys(${data}).length` + op + schemaCode)
   },
   error: {
     message({keyword, $data, schemaCode}) {
-      const comp = keyword == "maxProperties" ? "more" : "fewer"
+      const comp = keyword === "maxProperties" ? "more" : "fewer"
       const sch = concatSchema(schemaCode, $data)
       return `"should NOT have ${comp} than ${sch} items"`
     },

@@ -1,7 +1,7 @@
 import {KeywordDefinition} from "../../types"
 import {appendSchema, dataNotType} from "../util"
 
-const OPS = {
+const OPS: {[index: string]: {fail: string; ok: string}} = {
   maximum: {fail: ">", ok: "<="},
   minimum: {fail: "<", ok: ">="},
   exclusiveMaximum: {fail: ">=", ok: "<"},

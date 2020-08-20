@@ -8,7 +8,7 @@ const def: KeywordDefinition = {
   schemaType: "array",
   code(cxt) {
     const {gen, ok, schema, it} = cxt
-    let alwaysValid = schema.some((sch: object | boolean) => alwaysValidSchema(it, sch))
+    const alwaysValid = schema.some((sch: object | boolean) => alwaysValidSchema(it, sch))
     if (alwaysValid) {
       ok()
       return

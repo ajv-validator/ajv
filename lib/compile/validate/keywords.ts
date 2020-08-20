@@ -10,7 +10,7 @@ export function schemaKeywords(
   types: string[],
   typeErrors: boolean,
   top: boolean
-) {
+): void {
   const {
     gen,
     schema,

@@ -28,7 +28,7 @@ const def: KeywordDefinition = {
         loopEnum(vSchema, valid)
         fail(`!${valid}`)
       } else {
-        let cond: string = schema.reduce(
+        const cond: string = schema.reduce(
           (c, _, i) => (c += (c && "||") + equalCode(vSchema, i)),
           ""
         )
@@ -49,7 +49,7 @@ const def: KeywordDefinition = {
     }
 
     function equalCode(vSchema: string, i: number): string {
-      let sch = schema[i]
+      let sch: string = schema[i]
       if (sch && typeof sch === "object") {
         return `equal(${data}, ${vSchema}[${i}])`
       }

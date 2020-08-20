@@ -190,7 +190,7 @@ export interface KeywordContext {
   parentSchema: any
   schemaCode: string | number | boolean
   schemaValue: string | number | boolean
-  params?: any
+  params: {[x: string]: string}
   it: CompilationContext
 }
 

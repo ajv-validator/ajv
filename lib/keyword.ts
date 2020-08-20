@@ -145,6 +145,7 @@ function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): void
     schemaCode: $data ? gen.name("schema") : schemaValue,
     schemaValue,
     parentSchema: it.schema,
+    params: {},
     it,
   }
   if ($data) {
@@ -216,6 +217,7 @@ export function getKeywordContext(it: CompilationContext, keyword: string): Keyw
     schemaCode,
     schemaValue: schemaCode,
     parentSchema: schema,
+    params: {},
     it,
   }
 }

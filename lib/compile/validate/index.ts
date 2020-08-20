@@ -7,16 +7,14 @@ import {schemaKeywords} from "./keywords"
 
 const resolve = require("../resolve")
 
-/**
- * schema compilation (render) time:
- * it = { schema, RULES, _validate, opts }
- * it.validate - this function (validateCode),
- *   it is used recursively to generate code for sub-schemas
- *
- * runtime:
- * "validate" is a variable name to which this function will be assigned
- * validateRef etc. are defined in the parent scope in index.js
- */
+// schema compilation (render) time:
+// it = { schema, RULES, _validate, opts }
+// it.validate - this function (validateCode),
+//   it is used recursively to generate code for sub-schemas
+//
+// runtime:
+// "validate" is a variable name to which this function will be assigned
+// validateRef etc. are defined in the parent scope in index.js
 export default function validateCode(
   it: CompilationContext,
   valid?: string,
@@ -129,7 +127,7 @@ function startFunction({
 }: CompilationContext): void {
   const asyncFunc = async ? "async" : ""
   const sourceUrl =
-    schema.$id && (sourceCode || processCode) ? `/*# sourceURL=${schema.$id} */` : ""
+    schema.$id && (sourceCode || processCode) ? `/*# sourceURL=${schema.$id as string} */` : ""
   gen.code(
     `const validate = ${asyncFunc} function(data, dataPath, parentData, parentDataProperty, rootData) {
       'use strict';

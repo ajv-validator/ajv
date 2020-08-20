@@ -59,7 +59,7 @@ const def: KeywordDefinition = {
       )
     }
 
-    function validateClause(keyword, ifClause?: string): () => void {
+    function validateClause(keyword: string, ifClause?: string): () => void {
       return () => {
         applySubschema(it, {keyword}, schValid)
         gen.code(`${valid} = ${schValid};`)

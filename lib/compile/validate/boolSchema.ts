@@ -44,6 +44,7 @@ function falseSchemaError(it: CompilationContext, overrideAllErrors?: boolean) {
     schemaCode: false,
     schemaValue: false,
     parentSchema: false,
+    params: {},
     it,
   }
   reportError(cxt, boolError, overrideAllErrors)

@@ -36,7 +36,7 @@ function assignDefault(
     return
   }
 
-  let condition =
+  const condition =
     `${data} === undefined` +
     (useDefaults === "empty" ? ` || ${data} === null || ${data} === ""` : "")
   // TODO remove option `useDefaults === "shared"`

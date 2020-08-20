@@ -30,15 +30,14 @@ export function dataNotType(
 }
 
 export function schemaRefOrVal(
-  schema,
+  schema: unknown,
   schemaPath: string,
   keyword: string,
   $data?: string | false
 ): string | number | boolean {
-  const t = typeof schema
   if (!$data) {
-    if (t === "number" || t === "boolean") return schema
-    if (t === "string") return quotedString(schema)
+    if (typeof schema == "number" || typeof schema == "boolean") return schema
+    if (typeof schema == "string") return quotedString(schema)
   }
   return `validate.schema${schemaPath + getProperty(keyword)}`
 }
