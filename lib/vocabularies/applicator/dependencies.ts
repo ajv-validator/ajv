@@ -77,7 +77,7 @@ const def: KeywordDefinition = {
         gen.if(
           propertyInData(data, prop, Expr.Const, it.opts.ownProperties),
           () => applySubschema(it, {keyword: "dependencies", schemaProp: prop}, valid),
-          () => gen.code(`var ${valid} = true;`) // TODO refactor var
+          `var ${valid} = true;` // TODO refactor var
         )
         if (!it.allErrors) gen.if(valid)
       }

@@ -31,7 +31,7 @@ const def: KeywordDefinition = {
         },
         valid
       )
-      gen.code(`if (${valid}) break;`)
+      gen.if(valid, "break")
     })
 
     // TODO refactor failCompoundOrReset? It is different from anyOf though

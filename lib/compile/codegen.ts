@@ -4,6 +4,8 @@ enum Block {
   For,
 }
 
+type Code = string | (() => void)
+
 export default class CodeGen {
   #names: {[key: string]: number} = {}
   // TODO make private. Possibly stack?
@@ -17,23 +19,20 @@ export default class CodeGen {
     return `${prefix}_${num}`
   }
 
-  code(str?: string): CodeGen {
+  code(c?: Code): CodeGen {
     // TODO optionally strip whitespace
-    if (str) this._out += str + "\n"
+    if (typeof c == "function") c()
+    else if (c) this._out += c + "\n"
     return this
   }
 
-  if(condition: string, thenBody?: () => void, elseBody?: () => void): CodeGen {
+  if(condition: string, thenBody?: Code, elseBody?: Code): CodeGen {
     this.#blocks.push(Block.If)
     this.code(`if(${condition}){`)
     if (thenBody && elseBody) {
-      thenBody()
-      this.else()
-      elseBody()
-      this.endIf()
+      this.code(thenBody).else().code(elseBody).endIf()
     } else if (thenBody) {
-      thenBody()
-      this.endIf()
+      this.code(thenBody).endIf()
     } else if (elseBody) {
       throw new Error("CodeGen: else body without then body")
     }
@@ -62,13 +61,10 @@ export default class CodeGen {
     return this
   }
 
-  for(iteration: string, forBody?: () => void): CodeGen {
+  for(iteration: string, forBody?: Code): CodeGen {
     this.#blocks.push(Block.For)
     this.code(`for(${iteration}){`)
-    if (forBody) {
-      forBody()
-      this.endFor()
-    }
+    if (forBody) this.code(forBody).endFor()
     return this
   }
 
@@ -80,12 +76,9 @@ export default class CodeGen {
     return this
   }
 
-  block(body?: () => void, expectedToClose?: number): CodeGen {
+  block(body?: Code, expectedToClose?: number): CodeGen {
     this.#blockStarts.push(this.#blocks.length)
-    if (body) {
-      body()
-      this.endBlock(expectedToClose)
-    }
+    if (body) this.code(body).endBlock(expectedToClose)
     return this
   }
 
@@ -103,14 +96,16 @@ export default class CodeGen {
   }
 
   get _lastBlock(): Block {
-    const len = this.#blocks.length
-    if (len === 0) throw new Error("CodeGen: not in block")
-    return this.#blocks[len - 1]
+    return this.#blocks[this._last()]
   }
 
   set _lastBlock(b: Block) {
+    this.#blocks[this._last()] = b
+  }
+
+  _last() {
     const len = this.#blocks.length
-    if (len === 0) throw new Error('CodeGen: not in "if" block')
-    this.#blocks[len - 1] = b
+    if (len === 0) throw new Error("CodeGen: not in block")
+    return len - 1
   }
 }

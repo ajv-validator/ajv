@@ -9,13 +9,10 @@ const def: KeywordDefinition = {
     if ($data) {
       const valid = gen.name("valid")
       gen.code(`let ${valid};`)
-      gen.if(
-        `${schemaCode} === undefined`,
-        () => gen.code(`${valid} = true;`),
-        () =>
-          gen
-            .code(`${valid} = false;`)
-            .if(`Array.isArray(${schemaCode})`, () => loopEnum(<string>schemaCode, valid))
+      gen.if(`${schemaCode} === undefined`, `${valid} = true;`, () =>
+        gen
+          .code(`${valid} = false;`)
+          .if(`Array.isArray(${schemaCode})`, () => loopEnum(<string>schemaCode, valid))
       )
       fail(`!${valid}`)
     } else {

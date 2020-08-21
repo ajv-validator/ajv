@@ -48,7 +48,7 @@ const def: KeywordDefinition = {
             },
             valid
           )
-          if (!it.allErrors) gen.if(`!${valid}`, () => gen.code("break;"))
+          if (!it.allErrors) gen.if(`!${valid}`, "break")
         })
       })
     }

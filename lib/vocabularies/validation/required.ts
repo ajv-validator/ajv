@@ -94,10 +94,9 @@ const def: KeywordDefinition = {
 
     function loopUntilMissing(missing: string, valid: string): void {
       gen.for(`${missing} of ${schemaCode}`, () =>
-        gen.code(
-          `${valid} = ${propertyInData(data, missing, Expr.Str, it.opts.ownProperties)};
-        if (!${valid}) break;`
-        )
+        gen
+          .code(`${valid} = ${propertyInData(data, missing, Expr.Str, it.opts.ownProperties)};`)
+          .if(`!${valid}`, "break")
       )
     }
   },
