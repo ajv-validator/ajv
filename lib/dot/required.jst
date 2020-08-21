@@ -23,27 +23,10 @@
   Object.prototype.hasOwnProperty.call({{=$data}}, {{=$vSchema}}[{{=$i}}])
 #}}
 
-
-{{? !$isData }}
-  {{? $schema.length < it.opts.loopRequired &&
-      it.schema.properties && Object.keys(it.schema.properties).length }}
-    {{ var $required = []; }}
-    {{~ $schema:$property }}
-      {{ var $propertySch = it.schema.properties[$property]; }}
-      {{? !($propertySch && {{# def.nonEmptySchema:$propertySch}}) }}
-        {{ $required[$required.length] = $property; }}
-      {{?}}
-    {{~}}
-  {{??}}
-    {{ var $required = $schema; }}
-  {{?}}
-{{?}}
-
-
-{{? $isData || $required.length }}
+{{? $isData || $schema.length }}
   {{
     var $currentErrorPath = it.errorPath
-      , $loopRequired = $isData || $required.length >= it.opts.loopRequired
+      , $loopRequired = $isData || $schema.length >= it.opts.loopRequired
       , $ownProperties = it.opts.ownProperties;
   }}
 
@@ -68,7 +51,7 @@
       {{# def.checkError:'required' }}
       else {
     {{??}}
-      if ({{# def.checkMissingProperty:$required }}) {
+      if ({{# def.checkMissingProperty:$schema }}) {
         {{# def.errorMissingProperty:'required' }}
       } else {
     {{?}}
@@ -92,7 +75,7 @@
 
       {{? $isData }}  }  {{?}}
     {{??}}
-      {{~ $required:$propertyKey }}
+      {{~ $schema:$propertyKey }}
         {{# def.allErrorsMissingProperty:'required' }}
       {{~}}
     {{?}}

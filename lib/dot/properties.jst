@@ -39,11 +39,6 @@
     , $ownProperties = it.opts.ownProperties
     , $currentBaseId = it.baseId;
 
-  var $required = it.schema.required;
-  if ($required && !(it.opts.$data && $required.$data) && $required.length < it.opts.loopRequired) {
-    var $requiredHash = it.util.toHash($required);
-  }
-
   function notProto(p) { return p !== '__proto__'; }
 }}
 
@@ -161,31 +156,16 @@ var {{=$nextValid}} = true;
       {{? $hasDefault }}
         {{= $code }}
       {{??}}
-        {{? $requiredHash && $requiredHash[$propertyKey] }}
+        {{? $breakOnError }}
           if ({{# def.noPropertyInData }}) {
-            {{=$nextValid}} = false;
-            {{
-              var $currentErrorPath = it.errorPath
-                , $currErrSchemaPath = $errSchemaPath
-                , $missingProperty = it.util.escapeQuotes($propertyKey);
-              $errSchemaPath = it.errSchemaPath + '/required';
-            }}
-            {{# def.error:'required' }}
-            {{ $errSchemaPath = $currErrSchemaPath; }}
-            {{ it.errorPath = $currentErrorPath; }}
+            {{=$nextValid}} = true;
           } else {
         {{??}}
-          {{? $breakOnError }}
-            if ({{# def.noPropertyInData }}) {
-              {{=$nextValid}} = true;
-            } else {
-          {{??}}
-            if ({{=$useData}} !== undefined
-              {{? $ownProperties }}
-                && {{# def.isOwnProperty }}
-              {{?}}
-            ) {
-          {{?}}
+          if ({{=$useData}} !== undefined
+            {{? $ownProperties }}
+              && {{# def.isOwnProperty }}
+            {{?}}
+          ) {
         {{?}}
 
           {{= $code }}
