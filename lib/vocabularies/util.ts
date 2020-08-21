@@ -1,5 +1,6 @@
 import {getProperty, schemaHasRules} from "../compile/util"
 import {CompilationContext} from "../types"
+import {Expr} from "../compile/subschema"
 
 export function appendSchema(
   schemaCode: string | number | boolean,
@@ -63,18 +64,33 @@ export function alwaysValidSchema(
     : !schemaHasRules(schema, RULES.all)
 }
 
-export function isOwnProperty(data: string, property: string): string {
-  return `Object.prototype.hasOwnProperty.call(${data}, ${quotedString(property)})`
+export function isOwnProperty(data: string, property: string, expr: Expr): string {
+  const prop = expr === Expr.Const ? quotedString(property) : property
+  return `Object.prototype.hasOwnProperty.call(${data}, ${prop})`
 }
 
-export function propertyInData(data: string, propertry: string, ownProperties?: boolean): string {
-  let cond = `${data}${getProperty(propertry)} !== undefined`
-  if (ownProperties) cond += ` && ${isOwnProperty(data, propertry)}`
+export function propertyInData(
+  data: string,
+  property: string,
+  expr: Expr,
+  ownProperties?: boolean
+): string {
+  let cond = `${data}${accessProperty(property, expr)} !== undefined`
+  if (ownProperties) cond += ` && ${isOwnProperty(data, property, expr)}`
   return cond
 }
 
-export function noPropertyInData(data: string, propertry: string, ownProperties?: boolean): string {
-  let cond = `${data}${getProperty(propertry)} === undefined`
-  if (ownProperties) cond += ` || !${isOwnProperty(data, propertry)}`
+export function noPropertyInData(
+  data: string,
+  property: string,
+  expr: Expr,
+  ownProperties?: boolean
+): string {
+  let cond = `${data}${accessProperty(property, expr)} === undefined`
+  if (ownProperties) cond += ` || !${isOwnProperty(data, property, expr)}`
   return cond
+}
+
+function accessProperty(property: string | number, expr: Expr): string {
+  return expr === Expr.Const ? getProperty(property) : `[${property}]`
 }

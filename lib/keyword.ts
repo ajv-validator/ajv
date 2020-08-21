@@ -60,11 +60,11 @@ export function addKeyword(
   /* eslint no-shadow: 0 */
   const RULES: ValidationRules = this.RULES
   if (RULES.keywords[keyword]) {
-    throw new Error("Keyword " + keyword + " is already defined")
+    throw new Error(`Keyword ${keyword} is already defined`)
   }
 
   if (!IDENTIFIER.test(keyword)) {
-    throw new Error("Keyword " + keyword + " is not a valid identifier")
+    throw new Error(`Keyword ${keyword} is not a valid identifier`)
   }
 
   // TODO any

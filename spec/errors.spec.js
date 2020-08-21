@@ -296,6 +296,45 @@ describe("Validation errors", () => {
       validate({requiredProperties: ["foo", "bar"]}).should.equal(false)
       validate.errors.should.have.length(2)
     })
+
+    it("should show different error when required is $data of incorrect type", () => {
+      // test(new Ajv({$data: true}))
+      test(new Ajv({$data: true, allErrors: true}))
+
+      function test(_ajv) {
+        const schema = {
+          required: {$data: "0/req"},
+          properties: {
+            req: {},
+            foo: {},
+            bar: {},
+          },
+        }
+
+        const validate = _ajv.compile(schema)
+
+        shouldBeValid(validate, {req: ["foo", "bar"], foo: 1, bar: 2})
+        shouldBeInvalid(validate, {req: ["foo", "bar"], foo: 1})
+        shouldBeError(
+          validate.errors[0],
+          "required",
+          "#/required",
+          "",
+          "should have required property 'bar'",
+          {missingProperty: "bar"}
+        )
+
+        shouldBeInvalid(validate, {req: "invalid"})
+        shouldBeError(
+          validate.errors[0],
+          "required",
+          "#/required",
+          "",
+          '"required" keyword value must be array',
+          {}
+        )
+      }
+    })
   })
 
   describe('"dependencies" errors', () => {

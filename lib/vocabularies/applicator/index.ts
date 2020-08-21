@@ -5,7 +5,6 @@ const applicator: Vocabulary = [
   require("./items"),
   require("./contains"),
   // object
-  // require("./required"),
   require("./dependencies"),
   require("./propertyNames"),
   // require("./properties"),
