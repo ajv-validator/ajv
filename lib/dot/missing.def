@@ -5,7 +5,7 @@
       var $prop = it.util.getProperty($propertyKey)
         , $useData = $data + $prop;
     }}
-    ( ({{# def.noPropertyInData }}) && (missing{{=$lvl}} = {{= it.util.toQuotedString(it.opts.jsonPointers ? $propertyKey : $prop) }}) )
+    ( ({{# def.noPropertyInData }}) && (missing{{=$lvl}} = {{= it.util.toQuotedString($propertyKey) }}) )
   {{~}}
 #}}
 

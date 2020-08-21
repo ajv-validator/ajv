@@ -167,7 +167,7 @@ describe("Validation errors", () => {
         required: ["foo", "bar", "baz"],
       }
 
-      _testRequired(schema, "#", ".")
+      _testRequired(schema, "#")
     }
 
     it("large data/schemas", () => {
@@ -260,7 +260,7 @@ describe("Validation errors", () => {
         anyOf: [{required: ["foo", "bar", "baz"]}],
       }
 
-      _testRequired(schema, "#/anyOf/0", ".", 1)
+      _testRequired(schema, "#/anyOf/0", 1)
     }
 
     it("should not validate required twice in large schemas with loopRequired option", () => {
@@ -319,9 +319,9 @@ describe("Validation errors", () => {
       var validate = ajv.compile(schema)
       shouldBeValid(validate, data)
       shouldBeInvalid(validate, invalidData1)
-      shouldBeError(validate.errors[0], "dependencies", "#/dependencies", "", msg, params(".bar"))
+      shouldBeError(validate.errors[0], "dependencies", "#/dependencies", "", msg, params("bar"))
       shouldBeInvalid(validate, invalidData2)
-      shouldBeError(validate.errors[0], "dependencies", "#/dependencies", "", msg, params(".foo"))
+      shouldBeError(validate.errors[0], "dependencies", "#/dependencies", "", msg, params("foo"))
 
       var validateJP = ajvJP.compile(schema)
       shouldBeValid(validateJP, data)
@@ -371,9 +371,8 @@ describe("Validation errors", () => {
     }
   })
 
-  function _testRequired(schema, schemaPathPrefix, prefix, extraErrors) {
+  function _testRequired(schema, schemaPathPrefix, extraErrors) {
     var schPath = (schemaPathPrefix || "#") + "/required"
-    prefix = prefix || ""
     extraErrors = extraErrors || 0
 
     var data = {foo: 1, bar: 2, baz: 3},
@@ -383,12 +382,12 @@ describe("Validation errors", () => {
     var validate = ajv.compile(schema)
     shouldBeValid(validate, data)
     shouldBeInvalid(validate, invalidData1, 1 + extraErrors)
-    shouldBeError(validate.errors[0], "required", schPath, "", requiredMsg(prefix + "bar"), {
-      missingProperty: prefix + "bar",
+    shouldBeError(validate.errors[0], "required", schPath, "", requiredMsg("bar"), {
+      missingProperty: "bar",
     })
     shouldBeInvalid(validate, invalidData2, 1 + extraErrors)
-    shouldBeError(validate.errors[0], "required", schPath, "", requiredMsg(prefix + "foo"), {
-      missingProperty: prefix + "foo",
+    shouldBeError(validate.errors[0], "required", schPath, "", requiredMsg("foo"), {
+      missingProperty: "foo",
     })
 
     var validateJP = ajvJP.compile(schema)

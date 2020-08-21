@@ -1,7 +1,6 @@
-import {KeywordContext, KeywordErrorDefinition} from "../../types"
-import {noPropertyInData, quotedString} from "../util"
-import {getProperty} from "../../compile/util"
-import {reportError} from "../../compile/errors"
+import {KeywordContext, KeywordErrorDefinition} from "../types"
+import {noPropertyInData, quotedString} from "./util"
+import {reportError} from "../compile/errors"
 
 export function checkReportMissingProp(
   cxt: KeywordContext,
@@ -28,8 +27,7 @@ export function checkMissingProp(
   return properties
     .map((prop) => {
       const hasNoProp = noPropertyInData(data, prop, opts.ownProperties)
-      const missingProp = quotedString(opts.jsonPointers ? prop : getProperty(prop))
-      return `(${hasNoProp} && (${missing} = ${missingProp}))`
+      return `(${hasNoProp} && (${missing} = ${quotedString(prop)}))`
     })
     .reduce((cond, part) => `${cond} || ${part}`)
 }

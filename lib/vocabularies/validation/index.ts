@@ -9,6 +9,7 @@ const validation: Vocabulary = [
   require("./pattern"),
   // object
   require("./limitProperties"),
+  // require("./required"),
   // array
   require("./limitItems"),
   require("./uniqueItems"),

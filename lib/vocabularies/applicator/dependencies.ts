@@ -2,7 +2,7 @@ import {KeywordDefinition, KeywordErrorDefinition} from "../../types"
 import {alwaysValidSchema, quotedString, propertyInData} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {escapeQuotes} from "../../compile/util"
-import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "./missing"
+import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"
 
 interface PropertyDependencies {
   [x: string]: string[]
