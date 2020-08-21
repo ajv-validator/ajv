@@ -2,8 +2,6 @@
 module.exports = {
   checkDataType,
   checkDataTypes,
-  // TODO remove when validate is refactored
-  coerceToTypes,
   toHash,
   escapeQuotes,
   varOccurrences,
@@ -71,26 +69,6 @@ export function checkDataTypes(
     code += (code ? " && " : "") + checkDataType(t, data, strictNumbers, negate)
   }
   return code
-}
-
-// TODO remove when validate is refactored
-const COERCE_TYPES = toHash(["string", "number", "integer", "boolean", "null"])
-export function coerceToTypes(
-  optionCoerceTypes: undefined | boolean | "array",
-  dataTypes: string[]
-): string[] | void {
-  if (Array.isArray(dataTypes)) {
-    const types: string[] = []
-    for (const t of dataTypes) {
-      if (COERCE_TYPES[t] || (optionCoerceTypes === "array" && t === "array")) {
-        types.push(t)
-      }
-    }
-    if (types.length) return types
-    return
-  }
-  if (COERCE_TYPES[dataTypes]) return [dataTypes]
-  if (optionCoerceTypes === "array" && dataTypes === "array") return ["array"]
 }
 
 export function toHash(arr: string[]): {[key: string]: true} {
