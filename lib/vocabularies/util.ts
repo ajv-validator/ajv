@@ -1,5 +1,5 @@
 import {getProperty, schemaHasRules} from "../compile/util"
-import {CompilationContext} from "../types"
+import {CompilationContext, KeywordContext} from "../types"
 import {Expr} from "../compile/subschema"
 
 export function appendSchema(
@@ -43,16 +43,6 @@ export function schemaRefOrVal(
   return `validate.schema${schemaPath + getProperty(keyword)}`
 }
 
-// TODO remove
-// export function nonEmptySchema(
-//   {RULES, opts: {strictKeywords}}: CompilationContext,
-//   schema: boolean | object
-// ): boolean | void {
-//   return strictKeywords
-//     ? (typeof schema == "object" && Object.keys(schema).length > 0) || schema === false
-//     : schemaHasRules(schema, RULES.all)
-// }
-
 export function alwaysValidSchema(
   {RULES, opts: {strictKeywords}}: CompilationContext,
   schema: boolean | object
@@ -62,6 +52,10 @@ export function alwaysValidSchema(
     : strictKeywords
     ? Object.keys(schema).length === 0
     : !schemaHasRules(schema, RULES.all)
+}
+
+export function schemaProperties(it: CompilationContext, schema: object): string[] {
+  return Object.keys(schema).filter((p) => p !== "__proto__" && !alwaysValidSchema(it, schema[p]))
 }
 
 export function isOwnProperty(data: string, property: string, expr: Expr): string {
@@ -93,4 +87,14 @@ export function noPropertyInData(
 
 function accessProperty(property: string | number, expr: Expr): string {
   return expr === Expr.Const ? getProperty(property) : `[${property}]`
+}
+
+export function loopPropertiesCode(
+  {gen, data, it}: KeywordContext,
+  loopBody: (key: string) => void
+) {
+  // TODO maybe always iterate own properties in v7?
+  const key = gen.name("key")
+  const iteration = it.opts.ownProperties ? `of Object.keys(${data})` : `in ${data}`
+  gen.for(`const ${key} ${iteration}`, () => loopBody(key))
 }

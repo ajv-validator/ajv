@@ -1,5 +1,5 @@
 import {KeywordDefinition, KeywordErrorDefinition} from "../../types"
-import {alwaysValidSchema} from "../util"
+import {alwaysValidSchema, loopPropertiesCode} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportExtraError} from "../../compile/errors"
 
@@ -8,21 +8,18 @@ const def: KeywordDefinition = {
   type: "object",
   schemaType: ["object", "boolean"],
   code(cxt) {
-    const {gen, ok, errorParams, schema, data, it} = cxt
+    const {gen, ok, errorParams, schema, it} = cxt
     if (alwaysValidSchema(it, schema)) {
       ok()
       return
     }
 
     const valid = gen.name("valid")
-    const key = gen.name("key")
     const errsCount = gen.name("_errs")
-    errorParams({propertyName: key})
     gen.code(`const ${errsCount} = errors;`)
 
-    // TODO maybe always iterate own properties in v7?
-    const iteration = it.opts.ownProperties ? `of Object.keys(${data})` : `in ${data}`
-    gen.for(`const ${key} ${iteration}`, () => {
+    loopPropertiesCode(cxt, (key) => {
+      errorParams({propertyName: key})
       applySubschema(
         it,
         {keyword: "propertyNames", data: key, propertyName: key, compositeRule: true},

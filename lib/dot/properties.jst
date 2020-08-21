@@ -177,39 +177,6 @@ var {{=$nextValid}} = true;
   {{~}}
 {{?}}
 
-{{? $pPropertyKeys.length }}
-  {{~ $pPropertyKeys:$pProperty }}
-    {{ var $sch = $pProperties[$pProperty]; }}
-
-    {{? {{# def.nonEmptySchema:$sch}} }}
-      {{
-        $it.schema = $sch;
-        $it.schemaPath = it.schemaPath + '.patternProperties' + it.util.getProperty($pProperty);
-        $it.errSchemaPath = it.errSchemaPath + '/patternProperties/'
-                                             + it.util.escapeFragment($pProperty);
-      }}
-
-      {{# def.iterateProperties }}
-        if ({{= it.usePattern($pProperty) }}.test({{=$key}})) {
-          {{
-            $it.errorPath = it.util.getPathExpr(it.errorPath, $key, it.opts.jsonPointers);
-            var $passData = $data + '[' + $key + ']';
-            $it.dataPathArr[$dataNxt] = $key;
-          }}
-
-          {{# def.generateSubschemaCode }}
-          {{# def.optimizeValidate }}
-
-          {{? $breakOnError }} if (!{{=$nextValid}}) break; {{?}}
-        }
-        {{? $breakOnError }} else {{=$nextValid}} = true; {{?}}
-      }
-
-      {{# def.ifResultValid }}
-    {{?}} {{ /* def.nonEmptySchema */ }}
-  {{~}}
-{{?}}
-
 
 {{? $breakOnError }}
   {{= $closingBraces }}

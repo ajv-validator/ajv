@@ -14,7 +14,7 @@ interface SchemaDependencies {
 const def: KeywordDefinition = {
   keyword: "dependencies",
   type: "object",
-  schemaType: ["object"],
+  schemaType: "object",
   code(cxt) {
     const {gen, errorParams, schema, data, it} = cxt
 

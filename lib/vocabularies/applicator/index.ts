@@ -8,6 +8,7 @@ const applicator: Vocabulary = [
   require("./dependencies"),
   require("./propertyNames"),
   // require("./properties"),
+  require("./patternProperties"),
   // any
   require("./not"),
   require("./anyOf"),
