@@ -75,8 +75,8 @@ export default function Ajv(opts: Options): void {
   this._metaOpts = getMetaSchemaOptions(this)
 
   if (opts.formats) addInitialFormats(this)
-  this.addVocabulary(applicatorVocabulary, true)
   this.addVocabulary(validationVocabulary, true)
+  this.addVocabulary(applicatorVocabulary, true)
   if (opts.keywords) addInitialKeywords(this, opts.keywords)
   addDefaultMetaSchema(this)
   if (typeof opts.meta == "object") this.addMetaSchema(opts.meta)

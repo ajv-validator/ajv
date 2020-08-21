@@ -154,6 +154,7 @@ export interface KeywordDefinition {
   $data?: boolean
   errors?: boolean | "full"
   metaSchema?: object
+  before?: string
   // schema: false makes validate not to expect schema (ValidateFunction)
   schema?: boolean
   statements?: boolean

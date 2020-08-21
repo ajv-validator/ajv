@@ -67,9 +67,11 @@ export function addKeyword(
     throw new Error("Keyword " + keyword + " is not a valid identifier")
   }
 
+  // TODO any
+  const self = this
+
   if (definition) {
     if (!_skipValidation) this.validateKeyword(definition, true)
-
     const dataType = definition.type
     if (Array.isArray(dataType)) {
       for (const t of dataType) {
@@ -113,7 +115,21 @@ export function addKeyword(
       code: definition.code ? ruleCode : customRuleCode,
       implements: definition.implements,
     }
-    ruleGroup.rules.push(rule)
+
+    if (definition.before) {
+      // TODO remove type case when RuleDef is removed
+      const i = ruleGroup.rules.findIndex((rule) => (rule as Rule).keyword === definition.before)
+      if (i >= 0) {
+        ruleGroup.rules.splice(i, 0, rule)
+      } else {
+        ruleGroup.rules.push(rule)
+        // TODO replace with Ajv this.logger
+        self.logger.log(`rule ${definition.before} is not defined`)
+      }
+    } else {
+      ruleGroup.rules.push(rule)
+    }
+
     RULES.custom[keyword] = rule
   }
 

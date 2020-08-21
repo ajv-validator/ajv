@@ -7,6 +7,7 @@ const def: KeywordDefinition = {
   keyword: "contains",
   type: "array",
   schemaType: ["object", "boolean"],
+  before: "uniqueItems",
   code(cxt) {
     const {gen, fail, schema, data, it} = cxt
     const errsCount = gen.name("_errs")
