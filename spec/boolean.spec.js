@@ -7,7 +7,12 @@ describe("boolean schemas", function () {
   var ajvs
 
   before(function () {
-    ajvs = [new Ajv(), new Ajv({allErrors: true}), new Ajv({inlineRefs: false})]
+    ajvs = [
+      new Ajv(),
+      new Ajv({allErrors: true}),
+      new Ajv({inlineRefs: false}),
+      new Ajv({strictKeywords: true}),
+    ]
   })
 
   describe("top level schema", function () {
