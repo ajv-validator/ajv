@@ -8,7 +8,11 @@ const def: KeywordDefinition = {
   type: "array",
   schemaType: ["object", "array", "boolean"],
   before: "uniqueItems",
+  // TODO
+  // implements: ["additionalItems"],
   code(cxt) {
+    // TODO strict mode: fail or warning if "additionalItems" is present without "items"
+
     const {gen, /* fail, */ schema, parentSchema, data, it} = cxt
     const errsCount = gen.name("_errs")
     const len = gen.name("len")

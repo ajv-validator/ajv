@@ -26,10 +26,10 @@
     , $nextData = 'data' + $dataNxt
     , $dataProperties = 'dataProperties' + $lvl;
 
-  var $schemaKeys = Object.keys($schema || {}).filter(notProto)
+  var $schemaKeys = Object.keys(it.schema.properties || {}).filter(notProto)
     , $pProperties = it.schema.patternProperties || {}
     , $pPropertyKeys = Object.keys($pProperties).filter(notProto)
-    , $aProperties = it.schema.additionalProperties
+    , $aProperties = $schema
     , $someProperties = $schemaKeys.length || $pPropertyKeys.length
     , $noAdditional = $aProperties === false
     , $additionalIsSchema = typeof $aProperties == 'object'
@@ -122,61 +122,6 @@ var {{=$nextValid}} = true;
 
   {{# def.ifResultValid }}
 {{?}}
-
-{{ var $useDefaults = it.opts.useDefaults && !it.compositeRule; }}
-
-{{? $schemaKeys.length }}
-  {{~ $schemaKeys:$propertyKey }}
-    {{ var $sch = $schema[$propertyKey]; }}
-
-    {{? {{# def.nonEmptySchema:$sch}} }}
-      {{
-        var $prop = it.util.getProperty($propertyKey)
-          , $passData = $data + $prop
-          , $hasDefault = $useDefaults && $sch.default !== undefined;
-        $it.schema = $sch;
-        $it.schemaPath = $schemaPath + $prop;
-        $it.errSchemaPath = $errSchemaPath + '/' + it.util.escapeFragment($propertyKey);
-        $it.errorPath = it.util.getPath(it.errorPath, $propertyKey, it.opts.jsonPointers);
-        $it.dataPathArr[$dataNxt] = it.util.toQuotedString($propertyKey);
-      }}
-
-      {{# def.generateSubschemaCode }}
-
-      {{? {{# def.willOptimize }} }}
-        {{
-          $code = {{# def._optimizeValidate }};
-          var $useData = $passData;
-        }}
-      {{??}}
-        {{ var $useData = $nextData; }}
-        var {{=$nextData}} = {{=$passData}};
-      {{?}}
-
-      {{? $hasDefault }}
-        {{= $code }}
-      {{??}}
-        {{? $breakOnError }}
-          if ({{# def.noPropertyInData }}) {
-            {{=$nextValid}} = true;
-          } else {
-        {{??}}
-          if ({{=$useData}} !== undefined
-            {{? $ownProperties }}
-              && {{# def.isOwnProperty }}
-            {{?}}
-          ) {
-        {{?}}
-
-          {{= $code }}
-        }
-      {{?}}  {{ /* $hasDefault */ }}
-    {{?}} {{ /* def.nonEmptySchema */ }}
-
-    {{# def.ifResultValid }}
-  {{~}}
-{{?}}
-
 
 {{? $breakOnError }}
   {{= $closingBraces }}

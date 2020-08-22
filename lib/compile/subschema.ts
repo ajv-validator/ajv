@@ -1,6 +1,7 @@
 import {CompilationContext} from "../types"
 import validateCode from "./validate"
 import {getProperty, escapeFragment, getPath, getPathExpr} from "./util"
+import {quotedString} from "../vocabularies/util"
 
 export interface SubschemaContext {
   schema: any
@@ -60,11 +61,15 @@ export function applySubschema(
         expr === Expr.Const
           ? getPath(errorPath, dataProp, opts.jsonPointers)
           : getPathExpr(errorPath, <string>dataProp, opts.jsonPointers, expr === Expr.Num),
-      dataPathArr: [...dataPathArr, dataProp],
+      dataPathArr: [
+        ...dataPathArr,
+        expr === Expr.Const && typeof dataProp == "string" ? quotedString(dataProp) : dataProp,
+      ],
       dataLevel: nextLevel,
     })
 
-    const passDataProp = Expr.Const ? getProperty(dataProp) : `[${dataProp}]`
+    // TODO refactor - use accessProperty
+    const passDataProp = expr === Expr.Const ? getProperty(dataProp) : `[${dataProp}]`
     gen.code(`var data${nextLevel} = data${dataLevel || ""}${passDataProp};`)
   } else if (data !== undefined) {
     const {gen, dataLevel} = it

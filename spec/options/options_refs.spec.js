@@ -16,7 +16,7 @@ describe("referenced schema options", () => {
     })
 
     describe('= "ignore" and default', () => {
-      it("should ignore other keywords when $ref is used", () => {
+      it.only("should ignore other keywords when $ref is used", () => {
         test(new Ajv())
         test(new Ajv({extendRefs: "ignore"}), false)
       })

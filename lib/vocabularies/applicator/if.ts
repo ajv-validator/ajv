@@ -6,6 +6,7 @@ import {reportExtraError, resetErrorsCount} from "../../compile/errors"
 const def: KeywordDefinition = {
   keyword: "if",
   schemaType: ["object", "boolean"],
+  // TODO
   // implements: ["then", "else"],
   code(cxt) {
     const {gen, ok, errorParams, it} = cxt
