@@ -16,7 +16,7 @@ const def: KeywordDefinition = {
   type: "object",
   schemaType: "object",
   code(cxt) {
-    const {gen, errorParams, schema, data, it} = cxt
+    const {gen, ok, errorParams, schema, data, it} = cxt
 
     const [propDeps, schDeps] = splitDependencies()
 
@@ -29,8 +29,7 @@ const def: KeywordDefinition = {
       validateSchemaDeps(schDeps)
     })
 
-    // TODO refactor ifs
-    if (!it.allErrors) gen.code(`if (${errsCount} === errors) {`)
+    ok(`${errsCount} === errors`)
 
     function splitDependencies(): [PropertyDependencies, SchemaDependencies] {
       const propertyDeps: PropertyDependencies = {}

@@ -8,20 +8,19 @@ const def: KeywordDefinition = {
   schemaType: "object",
   code(cxt) {
     const {gen, ok, schema, data, it} = cxt
+    // TODO
+    // if (it.opts.removeAdditional === "all" && parentSchema.additionalProperties === undefined) {
+    //   remove all additional properties - it will fix skipped tests
+    // }
     const properties = schemaProperties(it, schema)
-    if (properties.length === 0) {
-      ok()
-      return
-    }
+    if (properties.length === 0) return ok()
 
     const valid = gen.name("valid")
     const errsCount = gen.name("_errs")
     gen.code(`const ${errsCount} = errors;`)
 
     gen.block(validateProperties)
-
-    // TODO refactor ifs
-    if (!it.allErrors) gen.code(`if (${errsCount} === errors) {`)
+    ok(`${errsCount} === errors`)
 
     function validateProperties() {
       for (const prop of properties) {

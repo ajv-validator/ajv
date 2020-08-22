@@ -9,19 +9,14 @@ const def: KeywordDefinition = {
   code(cxt) {
     const {gen, ok, schema, it} = cxt
     const patterns = schemaProperties(it, schema)
-    if (patterns.length === 0) {
-      ok()
-      return
-    }
+    if (patterns.length === 0) return ok()
 
     const valid = gen.name("valid")
     const errsCount = gen.name("_errs")
     gen.code(`const ${errsCount} = errors;`)
 
     gen.block(validatePatternProperties)
-
-    // TODO refactor ifs
-    if (!it.allErrors) gen.code(`if (${errsCount} === errors) {`)
+    ok(`${errsCount} === errors`)
 
     function validatePatternProperties() {
       for (const pat of patterns) {

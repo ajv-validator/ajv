@@ -26,31 +26,29 @@ export function schemaKeywords(
     if (!allErrors) gen.code("}")
     return
   }
-  let closeBlocks = ""
   const ruleGroups = RULES.rules.filter((group) => shouldUseGroup(schema, group))
   const last = ruleGroups.length - 1
-  ruleGroups.forEach((group, i) => {
-    if (group.type) {
-      // TODO refactor `data${dataLevel || ""}`
-      const checkType = checkDataType(group.type, `data${dataLevel || ""}`, strictNumbers)
-      // TODO refactor ifs
-      gen.if(checkType)
-      iterateKeywords(it, group)
-      if (types.length === 1 && types[0] === group.type && typeErrors) {
-        gen.else()
-        reportTypeError(it)
+  gen.block(() =>
+    ruleGroups.forEach((group, i) => {
+      if (group.type) {
+        // TODO refactor `data${dataLevel || ""}`
+        const checkType = checkDataType(group.type, `data${dataLevel || ""}`, strictNumbers)
+        gen.if(checkType)
+        iterateKeywords(it, group)
+        if (types.length === 1 && types[0] === group.type && typeErrors) {
+          gen.else()
+          reportTypeError(it)
+        }
+        gen.endIf()
+      } else {
+        iterateKeywords(it, group)
       }
-      gen.endIf()
-    } else {
-      iterateKeywords(it, group)
-    }
-    if (!allErrors && i < last) {
-      const errCount = top ? "0" : `errs_${level}`
-      gen.code(`if (errors === ${errCount}) {`)
-      closeBlocks += "}"
-    }
-  })
-  if (!allErrors) gen.code(closeBlocks)
+      if (!allErrors && i < last) {
+        const errCount = top ? "0" : `errs_${level}`
+        gen.if(`errors === ${errCount}`)
+      }
+    })
+  )
 }
 
 function iterateKeywords(it: CompilationContext, group: RuleGroup) {

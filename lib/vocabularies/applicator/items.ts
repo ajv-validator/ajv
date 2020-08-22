@@ -13,21 +13,15 @@ const def: KeywordDefinition = {
   code(cxt) {
     // TODO strict mode: fail or warning if "additionalItems" is present without "items"
 
-    const {gen, /* fail, */ schema, parentSchema, data, it} = cxt
+    const {gen, ok, schema, parentSchema, data, it} = cxt
     const errsCount = gen.name("_errs")
     const len = gen.name("len")
     gen.code(
       `const ${errsCount} = errors;
       const ${len} = ${data}.length;`
     )
-
-    if (it.allErrors) {
-      validateItemsKeyword()
-    } else {
-      gen.block(validateItemsKeyword)
-      // TODO refactor ifs
-      gen.code(`if (${errsCount} === errors) {`)
-    }
+    gen.block(validateItemsKeyword)
+    ok(`${errsCount} === errors`)
 
     function validateItemsKeyword(): void {
       if (Array.isArray(schema)) {

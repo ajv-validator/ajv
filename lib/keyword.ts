@@ -190,8 +190,10 @@ function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): void
   }
 
   function ok(condition?: string): void {
-    if (condition) fail(`!(${condition})`)
-    else if (!allErrors) gen.code("if (true) {")
+    if (!allErrors) {
+      if (condition) gen.code(`if (${condition}) {`)
+      else gen.code("if (true) {")
+    }
   }
 
   function errorParams(obj: KeywordContextParams, assign?: true) {

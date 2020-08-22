@@ -56,7 +56,7 @@ export default function rules(): ValidationRules {
       {type: "array", rules: []},
       {
         type: "object",
-        rules: [{properties: ["additionalProperties"]}],
+        rules: ["additionalProperties"],
       },
       {rules: ["$ref"]},
     ],

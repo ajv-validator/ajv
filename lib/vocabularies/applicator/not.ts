@@ -8,10 +8,7 @@ const def: KeywordDefinition = {
   schemaType: ["object", "boolean"],
   code(cxt) {
     const {gen, fail, schema, it} = cxt
-    if (alwaysValidSchema(it, schema)) {
-      fail()
-      return
-    }
+    if (alwaysValidSchema(it, schema)) return fail()
 
     const valid = gen.name("valid")
     const errsCount = gen.name("_errs")

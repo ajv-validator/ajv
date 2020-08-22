@@ -13,10 +13,7 @@ const def: KeywordDefinition = {
     const errsCount = gen.name("_errs")
     gen.code(`const ${errsCount} = errors;`)
 
-    if (alwaysValidSchema(it, schema)) {
-      fail(`${data}.length === 0`)
-      return
-    }
+    if (alwaysValidSchema(it, schema)) return fail(`${data}.length === 0`)
 
     const valid = gen.name("valid")
     const i = gen.name("i")
