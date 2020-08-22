@@ -41,5 +41,5 @@ function assignDefault(
     (useDefaults === "empty" ? ` || ${data} === null || ${data} === ""` : "")
   // TODO remove option `useDefaults === "shared"`
   const defaultExpr = useDefaults === "shared" ? useDefault : JSON.stringify
-  gen.code(`if (${condition}) ${data} = ${defaultExpr(defaultValue)};`)
+  gen.if(condition, `${data} = ${defaultExpr(defaultValue)}`)
 }

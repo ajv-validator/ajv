@@ -33,13 +33,14 @@ export function schemaKeywords(
     if (group.type) {
       // TODO refactor `data${dataLevel || ""}`
       const checkType = checkDataType(group.type, `data${dataLevel || ""}`, strictNumbers)
-      gen.code(`if (${checkType}) {`)
+      // TODO refactor ifs
+      gen.if(checkType)
       iterateKeywords(it, group)
       if (types.length === 1 && types[0] === group.type && typeErrors) {
-        gen.code(`} else {`)
+        gen.else()
         reportTypeError(it)
       }
-      gen.code("}")
+      gen.endIf()
     } else {
       iterateKeywords(it, group)
     }

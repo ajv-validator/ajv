@@ -33,14 +33,14 @@ export function coerceAndCheckDataType(it: CompilationContext, types: string[]):
   const coerceTo = coerceToTypes(types, coerceTypes)
   const checkTypes =
     types.length > 0 &&
-    (coerceTo.length > 0 || types.length > 1 || !schemaHasRulesForType(it, types[0]))
+    !(coerceTo.length === 0 && types.length === 1 && schemaHasRulesForType(it, types[0]))
   if (checkTypes) {
     // TODO refactor `data${dataLevel || ""}`
     const wrongType = checkDataTypes(types, `data${dataLevel || ""}`, strictNumbers, true)
-    gen.code(`if (${wrongType}) {`)
-    if (coerceTo.length) coerceData(it, coerceTo)
-    else reportTypeError(it)
-    gen.code("}")
+    gen.if(wrongType, () => {
+      if (coerceTo.length) coerceData(it, coerceTo)
+      else reportTypeError(it)
+    })
   }
   return checkTypes
 }
@@ -52,39 +52,6 @@ function coerceToTypes(types: string[], coerceTypes?: boolean | "array"): string
     : []
 }
 
-interface CoerceArgs {
-  dataType: string
-  data: string
-  coerced: string
-}
-
-const coerceCode: {[x: string]: (arg: CoerceArgs) => string} = {
-  string: ({dataType, data, coerced}) =>
-    `else if (${dataType} == "number" || ${dataType} == "boolean")
-      ${coerced} = "" + ${data};
-    else if (${data} === null)
-      ${coerced} = "";`,
-  number: ({dataType, data, coerced}) =>
-    `else if (${dataType} == "boolean" || ${data} === null
-      || (${dataType} == "string" && ${data} && ${data} == +${data}))
-      ${coerced} = +${data};`,
-  integer: ({dataType, data, coerced}) =>
-    `else if (${dataType} === "boolean" || ${data} === null
-      || (${dataType} === "string" && ${data} && ${data} == +${data} && !(${data} % 1)))
-      ${coerced} = +${data};`,
-  boolean: ({data, coerced}) =>
-    `else if (${data} === "false" || ${data} === 0 || ${data} === null)
-      ${coerced} = false;
-    else if (${data} === "true" || ${data} === 1)
-      ${coerced} = true;`,
-  null: ({data, coerced}) =>
-    `else if (${data} === "" || ${data} === 0 || ${data} === false)
-      ${coerced} = null;`,
-  array: ({dataType, data, coerced}) =>
-    `else if (${dataType} === "string" || ${dataType} === "number" || ${dataType} === "boolean" || ${data} === null)
-      ${coerced} = [${data}];`,
-}
-
 export function coerceData(it: CompilationContext, coerceTo: string[]): void {
   const {
     gen,
@@ -92,48 +59,90 @@ export function coerceData(it: CompilationContext, coerceTo: string[]): void {
     dataLevel,
     opts: {coerceTypes, strictNumbers},
   } = it
-  // TODO use "data" to CompilationContext
+  // TODO move "data" to CompilationContext
   const data = `data${dataLevel || ""}`
   const dataType = gen.name("dataType")
   const coerced = gen.name("coerced")
   gen.code(`let ${coerced};`)
   gen.code(`let ${dataType} = typeof ${data};`)
   if (coerceTypes === "array") {
-    gen.code(
-      `if (${dataType} == 'object' && Array.isArray(${data}) && ${data}.length == 1) {
-        ${data} = ${data}[0];
-        ${dataType} = typeof ${data};
-        if (${checkDataType(schema.type, data, strictNumbers)})
-          ${coerced} = ${data};
-      }`
+    gen.if(`${dataType} == 'object' && Array.isArray(${data}) && ${data}.length == 1`, () =>
+      gen
+        .code(`${data} = ${data}[0]; ${dataType} = typeof ${data};`)
+        .if(`${checkDataType(schema.type, data, strictNumbers)}`, `${coerced} = ${data}`)
     )
   }
-  gen.code(`if (${coerced} !== undefined) ;`)
-  const args: CoerceArgs = {dataType, data, coerced}
+  gen.if(`${coerced} !== undefined`)
   for (const t of coerceTo) {
-    if (t in coerceCode && (t !== "array" || coerceTypes === "array")) {
-      gen.code(coerceCode[t](args))
+    if (t in COERCIBLE || (t === "array" && coerceTypes === "array")) {
+      coerceSpecificType(t)
     }
   }
-  gen.code(`else {`)
+  gen.else()
   reportTypeError(it)
-  gen.code(`}`)
+  gen.endIf()
 
-  gen.code(
-    `if (${coerced} !== undefined) {
-      ${data} = ${coerced};
-      ${assignParentData(it, coerced)}
-    }`
-  )
+  gen.if(`${coerced} !== undefined`, () => {
+    gen.code(`${data} = ${coerced};`)
+    assignParentData(it, coerced)
+  })
+
+  function coerceSpecificType(t) {
+    switch (t) {
+      case "string":
+        gen
+          .elseIf(`${dataType} == "number" || ${dataType} == "boolean"`)
+          .code(`${coerced} = "" + ${data}`)
+          .elseIf(`${data} === null`)
+          .code(`${coerced} = ""`)
+        return
+      case "number":
+        gen
+          .elseIf(
+            `${dataType} == "boolean" || ${data} === null
+          || (${dataType} == "string" && ${data} && ${data} == +${data})`
+          )
+          .code(`${coerced} = +${data}`)
+        return
+      case "integer":
+        gen
+          .elseIf(
+            `${dataType} === "boolean" || ${data} === null
+          || (${dataType} === "string" && ${data} && ${data} == +${data} && !(${data} % 1))`
+          )
+          .code(`${coerced} = +${data}`)
+        return
+      case "boolean":
+        gen
+          .elseIf(`${data} === "false" || ${data} === 0 || ${data} === null`)
+          .code(`${coerced} = false`)
+          .elseIf(`${data} === "true" || ${data} === 1`)
+          .code(`${coerced} = true`)
+        return
+      case "null":
+        gen.elseIf(`${data} === "" || ${data} === 0 || ${data} === false`)
+        gen.code(`${coerced} = null`)
+        return
+
+      case "array":
+        gen
+          .elseIf(
+            `${dataType} === "string" || ${dataType} === "number"
+          || ${dataType} === "boolean" || ${data} === null`
+          )
+          .code(`${coerced} = [${data}]`)
+    }
+  }
 }
 
-function assignParentData({dataLevel, dataPathArr}: CompilationContext, expr: string): string {
+function assignParentData({gen, dataLevel, dataPathArr}: CompilationContext, expr: string): void {
   // TODO replace dataLevel
   if (dataLevel) {
     const parentData = "data" + (dataLevel - 1 || "")
-    return `${parentData}[${dataPathArr[dataLevel]}] = ${expr};`
+    gen.code(`${parentData}[${dataPathArr[dataLevel]}] = ${expr};`)
+  } else {
+    gen.if("parentData !== undefined", `parentData[parentDataProperty] = ${expr};`)
   }
-  return `if (parentData !== undefined) parentData[parentDataProperty] = ${expr};`
 }
 
 const typeError: KeywordErrorDefinition = {

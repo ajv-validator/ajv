@@ -30,7 +30,7 @@ const def: KeywordDefinition = {
         } else {
           gen.if(propertyInData(data, prop, Expr.Const, it.opts.ownProperties))
           applyPropertySchema(prop)
-          if (!it.allErrors) gen.else().code(`${valid} = true;`)
+          if (!it.allErrors) gen.else().code(`var ${valid} = true;`)
           gen.endIf()
         }
         if (!it.allErrors) gen.if(valid)

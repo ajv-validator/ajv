@@ -7,7 +7,7 @@ const applicator: Vocabulary = [
   // object
   require("./dependencies"),
   require("./propertyNames"),
-  require("./properties"),
+  // require("./properties"),
   require("./patternProperties"),
   // any
   require("./not"),
