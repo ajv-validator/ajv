@@ -10,38 +10,29 @@ const def: KeywordDefinition = {
       const valid = gen.name("valid")
       gen.code(`let ${valid};`)
       gen.if(`${schemaCode} === undefined`, `${valid} = true;`, () =>
-        gen
-          .code(`${valid} = false;`)
-          .if(`Array.isArray(${schemaCode})`, () => loopEnum(<string>schemaCode, valid))
+        gen.code(`${valid} = false;`).if(`Array.isArray(${schemaCode})`, () => loopEnum(valid))
       )
       fail(`!${valid}`)
     } else {
       if (schema.length === 0) throw new Error("enum must have non-empty array")
-      const vSchema = gen.name("schema")
-      gen.code(`const ${vSchema} = ${schemaCode};`)
       if (schema.length > (opts.loopEnum as number)) {
         const valid = gen.name("valid")
         gen.code(`let ${valid} = false;`)
-        loopEnum(vSchema, valid)
+        loopEnum(valid)
         fail(`!${valid}`)
       } else {
-        const cond: string = schema.reduce(
-          (c, _, i) => (c += (c && "||") + equalCode(vSchema, i)),
-          ""
-        )
+        const vSchema = gen.name("schema")
+        gen.code(`const ${vSchema} = ${schemaCode};`)
+        const cond: string = schema
+          .map((_, i: number) => equalCode(vSchema, i))
+          .reduce((acc: string, eq: string) => `${acc} || ${eq}`)
         fail(`!(${cond})`)
       }
     }
 
-    function loopEnum(sch: string, valid: string): void {
-      // TODO trim whitespace
-      gen.code(
-        `for (const v of ${sch}) {
-          if (equal(${data}, v)) {
-            ${valid} = true;
-            break;
-          }
-        }`
+    function loopEnum(valid: string): void {
+      gen.for(`const v of ${schemaCode}`, () =>
+        gen.if(`equal(${data}, v)`, `${valid} = true; break;`)
       )
     }
 

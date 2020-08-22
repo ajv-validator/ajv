@@ -34,11 +34,11 @@ const def: KeywordDefinition = {
     function allErrorsMode(): void {
       if (loopRequired) {
         if ($data) {
-          gen.if(`${schemaCode} && !Array.isArray(${schemaCode})`)
-          reportError(cxt, error)
-          gen.elseIf(`${schemaCode} !== undefined`)
-          loopAllRequired()
-          gen.endIf()
+          gen.if(
+            `${schemaCode} && !Array.isArray(${schemaCode})`,
+            () => reportError(cxt, error),
+            () => gen.if(`${schemaCode} !== undefined`, loopAllRequired)
+          )
         } else {
           loopAllRequired()
         }
@@ -61,14 +61,11 @@ const def: KeywordDefinition = {
         // TODO refactor and enable/fix test in errors.spec.js line 301
         // it can be simpler once blocks are globally supported - endIf can be removed, so there will be 2 open blocks
         if ($data) {
-          gen
-            .if(`${schemaCode} === undefined`)
-            .code(`${valid} = true;`)
-            .elseIf(`!Array.isArray(${schemaCode})`)
-            .code(`${valid} = false;`)
-            .else()
-          loopUntilMissing(missing, valid)
-          gen.endIf()
+          gen.if(`${schemaCode} === undefined`, `${valid} = true`, () =>
+            gen.if(`!Array.isArray(${schemaCode})`, `${valid} = false`, () =>
+              loopUntilMissing(missing, valid)
+            )
+          )
         } else {
           loopUntilMissing(missing, valid)
         }

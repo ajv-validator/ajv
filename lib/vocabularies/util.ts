@@ -92,7 +92,7 @@ function accessProperty(property: string | number, expr: Expr): string {
 export function loopPropertiesCode(
   {gen, data, it}: KeywordContext,
   loopBody: (key: string) => void
-) {
+): void {
   // TODO maybe always iterate own properties in v7?
   const key = gen.name("key")
   const iteration = it.opts.ownProperties ? `of Object.keys(${data})` : `in ${data}`

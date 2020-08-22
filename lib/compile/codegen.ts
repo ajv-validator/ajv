@@ -103,7 +103,7 @@ export default class CodeGen {
     this.#blocks[this._last()] = b
   }
 
-  _last() {
+  _last(): number {
     const len = this.#blocks.length
     if (len === 0) throw new Error("CodeGen: not in block")
     return len - 1

@@ -16,14 +16,9 @@ const def: KeywordDefinition = {
     const itemType = parentSchema.items?.type
 
     if ($data) {
-      gen
-        .if(`${schemaCode} === false || ${schemaCode} === undefined`)
-        .code(`${valid} = true;`)
-        .elseIf(`typeof ${schemaCode} != "boolean"`)
-        .code(`${valid} = false;`)
-        .else()
-      validateUniqueItems()
-      gen.endIf()
+      gen.if(`${schemaCode} === false || ${schemaCode} === undefined`, `${valid} = true`, () =>
+        gen.if(`typeof ${schemaCode} != "boolean"`, `${valid} = false`, validateUniqueItems)
+      )
     } else {
       validateUniqueItems()
     }
@@ -52,34 +47,28 @@ const def: KeywordDefinition = {
         true
       )
       const indices = gen.name("indices")
-      gen.code(
-        `const ${indices} = {};
-        for (;${i}--;) {
-          let item = ${data}[${i}];
-          if (${wrongType}) continue;
-          ${Array.isArray(itemType) ? 'if (typeof item == "string") item += "_";' : ""}
-          if (typeof ${indices}[item] == "number") {
-            ${valid} = false;
-            ${j} = ${indices}[item];
-            break;
-          }
-          ${indices}[item] = ${i};
-        }`
-      )
+      gen.code(`const ${indices} = {};`)
+      gen.for(`;${i}--;`, () => {
+        gen.code(`let item = ${data}[${i}];`)
+        gen.if(wrongType, "continue")
+        if (Array.isArray(itemType)) gen.if('typeof item == "string"', 'item += "_"')
+        gen
+          .if(
+            `typeof ${indices}[item] == "number"`,
+            `${valid} = false; ${j} = ${indices}[item]; break;`
+          )
+          .code(`${indices}[item] = ${i};`)
+      })
     }
 
     function loopN2(): void {
-      gen.code(
-        `outer:
-        for (;${i}--;) {
-          for (${j} = ${i}; ${j}--;) {
-            if (equal(${data}[${i}], ${data}[${j}])) {
-              ${valid} = false;
-              break outer;
-            }
-          }
-        }`
-      )
+      gen
+        .code(`outer:`)
+        .for(`;${i}--;`, () =>
+          gen.for(`${j} = ${i}; ${j}--;`, () =>
+            gen.if(`equal(${data}[${i}], ${data}[${j}])`, `${valid} = false; break outer;`)
+          )
+        )
     }
   },
   error: {
