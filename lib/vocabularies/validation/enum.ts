@@ -1,5 +1,5 @@
 import {KeywordDefinition} from "../../types"
-import {quotedString} from "../util"
+import {quotedString, orExpr} from "../util"
 
 const def: KeywordDefinition = {
   keyword: "enum",
@@ -23,9 +23,7 @@ const def: KeywordDefinition = {
       } else {
         const vSchema = gen.name("schema")
         gen.code(`const ${vSchema} = ${schemaCode};`)
-        const cond: string = schema
-          .map((_, i: number) => equalCode(vSchema, i))
-          .reduce((acc: string, eq: string) => `${acc} || ${eq}`)
+        const cond: string = orExpr(schema, (_, i) => equalCode(vSchema, i))
         fail(`!(${cond})`)
       }
     }

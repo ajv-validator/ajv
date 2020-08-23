@@ -90,7 +90,6 @@
 
 {{## def._errorMessages = {
   $ref:            "'can\\\'t resolve reference {{=it.util.escapeQuotes($schema)}}'",
-  additionalProperties: "'should NOT have additional properties'",
   format:          "'should match format \"{{#def.concatSchemaEQ}}\"'",
   custom:          "'should pass \"{{=$rule.keyword}}\" keyword validation'",
   patternRequired: "'should have property matching pattern \\'{{=$missingPattern}}\\''",
@@ -104,7 +103,6 @@
 
 {{## def._errorSchemas = {
   $ref:            "{{=it.util.toQuotedString($schema)}}",
-  additionalProperties: "false",
   format:          "{{#def.schemaRefOrQS}}",
   custom:          "validate.schema{{=$schemaPath}}",
   patternRequired: "validate.schema{{=$schemaPath}}",
@@ -118,7 +116,6 @@
 
 {{## def._errorParams = {
   $ref:            "{ ref: '{{=it.util.escapeQuotes($schema)}}' }",
-  additionalProperties: "{ additionalProperty: '{{=$additionalProperty}}' }",
   format:          "{ format: {{#def.schemaValueQS}} }",
   custom:          "{ keyword: '{{=$rule.keyword}}' }",
   patternRequired: "{ missingPattern: '{{=$missingPattern}}' }",

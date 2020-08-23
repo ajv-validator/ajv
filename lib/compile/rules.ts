@@ -54,10 +54,7 @@ export default function rules(): ValidationRules {
       {type: "number", rules: ["format"]},
       {type: "string", rules: ["format"]},
       {type: "array", rules: []},
-      {
-        type: "object",
-        rules: ["additionalProperties"],
-      },
+      {type: "object", rules: []},
       {rules: ["$ref"]},
     ],
     all: toHash(ALL),

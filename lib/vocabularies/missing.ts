@@ -1,5 +1,5 @@
 import {KeywordContext, KeywordErrorDefinition} from "../types"
-import {noPropertyInData, quotedString} from "./util"
+import {noPropertyInData, quotedString, orExpr} from "./util"
 import {reportError} from "../compile/errors"
 import {Expr} from "../compile/subschema"
 
@@ -25,12 +25,10 @@ export function checkMissingProp(
   properties: string[],
   missing: string
 ): string {
-  return properties
-    .map((prop) => {
-      const hasNoProp = noPropertyInData(data, prop, Expr.Const, opts.ownProperties)
-      return `(${hasNoProp} && (${missing} = ${quotedString(prop)}))`
-    })
-    .reduce((cond, part) => `${cond} || ${part}`)
+  return orExpr(properties, (prop) => {
+    const hasNoProp = noPropertyInData(data, prop, Expr.Const, opts.ownProperties)
+    return `(${hasNoProp} && (${missing} = ${quotedString(prop)}))`
+  })
 }
 
 export function reportMissingProp(

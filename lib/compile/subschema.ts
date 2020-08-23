@@ -19,7 +19,7 @@ export enum Expr {
   Str,
 }
 
-interface SubschemaApplication {
+export interface SubschemaApplication {
   keyword: string
   schemaProp?: string | number
   data?: string

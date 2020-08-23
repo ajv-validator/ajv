@@ -54,8 +54,12 @@ export function alwaysValidSchema(
     : !schemaHasRules(schema, RULES.all)
 }
 
+export function allSchemaProperties(schema?: object): string[] {
+  return schema ? Object.keys(schema).filter((p) => p !== "__proto__") : []
+}
+
 export function schemaProperties(it: CompilationContext, schema: object): string[] {
-  return Object.keys(schema).filter((p) => p !== "__proto__" && !alwaysValidSchema(it, schema[p]))
+  return allSchemaProperties(schema).filter((p) => !alwaysValidSchema(it, schema[p]))
 }
 
 export function isOwnProperty(data: string, property: string, expr: Expr): string {
@@ -97,4 +101,8 @@ export function loopPropertiesCode(
   const key = gen.name("key")
   const iteration = it.opts.ownProperties ? `of Object.keys(${data})` : `in ${data}`
   gen.for(`const ${key} ${iteration}`, () => loopBody(key))
+}
+
+export function orExpr(items: string[], mapCondition: (s: string, i: number) => string): string {
+  return items.map(mapCondition).reduce((expr, cond) => `${expr} || ${cond}`)
 }

@@ -686,14 +686,7 @@
             },
             "type": {
               "type": "string",
-              "enum": [
-                "string",
-                "number",
-                "boolean",
-                "integer",
-                "array",
-                "file"
-              ]
+              "enum": ["string", "number", "boolean", "integer", "array", "file"]
             },
             "format": {
               "type": "string"
