@@ -3,15 +3,16 @@ import Cache from "./cache"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
 import rules from "./compile/rules"
 import $dataMetaSchema from "./data"
-import {Vocabulary, Options} from "./types"
+import {Options} from "./types"
 
 var compileSchema = require("./compile"),
   resolve = require("./compile/resolve"),
   stableStringify = require("fast-json-stable-stringify")
 
-const validationVocabulary: Vocabulary = require("./vocabularies/validation")
-const applicatorVocabulary: Vocabulary = require("./vocabularies/applicator")
-const formatVocabulary: Vocabulary = require("./vocabularies/format")
+import coreVocabulary from "./vocabularies/core"
+import validationVocabulary from "./vocabularies/validation"
+import applicatorVocabulary from "./vocabularies/applicator"
+import formatVocabulary from "./vocabularies/format"
 
 module.exports = Ajv
 
@@ -76,6 +77,7 @@ export default function Ajv(opts: Options): void {
   this._metaOpts = getMetaSchemaOptions(this)
 
   if (opts.formats) addInitialFormats(this)
+  this.addVocabulary(coreVocabulary, true)
   this.addVocabulary(validationVocabulary, true)
   this.addVocabulary(applicatorVocabulary, true)
   this.addVocabulary(formatVocabulary, true)
@@ -296,7 +298,7 @@ function _removeAllSchemas(self, schemas, regex?: RegExp) {
 }
 
 /* @this   Ajv */
-function _addSchema(schema, skipValidation, meta, shouldAddSchema) {
+function _addSchema(schema: object | boolean, skipValidation, meta, shouldAddSchema) {
   if (typeof schema != "object" && typeof schema != "boolean") {
     throw new Error("schema should be object or boolean")
   }
@@ -307,12 +309,12 @@ function _addSchema(schema, skipValidation, meta, shouldAddSchema) {
 
   shouldAddSchema = shouldAddSchema || this._opts.addUsedSchema !== false
 
-  var id = resolve.normalizeId(schema.$id)
+  var id = resolve.normalizeId(schema["$id"])
   if (id && shouldAddSchema) checkUnique(this, id)
 
   var willValidate = this._opts.validateSchema !== false && !skipValidation
   var recursiveMeta
-  if (willValidate && !(recursiveMeta = id && id === resolve.normalizeId(schema.$schema))) {
+  if (willValidate && !(recursiveMeta = id && id === resolve.normalizeId(schema["$schema"]))) {
     this.validateSchema(schema, true)
   }
 

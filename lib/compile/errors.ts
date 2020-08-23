@@ -27,23 +27,18 @@ export function reportExtraError(cxt: KeywordContext, error: KeywordErrorDefinit
 }
 
 export function resetErrorsCount(gen: CodeGen, errsCount: string): void {
-  gen.code(
-    `errors = ${errsCount};
-    if (vErrors !== null) {
-      if (${errsCount}) vErrors.length = ${errsCount};
-      else vErrors = null;
-    }`
+  gen.code(`errors = ${errsCount};`)
+  gen.if(`vErrors !== null`, () =>
+    gen.if(errsCount, `vErrors.length = ${errsCount}`, "vErrors = null")
   )
 }
 
 function addError(gen: CodeGen, errObj: string): void {
   const err = gen.name("err")
-  gen.code(
-    `const ${err} = ${errObj};
-    if (vErrors === null) vErrors = [${err}];
-    else vErrors.push(${err});
-    errors++;`
-  )
+  gen
+    .code(`const ${err} = ${errObj};`)
+    .if("vErrors === null", `vErrors = [${err}]`, `vErrors.push(${err})`)
+    .code(`errors++;`)
 }
 
 function returnErrors(gen: CodeGen, async: boolean, errs: string): void {
@@ -60,7 +55,7 @@ function errorObjectCode(cxt: KeywordContext, error: KeywordErrorDefinition): st
     keyword,
     data,
     schemaValue,
-    it: {createErrors, schemaPath, errorPath, errSchemaPath, propertyName, opts},
+    it: {createErrors, topSchemaRef, schemaPath, errorPath, errSchemaPath, propertyName, opts},
   } = cxt
   if (createErrors === false) return "{}"
   if (!error) throw new Error('keyword definition must have "error" property')
@@ -79,7 +74,7 @@ function errorObjectCode(cxt: KeywordContext, error: KeywordErrorDefinition): st
     // TODO trim whitespace
     out += `
       schema: ${schemaValue},
-      parentSchema: validate.schema${schemaPath},
+      parentSchema: ${topSchemaRef}${schemaPath},
       data: ${data},`
   }
   return out + "}"

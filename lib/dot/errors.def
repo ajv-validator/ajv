@@ -13,7 +13,7 @@
       {{?}}
       {{? it.opts.verbose }}
         , schema: {{# def._errorSchemas[_rule] }}
-        , parentSchema: validate.schema{{=it.schemaPath}}
+        , parentSchema: {{=it.topSchemaRef}}{{=it.schemaPath}}
         , data: {{=$data}}
       {{?}}
     }
@@ -98,15 +98,15 @@
 } #}}
 
 
-{{## def.schemaRefOrQS: {{?$isData}}validate.schema{{=$schemaPath}}{{??}}{{=it.util.toQuotedString($schema)}}{{?}} #}}
+{{## def.schemaRefOrQS: {{?$isData}}{{=it.topSchemaRef}}{{=$schemaPath}}{{??}}{{=it.util.toQuotedString($schema)}}{{?}} #}}
 
 {{## def._errorSchemas = {
   $ref:            "{{=it.util.toQuotedString($schema)}}",
-  custom:          "validate.schema{{=$schemaPath}}",
-  patternRequired: "validate.schema{{=$schemaPath}}",
-  switch:          "validate.schema{{=$schemaPath}}",
+  custom:          "{{=it.topSchemaRef}}{{=$schemaPath}}",
+  patternRequired: "{{=it.topSchemaRef}}{{=$schemaPath}}",
+  switch:          "{{=it.topSchemaRef}}{{=$schemaPath}}",
   _formatLimit:    "{{#def.schemaRefOrQS}}",
-  _formatExclusiveLimit: "validate.schema{{=$schemaPath}}"
+  _formatExclusiveLimit: "{{=it.topSchemaRef}}{{=$schemaPath}}"
 } #}}
 
 

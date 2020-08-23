@@ -23,7 +23,7 @@
   {{
     $ruleValidate = it.useCustomRule($rule, $schema, it.schema, it);
     if (!$ruleValidate) return;
-    $schemaValue = 'validate.schema' + $schemaPath;
+    $schemaValue = it.topSchemaRef + $schemaPath;
     $validateCode = $ruleValidate.code;
     $compile = $rDef.compile;
     $inline = $rDef.inline;
@@ -54,7 +54,7 @@ var {{=$valid}};
     {{??}}
       , {{=$schemaValue}}
       , {{=$data}}
-      , validate.schema{{=it.schemaPath}}
+      , {{=it.topSchemaRef}}{{=it.schemaPath}}
     {{?}}
     , {{# def.dataPath }}
     {{# def.passParentData }}

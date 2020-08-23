@@ -51,7 +51,7 @@ const def: KeywordDefinition = {
       let definedProp = ""
       if (props.length > 8) {
         // TODO maybe an option instead of hard-coded 8?
-        const propsSchema = schemaRefOrVal(parentSchema.properties, it.schemaPath, "properties")
+        const propsSchema = schemaRefOrVal(it, parentSchema.properties, "properties")
         definedProp = `${propsSchema}.hasOwnProperty(${key})`
       } else if (props.length) {
         definedProp = orExpr(props, (p) => `${key} === ${quotedString(p)}`)

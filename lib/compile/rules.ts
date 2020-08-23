@@ -1,8 +1,6 @@
 import {toHash} from "./util"
 import {CompilationContext, KeywordDefinition} from "../types"
 
-const ruleModules = require("../dotjs")
-
 export interface ValidationRules {
   rules: RuleGroup[]
   all: {[key: string]: boolean | Rule}
@@ -13,10 +11,8 @@ export interface ValidationRules {
 
 export interface RuleGroup {
   type?: string
-  rules: RuleDef[]
+  rules: Rule[]
 }
-
-type RuleDef = string | {[key: string]: string[]} | Rule
 
 export interface Rule {
   keyword: string
@@ -55,7 +51,7 @@ export default function rules(): ValidationRules {
       {type: "string", rules: []},
       {type: "array", rules: []},
       {type: "object", rules: []},
-      {rules: ["$ref"]},
+      {rules: []},
     ],
     all: toHash(ALL),
     keywords: {},
@@ -64,26 +60,6 @@ export default function rules(): ValidationRules {
   }
 
   RULES.rules.forEach((group) => {
-    group.rules = group.rules.map((keyword: string | object) => {
-      let implKeywords: string[] | undefined
-      if (typeof keyword == "object") {
-        const key: string = Object.keys(keyword)[0]
-        implKeywords = keyword[key]
-        keyword = key
-        ;(<string[]>implKeywords).forEach((k) => {
-          ALL.push(k)
-          RULES.all[k] = true
-        })
-      }
-      ALL.push(keyword)
-      const rule: Rule = (RULES.all[keyword] = {
-        keyword: keyword,
-        code: ruleModules[keyword],
-        implements: implKeywords,
-      })
-      return rule
-    })
-
     if (group.type) RULES.types[group.type] = group
   })
 

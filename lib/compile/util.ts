@@ -207,6 +207,7 @@ export function getData($data: string, lvl: number, paths: (number | string)[]):
 
 export function joinPaths(a: string, b: string): string {
   if (a === '""' || a === "''") return b
+  if (b === '""' || b === "''") return a
   return `${a} + ${b}`.replace(/([^\\])' \+ '/g, "$1")
 }
 

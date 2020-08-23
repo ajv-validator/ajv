@@ -18,4 +18,6 @@ const validation: Vocabulary = [
   require("./enum"),
 ]
 
+export default validation
+
 module.exports = validation

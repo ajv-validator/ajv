@@ -31,8 +31,8 @@ export function dataNotType(
 }
 
 export function schemaRefOrVal(
+  {topSchemaRef, schemaPath}: CompilationContext,
   schema: unknown,
-  schemaPath: string,
   keyword: string,
   $data?: string | false
 ): string | number | boolean {
@@ -40,7 +40,7 @@ export function schemaRefOrVal(
     if (typeof schema == "number" || typeof schema == "boolean") return schema
     if (typeof schema == "string") return quotedString(schema)
   }
-  return `validate.schema${schemaPath + getProperty(keyword)}`
+  return `${topSchemaRef}${schemaPath + getProperty(keyword)}`
 }
 
 export function alwaysValidSchema(

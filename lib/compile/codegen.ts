@@ -76,6 +76,15 @@ export default class CodeGen {
     return this
   }
 
+  try(tryBody: Code, catchBody?: Code, err?: string, finallyBody?: Code): CodeGen {
+    if (!catchBody && !finallyBody) throw new Error('"try" without "catch" and "finally"')
+    this.code("try{").code(tryBody)
+    if (catchBody) this.code(err ? `}catch(${err}){` : "}catch{").code(catchBody)
+    if (finallyBody) this.code("}finally{").code(finallyBody)
+    this.code("}")
+    return this
+  }
+
   block(body?: Code, expectedToClose?: number): CodeGen {
     this.#blockStarts.push(this.#blocks.length)
     if (body) this.code(body).endBlock(expectedToClose)

@@ -2,6 +2,7 @@ import Cache from "./cache"
 import CodeGen from "./compile/codegen"
 import {ValidationRules, Rule} from "./compile/rules"
 import {MissingRefError} from "./compile/error_classes"
+import {ResolvedRef} from "./compile"
 
 export interface Options {
   $data?: boolean
@@ -114,7 +115,7 @@ export interface CompilationContext {
   propertyName?: string
   gen: CodeGen
   createErrors?: boolean // TODO maybe remove later
-  baseId?: string // TODO probably not optional
+  baseId: string
   async: boolean
   opts: Options
   formats: {
@@ -134,10 +135,11 @@ export interface CompilationContext {
   logger: Logger // TODO ?
   isTop: boolean // TODO ?
   root: SchemaRoot // TODO ?
-  rootId?: string // TODO ?
+  rootId: string // TODO ?
+  topSchemaRef: string
   MissingRefError: typeof MissingRefError
   resolve: any
-  resolveRef: (...args: any[]) => any
+  resolveRef: (...args: any[]) => ResolvedRef | void
 }
 
 interface SchemaRoot {

@@ -18,4 +18,6 @@ const applicator: Vocabulary = [
   require("./if"),
 ]
 
+export default applicator
+
 module.exports = applicator

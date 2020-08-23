@@ -98,8 +98,6 @@ export function addKeyword(
     }
   }
 
-  RULES.keywords[keyword] = RULES.all[keyword] = true
-
   function _addRule(keyword: string, dataType: string | undefined, definition: KeywordDefinition) {
     let ruleGroup = RULES.rules.find(({type: t}) => t === dataType)
 
@@ -130,7 +128,8 @@ export function addKeyword(
       ruleGroup.rules.push(rule)
     }
 
-    RULES.custom[keyword] = rule
+    RULES.custom[keyword] = RULES.all[keyword] = rule
+    RULES.keywords[keyword] = true
   }
 
   return this
@@ -146,11 +145,11 @@ export function addKeyword(
 function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): void {
   const schema = it.schema[keyword]
   const {schemaType, code, error, $data: $defData}: KeywordDefinition = this.definition
-  const {gen, opts, dataLevel, schemaPath, dataPathArr, allErrors} = it
+  const {gen, opts, dataLevel, dataPathArr, allErrors} = it
   if (!code) throw new Error('"code" and "error" must be defined')
   const $data = $defData && opts.$data && schema && schema.$data
   const data = "data" + (dataLevel || "")
-  const schemaValue = schemaRefOrVal(schema, schemaPath, keyword, $data)
+  const schemaValue = schemaRefOrVal(it, schema, keyword, $data)
   const cxt: KeywordContext = {
     gen,
     fail,
@@ -225,8 +224,8 @@ function validSchemaType(schema: any, schemaType: string | string[]): boolean {
 }
 
 export function getKeywordContext(it: CompilationContext, keyword: string): KeywordContext {
-  const {gen, schema, schemaPath, dataLevel} = it
-  const schemaCode = schemaRefOrVal(schema, schemaPath, keyword)
+  const {gen, schema, dataLevel} = it
+  const schemaCode = schemaRefOrVal(it, schema, keyword)
   return {
     gen,
     fail: exception,

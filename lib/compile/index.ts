@@ -1,5 +1,6 @@
 import CodeGen from "./codegen"
 import {toQuotedString} from "./util"
+import {quotedString} from "../vocabularies/util"
 import {MissingRefError} from "./error_classes"
 import validateCode from "./validate"
 import {Rule} from "./rules"
@@ -20,6 +21,20 @@ var resolve = require("./resolve"),
 const ValidationError = require("./error_classes").ValidationError
 
 module.exports = compile
+
+export type ResolvedRef = InlineResolvedRef | FuncResolvedRef
+
+export interface InlineResolvedRef {
+  code: string
+  schema: object | boolean
+  inline: true
+}
+
+export interface FuncResolvedRef {
+  code: string
+  $async?: boolean
+  inline?: false
+}
 
 /**
  * Compiles schema to validation function
@@ -92,16 +107,19 @@ function compile(schema, root, localRefs, baseId) {
     }
 
     var $async = _schema.$async === true
+    const rootId = resolve.fullPath(_root.schema.$id)
 
     // TODO refactor to extract code from gen
     let sourceCode = <string>validateCode({
       allErrors: !!opts.allErrors,
       isTop: true,
+      topSchemaRef: "validate.schema",
       async: _schema.$async === true,
       schema: _schema,
       isRoot,
-      baseId,
       root: _root,
+      rootId,
+      baseId: baseId || rootId,
       schemaPath: "",
       errSchemaPath: "#",
       errorPath: '""',
@@ -186,7 +204,7 @@ function compile(schema, root, localRefs, baseId) {
     return validate
   }
 
-  function resolveRef(baseId: string, ref: string, isRoot: boolean) {
+  function resolveRef(baseId: string, ref: string, isRoot: boolean): ResolvedRef | void {
     ref = resolve.url(baseId, ref)
     var refIndex = refs[ref]
     var _refVal, refCode
@@ -239,7 +257,7 @@ function compile(schema, root, localRefs, baseId) {
     refVal[refId] = v
   }
 
-  function resolvedRef(refVal, code) {
+  function resolvedRef(refVal, code): ResolvedRef {
     return typeof refVal == "object" || typeof refVal == "boolean"
       ? {code: code, schema: refVal, inline: true}
       : {code: code, $async: refVal && !!refVal.$async}
@@ -384,25 +402,22 @@ function compIndex(schema, root, baseId) {
   return -1
 }
 
-function patternCode(i, patterns) {
-  return "var pattern" + i + " = new RegExp(" + toQuotedString(patterns[i]) + ");"
+function patternCode(i: number, patterns: string[]): string {
+  return `const pattern${i} = new RegExp(${quotedString(patterns[i])});`
 }
 
-function defaultCode(i) {
-  return "var default" + i + " = defaults[" + i + "];"
+function defaultCode(i: number): string {
+  return `const default${i} = defaults[${i}];`
 }
 
-function refValCode(i, refVal) {
-  return refVal[i] === undefined ? "" : "var refVal" + i + " = refVal[" + i + "];"
+function refValCode(i: number, refVal): string {
+  return refVal[i] === undefined ? "" : `const refVal${i} = refVal[${i}];`
 }
 
-function customRuleCode(i) {
-  return "var customRule" + i + " = customRules[" + i + "];"
+function customRuleCode(i: number): string {
+  return `const customRule${i} = customRules[${i}];`
 }
 
-function vars(arr, statement) {
-  if (!arr.length) return ""
-  var code = ""
-  for (var i = 0; i < arr.length; i++) code += statement(i, arr)
-  return code
+function vars(arr: unknown[], statement: (i: number, arr: any[]) => string) {
+  return arr.reduce((code: string, _, i: number) => code + statement(i, arr), "")
 }
