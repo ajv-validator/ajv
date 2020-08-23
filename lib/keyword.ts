@@ -141,8 +141,9 @@ export function addKeyword(
  * @this rule
  * @param {Object} it schema compilation context.
  * @param {String} keyword pre-defined or custom keyword.
+ * @param {String} ruleType current data type the rule is applied to (for rules supporting multiple types).
  */
-function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): void {
+function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): void {
   const schema = it.schema[keyword]
   const {schemaType, code, error, $data: $defData}: KeywordDefinition = this.definition
   const {gen, opts, dataLevel, schemaPath, dataPathArr, allErrors} = it
@@ -171,7 +172,7 @@ function ruleCode(it: CompilationContext, keyword: string /*, ruleType */): void
     throw new Error(`${keyword} must be ${JSON.stringify(schemaType)}`)
   }
   // TODO check that code called "fail" or another valid way to return code
-  code(cxt)
+  code(cxt, ruleType)
 
   // TODO replace with fail_ below
   function fail(condition?: string, context?: KeywordContext): void {

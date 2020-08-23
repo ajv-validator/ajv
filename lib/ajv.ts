@@ -11,6 +11,7 @@ var compileSchema = require("./compile"),
 
 const validationVocabulary: Vocabulary = require("./vocabularies/validation")
 const applicatorVocabulary: Vocabulary = require("./vocabularies/applicator")
+const formatVocabulary: Vocabulary = require("./vocabularies/format")
 
 module.exports = Ajv
 
@@ -77,6 +78,7 @@ export default function Ajv(opts: Options): void {
   if (opts.formats) addInitialFormats(this)
   this.addVocabulary(validationVocabulary, true)
   this.addVocabulary(applicatorVocabulary, true)
+  this.addVocabulary(formatVocabulary, true)
   if (opts.keywords) addInitialKeywords(this, opts.keywords)
   addDefaultMetaSchema(this)
   if (typeof opts.meta == "object") this.addMetaSchema(opts.meta)

@@ -118,7 +118,7 @@ export interface CompilationContext {
   async: boolean
   opts: Options
   formats: {
-    [index: string]: Format | undefined
+    [index: string]: AddedFormat
   }
   // keywords: {
   //   [index: string]: KeywordDefinition | undefined
@@ -166,7 +166,7 @@ export interface KeywordDefinition {
   compile?: (schema: any, parentSchema: object, it: CompilationContext) => ValidateFunction
   macro?: (schema: any, parentSchema: object, it: CompilationContext) => object | boolean
   inline?: (it: CompilationContext, keyword: string, schema: any, parentSchema: object) => string
-  code?: (cxt: KeywordContext) => string | void
+  code?: (cxt: KeywordContext, ruleType?: string) => string | void
   error?: KeywordErrorDefinition
   validateSchema?: ValidateFunction
   implements?: string[]
@@ -221,9 +221,12 @@ export interface AsyncFormatDefinition<T extends SN> {
   compare?: FormatCompare<T>
 }
 
-export type Format =
-  | string
+export type FormatValidate = FormatValidator<any> | AsyncFormatValidator<any> | RegExp
+
+export type AddedFormat =
   | RegExp
   | FormatValidator<string>
   | FormatDefinition<any>
   | AsyncFormatDefinition<any>
+
+export type Format = AddedFormat | string

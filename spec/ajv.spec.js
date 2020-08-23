@@ -79,15 +79,11 @@ describe("Ajv", () => {
     })
 
     it("should validate against previously compiled schema by id (also see addSchema)", () => {
-      ajv
-        .validate({$id: "//e.com/int.json", type: "integer"}, 1)
-        .should.equal(true)
+      ajv.validate({$id: "//e.com/int.json", type: "integer"}, 1).should.equal(true)
       ajv.validate("//e.com/int.json", 1).should.equal(true)
       ajv.validate("//e.com/int.json", "1").should.equal(false)
 
-      ajv
-        .compile({$id: "//e.com/str.json", type: "string"})
-        .should.be.a("function")
+      ajv.compile({$id: "//e.com/str.json", type: "string"}).should.be.a("function")
       ajv.validate("//e.com/str.json", "a").should.equal(true)
       ajv.validate("//e.com/str.json", 1).should.equal(false)
     })
@@ -109,12 +105,8 @@ describe("Ajv", () => {
         },
       })
 
-      ajv
-        .validate("http://e.com/types.json#/definitions/int", 1)
-        .should.equal(true)
-      ajv
-        .validate("http://e.com/types.json#/definitions/int", "1")
-        .should.equal(false)
+      ajv.validate("http://e.com/types.json#/definitions/int", 1).should.equal(true)
+      ajv.validate("http://e.com/types.json#/definitions/int", "1").should.equal(false)
     })
 
     it("should return schema fragment by id", () => {

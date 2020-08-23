@@ -51,8 +51,8 @@ export default function rules(): ValidationRules {
 
   const RULES: ValidationRules = {
     rules: [
-      {type: "number", rules: ["format"]},
-      {type: "string", rules: ["format"]},
+      {type: "number", rules: []},
+      {type: "string", rules: []},
       {type: "array", rules: []},
       {type: "object", rules: []},
       {rules: ["$ref"]},
