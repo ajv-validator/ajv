@@ -51,7 +51,8 @@ describe("Ajv", () => {
       })
     })
 
-    it("should throw if compiled schema has an invalid JavaScript code", () => {
+    // TODO replace with custom "code" keyword
+    it.skip("should throw if compiled schema has an invalid JavaScript code", () => {
       ajv.addKeyword("even", {inline: badEvenCode})
       var schema = {even: true}
       var validate = ajv.compile(schema)

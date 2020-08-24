@@ -159,7 +159,6 @@ export interface KeywordDefinition {
   before?: string
   // schema: false makes validate not to expect schema (ValidateFunction)
   schema?: boolean
-  statements?: boolean
   dependencies?: string[]
   modifying?: boolean
   valid?: boolean
@@ -167,7 +166,6 @@ export interface KeywordDefinition {
   validate?: SchemaValidateFunction | ValidateFunction
   compile?: (schema: any, parentSchema: object, it: CompilationContext) => ValidateFunction
   macro?: (schema: any, parentSchema: object, it: CompilationContext) => object | boolean
-  inline?: (it: CompilationContext, keyword: string, schema: any, parentSchema: object) => string
   code?: (cxt: KeywordContext, ruleType?: string) => string | void
   error?: KeywordErrorDefinition
   validateSchema?: ValidateFunction

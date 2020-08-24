@@ -9,7 +9,7 @@
     , $rDef = $rule.definition
     , $closingBraces = '';
   var $validate = $rDef.validate;
-  var $compile, $inline, $macro, $ruleValidate, $validateCode;
+  var $compile, $macro, $ruleValidate, $validateCode;
 }}
 
 {{? $isData && $rDef.$data }}
@@ -26,7 +26,6 @@
     $schemaValue = it.topSchemaRef + $schemaPath;
     $validateCode = $ruleValidate.code;
     $compile = $rDef.compile;
-    $inline = $rDef.inline;
     $macro = $rDef.macro;
   }}
 {{?}}
@@ -42,7 +41,7 @@
 }}
 
 
-{{? !($inline || $macro) }}{{=$ruleErrs}} = null;{{?}}
+{{? !$macro }}{{=$ruleErrs}} = null;{{?}}
 var {{=$errs}} = errors;
 var {{=$valid}};
 
@@ -90,13 +89,7 @@ var {{=$valid}};
   {{?}}
 {{?}}
 
-{{? $inline }}
-  {{? $rDef.statements }}
-    {{= $ruleValidate.validate }}
-  {{??}}
-    {{=$valid}} = {{= $ruleValidate.validate }};
-  {{?}}
-{{?? $macro }}
+{{? $macro }}
   {{# def.setupNextLevel }}
   {{
     $it.schema = $ruleValidate.validate;
@@ -154,23 +147,7 @@ var {{=$valid}};
       {{# def.error:'custom' }}
     {{# def.storeDefOut:def_customError }}
 
-    {{? $inline }}
-      {{? $rDef.errors }}
-        {{? $rDef.errors != 'full' }}
-          {{# def.extendErrors:true }}
-        {{?}}
-      {{??}}
-        {{? $rDef.errors === false}}
-          {{= def_customError }}
-        {{??}}
-          if ({{=$errs}} == errors) {
-            {{= def_customError }}
-          } else {
-            {{# def.extendErrors:true }}
-          }
-        {{?}}
-      {{?}}
-    {{?? $macro }}
+    {{? $macro }}
       {{# def.extraError:'custom' }}
     {{??}}
       {{? $rDef.errors === false}}

@@ -321,7 +321,6 @@ function compile(schema, root, localRefs, baseId) {
     }
 
     var compile = ruleDef.compile,
-      inline = ruleDef.inline,
       macro = ruleDef.macro
 
     var validate
@@ -330,8 +329,6 @@ function compile(schema, root, localRefs, baseId) {
     } else if (macro) {
       validate = macro.call(self, schema, parentSchema, it)
       if (opts.validateSchema !== false) self.validateSchema(validate, true)
-    } else if (inline) {
-      validate = inline.call(self, it, rule.keyword, schema, parentSchema)
     } else {
       validate = ruleDef.validate
       if (!validate) return

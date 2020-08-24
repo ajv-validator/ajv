@@ -498,7 +498,8 @@ describe("Custom keywords", () => {
     }
   })
 
-  describe("inline rules", () => {
+  // TODO replace with custom "code" keyword
+  describe.skip("inline rules", () => {
     it('should add and validate rule with "inline" code keyword', () => {
       testEvenKeyword({type: "number", inline: inlineEven})
     })
@@ -708,7 +709,8 @@ describe("Custom keywords", () => {
       }
     })
 
-    it('should validate rule with "inline" and "validate" funcs', () => {
+    // TODO replace with custom "code" keyword
+    it.skip('should validate rule with "inline" and "validate" funcs', () => {
       var inlineCalled
       testEvenKeyword$data({
         type: "number",
@@ -730,7 +732,8 @@ describe("Custom keywords", () => {
       }
     })
 
-    it('should validate with "inline" and "validate" funcs with meta-schema', () => {
+    // TODO replace with custom "code" keyword
+    it.skip('should validate with "inline" and "validate" funcs with meta-schema', () => {
       var inlineCalled
       testEvenKeyword$data({
         type: "number",
