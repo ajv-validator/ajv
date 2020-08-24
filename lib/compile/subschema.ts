@@ -76,14 +76,14 @@ function getSubschema(
   }
 
   if (schema !== undefined) {
-    if (schemaPath === undefined || topSchemaRef === undefined) {
-      throw new Error('"schemaPath" and "topSchemaRef" are required with "schema"')
+    if (schemaPath === undefined || errSchemaPath === undefined || topSchemaRef === undefined) {
+      throw new Error('"schemaPath", "errSchemaPath" and "topSchemaRef" are required with "schema"')
     }
     return {
       schema,
       schemaPath,
       topSchemaRef,
-      errSchemaPath: errSchemaPath || it.errSchemaPath,
+      errSchemaPath,
     }
   }
 

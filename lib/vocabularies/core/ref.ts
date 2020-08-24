@@ -2,6 +2,7 @@ import {CodeKeywordDefinition} from "../../types"
 import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {ResolvedRef, InlineResolvedRef} from "../../compile"
+import {getParentData} from "../util"
 
 const def: CodeKeywordDefinition = {
   keyword: "$ref",
@@ -61,12 +62,11 @@ const def: CodeKeywordDefinition = {
           gen.code(`await ${callValidate(v)};`)
           if (!allErrors) gen.code(`${valid} = true;`)
         },
-        () => {
-          gen.if("!(e instanceof ValidationError)", "throw e")
-          addErrorsFrom("e")
+        (e) => {
+          gen.if(`!(${e} instanceof ValidationError)`, `throw ${e}`)
+          addErrorsFrom(e)
           if (!allErrors) gen.code(`${valid} = false;`)
-        },
-        "e"
+        }
       )
       ok(valid)
     }
@@ -80,12 +80,10 @@ const def: CodeKeywordDefinition = {
     }
 
     function callValidate(v: string): string {
-      const {errorPath, dataLevel, dataPathArr} = it
+      const {errorPath} = it
       const dataPath = `(dataPath || '')${errorPath === '""' ? "" : ` + ${errorPath}`}` // TODO joinPaths?
-      const parentArgs = dataLevel
-        ? `data${dataLevel - 1 || ""}, ${dataPathArr[dataLevel]}`
-        : "parentData, parentDataProperty"
-      const args = `${data}, ${dataPath}, ${parentArgs}, rootData`
+      const parent = getParentData(it)
+      const args = `${data}, ${dataPath}, ${parent.data}, ${parent.property}, rootData`
       return opts.passContext ? `${v}.call(this, ${args})` : `${v}(${args})`
     }
 

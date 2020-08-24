@@ -191,6 +191,8 @@ export type CompileKeywordFunc = (
   it: CompilationContext
 ) => ValidateFunction
 
+export type FuncKeywordDefinition = CompiledKeywordDefinition | ValidatedKeywordDefinition
+
 export interface CompiledKeywordDefinition extends FuncKeywordDef {
   compile: CompileKeywordFunc
   modifying?: boolean

@@ -15,7 +15,7 @@ import {reportError} from "./compile/errors"
 import {getData} from "./compile/util"
 import {schemaRefOrVal} from "./vocabularies/util"
 import {definitionSchema} from "./definition_schema"
-import keywordCode, {validateKeywordSchema} from "./compile/validate/keyword"
+import keywordCode, {validateKeywordSchema, keywordError} from "./compile/validate/keyword"
 
 const IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i
 const customRuleCode = require("./dotjs/custom")
@@ -112,10 +112,7 @@ export function addKeyword(
       keyword,
       definition,
       custom: true,
-      code:
-        "code" in definition || ("macro" in definition && !definition.$data)
-          ? ruleCode
-          : customRuleCode,
+      code: "code" in definition || !definition.$data ? ruleCode : customRuleCode,
       implements: definition.implements,
     }
 
@@ -149,7 +146,7 @@ export function addKeyword(
 function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): void {
   const schema = it.schema[keyword]
   const def: CodeKeywordDefinition = this.definition
-  const {schemaType, code, error, $data: $defData} = def
+  const {schemaType, $data: $defData} = def
   validateKeywordSchema(it, keyword, def)
   const {gen, opts, dataLevel, dataPathArr, allErrors} = it
   // TODO
@@ -178,7 +175,7 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
     throw new Error(`${keyword} must be ${JSON.stringify(schemaType)}`)
   }
   // TODO check that code called "fail" or another valid way to return code
-  ;(code || keywordCode)(cxt, ruleType, this.definition)
+  ;(def.code || keywordCode)(cxt, ruleType, this.definition)
 
   // TODO replace with fail_ below
   function fail(condition?: string, context?: KeywordContext): void {
@@ -192,7 +189,7 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
     }
 
     function _reportError() {
-      reportError(context || cxt, error as KeywordErrorDefinition)
+      reportError(context || cxt, def.error || keywordError)
     }
   }
 

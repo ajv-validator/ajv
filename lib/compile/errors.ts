@@ -1,5 +1,4 @@
 import {KeywordContext, KeywordErrorDefinition} from "../types"
-import {toQuotedString} from "./util"
 import {quotedString} from "../vocabularies/util"
 import CodeGen from "./codegen"
 
@@ -33,6 +32,23 @@ export function resetErrorsCount(gen: CodeGen, errsCount: string): void {
   )
 }
 
+export function extendErrors(
+  {gen, keyword, schemaValue, data, it}: KeywordContext,
+  errsCount: string
+): void {
+  gen.for(`let i=${errsCount}; i<errors; i++`, () => {
+    gen.code(`const err = vErrors[i];`)
+    gen.if("err.dataPath === undefined", `err.dataPath = (dataPath || '') + ${it.errorPath}`)
+    gen.code(`err.schemaPath = ${quotedString(it.errSchemaPath + "/" + keyword)};`)
+    if (it.opts.verbose) {
+      gen.code(
+        `err.schema = ${schemaValue};
+        err.data = ${data};`
+      )
+    }
+  })
+}
+
 function addError(gen: CodeGen, errObj: string): void {
   const err = gen.name("err")
   gen
@@ -64,7 +80,7 @@ function errorObjectCode(cxt: KeywordContext, error: KeywordErrorDefinition): st
   let out = `{
     keyword: "${keyword}",
     dataPath: (dataPath || "") + ${errorPath},
-    schemaPath: ${toQuotedString(errSchemaPath + "/" + keyword)},
+    schemaPath: ${quotedString(errSchemaPath + "/" + keyword)},
     params: ${params ? params(cxt) : "{}"},`
   if (propertyName) out += `propertyName: ${propertyName},`
   if (opts.messages !== false) {

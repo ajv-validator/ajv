@@ -106,3 +106,14 @@ export function loopPropertiesCode(
 export function orExpr(items: string[], mapCondition: (s: string, i: number) => string): string {
   return items.map(mapCondition).reduce((expr, cond) => `${expr} || ${cond}`)
 }
+
+export interface ParentData {
+  data: string
+  property: string
+}
+
+export function getParentData({dataLevel, dataPathArr}: CompilationContext): ParentData {
+  return dataLevel
+    ? {data: `data${dataLevel - 1 || ""}`, property: `${dataPathArr[dataLevel]}`}
+    : {data: "parentData", property: "parentDataProperty"}
+}

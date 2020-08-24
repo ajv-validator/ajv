@@ -18,7 +18,7 @@
     "prettier:check": "prettier --list-different './**/*.{md,json,yaml,js,ts}'",
     "test-spec": "mocha spec/{**/,}*.spec.js -R spec",
     "test-fast": "AJV_FAST_TEST=true npm run test-spec",
-    "test-debug": "npm run test-spec -- --inspect-brk",
+    "test-debug": "npm run test-spec -- --inspect",
     "test-cov": "nyc npm run test-spec",
     "test-ts": "tsc --target ES5 --noImplicitAny --noEmit spec/typescript/index.ts",
     "bundle": "del-cli dist && node ./scripts/bundle.js . Ajv pure_getters",
