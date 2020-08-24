@@ -60,8 +60,7 @@ function iterateKeywords(it: CompilationContext, group: RuleGroup) {
   } = it
   if (useDefaults) assignDefaults(it, group.type)
   let closeBlocks = ""
-  // TODO remove Rule type cast
-  for (const rule of group.rules as Rule[]) {
+  for (const rule of group.rules) {
     if (shouldUseRule(schema, rule)) {
       // TODO _outLen
       const _outLen = gen._out.length

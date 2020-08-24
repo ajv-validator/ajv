@@ -115,8 +115,7 @@ export function addKeyword(
     }
 
     if (definition.before) {
-      // TODO remove type case when RuleDef is removed
-      const i = ruleGroup.rules.findIndex((rule) => (rule as Rule).keyword === definition.before)
+      const i = ruleGroup.rules.findIndex((rule) => rule.keyword === definition.before)
       if (i >= 0) {
         ruleGroup.rules.splice(i, 0, rule)
       } else {
@@ -272,8 +271,7 @@ export function removeKeyword(keyword: string): object {
   delete RULES.all[keyword]
   delete RULES.custom[keyword]
   for (const group of RULES.rules) {
-    // TODO remove <Rule> type cast once all rules migrated
-    const i = group.rules.findIndex((rule) => (<Rule>rule).keyword === keyword)
+    const i = group.rules.findIndex((rule) => rule.keyword === keyword)
     if (i >= 0) group.rules.splice(i, 1)
   }
   return this

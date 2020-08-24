@@ -298,7 +298,7 @@ function _removeAllSchemas(self, schemas, regex?: RegExp) {
 }
 
 /* @this   Ajv */
-function _addSchema(schema: object | boolean, skipValidation, meta, shouldAddSchema) {
+function _addSchema(schema: {[x: string]: any} | boolean, skipValidation, meta, shouldAddSchema) {
   if (typeof schema != "object" && typeof schema != "boolean") {
     throw new Error("schema should be object or boolean")
   }
@@ -309,24 +309,23 @@ function _addSchema(schema: object | boolean, skipValidation, meta, shouldAddSch
 
   shouldAddSchema = shouldAddSchema || this._opts.addUsedSchema !== false
 
-  var id = resolve.normalizeId(schema["$id"])
+  let $id, $schema
+  if (typeof schema == "object") {
+    $id = schema.$id
+    $schema = schema.$schema
+  }
+  var id = resolve.normalizeId($id)
   if (id && shouldAddSchema) checkUnique(this, id)
 
   var willValidate = this._opts.validateSchema !== false && !skipValidation
   var recursiveMeta
-  if (willValidate && !(recursiveMeta = id && id === resolve.normalizeId(schema["$schema"]))) {
+  if (willValidate && !(recursiveMeta = id && id === resolve.normalizeId($schema))) {
     this.validateSchema(schema, true)
   }
 
   var localRefs = resolve.ids.call(this, schema)
 
-  var schemaObj = new SchemaObject({
-    id: id,
-    schema: schema,
-    localRefs: localRefs,
-    cacheKey: cacheKey,
-    meta: meta,
-  })
+  var schemaObj = new SchemaObject({id, schema, localRefs, cacheKey, meta})
 
   if (id[0] !== "#" && shouldAddSchema) this._refs[id] = schemaObj
   this._cache.put(cacheKey, schemaObj)
@@ -338,25 +337,26 @@ function _addSchema(schema: object | boolean, skipValidation, meta, shouldAddSch
 
 /* @this   Ajv */
 function _compile(schemaObj, root) {
-  if (schemaObj.compiling) {
-    schemaObj.validate = callValidate
-    callValidate.schema = schemaObj.schema
-    callValidate.errors = null
-    callValidate.root = root ? root : callValidate
-    if (schemaObj.schema.$async === true) callValidate.$async = true
-    return callValidate
-  }
+  if (schemaObj.compiling) return _makeValidate(schemaObj, root)
   schemaObj.compiling = true
+  const v = _tryCompile.call(this, schemaObj, root)
+  schemaObj.validate = v
+  schemaObj.refs = v.refs
+  schemaObj.refVal = v.refVal
+  schemaObj.root = v.root
+  return v
+}
 
+/* @this   Ajv */
+function _tryCompile(schemaObj, root) {
   var currentOpts
   if (schemaObj.meta) {
     currentOpts = this._opts
     this._opts = this._metaOpts
   }
 
-  var v
   try {
-    v = compileSchema.call(this, schemaObj.schema, root, schemaObj.localRefs)
+    return compileSchema.call(this, schemaObj.schema, root, schemaObj.localRefs)
   } catch (e) {
     delete schemaObj.validate
     throw e
@@ -364,12 +364,15 @@ function _compile(schemaObj, root) {
     schemaObj.compiling = false
     if (schemaObj.meta) this._opts = currentOpts
   }
+}
 
-  schemaObj.validate = v
-  schemaObj.refs = v.refs
-  schemaObj.refVal = v.refVal
-  schemaObj.root = v.root
-  return v
+function _makeValidate(schemaObj, root) {
+  schemaObj.validate = callValidate
+  callValidate.schema = schemaObj.schema
+  callValidate.errors = null
+  callValidate.root = root ? root : callValidate
+  if (schemaObj.schema.$async === true) callValidate.$async = true
+  return callValidate
 
   /* @this   {*} - custom context, see passContext option */
   function callValidate(...args) {

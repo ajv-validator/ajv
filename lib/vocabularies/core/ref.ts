@@ -11,7 +11,7 @@ const def: KeywordDefinition = {
     const ref = getRef()
     if (ref === undefined) missingRef()
     else if (ref.inline) applyRefSchema(ref)
-    else if (ref.$async) validateAsyncRef(ref.code)
+    else if (ref.$async || it.async) validateAsyncRef(ref.code)
     else validateRef(ref.code)
 
     function getRef(): ResolvedRef | void {
@@ -20,10 +20,7 @@ const def: KeywordDefinition = {
           ? {code: "validate", $async: it.async}
           : {code: "root.refVal[0]", $async: root.schema.$async === true}
       }
-
-      const ref = resolveRef(baseId, schema, isRoot)
-      if (ref && !ref.inline && it.async) ref.$async = true
-      return ref
+      return resolveRef(baseId, schema, isRoot)
     }
 
     function missingRef(): void {
@@ -40,14 +37,14 @@ const def: KeywordDefinition = {
       }
     }
 
-    function applyRefSchema(ref: InlineResolvedRef): void {
+    function applyRefSchema(inlineRef: InlineResolvedRef): void {
       const valid = gen.name("valid")
       applySubschema(
         it,
         {
-          schema: ref.schema,
+          schema: inlineRef.schema,
           schemaPath: "",
-          topSchemaRef: ref.code,
+          topSchemaRef: inlineRef.code,
           errSchemaPath: schema,
         },
         valid

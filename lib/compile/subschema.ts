@@ -61,23 +61,24 @@ function getSubschema(
   }
 
   if (keyword !== undefined) {
-    const schema = it.schema[keyword]
+    const sch = it.schema[keyword]
     return schemaProp === undefined
       ? {
-          schema: schema,
+          schema: sch,
           schemaPath: it.schemaPath + getProperty(keyword),
           errSchemaPath: `${it.errSchemaPath}/${keyword}`,
         }
       : {
-          schema: schema[schemaProp],
+          schema: sch[schemaProp],
           schemaPath: it.schemaPath + getProperty(keyword) + getProperty(schemaProp),
           errSchemaPath: `${it.errSchemaPath}/${keyword}/${escapeFragment("" + schemaProp)}`,
         }
   }
 
   if (schema !== undefined) {
-    if (schemaPath === undefined || errSchemaPath === undefined || topSchemaRef === undefined)
+    if (schemaPath === undefined || errSchemaPath === undefined || topSchemaRef === undefined) {
       throw new Error('"schemaPath", "errSchemaPath" and "topSchemaRef" are required with "schema"')
+    }
     return {
       schema,
       schemaPath,

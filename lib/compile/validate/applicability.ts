@@ -7,8 +7,7 @@ export function schemaHasRulesForType({RULES, schema}: CompilationContext, ty: s
 }
 
 export function shouldUseGroup(schema: object, group: RuleGroup): boolean {
-  // TODO remove type cast to Rule
-  return group.rules.some((rule) => shouldUseRule(schema, <Rule>rule))
+  return group.rules.some((rule) => shouldUseRule(schema, rule))
 }
 
 export function shouldUseRule(schema: object, rule: Rule): boolean | undefined {
