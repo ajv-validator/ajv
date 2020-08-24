@@ -1,4 +1,4 @@
-import {KeywordDefinition, KeywordErrorDefinition} from "../../types"
+import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import {propertyInData, noPropertyInData} from "../util"
 import {Expr} from "../../compile/subschema"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"
@@ -14,7 +14,7 @@ const error: KeywordErrorDefinition = {
     missingProperty ? `{missingProperty: ${missingProperty}}` : "{}",
 }
 
-const def: KeywordDefinition = {
+const def: CodeKeywordDefinition = {
   keyword: "required",
   type: "object",
   schemaType: ["array"],

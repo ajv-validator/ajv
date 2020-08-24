@@ -1,5 +1,6 @@
 import {
   KeywordDefinition,
+  CodeKeywordDefinition,
   KeywordErrorDefinition,
   Vocabulary,
   ErrorObject,
@@ -14,6 +15,7 @@ import {reportError} from "./compile/errors"
 import {getData} from "./compile/util"
 import {schemaRefOrVal} from "./vocabularies/util"
 import {definitionSchema} from "./definition_schema"
+import keywordCode, {validateKeywordSchema} from "./compile/validate/keyword"
 
 const IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i
 const customRuleCode = require("./dotjs/custom")
@@ -110,7 +112,10 @@ export function addKeyword(
       keyword,
       definition,
       custom: true,
-      code: definition.code ? ruleCode : customRuleCode,
+      code:
+        "code" in definition || ("macro" in definition && !definition.$data)
+          ? ruleCode
+          : customRuleCode,
       implements: definition.implements,
     }
 
@@ -143,9 +148,12 @@ export function addKeyword(
  */
 function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): void {
   const schema = it.schema[keyword]
-  const {schemaType, code, error, $data: $defData}: KeywordDefinition = this.definition
+  const def: CodeKeywordDefinition = this.definition
+  const {schemaType, code, error, $data: $defData} = def
+  validateKeywordSchema(it, keyword, def)
   const {gen, opts, dataLevel, dataPathArr, allErrors} = it
-  if (!code) throw new Error('"code" and "error" must be defined')
+  // TODO
+  // if (!code) throw new Error('"code" and "error" must be defined')
   const $data = $defData && opts.$data && schema && schema.$data
   const data = "data" + (dataLevel || "")
   const schemaValue = schemaRefOrVal(it, schema, keyword, $data)
@@ -170,7 +178,7 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
     throw new Error(`${keyword} must be ${JSON.stringify(schemaType)}`)
   }
   // TODO check that code called "fail" or another valid way to return code
-  code(cxt, ruleType)
+  ;(code || keywordCode)(cxt, ruleType, this.definition)
 
   // TODO replace with fail_ below
   function fail(condition?: string, context?: KeywordContext): void {

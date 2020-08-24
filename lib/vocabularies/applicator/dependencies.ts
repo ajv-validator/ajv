@@ -1,4 +1,4 @@
-import {KeywordDefinition, KeywordErrorDefinition} from "../../types"
+import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import {alwaysValidSchema, quotedString, propertyInData} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
 import {escapeQuotes} from "../../compile/util"
@@ -11,7 +11,7 @@ interface SchemaDependencies {
   [x: string]: object | boolean
 }
 
-const def: KeywordDefinition = {
+const def: CodeKeywordDefinition = {
   keyword: "dependencies",
   type: "object",
   schemaType: "object",

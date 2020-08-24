@@ -1,7 +1,7 @@
-import {KeywordDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import {checkDataType, checkDataTypes} from "../../compile/util"
 
-const def: KeywordDefinition = {
+const def: CodeKeywordDefinition = {
   keyword: "uniqueItems",
   type: "array",
   schemaType: "boolean",

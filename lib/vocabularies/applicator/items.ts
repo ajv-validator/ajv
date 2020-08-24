@@ -1,9 +1,9 @@
-import {KeywordDefinition, KeywordErrorDefinition} from "../../types"
+import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import {alwaysValidSchema} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
 import {fail_} from "../../keyword"
 
-const def: KeywordDefinition = {
+const def: CodeKeywordDefinition = {
   keyword: "items",
   type: "array",
   schemaType: ["object", "array", "boolean"],

@@ -1,7 +1,7 @@
-import {KeywordDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import {concatSchema, dataNotType} from "../util"
 
-const def: KeywordDefinition = {
+const def: CodeKeywordDefinition = {
   keyword: ["maxProperties", "minProperties"],
   type: "object",
   schemaType: "number",

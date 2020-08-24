@@ -1,8 +1,8 @@
-import {KeywordDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 
-const def: KeywordDefinition = {
+const def: CodeKeywordDefinition = {
   keyword: "allOf",
   schemaType: "array",
   code({gen, ok, schema, it}) {

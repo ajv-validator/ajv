@@ -1,7 +1,7 @@
-import {KeywordDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import {quotedString, orExpr} from "../util"
 
-const def: KeywordDefinition = {
+const def: CodeKeywordDefinition = {
   keyword: "enum",
   schemaType: "array",
   $data: true,

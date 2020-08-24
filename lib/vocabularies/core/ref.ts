@@ -1,9 +1,9 @@
-import {KeywordDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {ResolvedRef, InlineResolvedRef} from "../../compile"
 
-const def: KeywordDefinition = {
+const def: CodeKeywordDefinition = {
   keyword: "$ref",
   schemaType: "string",
   code({gen, ok, fail, data, schema, it}) {

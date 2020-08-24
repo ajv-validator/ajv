@@ -3,8 +3,8 @@ import {toQuotedString} from "./util"
 import {quotedString} from "../vocabularies/util"
 import {MissingRefError} from "./error_classes"
 import validateCode from "./validate"
-import {Rule} from "./rules"
-import {CompilationContext, KeywordDefinition, ErrorObject} from "../types"
+import {validateKeywordSchema} from "./validate/keyword"
+import {ErrorObject, KeywordCompilationResult} from "../types"
 
 const equal = require("fast-deep-equal")
 const ucs2length = require("./ucs2length")
@@ -56,7 +56,7 @@ function compile(schema, root, localRefs, baseId) {
     patternsHash = {},
     defaults: any[] = [],
     defaultsHash = {},
-    customRules: any[] = []
+    customRules: KeywordCompilationResult[] = []
 
   root = root || {schema: schema, refVal: refVal, refs: refs}
 
@@ -136,7 +136,8 @@ function compile(schema, root, localRefs, baseId) {
       resolveRef, // TODO remove to imports
       usePattern, // TODO remove to imports
       useDefault, // TODO remove to imports
-      useCustomRule, // TODO remove to imports
+      validateKeywordSchema, // TODO remove
+      customRules, // TODO add to types
       opts,
       formats,
       logger: self.logger,
@@ -290,60 +291,6 @@ function compile(schema, root, localRefs, baseId) {
         return "default" + index
       default:
         throw new Error(`unsupported default type "${typeof value}"`)
-    }
-  }
-
-  function useCustomRule(
-    rule: Rule,
-    schema: any,
-    parentSchema: object,
-    it: CompilationContext
-  ): any {
-    const ruleDef = rule.definition as KeywordDefinition
-    if (self._opts.validateSchema !== false) {
-      var deps = ruleDef.dependencies
-      if (
-        deps &&
-        !deps.every((keyword) => Object.prototype.hasOwnProperty.call(parentSchema, keyword))
-      ) {
-        throw new Error("parent schema must have all required keywords: " + deps.join(","))
-      }
-
-      var validateSchema = ruleDef.validateSchema
-      if (validateSchema) {
-        var valid = validateSchema(schema)
-        if (!valid) {
-          var message = "keyword schema is invalid: " + self.errorsText(validateSchema.errors)
-          if (self._opts.validateSchema === "log") self.logger.error(message)
-          else throw new Error(message)
-        }
-      }
-    }
-
-    var compile = ruleDef.compile,
-      macro = ruleDef.macro
-
-    var validate
-    if (compile) {
-      validate = compile.call(self, schema, parentSchema, it)
-    } else if (macro) {
-      validate = macro.call(self, schema, parentSchema, it)
-      if (opts.validateSchema !== false) self.validateSchema(validate, true)
-    } else {
-      validate = ruleDef.validate
-      if (!validate) return
-    }
-
-    if (validate === undefined) {
-      throw new Error('custom keyword "' + rule.keyword + '"failed to compile')
-    }
-
-    var index = customRules.length
-    customRules[index] = validate
-
-    return {
-      code: "customRule" + index,
-      validate,
     }
   }
 }

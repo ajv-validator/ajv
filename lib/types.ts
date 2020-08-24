@@ -1,6 +1,6 @@
 import Cache from "./cache"
 import CodeGen from "./compile/codegen"
-import {ValidationRules, Rule} from "./compile/rules"
+import {ValidationRules} from "./compile/rules"
 import {MissingRefError} from "./compile/error_classes"
 import {ResolvedRef} from "./compile"
 
@@ -101,6 +101,8 @@ export interface ErrorObject {
   data?: any
 }
 
+export type KeywordCompilationResult = object | boolean | SchemaValidateFunction | ValidateFunction
+
 export interface CompilationContext {
   allErrors: boolean
   level: number
@@ -128,9 +130,10 @@ export interface CompilationContext {
   validateCode: (it: CompilationContext) => string | void // TODO remove string
   usePattern: (str: string) => string
   useDefault: (value: any) => string
-  useCustomRule: (rule: Rule, schema: any, parentSchema: object, it: CompilationContext) => any
-  util: object // TODO
-  self: object // TODO
+  customRules: KeywordCompilationResult[]
+  validateKeywordSchema: (it: CompilationContext, keyword: string, def: KeywordDefinition) => void // TODO remove
+  util: any // TODO
+  self: any // TODO
   RULES: ValidationRules
   logger: Logger // TODO ?
   isTop: boolean // TODO ?
@@ -148,29 +151,65 @@ interface SchemaRoot {
   refs: {[key: string]: any} // TODO
 }
 
-export interface KeywordDefinition {
+interface _KeywordDef {
   keyword?: string | string[]
   type?: string | string[]
   schemaType?: string | string[]
-  async?: boolean
-  $data?: boolean
-  errors?: boolean | "full"
-  metaSchema?: object
-  before?: string
-  // schema: false makes validate not to expect schema (ValidateFunction)
-  schema?: boolean
-  dependencies?: string[]
-  modifying?: boolean
-  valid?: boolean
-  // at least one of the following properties should be present
-  validate?: SchemaValidateFunction | ValidateFunction
-  compile?: (schema: any, parentSchema: object, it: CompilationContext) => ValidateFunction
-  macro?: (schema: any, parentSchema: object, it: CompilationContext) => object | boolean
-  code?: (cxt: KeywordContext, ruleType?: string) => string | void
-  error?: KeywordErrorDefinition
-  validateSchema?: ValidateFunction
+  $data?: boolean // requires "validate" or "code"
   implements?: string[]
+  before?: string
+  metaSchema?: object
+  validateSchema?: ValidateFunction // compiled keyword metaSchema - should not be passed
+  dependencies?: string[] // keywords that must be present in the same schema
 }
+
+interface FuncKeywordDef extends _KeywordDef {
+  validate?: SchemaValidateFunction | ValidateFunction
+  // schema: false makes validate not to expect schema (ValidateFunction)
+  schema?: boolean // requires "validate"
+  errors?: boolean | "full"
+}
+
+export interface CodeKeywordDefinition extends _KeywordDef {
+  code: (cxt: KeywordContext, ruleType?: string, def?: KeywordDefinition) => string | void
+  error?: KeywordErrorDefinition
+}
+
+export type MacroKeywordFunc = (
+  schema: any,
+  parentSchema: object,
+  it: CompilationContext
+) => object | boolean
+
+export interface MacroKeywordDefinition extends FuncKeywordDef {
+  macro: MacroKeywordFunc
+}
+
+export type CompileKeywordFunc = (
+  schema: any,
+  parentSchema: object,
+  it: CompilationContext
+) => ValidateFunction
+
+export interface CompiledKeywordDefinition extends FuncKeywordDef {
+  compile: CompileKeywordFunc
+  modifying?: boolean
+  async?: boolean
+  valid?: boolean
+}
+
+export interface ValidatedKeywordDefinition extends FuncKeywordDef {
+  validate: SchemaValidateFunction | ValidateFunction
+  modifying?: boolean
+  async?: boolean
+  valid?: boolean
+}
+
+export type KeywordDefinition =
+  | MacroKeywordDefinition
+  | CompiledKeywordDefinition
+  | ValidatedKeywordDefinition
+  | CodeKeywordDefinition
 
 export interface KeywordErrorDefinition {
   message: string | ((cxt: KeywordContext) => string)

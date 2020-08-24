@@ -1,9 +1,9 @@
-import {KeywordDefinition, KeywordErrorDefinition, CompilationContext} from "../../types"
+import {CodeKeywordDefinition, KeywordErrorDefinition, CompilationContext} from "../../types"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportExtraError, resetErrorsCount} from "../../compile/errors"
 
-const def: KeywordDefinition = {
+const def: CodeKeywordDefinition = {
   keyword: "if",
   schemaType: ["object", "boolean"],
   // TODO

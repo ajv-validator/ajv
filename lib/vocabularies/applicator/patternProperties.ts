@@ -1,8 +1,8 @@
-import {KeywordDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import {schemaProperties, loopPropertiesCode} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
 
-const def: KeywordDefinition = {
+const def: CodeKeywordDefinition = {
   keyword: "patternProperties",
   type: "object",
   schemaType: "object",

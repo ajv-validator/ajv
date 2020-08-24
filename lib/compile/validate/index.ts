@@ -3,7 +3,7 @@ import {schemaUnknownRules, schemaHasRules, schemaHasRulesExcept} from "../util"
 import {quotedString} from "../../vocabularies/util"
 import {booleanOrEmptySchema} from "./boolSchema"
 import {getSchemaTypes, coerceAndCheckDataType} from "./dataType"
-import {schemaKeywords} from "./keywords"
+import {schemaKeywords} from "./iterate"
 
 const resolve = require("../resolve")
 

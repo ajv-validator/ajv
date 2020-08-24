@@ -21,7 +21,7 @@
   var {{=$validateCode}} = {{=$definition}}.validate;
 {{??}}
   {{
-    $ruleValidate = it.useCustomRule($rule, $schema, it.schema, it);
+    $ruleValidate = useCustomRule.call(it.self, $rule, $schema, it.schema, it);
     if (!$ruleValidate) return;
     $schemaValue = it.topSchemaRef + $schemaPath;
     $validateCode = $ruleValidate.code;
@@ -167,4 +167,47 @@ var {{=$valid}};
   } {{? $breakOnError }} else { {{?}}
 {{?}}
 
-{{ it.gen.code(out); }}
+{{
+  function useCustomRule(
+    rule,
+    schema,
+    parentSchema,
+    it
+  ) {
+    const ruleDef = rule.definition;
+    
+    if (this._opts.validateSchema !== false) {
+      it.validateKeywordSchema(it, $keyword, ruleDef);
+    }
+
+    var compile = ruleDef.compile,
+      macro = ruleDef.macro;
+
+    var validate;
+    if (compile) {
+      validate = compile.call(this, schema, parentSchema, it);
+    } else if (macro) {
+      validate = macro.call(this, schema, parentSchema, it);
+      if (it.opts.validateSchema !== false) this.validateSchema(validate, true);
+    } else {
+      validate = ruleDef.validate;
+      if (!validate) return;
+    }
+
+    /* addCustomRule */
+    if (validate === undefined) {
+      throw new Error('custom keyword "' + rule.keyword + '"failed to compile');
+    }
+
+    var index = it.customRules.length;
+    it.customRules[index] = validate;
+
+    return {
+      code: "customRule" + index,
+      validate,
+    };
+  }
+
+it.gen.code(out);
+
+}}

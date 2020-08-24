@@ -1,4 +1,4 @@
-import {KeywordDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import {appendSchema, dataNotType} from "../util"
 
 const OPS: {[index: string]: {fail: string; ok: string}} = {
@@ -8,7 +8,7 @@ const OPS: {[index: string]: {fail: string; ok: string}} = {
   exclusiveMinimum: {fail: "<=", ok: ">"},
 }
 
-const def: KeywordDefinition = {
+const def: CodeKeywordDefinition = {
   keyword: ["maximum", "minimum", "exclusiveMaximum", "exclusiveMinimum"],
   type: "number",
   schemaType: "number",

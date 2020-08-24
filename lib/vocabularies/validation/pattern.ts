@@ -1,7 +1,7 @@
-import {KeywordDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import {dataNotType} from "../util"
 
-const def: KeywordDefinition = {
+const def: CodeKeywordDefinition = {
   keyword: "pattern",
   type: "string",
   schemaType: "string",

@@ -1,9 +1,9 @@
-import {KeywordDefinition, KeywordErrorDefinition} from "../../types"
+import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import {alwaysValidSchema, loopPropertiesCode} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportExtraError} from "../../compile/errors"
 
-const def: KeywordDefinition = {
+const def: CodeKeywordDefinition = {
   keyword: "propertyNames",
   type: "object",
   schemaType: ["object", "boolean"],

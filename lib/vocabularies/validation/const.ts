@@ -1,6 +1,6 @@
-import {KeywordDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 
-const def: KeywordDefinition = {
+const def: CodeKeywordDefinition = {
   keyword: "const",
   $data: true,
   code: ({fail, data, schemaCode}) => fail(`!equal(${data}, ${schemaCode})`),

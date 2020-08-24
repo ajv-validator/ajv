@@ -1,8 +1,8 @@
-import {KeywordDefinition, AddedFormat, FormatValidate} from "../../types"
+import {CodeKeywordDefinition, AddedFormat, FormatValidate} from "../../types"
 import {dataNotType} from "../util"
 import {getProperty} from "../../compile/util"
 
-const def: KeywordDefinition = {
+const def: CodeKeywordDefinition = {
   keyword: "format",
   type: ["number", "string"],
   schemaType: "string",

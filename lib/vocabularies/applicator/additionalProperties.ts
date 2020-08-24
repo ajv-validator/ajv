@@ -1,4 +1,4 @@
-import {KeywordDefinition, KeywordErrorDefinition} from "../../types"
+import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import {
   allSchemaProperties,
   schemaRefOrVal,
@@ -15,7 +15,7 @@ const error: KeywordErrorDefinition = {
   params: ({params}) => `{additionalProperty: ${params.additionalProperty}}`,
 }
 
-const def: KeywordDefinition = {
+const def: CodeKeywordDefinition = {
   keyword: "additionalProperties",
   type: "object",
   schemaType: ["object", "boolean"],
