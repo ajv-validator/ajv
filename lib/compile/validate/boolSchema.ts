@@ -6,27 +6,24 @@ const boolError: KeywordErrorDefinition = {
   params: () => "{}",
 }
 
-export function booleanOrEmptySchema(it: CompilationContext, valid: string): void {
-  const {gen, isTop, schema} = it
-  if (isTop) {
-    if (schema === false) {
-      falseSchemaError(it, false)
-    } else if (schema.$async === true) {
-      gen.code("return data;")
-    } else {
-      gen.code("validate.errors = null; return true;")
-    }
-    gen.code(
-      `};
-      return validate;`
-    )
+export function topBoolOrEmptySchema(it: CompilationContext): void {
+  const {gen, schema} = it
+  if (schema === false) {
+    falseSchemaError(it, false)
+  } else if (schema.$async === true) {
+    gen.code("return data;")
   } else {
-    if (schema === false) {
-      gen.code(`var ${valid} = false;`) // TODO var
-      falseSchemaError(it)
-    } else {
-      gen.code(`var ${valid} = true;`) // TODO var
-    }
+    gen.code("validate.errors = null; return true;")
+  }
+}
+
+export function boolOrEmptySchema(it: CompilationContext, valid: string): void {
+  const {gen, schema} = it
+  if (schema === false) {
+    gen.code(`var ${valid} = false;`) // TODO var
+    falseSchemaError(it)
+  } else {
+    gen.code(`var ${valid} = true;`) // TODO var
   }
 }
 

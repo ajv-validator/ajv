@@ -1,5 +1,5 @@
 import {CompilationContext} from "../types"
-import {validateCode} from "./validate"
+import {subschemaCode} from "./validate"
 import {getProperty, escapeFragment, getPath, getPathExpr} from "./util"
 import {quotedString} from "../vocabularies/util"
 
@@ -47,8 +47,8 @@ export function applySubschema(
   const subschema = getSubschema(it, appl)
   extendSubschemaData(subschema, it, appl)
   extendSubschemaMode(subschema, appl)
-  const nextContext = {...it, ...subschema, level: it.level + 1}
-  validateCode(nextContext, valid)
+  const nextContext = {...it, ...subschema}
+  subschemaCode(nextContext, valid)
 }
 
 function getSubschema(

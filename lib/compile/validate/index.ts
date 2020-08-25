@@ -1,52 +1,63 @@
 import {CompilationContext} from "../../types"
 import {schemaUnknownRules, schemaHasRules, schemaHasRulesExcept} from "../util"
 import {quotedString} from "../../vocabularies/util"
-import {booleanOrEmptySchema} from "./boolSchema"
+import {topBoolOrEmptySchema, boolOrEmptySchema} from "./boolSchema"
 import {getSchemaTypes, coerceAndCheckDataType} from "./dataType"
 import {schemaKeywords} from "./iterate"
+import CodeGen, {Code} from "../codegen"
 
 const resolve = require("../resolve")
 
-// schema compilation (render) time:
-// this function is used recursively to generate code for sub-schemas
-//
-// runtime:
-// "validate" is a variable name to which this function will be assigned
-// validateRef etc. are defined in the parent scope in index.js
-export function validateCode(it: CompilationContext, valid?: string): string | void {
-  const {
-    isTop,
-    schema,
-    level,
-    gen,
-    opts: {$comment},
-  } = it
-
-  // TODO valid must be non-optional or maybe it must be returned
-  if (!valid) valid = `valid${level}`
-
+// schema compilation - generates validation function, subschemaCode (below) is used for subschemas
+export function validateFunctionCode(it: CompilationContext): void {
+  const {schema, opts} = it
   checkKeywords(it)
-
-  if (isTop) startFunction(it)
-  if (booleanOrEmpty(it, valid)) return
-  if ($comment && schema.$comment) commentKeyword(it)
-
-  if (isTop) {
-    delete it.isTop
-    checkNoDefault(it)
-    initializeTop(it)
-    typeAndKeywords(it)
-    endFunction(it)
-  } else {
-    updateContext(it)
-    checkAsync(it)
-    const errsCount = gen.name("_errs")
-    // TODO var - async validation fails, possibly because of nodent
-    gen.code(`var ${errsCount} = errors;`)
-    typeAndKeywords(it, errsCount)
-    // TODO var, level
-    gen.code(`var ${valid} = ${errsCount} === errors;`)
+  if (isBoolOrEmpty(it)) {
+    validateFunction(it, () => topBoolOrEmptySchema(it))
+    return
   }
+  validateFunction(it, () => {
+    if (opts.$comment && schema.$comment) commentKeyword(it)
+    checkNoDefault(it)
+    initializeTop(it.gen)
+    typeAndKeywords(it)
+    returnResults(it)
+  })
+}
+
+function validateFunction(it: CompilationContext, body: Code) {
+  const {gen} = it
+  gen.func("validate", "data, dataPath, parentData, parentDataProperty, rootData", it.async, body)
+  gen.code(
+    `"use strict";
+    ${funcSourceUrl(it)}`
+  )
+  gen.code(`return validate;`)
+}
+
+function funcSourceUrl({schema, opts}: CompilationContext): string {
+  return schema.$id && (opts.sourceCode || opts.processCode)
+    ? `/*# sourceURL=${schema.$id as string} */`
+    : ""
+}
+
+// schema compilation - this function is used recursively to generate code for sub-schemas
+export function subschemaCode(it: CompilationContext, valid: string): void {
+  const {schema, gen, opts} = it
+  checkKeywords(it)
+  if (isBoolOrEmpty(it)) {
+    boolOrEmptySchema(it, valid)
+    return
+  }
+  if (opts.$comment && schema.$comment) commentKeyword(it)
+  updateContext(it)
+  checkAsync(it)
+  const errsCount = gen.name("_errs")
+  // TODO var - async validation fails if var replaced, possibly because of nodent
+  gen.code(`var ${errsCount} = errors;`)
+  typeAndKeywords(it, errsCount)
+  // TODO var
+  gen.code(`var ${valid} = ${errsCount} === errors;`)
 }
 
 function checkKeywords(it: CompilationContext) {
@@ -54,12 +65,8 @@ function checkKeywords(it: CompilationContext) {
   checkRefsAndKeywords(it)
 }
 
-function booleanOrEmpty(it: CompilationContext, valid: string): true | void {
-  const {schema, RULES} = it
-  if (typeof schema == "boolean" || !schemaHasRules(schema, RULES.all)) {
-    booleanOrEmptySchema(it, valid)
-    return true
-  }
+function isBoolOrEmpty({schema, RULES}: CompilationContext): boolean {
+  return typeof schema == "boolean" || !schemaHasRules(schema, RULES.all)
 }
 
 function typeAndKeywords(it: CompilationContext, errsCount?: string): void {
@@ -68,17 +75,12 @@ function typeAndKeywords(it: CompilationContext, errsCount?: string): void {
   schemaKeywords(it, types, !checkedTypes, errsCount)
 }
 
-function checkUnknownKeywords({
-  schema,
-  RULES,
-  opts: {strictKeywords},
-  logger,
-}: CompilationContext): void {
-  if (strictKeywords) {
+function checkUnknownKeywords({schema, RULES, opts, logger}: CompilationContext): void {
+  if (opts.strictKeywords) {
     const unknownKeyword = schemaUnknownRules(schema, RULES.keywords)
     if (unknownKeyword) {
       const msg = `unknown keyword: "${unknownKeyword}"`
-      if (strictKeywords === "log") logger.warn(msg)
+      if (opts.strictKeywords === "log") logger.warn(msg)
       else throw new Error(msg)
     }
   }
@@ -88,53 +90,33 @@ function checkRefsAndKeywords({
   schema,
   errSchemaPath,
   RULES,
-  opts: {extendRefs},
+  opts,
   logger,
 }: CompilationContext): void {
   if (schema.$ref && schemaHasRulesExcept(schema, RULES.all, "$ref")) {
-    if (extendRefs === "fail") {
+    if (opts.extendRefs === "fail") {
       throw new Error(`$ref: sibling validation keywords at "${errSchemaPath}" (option extendRefs)`)
-    } else if (extendRefs !== true) {
+    } else if (opts.extendRefs !== true) {
       logger.warn(`$ref: keywords ignored in schema at path "${errSchemaPath}"`)
     }
   }
 }
 
-function startFunction({
-  gen,
-  schema,
-  async,
-  opts: {sourceCode, processCode},
-}: CompilationContext): void {
-  const asyncFunc = async ? "async" : ""
-  const sourceUrl =
-    schema.$id && (sourceCode || processCode) ? `/*# sourceURL=${schema.$id as string} */` : ""
-  gen.code(
-    `const validate = ${asyncFunc} function(data, dataPath, parentData, parentDataProperty, rootData) {
-      'use strict';
-      ${sourceUrl}`
-  )
-}
-
-function checkNoDefault({
-  schema,
-  opts: {useDefaults, strictDefaults},
-  logger,
-}: CompilationContext): void {
-  if (schema.default !== undefined && useDefaults && strictDefaults) {
+function checkNoDefault({schema, opts, logger}: CompilationContext): void {
+  if (schema.default !== undefined && opts.useDefaults && opts.strictDefaults) {
     const msg = "default is ignored in the schema root"
-    if (strictDefaults === "log") logger.warn(msg)
+    if (opts.strictDefaults === "log") logger.warn(msg)
     else throw new Error(msg)
   }
 }
 
-function initializeTop({gen}: CompilationContext): void {
-  // TODO old comment: "don't edit, used in replace". Should be removed?
-  gen.code(
-    `let vErrors = null;
-    let errors = 0;
-    if (rootData === undefined) rootData = data;`
-  )
+function initializeTop(gen: CodeGen): void {
+  gen
+    .code(
+      `let vErrors = null;
+       let errors = 0;`
+    )
+    .if(`rootData === undefined`, `rootData = data;`)
 }
 
 function updateContext(it: CompilationContext): void {
@@ -155,17 +137,13 @@ function commentKeyword({gen, schema, errSchemaPath, opts: {$comment}}: Compilat
   }
 }
 
-function endFunction({gen, async}: CompilationContext) {
-  // TODO old comment: "don't edit, used in replace". Should be removed?
-  gen.code(
-    async
-      ? `if (errors === 0) return data;
-        else throw new ValidationError(vErrors);`
-      : `validate.errors = vErrors;
-        return errors === 0;`
-  )
-  gen.code(
-    `};
-    return validate;`
-  )
+function returnResults({gen, async}: CompilationContext) {
+  if (async) {
+    gen.if("errors === 0", "return data", "throw new ValidationError(vErrors)")
+  } else {
+    gen.code(
+      `validate.errors = vErrors;
+      return errors === 0;`
+    )
+  }
 }

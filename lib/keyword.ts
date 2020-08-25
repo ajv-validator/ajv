@@ -194,10 +194,7 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
   }
 
   function ok(condition?: string): void {
-    if (!allErrors) {
-      if (condition) gen.if(condition)
-      else gen.if("true")
-    }
+    if (!allErrors) gen.if(condition || "true")
   }
 
   function errorParams(obj: KeywordContextParams, assign?: true) {

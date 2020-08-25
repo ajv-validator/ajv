@@ -2,9 +2,10 @@ enum Block {
   If,
   Else,
   For,
+  Func,
 }
 
-type Code = string | (() => void)
+export type Code = string | (() => void)
 
 export default class CodeGen {
   #names: {[key: string]: number} = {}
@@ -105,6 +106,21 @@ export default class CodeGen {
     }
     this.#blocks.length = len
     if (toClose > 0) this.code("}".repeat(toClose))
+    return this
+  }
+
+  func(name = "", args = "", async?: boolean, funcBody?: Code): CodeGen {
+    this.#blocks.push(Block.Func)
+    this.code(`${async ? "async " : ""}function ${name}(${args}){`)
+    if (funcBody) this.code(funcBody).endFunc()
+    return this
+  }
+
+  endFunc(): CodeGen {
+    const b = this._lastBlock
+    if (b !== Block.Func) throw new Error('CodeGen: "endFunc" without "func"')
+    this.#blocks.pop()
+    this.code(`}`)
     return this
   }
 

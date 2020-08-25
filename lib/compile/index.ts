@@ -1,7 +1,7 @@
 import CodeGen from "./codegen"
 import {toQuotedString} from "./util"
 import {quotedString} from "../vocabularies/util"
-import {validateCode} from "./validate"
+import {validateFunctionCode} from "./validate"
 import {validateKeywordSchema} from "./validate/keyword"
 import {ErrorObject, KeywordCompilationResult} from "../types"
 
@@ -109,9 +109,8 @@ function compile(schema, root, localRefs, baseId) {
 
     const gen = new CodeGen()
     // TODO refactor to extract code from gen
-    validateCode({
+    validateFunctionCode({
       allErrors: !!opts.allErrors,
-      isTop: true,
       topSchemaRef: "validate.schema",
       async: _schema.$async === true,
       schema: _schema,
@@ -123,7 +122,6 @@ function compile(schema, root, localRefs, baseId) {
       errSchemaPath: "#",
       errorPath: '""',
       dataPathArr: [""],
-      level: 0,
       dataLevel: 0,
       data: "data", // TODO get unique name when passed from applicator keywords
       gen,

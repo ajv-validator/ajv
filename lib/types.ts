@@ -104,7 +104,6 @@ export type KeywordCompilationResult = object | boolean | SchemaValidateFunction
 
 export interface CompilationContext {
   allErrors: boolean
-  level: number
   dataLevel: number
   data: string
   dataPathArr: (string | number)[]
@@ -133,7 +132,6 @@ export interface CompilationContext {
   self: any // TODO
   RULES: ValidationRules
   logger: Logger // TODO ?
-  isTop?: boolean // TODO ?
   root: SchemaRoot // TODO ?
   rootId: string // TODO ?
   topSchemaRef: string
