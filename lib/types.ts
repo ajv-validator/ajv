@@ -155,7 +155,6 @@ interface _KeywordDef {
   keyword?: string | string[]
   type?: string | string[]
   schemaType?: string | string[]
-  $data?: boolean // requires "validate" or "code"
   implements?: string[]
   before?: string
   metaSchema?: object
@@ -163,16 +162,10 @@ interface _KeywordDef {
   dependencies?: string[] // keywords that must be present in the same schema
 }
 
-interface FuncKeywordDef extends _KeywordDef {
-  validate?: SchemaValidateFunction | ValidateFunction
-  // schema: false makes validate not to expect schema (ValidateFunction)
-  schema?: boolean // requires "validate"
-  errors?: boolean | "full"
-}
-
 export interface CodeKeywordDefinition extends _KeywordDef {
   code: (cxt: KeywordContext, ruleType?: string, def?: KeywordDefinition) => string | void
-  error?: KeywordErrorDefinition
+  error?: KeywordErrorDefinition // TODO all keyword types should support error
+  $data?: boolean
 }
 
 export type MacroKeywordFunc = (
@@ -181,9 +174,7 @@ export type MacroKeywordFunc = (
   it: CompilationContext
 ) => object | boolean
 
-export interface MacroKeywordDefinition extends FuncKeywordDef {
-  macro: MacroKeywordFunc
-}
+export type FuncKeywordDefinition = CompiledKeywordDefinition | ValidatedKeywordDefinition
 
 export type CompileKeywordFunc = (
   schema: any,
@@ -191,20 +182,27 @@ export type CompileKeywordFunc = (
   it: CompilationContext
 ) => ValidateFunction
 
-export type FuncKeywordDefinition = CompiledKeywordDefinition | ValidatedKeywordDefinition
-
-export interface CompiledKeywordDefinition extends FuncKeywordDef {
-  compile: CompileKeywordFunc
+interface $DataKeywordDef extends _KeywordDef {
+  validate?: SchemaValidateFunction | ValidateFunction
+  $data?: boolean // requires "validate"
+  // schema: false makes validate not to expect schema (ValidateFunction)
+  schema?: boolean // requires "validate"
   modifying?: boolean
   async?: boolean
   valid?: boolean
+  errors?: boolean | "full"
 }
 
-export interface ValidatedKeywordDefinition extends FuncKeywordDef {
+export interface MacroKeywordDefinition extends $DataKeywordDef {
+  macro: MacroKeywordFunc
+}
+
+export interface CompiledKeywordDefinition extends $DataKeywordDef {
+  compile: CompileKeywordFunc
+}
+
+export interface ValidatedKeywordDefinition extends $DataKeywordDef {
   validate: SchemaValidateFunction | ValidateFunction
-  modifying?: boolean
-  async?: boolean
-  valid?: boolean
 }
 
 export type KeywordDefinition =

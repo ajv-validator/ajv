@@ -112,7 +112,7 @@ export function addKeyword(
       keyword,
       definition,
       custom: true,
-      code: "code" in definition || !definition.$data ? ruleCode : customRuleCode,
+      code: ruleCode, // "code" in definition || !definition.$data ? ruleCode : customRuleCode,
       implements: definition.implements,
     }
 
@@ -163,8 +163,8 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
     data,
     $data,
     schema,
-    schemaCode: $data ? gen.name("schema") : schemaValue,
-    schemaValue,
+    schemaCode: $data ? gen.name("schema") : schemaValue, // reference to resolved schema value
+    schemaValue, // actual schema reference or value for primitive values
     parentSchema: it.schema,
     params: {},
     it,
