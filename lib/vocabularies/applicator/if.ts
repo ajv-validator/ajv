@@ -3,18 +3,22 @@ import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportExtraError, resetErrorsCount} from "../../compile/errors"
 
+const error: KeywordErrorDefinition = {
+  message: ({params}) => `'should match "' + ${params.ifClause} + '" schema'`,
+  params: ({params}) => `{failingKeyword: ${params.ifClause}}`,
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "if",
   schemaType: ["object", "boolean"],
   // TODO
   // implements: ["then", "else"],
   code(cxt) {
-    const {gen, ok, errorParams, it} = cxt
+    const {gen, fail, errorParams, it} = cxt
     const hasThen = hasSchema(it, "then")
     const hasElse = hasSchema(it, "else")
     if (!hasThen && !hasElse) {
       // TODO strict mode: fail or warning if both "then" and "else" are not present
-      ok()
       return
     }
 
@@ -41,12 +45,7 @@ const def: CodeKeywordDefinition = {
       gen.if(`!${schValid}`, validateClause("else"))
     }
 
-    // // TODO refactor failCompoundOrReset?
-    // // TODO refactor ifs
-    gen.if(`!${valid}`)
-    reportExtraError(cxt, def.error as KeywordErrorDefinition)
-    if (it.allErrors) gen.endIf()
-    else gen.else()
+    fail(`!${valid}`, () => reportExtraError(cxt, error))
 
     function validateIf(): void {
       applySubschema(
@@ -70,10 +69,7 @@ const def: CodeKeywordDefinition = {
       }
     }
   },
-  error: {
-    message: ({params}) => `'should match "' + ${params.ifClause} + '" schema'`,
-    params: ({params}) => `{failingKeyword: ${params.ifClause}}`,
-  },
+  error,
 }
 
 module.exports = def

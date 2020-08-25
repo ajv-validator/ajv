@@ -7,9 +7,9 @@ const def: CodeKeywordDefinition = {
   type: ["number", "string"],
   schemaType: "string",
   $data: true,
-  code({gen, ok, fail, data, $data, schema, schemaCode, it}, ruleType) {
+  code({gen, fail, data, $data, schema, schemaCode, it}, ruleType) {
     const {formats, opts, logger, errSchemaPath} = it
-    if (opts.format === false) return ok()
+    if (opts.format === false) return
 
     if ($data) validate$DataFormat()
     else validateFormat()
@@ -56,12 +56,10 @@ const def: CodeKeywordDefinition = {
       const formatDef: AddedFormat = formats[schema]
       if (!formatDef) {
         unknownFormat()
-        ok()
         return
       }
       const [fmtType, format, fmtRef] = getFormat(formatDef)
-      if (fmtType !== ruleType) ok()
-      else fail(`!(${validCondition()})`)
+      if (fmtType === ruleType) fail(`!(${validCondition()})`)
 
       function unknownFormat() {
         if (opts.unknownFormats === "ignore") return logger.warn(unknownMsg())

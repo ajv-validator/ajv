@@ -22,6 +22,7 @@ export default function keywordCode(
   def: KeywordDefinition
 ): void {
   // TODO "code" keyword
+  // TODO refactor
   if (cxt.$data && "validate" in def) {
     funcKeywordCode(cxt, def as FuncKeywordDefinition)
   } else if ("macro" in def) {
@@ -32,7 +33,7 @@ export default function keywordCode(
 }
 
 function macroKeywordCode(cxt: KeywordContext, def: MacroKeywordDefinition) {
-  const {gen, keyword, schema, parentSchema, it} = cxt
+  const {gen, fail, keyword, schema, parentSchema, it} = cxt
   const macroSchema = def.macro.call(it.self, schema, parentSchema, it)
   const schemaRef = addCustomRule(it, keyword, macroSchema)
   if (it.opts.validateSchema !== false) it.self.validateSchema(macroSchema, true)
@@ -50,15 +51,11 @@ function macroKeywordCode(cxt: KeywordContext, def: MacroKeywordDefinition) {
     valid
   )
 
-  // TODO refactor ifs
-  gen.if(`!${valid}`)
-  reportExtraError(cxt, keywordError)
-  if (it.allErrors) gen.endIf()
-  else gen.else()
+  fail(`!${valid}`, () => reportExtraError(cxt, keywordError))
 }
 
 function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
-  const {gen, ok, fail, keyword, schema, schemaCode, parentSchema, data, $data, it} = cxt
+  const {gen, fail, keyword, schema, schemaCode, parentSchema, data, $data, it} = cxt
   checkAsync(it, def)
   const validate =
     "compile" in def && !$data ? def.compile.call(it.self, schema, parentSchema, it) : def.validate
@@ -99,8 +96,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
     gen.code(`${valid} = ${def.async ? "await " : ""}${callValidate(validateRef)};`)
     if (def.modifying) modifyData(cxt)
     gen.endBlock()
-    if (def.valid) return ok()
-    fail(`!${valid}`)
+    if (!def.valid) fail(`!${valid}`)
   }
 
   function validateAsyncRule() {
@@ -159,19 +155,15 @@ function reportKeywordErrors(
   ruleErrs: string,
   errsCount: string
 ): void {
-  const {gen, ok, it} = cxt
+  const {ok, fail} = cxt
   switch (def.valid) {
     case true:
-      return ok()
+      return
     case false:
       addKeywordErrors(cxt, ruleErrs, errsCount)
-      return ok("false")
+      return ok("false") // TODO maybe add gen.skip() to remove code till the end of the block?
     default:
-      // TODO refactor ifs
-      gen.if(`!${valid}`)
-      addKeywordErrors(cxt, ruleErrs, errsCount)
-      if (it.allErrors) gen.endIf()
-      else gen.else()
+      fail(`!${valid}`, () => addKeywordErrors(cxt, ruleErrs, errsCount))
   }
 }
 

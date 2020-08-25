@@ -32,7 +32,7 @@ const def: CodeKeywordDefinition = {
           return fail()
         case "ignore":
           logger.warn(msg)
-          return ok()
+          return
         default:
           throw new MissingRefError(baseId, schema, msg)
       }
@@ -72,10 +72,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function validateRef(v: string): void {
-      gen.if(`!${callValidate(v)}`)
-      addErrorsFrom(v)
-      if (allErrors) gen.endIf()
-      else gen.else()
+      fail(`!${callValidate(v)}`, () => addErrorsFrom(v))
     }
 
     function callValidate(v: string): string {

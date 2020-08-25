@@ -9,11 +9,8 @@ const def: CodeKeywordDefinition = {
   schemaType: ["object", "boolean"],
   code(cxt) {
     const {gen, ok, errorParams, schema, it} = cxt
-    if (alwaysValidSchema(it, schema)) return ok()
-
+    if (alwaysValidSchema(it, schema)) return
     const valid = gen.name("valid")
-    const errsCount = gen.name("_errs")
-    gen.code(`const ${errsCount} = errors;`)
 
     loopPropertiesCode(cxt, (key) => {
       errorParams({propertyName: key})
@@ -28,7 +25,7 @@ const def: CodeKeywordDefinition = {
       })
     })
 
-    ok(`${errsCount} === errors`)
+    ok(valid)
   },
   error: {
     message: ({params}) => `"property name '" + ${params.propertyName} + "' is invalid"`,

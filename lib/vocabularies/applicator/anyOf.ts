@@ -7,9 +7,9 @@ const def: CodeKeywordDefinition = {
   keyword: "anyOf",
   schemaType: "array",
   code(cxt) {
-    const {gen, ok, schema, it} = cxt
+    const {gen, schema, it} = cxt
     const alwaysValid = schema.some((sch: object | boolean) => alwaysValidSchema(it, sch))
-    if (alwaysValid) return ok()
+    if (alwaysValid) return
 
     const valid = gen.name("valid")
     const schValid = gen.name("_valid")

@@ -213,8 +213,8 @@ export type Vocabulary = KeywordDefinition[]
 
 export interface KeywordContext {
   gen: CodeGen
-  fail: (condition?: string, context?: KeywordContext) => void
-  ok: (condition?: string) => void
+  fail: (condition?: string, failAction?: () => void, context?: KeywordContext) => void
+  ok: (condition: string) => void
   errorParams: (obj: KeywordContextParams, assing?: true) => void
   keyword: string
   data: string

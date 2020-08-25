@@ -17,19 +17,10 @@ const def: CodeKeywordDefinition = {
   schemaType: "object",
   code(cxt) {
     const {gen, ok, errorParams, schema, data, it} = cxt
-
     const [propDeps, schDeps] = splitDependencies()
-
     const valid = gen.name("valid")
-    const errsCount = gen.name("_errs")
-    gen.code(`const ${errsCount} = errors;`)
-
-    gen.block(() => {
-      validatePropertyDeps(propDeps)
-      validateSchemaDeps(schDeps)
-    })
-
-    ok(`${errsCount} === errors`)
+    validatePropertyDeps(propDeps)
+    validateSchemaDeps(schDeps)
 
     function splitDependencies(): [PropertyDependencies, SchemaDependencies] {
       const propertyDeps: PropertyDependencies = {}
@@ -78,7 +69,7 @@ const def: CodeKeywordDefinition = {
           () => applySubschema(it, {keyword: "dependencies", schemaProp: prop}, valid),
           `var ${valid} = true;` // TODO refactor var
         )
-        if (!it.allErrors) gen.if(valid)
+        ok(valid)
       }
     }
   },

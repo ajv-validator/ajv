@@ -1,7 +1,6 @@
-import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import {alwaysValidSchema} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
-import {fail_} from "../../keyword"
 
 const def: CodeKeywordDefinition = {
   keyword: "items",
@@ -12,41 +11,31 @@ const def: CodeKeywordDefinition = {
   // implements: ["additionalItems"],
   code(cxt) {
     // TODO strict mode: fail or warning if "additionalItems" is present without "items"
-
-    const {gen, ok, schema, parentSchema, data, it} = cxt
-    const errsCount = gen.name("_errs")
+    const {gen, ok, fail, schema, parentSchema, data, it} = cxt
     const len = gen.name("len")
-    gen.code(
-      `const ${errsCount} = errors;
-      const ${len} = ${data}.length;`
-    )
-    gen.block(validateItemsKeyword)
-    ok(`${errsCount} === errors`)
+    gen.code(`const ${len} = ${data}.length;`)
 
-    function validateItemsKeyword(): void {
-      if (Array.isArray(schema)) {
-        const addIts = parentSchema.additionalItems
-        if (addIts === false) validateDataLength(schema)
-        validateDefinedItems()
-        if (typeof addIts == "object" && !alwaysValidSchema(it, addIts)) {
-          gen.if(`${len} > ${schema.length}`, () => validateItems("additionalItems", schema.length))
-        }
-      } else if (!alwaysValidSchema(it, schema)) {
-        validateItems("items", 0)
+    if (Array.isArray(schema)) {
+      validateItemsArray(schema)
+    } else if (!alwaysValidSchema(it, schema)) {
+      validateItems("items", 0)
+    }
+
+    function validateItemsArray(sch: (object | boolean)[]) {
+      const addIts = parentSchema.additionalItems
+      if (addIts === false) validateDataLength(sch)
+      validateDefinedItems()
+      if (typeof addIts == "object" && !alwaysValidSchema(it, addIts)) {
+        gen.if(`${len} > ${sch.length}`, () => validateItems("additionalItems", sch.length))
       }
     }
 
-    function validateDataLength(sch: any[]): void {
-      // TODO replace with "fail"
-      fail_(
-        `${len} > ${sch.length}`,
-        {
-          ...cxt,
-          keyword: "additionalItems",
-          schemaValue: false,
-        },
-        def.error as KeywordErrorDefinition
-      )
+    function validateDataLength(sch: (object | boolean)[]): void {
+      fail(`${len} > ${sch.length}`, undefined, {
+        ...cxt,
+        keyword: "additionalItems",
+        schemaValue: false,
+      })
     }
 
     function validateDefinedItems(): void {
@@ -65,7 +54,7 @@ const def: CodeKeywordDefinition = {
             valid
           )
         )
-        if (!it.allErrors) gen.if(valid)
+        ok(valid)
       })
     }
 
@@ -76,6 +65,7 @@ const def: CodeKeywordDefinition = {
         applySubschema(it, {keyword, dataProp: i, expr: Expr.Num}, valid)
         if (!it.allErrors) gen.if(`!${valid}`, "break")
       })
+      ok(valid)
     }
   },
   error: {

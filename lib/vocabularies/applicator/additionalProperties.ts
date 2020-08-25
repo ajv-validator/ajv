@@ -21,7 +21,7 @@ const def: CodeKeywordDefinition = {
   schemaType: ["object", "boolean"],
   error,
   code(cxt) {
-    const {gen, ok, errorParams, schema, parentSchema, data, it} = cxt
+    const {gen, errorParams, schema, parentSchema, data, it} = cxt
     const {
       allErrors,
       usePattern,
@@ -29,7 +29,7 @@ const def: CodeKeywordDefinition = {
     } = it
 
     if ((schema === undefined || alwaysValidSchema(it, schema)) && removeAdditional !== "all") {
-      return ok()
+      return
     }
 
     const props = allSchemaProperties(parentSchema.properties)

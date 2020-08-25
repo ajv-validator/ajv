@@ -1,7 +1,6 @@
 import {
   KeywordDefinition,
   CodeKeywordDefinition,
-  KeywordErrorDefinition,
   Vocabulary,
   ErrorObject,
   ValidateFunction,
@@ -177,14 +176,15 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
   ;(def.code || keywordCode)(cxt, ruleType, this.definition)
 
   // TODO replace with fail_ below
-  function fail(condition?: string, context?: KeywordContext): void {
+  function fail(condition?: string, failAction?: () => void, context?: KeywordContext): void {
+    const action = failAction || _reportError
     if (condition) {
       gen.if(condition)
-      _reportError()
+      action()
       if (allErrors) gen.endIf()
       else gen.else()
     } else {
-      _reportError()
+      action()
       if (!allErrors) gen.if("false")
     }
 
@@ -193,23 +193,14 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
     }
   }
 
-  function ok(condition?: string): void {
-    if (!allErrors) gen.if(condition || "true")
+  function ok(condition: string): void {
+    if (!allErrors) gen.if(condition)
   }
 
   function errorParams(obj: KeywordContextParams, assign?: true) {
     if (assign) Object.assign(cxt.params, obj)
     else cxt.params = obj
   }
-}
-
-// TODO remove when "fail" replaced
-export function fail_(condition: string, cxt: KeywordContext, error: KeywordErrorDefinition): void {
-  const {gen, allErrors} = cxt.it
-  gen.if(condition)
-  reportError(cxt, error)
-  if (allErrors) gen.endIf()
-  else gen.else()
 }
 
 function validSchemaType(schema: any, schemaType: string | string[]): boolean {

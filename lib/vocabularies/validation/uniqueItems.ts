@@ -6,8 +6,8 @@ const def: CodeKeywordDefinition = {
   type: "array",
   schemaType: "boolean",
   $data: true,
-  code({gen, fail, ok, errorParams, data, $data, schema, parentSchema, schemaCode, it: {opts}}) {
-    if (opts.uniqueItems === false || !($data || schema)) return ok()
+  code({gen, fail, errorParams, data, $data, schema, parentSchema, schemaCode, it: {opts}}) {
+    if (opts.uniqueItems === false || !($data || schema)) return
     const i = gen.name("i")
     const j = gen.name("j")
     const valid = gen.name("valid")
@@ -15,6 +15,7 @@ const def: CodeKeywordDefinition = {
     gen.code(`let ${valid}, ${i}, ${j};`)
     const itemType = parentSchema.items?.type
 
+    // TODO refactor to have two open blocks? same as in required
     if ($data) {
       gen.if(`${schemaCode} === false || ${schemaCode} === undefined`, `${valid} = true`, () =>
         gen.if(`typeof ${schemaCode} != "boolean"`, `${valid} = false`, validateUniqueItems)

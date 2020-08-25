@@ -7,16 +7,11 @@ const def: CodeKeywordDefinition = {
   type: "object",
   schemaType: "object",
   code(cxt) {
-    const {gen, ok, schema, it} = cxt
+    const {gen, schema, it} = cxt
     const patterns = schemaProperties(it, schema)
-    if (patterns.length === 0) return ok()
-
+    if (patterns.length === 0) return
     const valid = gen.name("valid")
-    const errsCount = gen.name("_errs")
-    gen.code(`const ${errsCount} = errors;`)
-
-    gen.block(validatePatternProperties)
-    ok(`${errsCount} === errors`)
+    validatePatternProperties()
 
     function validatePatternProperties() {
       for (const pat of patterns) {

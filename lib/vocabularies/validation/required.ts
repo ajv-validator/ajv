@@ -20,8 +20,8 @@ const def: CodeKeywordDefinition = {
   schemaType: ["array"],
   $data: true,
   code(cxt) {
-    const {gen, ok, fail, errorParams, schema, schemaCode, data, $data, it} = cxt
-    if (!$data && schema.length === 0) return ok()
+    const {gen, fail, errorParams, schema, schemaCode, data, $data, it} = cxt
+    if (!$data && schema.length === 0) return
 
     const loopRequired = $data || schema.length >= <number>it.opts.loopRequired
 
