@@ -106,7 +106,7 @@ ajv.addMetaSchema(require("ajv/lib/refs/json-schema-draft-06.json"))
 
 ## Performance
 
-Ajv generates code using [doT templates](https://github.com/olado/doT) to turn JSON Schemas into super-fast validation functions that are efficient for v8 optimization.
+Ajv generates code to turn JSON Schemas into super-fast validation functions that are efficient for v8 optimization.
 
 Currently Ajv is the fastest and the most standard compliant validator according to these benchmarks:
 
@@ -1370,11 +1370,9 @@ npm test
 
 ## Contributing
 
-All validation functions are generated using doT templates in [dot](https://github.com/ajv-validator/ajv/tree/master/lib/dot) folder. Templates are precompiled so doT is not a run-time dependency.
+`npm run build` - compiles typescript to dist folder.
 
-`npm run build` - compiles templates to [dotjs](https://github.com/ajv-validator/ajv/tree/master/lib/dotjs) folder.
-
-`npm run watch` - automatically compiles templates when files in dot folder change
+`npm run watch` - automatically compiles typescript when files in lib folder change
 
 Please see [Contributing guidelines](https://github.com/ajv-validator/ajv/blob/master/CONTRIBUTING.md)
 

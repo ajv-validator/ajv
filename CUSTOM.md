@@ -43,9 +43,7 @@ Example. `constant` keyword (a synonym for draft-06 keyword `const`, it is equiv
 ```javascript
 ajv.addKeyword("constant", {
   validate: function (schema, data) {
-    return typeof schema == "object" && schema !== null
-      ? deepEqual(schema, data)
-      : schema === data
+    return typeof schema == "object" && schema !== null ? deepEqual(schema, data) : schema === data
   },
   errors: false,
 })
@@ -388,7 +386,9 @@ All custom keywords but macro keywords can optionally create custom error messag
 
 Synchronous validating and compiled keywords should define errors by assigning them to `.errors` property of the validation function. Asynchronous keywords can return promise that rejects with `new Ajv.ValidationError(errors)`, where `errors` is an array of custom validation errors (if you don't want to define custom errors in asynchronous keyword, its validation function can return the promise that resolves with `false`).
 
-Inline custom keyword should increase error counter `errors` and add error to `vErrors` array (it can be null). This can be done for both synchronous and asynchronous keywords. See [example range keyword](https://github.com/ajv-validator/ajv/blob/master/spec/custom_rules/range_with_errors.jst).
+TODO replace "inline" keywords with "code" keywords
+
+Inline custom keyword should increase error counter `errors` and add error to `vErrors` array (it can be null). This can be done for both synchronous and asynchronous keywords.
 
 When inline keyword performs validation Ajv checks whether it created errors by comparing errors count before and after validation. To skip this check add option `errors` (can be `"full"`, `true` or `false`) to keyword definition:
 

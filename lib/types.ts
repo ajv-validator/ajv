@@ -136,7 +136,7 @@ export interface CompilationContext {
   self: any // TODO
   RULES: ValidationRules
   logger: Logger // TODO ?
-  isTop: boolean // TODO ?
+  isTop?: boolean // TODO ?
   root: SchemaRoot // TODO ?
   rootId: string // TODO ?
   topSchemaRef: string

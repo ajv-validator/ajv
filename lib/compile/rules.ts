@@ -16,7 +16,7 @@ export interface RuleGroup {
 
 export interface Rule {
   keyword: string
-  code: (it: CompilationContext, keyword?: string, ruleType?: string) => void
+  code: (it: CompilationContext, keyword: string, ruleType?: string) => void
   implements?: string[]
   definition?: KeywordDefinition
   custom?: true

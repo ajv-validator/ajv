@@ -23,15 +23,13 @@
     "test-ts": "tsc --target ES5 --noImplicitAny --noEmit spec/typescript/index.ts",
     "bundle": "del-cli dist && node ./scripts/bundle.js . Ajv pure_getters",
     "bundle-beautify": "node ./scripts/bundle.js js-beautify",
-    "dot": "del-cli lib/dotjs/*.js \"!lib/dotjs/index.js\" && node scripts/compile-dots.js",
-    "tsc": "tsc || true && cp -r lib/refs dist/refs",
-    "build": "npm run dot && npm run tsc",
+    "build": "del-cli dist && tsc || true && cp -r lib/refs dist/refs",
     "test-karma": "karma start",
     "test-browser": "del-cli .browser && npm run bundle && scripts/prepare-tests && npm run test-karma",
     "test-all": "npm run test-cov && if-node-version 12 npm run test-browser",
     "test": "npm run lint && npm run build && npm run test-cov",
     "prepublish": "npm run build",
-    "watch": "watch \"npm run build\" ./lib/dot"
+    "watch": "watch \"npm run build\" ./lib"
   },
   "nyc": {
     "exclude": [
@@ -83,7 +81,6 @@
     "chai": "^4.0.1",
     "coveralls": "^3.0.1",
     "del-cli": "^3.0.0",
-    "dot": "^1.0.3",
     "eslint": "^7.3.1",
     "eslint-config-prettier": "^6.11.0",
     "gh-pages-generator": "^0.2.3",
@@ -91,7 +88,6 @@
     "husky": "^4.2.5",
     "if-node-version": "^1.0.0",
     "js-beautify": "^1.7.3",
-    "jshint": "^2.10.2",
     "json-schema-test": "^2.0.0",
     "karma": "^5.0.0",
     "karma-chrome-launcher": "^3.0.0",
@@ -100,7 +96,6 @@
     "lint-staged": "^10.2.11",
     "mocha": "^8.0.1",
     "nyc": "^15.0.0",
-    "pre-commit": "^1.1.1",
     "prettier": "^2.0.5",
     "require-globify": "^1.3.0",
     "typescript": "^4.0.0",

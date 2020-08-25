@@ -47,7 +47,7 @@ export default function validateCode(
   if ($comment && schema.$comment) commentKeyword(it)
 
   if (isTop) {
-    updateTopContext(it)
+    delete it.isTop
     checkNoDefault(it)
     initializeTop(it)
     typeAndKeywords()
@@ -134,12 +134,6 @@ function startFunction({
       'use strict';
       ${sourceUrl}`
   )
-}
-
-function updateTopContext(it: CompilationContext): void {
-  // it.rootId = resolve.fullPath(it.root.schema.$id)
-  // it.baseId = it.baseId || it.rootId
-  delete it.isTop
 }
 
 function checkNoDefault({

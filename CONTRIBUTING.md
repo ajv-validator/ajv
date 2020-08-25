@@ -133,11 +133,9 @@ npm run test-fast
 git commit -nm 'type: message'
 ```
 
-All validation functions are generated using doT templates in [dot](https://github.com/ajv-validator/ajv/tree/master/lib/dot) folder. Templates are precompiled so doT is not a run-time dependency.
+`npm run build` - compiles typescript to dist folder.
 
-`npm run build` - compiles templates to [dotjs](https://github.com/ajv-validator/ajv/tree/master/lib/dotjs) folder.
-
-`npm run watch` - automatically compiles templates when files in dot folder change
+`npm run watch` - automatically compiles typescript when files in lib folder change
 
 #### Pull requests
 

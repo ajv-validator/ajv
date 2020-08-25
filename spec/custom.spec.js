@@ -2,8 +2,7 @@
 
 var getAjvInstances = require("./ajv_instances"),
   should = require("./chai").should(),
-  equal = require("../dist/compile/equal"),
-  customRules = require("./custom_rules")
+  equal = require("../dist/compile/equal")
 
 describe("Custom keywords", () => {
   var ajv, instances
@@ -498,7 +497,7 @@ describe("Custom keywords", () => {
     }
   })
 
-  // TODO replace with custom "code" keyword
+  // TODO replace with custom "code" keywords
   describe.skip("inline rules", () => {
     it('should add and validate rule with "inline" code keyword', () => {
       testEvenKeyword({type: "number", inline: inlineEven})
@@ -509,51 +508,47 @@ describe("Custom keywords", () => {
     })
 
     it('should define "inline" keyword as template', () => {
-      var inlineRangeTemplate = customRules.range
-
-      testRangeKeyword({
-        type: "number",
-        inline: inlineRangeTemplate,
-        statements: true,
-      })
+      // var inlineRangeTemplate = customRules.range
+      // testRangeKeyword({
+      //   type: "number",
+      //   inline: inlineRangeTemplate,
+      //   statements: true,
+      // })
     })
 
     it('should define "inline" keyword without errors', () => {
-      var inlineRangeTemplate = customRules.range
-
-      testRangeKeyword({
-        type: "number",
-        inline: inlineRangeTemplate,
-        statements: true,
-        errors: false,
-      })
+      // var inlineRangeTemplate = customRules.range
+      // testRangeKeyword({
+      //   type: "number",
+      //   inline: inlineRangeTemplate,
+      //   statements: true,
+      //   errors: false,
+      // })
     })
 
     it("should allow defining optional errors", () => {
-      var inlineRangeTemplate = customRules.rangeWithErrors
-
-      testRangeKeyword(
-        {
-          type: "number",
-          inline: inlineRangeTemplate,
-          statements: true,
-        },
-        true
-      )
+      // var inlineRangeTemplate = customRules.rangeWithErrors
+      // testRangeKeyword(
+      //   {
+      //     type: "number",
+      //     inline: inlineRangeTemplate,
+      //     statements: true,
+      //   },
+      //   true
+      // )
     })
 
     it("should allow defining required errors", () => {
-      var inlineRangeTemplate = customRules.rangeWithErrors
-
-      testRangeKeyword(
-        {
-          type: "number",
-          inline: inlineRangeTemplate,
-          statements: true,
-          errors: true,
-        },
-        true
-      )
+      // var inlineRangeTemplate = customRules.rangeWithErrors
+      // testRangeKeyword(
+      //   {
+      //     type: "number",
+      //     inline: inlineRangeTemplate,
+      //     statements: true,
+      //     errors: true,
+      //   },
+      //   true
+      // )
     })
 
     function inlineEven(it, keyword, schema) {

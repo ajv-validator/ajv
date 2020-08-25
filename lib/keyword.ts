@@ -18,7 +18,6 @@ import {definitionSchema} from "./definition_schema"
 import keywordCode, {validateKeywordSchema, keywordError} from "./compile/validate/keyword"
 
 const IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i
-const customRuleCode = require("./dotjs/custom")
 
 /**
  * Define vocabulary
@@ -112,7 +111,7 @@ export function addKeyword(
       keyword,
       definition,
       custom: true,
-      code: ruleCode, // "code" in definition || !definition.$data ? ruleCode : customRuleCode,
+      code: ruleCode,
       implements: definition.implements,
     }
 

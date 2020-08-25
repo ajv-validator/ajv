@@ -9,7 +9,7 @@ import {
 } from "../../types"
 import {applySubschema} from "../subschema"
 import {reportError, reportExtraError, extendErrors} from "../errors"
-import {getParentData, dataNotType} from "../../vocabularies/util"
+import {getParentData} from "../../vocabularies/util"
 
 export const keywordError: KeywordErrorDefinition = {
   message: ({keyword}) => `'should pass "${keyword}" keyword validation'`,

@@ -9,7 +9,7 @@ export function schemaKeywords(
   it: CompilationContext,
   types: string[],
   typeErrors: boolean,
-  top: boolean
+  top?: boolean
 ): void {
   const {
     gen,

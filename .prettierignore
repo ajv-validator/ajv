@@ -3,4 +3,3 @@ spec/JSON-Schema-Test-Suite
 coverage
 dist
 .nyc_output
-lib/dotjs
