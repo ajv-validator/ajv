@@ -1,23 +1,3 @@
-// TODO switch to exports - below are used in dot templates
-module.exports = {
-  checkDataType,
-  checkDataTypes,
-  toHash,
-  escapeQuotes,
-  varOccurrences,
-  varReplace,
-  schemaHasRules,
-  schemaHasRulesExcept,
-  schemaUnknownRules,
-  toQuotedString,
-  getPathExpr,
-  getPath,
-  getData,
-  getProperty,
-  unescapeFragment,
-  escapeFragment,
-}
-
 export function checkDataType(
   dataType: string,
   data: string,
@@ -94,19 +74,6 @@ export function escapeQuotes(str: string): string {
     .replace(/\r/g, "\\r")
     .replace(/\f/g, "\\f")
     .replace(/\t/g, "\\t")
-}
-
-export function varOccurrences(str: string, dataVar: string): number {
-  dataVar += "[^0-9]"
-  /* eslint-disable @typescript-eslint/prefer-regexp-exec */
-  const matches = str.match(new RegExp(dataVar, "g"))
-  return matches ? matches.length : 0
-}
-
-export function varReplace(str: string, dataVar: string, expr: string): string {
-  dataVar += "([^0-9])"
-  expr = expr.replace(/\$/g, "$$$$")
-  return str.replace(new RegExp(dataVar, "g"), expr + "$1")
 }
 
 // TODO rules, schema?

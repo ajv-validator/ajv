@@ -307,16 +307,12 @@ There is a number of variables and expressions you can use in the generated (val
 
 There are sevral useful functions you can use in your inline keywords. These functions are available as properties of `it.util` object:
 
-##### .copy(Object obj[, Object target]) -&gt; Object
-
-Clone or extend the object. If one object is passed, it is cloned. If two objects are passed, the second object is extended with the properties of the first.
-
 ##### .toHash(Array arr) -&gt; Object
 
 Converts the array of strings to the object where each string becomes the key with the value of `true`.
 
 ```javascript
-it.util.toHash(["a", "b", "c"]) // { a: true, b: true, c: true }
+toHash(["a", "b", "c"]) // { a: true, b: true, c: true }
 ```
 
 ##### .equal(value1, value2) -&gt; Boolean
@@ -328,10 +324,10 @@ Performs deep equality comparison. This function is used in keywords `enum`, `co
 Converts the string that is the key/index to access the property/item to the JavaScript syntax to access the property (either "." notation or "[...]" notation).
 
 ```javascript
-it.util.getProperty("a") // ".a"
-it.util.getProperty("1") // "['1']"
-it.util.getProperty("a'b") // "['a\\'b']"
-it.util.getProperty(1) // "[1]"
+getProperty("a") // ".a"
+getProperty("1") // "['1']"
+getProperty("a'b") // "['a\\'b']"
+getProperty(1) // "[1]"
 ```
 
 ##### .schemaHasRules(Object schema, Object rules) -&gt; String
@@ -339,7 +335,7 @@ it.util.getProperty(1) // "[1]"
 Determines whether the passed schema has rules that should be validated. This function should be used before calling `it.validate` to compile subschemas.
 
 ```javascript
-it.util.schemaHasRules(schema, it.RULES.all) // true or false
+schemaHasRules(schema, it.RULES.all) // true or false
 ```
 
 ##### .escapeQuotes(String str) -&gt; String
@@ -351,7 +347,7 @@ Escapes single quotes in the string, so it can be inserted in the generated code
 Converts the string to the JavaScript string constant in single quotes (using the escaped string).
 
 ```javascript
-it.util.toQuotedString("a'b") // "'a\\'b'"
+toQuotedString("a'b") // "'a\\'b'"
 ```
 
 ##### .getData(String jsonPointer, Number dataLevel, Array paths) -&gt; String
@@ -359,7 +355,7 @@ it.util.toQuotedString("a'b") // "'a\\'b'"
 Returns the validation-time expression to safely access data based on the passed [relative json pointer](https://tools.ietf.org/html/draft-luff-relative-json-pointer-00) (See [examples](https://gist.github.com/geraintluff/5911303)).
 
 ```javascript
-it.util.getData("2/test/1", it.dataLevel, it.dataPathArr)
+getData("2/test/1", it.dataLevel, it.dataPathArr)
 // The result depends on the current level
 // if it.dataLevel is 3 the result is "data1 && data1.test && data1.test[1]"
 ```

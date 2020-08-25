@@ -1,7 +1,6 @@
 import CodeGen from "./codegen"
 import {toQuotedString} from "./util"
 import {quotedString} from "../vocabularies/util"
-import {MissingRefError} from "./error_classes"
 import validateCode from "./validate"
 import {validateKeywordSchema} from "./validate/keyword"
 import {ErrorObject, KeywordCompilationResult} from "../types"
@@ -10,7 +9,6 @@ const equal = require("fast-deep-equal")
 const ucs2length = require("./ucs2length")
 
 var resolve = require("./resolve"),
-  util = require("./util"),
   stableStringify = require("fast-json-stable-stringify")
 
 /**
@@ -128,11 +126,8 @@ function compile(schema, root, localRefs, baseId) {
       dataLevel: 0,
       data: "data", // TODO get unique name when passed from applicator keywords
       gen: new CodeGen(),
-      MissingRefError,
-      RULES,
+      RULES, // TODO refactor - it is available on the instance
       validateCode,
-      util, // TODO remove to imports
-      resolve, // TODO remove to imports
       resolveRef, // TODO remove to imports
       usePattern, // TODO remove to imports
       useDefault, // TODO remove to imports

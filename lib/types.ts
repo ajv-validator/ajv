@@ -1,7 +1,6 @@
 import Cache from "./cache"
 import CodeGen from "./compile/codegen"
 import {ValidationRules} from "./compile/rules"
-import {MissingRefError} from "./compile/error_classes"
 import {ResolvedRef} from "./compile"
 
 export interface Options {
@@ -132,7 +131,6 @@ export interface CompilationContext {
   useDefault: (value: any) => string
   customRules: KeywordCompilationResult[]
   validateKeywordSchema: (it: CompilationContext, keyword: string, def: KeywordDefinition) => void // TODO remove
-  util: any // TODO
   self: any // TODO
   RULES: ValidationRules
   logger: Logger // TODO ?
@@ -140,8 +138,6 @@ export interface CompilationContext {
   root: SchemaRoot // TODO ?
   rootId: string // TODO ?
   topSchemaRef: string
-  MissingRefError: typeof MissingRefError
-  resolve: any
   resolveRef: (...args: any[]) => ResolvedRef | void
 }
 
