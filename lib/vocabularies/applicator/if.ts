@@ -43,9 +43,10 @@ const def: CodeKeywordDefinition = {
 
     // // TODO refactor failCompoundOrReset?
     // // TODO refactor ifs
-    gen.code(`if (!${valid}) {`)
+    gen.if(`!${valid}`)
     reportExtraError(cxt, def.error as KeywordErrorDefinition)
-    gen.code(it.allErrors ? "}" : "} else {")
+    if (it.allErrors) gen.endIf()
+    else gen.else()
 
     function validateIf(): void {
       applySubschema(

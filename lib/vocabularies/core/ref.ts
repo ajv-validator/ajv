@@ -72,11 +72,10 @@ const def: CodeKeywordDefinition = {
     }
 
     function validateRef(v: string): void {
-      // TODO refactor ifs
-      gen.code(`if (!${callValidate(v)}) {`)
+      gen.if(`!${callValidate(v)}`)
       addErrorsFrom(v)
-      // refactor ifs
-      gen.code(allErrors ? "}" : "} else {")
+      if (allErrors) gen.endIf()
+      else gen.else()
     }
 
     function callValidate(v: string): string {

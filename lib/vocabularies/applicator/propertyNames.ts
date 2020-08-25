@@ -28,8 +28,7 @@ const def: CodeKeywordDefinition = {
       })
     })
 
-    // TODO refactor ifs
-    if (!it.allErrors) gen.code(`if (${errsCount} === errors) {`)
+    ok(`${errsCount} === errors`)
   },
   error: {
     message: ({params}) => `"property name '" + ${params.propertyName} + "' is invalid"`,

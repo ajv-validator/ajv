@@ -9,12 +9,11 @@ export function schemaKeywords(
   it: CompilationContext,
   types: string[],
   typeErrors: boolean,
-  top?: boolean
+  errsCount?: string
 ): void {
   const {
     gen,
     schema,
-    level,
     dataLevel,
     RULES,
     allErrors,
@@ -22,8 +21,7 @@ export function schemaKeywords(
   } = it
   if (schema.$ref && !(extendRefs === true && schemaHasRulesExcept(schema, RULES.all, "$ref"))) {
     // TODO remove Rule type cast
-    ;(RULES.all.$ref as Rule).code(it, "$ref")
-    if (!allErrors) gen.code("}")
+    gen.block(() => (RULES.all.$ref as Rule).code(it, "$ref"))
     return
   }
   const ruleGroups = RULES.rules.filter((group) => shouldUseGroup(schema, group))
@@ -44,8 +42,7 @@ export function schemaKeywords(
         iterateKeywords(it, group)
       }
       if (!allErrors && i < last) {
-        const errCount = top ? "0" : `errs_${level}`
-        gen.if(`errors === ${errCount}`)
+        gen.if(`errors === ${errsCount || 0}`)
       }
     })
   )
@@ -55,20 +52,14 @@ function iterateKeywords(it: CompilationContext, group: RuleGroup) {
   const {
     gen,
     schema,
-    allErrors,
     opts: {useDefaults},
   } = it
   if (useDefaults) assignDefaults(it, group.type)
-  let closeBlocks = ""
-  for (const rule of group.rules) {
-    if (shouldUseRule(schema, rule)) {
-      // TODO _outLen
-      const _outLen = gen._out.length
-      rule.code(it, rule.keyword, group.type)
-      if (_outLen < gen._out.length) {
-        if (!allErrors) closeBlocks += "}"
+  gen.block(() => {
+    for (const rule of group.rules) {
+      if (shouldUseRule(schema, rule)) {
+        rule.code(it, rule.keyword, group.type)
       }
     }
-  }
-  if (!allErrors) gen.code(closeBlocks)
+  })
 }

@@ -179,12 +179,13 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
   // TODO replace with fail_ below
   function fail(condition?: string, context?: KeywordContext): void {
     if (condition) {
-      gen.code(`if (${condition}) {`)
+      gen.if(condition)
       _reportError()
-      gen.code(allErrors ? "}" : "} else {")
+      if (allErrors) gen.endIf()
+      else gen.else()
     } else {
       _reportError()
-      if (!allErrors) gen.code("if (false) {")
+      if (!allErrors) gen.if("false")
     }
 
     function _reportError() {
@@ -194,8 +195,8 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
 
   function ok(condition?: string): void {
     if (!allErrors) {
-      if (condition) gen.code(`if (${condition}) {`)
-      else gen.code("if (true) {")
+      if (condition) gen.if(condition)
+      else gen.if("true")
     }
   }
 

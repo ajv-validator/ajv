@@ -51,9 +51,10 @@ function macroKeywordCode(cxt: KeywordContext, def: MacroKeywordDefinition) {
   )
 
   // TODO refactor ifs
-  gen.code(`if (!${valid}) {`)
+  gen.if(`!${valid}`)
   reportExtraError(cxt, keywordError)
-  gen.code(it.allErrors ? "}" : "} else {")
+  if (it.allErrors) gen.endIf()
+  else gen.else()
 }
 
 function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
@@ -167,10 +168,10 @@ function reportKeywordErrors(
       return ok("false")
     default:
       // TODO refactor ifs
-      gen.code(`if (!${valid}) {`)
+      gen.if(`!${valid}`)
       addKeywordErrors(cxt, ruleErrs, errsCount)
-      gen.code(`}`)
-      if (!it.allErrors) gen.code(" else {")
+      if (it.allErrors) gen.endIf()
+      else gen.else()
   }
 }
 

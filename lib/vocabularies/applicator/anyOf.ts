@@ -36,12 +36,11 @@ const def: CodeKeywordDefinition = {
     }, schema.length)
 
     // TODO refactor failCompoundOrReset?
-    // TODO refactor ifs
-    gen.code(`if (!${valid}) {`)
+    gen.if(`!${valid}`)
     reportExtraError(cxt, def.error as KeywordErrorDefinition)
-    gen.code(`} else {`)
+    gen.else()
     resetErrorsCount(gen, errsCount)
-    if (it.allErrors) gen.code(`}`)
+    if (it.allErrors) gen.endIf()
   },
   error: {
     message: "should match some schema in anyOf",

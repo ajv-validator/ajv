@@ -1,5 +1,5 @@
 import {CompilationContext} from "../types"
-import validateCode from "./validate"
+import {validateCode} from "./validate"
 import {getProperty, escapeFragment, getPath, getPathExpr} from "./util"
 import {quotedString} from "../vocabularies/util"
 
@@ -48,8 +48,7 @@ export function applySubschema(
   extendSubschemaData(subschema, it, appl)
   extendSubschemaMode(subschema, appl)
   const nextContext = {...it, ...subschema, level: it.level + 1}
-  // TODO remove "true" once appendGen is removed
-  validateCode(nextContext, valid, true)
+  validateCode(nextContext, valid)
 }
 
 function getSubschema(

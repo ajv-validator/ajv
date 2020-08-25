@@ -69,10 +69,9 @@ const def: CodeKeywordDefinition = {
 
         fail(`!${valid}`)
       } else {
-        // TODO refactor ifs
-        gen.code(`if (${checkMissingProp(cxt, schema, missing)}) {`)
+        gen.if(`${checkMissingProp(cxt, schema, missing)}`)
         reportMissingProp(cxt, missing, error)
-        gen.code(`} else {`)
+        gen.else()
       }
     }
 

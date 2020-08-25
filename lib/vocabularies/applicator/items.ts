@@ -74,7 +74,7 @@ const def: CodeKeywordDefinition = {
       const valid = gen.name("valid")
       gen.for(`let ${i}=${startFrom}; ${i}<${len}; ${i}++`, () => {
         applySubschema(it, {keyword, dataProp: i, expr: Expr.Num}, valid)
-        if (!it.allErrors) gen.code(`if(!${valid}){break}`)
+        if (!it.allErrors) gen.if(`!${valid}`, "break")
       })
     }
   },

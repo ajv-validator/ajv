@@ -32,12 +32,11 @@ const def: CodeKeywordDefinition = {
     })
 
     // TODO refactor failCompoundOrReset? It is different from anyOf though
-    // TODO refactor ifs
-    gen.code(`if (!${valid}) {`)
+    gen.if(`!${valid}`)
     reportError(cxt, def.error as KeywordErrorDefinition)
-    gen.code(`} else {`)
+    gen.else()
     resetErrorsCount(gen, errsCount)
-    if (it.allErrors) gen.code(`}`)
+    if (it.allErrors) gen.endIf()
   },
   error: {
     message: "should contain a valid item",

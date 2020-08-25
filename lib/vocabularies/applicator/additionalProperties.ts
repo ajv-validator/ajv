@@ -38,7 +38,7 @@ const def: CodeKeywordDefinition = {
     const errsCount = gen.name("_errs")
     gen.code(`const ${errsCount} = errors;`)
     checkAdditionalProperties()
-    if (!allErrors) gen.code(`if (${errsCount} === errors) {`)
+    if (!allErrors) gen.if(`${errsCount} === errors`)
 
     function checkAdditionalProperties(): void {
       loopPropertiesCode(cxt, (key: string) => {

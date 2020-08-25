@@ -126,7 +126,6 @@ export interface CompilationContext {
   //   [index: string]: KeywordDefinition | undefined
   // }
   compositeRule?: boolean
-  validateCode: (it: CompilationContext) => string | void // TODO remove string
   usePattern: (str: string) => string
   useDefault: (value: any) => string
   customRules: KeywordCompilationResult[]

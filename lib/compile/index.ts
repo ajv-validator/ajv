@@ -1,7 +1,7 @@
 import CodeGen from "./codegen"
 import {toQuotedString} from "./util"
 import {quotedString} from "../vocabularies/util"
-import validateCode from "./validate"
+import {validateCode} from "./validate"
 import {validateKeywordSchema} from "./validate/keyword"
 import {ErrorObject, KeywordCompilationResult} from "../types"
 
@@ -107,8 +107,9 @@ function compile(schema, root, localRefs, baseId) {
     var $async = _schema.$async === true
     const rootId = resolve.fullPath(_root.schema.$id)
 
+    const gen = new CodeGen()
     // TODO refactor to extract code from gen
-    let sourceCode = <string>validateCode({
+    validateCode({
       allErrors: !!opts.allErrors,
       isTop: true,
       topSchemaRef: "validate.schema",
@@ -125,9 +126,8 @@ function compile(schema, root, localRefs, baseId) {
       level: 0,
       dataLevel: 0,
       data: "data", // TODO get unique name when passed from applicator keywords
-      gen: new CodeGen(),
+      gen,
       RULES, // TODO refactor - it is available on the instance
-      validateCode,
       resolveRef, // TODO remove to imports
       usePattern, // TODO remove to imports
       useDefault, // TODO remove to imports
@@ -139,12 +139,12 @@ function compile(schema, root, localRefs, baseId) {
       self,
     })
 
-    sourceCode =
+    let sourceCode =
       vars(refVal, refValCode) +
       vars(patterns, patternCode) +
       vars(defaults, defaultCode) +
       vars(customRules, customRuleCode) +
-      sourceCode
+      gen._out
 
     if (opts.processCode) sourceCode = opts.processCode(sourceCode, _schema)
     // console.log("\n\n\n *** \n", sourceCode)

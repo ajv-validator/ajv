@@ -8,84 +8,64 @@ import {schemaKeywords} from "./iterate"
 const resolve = require("../resolve")
 
 // schema compilation (render) time:
-// it = { schema, RULES, _validate, opts }
-// it.validate - this function (validateCode),
-//   it is used recursively to generate code for sub-schemas
+// this function is used recursively to generate code for sub-schemas
 //
 // runtime:
 // "validate" is a variable name to which this function will be assigned
 // validateRef etc. are defined in the parent scope in index.js
-export default function validateCode(
-  it: CompilationContext,
-  valid?: string,
-  appendGen?: true // TODO remove once all callers pass true
-): string | void {
+export function validateCode(it: CompilationContext, valid?: string): string | void {
   const {
     isTop,
     schema,
-    RULES,
     level,
     gen,
     opts: {$comment},
   } = it
 
-  let _out
-  if (!appendGen) {
-    // TODO _out
-    _out = gen._out
-    gen._out = ""
-  }
-
   // TODO valid must be non-optional or maybe it must be returned
   if (!valid) valid = `valid${level}`
 
-  checkUnknownKeywords(it)
-  checkRefsAndKeywords(it)
+  checkKeywords(it)
 
   if (isTop) startFunction(it)
-  if (booleanOrEmpty()) return _out
+  if (booleanOrEmpty(it, valid)) return
   if ($comment && schema.$comment) commentKeyword(it)
 
   if (isTop) {
     delete it.isTop
     checkNoDefault(it)
     initializeTop(it)
-    typeAndKeywords()
+    typeAndKeywords(it)
     endFunction(it)
   } else {
     updateContext(it)
     checkAsync(it)
-    // TODO level, var - it is coupled with errs count in keyword.ts
-    gen.code(`var errs_${level} = errors;`)
-    typeAndKeywords()
-    // TODO level, var
-    gen.code(`var ${valid} = errors === errs_${level};`)
+    const errsCount = gen.name("_errs")
+    // TODO var - async validation fails, possibly because of nodent
+    gen.code(`var ${errsCount} = errors;`)
+    typeAndKeywords(it, errsCount)
+    // TODO var, level
+    gen.code(`var ${valid} = ${errsCount} === errors;`)
   }
+}
 
-  if (!appendGen) {
-    // TODO _out
-    ;[_out, gen._out] = [gen._out, _out]
-    return _out
+function checkKeywords(it: CompilationContext) {
+  checkUnknownKeywords(it)
+  checkRefsAndKeywords(it)
+}
+
+function booleanOrEmpty(it: CompilationContext, valid: string): true | void {
+  const {schema, RULES} = it
+  if (typeof schema == "boolean" || !schemaHasRules(schema, RULES.all)) {
+    booleanOrEmptySchema(it, valid)
+    return true
   }
+}
 
-  function booleanOrEmpty(): true | void {
-    if (typeof schema == "boolean" || !schemaHasRules(schema, RULES.all)) {
-      // TODO remove type cast once valid is non optional
-      booleanOrEmptySchema(it, <string>valid)
-
-      if (!appendGen) {
-        // TODO _out
-        ;[_out, gen._out] = [gen._out, _out]
-      }
-      return true
-    }
-  }
-
-  function typeAndKeywords(): void {
-    const types = getSchemaTypes(it)
-    const checkedTypes = coerceAndCheckDataType(it, types)
-    schemaKeywords(it, types, !checkedTypes, isTop)
-  }
+function typeAndKeywords(it: CompilationContext, errsCount?: string): void {
+  const types = getSchemaTypes(it)
+  const checkedTypes = coerceAndCheckDataType(it, types)
+  schemaKeywords(it, types, !checkedTypes, errsCount)
 }
 
 function checkUnknownKeywords({

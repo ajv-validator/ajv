@@ -25,11 +25,11 @@ const def: CodeKeywordDefinition = {
 
     // TODO refactor failCompoundOrReset?
     // TODO refactor ifs
-    gen.code(`if (!${valid}) {`)
+    gen.if(`!${valid}`)
     reportExtraError(cxt, def.error as KeywordErrorDefinition)
-    gen.code(`} else {`)
+    gen.else()
     resetErrorsCount(gen, errsCount)
-    if (it.allErrors) gen.code(`}`)
+    if (it.allErrors) gen.endIf()
 
     function validateOneOf() {
       schema.forEach((sch, i: number) => {
@@ -57,12 +57,7 @@ const def: CodeKeywordDefinition = {
             .else()
         }
 
-        gen.code(
-          `if (${schValid}) {
-            ${valid} = true;
-            ${passing} = ${i};
-          }`
-        )
+        gen.if(schValid, `${valid} = true; ${passing} = ${i};`)
       })
     }
   },
