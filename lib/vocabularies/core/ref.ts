@@ -3,7 +3,7 @@ import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {ResolvedRef, InlineResolvedRef} from "../../compile"
 import {callValidate} from "../util"
-import {Expression} from "../../compile/codegen"
+import {_, Expression} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "$ref",
@@ -57,16 +57,15 @@ const def: CodeKeywordDefinition = {
     }
 
     function validateAsyncRef(v: Expression): void {
-      const valid = gen.name("valid")
       if (!it.async) throw new Error("async schema referenced by sync schema")
-      if (!allErrors) gen.code(`let ${valid};`)
+      const valid = gen.let("valid")
       gen.try(
         () => {
           gen.code(`await ${callValidate(cxt, v, passCxt)};`)
           if (!allErrors) gen.code(`${valid} = true;`)
         },
         (e) => {
-          gen.if(`!(${e} instanceof ValidationError)`, `throw ${e}`)
+          gen.if(_`!(${e} instanceof ValidationError)`, `throw ${e}`)
           addErrorsFrom(e)
           if (!allErrors) gen.code(`${valid} = false;`)
         }

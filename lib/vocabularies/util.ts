@@ -1,6 +1,6 @@
 import {getProperty, schemaHasRules} from "../compile/util"
 import {CompilationContext, KeywordContext} from "../types"
-import {Name, Expression} from "../compile/codegen"
+import {_, Code, Name, Expression} from "../compile/codegen"
 
 export function appendSchema(
   schemaCode: Expression | number | boolean,
@@ -35,7 +35,10 @@ export function schemaRefOrVal(
   schema: unknown,
   keyword: string,
   $data?: string | false
-): string | number | boolean {
+): Expression | number | boolean {
+  // return $data || typeof schema === "object"
+  //   ? `${topSchemaRef}${schemaPath + getProperty(keyword)}`
+  //   : _`${schema}`
   if (!$data) {
     if (typeof schema == "number" || typeof schema == "boolean") return schema
     if (typeof schema == "string") return quotedString(schema)
@@ -62,23 +65,19 @@ export function schemaProperties(it: CompilationContext, schema: object): string
   return allSchemaProperties(schema).filter((p) => !alwaysValidSchema(it, schema[p]))
 }
 
-export function isOwnProperty(data: string, property: Expression): Expression {
-  const prop = property instanceof Name ? property : quotedString(property)
+export function isOwnProperty(data: Name, property: Expression): Expression {
+  const prop = property instanceof Code ? property : quotedString(property)
   return `Object.prototype.hasOwnProperty.call(${data}, ${prop})`
 }
 
-export function propertyInData(
-  data: string,
-  property: Expression,
-  ownProperties?: boolean
-): string {
+export function propertyInData(data: Name, property: Expression, ownProperties?: boolean): string {
   let cond = `${data}${accessProperty(property)} !== undefined`
   if (ownProperties) cond += ` && ${isOwnProperty(data, property)}`
   return cond
 }
 
 export function noPropertyInData(
-  data: string,
+  data: Name,
   property: Expression,
   ownProperties?: boolean
 ): string {
@@ -87,8 +86,8 @@ export function noPropertyInData(
   return cond
 }
 
-function accessProperty(property: Expression | number): string {
-  return property instanceof Name ? `[${property}]` : getProperty(property)
+export function accessProperty(property: Expression | number): string {
+  return property instanceof Code ? `[${property}]` : getProperty(property)
 }
 
 export function loopPropertiesCode(

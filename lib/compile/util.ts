@@ -1,8 +1,8 @@
-import {Name, Expression} from "./codegen"
+import {_, Code, Name, Expression} from "./codegen"
 
 export function checkDataType(
   dataType: string,
-  data: string,
+  data: Name,
   strictNumbers?: boolean,
   negate?: boolean
 ): string {
@@ -30,7 +30,7 @@ export function checkDataType(
 
 export function checkDataTypes(
   dataTypes: string[],
-  data: string,
+  data: Name,
   strictNumbers?: boolean,
   negate?: true
 ): string {
@@ -62,10 +62,14 @@ export function toHash(arr: string[]): {[key: string]: true} {
 const IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i
 const SINGLE_QUOTE = /'|\\/g
 export function getProperty(key: Expression | number): string {
-  return typeof key === "number"
-    ? `[${key}]`
-    : key instanceof Name || IDENTIFIER.test(key)
+  // return key instanceof Name || (typeof key == "string" && IDENTIFIER.test(key))
+  //   ? _`.${key}`
+  //   : _`[${key}]`
+
+  return key instanceof Name || (typeof key == "string" && IDENTIFIER.test(key))
     ? `.${key}`
+    : key instanceof Code || typeof key === "number"
+    ? `[${key}]`
     : `['${escapeQuotes(key)}']`
 }
 

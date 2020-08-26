@@ -1,8 +1,8 @@
 import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
-import {alwaysValidSchema, quotedString, propertyInData} from "../util"
+import {alwaysValidSchema, propertyInData} from "../util"
 import {applySubschema} from "../../compile/subschema"
-import {escapeQuotes} from "../../compile/util"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"
+import {_, str} from "../../compile/codegen"
 
 interface PropertyDependencies {
   [x: string]: string[]
@@ -40,7 +40,7 @@ const def: CodeKeywordDefinition = {
         const hasProperty = propertyInData(data, prop, it.opts.ownProperties)
         errorParams({
           property: prop,
-          depsCount: "" + deps.length,
+          depsCount: deps.length,
           deps: deps.join(", "),
         })
         if (it.allErrors) {
@@ -52,8 +52,7 @@ const def: CodeKeywordDefinition = {
         } else {
           // TODO refactor: maybe use one variable for all dependencies
           // or not use this variable at all?
-          const missing = gen.name("missing")
-          gen.code(`let ${missing};`)
+          const missing = gen.let("missing")
           gen.if(`${hasProperty} && (${checkMissingProp(cxt, deps, missing)})`)
           reportMissingProp(cxt, missing, def.error as KeywordErrorDefinition)
           gen.else()
@@ -75,14 +74,14 @@ const def: CodeKeywordDefinition = {
   },
   error: {
     message: ({params: {property, depsCount, deps}}) => {
-      const requiredProps = (depsCount === "1" ? "property " : "properties ") + escapeQuotes(deps)
-      return `'should have ${requiredProps} when property ${escapeQuotes(property)} is present'`
+      const property_ies = depsCount === 1 ? "property" : "properties"
+      return str`should have ${property_ies} ${deps} when property ${property} is present`
     },
     params: ({params: {property, depsCount, deps, missingProperty}}) =>
-      `{property: ${quotedString(property)},
+      _`{property: ${property},
       missingProperty: ${missingProperty},
       depsCount: ${depsCount},
-      deps: ${quotedString(deps)}}`, // TODO change to reference?
+      deps: ${deps}}`, // TODO change to reference?
   },
 }
 

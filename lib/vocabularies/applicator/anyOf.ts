@@ -2,6 +2,7 @@ import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportExtraError, resetErrorsCount} from "../../compile/errors"
+import {_} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "anyOf",
@@ -11,16 +12,12 @@ const def: CodeKeywordDefinition = {
     const alwaysValid = schema.some((sch: object | boolean) => alwaysValidSchema(it, sch))
     if (alwaysValid) return
 
-    const valid = gen.name("valid")
+    const errsCount = gen.const("_errs", "errors")
+    const valid = gen.let("valid", false)
     const schValid = gen.name("_valid")
-    const errsCount = gen.name("_errs")
-    gen.code(
-      `let ${valid} = false;
-      const ${errsCount} = errors;`
-    )
 
     gen.block(() => {
-      schema.forEach((_, i: number) => {
+      schema.forEach((_sch, i: number) => {
         applySubschema(
           it,
           {
@@ -30,8 +27,8 @@ const def: CodeKeywordDefinition = {
           },
           schValid
         )
-        gen.code(`${valid} = ${valid} || ${schValid};`)
-        gen.if(`!${valid}`)
+        gen.code(_`${valid} = ${valid} || ${schValid};`)
+        gen.if(_`!${valid}`)
       })
     }, schema.length)
 

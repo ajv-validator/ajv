@@ -4,7 +4,7 @@ import {quotedString} from "../../vocabularies/util"
 import {topBoolOrEmptySchema, boolOrEmptySchema} from "./boolSchema"
 import {getSchemaTypes, coerceAndCheckDataType} from "./dataType"
 import {schemaKeywords} from "./iterate"
-import CodeGen, {_Code, Name} from "../codegen"
+import CodeGen, {_, Block, Name} from "../codegen"
 
 const resolve = require("../resolve")
 
@@ -25,7 +25,7 @@ export function validateFunctionCode(it: CompilationContext): void {
   })
 }
 
-function validateFunction(it: CompilationContext, body: _Code) {
+function validateFunction(it: CompilationContext, body: Block) {
   const {gen} = it
   gen.func("validate", "data, dataPath, parentData, parentDataProperty, rootData", it.async, body)
   gen.code(
@@ -52,12 +52,11 @@ export function subschemaCode(it: CompilationContext, valid: Name): void {
   if (opts.$comment && schema.$comment) commentKeyword(it)
   updateContext(it)
   checkAsync(it)
-  const errsCount = gen.name("_errs")
   // TODO var - async validation fails if var replaced, possibly because of nodent
-  gen.code(`var ${errsCount} = errors;`)
+  const errsCount = gen.var("_errs", "errors")
   typeAndKeywords(it, errsCount)
   // TODO var
-  gen.code(`var ${valid} = ${errsCount} === errors;`)
+  gen.var(valid, _`${errsCount} === errors`)
 }
 
 function checkKeywords(it: CompilationContext) {

@@ -1,36 +1,71 @@
-enum Block {
+enum BlockKind {
   If,
   Else,
   For,
   Func,
 }
 
-enum VarKind {
-  Const,
-  Let,
-  VFar,
-}
+export type Expression = string | Name | Code
 
-export class Name {
-  #name: string
+export type Block = string | Name | Code | (() => void)
+
+export class Code {
+  _str: string
+
   constructor(name: string) {
-    this.#name = name
+    this._str = name
   }
 
   toString(): string {
-    return this.#name
+    return this._str
+  }
+
+  isQuoted(): boolean {
+    const len = this._str.length
+    return len >= 2 && this._str[0] === '"' && this._str[len - 1] === '"'
   }
 }
 
-export type Expression = string | Name
+export class Name extends Code {}
 
-export type _Code = string | (() => void)
+const varKinds = {
+  const: new Name("const"),
+  let: new Name("let"),
+  var: new Name("var"),
+}
+
+type TemplateArg = Expression | number | boolean
+
+export function _(strs: TemplateStringsArray, ...args: TemplateArg[]): Code {
+  return new Code(strs.reduce((res, s, i) => res + interpolate(args[i - 1]) + s))
+}
+
+// TODO this is unsafe tagged template that should be removed later
+export function $(strs: TemplateStringsArray, ...args: TemplateArg[]): Code {
+  return new Code(strs.reduce((res, s, i) => res + args[i - 1] + s))
+}
+
+export function str(strings: TemplateStringsArray, ...args: TemplateArg[]): Code {
+  return new Code(
+    strings.map(quoteString).reduce((res, s, i) => {
+      let aStr = interpolate(args[i - 1])
+      if (aStr instanceof Code && aStr.isQuoted()) aStr = aStr.toString()
+      return typeof aStr === "string"
+        ? res.slice(0, -1) + aStr.slice(1, -1) + s.slice(1)
+        : `${res} + ${aStr} + ${s}`
+    })
+  )
+}
+
+function interpolate(x: TemplateArg): TemplateArg {
+  return x instanceof Code || typeof x == "number" || typeof x == "boolean" ? x : quoteString(x)
+}
 
 export default class CodeGen {
   #names: {[key: string]: number} = {}
   // TODO make private. Possibly stack?
   _out = ""
-  #blocks: Block[] = []
+  #blocks: BlockKind[] = []
   #blockStarts: number[] = []
 
   toString(): string {
@@ -43,17 +78,39 @@ export default class CodeGen {
     return new Name(`${prefix}_${num}`)
   }
 
-  // _def(varKind: VarKind, prefix: string, rhs?: string): Variable {}
+  _def(varKind: Name, nameOrPrefix: Name | string, rhs?: Expression | number | boolean): Name {
+    const name = nameOrPrefix instanceof Name ? nameOrPrefix : this.name(nameOrPrefix)
+    if (rhs === undefined) this.code(`${varKind} ${name};`)
+    else this.code(`${varKind} ${name} = ${rhs};`)
+    return name
+  }
 
-  code(c?: _Code): CodeGen {
+  const(nameOrPrefix: Name | string, rhs?: Expression | number | boolean): Name {
+    return this._def(varKinds.const, nameOrPrefix, rhs)
+  }
+
+  let(nameOrPrefix: Name | string, rhs?: Expression | number | boolean): Name {
+    return this._def(varKinds.let, nameOrPrefix, rhs)
+  }
+
+  var(nameOrPrefix: Name | string, rhs?: Expression | number | boolean): Name {
+    return this._def(varKinds.var, nameOrPrefix, rhs)
+  }
+
+  assign(name: Name, rhs: Expression | number | boolean): CodeGen {
+    this.code(`${name} = ${rhs};`)
+    return this
+  }
+
+  code(c?: Block): CodeGen {
     // TODO optionally strip whitespace
     if (typeof c == "function") c()
     else if (c) this._out += c + "\n"
     return this
   }
 
-  if(condition: Expression, thenBody?: _Code, elseBody?: _Code): CodeGen {
-    this.#blocks.push(Block.If)
+  if(condition: Expression, thenBody?: Block, elseBody?: Block): CodeGen {
+    this.#blocks.push(BlockKind.If)
     this.code(`if(${condition}){`)
     if (thenBody && elseBody) {
       this.code(thenBody).else().code(elseBody).endIf()
@@ -66,14 +123,14 @@ export default class CodeGen {
   }
 
   elseIf(condition: Expression): CodeGen {
-    if (this._lastBlock !== Block.If) throw new Error('CodeGen: "else if" without "if"')
+    if (this._lastBlock !== BlockKind.If) throw new Error('CodeGen: "else if" without "if"')
     this.code(`}else if(${condition}){`)
     return this
   }
 
   else(): CodeGen {
-    if (this._lastBlock !== Block.If) throw new Error('CodeGen: "else" without "if"')
-    this._lastBlock = Block.Else
+    if (this._lastBlock !== BlockKind.If) throw new Error('CodeGen: "else" without "if"')
+    this._lastBlock = BlockKind.Else
     this.code(`}else{`)
     return this
   }
@@ -81,14 +138,14 @@ export default class CodeGen {
   endIf(): CodeGen {
     // TODO possibly remove empty branches here
     const b = this._lastBlock
-    if (b !== Block.If && b !== Block.Else) throw new Error('CodeGen: "endIf" without "if"')
+    if (b !== BlockKind.If && b !== BlockKind.Else) throw new Error('CodeGen: "endIf" without "if"')
     this.#blocks.pop()
     this.code(`}`)
     return this
   }
 
-  for(iteration: string, forBody?: _Code): CodeGen {
-    this.#blocks.push(Block.For)
+  for(iteration: string | Code, forBody?: Block): CodeGen {
+    this.#blocks.push(BlockKind.For)
     this.code(`for(${iteration}){`)
     if (forBody) this.code(forBody).endFor()
     return this
@@ -96,13 +153,18 @@ export default class CodeGen {
 
   endFor(): CodeGen {
     const b = this._lastBlock
-    if (b !== Block.For) throw new Error('CodeGen: "endFor" without "for"')
+    if (b !== BlockKind.For) throw new Error('CodeGen: "endFor" without "for"')
     this.#blocks.pop()
     this.code(`}`)
     return this
   }
 
-  try(tryBody: _Code, catchCode?: (e: Name) => void, finallyCode?: _Code): CodeGen {
+  break(): CodeGen {
+    this.code("break;")
+    return this
+  }
+
+  try(tryBody: Block, catchCode?: (e: Name) => void, finallyCode?: Block): CodeGen {
     if (!catchCode && !finallyCode) throw new Error('CodeGen: "try" without "catch" and "finally"')
     this.code("try{").code(tryBody)
     if (catchCode) {
@@ -115,7 +177,7 @@ export default class CodeGen {
     return this
   }
 
-  block(body?: _Code, expectedToClose?: number): CodeGen {
+  block(body?: Block, expectedToClose?: number): CodeGen {
     this.#blockStarts.push(this.#blocks.length)
     if (body) this.code(body).endBlock(expectedToClose)
     return this
@@ -134,8 +196,8 @@ export default class CodeGen {
     return this
   }
 
-  func(name = "", args = "", async?: boolean, funcBody?: _Code): CodeGen {
-    this.#blocks.push(Block.Func)
+  func(name = "", args = "", async?: boolean, funcBody?: Block): CodeGen {
+    this.#blocks.push(BlockKind.Func)
     this.code(`${async ? "async " : ""}function ${name}(${args}){`)
     if (funcBody) this.code(funcBody).endFunc()
     return this
@@ -143,17 +205,17 @@ export default class CodeGen {
 
   endFunc(): CodeGen {
     const b = this._lastBlock
-    if (b !== Block.Func) throw new Error('CodeGen: "endFunc" without "func"')
+    if (b !== BlockKind.Func) throw new Error('CodeGen: "endFunc" without "func"')
     this.#blocks.pop()
     this.code(`}`)
     return this
   }
 
-  get _lastBlock(): Block {
+  get _lastBlock(): BlockKind {
     return this.#blocks[this._last()]
   }
 
-  set _lastBlock(b: Block) {
+  set _lastBlock(b: BlockKind) {
     this.#blocks[this._last()] = b
   }
 
@@ -162,4 +224,10 @@ export default class CodeGen {
     if (len === 0) throw new Error("CodeGen: not in block")
     return len - 1
   }
+}
+
+export function quoteString(s: string): string {
+  return JSON.stringify(s)
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029")
 }

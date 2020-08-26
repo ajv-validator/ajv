@@ -10,7 +10,7 @@ import {
 import {applySubschema} from "../subschema"
 import {reportError, reportExtraError, extendErrors} from "../errors"
 import {getParentData, callValidate} from "../../vocabularies/util"
-import {Name, Expression} from "../codegen"
+import {_, Name, Expression} from "../codegen"
 
 export const keywordError: KeywordErrorDefinition = {
   message: ({keyword}) => `'should pass "${keyword}" keyword validation'`,
@@ -61,8 +61,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
   const validate =
     "compile" in def && !$data ? def.compile.call(it.self, schema, parentSchema, it) : def.validate
   const validateRef = addCustomRule(it, keyword, validate)
-  const valid = gen.name("valid")
-  gen.code(`let ${valid};`)
+  const valid = gen.let("valid")
 
   if (def.errors === false) {
     validateNoErrorsRule()
@@ -82,8 +81,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
   function validateRuleWithErrors(): void {
     gen.block()
     if ($data) check$data()
-    const errsCount = gen.name("_errs")
-    gen.code(`const ${errsCount} = errors;`)
+    const errsCount = gen.const("_errs", "errors")
     const ruleErrs = def.async ? validateAsyncRule() : validateSyncRule()
     if (def.modifying) modifyData(cxt)
     gen.endBlock()
@@ -109,8 +107,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
   }
 
   function validateAsyncRule(): Name {
-    const ruleErrs = gen.name("ruleErrs")
-    gen.code(`let ${ruleErrs} = null;`)
+    const ruleErrs = gen.let("ruleErrs", "null")
     gen.try(
       () => assignValid("await "),
       (e) =>

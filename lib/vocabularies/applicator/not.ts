@@ -11,8 +11,7 @@ const def: CodeKeywordDefinition = {
     if (alwaysValidSchema(it, schema)) return fail()
 
     const valid = gen.name("valid")
-    const errsCount = gen.name("_errs")
-    gen.code(`const ${errsCount} = errors;`)
+    const errsCount = gen.const("_errs", "errors")
     applySubschema(
       it,
       {

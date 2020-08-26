@@ -1,37 +1,35 @@
 import {CodeKeywordDefinition} from "../../types"
 import {quotedString, orExpr} from "../util"
-import {Name} from "../../compile/codegen"
+import {_, Name} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "enum",
   schemaType: "array",
   $data: true,
-  code({gen, fail, data, $data, schema, schemaCode, it: {opts}}) {
+  code({gen, pass, data, $data, schema, schemaCode, it: {opts}}) {
     if ($data) {
-      const valid = gen.name("valid")
-      gen.code(`let ${valid};`)
+      const valid = gen.let("valid")
       gen.if(`${schemaCode} === undefined`, `${valid} = true;`, () =>
         gen.code(`${valid} = false;`).if(`Array.isArray(${schemaCode})`, () => loopEnum(valid))
       )
-      fail(`!${valid}`)
+      pass(valid)
     } else {
       if (schema.length === 0) throw new Error("enum must have non-empty array")
       if (schema.length > (opts.loopEnum as number)) {
-        const valid = gen.name("valid")
-        gen.code(`let ${valid} = false;`)
+        const valid = gen.let("valid", "false")
         loopEnum(valid)
-        fail(`!${valid}`)
+        pass(valid)
       } else {
-        const vSchema = gen.name("schema")
-        gen.code(`const ${vSchema} = ${schemaCode};`)
+        const vSchema = gen.const("schema", schemaCode)
         const cond: string = orExpr(schema, (_, i) => equalCode(vSchema, i))
-        fail(`!(${cond})`)
+        pass(cond)
       }
     }
 
     function loopEnum(valid: Name): void {
-      gen.for(`const v of ${schemaCode}`, () =>
-        gen.if(`equal(${data}, v)`, `${valid} = true; break;`)
+      const v = gen.name("v")
+      gen.for(`const ${v} of ${schemaCode}`, () =>
+        gen.if(_`equal(${data}, ${v})`, _`${valid} = true; break;`)
       )
     }
 

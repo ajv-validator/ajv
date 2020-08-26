@@ -36,8 +36,7 @@ const def: CodeKeywordDefinition = {
     const props = allSchemaProperties(parentSchema.properties)
     const patProps = allSchemaProperties(parentSchema.patternProperties)
 
-    const errsCount = gen.name("_errs")
-    gen.code(`const ${errsCount} = errors;`)
+    const errsCount = gen.const("_errs", "errors")
     checkAdditionalProperties()
     if (!allErrors) gen.if(`${errsCount} === errors`)
 
@@ -77,7 +76,7 @@ const def: CodeKeywordDefinition = {
       if (schema === false) {
         errorParams({additionalProperty: key})
         reportError(cxt, error)
-        if (!allErrors) gen.code("break;")
+        if (!allErrors) gen.break()
         return
       }
 

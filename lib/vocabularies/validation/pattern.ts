@@ -9,7 +9,7 @@ const def: CodeKeywordDefinition = {
   code({fail, data, $data, schema, schemaCode, it: {usePattern}}) {
     const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
     const regExp = $data ? `(new RegExp(${schemaCode}))` : usePattern(schema)
-    fail(dnt + `!${regExp}.test(${data})`)
+    fail(dnt + `!${regExp}.test(${data})`) // TODO pass?
   },
   error: {
     message: ({$data, schemaCode}) =>

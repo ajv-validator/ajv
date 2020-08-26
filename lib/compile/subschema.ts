@@ -1,14 +1,14 @@
 import {CompilationContext} from "../types"
 import {subschemaCode} from "./validate"
 import {getProperty, escapeFragment, getPath, getPathExpr} from "./util"
-import {quotedString} from "../vocabularies/util"
-import {Name, Expression} from "./codegen"
+import {quotedString, accessProperty} from "../vocabularies/util"
+import {Code, Name, Expression} from "./codegen"
 
 export interface SubschemaContext {
   schema: object | boolean
   schemaPath: string
   errSchemaPath: string
-  topSchemaRef?: Expression
+  topSchemaRef?: Code
   errorPath?: string
   dataPathArr?: (Expression | number)[]
   dataLevel?: number
@@ -30,7 +30,7 @@ export interface SubschemaApplication {
   schema?: object | boolean
   schemaPath?: string
   errSchemaPath?: string
-  topSchemaRef?: Expression
+  topSchemaRef?: Code
   data?: Name
   dataProp?: Expression | number
   propertyName?: Name
@@ -104,7 +104,7 @@ function extendSubschemaData(
     // TODO possibly refactor getPath and getPathExpr to one function using Expr enum
     const nextLevel = dataLevel + 1
     subschema.errorPath =
-      dataProp instanceof Name
+      dataProp instanceof Code
         ? getPathExpr(errorPath, dataProp, opts.jsonPointers, expr === Expr.Num)
         : getPath(errorPath, dataProp, opts.jsonPointers)
 
@@ -114,8 +114,7 @@ function extendSubschemaData(
     ]
     subschema.dataLevel = nextLevel
 
-    // TODO refactor - use accessProperty
-    const passDataProp = expr === Expr.Const ? getProperty(dataProp) : `[${dataProp}]`
+    const passDataProp = accessProperty(dataProp)
     gen.code(`var data${nextLevel} = data${dataLevel || ""}${passDataProp};`)
   }
 

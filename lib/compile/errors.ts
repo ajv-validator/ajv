@@ -1,6 +1,6 @@
 import {KeywordContext, KeywordErrorDefinition} from "../types"
 import {quotedString} from "../vocabularies/util"
-import CodeGen, {Name} from "./codegen"
+import CodeGen, {_, Name} from "./codegen"
 
 export function reportError(
   cxt: KeywordContext,
@@ -26,9 +26,9 @@ export function reportExtraError(cxt: KeywordContext, error: KeywordErrorDefinit
 }
 
 export function resetErrorsCount(gen: CodeGen, errsCount: Name): void {
-  gen.code(`errors = ${errsCount};`)
-  gen.if(`vErrors !== null`, () =>
-    gen.if(errsCount, `vErrors.length = ${errsCount}`, "vErrors = null")
+  gen.code(_`errors = ${errsCount};`)
+  gen.if(_`vErrors !== null`, () =>
+    gen.if(errsCount, _`vErrors.length = ${errsCount}`, _`vErrors = null`)
   )
 }
 
@@ -36,25 +36,24 @@ export function extendErrors(
   {gen, keyword, schemaValue, data, it}: KeywordContext,
   errsCount: Name
 ): void {
-  gen.for(`let i=${errsCount}; i<errors; i++`, () => {
-    gen.code(`const err = vErrors[i];`)
-    gen.if("err.dataPath === undefined", `err.dataPath = (dataPath || '') + ${it.errorPath}`)
-    gen.code(`err.schemaPath = ${quotedString(it.errSchemaPath + "/" + keyword)};`)
+  const err = gen.name("err")
+  gen.for(_`let i=${errsCount}; i<errors; i++`, () => {
+    gen.const(err, _`vErrors[i]`)
+    gen.if(_`${err}.dataPath === undefined`, `${err}.dataPath = (dataPath || '') + ${it.errorPath}`)
+    gen.code(_`${err}.schemaPath = ${it.errSchemaPath + "/" + keyword};`)
     if (it.opts.verbose) {
       gen.code(
-        `err.schema = ${schemaValue};
-        err.data = ${data};`
+        `${err}.schema = ${schemaValue};
+        ${err}.data = ${data};`
       )
     }
   })
 }
 
 function addError(gen: CodeGen, errObj: string): void {
-  const err = gen.name("err")
-  gen
-    .code(`const ${err} = ${errObj};`)
-    .if("vErrors === null", `vErrors = [${err}]`, `vErrors.push(${err})`)
-    .code(`errors++;`)
+  const err = gen.const("err", errObj)
+  gen.if(_`vErrors === null`, _`vErrors = [${err}]`, _`vErrors.push(${err})`)
+  gen.code(_`errors++;`)
 }
 
 function returnErrors(gen: CodeGen, async: boolean, errs: string): void {

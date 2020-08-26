@@ -1,4 +1,4 @@
-import CodeGen, {Expression} from "./codegen"
+import CodeGen, {Expression, Code} from "./codegen"
 import {toQuotedString} from "./util"
 import {quotedString} from "../vocabularies/util"
 import {validateFunctionCode} from "./validate"
@@ -112,7 +112,7 @@ function compile(schema, root, localRefs, baseId) {
     validateFunctionCode({
       gen,
       allErrors: !!opts.allErrors,
-      topSchemaRef: "validate.schema",
+      topSchemaRef: new Code("validate.schema"),
       async: _schema.$async === true,
       schema: _schema,
       isRoot,

@@ -1,13 +1,14 @@
 import {CodeKeywordDefinition, AddedFormat, FormatValidate} from "../../types"
 import {dataNotType} from "../util"
 import {getProperty} from "../../compile/util"
+import {_} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "format",
   type: ["number", "string"],
   schemaType: "string",
   $data: true,
-  code({gen, fail, data, $data, schema, schemaCode, it}, ruleType) {
+  code({gen, pass, fail, data, $data, schema, schemaCode, it}, ruleType) {
     const {formats, opts, logger, errSchemaPath} = it
     if (opts.format === false) return
 
@@ -15,25 +16,16 @@ const def: CodeKeywordDefinition = {
     else validateFormat()
 
     function validate$DataFormat() {
-      const fmtDef = gen.name("fmtDef")
-      const fmtType = gen.name("fmtType")
-      const format = gen.name("format")
-      prepare()
-      fail(invalidCondition())
-
-      function prepare() {
-        gen.code(`const ${fmtDef} = formats[${schemaCode}]; let ${fmtType}, ${format};`)
-        gen.if(
-          `typeof ${fmtDef} == "object" && !(${fmtDef} instanceof RegExp)`,
-          `${fmtType} = ${fmtDef}.type || "string"; ${format} = ${fmtDef}.validate;`,
-          `${fmtType} = "string"; ${format} = ${fmtDef}`
-        )
-      }
-
-      function invalidCondition(): string {
-        const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
-        return dnt + unknownFmt() + invalidFmt()
-      }
+      const fmtDef = gen.const("fmtDef", `formats[${schemaCode}]`)
+      const fmtType = gen.let("fmtType")
+      const format = gen.let("format")
+      gen.if(
+        _`typeof ${fmtDef} == "object" && !(${fmtDef} instanceof RegExp)`,
+        _`${fmtType} = ${fmtDef}.type || "string"; ${format} = ${fmtDef}.validate;`,
+        _`${fmtType} = "string"; ${format} = ${fmtDef}`
+      )
+      const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
+      fail(dnt + unknownFmt() + invalidFmt())
 
       function unknownFmt(): string {
         if (opts.unknownFormats === "ignore") return ""
@@ -59,7 +51,7 @@ const def: CodeKeywordDefinition = {
         return
       }
       const [fmtType, format, fmtRef] = getFormat(formatDef)
-      if (fmtType === ruleType) fail(`!(${validCondition()})`)
+      if (fmtType === ruleType) pass(validCondition())
 
       function unknownFormat() {
         if (opts.unknownFormats === "ignore") return logger.warn(unknownMsg())

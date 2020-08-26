@@ -1,10 +1,9 @@
 import {KeywordErrorDefinition, CompilationContext, KeywordContext} from "../../types"
 import {reportError} from "../errors"
-import {Name} from "../codegen"
+import {_, Name} from "../codegen"
 
 const boolError: KeywordErrorDefinition = {
-  message: () => '"boolean schema is false"',
-  params: () => "{}",
+  message: "boolean schema is false",
 }
 
 export function topBoolOrEmptySchema(it: CompilationContext): void {
@@ -12,19 +11,19 @@ export function topBoolOrEmptySchema(it: CompilationContext): void {
   if (schema === false) {
     falseSchemaError(it, false)
   } else if (schema.$async === true) {
-    gen.code("return data;")
+    gen.code(_`return data;`)
   } else {
-    gen.code("validate.errors = null; return true;")
+    gen.code(_`validate.errors = null; return true;`)
   }
 }
 
 export function boolOrEmptySchema(it: CompilationContext, valid: Name): void {
   const {gen, schema} = it
   if (schema === false) {
-    gen.code(`var ${valid} = false;`) // TODO var
+    gen.var(valid, false) // TODO var
     falseSchemaError(it)
   } else {
-    gen.code(`var ${valid} = true;`) // TODO var
+    gen.var(valid, true) // TODO var
   }
 }
 
@@ -33,11 +32,12 @@ function falseSchemaError(it: CompilationContext, overrideAllErrors?: boolean) {
   // TODO maybe some other interface should be used for non-keyword validation errors...
   const cxt: KeywordContext = {
     gen,
-    fail: exception,
     ok: exception,
+    pass: exception,
+    fail: exception,
     errorParams: exception,
     keyword: "false schema",
-    data: "data" + (dataLevel || ""),
+    data: new Name("data" + (dataLevel || "")), // TODO refactor dataLevel
     schema: false,
     schemaCode: false,
     schemaValue: false,

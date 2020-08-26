@@ -1,5 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
-import {appendSchema, dataNotType} from "../util"
+import {dataNotType} from "../util"
+import {_, str} from "../../compile/codegen"
 
 const OPS: {[index: string]: {fail: string; ok: string}} = {
   maximum: {fail: ">", ok: "<="},
@@ -18,9 +19,8 @@ const def: CodeKeywordDefinition = {
     fail(dnt + data + OPS[keyword].fail + schemaCode + ` || isNaN(${data})`)
   },
   error: {
-    message: ({keyword, $data, schemaCode}) =>
-      `"should be ${OPS[keyword].ok} ${appendSchema(schemaCode, $data)}`,
-    params: ({keyword, schemaCode}) => `{comparison: "${OPS[keyword].ok}", limit: ${schemaCode}}`,
+    message: ({keyword, schemaCode}) => str`should be ${OPS[keyword].ok} ${schemaCode}`,
+    params: ({keyword, schemaCode}) => _`{comparison: ${OPS[keyword].ok}, limit: ${schemaCode}}`,
   },
 }
 

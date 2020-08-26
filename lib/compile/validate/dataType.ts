@@ -3,7 +3,7 @@ import {toHash, checkDataType, checkDataTypes} from "../util"
 import {schemaHasRulesForType} from "./applicability"
 import {reportError} from "../errors"
 import {getKeywordContext} from "../../keyword"
-import {Name} from "../codegen"
+import {_, Name} from "../codegen"
 
 export function getSchemaTypes({schema, opts}: CompilationContext): string[] {
   const st: undefined | string | string[] = schema.type
@@ -37,7 +37,7 @@ export function coerceAndCheckDataType(it: CompilationContext, types: string[]):
     !(coerceTo.length === 0 && types.length === 1 && schemaHasRulesForType(it, types[0]))
   if (checkTypes) {
     // TODO refactor `data${dataLevel || ""}`
-    const wrongType = checkDataTypes(types, `data${dataLevel || ""}`, strictNumbers, true)
+    const wrongType = checkDataTypes(types, new Name(`data${dataLevel || ""}`), strictNumbers, true)
     gen.if(wrongType, () => {
       if (coerceTo.length) coerceData(it, coerceTo)
       else reportTypeError(it)
@@ -61,16 +61,14 @@ export function coerceData(it: CompilationContext, coerceTo: string[]): void {
     opts: {coerceTypes, strictNumbers},
   } = it
   // TODO move "data" to CompilationContext
-  const data = `data${dataLevel || ""}`
-  const dataType = gen.name("dataType")
-  const coerced = gen.name("coerced")
-  gen.code(`let ${coerced};`)
-  gen.code(`let ${dataType} = typeof ${data};`)
+  const data = new Name(`data${dataLevel || ""}`)
+  const dataType = gen.let("dataType", `typeof ${data}`)
+  const coerced = gen.let("coerced")
   if (coerceTypes === "array") {
-    gen.if(`${dataType} == 'object' && Array.isArray(${data}) && ${data}.length == 1`, () =>
+    gen.if(_`${dataType} == 'object' && Array.isArray(${data}) && ${data}.length == 1`, () =>
       gen
-        .code(`${data} = ${data}[0]; ${dataType} = typeof ${data};`)
-        .if(`${checkDataType(schema.type, data, strictNumbers)}`, `${coerced} = ${data}`)
+        .code(_`${data} = ${data}[0]; ${dataType} = typeof ${data};`)
+        .if(checkDataType(schema.type, data, strictNumbers), _`${coerced} = ${data}`)
     )
   }
   gen.if(`${coerced} !== undefined`)

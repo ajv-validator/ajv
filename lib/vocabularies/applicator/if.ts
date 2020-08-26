@@ -2,11 +2,11 @@ import {CodeKeywordDefinition, KeywordErrorDefinition, CompilationContext} from 
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportExtraError, resetErrorsCount} from "../../compile/errors"
-import {Name} from "../../compile/codegen"
+import {_, str, Name} from "../../compile/codegen"
 
 const error: KeywordErrorDefinition = {
-  message: ({params}) => `'should match "' + ${params.ifClause} + '" schema'`,
-  params: ({params}) => `{failingKeyword: ${params.ifClause}}`,
+  message: ({params}) => str`should match "${params.ifClause}" schema`,
+  params: ({params}) => _`{failingKeyword: ${params.ifClause}}`,
 }
 
 const def: CodeKeywordDefinition = {
@@ -15,7 +15,7 @@ const def: CodeKeywordDefinition = {
   // TODO
   // implements: ["then", "else"],
   code(cxt) {
-    const {gen, fail, errorParams, it} = cxt
+    const {gen, pass, errorParams, it} = cxt
     const hasThen = hasSchema(it, "then")
     const hasElse = hasSchema(it, "else")
     if (!hasThen && !hasElse) {
@@ -23,22 +23,16 @@ const def: CodeKeywordDefinition = {
       return
     }
 
-    const valid = gen.name("valid")
+    const valid = gen.let("valid", true)
+    const errsCount = gen.const("_errs", "errors")
     const schValid = gen.name("_valid")
-    const errsCount = gen.name("_errs")
-
-    gen.code(
-      `const ${errsCount} = errors;
-      let ${valid} = true;`
-    )
 
     validateIf()
     resetErrorsCount(gen, errsCount)
 
     if (hasThen && hasElse) {
-      const ifClause = gen.name("ifClause")
+      const ifClause = gen.let("ifClause")
       errorParams({ifClause})
-      gen.code(`let ${ifClause};`)
       gen.if(schValid, validateClause("then", ifClause), validateClause("else", ifClause))
     } else if (hasThen) {
       gen.if(schValid, validateClause("then"))
@@ -46,7 +40,7 @@ const def: CodeKeywordDefinition = {
       gen.if(`!${schValid}`, validateClause("else"))
     }
 
-    fail(`!${valid}`, () => reportExtraError(cxt, error))
+    pass(valid, () => reportExtraError(cxt, error))
 
     function validateIf(): void {
       applySubschema(
@@ -66,7 +60,7 @@ const def: CodeKeywordDefinition = {
         applySubschema(it, {keyword}, schValid)
         gen.code(`${valid} = ${schValid};`)
         if (ifClause) gen.code(`${ifClause} = "${keyword}";`)
-        else errorParams({ifClause: `"${keyword}"`})
+        else errorParams({ifClause: keyword})
       }
     }
   },

@@ -10,8 +10,7 @@ const def: CodeKeywordDefinition = {
   before: "uniqueItems",
   code(cxt) {
     const {gen, fail, schema, data, it} = cxt
-    const errsCount = gen.name("_errs")
-    gen.code(`const ${errsCount} = errors;`)
+    const errsCount = gen.const("_errs", "errors")
 
     if (alwaysValidSchema(it, schema)) return fail(`${data}.length === 0`)
 

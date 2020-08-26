@@ -18,7 +18,7 @@ const def: CodeKeywordDefinition = {
         if (it.allErrors) {
           validateProperties(pat)
         } else {
-          gen.code(`var ${valid} = true`) // TODO var
+          gen.var(valid, true) // TODO var
           validateProperties(pat)
           gen.if(valid)
         }

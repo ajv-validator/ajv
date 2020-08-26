@@ -22,7 +22,7 @@ const def: CodeKeywordDefinition = {
       } else {
         gen.if(propertyInData(data, prop, it.opts.ownProperties))
         applyPropertySchema(prop)
-        if (!it.allErrors) gen.else().code(`var ${valid} = true;`)
+        if (!it.allErrors) gen.else().var(valid, true)
         gen.endIf()
       }
       ok(valid)

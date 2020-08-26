@@ -15,7 +15,7 @@ import {getData} from "./compile/util"
 import {schemaRefOrVal} from "./vocabularies/util"
 import {definitionSchema} from "./definition_schema"
 import keywordCode, {validateKeywordSchema, keywordError} from "./compile/validate/keyword"
-import {Expression} from "./compile/codegen"
+import {_, Name, Expression} from "./compile/codegen"
 
 const IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i
 
@@ -151,12 +151,13 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
   // TODO
   // if (!code) throw new Error('"code" and "error" must be defined')
   const $data = $defData && opts.$data && schema && schema.$data
-  const data = "data" + (dataLevel || "")
+  const data = new Name("data" + (dataLevel || "")) // TODO remove dataLevel
   const schemaValue = schemaRefOrVal(it, schema, keyword, $data)
   const cxt: KeywordContext = {
     gen,
-    fail,
     ok,
+    pass,
+    fail,
     errorParams,
     keyword,
     data,
@@ -169,16 +170,16 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
     it,
   }
   if ($data) {
-    gen.code(`const ${cxt.schemaCode} = ${getData($data, dataLevel, dataPathArr)};`)
+    gen.const(<Name>cxt.schemaCode, `${getData($data, dataLevel, dataPathArr)}`)
   } else if (schemaType && !validSchemaType(schema, schemaType)) {
     throw new Error(`${keyword} must be ${JSON.stringify(schemaType)}`)
   }
   ;(def.code || keywordCode)(cxt, ruleType, this.definition)
 
-  function fail(condition?: Expression, failAction?: () => void, context?: KeywordContext): void {
+  function fail(cond?: Expression, failAction?: () => void, context?: KeywordContext): void {
     const action = failAction || _reportError
-    if (condition) {
-      gen.if(condition)
+    if (cond) {
+      gen.if(cond)
       action()
       if (allErrors) gen.endIf()
       else gen.else()
@@ -192,8 +193,13 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
     }
   }
 
-  function ok(condition: Expression): void {
-    if (!allErrors) gen.if(condition)
+  function pass(cond: Expression, failAction?: () => void, context?: KeywordContext): void {
+    cond = cond instanceof Name ? cond : `(${cond})`
+    fail(`!${cond}`, failAction, context)
+  }
+
+  function ok(cond: Expression): void {
+    if (!allErrors) gen.if(cond)
   }
 
   function errorParams(obj: KeywordContextParams, assign?: true) {
@@ -219,11 +225,12 @@ export function getKeywordContext(it: CompilationContext, keyword: string): Keyw
   const schemaCode = schemaRefOrVal(it, schema, keyword)
   return {
     gen,
-    fail: exception,
     ok: exception,
+    pass: exception,
+    fail: exception,
     errorParams: exception,
     keyword,
-    data: "data" + (dataLevel || ""),
+    data: new Name("data" + (dataLevel || "")),
     schema: schema[keyword],
     schemaCode,
     schemaValue: schemaCode,

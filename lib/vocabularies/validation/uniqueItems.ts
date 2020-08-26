@@ -1,18 +1,18 @@
 import {CodeKeywordDefinition} from "../../types"
 import {checkDataType, checkDataTypes} from "../../compile/util"
+import {_} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "uniqueItems",
   type: "array",
   schemaType: "boolean",
   $data: true,
-  code({gen, fail, errorParams, data, $data, schema, parentSchema, schemaCode, it: {opts}}) {
+  code({gen, pass, errorParams, data, $data, schema, parentSchema, schemaCode, it: {opts}}) {
     if (opts.uniqueItems === false || !($data || schema)) return
-    const i = gen.name("i")
-    const j = gen.name("j")
-    const valid = gen.name("valid")
+    const i = gen.let("i")
+    const j = gen.let("j")
+    const valid = gen.let("valid")
     errorParams({i, j})
-    gen.code(`let ${valid}, ${i}, ${j};`)
     const itemType = parentSchema.items?.type
 
     // TODO refactor to have two open blocks? same as in required
@@ -24,7 +24,7 @@ const def: CodeKeywordDefinition = {
       validateUniqueItems()
     }
 
-    fail(`!${valid}`)
+    pass(valid)
 
     function validateUniqueItems() {
       gen.code(
@@ -41,33 +41,33 @@ const def: CodeKeywordDefinition = {
     }
 
     function loopN(): void {
+      const item = gen.name("item")
       const wrongType = (Array.isArray(itemType) ? checkDataTypes : checkDataType)(
         itemType,
-        "item",
+        item,
         opts.strictNumbers,
         true
       )
-      const indices = gen.name("indices")
-      gen.code(`const ${indices} = {};`)
-      gen.for(`;${i}--;`, () => {
-        gen.code(`let item = ${data}[${i}];`)
+      const indices = gen.const("indices", "{}")
+      gen.for(_`;${i}--;`, () => {
+        gen.let(item, `${data}[${i}];`)
         gen.if(wrongType, "continue")
-        if (Array.isArray(itemType)) gen.if('typeof item == "string"', 'item += "_"')
+        if (Array.isArray(itemType)) gen.if(_`typeof ${item} == "string"`, _`${item} += "_"`)
         gen
           .if(
-            `typeof ${indices}[item] == "number"`,
-            `${valid} = false; ${j} = ${indices}[item]; break;`
+            _`typeof ${indices}[${item}] == "number"`,
+            _`${valid} = false; ${j} = ${indices}[${item}]; break;`
           )
-          .code(`${indices}[item] = ${i};`)
+          .code(_`${indices}[${item}] = ${i};`)
       })
     }
 
     function loopN2(): void {
       gen
-        .code(`outer:`)
-        .for(`;${i}--;`, () =>
-          gen.for(`${j} = ${i}; ${j}--;`, () =>
-            gen.if(`equal(${data}[${i}], ${data}[${j}])`, `${valid} = false; break outer;`)
+        .code(_`outer:`)
+        .for(_`;${i}--;`, () =>
+          gen.for(_`${j} = ${i}; ${j}--;`, () =>
+            gen.if(`equal(${data}[${i}], ${data}[${j}])`, _`${valid} = false; break outer;`)
           )
         )
     }

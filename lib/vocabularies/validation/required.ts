@@ -20,7 +20,7 @@ const def: CodeKeywordDefinition = {
   schemaType: ["array"],
   $data: true,
   code(cxt) {
-    const {gen, fail, errorParams, schema, schemaCode, data, $data, it} = cxt
+    const {gen, pass, errorParams, schema, schemaCode, data, $data, it} = cxt
     if (!$data && schema.length === 0) return
 
     const loopRequired = $data || schema.length >= <number>it.opts.loopRequired
@@ -47,13 +47,11 @@ const def: CodeKeywordDefinition = {
     }
 
     function exitOnErrorMode(): void {
-      const missing = gen.name("missing")
-      gen.code(`let ${missing};`)
+      const missing = gen.let("missing")
       errorParams({missingProperty: missing})
 
       if (loopRequired) {
-        const valid = gen.name("valid")
-        gen.code(`let ${valid} = true;`)
+        const valid = gen.let("valid", "true")
 
         // TODO refactor and enable/fix test in errors.spec.js line 301
         // it can be simpler once blocks are globally supported - endIf can be removed, so there will be 2 open blocks
@@ -67,7 +65,7 @@ const def: CodeKeywordDefinition = {
           loopUntilMissing(missing, valid)
         }
 
-        fail(`!${valid}`)
+        pass(valid)
       } else {
         gen.if(`${checkMissingProp(cxt, schema, missing)}`)
         reportMissingProp(cxt, missing, error)

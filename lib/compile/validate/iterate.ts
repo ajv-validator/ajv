@@ -36,7 +36,7 @@ export function schemaKeywords(
   function groupKeywords(group: RuleGroup): void {
     if (group.type) {
       // TODO refactor `data${dataLevel || ""}`
-      const checkType = checkDataType(group.type, `data${dataLevel || ""}`, strictNumbers)
+      const checkType = checkDataType(group.type, new Name(`data${dataLevel || ""}`), strictNumbers)
       gen.if(checkType)
       iterateKeywords(it, group)
       if (types.length === 1 && types[0] === group.type && typeErrors) {
