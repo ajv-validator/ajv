@@ -1,6 +1,6 @@
 import {KeywordContext, KeywordErrorDefinition} from "../types"
 import {quotedString} from "../vocabularies/util"
-import CodeGen from "./codegen"
+import CodeGen, {Name} from "./codegen"
 
 export function reportError(
   cxt: KeywordContext,
@@ -25,7 +25,7 @@ export function reportExtraError(cxt: KeywordContext, error: KeywordErrorDefinit
   }
 }
 
-export function resetErrorsCount(gen: CodeGen, errsCount: string): void {
+export function resetErrorsCount(gen: CodeGen, errsCount: Name): void {
   gen.code(`errors = ${errsCount};`)
   gen.if(`vErrors !== null`, () =>
     gen.if(errsCount, `vErrors.length = ${errsCount}`, "vErrors = null")
@@ -34,7 +34,7 @@ export function resetErrorsCount(gen: CodeGen, errsCount: string): void {
 
 export function extendErrors(
   {gen, keyword, schemaValue, data, it}: KeywordContext,
-  errsCount: string
+  errsCount: Name
 ): void {
   gen.for(`let i=${errsCount}; i<errors; i++`, () => {
     gen.code(`const err = vErrors[i];`)

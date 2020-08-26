@@ -10,6 +10,7 @@ import {
 import {applySubschema} from "../subschema"
 import {reportError, reportExtraError, extendErrors} from "../errors"
 import {getParentData, callValidate} from "../../vocabularies/util"
+import {Name, Expression} from "../codegen"
 
 export const keywordError: KeywordErrorDefinition = {
   message: ({keyword}) => `'should pass "${keyword}" keyword validation'`,
@@ -107,7 +108,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
     }
   }
 
-  function validateAsyncRule(): string {
+  function validateAsyncRule(): Name {
     const ruleErrs = gen.name("ruleErrs")
     gen.code(`let ${ruleErrs} = null;`)
     gen.try(
@@ -133,7 +134,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
     gen.code(`${valid} = ${await}${callValidate(cxt, validateRef, passCxt, passSchema)};`)
   }
 
-  function reportKeywordErrors(ruleErrs: string, errsCount: string): void {
+  function reportKeywordErrors(ruleErrs: Expression, errsCount: Name): void {
     switch (def.valid) {
       case true:
         return
@@ -152,7 +153,7 @@ function modifyData(cxt: KeywordContext) {
   gen.if(parent.data, `${data} = ${parent.data}[${parent.property}];`)
 }
 
-function addKeywordErrors(cxt: KeywordContext, ruleErrs: string, errsCount: string): void {
+function addKeywordErrors(cxt: KeywordContext, ruleErrs: Expression, errsCount: Name): void {
   const {gen} = cxt
   gen.if(
     `Array.isArray(${ruleErrs})`,

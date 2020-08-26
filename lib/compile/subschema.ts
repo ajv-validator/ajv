@@ -2,16 +2,17 @@ import {CompilationContext} from "../types"
 import {subschemaCode} from "./validate"
 import {getProperty, escapeFragment, getPath, getPathExpr} from "./util"
 import {quotedString} from "../vocabularies/util"
+import {Name, Expression} from "./codegen"
 
 export interface SubschemaContext {
   schema: object | boolean
   schemaPath: string
   errSchemaPath: string
-  topSchemaRef?: string
+  topSchemaRef?: Expression
   errorPath?: string
-  dataPathArr?: (string | number)[]
+  dataPathArr?: (Expression | number)[]
   dataLevel?: number
-  propertyName?: string
+  propertyName?: Name
   compositeRule?: true
   createErrors?: boolean
   allErrors?: boolean
@@ -29,10 +30,10 @@ export interface SubschemaApplication {
   schema?: object | boolean
   schemaPath?: string
   errSchemaPath?: string
-  topSchemaRef?: string
-  data?: string
-  dataProp?: string | number
-  propertyName?: string
+  topSchemaRef?: Expression
+  data?: Name
+  dataProp?: Expression | number
+  propertyName?: Name
   expr?: Expr
   compositeRule?: true
   createErrors?: boolean
@@ -42,7 +43,7 @@ export interface SubschemaApplication {
 export function applySubschema(
   it: CompilationContext,
   appl: SubschemaApplication,
-  valid: string
+  valid: Name
 ): void {
   const subschema = getSubschema(it, appl)
   extendSubschemaData(subschema, it, appl)
@@ -103,9 +104,10 @@ function extendSubschemaData(
     // TODO possibly refactor getPath and getPathExpr to one function using Expr enum
     const nextLevel = dataLevel + 1
     subschema.errorPath =
-      expr === Expr.Const
-        ? getPath(errorPath, dataProp, opts.jsonPointers)
-        : getPathExpr(errorPath, <string>dataProp, opts.jsonPointers, expr === Expr.Num)
+      dataProp instanceof Name
+        ? getPathExpr(errorPath, dataProp, opts.jsonPointers, expr === Expr.Num)
+        : getPath(errorPath, dataProp, opts.jsonPointers)
+
     subschema.dataPathArr = [
       ...dataPathArr,
       expr === Expr.Const && typeof dataProp == "string" ? quotedString(dataProp) : dataProp,

@@ -1,5 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
 import {quotedString, orExpr} from "../util"
+import {Name} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "enum",
@@ -28,13 +29,13 @@ const def: CodeKeywordDefinition = {
       }
     }
 
-    function loopEnum(valid: string): void {
+    function loopEnum(valid: Name): void {
       gen.for(`const v of ${schemaCode}`, () =>
         gen.if(`equal(${data}, v)`, `${valid} = true; break;`)
       )
     }
 
-    function equalCode(vSchema: string, i: number): string {
+    function equalCode(vSchema: Name, i: number): string {
       let sch: string = schema[i]
       if (sch && typeof sch === "object") {
         return `equal(${data}, ${vSchema}[${i}])`

@@ -9,6 +9,7 @@ import {
 } from "../util"
 import {applySubschema, SubschemaApplication, Expr} from "../../compile/subschema"
 import {reportError, resetErrorsCount} from "../../compile/errors"
+import {Name} from "../../compile/codegen"
 
 const error: KeywordErrorDefinition = {
   message: "should NOT have additional properties",
@@ -41,13 +42,13 @@ const def: CodeKeywordDefinition = {
     if (!allErrors) gen.if(`${errsCount} === errors`)
 
     function checkAdditionalProperties(): void {
-      loopPropertiesCode(cxt, (key: string) => {
+      loopPropertiesCode(cxt, (key: Name) => {
         if (!props.length && !patProps.length) additionalPropertyCode(key)
         else gen.if(isAdditional(key), () => additionalPropertyCode(key))
       })
     }
 
-    function isAdditional(key: string): string {
+    function isAdditional(key: Name): string {
       let definedProp = ""
       if (props.length > 8) {
         // TODO maybe an option instead of hard-coded 8?
@@ -63,11 +64,11 @@ const def: CodeKeywordDefinition = {
       return `!(${definedProp})`
     }
 
-    function deleteAdditional(key: string): void {
+    function deleteAdditional(key: Name): void {
       gen.code(`delete ${data}[${key}];`)
     }
 
-    function additionalPropertyCode(key: string): void {
+    function additionalPropertyCode(key: Name): void {
       if (removeAdditional === "all" || (removeAdditional && schema === false)) {
         deleteAdditional(key)
         return
@@ -95,7 +96,7 @@ const def: CodeKeywordDefinition = {
       }
     }
 
-    function applyAdditionalSchema(key: string, valid: string, errors?: false): void {
+    function applyAdditionalSchema(key: Name, valid: Name, errors?: false): void {
       const subschema: SubschemaApplication = {
         keyword: "additionalProperties",
         dataProp: key,

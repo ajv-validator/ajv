@@ -1,3 +1,5 @@
+import {Name, Expression} from "./codegen"
+
 export function checkDataType(
   dataType: string,
   data: string,
@@ -59,10 +61,10 @@ export function toHash(arr: string[]): {[key: string]: true} {
 
 const IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i
 const SINGLE_QUOTE = /'|\\/g
-export function getProperty(key: string | number): string {
+export function getProperty(key: Expression | number): string {
   return typeof key === "number"
     ? `[${key}]`
-    : IDENTIFIER.test(key)
+    : key instanceof Name || IDENTIFIER.test(key)
     ? `.${key}`
     : `['${escapeQuotes(key)}']`
 }
@@ -104,7 +106,7 @@ export function toQuotedString(str: string): string {
 
 export function getPathExpr(
   currentPath: string,
-  expr: string,
+  expr: Expression,
   jsonPointers?: boolean,
   isNumber?: boolean
 ): string {
@@ -131,7 +133,7 @@ export function getPath(
 
 const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/
 const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/
-export function getData($data: string, lvl: number, paths: (number | string)[]): string {
+export function getData($data: string, lvl: number, paths: (Expression | number)[]): string {
   let jsonPointer, data
   if ($data === "") return "rootData"
   if ($data[0] === "/") {

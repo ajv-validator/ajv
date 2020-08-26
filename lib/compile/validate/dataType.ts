@@ -3,6 +3,7 @@ import {toHash, checkDataType, checkDataTypes} from "../util"
 import {schemaHasRulesForType} from "./applicability"
 import {reportError} from "../errors"
 import {getKeywordContext} from "../../keyword"
+import {Name} from "../codegen"
 
 export function getSchemaTypes({schema, opts}: CompilationContext): string[] {
   const st: undefined | string | string[] = schema.type
@@ -135,7 +136,10 @@ export function coerceData(it: CompilationContext, coerceTo: string[]): void {
   }
 }
 
-function assignParentData({gen, dataLevel, dataPathArr}: CompilationContext, expr: string): void {
+function assignParentData(
+  {gen, dataLevel, dataPathArr}: CompilationContext,
+  expr: string | Name
+): void {
   // TODO replace dataLevel
   if (dataLevel) {
     const parentData = "data" + (dataLevel - 1 || "")

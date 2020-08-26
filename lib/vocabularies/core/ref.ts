@@ -3,6 +3,7 @@ import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {ResolvedRef, InlineResolvedRef} from "../../compile"
 import {callValidate} from "../util"
+import {Expression} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "$ref",
@@ -55,7 +56,7 @@ const def: CodeKeywordDefinition = {
       ok(valid)
     }
 
-    function validateAsyncRef(v: string): void {
+    function validateAsyncRef(v: Expression): void {
       const valid = gen.name("valid")
       if (!it.async) throw new Error("async schema referenced by sync schema")
       if (!allErrors) gen.code(`let ${valid};`)
@@ -73,11 +74,11 @@ const def: CodeKeywordDefinition = {
       ok(valid)
     }
 
-    function validateRef(v: string): void {
+    function validateRef(v: Expression): void {
       fail(`!${callValidate(cxt, v, passCxt)}`, () => addErrorsFrom(v))
     }
 
-    function addErrorsFrom(source: string): void {
+    function addErrorsFrom(source: Expression): void {
       gen.if(
         "vErrors === null",
         `vErrors = ${source}.errors`,

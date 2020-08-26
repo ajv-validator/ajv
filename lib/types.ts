@@ -1,5 +1,5 @@
 import Cache from "./cache"
-import CodeGen from "./compile/codegen"
+import CodeGen, {Name, Expression} from "./compile/codegen"
 import {ValidationRules} from "./compile/rules"
 import {ResolvedRef} from "./compile"
 
@@ -106,13 +106,13 @@ export interface CompilationContext {
   allErrors: boolean
   dataLevel: number
   data: string
-  dataPathArr: (string | number)[]
+  dataPathArr: (Expression | number)[]
   schema: any
   isRoot: boolean
   schemaPath: string
   errorPath: string
   errSchemaPath: string
-  propertyName?: string
+  propertyName?: Name
   gen: CodeGen
   createErrors?: boolean // TODO maybe remove later
   baseId: string
@@ -134,7 +134,7 @@ export interface CompilationContext {
   logger: Logger // TODO ?
   root: SchemaRoot // TODO ?
   rootId: string // TODO ?
-  topSchemaRef: string
+  topSchemaRef: Expression
   resolveRef: (...args: any[]) => ResolvedRef | void
 }
 
@@ -213,21 +213,21 @@ export type Vocabulary = KeywordDefinition[]
 
 export interface KeywordContext {
   gen: CodeGen
-  fail: (condition?: string, failAction?: () => void, context?: KeywordContext) => void
-  ok: (condition: string) => void
+  fail: (condition?: Expression, failAction?: () => void, context?: KeywordContext) => void
+  ok: (condition: Expression) => void
   errorParams: (obj: KeywordContextParams, assing?: true) => void
   keyword: string
   data: string
   $data?: string | false
   schema: any
   parentSchema: any
-  schemaCode: string | number | boolean
+  schemaCode: Expression | number | boolean
   schemaValue: string | number | boolean
   params: KeywordContextParams
   it: CompilationContext
 }
 
-export type KeywordContextParams = {[x: string]: string}
+export type KeywordContextParams = {[x: string]: Expression}
 
 export type FormatMode = "fast" | "full"
 

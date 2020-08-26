@@ -1,4 +1,4 @@
-import CodeGen from "./codegen"
+import CodeGen, {Expression} from "./codegen"
 import {toQuotedString} from "./util"
 import {quotedString} from "../vocabularies/util"
 import {validateFunctionCode} from "./validate"
@@ -23,13 +23,13 @@ module.exports = compile
 export type ResolvedRef = InlineResolvedRef | FuncResolvedRef
 
 export interface InlineResolvedRef {
-  code: string
+  code: Expression
   schema: object | boolean
   inline: true
 }
 
 export interface FuncResolvedRef {
-  code: string
+  code: Expression
   $async?: boolean
   inline?: false
 }

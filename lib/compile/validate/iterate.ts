@@ -4,12 +4,13 @@ import {checkDataType, schemaHasRulesExcept} from "../util"
 import {assignDefaults} from "./defaults"
 import {reportTypeError} from "./dataType"
 import {RuleGroup, Rule} from "../rules"
+import {Name} from "../codegen"
 
 export function schemaKeywords(
   it: CompilationContext,
   types: string[],
   typeErrors: boolean,
-  errsCount?: string
+  errsCount?: Name
 ): void {
   const {
     gen,

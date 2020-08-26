@@ -1,18 +1,18 @@
 import {getProperty, schemaHasRules} from "../compile/util"
 import {CompilationContext, KeywordContext} from "../types"
-import {Expr} from "../compile/subschema"
+import {Name, Expression} from "../compile/codegen"
 
 export function appendSchema(
-  schemaCode: string | number | boolean,
+  schemaCode: Expression | number | boolean,
   $data?: string | false
 ): string {
   return $data ? `" + ${schemaCode}` : `${schemaCode}"`
 }
 
 export function concatSchema(
-  schemaCode: string | number | boolean,
+  schemaCode: Expression | number | boolean,
   $data?: string | false
-): string | number | boolean {
+): Expression | number | boolean {
   return $data ? `" + ${schemaCode} + "` : schemaCode
 }
 
@@ -23,7 +23,7 @@ export function quotedString(str: string): string {
 }
 
 export function dataNotType(
-  schemaCode: string | number | boolean,
+  schemaCode: Expression | number | boolean,
   schemaType: string,
   $data?: string | false
 ): string {
@@ -62,40 +62,38 @@ export function schemaProperties(it: CompilationContext, schema: object): string
   return allSchemaProperties(schema).filter((p) => !alwaysValidSchema(it, schema[p]))
 }
 
-export function isOwnProperty(data: string, property: string, expr: Expr): string {
-  const prop = expr === Expr.Const ? quotedString(property) : property
+export function isOwnProperty(data: string, property: Expression): Expression {
+  const prop = property instanceof Name ? property : quotedString(property)
   return `Object.prototype.hasOwnProperty.call(${data}, ${prop})`
 }
 
 export function propertyInData(
   data: string,
-  property: string,
-  expr: Expr,
+  property: Expression,
   ownProperties?: boolean
 ): string {
-  let cond = `${data}${accessProperty(property, expr)} !== undefined`
-  if (ownProperties) cond += ` && ${isOwnProperty(data, property, expr)}`
+  let cond = `${data}${accessProperty(property)} !== undefined`
+  if (ownProperties) cond += ` && ${isOwnProperty(data, property)}`
   return cond
 }
 
 export function noPropertyInData(
   data: string,
-  property: string,
-  expr: Expr,
+  property: Expression,
   ownProperties?: boolean
 ): string {
-  let cond = `${data}${accessProperty(property, expr)} === undefined`
-  if (ownProperties) cond += ` || !${isOwnProperty(data, property, expr)}`
+  let cond = `${data}${accessProperty(property)} === undefined`
+  if (ownProperties) cond += ` || !${isOwnProperty(data, property)}`
   return cond
 }
 
-function accessProperty(property: string | number, expr: Expr): string {
-  return expr === Expr.Const ? getProperty(property) : `[${property}]`
+function accessProperty(property: Expression | number): string {
+  return property instanceof Name ? `[${property}]` : getProperty(property)
 }
 
 export function loopPropertiesCode(
   {gen, data, it}: KeywordContext,
-  loopBody: (key: string) => void
+  loopBody: (key: Name) => void
 ): void {
   // TODO maybe always iterate own properties in v7?
   const key = gen.name("key")
@@ -120,7 +118,7 @@ export function getParentData({dataLevel, dataPathArr}: CompilationContext): Par
 
 export function callValidate(
   {schemaCode, data, it}: KeywordContext,
-  func: string,
+  func: Expression,
   context?: string,
   passSchema?: boolean
 ): string {

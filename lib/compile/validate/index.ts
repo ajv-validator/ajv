@@ -4,7 +4,7 @@ import {quotedString} from "../../vocabularies/util"
 import {topBoolOrEmptySchema, boolOrEmptySchema} from "./boolSchema"
 import {getSchemaTypes, coerceAndCheckDataType} from "./dataType"
 import {schemaKeywords} from "./iterate"
-import CodeGen, {Code} from "../codegen"
+import CodeGen, {_Code, Name} from "../codegen"
 
 const resolve = require("../resolve")
 
@@ -25,7 +25,7 @@ export function validateFunctionCode(it: CompilationContext): void {
   })
 }
 
-function validateFunction(it: CompilationContext, body: Code) {
+function validateFunction(it: CompilationContext, body: _Code) {
   const {gen} = it
   gen.func("validate", "data, dataPath, parentData, parentDataProperty, rootData", it.async, body)
   gen.code(
@@ -42,7 +42,7 @@ function funcSourceUrl({schema, opts}: CompilationContext): string {
 }
 
 // schema compilation - this function is used recursively to generate code for sub-schemas
-export function subschemaCode(it: CompilationContext, valid: string): void {
+export function subschemaCode(it: CompilationContext, valid: Name): void {
   const {schema, gen, opts} = it
   checkKeywords(it)
   if (isBoolOrEmpty(it)) {
@@ -69,7 +69,7 @@ function isBoolOrEmpty({schema, RULES}: CompilationContext): boolean {
   return typeof schema == "boolean" || !schemaHasRules(schema, RULES.all)
 }
 
-function typeAndKeywords(it: CompilationContext, errsCount?: string): void {
+function typeAndKeywords(it: CompilationContext, errsCount?: Name): void {
   const types = getSchemaTypes(it)
   const checkedTypes = coerceAndCheckDataType(it, types)
   schemaKeywords(it, types, !checkedTypes, errsCount)

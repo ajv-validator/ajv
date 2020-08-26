@@ -5,7 +5,26 @@ enum Block {
   Func,
 }
 
-export type Code = string | (() => void)
+enum VarKind {
+  Const,
+  Let,
+  VFar,
+}
+
+export class Name {
+  #name: string
+  constructor(name: string) {
+    this.#name = name
+  }
+
+  toString(): string {
+    return this.#name
+  }
+}
+
+export type Expression = string | Name
+
+export type _Code = string | (() => void)
 
 export default class CodeGen {
   #names: {[key: string]: number} = {}
@@ -18,20 +37,22 @@ export default class CodeGen {
     return this._out
   }
 
-  name(prefix: string): string {
+  name(prefix: string): Name {
     if (!this.#names[prefix]) this.#names[prefix] = 0
     const num = this.#names[prefix]++
-    return `${prefix}_${num}`
+    return new Name(`${prefix}_${num}`)
   }
 
-  code(c?: Code): CodeGen {
+  // _def(varKind: VarKind, prefix: string, rhs?: string): Variable {}
+
+  code(c?: _Code): CodeGen {
     // TODO optionally strip whitespace
     if (typeof c == "function") c()
     else if (c) this._out += c + "\n"
     return this
   }
 
-  if(condition: string, thenBody?: Code, elseBody?: Code): CodeGen {
+  if(condition: Expression, thenBody?: _Code, elseBody?: _Code): CodeGen {
     this.#blocks.push(Block.If)
     this.code(`if(${condition}){`)
     if (thenBody && elseBody) {
@@ -44,7 +65,7 @@ export default class CodeGen {
     return this
   }
 
-  elseIf(condition: string): CodeGen {
+  elseIf(condition: Expression): CodeGen {
     if (this._lastBlock !== Block.If) throw new Error('CodeGen: "else if" without "if"')
     this.code(`}else if(${condition}){`)
     return this
@@ -66,7 +87,7 @@ export default class CodeGen {
     return this
   }
 
-  for(iteration: string, forBody?: Code): CodeGen {
+  for(iteration: string, forBody?: _Code): CodeGen {
     this.#blocks.push(Block.For)
     this.code(`for(${iteration}){`)
     if (forBody) this.code(forBody).endFor()
@@ -81,7 +102,7 @@ export default class CodeGen {
     return this
   }
 
-  try(tryBody: Code, catchCode?: (e: string) => void, finallyCode?: Code): CodeGen {
+  try(tryBody: _Code, catchCode?: (e: Name) => void, finallyCode?: _Code): CodeGen {
     if (!catchCode && !finallyCode) throw new Error('CodeGen: "try" without "catch" and "finally"')
     this.code("try{").code(tryBody)
     if (catchCode) {
@@ -94,7 +115,7 @@ export default class CodeGen {
     return this
   }
 
-  block(body?: Code, expectedToClose?: number): CodeGen {
+  block(body?: _Code, expectedToClose?: number): CodeGen {
     this.#blockStarts.push(this.#blocks.length)
     if (body) this.code(body).endBlock(expectedToClose)
     return this
@@ -113,7 +134,7 @@ export default class CodeGen {
     return this
   }
 
-  func(name = "", args = "", async?: boolean, funcBody?: Code): CodeGen {
+  func(name = "", args = "", async?: boolean, funcBody?: _Code): CodeGen {
     this.#blocks.push(Block.Func)
     this.code(`${async ? "async " : ""}function ${name}(${args}){`)
     if (funcBody) this.code(funcBody).endFunc()

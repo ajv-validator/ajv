@@ -20,7 +20,7 @@ const def: CodeKeywordDefinition = {
       if (hasDefault(prop)) {
         applyPropertySchema(prop)
       } else {
-        gen.if(propertyInData(data, prop, Expr.Const, it.opts.ownProperties))
+        gen.if(propertyInData(data, prop, it.opts.ownProperties))
         applyPropertySchema(prop)
         if (!it.allErrors) gen.else().code(`var ${valid} = true;`)
         gen.endIf()

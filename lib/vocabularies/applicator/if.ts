@@ -2,6 +2,7 @@ import {CodeKeywordDefinition, KeywordErrorDefinition, CompilationContext} from 
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportExtraError, resetErrorsCount} from "../../compile/errors"
+import {Name} from "../../compile/codegen"
 
 const error: KeywordErrorDefinition = {
   message: ({params}) => `'should match "' + ${params.ifClause} + '" schema'`,
@@ -60,7 +61,7 @@ const def: CodeKeywordDefinition = {
       )
     }
 
-    function validateClause(keyword: string, ifClause?: string): () => void {
+    function validateClause(keyword: string, ifClause?: Name): () => void {
       return () => {
         applySubschema(it, {keyword}, schValid)
         gen.code(`${valid} = ${schValid};`)

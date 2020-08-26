@@ -15,6 +15,7 @@ import {getData} from "./compile/util"
 import {schemaRefOrVal} from "./vocabularies/util"
 import {definitionSchema} from "./definition_schema"
 import keywordCode, {validateKeywordSchema, keywordError} from "./compile/validate/keyword"
+import {Expression} from "./compile/codegen"
 
 const IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i
 
@@ -174,7 +175,7 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
   }
   ;(def.code || keywordCode)(cxt, ruleType, this.definition)
 
-  function fail(condition?: string, failAction?: () => void, context?: KeywordContext): void {
+  function fail(condition?: Expression, failAction?: () => void, context?: KeywordContext): void {
     const action = failAction || _reportError
     if (condition) {
       gen.if(condition)
@@ -191,7 +192,7 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
     }
   }
 
-  function ok(condition: string): void {
+  function ok(condition: Expression): void {
     if (!allErrors) gen.if(condition)
   }
 

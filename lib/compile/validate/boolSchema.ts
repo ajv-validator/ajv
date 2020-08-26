@@ -1,5 +1,6 @@
 import {KeywordErrorDefinition, CompilationContext, KeywordContext} from "../../types"
 import {reportError} from "../errors"
+import {Name} from "../codegen"
 
 const boolError: KeywordErrorDefinition = {
   message: () => '"boolean schema is false"',
@@ -17,7 +18,7 @@ export function topBoolOrEmptySchema(it: CompilationContext): void {
   }
 }
 
-export function boolOrEmptySchema(it: CompilationContext, valid: string): void {
+export function boolOrEmptySchema(it: CompilationContext, valid: Name): void {
   const {gen, schema} = it
   if (schema === false) {
     gen.code(`var ${valid} = false;`) // TODO var

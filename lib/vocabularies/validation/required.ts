@@ -1,8 +1,8 @@
 import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import {propertyInData, noPropertyInData} from "../util"
-import {Expr} from "../../compile/subschema"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"
 import {reportError} from "../../compile/errors"
+import {Name} from "../../compile/codegen"
 
 const error: KeywordErrorDefinition = {
   message: ({params: {missingProperty}}) => {
@@ -79,16 +79,14 @@ const def: CodeKeywordDefinition = {
       const prop = gen.name("prop")
       errorParams({missingProperty: prop})
       gen.for(`const ${prop} of ${schemaCode}`, () =>
-        gen.if(noPropertyInData(data, prop, Expr.Str, it.opts.ownProperties), () =>
-          reportError(cxt, error)
-        )
+        gen.if(noPropertyInData(data, prop, it.opts.ownProperties), () => reportError(cxt, error))
       )
     }
 
-    function loopUntilMissing(missing: string, valid: string): void {
+    function loopUntilMissing(missing: Name, valid: Name): void {
       gen.for(`${missing} of ${schemaCode}`, () =>
         gen
-          .code(`${valid} = ${propertyInData(data, missing, Expr.Str, it.opts.ownProperties)};`)
+          .code(`${valid} = ${propertyInData(data, missing, it.opts.ownProperties)};`)
           .if(`!${valid}`, "break")
       )
     }
