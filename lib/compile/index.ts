@@ -108,8 +108,9 @@ function compile(schema, root, localRefs, baseId) {
     const rootId = resolve.fullPath(_root.schema.$id)
 
     const gen = new CodeGen()
-    // TODO refactor to extract code from gen
+
     validateFunctionCode({
+      gen,
       allErrors: !!opts.allErrors,
       topSchemaRef: "validate.schema",
       async: _schema.$async === true,
@@ -124,7 +125,6 @@ function compile(schema, root, localRefs, baseId) {
       dataPathArr: [""],
       dataLevel: 0,
       data: "data", // TODO get unique name when passed from applicator keywords
-      gen,
       RULES, // TODO refactor - it is available on the instance
       resolveRef, // TODO remove to imports
       usePattern, // TODO remove to imports
@@ -142,7 +142,7 @@ function compile(schema, root, localRefs, baseId) {
       vars(patterns, patternCode) +
       vars(defaults, defaultCode) +
       vars(customRules, customRuleCode) +
-      gen._out
+      gen.toString()
 
     if (opts.processCode) sourceCode = opts.processCode(sourceCode, _schema)
     // console.log("\n\n\n *** \n", sourceCode)

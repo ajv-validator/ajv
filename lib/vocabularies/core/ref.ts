@@ -1,15 +1,17 @@
-import {CodeKeywordDefinition} from "../../types"
+import {CodeKeywordDefinition, KeywordContext} from "../../types"
 import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {ResolvedRef, InlineResolvedRef} from "../../compile"
-import {getParentData} from "../util"
+import {callValidate} from "../util"
 
 const def: CodeKeywordDefinition = {
   keyword: "$ref",
   schemaType: "string",
-  code({gen, ok, fail, data, schema, it}) {
+  code(cxt: KeywordContext) {
+    const {gen, ok, fail, schema, it} = cxt
     const {resolveRef, allErrors, baseId, isRoot, root, opts, logger} = it
     const ref = getRef()
+    const passCxt = opts.passContext ? "this" : ""
     if (ref === undefined) missingRef()
     else if (ref.inline) applyRefSchema(ref)
     else if (ref.$async || it.async) validateAsyncRef(ref.code)
@@ -59,7 +61,7 @@ const def: CodeKeywordDefinition = {
       if (!allErrors) gen.code(`let ${valid};`)
       gen.try(
         () => {
-          gen.code(`await ${callValidate(v)};`)
+          gen.code(`await ${callValidate(cxt, v, passCxt)};`)
           if (!allErrors) gen.code(`${valid} = true;`)
         },
         (e) => {
@@ -72,15 +74,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function validateRef(v: string): void {
-      fail(`!${callValidate(v)}`, () => addErrorsFrom(v))
-    }
-
-    function callValidate(v: string): string {
-      const {errorPath} = it
-      const dataPath = `(dataPath || '')${errorPath === '""' ? "" : ` + ${errorPath}`}` // TODO joinPaths?
-      const parent = getParentData(it)
-      const args = `${data}, ${dataPath}, ${parent.data}, ${parent.property}, rootData`
-      return opts.passContext ? `${v}.call(this, ${args})` : `${v}(${args})`
+      fail(`!${callValidate(cxt, v, passCxt)}`, () => addErrorsFrom(v))
     }
 
     function addErrorsFrom(source: string): void {

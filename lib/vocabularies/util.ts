@@ -117,3 +117,18 @@ export function getParentData({dataLevel, dataPathArr}: CompilationContext): Par
     ? {data: `data${dataLevel - 1 || ""}`, property: `${dataPathArr[dataLevel]}`}
     : {data: "parentData", property: "parentDataProperty"}
 }
+
+export function callValidate(
+  {schemaCode, data, it}: KeywordContext,
+  func: string,
+  context?: string,
+  passSchema?: boolean
+): string {
+  const dataAndSchema = passSchema
+    ? `${schemaCode}, ${data}, ${it.topSchemaRef}${it.schemaPath}`
+    : data
+  const dataPath = `(dataPath || '')${it.errorPath === '""' ? "" : ` + ${it.errorPath}`}` // TODO joinPaths?
+  const parent = getParentData(it)
+  const args = `${dataAndSchema}, ${dataPath}, ${parent.data}, ${parent.property}, rootData`
+  return context ? `${func}.call(${context}, ${args})` : `${func}(${args})`
+}

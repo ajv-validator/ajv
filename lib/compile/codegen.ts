@@ -14,6 +14,10 @@ export default class CodeGen {
   #blocks: Block[] = []
   #blockStarts: number[] = []
 
+  toString(): string {
+    return this._out
+  }
+
   name(prefix: string): string {
     if (!this.#names[prefix]) this.#names[prefix] = 0
     const num = this.#names[prefix]++

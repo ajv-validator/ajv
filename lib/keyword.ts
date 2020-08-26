@@ -172,10 +172,8 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
   } else if (schemaType && !validSchemaType(schema, schemaType)) {
     throw new Error(`${keyword} must be ${JSON.stringify(schemaType)}`)
   }
-  // TODO check that code called "fail" or another valid way to return code
   ;(def.code || keywordCode)(cxt, ruleType, this.definition)
 
-  // TODO replace with fail_ below
   function fail(condition?: string, failAction?: () => void, context?: KeywordContext): void {
     const action = failAction || _reportError
     if (condition) {

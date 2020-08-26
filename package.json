@@ -16,7 +16,7 @@
     "lint": "npm run eslint",
     "prettier:write": "prettier --write './**/*.{md,json,yaml,js,ts}'",
     "prettier:check": "prettier --list-different './**/*.{md,json,yaml,js,ts}'",
-    "test-spec": "mocha spec/{**/,}*.spec.js -R spec",
+    "test-spec": "mocha spec/{**/,}*.spec.js -R dot",
     "test-fast": "AJV_FAST_TEST=true npm run test-spec",
     "test-debug": "npm run test-spec -- --inspect",
     "test-cov": "nyc npm run test-spec",
