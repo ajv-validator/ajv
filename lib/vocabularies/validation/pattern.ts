@@ -1,5 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
 import {dataNotType} from "../util"
+import {_, str} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "pattern",
@@ -8,15 +9,12 @@ const def: CodeKeywordDefinition = {
   $data: true,
   code({fail, data, $data, schema, schemaCode, it: {usePattern}}) {
     const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
-    const regExp = $data ? `(new RegExp(${schemaCode}))` : usePattern(schema)
+    const regExp = $data ? _`(new RegExp(${schemaCode}))` : usePattern(schema)
     fail(dnt + `!${regExp}.test(${data})`) // TODO pass?
   },
   error: {
-    message: ({$data, schemaCode}) =>
-      $data
-        ? `'should match pattern "' + ${schemaCode} + '"'`
-        : `"should match pattern \\"${(<string>schemaCode).slice(1, -1)}\\""`,
-    params: ({schemaCode}) => `{pattern: ${schemaCode}}`,
+    message: ({schemaCode}) => str`should match pattern "${schemaCode}"`,
+    params: ({schemaCode}) => _`{pattern: ${schemaCode}}`,
   },
 }
 

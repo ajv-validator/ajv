@@ -86,11 +86,9 @@ const def: CodeKeywordDefinition = {
       gen.code(`errors = vErrors.length;`)
     }
   },
+  // TODO incorrect error message
   error: {
-    message: ({$data, schemaCode}) =>
-      $data
-        ? `'should match format "' + ${schemaCode} + '"'`
-        : `"should match format \\"${(<string>schemaCode).slice(1, -1)}\\""`,
+    message: ({schemaCode}) => `'should match format "' + ${schemaCode} + '"'`,
     params: ({schemaCode}) => `{format: ${schemaCode}}`,
   },
 }

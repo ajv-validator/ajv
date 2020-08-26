@@ -2,7 +2,7 @@ import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import {alwaysValidSchema, loopPropertiesCode} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportExtraError} from "../../compile/errors"
-import {str} from "../../compile/codegen"
+import {_, str} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "propertyNames",
@@ -30,7 +30,7 @@ const def: CodeKeywordDefinition = {
   },
   error: {
     message: ({params}) => str`property name '${params.propertyName}' is invalid`, // TODO double quotes?
-    params: ({params}) => `{propertyName: ${params.propertyName}}`,
+    params: ({params}) => _`{propertyName: ${params.propertyName}}`,
   },
 }
 

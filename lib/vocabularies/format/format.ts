@@ -1,7 +1,7 @@
 import {CodeKeywordDefinition, AddedFormat, FormatValidate} from "../../types"
 import {dataNotType} from "../util"
 import {getProperty} from "../../compile/util"
-import {_} from "../../compile/codegen"
+import {_, str} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "format",
@@ -83,11 +83,8 @@ const def: CodeKeywordDefinition = {
     }
   },
   error: {
-    message: ({$data, schemaCode}) =>
-      $data
-        ? `'should match format "' + ${schemaCode} + '"'`
-        : `"should match format \\"${(<string>schemaCode).slice(1, -1)}\\""`,
-    params: ({schemaCode}) => `{format: ${schemaCode}}`,
+    message: ({schemaCode}) => str`should match format "${schemaCode}"`,
+    params: ({schemaCode}) => _`{format: ${schemaCode}}`,
   },
 }
 

@@ -2,20 +2,6 @@ import {getProperty, schemaHasRules} from "../compile/util"
 import {CompilationContext, KeywordContext} from "../types"
 import {_, Code, Name, Expression} from "../compile/codegen"
 
-export function appendSchema(
-  schemaCode: Expression | number | boolean,
-  $data?: string | false
-): string {
-  return $data ? `" + ${schemaCode}` : `${schemaCode}"`
-}
-
-export function concatSchema(
-  schemaCode: Expression | number | boolean,
-  $data?: string | false
-): Expression | number | boolean {
-  return $data ? `" + ${schemaCode} + "` : schemaCode
-}
-
 export function quotedString(str: string): string {
   return JSON.stringify(str)
     .replace(/\u2028/g, "\\u2028")
@@ -41,7 +27,7 @@ export function schemaRefOrVal(
   //   : _`${schema}`
   if (!$data) {
     if (typeof schema == "number" || typeof schema == "boolean") return schema
-    if (typeof schema == "string") return quotedString(schema)
+    if (typeof schema == "string") return _`${schema}`
   }
   return `${topSchemaRef}${schemaPath + getProperty(keyword)}`
 }

@@ -44,7 +44,7 @@ const def: CodeKeywordDefinition = {
   },
   error: {
     message: "should be equal to one of the allowed values",
-    params: ({schemaCode}) => `{allowedValues: ${schemaCode}}`,
+    params: ({schemaCode}) => _`{allowedValues: ${schemaCode}}`,
   },
 }
 

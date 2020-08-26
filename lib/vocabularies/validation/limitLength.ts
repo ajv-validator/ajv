@@ -1,5 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
-import {concatSchema, dataNotType} from "../util"
+import {dataNotType} from "../util"
+import {_, str} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: ["maxLength", "minLength"],
@@ -13,12 +14,11 @@ const def: CodeKeywordDefinition = {
     fail(dnt + len + op + schemaCode)
   },
   error: {
-    message({keyword, $data, schemaCode}) {
+    message({keyword, schemaCode}) {
       const comp = keyword === "maxLength" ? "more" : "fewer"
-      const sch = concatSchema(schemaCode, $data)
-      return `"should NOT have ${comp} than ${sch} items"`
+      return str`should NOT have ${comp} than ${schemaCode} items`
     },
-    params: ({schemaCode}) => `{limit: ${schemaCode}}`,
+    params: ({schemaCode}) => _`{limit: ${schemaCode}}`,
   },
 }
 

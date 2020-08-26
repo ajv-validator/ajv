@@ -2,16 +2,16 @@ import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import {propertyInData, noPropertyInData} from "../util"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"
 import {reportError} from "../../compile/errors"
-import {Name} from "../../compile/codegen"
+import {_, str, Name} from "../../compile/codegen"
 
 const error: KeywordErrorDefinition = {
   message: ({params: {missingProperty}}) => {
     return missingProperty
-      ? `"should have required property '" + ${missingProperty} + "'"` // TODO missingProperty can be string constant
-      : `'"required" keyword value must be array'`
+      ? str`should have required property '${missingProperty}'`
+      : str`"required" keyword value must be array`
   },
   params: ({params: {missingProperty}}) =>
-    missingProperty ? `{missingProperty: ${missingProperty}}` : "{}",
+    missingProperty ? _`{missingProperty: ${missingProperty}}` : _`{}`,
 }
 
 const def: CodeKeywordDefinition = {

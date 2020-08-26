@@ -1,6 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
-import {appendSchema, dataNotType} from "../util"
-import {_} from "../../compile/codegen"
+import {dataNotType} from "../util"
+import {_, str} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "multipleOf",
@@ -17,8 +17,8 @@ const def: CodeKeywordDefinition = {
     fail(dnt + `(${res} = ${data}/${schemaCode}, ${invalid})`) // TODO pass
   },
   error: {
-    message: ({$data, schemaCode}) => `"should be multiple of ${appendSchema(schemaCode, $data)}`,
-    params: ({schemaCode}) => `{multipleOf: ${schemaCode}}`,
+    message: ({schemaCode}) => str`should be multiple of ${schemaCode}`,
+    params: ({schemaCode}) => _`{multipleOf: ${schemaCode}}`,
   },
 }
 

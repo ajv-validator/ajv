@@ -1,6 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
 import {checkDataType, checkDataTypes} from "../../compile/util"
-import {_} from "../../compile/codegen"
+import {_, str} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "uniqueItems",
@@ -74,12 +74,12 @@ const def: CodeKeywordDefinition = {
   },
   error: {
     message: ({$data, params: {i, j}}) => {
-      const msg = `"should NOT have duplicate items (items ## " + ${j} + " and " + ${i} + " are identical)"`
-      return $data ? `(${i} === undefined ? "uniqueItems must be boolean ($data)" : ${msg})` : msg
+      const msg = str`should NOT have duplicate items (items ## ${j} and ${i} are identical)`
+      return $data ? _`(${i} === undefined ? "uniqueItems must be boolean ($data)" : ${msg})` : msg
     },
     params: ({$data, params: {i, j}}) => {
-      const obj = `{i: ${i}, j: ${j}}`
-      return $data ? `(${i} === undefined ? {} : ${obj})` : obj
+      const obj = _`{i: ${i}, j: ${j}}`
+      return $data ? _`(${i} === undefined ? {} : ${obj})` : obj
     },
   },
 }
