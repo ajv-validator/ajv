@@ -3,6 +3,7 @@ import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportExtraError, resetErrorsCount} from "../../compile/errors"
 import {_} from "../../compile/codegen"
+import N from "../../compile/names"
 
 const def: CodeKeywordDefinition = {
   keyword: "anyOf",
@@ -12,7 +13,7 @@ const def: CodeKeywordDefinition = {
     const alwaysValid = schema.some((sch: object | boolean) => alwaysValidSchema(it, sch))
     if (alwaysValid) return
 
-    const errsCount = gen.const("_errs", "errors")
+    const errsCount = gen.const("_errs", N.errors)
     const valid = gen.let("valid", false)
     const schValid = gen.name("_valid")
 

@@ -1,6 +1,6 @@
 import {_, Code, Name, Expression} from "./codegen"
 import {CompilationContext} from "../types"
-import names from "./names"
+import N from "./names"
 
 export function checkDataType(
   dataType: string,
@@ -144,13 +144,13 @@ export function getData(
   {dataLevel, dataNames, dataPathArr}: CompilationContext
 ): Expression | number {
   let jsonPointer, data
-  if ($data === "") return names.rootData
+  if ($data === "") return N.rootData
   if ($data[0] === "/") {
     if (!JSON_POINTER.test($data)) {
       throw new Error("Invalid JSON-pointer: " + $data)
     }
     jsonPointer = $data
-    data = names.rootData
+    data = N.rootData
   } else {
     const matches = RELATIVE_JSON_POINTER.exec($data)
     if (!matches) throw new Error("Invalid JSON-pointer: " + $data)

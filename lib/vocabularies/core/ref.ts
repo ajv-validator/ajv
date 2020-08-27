@@ -4,6 +4,7 @@ import {applySubschema} from "../../compile/subschema"
 import {ResolvedRef, InlineResolvedRef} from "../../compile"
 import {callValidate} from "../util"
 import {_, Expression} from "../../compile/codegen"
+import N from "../../compile/names"
 
 const def: CodeKeywordDefinition = {
   keyword: "$ref",
@@ -21,7 +22,7 @@ const def: CodeKeywordDefinition = {
     function getRef(): ResolvedRef | void {
       if (schema === "#" || schema === "#/") {
         return isRoot
-          ? {code: "validate", $async: it.async}
+          ? {code: N.validate, $async: it.async}
           : {code: "root.refVal[0]", $async: root.schema.$async === true}
       }
       return resolveRef(baseId, schema, isRoot)
@@ -78,12 +79,9 @@ const def: CodeKeywordDefinition = {
     }
 
     function addErrorsFrom(source: Expression): void {
-      gen.if(
-        "vErrors === null",
-        `vErrors = ${source}.errors`,
-        `vErrors = vErrors.concat(${source}.errors)`
-      )
-      gen.code(`errors = vErrors.length;`)
+      const errs = `${source}.errors`
+      gen.assign(N.vErrors, `${N.vErrors} === null ? ${errs} : ${N.vErrors}.concat(${errs})`) // TODO tagged
+      gen.assign(N.errors, _`${N.vErrors}.length`)
     }
   },
   // TODO incorrect error message

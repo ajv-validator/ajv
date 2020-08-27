@@ -1,6 +1,7 @@
 import {getProperty, schemaHasRules} from "../compile/util"
 import {CompilationContext, KeywordContext} from "../types"
 import {_, Code, Name, Expression} from "../compile/codegen"
+import N from "../compile/names"
 
 export function quotedString(str: string): string {
   return JSON.stringify(str)
@@ -104,7 +105,7 @@ export function callValidate(
   const dataAndSchema = passSchema
     ? `${schemaCode}, ${data}, ${it.topSchemaRef}${it.schemaPath}`
     : data
-  const dataPath = `(dataPath || '')${it.errorPath === '""' ? "" : ` + ${it.errorPath}`}` // TODO joinPaths?
-  const args = `${dataAndSchema}, ${dataPath}, ${it.parentData}, ${it.parentDataProperty}, rootData`
+  const dataPath = `(${N.dataPath} || '')${it.errorPath === '""' ? "" : ` + ${it.errorPath}`}` // TODO joinPaths?
+  const args = `${dataAndSchema}, ${dataPath}, ${it.parentData}, ${it.parentDataProperty}, ${N.rootData}`
   return context ? `${func}.call(${context}, ${args})` : `${func}(${args})`
 }

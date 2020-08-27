@@ -2,6 +2,7 @@ import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import {alwaysValidSchema} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
 import {reportError, resetErrorsCount} from "../../compile/errors"
+import N from "../../compile/names"
 
 const def: CodeKeywordDefinition = {
   keyword: "contains",
@@ -10,7 +11,7 @@ const def: CodeKeywordDefinition = {
   before: "uniqueItems",
   code(cxt) {
     const {gen, fail, schema, data, it} = cxt
-    const errsCount = gen.const("_errs", "errors")
+    const errsCount = gen.const("_errs", N.errors)
 
     if (alwaysValidSchema(it, schema)) return fail(`${data}.length === 0`)
 

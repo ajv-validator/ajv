@@ -2,6 +2,7 @@ import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportError, resetErrorsCount} from "../../compile/errors"
+import N from "../../compile/names"
 
 const def: CodeKeywordDefinition = {
   keyword: "not",
@@ -11,7 +12,7 @@ const def: CodeKeywordDefinition = {
     if (alwaysValidSchema(it, schema)) return fail()
 
     const valid = gen.name("valid")
-    const errsCount = gen.const("_errs", "errors")
+    const errsCount = gen.const("_errs", N.errors)
     applySubschema(
       it,
       {

@@ -1,9 +1,10 @@
-import CodeGen, {nil, Expression, Code, Name} from "./codegen"
+import CodeGen, {_, nil, Expression} from "./codegen"
 import {toQuotedString} from "./util"
 import {quotedString} from "../vocabularies/util"
 import {validateFunctionCode} from "./validate"
 import {validateKeywordSchema} from "./validate/keyword"
 import {ErrorObject, KeywordCompilationResult} from "../types"
+import N from "./names"
 
 const equal = require("fast-deep-equal")
 const ucs2length = require("./ucs2length")
@@ -109,17 +110,15 @@ function compile(schema, root, localRefs, baseId) {
 
     const gen = new CodeGen()
 
-    const data = new Name("data")
-
     validateFunctionCode({
       gen,
       allErrors: !!opts.allErrors,
-      data,
-      parentData: new Name("parentData"),
-      parentDataProperty: new Name("parentDataProperty"),
-      dataNames: [data],
+      data: N.data,
+      parentData: N.parentData,
+      parentDataProperty: N.parentDataProperty,
+      dataNames: [N.data],
       dataPathArr: [nil],
-      topSchemaRef: new Code("validate.schema"),
+      topSchemaRef: _`${N.validate}.schema`,
       async: _schema.$async === true,
       schema: _schema,
       isRoot,

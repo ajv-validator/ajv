@@ -11,6 +11,7 @@ import {applySubschema} from "../subschema"
 import {reportError, reportExtraError, extendErrors} from "../errors"
 import {callValidate} from "../../vocabularies/util"
 import {_, Name, Expression} from "../codegen"
+import N from "../names"
 
 export const keywordError: KeywordErrorDefinition = {
   message: ({keyword}) => `'should pass "${keyword}" keyword validation'`,
@@ -81,7 +82,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
   function validateRuleWithErrors(): void {
     gen.block()
     if ($data) check$data()
-    const errsCount = gen.const("_errs", "errors")
+    const errsCount = gen.const("_errs", N.errors)
     const ruleErrs = def.async ? validateAsyncRule() : validateSyncRule()
     if (def.modifying) modifyData(cxt)
     gen.endBlock()
@@ -118,7 +119,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
     return ruleErrs
   }
 
-  function validateSyncRule(): string {
+  function validateSyncRule(): Expression {
     const validateErrs = `${validateRef}.errors`
     gen.code(`${validateErrs} = null;`)
     assignValid("")
@@ -149,14 +150,13 @@ function modifyData(cxt: KeywordContext) {
   gen.if(it.parentData, () => gen.assign(data, `${it.parentData}[${it.parentDataProperty}];`))
 }
 
-function addKeywordErrors(cxt: KeywordContext, ruleErrs: Expression, errsCount: Name): void {
+function addKeywordErrors(cxt: KeywordContext, errs: Expression, errsCount: Name): void {
   const {gen} = cxt
   gen.if(
-    `Array.isArray(${ruleErrs})`,
+    `Array.isArray(${errs})`,
     () => {
-      gen
-        .if("vErrors === null", `vErrors = ${ruleErrs}`, `vErrors = vErrors.concat(${ruleErrs})`)
-        .code("errors = vErrors.length;")
+      gen.assign(N.vErrors, `${N.vErrors} === null ? ${errs} : ${N.vErrors}.concat(${errs})`) // TODO tagged
+      gen.assign(N.errors, _`${N.vErrors}.length;`)
       extendErrors(cxt, errsCount)
     },
     () => reportError(cxt, keywordError)

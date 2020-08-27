@@ -3,7 +3,7 @@ import {toHash, checkDataType, checkDataTypes} from "../util"
 import {schemaHasRulesForType} from "./applicability"
 import {reportError} from "../errors"
 import {getKeywordContext} from "../../keyword"
-import {_, Name} from "../codegen"
+import {_, str, Name} from "../codegen"
 
 export function getSchemaTypes({schema, opts}: CompilationContext): string[] {
   const st: undefined | string | string[] = schema.type
@@ -59,7 +59,7 @@ export function coerceData(it: CompilationContext, coerceTo: string[]): void {
         .if(checkDataType(schema.type, data, opts.strictNumbers), _`${coerced} = ${data}`)
     )
   }
-  gen.if(`${coerced} !== undefined`)
+  gen.if(_`${coerced} !== undefined`)
   for (const t of coerceTo) {
     if (t in COERCIBLE || (t === "array" && opts.coerceTypes === "array")) {
       coerceSpecificType(t)
@@ -69,8 +69,8 @@ export function coerceData(it: CompilationContext, coerceTo: string[]): void {
   reportTypeError(it)
   gen.endIf()
 
-  gen.if(`${coerced} !== undefined`, () => {
-    gen.code(`${data} = ${coerced};`)
+  gen.if(_`${coerced} !== undefined`, () => {
+    gen.code(_`${data} = ${coerced};`)
     assignParentData(it, coerced)
   })
 
@@ -78,44 +78,44 @@ export function coerceData(it: CompilationContext, coerceTo: string[]): void {
     switch (t) {
       case "string":
         gen
-          .elseIf(`${dataType} == "number" || ${dataType} == "boolean"`)
-          .code(`${coerced} = "" + ${data}`)
-          .elseIf(`${data} === null`)
-          .code(`${coerced} = ""`)
+          .elseIf(_`${dataType} == "number" || ${dataType} == "boolean"`)
+          .code(_`${coerced} = "" + ${data}`)
+          .elseIf(_`${data} === null`)
+          .code(_`${coerced} = ""`)
         return
       case "number":
         gen
           .elseIf(
-            `${dataType} == "boolean" || ${data} === null
-          || (${dataType} == "string" && ${data} && ${data} == +${data})`
+            _`${dataType} == "boolean" || ${data} === null
+              || (${dataType} == "string" && ${data} && ${data} == +${data})`
           )
-          .code(`${coerced} = +${data}`)
+          .code(_`${coerced} = +${data}`)
         return
       case "integer":
         gen
           .elseIf(
-            `${dataType} === "boolean" || ${data} === null
-          || (${dataType} === "string" && ${data} && ${data} == +${data} && !(${data} % 1))`
+            _`${dataType} === "boolean" || ${data} === null
+              || (${dataType} === "string" && ${data} && ${data} == +${data} && !(${data} % 1))`
           )
           .code(`${coerced} = +${data}`)
         return
       case "boolean":
         gen
-          .elseIf(`${data} === "false" || ${data} === 0 || ${data} === null`)
-          .code(`${coerced} = false`)
-          .elseIf(`${data} === "true" || ${data} === 1`)
-          .code(`${coerced} = true`)
+          .elseIf(_`${data} === "false" || ${data} === 0 || ${data} === null`)
+          .code(_`${coerced} = false`)
+          .elseIf(_`${data} === "true" || ${data} === 1`)
+          .code(_`${coerced} = true`)
         return
       case "null":
-        gen.elseIf(`${data} === "" || ${data} === 0 || ${data} === false`)
-        gen.code(`${coerced} = null`)
+        gen.elseIf(_`${data} === "" || ${data} === 0 || ${data} === false`)
+        gen.code(_`${coerced} = null`)
         return
 
       case "array":
         gen
           .elseIf(
-            `${dataType} === "string" || ${dataType} === "number"
-          || ${dataType} === "boolean" || ${data} === null`
+            _`${dataType} === "string" || ${dataType} === "number"
+              || ${dataType} === "boolean" || ${data} === null`
           )
           .code(`${coerced} = [${data}]`)
     }
@@ -127,15 +127,16 @@ function assignParentData(
   expr: string | Name
 ): void {
   // TODO use gen.property
-  gen.if(`${parentData} !== undefined`, () =>
+  gen.if(_`${parentData} !== undefined`, () =>
     gen.assign(`${parentData}[${parentDataProperty}]`, expr)
   )
 }
 
 const typeError: KeywordErrorDefinition = {
-  message: ({schema}) => `"should be ${Array.isArray(schema) ? schema.join(",") : <string>schema}"`,
+  message: ({schema}) =>
+    str`should be ${Array.isArray(schema) ? schema.join(",") : <string>schema}`,
   // TODO change: return type as array here
-  params: ({schema}) => `{type: "${Array.isArray(schema) ? schema.join(",") : <string>schema}"}`,
+  params: ({schema}) => _`{type: ${Array.isArray(schema) ? schema.join(",") : <string>schema}}`,
 }
 
 export function reportTypeError(it: CompilationContext): void {

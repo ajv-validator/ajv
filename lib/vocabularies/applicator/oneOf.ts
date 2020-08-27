@@ -3,6 +3,7 @@ import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportExtraError, resetErrorsCount} from "../../compile/errors"
 import {_} from "../../compile/codegen"
+import N from "../../compile/names"
 
 const def: CodeKeywordDefinition = {
   keyword: "oneOf",
@@ -10,7 +11,7 @@ const def: CodeKeywordDefinition = {
   code(cxt) {
     const {gen, errorParams, schema, it} = cxt
     const valid = gen.let("valid", false)
-    const errsCount = gen.const("_errs", "errors")
+    const errsCount = gen.const("_errs", N.errors)
     const passing = gen.let("passing", "null")
     const schValid = gen.name("_valid")
     errorParams({passing})

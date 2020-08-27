@@ -3,6 +3,7 @@ import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportExtraError, resetErrorsCount} from "../../compile/errors"
 import {_, str, Name} from "../../compile/codegen"
+import N from "../../compile/names"
 
 const error: KeywordErrorDefinition = {
   message: ({params}) => str`should match "${params.ifClause}" schema`,
@@ -24,7 +25,7 @@ const def: CodeKeywordDefinition = {
     }
 
     const valid = gen.let("valid", true)
-    const errsCount = gen.const("_errs", "errors")
+    const errsCount = gen.const("_errs", N.errors)
     const schValid = gen.name("_valid")
 
     validateIf()

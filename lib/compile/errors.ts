@@ -1,6 +1,7 @@
 import {KeywordContext, KeywordErrorDefinition} from "../types"
 import {quotedString} from "../vocabularies/util"
-import CodeGen, {_, Name} from "./codegen"
+import CodeGen, {_, Name, Expression} from "./codegen"
+import N from "./names"
 
 export function reportError(
   cxt: KeywordContext,
@@ -21,14 +22,14 @@ export function reportExtraError(cxt: KeywordContext, error: KeywordErrorDefinit
   const errObj = errorObjectCode(cxt, error)
   addError(gen, errObj)
   if (!(compositeRule || allErrors)) {
-    returnErrors(gen, async, "vErrors")
+    returnErrors(gen, async, N.vErrors)
   }
 }
 
 export function resetErrorsCount(gen: CodeGen, errsCount: Name): void {
-  gen.code(_`errors = ${errsCount};`)
-  gen.if(_`vErrors !== null`, () =>
-    gen.if(errsCount, _`vErrors.length = ${errsCount}`, _`vErrors = null`)
+  gen.assign(N.errors, errsCount)
+  gen.if(_`${N.vErrors} !== null`, () =>
+    gen.if(errsCount, _`${N.vErrors}.length = ${errsCount}`, _`${N.vErrors} = null`)
   )
 }
 
@@ -37,13 +38,16 @@ export function extendErrors(
   errsCount: Name
 ): void {
   const err = gen.name("err")
-  gen.for(_`let i=${errsCount}; i<errors; i++`, () => {
-    gen.const(err, _`vErrors[i]`)
-    gen.if(_`${err}.dataPath === undefined`, `${err}.dataPath = (dataPath || '') + ${it.errorPath}`)
+  gen.for(_`let i=${errsCount}; i<${N.errors}; i++`, () => {
+    gen.const(err, _`${N.vErrors}[i]`)
+    gen.if(
+      _`${err}.dataPath === undefined`,
+      `${err}.dataPath = (${N.dataPath} || '') + ${it.errorPath}`
+    )
     gen.code(_`${err}.schemaPath = ${it.errSchemaPath + "/" + keyword};`)
     if (it.opts.verbose) {
       gen.code(
-        `${err}.schema = ${schemaValue};
+        _`${err}.schema = ${schemaValue};
         ${err}.data = ${data};`
       )
     }
@@ -52,17 +56,17 @@ export function extendErrors(
 
 function addError(gen: CodeGen, errObj: string): void {
   const err = gen.const("err", errObj)
-  gen.if(_`vErrors === null`, _`vErrors = [${err}]`, _`vErrors.push(${err})`)
-  gen.code(_`errors++;`)
+  gen.if(_`${N.vErrors} === null`, _`${N.vErrors} = [${err}]`, _`${N.vErrors}.push(${err})`)
+  gen.code(_`${N.errors}++;`)
 }
 
-function returnErrors(gen: CodeGen, async: boolean, errs: string): void {
-  gen.code(
-    async
-      ? `throw new ValidationError(${errs});`
-      : `validate.errors = ${errs};
-        return false;`
-  )
+function returnErrors(gen: CodeGen, async: boolean, errs: Expression): void {
+  if (async) {
+    gen.code(`throw new ValidationError(${errs})`)
+  } else {
+    gen.assign(_`${N.validate}.errors`, errs)
+    gen.return("false")
+  }
 }
 
 function errorObjectCode(cxt: KeywordContext, error: KeywordErrorDefinition): string {
@@ -78,7 +82,7 @@ function errorObjectCode(cxt: KeywordContext, error: KeywordErrorDefinition): st
   // TODO trim whitespace
   let out = `{
     keyword: "${keyword}",
-    dataPath: (dataPath || "") + ${errorPath},
+    dataPath: (${N.dataPath} || "") + ${errorPath},
     schemaPath: ${quotedString(errSchemaPath + "/" + keyword)},
     params: ${params ? params(cxt) : "{}"},`
   if (propertyName) out += `propertyName: ${propertyName},`

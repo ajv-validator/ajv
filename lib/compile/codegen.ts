@@ -7,6 +7,8 @@ enum BlockKind {
 
 export type Expression = string | Name | Code
 
+export type Value = string | Name | Code | number | boolean | null
+
 export type Block = string | Name | Code | (() => void)
 
 export class Code {
@@ -63,6 +65,8 @@ function interpolate(x: TemplateArg): TemplateArg {
   return x instanceof Code || typeof x == "number" || typeof x == "boolean" ? x : quoteString(x)
 }
 
+const IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i
+
 export default class CodeGen {
   #names: {[key: string]: number} = {}
   // TODO make private. Possibly stack?
@@ -99,15 +103,20 @@ export default class CodeGen {
     return this._def(varKinds.var, nameOrPrefix, rhs)
   }
 
-  assign(name: Expression, rhs: Expression | number | boolean): CodeGen {
+  assign(name: Expression, rhs: Value): CodeGen {
     this.code(`${name} = ${rhs};`)
     return this
   }
 
-  code(c?: Block): CodeGen {
+  prop(name: Code, key: Expression | number): Code {
+    name = name instanceof Name ? name : _`(${name})`
+    return typeof key == "string" && IDENTIFIER.test(key) ? _`${name}.${key}` : _`${name}[${key}]`
+  }
+
+  code(c?: Block | Value): CodeGen {
     // TODO optionally strip whitespace
     if (typeof c == "function") c()
-    else if (c) this._out += c + "\n"
+    else if (c !== undefined) this._out += c + "\n" // TODO fails without line breaks
     return this
   }
 
@@ -166,7 +175,7 @@ export default class CodeGen {
     return this
   }
 
-  return(value: Block): CodeGen {
+  return(value: Block | Value): CodeGen {
     this._out += "return "
     this.code(value)
     this._out += ";"

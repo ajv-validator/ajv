@@ -5,6 +5,7 @@ import {assignDefaults} from "./defaults"
 import {reportTypeError} from "./dataType"
 import {RuleGroup, Rule} from "../rules"
 import {Name} from "../codegen"
+import N from "../names"
 
 export function schemaKeywords(
   it: CompilationContext,
@@ -43,7 +44,7 @@ export function schemaKeywords(
       iterateKeywords(it, group)
     }
     // TODO make it "ok" call?
-    if (!allErrors) gen.if(`errors === ${errsCount || 0}`)
+    if (!allErrors) gen.if(`${N.errors} === ${errsCount || 0}`)
   }
 }
 

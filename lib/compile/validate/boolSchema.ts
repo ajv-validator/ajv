@@ -1,6 +1,7 @@
 import {KeywordErrorDefinition, CompilationContext, KeywordContext} from "../../types"
 import {reportError} from "../errors"
 import {_, Name} from "../codegen"
+import N from "../names"
 
 const boolError: KeywordErrorDefinition = {
   message: "boolean schema is false",
@@ -11,9 +12,10 @@ export function topBoolOrEmptySchema(it: CompilationContext): void {
   if (schema === false) {
     falseSchemaError(it, false)
   } else if (schema.$async === true) {
-    gen.code(_`return data;`)
+    gen.return(N.data)
   } else {
-    gen.code(_`validate.errors = null; return true;`)
+    gen.assign(_`${N.validate}.errors`, "null")
+    gen.return(true)
   }
 }
 

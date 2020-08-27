@@ -10,6 +10,7 @@ import {
 import {applySubschema, SubschemaApplication, Expr} from "../../compile/subschema"
 import {reportError, resetErrorsCount} from "../../compile/errors"
 import {Name} from "../../compile/codegen"
+import N from "../../compile/names"
 
 const error: KeywordErrorDefinition = {
   message: "should NOT have additional properties",
@@ -36,9 +37,9 @@ const def: CodeKeywordDefinition = {
     const props = allSchemaProperties(parentSchema.properties)
     const patProps = allSchemaProperties(parentSchema.patternProperties)
 
-    const errsCount = gen.const("_errs", "errors")
+    const errsCount = gen.const("_errs", N.errors)
     checkAdditionalProperties()
-    if (!allErrors) gen.if(`${errsCount} === errors`)
+    if (!allErrors) gen.if(`${errsCount} === ${N.errors}`)
 
     function checkAdditionalProperties(): void {
       loopPropertiesCode(cxt, (key: Name) => {
