@@ -2,7 +2,6 @@ import CodeGen, {_, nil, Expression} from "./codegen"
 import {toQuotedString} from "./util"
 import {quotedString} from "../vocabularies/util"
 import {validateFunctionCode} from "./validate"
-import {validateKeywordSchema} from "./validate/keyword"
 import {ErrorObject, KeywordCompilationResult} from "../types"
 import N from "./names"
 
@@ -133,7 +132,6 @@ function compile(schema, root, localRefs, baseId) {
       resolveRef, // TODO remove to imports
       usePattern, // TODO remove to imports
       useDefault, // TODO remove to imports
-      validateKeywordSchema, // TODO remove
       customRules, // TODO add to types
       opts,
       formats,

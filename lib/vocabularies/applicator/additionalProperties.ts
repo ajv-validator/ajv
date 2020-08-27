@@ -1,4 +1,5 @@
 import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import KeywordContext from "../../compile/context"
 import {
   allSchemaProperties,
   schemaRefOrVal,
@@ -22,8 +23,8 @@ const def: CodeKeywordDefinition = {
   type: "object",
   schemaType: ["object", "boolean"],
   error,
-  code(cxt) {
-    const {gen, errorParams, schema, parentSchema, data, it} = cxt
+  code(cxt: KeywordContext) {
+    const {gen, schema, parentSchema, data, it} = cxt
     const {
       allErrors,
       usePattern,
@@ -75,7 +76,7 @@ const def: CodeKeywordDefinition = {
       }
 
       if (schema === false) {
-        errorParams({additionalProperty: key})
+        cxt.errorParams({additionalProperty: key})
         reportError(cxt, error)
         if (!allErrors) gen.break()
         return

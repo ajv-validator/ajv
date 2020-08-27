@@ -1,4 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
+import KeywordContext from "../../compile/context"
 import {checkDataType, checkDataTypes} from "../../compile/util"
 import {_, str} from "../../compile/codegen"
 
@@ -7,12 +8,13 @@ const def: CodeKeywordDefinition = {
   type: "array",
   schemaType: "boolean",
   $data: true,
-  code({gen, pass, errorParams, data, $data, schema, parentSchema, schemaCode, it: {opts}}) {
-    if (opts.uniqueItems === false || !($data || schema)) return
+  code(cxt: KeywordContext) {
+    const {gen, data, $data, schema, parentSchema, schemaCode, it} = cxt
+    if (it.opts.uniqueItems === false || !($data || schema)) return
     const i = gen.let("i")
     const j = gen.let("j")
     const valid = gen.let("valid")
-    errorParams({i, j})
+    cxt.errorParams({i, j})
     const itemType = parentSchema.items?.type
 
     // TODO refactor to have two open blocks? same as in required
@@ -24,7 +26,7 @@ const def: CodeKeywordDefinition = {
       validateUniqueItems()
     }
 
-    pass(valid)
+    cxt.pass(valid)
 
     function validateUniqueItems() {
       gen.code(
@@ -45,7 +47,7 @@ const def: CodeKeywordDefinition = {
       const wrongType = (Array.isArray(itemType) ? checkDataTypes : checkDataType)(
         itemType,
         item,
-        opts.strictNumbers,
+        it.opts.strictNumbers,
         true
       )
       const indices = gen.const("indices", "{}")

@@ -1,4 +1,5 @@
-import {CodeKeywordDefinition, KeywordContext} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
+import KeywordContext from "../../compile/context"
 import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {ResolvedRef, InlineResolvedRef} from "../../compile"
@@ -10,7 +11,7 @@ const def: CodeKeywordDefinition = {
   keyword: "$ref",
   schemaType: "string",
   code(cxt: KeywordContext) {
-    const {gen, ok, fail, schema, it} = cxt
+    const {gen, schema, it} = cxt
     const {resolveRef, allErrors, baseId, isRoot, root, opts, logger} = it
     const ref = getRef()
     const passCxt = opts.passContext ? "this" : ""
@@ -33,7 +34,7 @@ const def: CodeKeywordDefinition = {
       switch (opts.missingRefs) {
         case "fail":
           logger.error(msg)
-          return fail()
+          return cxt.fail()
         case "ignore":
           logger.warn(msg)
           return
@@ -54,7 +55,7 @@ const def: CodeKeywordDefinition = {
         },
         valid
       )
-      ok(valid)
+      cxt.ok(valid)
     }
 
     function validateAsyncRef(v: Expression): void {
@@ -71,11 +72,11 @@ const def: CodeKeywordDefinition = {
           if (!allErrors) gen.code(`${valid} = false;`)
         }
       )
-      ok(valid)
+      cxt.ok(valid)
     }
 
     function validateRef(v: Expression): void {
-      fail(`!${callValidate(cxt, v, passCxt)}`, () => addErrorsFrom(v))
+      cxt.fail(`!${callValidate(cxt, v, passCxt)}`, () => addErrorsFrom(v))
     }
 
     function addErrorsFrom(source: Expression): void {

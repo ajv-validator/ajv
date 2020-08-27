@@ -1,4 +1,5 @@
-import {KeywordContext, KeywordErrorDefinition} from "../types"
+import {KeywordErrorDefinition} from "../types"
+import KeywordContext from "../compile/context"
 import {noPropertyInData, quotedString, orExpr} from "./util"
 import {reportError} from "../compile/errors"
 import {Name, _} from "../compile/codegen"
@@ -8,14 +9,9 @@ export function checkReportMissingProp(
   prop: string,
   error: KeywordErrorDefinition
 ): void {
-  const {
-    gen,
-    errorParams,
-    data,
-    it: {opts},
-  } = cxt
-  gen.if(noPropertyInData(data, prop, opts.ownProperties), () => {
-    errorParams({missingProperty: _`${prop}`}, true)
+  const {gen, data, it} = cxt
+  gen.if(noPropertyInData(data, prop, it.opts.ownProperties), () => {
+    cxt.errorParams({missingProperty: _`${prop}`}, true)
     reportError(cxt, error)
   })
 }

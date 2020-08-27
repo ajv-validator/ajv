@@ -1,4 +1,5 @@
 import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
 import {reportError, resetErrorsCount} from "../../compile/errors"
@@ -9,11 +10,14 @@ const def: CodeKeywordDefinition = {
   type: "array",
   schemaType: ["object", "boolean"],
   before: "uniqueItems",
-  code(cxt) {
-    const {gen, fail, schema, data, it} = cxt
+  code(cxt: KeywordContext) {
+    const {gen, schema, data, it} = cxt
     const errsCount = gen.const("_errs", N.errors)
 
-    if (alwaysValidSchema(it, schema)) return fail(`${data}.length === 0`)
+    if (alwaysValidSchema(it, schema)) {
+      cxt.fail(`${data}.length === 0`)
+      return
+    }
 
     const valid = gen.name("valid")
     const i = gen.name("i")

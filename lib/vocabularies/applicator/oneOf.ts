@@ -1,4 +1,5 @@
 import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportExtraError, resetErrorsCount} from "../../compile/errors"
@@ -8,13 +9,13 @@ import N from "../../compile/names"
 const def: CodeKeywordDefinition = {
   keyword: "oneOf",
   schemaType: "array",
-  code(cxt) {
-    const {gen, errorParams, schema, it} = cxt
+  code(cxt: KeywordContext) {
+    const {gen, schema, it} = cxt
     const valid = gen.let("valid", false)
     const errsCount = gen.const("_errs", N.errors)
     const passing = gen.let("passing", "null")
     const schValid = gen.name("_valid")
-    errorParams({passing})
+    cxt.errorParams({passing})
     // TODO possibly fail straight away (with warning or exception) if there are two empty always valid schemas
 
     gen.block(validateOneOf)

@@ -1,4 +1,5 @@
 import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportExtraError, resetErrorsCount} from "../../compile/errors"
@@ -8,7 +9,7 @@ import N from "../../compile/names"
 const def: CodeKeywordDefinition = {
   keyword: "anyOf",
   schemaType: "array",
-  code(cxt) {
+  code(cxt: KeywordContext) {
     const {gen, schema, it} = cxt
     const alwaysValid = schema.some((sch: object | boolean) => alwaysValidSchema(it, sch))
     if (alwaysValid) return

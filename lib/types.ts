@@ -2,6 +2,7 @@ import Cache from "./cache"
 import CodeGen, {Name, Expression} from "./compile/codegen"
 import {ValidationRules} from "./compile/rules"
 import {ResolvedRef} from "./compile"
+import KeywordContext from "./compile/context"
 
 export interface Options {
   $data?: boolean
@@ -131,7 +132,6 @@ export interface CompilationContext {
   usePattern: (str: string) => string
   useDefault: (value: any) => string
   customRules: KeywordCompilationResult[]
-  validateKeywordSchema: (it: CompilationContext, keyword: string, def: KeywordDefinition) => void // TODO remove
   self: any // TODO
   RULES: ValidationRules
   logger: Logger // TODO ?
@@ -160,7 +160,7 @@ interface _KeywordDef {
 }
 
 export interface CodeKeywordDefinition extends _KeywordDef {
-  code: (cxt: KeywordContext, ruleType?: string) => string | void
+  code: (cxt: KeywordContext, ruleType?: string) => void
   $data?: boolean
 }
 
@@ -208,18 +208,14 @@ export type KeywordDefinition =
   | CodeKeywordDefinition
 
 export interface KeywordErrorDefinition {
-  message: string | ((cxt: KeywordContext) => Expression)
-  params?: (cxt: KeywordContext) => Expression
+  message: string | ((cxt: KeywordErrorContext) => Expression)
+  params?: (cxt: KeywordErrorContext) => Expression
 }
 
 export type Vocabulary = KeywordDefinition[]
 
-export interface KeywordContext {
+export interface KeywordErrorContext {
   gen: CodeGen
-  ok: (condition: Expression) => void
-  pass: (condition: Expression, failAction?: () => void, context?: KeywordContext) => void
-  fail: (condition?: Expression, failAction?: () => void, context?: KeywordContext) => void
-  errorParams: (obj: KeywordContextParams, assing?: true) => void
   keyword: string
   data: Name
   $data?: string | false
@@ -230,6 +226,13 @@ export interface KeywordContext {
   params: KeywordContextParams
   it: CompilationContext
 }
+
+// export interface KeywordContext extends KeywordErrorContext {
+//   ok: (condition: Expression) => void
+//   pass: (condition: Expression, failAction?: () => void, context?: KeywordContext) => void
+//   fail: (condition?: Expression, failAction?: () => void, context?: KeywordContext) => void
+//   errorParams: (obj: KeywordContextParams, assing?: true) => void
+// }
 
 export type KeywordContextParams = {[x: string]: Expression | number}
 

@@ -1,8 +1,8 @@
-import {CompilationContext, KeywordErrorDefinition} from "../../types"
+import {CompilationContext, KeywordErrorDefinition, KeywordErrorContext} from "../../types"
 import {toHash, checkDataType, checkDataTypes} from "../util"
+import {schemaRefOrVal} from "../../vocabularies/util"
 import {schemaHasRulesForType} from "./applicability"
 import {reportError} from "../errors"
-import {getKeywordContext} from "./keyword"
 import {_, str, Name} from "../codegen"
 
 export function getSchemaTypes({schema, opts}: CompilationContext): string[] {
@@ -140,6 +140,22 @@ const typeError: KeywordErrorDefinition = {
 }
 
 export function reportTypeError(it: CompilationContext): void {
-  const cxt = getKeywordContext(it, "type")
+  const cxt = getErrorContext(it, "type")
   reportError(cxt, typeError)
+}
+
+function getErrorContext(it: CompilationContext, keyword: string): KeywordErrorContext {
+  const {gen, data, schema} = it
+  const schemaCode = schemaRefOrVal(it, schema, keyword)
+  return {
+    gen,
+    keyword,
+    data,
+    schema: schema[keyword],
+    schemaCode,
+    schemaValue: schemaCode,
+    parentSchema: schema,
+    params: {},
+    it,
+  }
 }

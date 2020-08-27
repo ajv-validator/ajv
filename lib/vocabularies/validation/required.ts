@@ -1,4 +1,5 @@
 import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import KeywordContext from "../../compile/context"
 import {propertyInData, noPropertyInData} from "../util"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"
 import {reportError} from "../../compile/errors"
@@ -19,8 +20,8 @@ const def: CodeKeywordDefinition = {
   type: "object",
   schemaType: ["array"],
   $data: true,
-  code(cxt) {
-    const {gen, pass, errorParams, schema, schemaCode, data, $data, it} = cxt
+  code(cxt: KeywordContext) {
+    const {gen, schema, schemaCode, data, $data, it} = cxt
     if (!$data && schema.length === 0) return
 
     const loopRequired = $data || schema.length >= <number>it.opts.loopRequired
@@ -48,7 +49,7 @@ const def: CodeKeywordDefinition = {
 
     function exitOnErrorMode(): void {
       const missing = gen.let("missing")
-      errorParams({missingProperty: missing})
+      cxt.errorParams({missingProperty: missing})
 
       if (loopRequired) {
         const valid = gen.let("valid", "true")
@@ -65,7 +66,7 @@ const def: CodeKeywordDefinition = {
           loopUntilMissing(missing, valid)
         }
 
-        pass(valid)
+        cxt.pass(valid)
       } else {
         gen.if(`${checkMissingProp(cxt, schema, missing)}`)
         reportMissingProp(cxt, missing, error)
@@ -75,7 +76,7 @@ const def: CodeKeywordDefinition = {
 
     function loopAllRequired(): void {
       const prop = gen.name("prop")
-      errorParams({missingProperty: prop})
+      cxt.errorParams({missingProperty: prop})
       gen.for(`const ${prop} of ${schemaCode}`, () =>
         gen.if(noPropertyInData(data, prop, it.opts.ownProperties), () => reportError(cxt, error))
       )

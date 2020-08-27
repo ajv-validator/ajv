@@ -1,5 +1,6 @@
 import {getProperty, schemaHasRules} from "../compile/util"
-import {CompilationContext, KeywordContext} from "../types"
+import {CompilationContext} from "../types"
+import KeywordContext from "../compile/context"
 import {_, Code, Name, Expression} from "../compile/codegen"
 import N from "../compile/names"
 

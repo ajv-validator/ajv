@@ -1,4 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
+import KeywordContext from "../../compile/context"
 import {schemaProperties, propertyInData} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
 
@@ -6,8 +7,8 @@ const def: CodeKeywordDefinition = {
   keyword: "properties",
   type: "object",
   schemaType: "object",
-  code(cxt) {
-    const {gen, ok, schema, data, it} = cxt
+  code(cxt: KeywordContext) {
+    const {gen, schema, data, it} = cxt
     // TODO
     // if (it.opts.removeAdditional === "all" && parentSchema.additionalProperties === undefined) {
     //   remove all additional properties - it will fix skipped tests
@@ -25,7 +26,7 @@ const def: CodeKeywordDefinition = {
         if (!it.allErrors) gen.else().var(valid, true)
         gen.endIf()
       }
-      ok(valid)
+      cxt.ok(valid)
     }
 
     function hasDefault(prop: string): boolean | undefined {

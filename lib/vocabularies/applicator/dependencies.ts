@@ -1,4 +1,5 @@
 import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import KeywordContext from "../../compile/context"
 import {alwaysValidSchema, propertyInData} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"
@@ -15,8 +16,8 @@ const def: CodeKeywordDefinition = {
   keyword: "dependencies",
   type: "object",
   schemaType: "object",
-  code(cxt) {
-    const {gen, ok, errorParams, schema, data, it} = cxt
+  code(cxt: KeywordContext) {
+    const {gen, schema, data, it} = cxt
     const [propDeps, schDeps] = splitDependencies()
     const valid = gen.name("valid")
     validatePropertyDeps(propDeps)
@@ -38,7 +39,7 @@ const def: CodeKeywordDefinition = {
         const deps = propertyDeps[prop]
         if (deps.length === 0) continue
         const hasProperty = propertyInData(data, prop, it.opts.ownProperties)
-        errorParams({
+        cxt.errorParams({
           property: prop,
           depsCount: deps.length,
           deps: deps.join(", "),
@@ -68,7 +69,7 @@ const def: CodeKeywordDefinition = {
           () => applySubschema(it, {keyword: "dependencies", schemaProp: prop}, valid),
           `var ${valid} = true;` // TODO refactor var
         )
-        ok(valid)
+        cxt.ok(valid)
       }
     }
   },

@@ -1,4 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
+import KeywordContext from "../../compile/context"
 import {dataNotType} from "../util"
 import {_, str} from "../../compile/codegen"
 
@@ -7,11 +8,12 @@ const def: CodeKeywordDefinition = {
   type: "string",
   schemaType: "number",
   $data: true,
-  code({fail, keyword, data, $data, schemaCode, it: {opts}}) {
+  code(cxt: KeywordContext) {
+    const {keyword, data, $data, schemaCode, it} = cxt
     const op = keyword === "maxLength" ? ">" : "<"
     const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
-    const len = opts.unicode === false ? `${data}.length` : `ucs2length(${data})`
-    fail(dnt + len + op + schemaCode)
+    const len = it.opts.unicode === false ? `${data}.length` : `ucs2length(${data})`
+    cxt.fail(dnt + len + op + schemaCode)
   },
   error: {
     message({keyword, schemaCode}) {

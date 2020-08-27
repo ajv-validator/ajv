@@ -1,4 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
+import KeywordContext from "../../compile/context"
 import {schemaProperties, loopPropertiesCode} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
 
@@ -6,7 +7,7 @@ const def: CodeKeywordDefinition = {
   keyword: "patternProperties",
   type: "object",
   schemaType: "object",
-  code(cxt) {
+  code(cxt: KeywordContext) {
     const {gen, schema, it} = cxt
     const patterns = schemaProperties(it, schema)
     if (patterns.length === 0) return

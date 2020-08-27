@@ -1,4 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
+import KeywordContext from "../../compile/context"
 import {dataNotType} from "../util"
 import {_, str} from "../../compile/codegen"
 
@@ -14,9 +15,10 @@ const def: CodeKeywordDefinition = {
   type: "number",
   schemaType: "number",
   $data: true,
-  code({fail, keyword, data, $data, schemaCode}) {
+  code(cxt: KeywordContext) {
+    const {keyword, data, $data, schemaCode} = cxt
     const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
-    fail(dnt + data + OPS[keyword].fail + schemaCode + ` || isNaN(${data})`)
+    cxt.fail(dnt + data + OPS[keyword].fail + schemaCode + ` || isNaN(${data})`)
   },
   error: {
     message: ({keyword, schemaCode}) => str`should be ${OPS[keyword].ok} ${schemaCode}`,

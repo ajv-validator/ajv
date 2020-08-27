@@ -1,4 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
+import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
 import {_, str} from "../../compile/codegen"
@@ -10,9 +11,9 @@ const def: CodeKeywordDefinition = {
   before: "uniqueItems",
   // TODO
   // implements: ["additionalItems"],
-  code(cxt) {
+  code(cxt: KeywordContext) {
     // TODO strict mode: fail or warning if "additionalItems" is present without "items"
-    const {gen, ok, fail, schema, parentSchema, data, it} = cxt
+    const {gen, schema, parentSchema, data, it} = cxt
     const len = gen.const("len", `${data}.length`)
 
     if (Array.isArray(schema)) {
@@ -31,7 +32,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function validateDataLength(sch: (object | boolean)[]): void {
-      fail(`${len} > ${sch.length}`, undefined, {
+      cxt.fail(`${len} > ${sch.length}`, undefined, {
         ...cxt,
         keyword: "additionalItems",
         schemaValue: false,
@@ -54,7 +55,7 @@ const def: CodeKeywordDefinition = {
             valid
           )
         )
-        ok(valid)
+        cxt.ok(valid)
       })
     }
 
@@ -65,7 +66,7 @@ const def: CodeKeywordDefinition = {
         applySubschema(it, {keyword, dataProp: i, expr: Expr.Num}, valid)
         if (!it.allErrors) gen.if(`!${valid}`, "break")
       })
-      ok(valid)
+      cxt.ok(valid)
     }
   },
   error: {

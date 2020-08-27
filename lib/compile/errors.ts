@@ -1,10 +1,15 @@
-import {KeywordContext, KeywordErrorDefinition} from "../types"
+import {KeywordErrorContext, KeywordErrorDefinition} from "../types"
 import {quotedString} from "../vocabularies/util"
 import CodeGen, {_, Name, Expression} from "./codegen"
 import N from "./names"
 
+export const keywordError: KeywordErrorDefinition = {
+  message: ({keyword}) => `'should pass "${keyword}" keyword validation'`,
+  params: ({keyword}) => `{keyword: "${keyword}"}`, // TODO possibly remove it as keyword is reported in the object
+}
+
 export function reportError(
-  cxt: KeywordContext,
+  cxt: KeywordErrorContext,
   error: KeywordErrorDefinition,
   overrideAllErrors?: boolean
 ): void {
@@ -17,7 +22,7 @@ export function reportError(
   }
 }
 
-export function reportExtraError(cxt: KeywordContext, error: KeywordErrorDefinition): void {
+export function reportExtraError(cxt: KeywordErrorContext, error: KeywordErrorDefinition): void {
   const {gen, compositeRule, allErrors, async} = cxt.it
   const errObj = errorObjectCode(cxt, error)
   addError(gen, errObj)
@@ -34,7 +39,7 @@ export function resetErrorsCount(gen: CodeGen, errsCount: Name): void {
 }
 
 export function extendErrors(
-  {gen, keyword, schemaValue, data, it}: KeywordContext,
+  {gen, keyword, schemaValue, data, it}: KeywordErrorContext,
   errsCount: Name
 ): void {
   const err = gen.name("err")
@@ -69,7 +74,7 @@ function returnErrors(gen: CodeGen, async: boolean, errs: Expression): void {
   }
 }
 
-function errorObjectCode(cxt: KeywordContext, error: KeywordErrorDefinition): string {
+function errorObjectCode(cxt: KeywordErrorContext, error: KeywordErrorDefinition): string {
   const {
     keyword,
     data,

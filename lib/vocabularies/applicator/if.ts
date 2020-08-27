@@ -1,4 +1,5 @@
 import {CodeKeywordDefinition, KeywordErrorDefinition, CompilationContext} from "../../types"
+import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {reportExtraError, resetErrorsCount} from "../../compile/errors"
@@ -15,8 +16,8 @@ const def: CodeKeywordDefinition = {
   schemaType: ["object", "boolean"],
   // TODO
   // implements: ["then", "else"],
-  code(cxt) {
-    const {gen, pass, errorParams, it} = cxt
+  code(cxt: KeywordContext) {
+    const {gen, it} = cxt
     const hasThen = hasSchema(it, "then")
     const hasElse = hasSchema(it, "else")
     if (!hasThen && !hasElse) {
@@ -33,7 +34,7 @@ const def: CodeKeywordDefinition = {
 
     if (hasThen && hasElse) {
       const ifClause = gen.let("ifClause")
-      errorParams({ifClause})
+      cxt.errorParams({ifClause})
       gen.if(schValid, validateClause("then", ifClause), validateClause("else", ifClause))
     } else if (hasThen) {
       gen.if(schValid, validateClause("then"))
@@ -41,7 +42,7 @@ const def: CodeKeywordDefinition = {
       gen.if(`!${schValid}`, validateClause("else"))
     }
 
-    pass(valid, () => reportExtraError(cxt, error))
+    cxt.pass(valid, () => reportExtraError(cxt, error))
 
     function validateIf(): void {
       applySubschema(
@@ -61,7 +62,7 @@ const def: CodeKeywordDefinition = {
         applySubschema(it, {keyword}, schValid)
         gen.code(`${valid} = ${schValid};`)
         if (ifClause) gen.code(`${ifClause} = "${keyword}";`)
-        else errorParams({ifClause: keyword})
+        else cxt.errorParams({ifClause: keyword})
       }
     }
   },

@@ -1,4 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
+import KeywordContext from "../../compile/context"
 import {quotedString, orExpr} from "../util"
 import {_, Name} from "../../compile/codegen"
 
@@ -6,23 +7,25 @@ const def: CodeKeywordDefinition = {
   keyword: "enum",
   schemaType: "array",
   $data: true,
-  code({gen, pass, data, $data, schema, schemaCode, it: {opts}}) {
+  code(cxt: KeywordContext) {
+    const {gen, data, $data, schema, schemaCode, it} = cxt
+    const {opts} = it
     if ($data) {
       const valid = gen.let("valid")
       gen.if(`${schemaCode} === undefined`, `${valid} = true;`, () =>
         gen.code(`${valid} = false;`).if(`Array.isArray(${schemaCode})`, () => loopEnum(valid))
       )
-      pass(valid)
+      cxt.pass(valid)
     } else {
       if (schema.length === 0) throw new Error("enum must have non-empty array")
       if (schema.length > (opts.loopEnum as number)) {
         const valid = gen.let("valid", "false")
         loopEnum(valid)
-        pass(valid)
+        cxt.pass(valid)
       } else {
         const vSchema = gen.const("schema", schemaCode)
         const cond: string = orExpr(schema, (_, i) => equalCode(vSchema, i))
-        pass(cond)
+        cxt.pass(cond)
       }
     }
 

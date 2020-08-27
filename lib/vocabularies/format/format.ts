@@ -1,4 +1,5 @@
 import {CodeKeywordDefinition, AddedFormat, FormatValidate} from "../../types"
+import KeywordContext from "../../compile/context"
 import {dataNotType} from "../util"
 import {getProperty} from "../../compile/util"
 import {_, str} from "../../compile/codegen"
@@ -8,7 +9,8 @@ const def: CodeKeywordDefinition = {
   type: ["number", "string"],
   schemaType: "string",
   $data: true,
-  code({gen, pass, fail, data, $data, schema, schemaCode, it}, ruleType) {
+  code(cxt: KeywordContext, ruleType?: string) {
+    const {gen, data, $data, schema, schemaCode, it} = cxt
     const {formats, opts, logger, errSchemaPath} = it
     if (opts.format === false) return
 
@@ -25,7 +27,7 @@ const def: CodeKeywordDefinition = {
         _`${fmtType} = "string"; ${format} = ${fmtDef}`
       )
       const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
-      fail(dnt + unknownFmt() + invalidFmt())
+      cxt.fail(dnt + unknownFmt() + invalidFmt())
 
       function unknownFmt(): string {
         if (opts.unknownFormats === "ignore") return ""
@@ -51,7 +53,7 @@ const def: CodeKeywordDefinition = {
         return
       }
       const [fmtType, format, fmtRef] = getFormat(formatDef)
-      if (fmtType === ruleType) pass(validCondition())
+      if (fmtType === ruleType) cxt.pass(validCondition())
 
       function unknownFormat() {
         if (opts.unknownFormats === "ignore") return logger.warn(unknownMsg())

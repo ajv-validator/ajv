@@ -1,4 +1,4 @@
-import {KeywordErrorDefinition, CompilationContext, KeywordContext} from "../../types"
+import {KeywordErrorDefinition, CompilationContext, KeywordErrorContext} from "../../types"
 import {reportError} from "../errors"
 import {_, Name} from "../codegen"
 import N from "../names"
@@ -32,12 +32,8 @@ export function boolOrEmptySchema(it: CompilationContext, valid: Name): void {
 function falseSchemaError(it: CompilationContext, overrideAllErrors?: boolean) {
   const {gen, data} = it
   // TODO maybe some other interface should be used for non-keyword validation errors...
-  const cxt: KeywordContext = {
+  const cxt: KeywordErrorContext = {
     gen,
-    ok: exception,
-    pass: exception,
-    fail: exception,
-    errorParams: exception,
     keyword: "false schema",
     data,
     schema: false,
@@ -48,9 +44,4 @@ function falseSchemaError(it: CompilationContext, overrideAllErrors?: boolean) {
     it,
   }
   reportError(cxt, boolError, overrideAllErrors)
-}
-
-// TODO combine with exception from dataType
-function exception() {
-  throw new Error("this function can only be used in keyword")
 }

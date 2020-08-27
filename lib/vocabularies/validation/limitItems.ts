@@ -1,4 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
+import KeywordContext from "../../compile/context"
 import {dataNotType} from "../util"
 import {_, str} from "../../compile/codegen"
 
@@ -7,10 +8,11 @@ const def: CodeKeywordDefinition = {
   type: "array",
   schemaType: "number",
   $data: true,
-  code({fail, keyword, data, $data, schemaCode}) {
+  code(cxt: KeywordContext) {
+    const {keyword, data, $data, schemaCode} = cxt
     const op = keyword === "maxItems" ? ">" : "<"
     const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
-    fail(dnt + `${data}.length` + op + schemaCode)
+    cxt.fail(dnt + `${data}.length` + op + schemaCode)
   },
   error: {
     message({keyword, schemaCode}) {
