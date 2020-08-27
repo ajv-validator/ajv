@@ -12,15 +12,11 @@ export function schemaKeywords(
   typeErrors: boolean,
   errsCount?: Name
 ): void {
-  const {
-    gen,
-    schema,
-    dataLevel,
-    RULES,
-    allErrors,
-    opts: {extendRefs, strictNumbers},
-  } = it
-  if (schema.$ref && !(extendRefs === true && schemaHasRulesExcept(schema, RULES.all, "$ref"))) {
+  const {gen, schema, data, RULES, allErrors, opts} = it
+  if (
+    schema.$ref &&
+    !(opts.extendRefs === true && schemaHasRulesExcept(schema, RULES.all, "$ref"))
+  ) {
     // TODO remove Rule type cast
     gen.block(() => (RULES.all.$ref as Rule).code(it, "$ref"))
     return
@@ -35,8 +31,7 @@ export function schemaKeywords(
 
   function groupKeywords(group: RuleGroup): void {
     if (group.type) {
-      // TODO refactor `data${dataLevel || ""}`
-      const checkType = checkDataType(group.type, new Name(`data${dataLevel || ""}`), strictNumbers)
+      const checkType = checkDataType(group.type, data, opts.strictNumbers)
       gen.if(checkType)
       iterateKeywords(it, group)
       if (types.length === 1 && types[0] === group.type && typeErrors) {
@@ -47,7 +42,7 @@ export function schemaKeywords(
     } else {
       iterateKeywords(it, group)
     }
-    // TODO make it "ok" call
+    // TODO make it "ok" call?
     if (!allErrors) gen.if(`errors === ${errsCount || 0}`)
   }
 }

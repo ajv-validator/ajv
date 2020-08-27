@@ -103,9 +103,13 @@ export interface ErrorObject {
 export type KeywordCompilationResult = object | boolean | SchemaValidateFunction | ValidateFunction
 
 export interface CompilationContext {
+  gen: CodeGen
   allErrors: boolean
   dataLevel: number
-  data: string
+  data: Name
+  parentData: Name
+  parentDataProperty: Expression | number
+  dataNames: Name[]
   dataPathArr: (Expression | number)[]
   schema: any
   isRoot: boolean
@@ -113,7 +117,6 @@ export interface CompilationContext {
   errorPath: string
   errSchemaPath: string
   propertyName?: Name
-  gen: CodeGen
   createErrors?: boolean // TODO maybe remove later
   baseId: string
   async: boolean

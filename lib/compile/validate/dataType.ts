@@ -26,18 +26,13 @@ export function getSchemaTypes({schema, opts}: CompilationContext): string[] {
 }
 
 export function coerceAndCheckDataType(it: CompilationContext, types: string[]): boolean {
-  const {
-    gen,
-    dataLevel,
-    opts: {coerceTypes, strictNumbers},
-  } = it
-  const coerceTo = coerceToTypes(types, coerceTypes)
+  const {gen, data, opts} = it
+  const coerceTo = coerceToTypes(types, opts.coerceTypes)
   const checkTypes =
     types.length > 0 &&
     !(coerceTo.length === 0 && types.length === 1 && schemaHasRulesForType(it, types[0]))
   if (checkTypes) {
-    // TODO refactor `data${dataLevel || ""}`
-    const wrongType = checkDataTypes(types, new Name(`data${dataLevel || ""}`), strictNumbers, true)
+    const wrongType = checkDataTypes(types, data, opts.strictNumbers, true)
     gen.if(wrongType, () => {
       if (coerceTo.length) coerceData(it, coerceTo)
       else reportTypeError(it)
@@ -54,26 +49,19 @@ function coerceToTypes(types: string[], coerceTypes?: boolean | "array"): string
 }
 
 export function coerceData(it: CompilationContext, coerceTo: string[]): void {
-  const {
-    gen,
-    schema,
-    dataLevel,
-    opts: {coerceTypes, strictNumbers},
-  } = it
-  // TODO move "data" to CompilationContext
-  const data = new Name(`data${dataLevel || ""}`)
+  const {gen, schema, data, opts} = it
   const dataType = gen.let("dataType", `typeof ${data}`)
   const coerced = gen.let("coerced")
-  if (coerceTypes === "array") {
+  if (opts.coerceTypes === "array") {
     gen.if(_`${dataType} == 'object' && Array.isArray(${data}) && ${data}.length == 1`, () =>
       gen
         .code(_`${data} = ${data}[0]; ${dataType} = typeof ${data};`)
-        .if(checkDataType(schema.type, data, strictNumbers), _`${coerced} = ${data}`)
+        .if(checkDataType(schema.type, data, opts.strictNumbers), _`${coerced} = ${data}`)
     )
   }
   gen.if(`${coerced} !== undefined`)
   for (const t of coerceTo) {
-    if (t in COERCIBLE || (t === "array" && coerceTypes === "array")) {
+    if (t in COERCIBLE || (t === "array" && opts.coerceTypes === "array")) {
       coerceSpecificType(t)
     }
   }
@@ -135,16 +123,13 @@ export function coerceData(it: CompilationContext, coerceTo: string[]): void {
 }
 
 function assignParentData(
-  {gen, dataLevel, dataPathArr}: CompilationContext,
+  {gen, parentData, parentDataProperty}: CompilationContext,
   expr: string | Name
 ): void {
-  // TODO replace dataLevel
-  if (dataLevel) {
-    const parentData = "data" + (dataLevel - 1 || "")
-    gen.code(`${parentData}[${dataPathArr[dataLevel]}] = ${expr};`)
-  } else {
-    gen.if("parentData !== undefined", `parentData[parentDataProperty] = ${expr};`)
-  }
+  // TODO use gen.property
+  gen.if(`${parentData} !== undefined`, () =>
+    gen.assign(`${parentData}[${parentDataProperty}]`, expr)
+  )
 }
 
 const typeError: KeywordErrorDefinition = {

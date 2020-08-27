@@ -5,13 +5,18 @@ import {quotedString, accessProperty} from "../vocabularies/util"
 import {Code, Name, Expression} from "./codegen"
 
 export interface SubschemaContext {
+  // TODO use Optional?
   schema: object | boolean
   schemaPath: string
   errSchemaPath: string
   topSchemaRef?: Code
   errorPath?: string
-  dataPathArr?: (Expression | number)[]
   dataLevel?: number
+  data?: Name
+  parentData?: Name
+  parentDataProperty?: Expression | number
+  dataNames?: Name[]
+  dataPathArr?: (Expression | number)[]
   propertyName?: Name
   compositeRule?: true
   createErrors?: boolean
@@ -24,20 +29,22 @@ export enum Expr {
   Str,
 }
 
-export interface SubschemaApplication {
-  keyword?: string
-  schemaProp?: string | number
-  schema?: object | boolean
-  schemaPath?: string
-  errSchemaPath?: string
-  topSchemaRef?: Code
-  data?: Name
-  dataProp?: Expression | number
-  propertyName?: Name
-  expr?: Expr
-  compositeRule?: true
-  createErrors?: boolean
-  allErrors?: boolean
+export type SubschemaApplication = Partial<SubschemaApplicationParams>
+
+interface SubschemaApplicationParams {
+  keyword: string
+  schemaProp: string | number
+  schema: object | boolean
+  schemaPath: string
+  errSchemaPath: string
+  topSchemaRef: Code
+  data: Name | Code
+  dataProp: Expression | number
+  propertyName: Name
+  expr: Expr
+  compositeRule: true
+  createErrors: boolean
+  allErrors: boolean
 }
 
 export function applySubschema(
@@ -99,31 +106,36 @@ function extendSubschemaData(
     throw new Error('both "data" and "dataProp" passed, only one allowed')
   }
 
+  const {gen} = it
+
   if (dataProp !== undefined) {
-    const {gen, errorPath, dataPathArr, dataLevel, opts} = it
+    const {errorPath, dataPathArr, opts} = it
+    const nextData = gen.var("data", `${it.data}${accessProperty(dataProp)}`) // TODO var, tagged
+    dataContextProps(nextData)
     // TODO possibly refactor getPath and getPathExpr to one function using Expr enum
-    const nextLevel = dataLevel + 1
     subschema.errorPath =
       dataProp instanceof Code
         ? getPathExpr(errorPath, dataProp, opts.jsonPointers, expr === Expr.Num)
         : getPath(errorPath, dataProp, opts.jsonPointers)
 
-    subschema.dataPathArr = [
-      ...dataPathArr,
-      expr === Expr.Const && typeof dataProp == "string" ? quotedString(dataProp) : dataProp,
-    ]
-    subschema.dataLevel = nextLevel
+    subschema.parentDataProperty =
+      expr === Expr.Const && typeof dataProp == "string" ? quotedString(dataProp) : dataProp
 
-    const passDataProp = accessProperty(dataProp)
-    gen.code(`var data${nextLevel} = data${dataLevel || ""}${passDataProp};`)
+    subschema.dataPathArr = [...dataPathArr, subschema.parentDataProperty]
   }
 
   if (data !== undefined) {
-    const {gen, dataLevel} = it
-    const nextLevel = dataLevel + 1
-    subschema.dataLevel = nextLevel
+    const nextData = data instanceof Name ? data : gen.var("data", data) // TODO var, replaceable if used once?
+    dataContextProps(nextData)
     if (propertyName !== undefined) subschema.propertyName = propertyName
-    gen.code(`var data${nextLevel} = ${data};`)
+    // TODO something is wrong here with not changing parentDataProperty and not appending dataPathArr
+  }
+
+  function dataContextProps(_nextData: Name) {
+    subschema.data = _nextData
+    subschema.dataLevel = it.dataLevel + 1
+    subschema.parentData = it.data
+    subschema.dataNames = [...it.dataNames, _nextData]
   }
 }
 

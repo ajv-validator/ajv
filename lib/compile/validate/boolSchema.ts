@@ -28,7 +28,7 @@ export function boolOrEmptySchema(it: CompilationContext, valid: Name): void {
 }
 
 function falseSchemaError(it: CompilationContext, overrideAllErrors?: boolean) {
-  const {gen, dataLevel} = it
+  const {gen, data} = it
   // TODO maybe some other interface should be used for non-keyword validation errors...
   const cxt: KeywordContext = {
     gen,
@@ -37,7 +37,7 @@ function falseSchemaError(it: CompilationContext, overrideAllErrors?: boolean) {
     fail: exception,
     errorParams: exception,
     keyword: "false schema",
-    data: new Name("data" + (dataLevel || "")), // TODO refactor dataLevel
+    data,
     schema: false,
     schemaCode: false,
     schemaValue: false,

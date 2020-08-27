@@ -1,4 +1,6 @@
 import {_, Code, Name, Expression} from "./codegen"
+import {CompilationContext} from "../types"
+import names from "./names"
 
 export function checkDataType(
   dataType: string,
@@ -137,33 +139,33 @@ export function getPath(
 
 const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/
 const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/
-export function getData($data: string, lvl: number, paths: (Expression | number)[]): string {
+export function getData(
+  $data: string,
+  {dataLevel, dataNames, dataPathArr}: CompilationContext
+): Expression | number {
   let jsonPointer, data
-  if ($data === "") return "rootData"
+  if ($data === "") return names.rootData
   if ($data[0] === "/") {
     if (!JSON_POINTER.test($data)) {
       throw new Error("Invalid JSON-pointer: " + $data)
     }
     jsonPointer = $data
-    data = "rootData"
+    data = names.rootData
   } else {
     const matches = RELATIVE_JSON_POINTER.exec($data)
     if (!matches) throw new Error("Invalid JSON-pointer: " + $data)
     const up: number = +matches[1]
     jsonPointer = matches[2]
     if (jsonPointer === "#") {
-      if (up >= lvl) {
-        throw new Error(
-          "Cannot access property/index " + up + " levels up, current level is " + lvl
-        )
+      if (up >= dataLevel) {
+        throw new Error(errorMsg("property/index", up))
       }
-      return "" + paths[lvl - up]
+      return dataPathArr[dataLevel - up]
     }
 
-    if (up > lvl) {
-      throw new Error("Cannot access data " + up + " levels up, current level is " + lvl)
-    }
-    data = "data" + (lvl - up || "")
+    if (up > dataLevel) throw new Error(errorMsg("data", up))
+
+    data = dataNames[dataLevel - up]
     if (!jsonPointer) return data
   }
 
@@ -176,6 +178,10 @@ export function getData($data: string, lvl: number, paths: (Expression | number)
     }
   }
   return expr
+
+  function errorMsg(pointerType: string, up: number): string {
+    return `Cannot access ${pointerType} ${up} levels up, current level is ${dataLevel}`
+  }
 }
 
 export function joinPaths(a: string, b: string): string {

@@ -147,11 +147,10 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
   const def: CodeKeywordDefinition = this.definition
   const {schemaType, $data: $defData} = def
   validateKeywordSchema(it, keyword, def)
-  const {gen, opts, dataLevel, dataPathArr, allErrors} = it
+  const {gen, data, opts, allErrors} = it
   // TODO
   // if (!code) throw new Error('"code" and "error" must be defined')
   const $data = $defData && opts.$data && schema && schema.$data
-  const data = new Name("data" + (dataLevel || "")) // TODO remove dataLevel
   const schemaValue = schemaRefOrVal(it, schema, keyword, $data)
   const cxt: KeywordContext = {
     gen,
@@ -170,7 +169,7 @@ function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): v
     it,
   }
   if ($data) {
-    gen.const(<Name>cxt.schemaCode, `${getData($data, dataLevel, dataPathArr)}`)
+    gen.const(<Name>cxt.schemaCode, `${getData($data, it)}`)
   } else if (schemaType && !validSchemaType(schema, schemaType)) {
     throw new Error(`${keyword} must be ${JSON.stringify(schemaType)}`)
   }
@@ -221,7 +220,7 @@ function validSchemaType(schema: any, schemaType: string | string[]): boolean {
 }
 
 export function getKeywordContext(it: CompilationContext, keyword: string): KeywordContext {
-  const {gen, schema, dataLevel} = it
+  const {gen, data, schema} = it
   const schemaCode = schemaRefOrVal(it, schema, keyword)
   return {
     gen,
@@ -230,7 +229,7 @@ export function getKeywordContext(it: CompilationContext, keyword: string): Keyw
     fail: exception,
     errorParams: exception,
     keyword,
-    data: new Name("data" + (dataLevel || "")),
+    data,
     schema: schema[keyword],
     schemaCode,
     schemaValue: schemaCode,

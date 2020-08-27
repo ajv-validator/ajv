@@ -91,14 +91,8 @@ export function orExpr(items: string[], mapCondition: (s: string, i: number) => 
 }
 
 export interface ParentData {
-  data: string
-  property: string
-}
-
-export function getParentData({dataLevel, dataPathArr}: CompilationContext): ParentData {
-  return dataLevel
-    ? {data: `data${dataLevel - 1 || ""}`, property: `${dataPathArr[dataLevel]}`}
-    : {data: "parentData", property: "parentDataProperty"}
+  data: Name
+  property: Expression | number
 }
 
 export function callValidate(
@@ -111,7 +105,6 @@ export function callValidate(
     ? `${schemaCode}, ${data}, ${it.topSchemaRef}${it.schemaPath}`
     : data
   const dataPath = `(dataPath || '')${it.errorPath === '""' ? "" : ` + ${it.errorPath}`}` // TODO joinPaths?
-  const parent = getParentData(it)
-  const args = `${dataAndSchema}, ${dataPath}, ${parent.data}, ${parent.property}, rootData`
+  const args = `${dataAndSchema}, ${dataPath}, ${it.parentData}, ${it.parentDataProperty}, rootData`
   return context ? `${func}.call(${context}, ${args})` : `${func}(${args})`
 }

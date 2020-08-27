@@ -26,6 +26,8 @@ export class Code {
   }
 }
 
+export const nil = new Code("")
+
 export class Name extends Code {}
 
 const varKinds = {
@@ -97,7 +99,7 @@ export default class CodeGen {
     return this._def(varKinds.var, nameOrPrefix, rhs)
   }
 
-  assign(name: Name, rhs: Expression | number | boolean): CodeGen {
+  assign(name: Expression, rhs: Expression | number | boolean): CodeGen {
     this.code(`${name} = ${rhs};`)
     return this
   }
@@ -164,6 +166,13 @@ export default class CodeGen {
     return this
   }
 
+  return(value: Block): CodeGen {
+    this._out += "return "
+    this.code(value)
+    this._out += ";"
+    return this
+  }
+
   try(tryBody: Block, catchCode?: (e: Name) => void, finallyCode?: Block): CodeGen {
     if (!catchCode && !finallyCode) throw new Error('CodeGen: "try" without "catch" and "finally"')
     this.code("try{").code(tryBody)
@@ -196,7 +205,7 @@ export default class CodeGen {
     return this
   }
 
-  func(name = "", args = "", async?: boolean, funcBody?: Block): CodeGen {
+  func(name: Name, args: Code = nil, async?: boolean, funcBody?: Block): CodeGen {
     this.#blocks.push(BlockKind.Func)
     this.code(`${async ? "async " : ""}function ${name}(${args}){`)
     if (funcBody) this.code(funcBody).endFunc()

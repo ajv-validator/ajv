@@ -9,7 +9,7 @@ import {
 } from "../../types"
 import {applySubschema} from "../subschema"
 import {reportError, reportExtraError, extendErrors} from "../errors"
-import {getParentData, callValidate} from "../../vocabularies/util"
+import {callValidate} from "../../vocabularies/util"
 import {_, Name, Expression} from "../codegen"
 
 export const keywordError: KeywordErrorDefinition = {
@@ -146,8 +146,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
 
 function modifyData(cxt: KeywordContext) {
   const {gen, data, it} = cxt
-  const parent = getParentData(it)
-  gen.if(parent.data, `${data} = ${parent.data}[${parent.property}];`)
+  gen.if(it.parentData, () => gen.assign(data, `${it.parentData}[${it.parentDataProperty}];`))
 }
 
 function addKeywordErrors(cxt: KeywordContext, ruleErrs: Expression, errsCount: Name): void {

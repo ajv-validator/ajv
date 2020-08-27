@@ -13,33 +13,25 @@ export function assignDefaults(it: CompilationContext, ty?: string): void {
 }
 
 function assignDefault(
-  {
-    gen,
-    compositeRule,
-    dataLevel,
-    useDefault,
-    opts: {strictDefaults, useDefaults},
-    logger,
-  }: CompilationContext,
+  {gen, compositeRule, data, useDefault, opts, logger}: CompilationContext,
   prop: string | number,
   defaultValue: any
 ): void {
   if (defaultValue === undefined) return
-  // TODO refactor `data${dataLevel || ""}`
-  const data = "data" + (dataLevel || "") + getProperty(prop)
+  const childData = `${data}${getProperty(prop)}` // TODO tagged
   if (compositeRule) {
-    if (strictDefaults) {
-      const msg = `default is ignored for: ${data}`
-      if (strictDefaults === "log") logger.warn(msg)
+    if (opts.strictDefaults) {
+      const msg = `default is ignored for: ${childData}`
+      if (opts.strictDefaults === "log") logger.warn(msg)
       else throw new Error(msg)
     }
     return
   }
 
   const condition =
-    `${data} === undefined` +
-    (useDefaults === "empty" ? ` || ${data} === null || ${data} === ""` : "")
+    `${childData} === undefined` +
+    (opts.useDefaults === "empty" ? ` || ${childData} === null || ${childData} === ""` : "")
   // TODO remove option `useDefaults === "shared"`
-  const defaultExpr = useDefaults === "shared" ? useDefault : JSON.stringify
-  gen.if(condition, `${data} = ${defaultExpr(defaultValue)}`)
+  const defaultExpr = opts.useDefaults === "shared" ? useDefault : JSON.stringify
+  gen.if(condition, `${childData} = ${defaultExpr(defaultValue)}`)
 }

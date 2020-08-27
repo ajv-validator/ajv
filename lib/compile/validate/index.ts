@@ -5,6 +5,7 @@ import {topBoolOrEmptySchema, boolOrEmptySchema} from "./boolSchema"
 import {getSchemaTypes, coerceAndCheckDataType} from "./dataType"
 import {schemaKeywords} from "./iterate"
 import CodeGen, {_, Block, Name} from "../codegen"
+import names from "../names"
 
 const resolve = require("../resolve")
 
@@ -26,13 +27,15 @@ export function validateFunctionCode(it: CompilationContext): void {
 }
 
 function validateFunction(it: CompilationContext, body: Block) {
-  const {gen} = it
-  gen.func("validate", "data, dataPath, parentData, parentDataProperty, rootData", it.async, body)
-  gen.code(
-    `"use strict";
-    ${funcSourceUrl(it)}`
+  const {gen, data, parentData, parentDataProperty} = it
+  gen.return(() =>
+    gen.func(
+      names.validate,
+      _`${data}, ${names.dataPath}, ${parentData}, ${parentDataProperty}, ${names.rootData}`,
+      it.async,
+      () => gen.code(`"use strict"; ${funcSourceUrl(it)}`).code(body)
+    )
   )
-  gen.code(`return validate;`)
 }
 
 function funcSourceUrl({schema, opts}: CompilationContext): string {
