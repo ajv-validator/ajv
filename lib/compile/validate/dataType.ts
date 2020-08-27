@@ -2,7 +2,7 @@ import {CompilationContext, KeywordErrorDefinition} from "../../types"
 import {toHash, checkDataType, checkDataTypes} from "../util"
 import {schemaHasRulesForType} from "./applicability"
 import {reportError} from "../errors"
-import {getKeywordContext} from "../../keyword"
+import {getKeywordContext} from "./keyword"
 import {_, str, Name} from "../codegen"
 
 export function getSchemaTypes({schema, opts}: CompilationContext): string[] {

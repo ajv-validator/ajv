@@ -15,5 +15,5 @@ export function shouldUseRule(schema: object, rule: Rule): boolean | undefined {
 }
 
 function ruleImplementsSomeKeyword(schema: object, rule: Rule): boolean | undefined {
-  return rule.implements?.some((kwd) => schema[kwd] !== undefined)
+  return rule.definition.implements?.some((kwd) => schema[kwd] !== undefined)
 }

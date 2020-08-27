@@ -1,10 +1,10 @@
 import {toHash} from "./util"
-import {CompilationContext, KeywordDefinition} from "../types"
+import {KeywordDefinition} from "../types"
 
 export interface ValidationRules {
   rules: RuleGroup[]
-  all: {[key: string]: boolean | Rule}
-  keywords: {[key: string]: boolean}
+  all: {[key: string]: boolean | Rule} // rules that have to be validated
+  keywords: {[key: string]: boolean} // all known keywords (superset of "all")
   types: {[key: string]: boolean | RuleGroup}
   custom: {[key: string]: Rule}
 }
@@ -14,12 +14,10 @@ export interface RuleGroup {
   rules: Rule[]
 }
 
+// This interface wraps KeywordDefinition because definition can have multiple keywords
 export interface Rule {
   keyword: string
-  code: (it: CompilationContext, keyword: string, ruleType?: string) => void
-  implements?: string[]
-  definition?: KeywordDefinition
-  custom?: true
+  definition: KeywordDefinition
 }
 
 export default function rules(): ValidationRules {

@@ -9,7 +9,7 @@ export interface SubschemaContext {
   schema: object | boolean
   schemaPath: string
   errSchemaPath: string
-  topSchemaRef?: Code
+  topSchemaRef?: Expression
   errorPath?: string
   dataLevel?: number
   data?: Name
@@ -37,7 +37,7 @@ interface SubschemaApplicationParams {
   schema: object | boolean
   schemaPath: string
   errSchemaPath: string
-  topSchemaRef: Code
+  topSchemaRef: Expression
   data: Name | Code
   dataProp: Expression | number
   propertyName: Name

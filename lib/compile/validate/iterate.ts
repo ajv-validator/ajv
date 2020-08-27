@@ -1,9 +1,10 @@
 import {CompilationContext} from "../../types"
 import {shouldUseGroup, shouldUseRule} from "./applicability"
 import {checkDataType, schemaHasRulesExcept} from "../util"
+import {keywordCode} from "./keyword"
 import {assignDefaults} from "./defaults"
 import {reportTypeError} from "./dataType"
-import {RuleGroup, Rule} from "../rules"
+import {Rule, RuleGroup} from "../rules"
 import {Name} from "../codegen"
 import N from "../names"
 
@@ -18,8 +19,7 @@ export function schemaKeywords(
     schema.$ref &&
     !(opts.extendRefs === true && schemaHasRulesExcept(schema, RULES.all, "$ref"))
   ) {
-    // TODO remove Rule type cast
-    gen.block(() => (RULES.all.$ref as Rule).code(it, "$ref"))
+    gen.block(() => keywordCode(it, "$ref", (<Rule>RULES.all.$ref).definition)) // TODO typecast
     return
   }
   gen.block(() => {
@@ -58,7 +58,7 @@ function iterateKeywords(it: CompilationContext, group: RuleGroup) {
   gen.block(() => {
     for (const rule of group.rules) {
       if (shouldUseRule(schema, rule)) {
-        rule.code(it, rule.keyword, group.type)
+        keywordCode(it, rule.keyword, rule.definition, group.type)
       }
     }
   })

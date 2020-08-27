@@ -1,5 +1,5 @@
 import Cache from "./cache"
-import CodeGen, {Name, Code, Expression} from "./compile/codegen"
+import CodeGen, {Name, Expression} from "./compile/codegen"
 import {ValidationRules} from "./compile/rules"
 import {ResolvedRef} from "./compile"
 
@@ -137,7 +137,7 @@ export interface CompilationContext {
   logger: Logger // TODO ?
   root: SchemaRoot // TODO ?
   rootId: string // TODO ?
-  topSchemaRef: Code
+  topSchemaRef: Expression // TODO must be Code - depends on global names
   resolveRef: (...args: any[]) => ResolvedRef | void
 }
 
@@ -148,7 +148,7 @@ interface SchemaRoot {
 }
 
 interface _KeywordDef {
-  keyword?: string | string[]
+  keyword: string | string[]
   type?: string | string[]
   schemaType?: string | string[]
   implements?: string[]
@@ -156,11 +156,11 @@ interface _KeywordDef {
   metaSchema?: object
   validateSchema?: ValidateFunction // compiled keyword metaSchema - should not be passed
   dependencies?: string[] // keywords that must be present in the same schema
+  error?: KeywordErrorDefinition // TODO all keyword types should support error
 }
 
 export interface CodeKeywordDefinition extends _KeywordDef {
-  code: (cxt: KeywordContext, ruleType?: string, def?: KeywordDefinition) => string | void
-  error?: KeywordErrorDefinition // TODO all keyword types should support error
+  code: (cxt: KeywordContext, ruleType?: string) => string | void
   $data?: boolean
 }
 

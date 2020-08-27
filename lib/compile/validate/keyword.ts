@@ -2,6 +2,7 @@ import {
   KeywordDefinition,
   KeywordErrorDefinition,
   KeywordContext,
+  KeywordContextParams,
   MacroKeywordDefinition,
   FuncKeywordDefinition,
   CompilationContext,
@@ -9,7 +10,8 @@ import {
 } from "../../types"
 import {applySubschema} from "../subschema"
 import {reportError, reportExtraError, extendErrors} from "../errors"
-import {callValidate} from "../../vocabularies/util"
+import {callValidate, schemaRefOrVal} from "../../vocabularies/util"
+import {getData} from "../util"
 import {_, Name, Expression} from "../codegen"
 import N from "../names"
 
@@ -18,20 +20,126 @@ export const keywordError: KeywordErrorDefinition = {
   params: ({keyword}) => `{keyword: "${keyword}"}`, // TODO possibly remove it as keyword is reported in the object
 }
 
-export default function keywordCode(
-  cxt: KeywordContext,
-  _ruleType: string,
-  def: KeywordDefinition
+export function keywordCode(
+  it: CompilationContext,
+  keyword: string,
+  def: KeywordDefinition,
+  ruleType?: string
 ): void {
-  // TODO "code" keyword
-  // TODO refactor
-  if (cxt.$data && "validate" in def) {
+  const cxt = _getKeywordContext(it, keyword, def)
+  if ("code" in def) {
+    def.code(cxt, ruleType)
+  } else if (cxt.$data && "validate" in def) {
     funcKeywordCode(cxt, def as FuncKeywordDefinition)
   } else if ("macro" in def) {
     macroKeywordCode(cxt, def)
   } else if ("compile" in def || "validate" in def) {
     funcKeywordCode(cxt, def)
   }
+}
+
+function _getKeywordContext(
+  it: CompilationContext,
+  keyword: string,
+  def: KeywordDefinition
+): KeywordContext {
+  const schema = it.schema[keyword]
+  const {schemaType, $data: $defData} = def
+  validateKeywordSchema(it, keyword, def)
+  const {gen, data, opts, allErrors} = it
+  // TODO
+  // if (!code) throw new Error('"code" and "error" must be defined')
+  const $data = $defData && opts.$data && schema && schema.$data
+  const schemaValue = schemaRefOrVal(it, schema, keyword, $data)
+  const cxt: KeywordContext = {
+    gen,
+    ok,
+    pass,
+    fail,
+    errorParams,
+    keyword,
+    data,
+    $data,
+    schema,
+    schemaCode: $data ? gen.name("schema") : schemaValue, // reference to resolved schema value
+    schemaValue, // actual schema reference or value for primitive values
+    parentSchema: it.schema,
+    params: {},
+    it,
+  }
+  if ($data) {
+    gen.const(<Name>cxt.schemaCode, `${getData($data, it)}`)
+  } else if (schemaType && !validSchemaType(schema, schemaType)) {
+    throw new Error(`${keyword} must be ${JSON.stringify(schemaType)}`)
+  }
+  return cxt
+
+  function fail(cond?: Expression, failAction?: () => void, context?: KeywordContext): void {
+    const action = failAction || _reportError
+    if (cond) {
+      gen.if(cond)
+      action()
+      if (allErrors) gen.endIf()
+      else gen.else()
+    } else {
+      action()
+      if (!allErrors) gen.if("false")
+    }
+
+    function _reportError() {
+      reportError(context || cxt, def.error || keywordError)
+    }
+  }
+
+  function pass(cond: Expression, failAction?: () => void, context?: KeywordContext): void {
+    cond = cond instanceof Name ? cond : `(${cond})`
+    fail(`!${cond}`, failAction, context)
+  }
+
+  function ok(cond: Expression): void {
+    if (!allErrors) gen.if(cond)
+  }
+
+  function errorParams(obj: KeywordContextParams, assign?: true) {
+    if (assign) Object.assign(cxt.params, obj)
+    else cxt.params = obj
+  }
+}
+
+function validSchemaType(schema: any, schemaType: string | string[]): boolean {
+  // TODO add tests
+  if (Array.isArray(schemaType)) {
+    return schemaType.some((st) => validSchemaType(schema, st))
+  }
+  return schemaType === "array"
+    ? Array.isArray(schema)
+    : schemaType === "object"
+    ? schema && typeof schema == "object" && !Array.isArray(schema)
+    : typeof schema == schemaType
+}
+
+export function getKeywordContext(it: CompilationContext, keyword: string): KeywordContext {
+  const {gen, data, schema} = it
+  const schemaCode = schemaRefOrVal(it, schema, keyword)
+  return {
+    gen,
+    ok: exception,
+    pass: exception,
+    fail: exception,
+    errorParams: exception,
+    keyword,
+    data,
+    schema: schema[keyword],
+    schemaCode,
+    schemaValue: schemaCode,
+    parentSchema: schema,
+    params: {},
+    it,
+  }
+}
+
+function exception() {
+  throw new Error("this function can only be used in keyword")
 }
 
 function macroKeywordCode(cxt: KeywordContext, def: MacroKeywordDefinition) {

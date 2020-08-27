@@ -1,258 +1,122 @@
-import {
-  KeywordDefinition,
-  CodeKeywordDefinition,
-  Vocabulary,
-  ErrorObject,
-  ValidateFunction,
-  CompilationContext,
-  KeywordContext,
-  KeywordContextParams,
-} from "./types"
+import {KeywordDefinition, Vocabulary, ErrorObject, ValidateFunction} from "./types"
 
 import {ValidationRules, Rule} from "./compile/rules"
-import {reportError} from "./compile/errors"
-import {getData} from "./compile/util"
-import {schemaRefOrVal} from "./vocabularies/util"
 import {definitionSchema} from "./definition_schema"
-import keywordCode, {validateKeywordSchema, keywordError} from "./compile/validate/keyword"
-import {_, Name, Expression} from "./compile/codegen"
+import {_} from "./compile/codegen"
 
 const IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i
 
-/**
- * Define vocabulary
- * @this  Ajv
- * @param {Array<Object>} definitions array of keyword definitions
- * @param {Boolean} _skipValidation skip definition validation
- * @return {Ajv} this for method chaining
- */
-export function addVocabulary(definitions: Vocabulary, _skipValidation?: boolean): object {
+export function addVocabulary(this, definitions: Vocabulary, _skipValidation?: boolean): object {
   // TODO return type Ajv
   for (const def of definitions) {
-    if (!def.keyword) {
-      throw new Error('Vocabulary keywords must have "keyword" property in definition')
-    }
-    if (Array.isArray(def.keyword)) {
-      for (const keyword of def.keyword) {
-        this.addKeyword(keyword, def, _skipValidation)
-      }
-    } else {
-      this.addKeyword(def.keyword, def, _skipValidation)
-    }
+    if (!def.keyword) throw new Error('Keyword definition must have "keyword" property')
+    this.addKeyword(def, _skipValidation)
   }
   return this
 }
 
-// TODO use overloading when switched to typescript to allow not passing keyword
-/**
- * Define keyword
- * @this  Ajv
- * @param {String} keyword custom keyword, should be unique (including different from all standard, custom and macro keywords).
- * @param {Object} definition keyword definition object with properties `type` (type(s) which the keyword applies to), `validate` or `compile`.
- * @param {Boolean} _skipValidation of keyword definition
- * @return {Ajv} this for method chaining
- */
+// TODO Ajv
+export function addKeyword(this, def: KeywordDefinition, _skipValidation?: boolean): object
+export function addKeyword(this, keyword: string): object
 export function addKeyword(
-  keyword: string,
-  definition: KeywordDefinition,
-  _skipValidation?: boolean
+  this: any, // TODO Ajv
+  kwdOrDef: string | KeywordDefinition,
+  defOrSkip?: KeywordDefinition | boolean, // deprecated
+  _skipValidation?: boolean // deprecated
 ): object {
-  // TODO return type Ajv
+  let keyword: string | string[]
+  let definition: KeywordDefinition | undefined
+  if (typeof kwdOrDef == "string") {
+    keyword = kwdOrDef
+    if (typeof defOrSkip == "object") {
+      // this.logger.warn("this method signature is deprecated, see docs for addKeyword")
+      definition = defOrSkip
+      if (definition.keyword === undefined) definition.keyword = keyword
+    }
+  } else if (typeof kwdOrDef == "object" && typeof defOrSkip != "object") {
+    definition = kwdOrDef
+    keyword = definition.keyword
+    _skipValidation = defOrSkip
+  } else {
+    throw new Error("invalid addKeywords parameters")
+  }
+
   /* eslint no-shadow: 0 */
   const RULES: ValidationRules = this.RULES
-  if (RULES.keywords[keyword]) {
-    throw new Error(`Keyword ${keyword} is already defined`)
-  }
-
-  if (!IDENTIFIER.test(keyword)) {
-    throw new Error(`Keyword ${keyword} is not a valid identifier`)
-  }
-
-  // TODO any
-  const self = this
+  eachItem(keyword, (kwd) => {
+    if (RULES.keywords[kwd]) throw new Error(`Keyword ${kwd} is already defined`)
+    if (!IDENTIFIER.test(kwd)) throw new Error(`Keyword ${kwd} has invalid name`)
+  })
 
   if (definition) {
     if (!_skipValidation) this.validateKeyword(definition, true)
-    const dataType = definition.type
-    if (Array.isArray(dataType)) {
-      for (const t of dataType) {
-        _addRule(keyword, t, definition)
-      }
-    } else {
-      _addRule(keyword, dataType, definition)
-    }
-
-    let metaSchema = definition.metaSchema
-    if (metaSchema) {
-      if (definition.$data && this._opts.$data) {
-        metaSchema = {
-          anyOf: [
-            metaSchema,
-            {
-              $ref:
-                "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#",
-            },
-          ],
-        }
-      }
-      definition.validateSchema = this.compile(metaSchema, true)
-    }
+    keywordMetaschema.call(this, definition)
   }
-
-  function _addRule(keyword: string, dataType: string | undefined, definition: KeywordDefinition) {
-    let ruleGroup = RULES.rules.find(({type: t}) => t === dataType)
-
-    if (!ruleGroup) {
-      ruleGroup = {type: dataType, rules: []}
-      RULES.rules.push(ruleGroup)
-    }
-
-    const rule: Rule = {
-      keyword,
-      definition,
-      custom: true,
-      code: ruleCode,
-      implements: definition.implements,
-    }
-
-    if (definition.before) {
-      const i = ruleGroup.rules.findIndex((rule) => rule.keyword === definition.before)
-      if (i >= 0) {
-        ruleGroup.rules.splice(i, 0, rule)
-      } else {
-        ruleGroup.rules.push(rule)
-        // TODO replace with Ajv this.logger
-        self.logger.log(`rule ${definition.before} is not defined`)
-      }
-    } else {
-      ruleGroup.rules.push(rule)
-    }
-
-    RULES.custom[keyword] = RULES.all[keyword] = rule
-    RULES.keywords[keyword] = true
-  }
+  const types = definition?.type
+  eachItem(keyword, (kwd) => {
+    eachItem(types, (t) => _addRule.call(this, kwd, t, definition))
+  })
 
   return this
 }
 
-/**
- * Generate keyword code
- * @this rule
- * @param {Object} it schema compilation context.
- * @param {String} keyword pre-defined or custom keyword.
- * @param {String} ruleType current data type the rule is applied to (for rules supporting multiple types).
- */
-function ruleCode(it: CompilationContext, keyword: string, ruleType?: string): void {
-  const schema = it.schema[keyword]
-  const def: CodeKeywordDefinition = this.definition
-  const {schemaType, $data: $defData} = def
-  validateKeywordSchema(it, keyword, def)
-  const {gen, data, opts, allErrors} = it
-  // TODO
-  // if (!code) throw new Error('"code" and "error" must be defined')
-  const $data = $defData && opts.$data && schema && schema.$data
-  const schemaValue = schemaRefOrVal(it, schema, keyword, $data)
-  const cxt: KeywordContext = {
-    gen,
-    ok,
-    pass,
-    fail,
-    errorParams,
-    keyword,
-    data,
-    $data,
-    schema,
-    schemaCode: $data ? gen.name("schema") : schemaValue, // reference to resolved schema value
-    schemaValue, // actual schema reference or value for primitive values
-    parentSchema: it.schema,
-    params: {},
-    it,
+function _addRule(keyword: string, dataType?: string, definition?: KeywordDefinition) {
+  const RULES: ValidationRules = this.RULES
+  let ruleGroup = RULES.rules.find(({type: t}) => t === dataType)
+  if (!ruleGroup) {
+    ruleGroup = {type: dataType, rules: []}
+    RULES.rules.push(ruleGroup)
   }
-  if ($data) {
-    gen.const(<Name>cxt.schemaCode, `${getData($data, it)}`)
-  } else if (schemaType && !validSchemaType(schema, schemaType)) {
-    throw new Error(`${keyword} must be ${JSON.stringify(schemaType)}`)
-  }
-  ;(def.code || keywordCode)(cxt, ruleType, this.definition)
 
-  function fail(cond?: Expression, failAction?: () => void, context?: KeywordContext): void {
-    const action = failAction || _reportError
-    if (cond) {
-      gen.if(cond)
-      action()
-      if (allErrors) gen.endIf()
-      else gen.else()
+  RULES.keywords[keyword] = true
+  if (!definition) return
+
+  const rule: Rule = {
+    keyword,
+    definition,
+  }
+
+  if (definition?.before) {
+    const i = ruleGroup.rules.findIndex((rule) => rule.keyword === definition.before)
+    if (i >= 0) {
+      ruleGroup.rules.splice(i, 0, rule)
     } else {
-      action()
-      if (!allErrors) gen.if("false")
+      ruleGroup.rules.push(rule)
+      // TODO replace with Ajv this.logger
+      this.logger.log(`rule ${definition.before} is not defined`)
     }
-
-    function _reportError() {
-      reportError(context || cxt, def.error || keywordError)
-    }
+  } else {
+    ruleGroup.rules.push(rule)
   }
 
-  function pass(cond: Expression, failAction?: () => void, context?: KeywordContext): void {
-    cond = cond instanceof Name ? cond : `(${cond})`
-    fail(`!${cond}`, failAction, context)
-  }
+  RULES.all[keyword] = rule
+}
 
-  function ok(cond: Expression): void {
-    if (!allErrors) gen.if(cond)
-  }
-
-  function errorParams(obj: KeywordContextParams, assign?: true) {
-    if (assign) Object.assign(cxt.params, obj)
-    else cxt.params = obj
+function eachItem<T>(xs: T | T[], f: (x: T) => void): void {
+  if (Array.isArray(xs)) {
+    for (const x of xs) f(x)
+  } else {
+    f(xs)
   }
 }
 
-function validSchemaType(schema: any, schemaType: string | string[]): boolean {
-  // TODO add tests
-  if (Array.isArray(schemaType)) {
-    return schemaType.some((st) => validSchemaType(schema, st))
+const $dataRef = {
+  $ref: "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#",
+}
+
+function keywordMetaschema(this: any, def: KeywordDefinition): void {
+  // TODO this Ajv
+  let metaSchema = def.metaSchema
+  if (metaSchema === undefined) return
+  if (def.$data && this._opts.$data) {
+    metaSchema = {anyOf: [metaSchema, $dataRef]}
   }
-  return schemaType === "array"
-    ? Array.isArray(schema)
-    : schemaType === "object"
-    ? schema && typeof schema == "object" && !Array.isArray(schema)
-    : typeof schema == schemaType
+  def.validateSchema = this.compile(metaSchema, true)
 }
 
-export function getKeywordContext(it: CompilationContext, keyword: string): KeywordContext {
-  const {gen, data, schema} = it
-  const schemaCode = schemaRefOrVal(it, schema, keyword)
-  return {
-    gen,
-    ok: exception,
-    pass: exception,
-    fail: exception,
-    errorParams: exception,
-    keyword,
-    data,
-    schema: schema[keyword],
-    schemaCode,
-    schemaValue: schemaCode,
-    parentSchema: schema,
-    params: {},
-    it,
-  }
-}
-
-function exception() {
-  throw new Error("this function can only be used in keyword")
-}
-
-/**
- * Get keyword
- * @this  Ajv
- * @param {String} keyword pre-defined or custom keyword.
- * @return {Object|Boolean} custom keyword definition, `true` if it is a predefined keyword, `false` otherwise.
- */
-export function getKeyword(keyword: string): KeywordDefinition | boolean {
-  /* jshint validthis: true */
-  const rule = this.RULES.custom[keyword]
-  return rule ? rule.definition : this.RULES.keywords[keyword] || false
+export function getKeyword(this, keyword: string): KeywordDefinition | boolean {
+  const rule = this.RULES.all[keyword]
+  return rule?.definition || rule || false
 }
 
 /**
@@ -267,7 +131,6 @@ export function removeKeyword(keyword: string): object {
   const RULES: ValidationRules = this.RULES
   delete RULES.keywords[keyword]
   delete RULES.all[keyword]
-  delete RULES.custom[keyword]
   for (const group of RULES.rules) {
     const i = group.rules.findIndex((rule) => rule.keyword === keyword)
     if (i >= 0) group.rules.splice(i, 1)
