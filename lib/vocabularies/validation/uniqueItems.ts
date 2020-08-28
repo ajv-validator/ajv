@@ -69,7 +69,7 @@ const def: CodeKeywordDefinition = {
         .code(_`outer:`)
         .for(_`;${i}--;`, () =>
           gen.for(_`${j} = ${i}; ${j}--;`, () =>
-            gen.if(`equal(${data}[${i}], ${data}[${j}])`, _`${valid} = false; break outer;`)
+            gen.if(_`equal(${data}[${i}], ${data}[${j}])`, _`${valid} = false; break outer;`)
           )
         )
     }

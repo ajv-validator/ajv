@@ -298,7 +298,7 @@ describe("Validation errors", () => {
     })
 
     it("should show different error when required is $data of incorrect type", () => {
-      // test(new Ajv({$data: true}))
+      test(new Ajv({$data: true}))
       test(new Ajv({$data: true, allErrors: true}))
 
       function test(_ajv) {

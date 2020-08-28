@@ -12,54 +12,42 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordContext) {
     const {gen, schema, schemaCode, data, $data, it} = cxt
     if (!$data && schema.length === 0) return
-
     const loopRequired = $data || schema.length >= <number>it.opts.loopRequired
-
     if (it.allErrors) allErrorsMode()
     else exitOnErrorMode()
 
     function allErrorsMode(): void {
       if (loopRequired) {
-        if ($data) {
-          gen.if(
-            `${schemaCode} && !Array.isArray(${schemaCode})`,
-            () => cxt.error(),
-            () => gen.if(`${schemaCode} !== undefined`, loopAllRequired)
-          )
-        } else {
-          loopAllRequired()
-        }
-      } else {
-        for (const prop of schema) {
-          checkReportMissingProp(cxt, prop)
-        }
+        check$DataAnd(loopAllRequired)
+        return
+      }
+      for (const prop of schema) {
+        checkReportMissingProp(cxt, prop)
       }
     }
 
     function exitOnErrorMode(): void {
       const missing = gen.let("missing")
-      cxt.setParams({missingProperty: missing})
-
       if (loopRequired) {
         const valid = gen.let("valid", true)
-
-        // TODO refactor and enable/fix test in errors.spec.js line 301
-        // it can be simpler once blocks are globally supported - endIf can be removed, so there will be 2 open blocks
-        if ($data) {
-          gen.if(`${schemaCode} === undefined`, `${valid} = true`, () =>
-            gen.if(`!Array.isArray(${schemaCode})`, `${valid} = false`, () =>
-              loopUntilMissing(missing, valid)
-            )
-          )
-        } else {
-          loopUntilMissing(missing, valid)
-        }
-
+        check$DataAnd(() => loopUntilMissing(missing, valid))
         cxt.pass(valid)
       } else {
         gen.if(`${checkMissingProp(cxt, schema, missing)}`)
         reportMissingProp(cxt, missing)
         gen.else()
+      }
+    }
+
+    function check$DataAnd(loop: () => void): void {
+      if ($data) {
+        gen.if(
+          `${schemaCode} && !Array.isArray(${schemaCode})`,
+          () => cxt.error(),
+          () => gen.if(`${schemaCode} !== undefined`, loop)
+        )
+      } else {
+        loop()
       }
     }
 
@@ -72,11 +60,12 @@ const def: CodeKeywordDefinition = {
     }
 
     function loopUntilMissing(missing: Name, valid: Name): void {
-      gen.for(`${missing} of ${schemaCode}`, () =>
+      cxt.setParams({missingProperty: missing})
+      gen.for(`${missing} of ${schemaCode}`, () => {
         gen
           .assign(valid, propertyInData(data, missing, it.opts.ownProperties))
           .ifNot(valid, "break")
-      )
+      })
     }
   },
   error: {
