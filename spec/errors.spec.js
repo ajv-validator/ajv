@@ -935,6 +935,18 @@ describe("Validation errors", () => {
     })
   })
 
+  describe("$ref errors", () => {
+    it("should have correct message and params", () => {
+      const _ajv = new Ajv({missingRefs: "fail"})
+      const schema = {$ref: "#/unknown"}
+      const validate = _ajv.compile(schema)
+      shouldBeInvalid(validate, {})
+      shouldBeError(validate.errors[0], "$ref", "#/$ref", "", "can't resolve reference #/unknown", {
+        ref: "#/unknown",
+      })
+    })
+  })
+
   function testSchema1(schema, schemaPathPrefix) {
     _testSchema1(ajv, schema, schemaPathPrefix)
     _testSchema1(ajvJP, schema, schemaPathPrefix)

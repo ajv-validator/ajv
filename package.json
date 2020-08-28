@@ -23,7 +23,7 @@
     "test-ts": "tsc --target ES5 --noImplicitAny --noEmit spec/typescript/index.ts",
     "bundle": "del-cli dist && node ./scripts/bundle.js . Ajv pure_getters",
     "bundle-beautify": "node ./scripts/bundle.js js-beautify",
-    "build": "del-cli dist && tsc || true && cp -r lib/refs dist/refs",
+    "build": "del-cli dist && tsc && cp -r lib/refs dist/refs",
     "test-karma": "karma start",
     "test-browser": "del-cli .browser && npm run bundle && scripts/prepare-tests && npm run test-karma",
     "test-all": "npm run test-cov && if-node-version 12 npm run test-browser",

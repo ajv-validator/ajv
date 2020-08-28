@@ -4,7 +4,7 @@ import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {ResolvedRef, InlineResolvedRef} from "../../compile"
 import {callValidate} from "../util"
-import {_, Expression} from "../../compile/codegen"
+import {_, str, Expression} from "../../compile/codegen"
 import N from "../../compile/names"
 
 const def: CodeKeywordDefinition = {
@@ -88,8 +88,8 @@ const def: CodeKeywordDefinition = {
   },
   // TODO incorrect error message
   error: {
-    message: ({schemaCode}) => `'should match format "' + ${schemaCode} + '"'`,
-    params: ({schemaCode}) => `{format: ${schemaCode}}`,
+    message: ({schema}) => str`can't resolve reference ${schema}`,
+    params: ({schema}) => _`{ref: ${schema}}`,
   },
 }
 
