@@ -175,8 +175,8 @@ export default class CodeGen {
     return this
   }
 
-  break(): CodeGen {
-    this.code("break;")
+  break(label?: Code): CodeGen {
+    this.code(label ? _`break ${label};` : _`break;`)
     return this
   }
 

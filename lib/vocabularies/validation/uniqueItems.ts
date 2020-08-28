@@ -1,7 +1,7 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {checkDataType, checkDataTypes} from "../../compile/util"
-import {_, str} from "../../compile/codegen"
+import {_, str, Name} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "uniqueItems",
@@ -11,29 +11,29 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordContext) {
     const {gen, data, $data, schema, parentSchema, schemaCode, it} = cxt
     if (it.opts.uniqueItems === false || !($data || schema)) return
-    const i = gen.let("i")
-    const j = gen.let("j")
     const valid = gen.let("valid")
-    cxt.setParams({i, j})
     const itemType = parentSchema.items?.type
 
-    // TODO refactor to have two open blocks? same as in required
     if ($data) {
-      gen.if(`${schemaCode} === false || ${schemaCode} === undefined`, `${valid} = true`, () =>
-        gen.if(`typeof ${schemaCode} != "boolean"`, `${valid} = false`, validateUniqueItems)
-      )
+      gen.if(_`${schemaCode} === false || ${schemaCode} === undefined`)
+      gen.assign(valid, true)
+      gen.elseIf(_`typeof ${schemaCode} != "boolean"`)
+      cxt.error()
+      gen.assign(valid, false)
+      gen.else()
+      validateUniqueItems()
+      gen.endIf()
     } else {
       validateUniqueItems()
     }
-
-    cxt.pass(valid)
+    cxt.ok(valid)
 
     function validateUniqueItems() {
-      gen.code(
-        `${i} = ${data}.length;
-        ${valid} = true;`
-      )
-      gen.if(`${i} > 1`, canOptimize() ? loopN : loopN2)
+      const i = gen.let("i", _`${data}.length`)
+      const j = gen.let("j")
+      cxt.setParams({i, j})
+      gen.assign(valid, true)
+      gen.if(`${i} > 1`, () => (canOptimize() ? loopN : loopN2)(i, j))
     }
 
     function canOptimize(): boolean {
@@ -42,7 +42,7 @@ const def: CodeKeywordDefinition = {
         : itemType && itemType !== "object" && itemType !== "array"
     }
 
-    function loopN(): void {
+    function loopN(i: Name, j: Name): void {
       const item = gen.name("item")
       const wrongType = (Array.isArray(itemType) ? checkDataTypes : checkDataType)(
         itemType,
@@ -50,39 +50,38 @@ const def: CodeKeywordDefinition = {
         it.opts.strictNumbers,
         true
       )
-      const indices = gen.const("indices", "{}")
+      const indices = gen.const("indices", _`{}`)
       gen.for(_`;${i}--;`, () => {
         gen.let(item, `${data}[${i}];`)
         gen.if(wrongType, "continue")
         if (Array.isArray(itemType)) gen.if(_`typeof ${item} == "string"`, _`${item} += "_"`)
         gen
-          .if(
-            _`typeof ${indices}[${item}] == "number"`,
-            _`${valid} = false; ${j} = ${indices}[${item}]; break;`
-          )
+          .if(_`typeof ${indices}[${item}] == "number"`, () => {
+            gen.assign(j, _`${indices}[${item}]`)
+            cxt.error()
+            gen.assign(valid, false).break()
+          })
           .code(_`${indices}[${item}] = ${i};`)
       })
     }
 
-    function loopN2(): void {
-      gen
-        .code(_`outer:`)
-        .for(_`;${i}--;`, () =>
-          gen.for(_`${j} = ${i}; ${j}--;`, () =>
-            gen.if(_`equal(${data}[${i}], ${data}[${j}])`, _`${valid} = false; break outer;`)
-          )
+    function loopN2(i: Name, j: Name): void {
+      gen.code(_`outer:`).for(_`;${i}--;`, () =>
+        gen.for(_`${j} = ${i}; ${j}--;`, () =>
+          gen.if(_`equal(${data}[${i}], ${data}[${j}])`, () => {
+            cxt.error()
+            gen.assign(valid, false).break(_`outer`)
+          })
         )
+      )
     }
   },
   error: {
-    message: ({$data, params: {i, j}}) => {
-      const msg = str`should NOT have duplicate items (items ## ${j} and ${i} are identical)`
-      return $data ? _`(${i} === undefined ? "uniqueItems must be boolean ($data)" : ${msg})` : msg
-    },
-    params: ({$data, params: {i, j}}) => {
-      const obj = _`{i: ${i}, j: ${j}}`
-      return $data ? _`(${i} === undefined ? {} : ${obj})` : obj
-    },
+    message: ({params: {i, j}}) =>
+      i
+        ? str`should NOT have duplicate items (items ## ${j} and ${i} are identical)`
+        : str`uniqueItems must be boolean ($data)`,
+    params: ({params: {i, j}}) => (i ? _`{i: ${i}, j: ${j}}` : _`{}`),
   },
 }
 

@@ -18,7 +18,13 @@ const def: CodeKeywordDefinition = {
 
     function allErrorsMode(): void {
       if (loopRequired) {
-        check$DataAnd(loopAllRequired)
+        if ($data) {
+          gen.if(_`${schemaCode} !== undefined`, () => {
+            gen.if(_`!Array.isArray(${schemaCode})`, () => cxt.error(), loopAllRequired)
+          })
+        } else {
+          loopAllRequired()
+        }
         return
       }
       for (const prop of schema) {
@@ -30,24 +36,23 @@ const def: CodeKeywordDefinition = {
       const missing = gen.let("missing")
       if (loopRequired) {
         const valid = gen.let("valid", true)
-        check$DataAnd(() => loopUntilMissing(missing, valid))
-        cxt.pass(valid)
+        if ($data) {
+          gen.if(_`${schemaCode} === undefined`)
+          gen.assign(valid, true)
+          gen.elseIf(_`!Array.isArray(${schemaCode})`)
+          cxt.error()
+          gen.assign(valid, false)
+          gen.else()
+          loopUntilMissing(missing, valid)
+          gen.endIf()
+        } else {
+          loopUntilMissing(missing, valid)
+        }
+        cxt.ok(valid)
       } else {
         gen.if(`${checkMissingProp(cxt, schema, missing)}`)
         reportMissingProp(cxt, missing)
         gen.else()
-      }
-    }
-
-    function check$DataAnd(loop: () => void): void {
-      if ($data) {
-        gen.if(
-          `${schemaCode} && !Array.isArray(${schemaCode})`,
-          () => cxt.error(),
-          () => gen.if(`${schemaCode} !== undefined`, loop)
-        )
-      } else {
-        loop()
       }
     }
 
@@ -62,9 +67,11 @@ const def: CodeKeywordDefinition = {
     function loopUntilMissing(missing: Name, valid: Name): void {
       cxt.setParams({missingProperty: missing})
       gen.for(`${missing} of ${schemaCode}`, () => {
-        gen
-          .assign(valid, propertyInData(data, missing, it.opts.ownProperties))
-          .ifNot(valid, "break")
+        gen.assign(valid, propertyInData(data, missing, it.opts.ownProperties))
+        gen.ifNot(valid, () => {
+          cxt.error()
+          gen.break()
+        })
       })
     }
   },
