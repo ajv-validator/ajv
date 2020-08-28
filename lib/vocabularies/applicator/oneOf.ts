@@ -1,34 +1,27 @@
-import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
-import {reportExtraError, resetErrorsCount} from "../../compile/errors"
 import {_} from "../../compile/codegen"
-import N from "../../compile/names"
-
-const error: KeywordErrorDefinition = {
-  message: "should match exactly one schema in oneOf",
-  params: ({params}) => _`{passingSchemas: ${params.passing}}`,
-}
 
 const def: CodeKeywordDefinition = {
   keyword: "oneOf",
   schemaType: "array",
+  trackErrors: true,
   code(cxt: KeywordContext) {
     const {gen, schema, it} = cxt
     const valid = gen.let("valid", false)
-    const errsCount = gen.const("_errs", N.errors)
     const passing = gen.let("passing", "null")
     const schValid = gen.name("_valid")
-    cxt.errorParams({passing})
+    cxt.setParams({passing})
     // TODO possibly fail straight away (with warning or exception) if there are two empty always valid schemas
 
     gen.block(validateOneOf)
 
     cxt.result(
       valid,
-      () => resetErrorsCount(gen, errsCount),
-      () => reportExtraError(cxt, error)
+      () => cxt.reset(),
+      () => cxt.error(true)
     )
 
     function validateOneOf() {
@@ -60,6 +53,10 @@ const def: CodeKeywordDefinition = {
         gen.if(schValid, _`${valid} = true; ${passing} = ${i};`)
       })
     }
+  },
+  error: {
+    message: "should match exactly one schema in oneOf",
+    params: ({params}) => _`{passingSchemas: ${params.passing}}`,
   },
 }
 

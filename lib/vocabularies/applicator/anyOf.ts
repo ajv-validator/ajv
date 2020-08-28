@@ -1,25 +1,18 @@
-import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
-import {reportExtraError, resetErrorsCount} from "../../compile/errors"
 import {_} from "../../compile/codegen"
-import N from "../../compile/names"
-
-const error: KeywordErrorDefinition = {
-  message: "should match some schema in anyOf",
-}
 
 const def: CodeKeywordDefinition = {
   keyword: "anyOf",
   schemaType: "array",
-  error,
+  trackErrors: true,
   code(cxt: KeywordContext) {
     const {gen, schema, it} = cxt
     const alwaysValid = schema.some((sch: object | boolean) => alwaysValidSchema(it, sch))
     if (alwaysValid) return
 
-    const errsCount = gen.const("_errs", N.errors)
     const valid = gen.let("valid", false)
     const schValid = gen.name("_valid")
 
@@ -41,9 +34,12 @@ const def: CodeKeywordDefinition = {
 
     cxt.result(
       valid,
-      () => resetErrorsCount(gen, errsCount),
-      () => reportExtraError(cxt, error)
+      () => cxt.reset(),
+      () => cxt.error(true)
     )
+  },
+  error: {
+    message: "should match some schema in anyOf",
   },
 }
 

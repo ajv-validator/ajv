@@ -162,6 +162,7 @@ interface _KeywordDef {
 export interface CodeKeywordDefinition extends _KeywordDef {
   code: (cxt: KeywordContext, ruleType?: string) => void
   $data?: boolean
+  trackErrors?: boolean
 }
 
 export type MacroKeywordFunc = (

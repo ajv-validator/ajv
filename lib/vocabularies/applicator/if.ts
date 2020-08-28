@@ -1,22 +1,15 @@
-import {CodeKeywordDefinition, KeywordErrorDefinition, CompilationContext} from "../../types"
+import {CodeKeywordDefinition, CompilationContext} from "../../types"
 import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
-import {reportExtraError, resetErrorsCount} from "../../compile/errors"
 import {_, str, Name} from "../../compile/codegen"
-import N from "../../compile/names"
-
-const error: KeywordErrorDefinition = {
-  message: ({params}) => str`should match "${params.ifClause}" schema`,
-  params: ({params}) => _`{failingKeyword: ${params.ifClause}}`,
-}
 
 const def: CodeKeywordDefinition = {
   keyword: "if",
   schemaType: ["object", "boolean"],
   // TODO
   // implements: ["then", "else"],
-  error,
+  trackErrors: true,
   code(cxt: KeywordContext) {
     const {gen, it} = cxt
     const hasThen = hasSchema(it, "then")
@@ -27,15 +20,14 @@ const def: CodeKeywordDefinition = {
     }
 
     const valid = gen.let("valid", true)
-    const errsCount = gen.const("_errs", N.errors)
     const schValid = gen.name("_valid")
 
     validateIf()
-    resetErrorsCount(gen, errsCount)
+    cxt.reset()
 
     if (hasThen && hasElse) {
       const ifClause = gen.let("ifClause")
-      cxt.errorParams({ifClause})
+      cxt.setParams({ifClause})
       gen.if(schValid, validateClause("then", ifClause), validateClause("else", ifClause))
     } else if (hasThen) {
       gen.if(schValid, validateClause("then"))
@@ -43,7 +35,7 @@ const def: CodeKeywordDefinition = {
       gen.ifNot(schValid, validateClause("else"))
     }
 
-    cxt.pass(valid, () => reportExtraError(cxt, error))
+    cxt.pass(valid, () => cxt.error(true))
 
     function validateIf(): void {
       applySubschema(
@@ -63,9 +55,13 @@ const def: CodeKeywordDefinition = {
         applySubschema(it, {keyword}, schValid)
         gen.code(`${valid} = ${schValid};`)
         if (ifClause) gen.code(`${ifClause} = "${keyword}";`)
-        else cxt.errorParams({ifClause: keyword})
+        else cxt.setParams({ifClause: keyword})
       }
     }
+  },
+  error: {
+    message: ({params}) => str`should match "${params.ifClause}" schema`,
+    params: ({params}) => _`{failingKeyword: ${params.ifClause}}`,
   },
 }
 

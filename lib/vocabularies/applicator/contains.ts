@@ -1,23 +1,16 @@
-import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
-import {resetErrorsCount} from "../../compile/errors"
-import N from "../../compile/names"
-
-const error: KeywordErrorDefinition = {
-  message: "should contain a valid item",
-}
 
 const def: CodeKeywordDefinition = {
   keyword: "contains",
   type: "array",
   schemaType: ["object", "boolean"],
   before: "uniqueItems",
-  error,
+  trackErrors: true,
   code(cxt: KeywordContext) {
     const {gen, schema, data, it} = cxt
-    const errsCount = gen.const("_errs", N.errors)
 
     if (alwaysValidSchema(it, schema)) {
       cxt.fail(`${data}.length === 0`)
@@ -40,7 +33,10 @@ const def: CodeKeywordDefinition = {
       gen.if(valid, "break")
     })
 
-    cxt.result(valid, () => resetErrorsCount(gen, errsCount))
+    cxt.result(valid, () => cxt.reset())
+  },
+  error: {
+    message: "should contain a valid item",
   },
 }
 

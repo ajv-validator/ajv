@@ -1,17 +1,12 @@
-import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
-import {reportError, resetErrorsCount} from "../../compile/errors"
-import N from "../../compile/names"
-
-const error: KeywordErrorDefinition = {
-  message: "should NOT be valid",
-}
 
 const def: CodeKeywordDefinition = {
   keyword: "not",
   schemaType: ["object", "boolean"],
+  trackErrors: true,
   code(cxt: KeywordContext) {
     const {gen, schema, it} = cxt
     if (alwaysValidSchema(it, schema)) {
@@ -20,7 +15,6 @@ const def: CodeKeywordDefinition = {
     }
 
     const valid = gen.name("valid")
-    const errsCount = gen.const("_errs", N.errors)
     applySubschema(
       it,
       {
@@ -34,9 +28,12 @@ const def: CodeKeywordDefinition = {
 
     cxt.result(
       valid,
-      () => reportError(cxt, error),
-      () => resetErrorsCount(gen, errsCount)
+      () => cxt.error(),
+      () => cxt.reset()
     )
+  },
+  error: {
+    message: "should NOT be valid",
   },
 }
 

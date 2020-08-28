@@ -1,4 +1,4 @@
-import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {alwaysValidSchema, propertyInData} from "../util"
 import {applySubschema} from "../../compile/subschema"
@@ -12,23 +12,10 @@ interface SchemaDependencies {
   [x: string]: object | boolean
 }
 
-const error: KeywordErrorDefinition = {
-  message: ({params: {property, depsCount, deps}}) => {
-    const property_ies = depsCount === 1 ? "property" : "properties"
-    return str`should have ${property_ies} ${deps} when property ${property} is present`
-  },
-  params: ({params: {property, depsCount, deps, missingProperty}}) =>
-    _`{property: ${property},
-    missingProperty: ${missingProperty},
-    depsCount: ${depsCount},
-    deps: ${deps}}`, // TODO change to reference?
-}
-
 const def: CodeKeywordDefinition = {
   keyword: "dependencies",
   type: "object",
   schemaType: "object",
-  error,
   code(cxt: KeywordContext) {
     const {gen, schema, data, it} = cxt
     const [propDeps, schDeps] = splitDependencies()
@@ -54,7 +41,7 @@ const def: CodeKeywordDefinition = {
         const deps = propertyDeps[prop]
         if (deps.length === 0) continue
         const hasProperty = propertyInData(data, prop, it.opts.ownProperties)
-        cxt.errorParams({
+        cxt.setParams({
           property: prop,
           depsCount: deps.length,
           deps: deps.join(", "),
@@ -62,12 +49,12 @@ const def: CodeKeywordDefinition = {
         if (it.allErrors) {
           gen.if(hasProperty, () => {
             for (const depProp of deps) {
-              checkReportMissingProp(cxt, depProp, error)
+              checkReportMissingProp(cxt, depProp)
             }
           })
         } else {
           gen.if(`${hasProperty} && (${checkMissingProp(cxt, deps, missing)})`)
-          reportMissingProp(cxt, missing, error)
+          reportMissingProp(cxt, missing)
           gen.else()
         }
       }
@@ -84,6 +71,17 @@ const def: CodeKeywordDefinition = {
         cxt.ok(valid)
       }
     }
+  },
+  error: {
+    message: ({params: {property, depsCount, deps}}) => {
+      const property_ies = depsCount === 1 ? "property" : "properties"
+      return str`should have ${property_ies} ${deps} when property ${property} is present`
+    },
+    params: ({params: {property, depsCount, deps, missingProperty}}) =>
+      _`{property: ${property},
+      missingProperty: ${missingProperty},
+      depsCount: ${depsCount},
+      deps: ${deps}}`, // TODO change to reference?
   },
 }
 

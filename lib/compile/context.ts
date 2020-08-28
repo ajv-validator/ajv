@@ -6,8 +6,9 @@ import {
 } from "../types"
 import {schemaRefOrVal} from "../vocabularies/util"
 import {getData} from "./util"
-import {reportError, keywordError} from "./errors"
+import {reportError, reportExtraError, resetErrorsCount, keywordError} from "./errors"
 import CodeGen, {Name, Expression} from "./codegen"
+import N from "./names"
 
 export default class KeywordContext implements KeywordErrorContext {
   gen: CodeGen
@@ -19,6 +20,7 @@ export default class KeywordContext implements KeywordErrorContext {
   schemaValue: Expression | number | boolean // Code reference to keyword schema value or primitive value
   schemaCode: Expression | number | boolean // Code reference to resolved schema value (different if schema is $data)
   parentSchema: any
+  errsCount?: Name
   params: KeywordContextParams
   it: CompilationContext
   def: KeywordDefinition
@@ -46,11 +48,15 @@ export default class KeywordContext implements KeywordErrorContext {
         throw new Error(`${keyword} value must be ${JSON.stringify(def.schemaType)}`)
       }
     }
+
+    if ("code" in def && def.trackErrors) {
+      this.errsCount = it.gen.const("_errs", N.errors)
+    }
   }
 
   result(condition: Expression, successAction?: () => void, failAction?: () => void): void {
     this.gen.ifNot(condition)
-    this._actionOrError(failAction)
+    failAction ? failAction() : this.error()
     if (successAction) {
       this.gen.else()
       successAction()
@@ -77,19 +83,20 @@ export default class KeywordContext implements KeywordErrorContext {
     }
   }
 
-  error(): void {
-    reportError(this, this.def.error || keywordError)
+  error(append?: true): void {
+    ;(append ? reportExtraError : reportError)(this, this.def.error || keywordError)
   }
 
-  _actionOrError(failAction?: () => void): void {
-    failAction ? failAction() : reportError(this, this.def.error || keywordError)
+  reset(): void {
+    if (this.errsCount === undefined) throw new Error('add "trackErrors" to keyword definition')
+    resetErrorsCount(this.gen, this.errsCount)
   }
 
   ok(cond: Expression): void {
     if (!this.allErrors) this.gen.if(cond)
   }
 
-  errorParams(obj: KeywordContextParams, assign?: true): void {
+  setParams(obj: KeywordContextParams, assign?: true): void {
     if (assign) Object.assign(this.params, obj)
     else this.params = obj
   }

@@ -1,14 +1,8 @@
-import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {alwaysValidSchema, loopPropertiesCode} from "../util"
 import {applySubschema} from "../../compile/subschema"
-import {reportExtraError} from "../../compile/errors"
 import {_, str} from "../../compile/codegen"
-
-const error: KeywordErrorDefinition = {
-  message: ({params}) => str`property name '${params.propertyName}' is invalid`, // TODO double quotes?
-  params: ({params}) => _`{propertyName: ${params.propertyName}}`,
-}
 
 const def: CodeKeywordDefinition = {
   keyword: "propertyNames",
@@ -20,19 +14,23 @@ const def: CodeKeywordDefinition = {
     const valid = gen.name("valid")
 
     loopPropertiesCode(cxt, (key) => {
-      cxt.errorParams({propertyName: key})
+      cxt.setParams({propertyName: key})
       applySubschema(
         it,
         {keyword: "propertyNames", data: key, propertyName: key, compositeRule: true},
         valid
       )
       gen.ifNot(valid, () => {
-        reportExtraError(cxt, error)
+        cxt.error(true)
         if (!it.allErrors) gen.break()
       })
     })
 
     cxt.ok(valid)
+  },
+  error: {
+    message: ({params}) => str`property name '${params.propertyName}' is invalid`, // TODO double quotes?
+    params: ({params}) => _`{propertyName: ${params.propertyName}}`,
   },
 }
 

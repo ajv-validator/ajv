@@ -1,4 +1,4 @@
-import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {
   allSchemaProperties,
@@ -9,22 +9,16 @@ import {
   orExpr,
 } from "../util"
 import {applySubschema, SubschemaApplication, Expr} from "../../compile/subschema"
-import {reportError, resetErrorsCount} from "../../compile/errors"
 import {Name} from "../../compile/codegen"
 import N from "../../compile/names"
-
-const error: KeywordErrorDefinition = {
-  message: "should NOT have additional properties",
-  params: ({params}) => `{additionalProperty: ${params.additionalProperty}}`,
-}
 
 const def: CodeKeywordDefinition = {
   keyword: "additionalProperties",
   type: "object",
   schemaType: ["object", "boolean", "undefined"], // "undefined" is needed to support option removeAdditional: "all"
-  error,
+  trackErrors: true,
   code(cxt: KeywordContext) {
-    const {gen, schema, parentSchema, data, it} = cxt
+    const {gen, schema, parentSchema, data, errsCount, it} = cxt
     const {allErrors, usePattern, opts} = it
 
     if (alwaysValidSchema(it, schema) && opts.removeAdditional !== "all") return
@@ -32,7 +26,7 @@ const def: CodeKeywordDefinition = {
     const props = allSchemaProperties(parentSchema.properties)
     const patProps = allSchemaProperties(parentSchema.patternProperties)
 
-    const errsCount = gen.const("_errs", N.errors)
+    // const errsCount = gen.const("_errs", N.errors)
     checkAdditionalProperties()
     if (!allErrors) gen.if(`${errsCount} === ${N.errors}`)
 
@@ -70,8 +64,8 @@ const def: CodeKeywordDefinition = {
       }
 
       if (schema === false) {
-        cxt.errorParams({additionalProperty: key})
-        reportError(cxt, error)
+        cxt.setParams({additionalProperty: key})
+        cxt.error()
         if (!allErrors) gen.break()
         return
       }
@@ -81,7 +75,7 @@ const def: CodeKeywordDefinition = {
         if (opts.removeAdditional === "failing") {
           applyAdditionalSchema(key, valid, false)
           gen.ifNot(valid, () => {
-            resetErrorsCount(gen, errsCount)
+            cxt.reset()
             deleteAdditional(key)
           })
         } else {
@@ -106,6 +100,10 @@ const def: CodeKeywordDefinition = {
       }
       applySubschema(it, subschema, valid)
     }
+  },
+  error: {
+    message: "should NOT have additional properties",
+    params: ({params}) => `{additionalProperty: ${params.additionalProperty}}`,
   },
 }
 

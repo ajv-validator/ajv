@@ -549,7 +549,7 @@ describe("Custom keywords", () => {
           const eq = parentSchema.exclusiveRange ? nil : _`=`
           const minOk = gen.const("minOk", _`${data} >${eq} ${min}`)
           const maxOk = gen.const("maxOk", _`${data} <${eq} ${max}`)
-          cxt.errorParams({minOk, maxOk, eq})
+          cxt.setParams({minOk, maxOk, eq})
           cxt.pass(`${minOk} && ${maxOk}`)
         },
         error: {

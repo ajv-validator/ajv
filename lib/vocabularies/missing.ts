@@ -1,18 +1,12 @@
-import {KeywordErrorDefinition} from "../types"
 import KeywordContext from "../compile/context"
 import {noPropertyInData, quotedString, orExpr} from "./util"
-import {reportError} from "../compile/errors"
 import {Name, _} from "../compile/codegen"
 
-export function checkReportMissingProp(
-  cxt: KeywordContext,
-  prop: string,
-  error: KeywordErrorDefinition
-): void {
+export function checkReportMissingProp(cxt: KeywordContext, prop: string): void {
   const {gen, data, it} = cxt
   gen.if(noPropertyInData(data, prop, it.opts.ownProperties), () => {
-    cxt.errorParams({missingProperty: _`${prop}`}, true)
-    reportError(cxt, error)
+    cxt.setParams({missingProperty: _`${prop}`}, true)
+    cxt.error()
   })
 }
 
@@ -27,11 +21,7 @@ export function checkMissingProp(
   })
 }
 
-export function reportMissingProp(
-  cxt: KeywordContext,
-  missing: Name,
-  error: KeywordErrorDefinition
-): void {
-  cxt.errorParams({missingProperty: missing}, true)
-  reportError(cxt, error)
+export function reportMissingProp(cxt: KeywordContext, missing: Name): void {
+  cxt.setParams({missingProperty: missing}, true)
+  cxt.error()
 }

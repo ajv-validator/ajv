@@ -14,7 +14,7 @@ const def: CodeKeywordDefinition = {
     const i = gen.let("i")
     const j = gen.let("j")
     const valid = gen.let("valid")
-    cxt.errorParams({i, j})
+    cxt.setParams({i, j})
     const itemType = parentSchema.items?.type
 
     // TODO refactor to have two open blocks? same as in required
