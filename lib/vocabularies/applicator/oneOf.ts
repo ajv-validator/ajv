@@ -6,6 +6,11 @@ import {reportExtraError, resetErrorsCount} from "../../compile/errors"
 import {_} from "../../compile/codegen"
 import N from "../../compile/names"
 
+const error: KeywordErrorDefinition = {
+  message: "should match exactly one schema in oneOf",
+  params: ({params}) => _`{passingSchemas: ${params.passing}}`,
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "oneOf",
   schemaType: "array",
@@ -20,13 +25,11 @@ const def: CodeKeywordDefinition = {
 
     gen.block(validateOneOf)
 
-    // TODO refactor failCompoundOrReset?
-    // TODO refactor ifs
-    gen.if(_`!${valid}`)
-    reportExtraError(cxt, def.error as KeywordErrorDefinition)
-    gen.else()
-    resetErrorsCount(gen, errsCount)
-    if (it.allErrors) gen.endIf()
+    cxt.result(
+      valid,
+      () => resetErrorsCount(gen, errsCount),
+      () => reportExtraError(cxt, error)
+    )
 
     function validateOneOf() {
       schema.forEach((sch, i: number) => {
@@ -57,10 +60,6 @@ const def: CodeKeywordDefinition = {
         gen.if(schValid, _`${valid} = true; ${passing} = ${i};`)
       })
     }
-  },
-  error: {
-    message: "should match exactly one schema in oneOf",
-    params: ({params}) => _`{passingSchemas: ${params.passing}}`,
   },
 }
 

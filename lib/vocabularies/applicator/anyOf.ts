@@ -6,9 +6,14 @@ import {reportExtraError, resetErrorsCount} from "../../compile/errors"
 import {_} from "../../compile/codegen"
 import N from "../../compile/names"
 
+const error: KeywordErrorDefinition = {
+  message: "should match some schema in anyOf",
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "anyOf",
   schemaType: "array",
+  error,
   code(cxt: KeywordContext) {
     const {gen, schema, it} = cxt
     const alwaysValid = schema.some((sch: object | boolean) => alwaysValidSchema(it, sch))
@@ -30,19 +35,15 @@ const def: CodeKeywordDefinition = {
           schValid
         )
         gen.code(_`${valid} = ${valid} || ${schValid};`)
-        gen.if(_`!${valid}`)
+        gen.ifNot(valid)
       })
     }, schema.length)
 
-    // TODO refactor failCompoundOrReset?
-    gen.if(`!${valid}`)
-    reportExtraError(cxt, def.error as KeywordErrorDefinition)
-    gen.else()
-    resetErrorsCount(gen, errsCount)
-    if (it.allErrors) gen.endIf()
-  },
-  error: {
-    message: "should match some schema in anyOf",
+    cxt.result(
+      valid,
+      () => resetErrorsCount(gen, errsCount),
+      () => reportExtraError(cxt, error)
+    )
   },
 }
 

@@ -1,8 +1,14 @@
-import {CodeKeywordDefinition} from "../../types"
+import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
+import {reportError} from "../../compile/errors"
 import {_, str} from "../../compile/codegen"
+
+const additionalItemsError: KeywordErrorDefinition = {
+  message: ({schema}) => str`should NOT have more than ${schema.length as number} items`,
+  params: ({schema}) => _`{limit: ${schema.length as number}}`,
+}
 
 const def: CodeKeywordDefinition = {
   keyword: "items",
@@ -32,11 +38,15 @@ const def: CodeKeywordDefinition = {
     }
 
     function validateDataLength(sch: (object | boolean)[]): void {
-      cxt.fail(`${len} > ${sch.length}`, undefined, {
-        ...cxt,
-        keyword: "additionalItems",
-        schemaValue: false,
-      })
+      cxt.result(
+        `${len} <= ${sch.length}`,
+        () => {},
+        () =>
+          reportError(
+            {...cxt, keyword: "additionalItems", schemaValue: false},
+            additionalItemsError
+          )
+      )
     }
 
     function validateDefinedItems(): void {
@@ -64,14 +74,10 @@ const def: CodeKeywordDefinition = {
       const valid = gen.name("valid")
       gen.for(_`let ${i}=${startFrom}; ${i}<${len}; ${i}++`, () => {
         applySubschema(it, {keyword, dataProp: i, expr: Expr.Num}, valid)
-        if (!it.allErrors) gen.if(`!${valid}`, "break")
+        if (!it.allErrors) gen.ifNot(valid, "break")
       })
       cxt.ok(valid)
     }
-  },
-  error: {
-    message: ({schema}) => str`should NOT have more than ${schema.length as number} items`,
-    params: ({schema}) => _`{limit: ${schema.length as number}}`,
   },
 }
 

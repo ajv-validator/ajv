@@ -12,14 +12,16 @@ const def: CodeKeywordDefinition = {
     const {opts} = it
     if ($data) {
       const valid = gen.let("valid")
-      gen.if(`${schemaCode} === undefined`, `${valid} = true;`, () =>
-        gen.code(`${valid} = false;`).if(`Array.isArray(${schemaCode})`, () => loopEnum(valid))
+      gen.if(
+        `${schemaCode} === undefined`,
+        () => gen.assign(valid, true),
+        () => gen.assign(valid, false).if(`Array.isArray(${schemaCode})`, () => loopEnum(valid))
       )
       cxt.pass(valid)
     } else {
       if (schema.length === 0) throw new Error("enum must have non-empty array")
       if (schema.length > (opts.loopEnum as number)) {
-        const valid = gen.let("valid", "false")
+        const valid = gen.let("valid", false)
         loopEnum(valid)
         cxt.pass(valid)
       } else {

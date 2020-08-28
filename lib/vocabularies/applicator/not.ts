@@ -5,6 +5,10 @@ import {applySubschema} from "../../compile/subschema"
 import {reportError, resetErrorsCount} from "../../compile/errors"
 import N from "../../compile/names"
 
+const error: KeywordErrorDefinition = {
+  message: "should NOT be valid",
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "not",
   schemaType: ["object", "boolean"],
@@ -28,16 +32,11 @@ const def: CodeKeywordDefinition = {
       valid
     )
 
-    // TODO refactor failCompoundOrReset?
-    // TODO refactor ifs
-    gen.if(valid)
-    reportError(cxt, def.error as KeywordErrorDefinition)
-    gen.else()
-    resetErrorsCount(gen, errsCount)
-    if (it.allErrors) gen.endIf()
-  },
-  error: {
-    message: "should NOT be valid",
+    cxt.result(
+      valid,
+      () => reportError(cxt, error),
+      () => resetErrorsCount(gen, errsCount)
+    )
   },
 }
 

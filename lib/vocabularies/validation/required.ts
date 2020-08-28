@@ -52,7 +52,7 @@ const def: CodeKeywordDefinition = {
       cxt.errorParams({missingProperty: missing})
 
       if (loopRequired) {
-        const valid = gen.let("valid", "true")
+        const valid = gen.let("valid", true)
 
         // TODO refactor and enable/fix test in errors.spec.js line 301
         // it can be simpler once blocks are globally supported - endIf can be removed, so there will be 2 open blocks
@@ -85,8 +85,8 @@ const def: CodeKeywordDefinition = {
     function loopUntilMissing(missing: Name, valid: Name): void {
       gen.for(`${missing} of ${schemaCode}`, () =>
         gen
-          .code(`${valid} = ${propertyInData(data, missing, it.opts.ownProperties)};`)
-          .if(`!${valid}`, "break")
+          .assign(valid, propertyInData(data, missing, it.opts.ownProperties))
+          .ifNot(valid, "break")
       )
     }
   },

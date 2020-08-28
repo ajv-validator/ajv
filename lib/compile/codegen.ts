@@ -133,6 +133,11 @@ export default class CodeGen {
     return this
   }
 
+  ifNot(condition: Expression, thenBody?: Block, elseBody?: Block): CodeGen {
+    const cond = condition instanceof Name ? condition : `(${condition})`
+    return this.if(`!${cond}`, thenBody, elseBody)
+  }
+
   elseIf(condition: Expression): CodeGen {
     if (this._lastBlock !== BlockKind.If) throw new Error('CodeGen: "else if" without "if"')
     this.code(`}else if(${condition}){`)

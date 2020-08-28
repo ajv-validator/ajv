@@ -51,25 +51,37 @@ export default class KeywordContext implements KeywordErrorContext {
     }
   }
 
-  fail(cond?: Expression, failAction?: () => void, context?: KeywordErrorContext): void {
-    if (cond) {
-      this.gen.if(cond)
-      failAction ? failAction() : this._reportError(context)
+  result(condition: Expression, successAction?: () => void, failAction?: () => void): void {
+    this.gen.ifNot(condition)
+    this._actionOrError(failAction)
+    if (successAction) {
+      this.gen.else()
+      successAction()
+      if (this.allErrors) this.gen.endIf()
+    } else {
       if (this.allErrors) this.gen.endIf()
       else this.gen.else()
-    } else {
-      failAction ? failAction() : this._reportError(context)
-      if (!this.allErrors) this.gen.if("false")
     }
   }
 
-  _reportError(context?: KeywordErrorContext) {
-    reportError(context || this, this.def.error || keywordError)
+  pass(condition: Expression, failAction?: () => void): void {
+    this.result(condition, undefined, failAction)
   }
 
-  pass(cond: Expression, failAction?: () => void, context?: KeywordErrorContext): void {
-    cond = cond instanceof Name ? cond : `(${cond})`
-    this.fail(`!${cond}`, failAction, context)
+  fail(condition?: Expression, failAction?: () => void): void {
+    if (condition) {
+      this.gen.if(condition)
+      this._actionOrError(failAction)
+      if (this.allErrors) this.gen.endIf()
+      else this.gen.else()
+    } else {
+      this._actionOrError(failAction)
+      if (!this.allErrors) this.gen.if("false") // TODO some other way to disable branch?
+    }
+  }
+
+  _actionOrError(failAction?: () => void): void {
+    failAction ? failAction() : reportError(this, this.def.error || keywordError)
   }
 
   ok(cond: Expression): void {

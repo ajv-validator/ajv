@@ -12,10 +12,23 @@ interface SchemaDependencies {
   [x: string]: object | boolean
 }
 
+const error: KeywordErrorDefinition = {
+  message: ({params: {property, depsCount, deps}}) => {
+    const property_ies = depsCount === 1 ? "property" : "properties"
+    return str`should have ${property_ies} ${deps} when property ${property} is present`
+  },
+  params: ({params: {property, depsCount, deps, missingProperty}}) =>
+    _`{property: ${property},
+    missingProperty: ${missingProperty},
+    depsCount: ${depsCount},
+    deps: ${deps}}`, // TODO change to reference?
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "dependencies",
   type: "object",
   schemaType: "object",
+  error,
   code(cxt: KeywordContext) {
     const {gen, schema, data, it} = cxt
     const [propDeps, schDeps] = splitDependencies()
@@ -35,6 +48,8 @@ const def: CodeKeywordDefinition = {
     }
 
     function validatePropertyDeps(propertyDeps: {[x: string]: string[]}): void {
+      if (Object.keys(propertyDeps).length === 0) return
+      const missing = gen.let("missing")
       for (const prop in propertyDeps) {
         const deps = propertyDeps[prop]
         if (deps.length === 0) continue
@@ -47,15 +62,12 @@ const def: CodeKeywordDefinition = {
         if (it.allErrors) {
           gen.if(hasProperty, () => {
             for (const depProp of deps) {
-              checkReportMissingProp(cxt, depProp, def.error as KeywordErrorDefinition)
+              checkReportMissingProp(cxt, depProp, error)
             }
           })
         } else {
-          // TODO refactor: maybe use one variable for all dependencies
-          // or not use this variable at all?
-          const missing = gen.let("missing")
           gen.if(`${hasProperty} && (${checkMissingProp(cxt, deps, missing)})`)
-          reportMissingProp(cxt, missing, def.error as KeywordErrorDefinition)
+          reportMissingProp(cxt, missing, error)
           gen.else()
         }
       }
@@ -67,22 +79,11 @@ const def: CodeKeywordDefinition = {
         gen.if(
           propertyInData(data, prop, it.opts.ownProperties),
           () => applySubschema(it, {keyword: "dependencies", schemaProp: prop}, valid),
-          `var ${valid} = true;` // TODO refactor var
+          () => gen.var(valid, true) // TODO var
         )
         cxt.ok(valid)
       }
     }
-  },
-  error: {
-    message: ({params: {property, depsCount, deps}}) => {
-      const property_ies = depsCount === 1 ? "property" : "properties"
-      return str`should have ${property_ies} ${deps} when property ${property} is present`
-    },
-    params: ({params: {property, depsCount, deps, missingProperty}}) =>
-      _`{property: ${property},
-      missingProperty: ${missingProperty},
-      depsCount: ${depsCount},
-      deps: ${deps}}`, // TODO change to reference?
   },
 }
 

@@ -2,14 +2,19 @@ import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
-import {reportError, resetErrorsCount} from "../../compile/errors"
+import {resetErrorsCount} from "../../compile/errors"
 import N from "../../compile/names"
+
+const error: KeywordErrorDefinition = {
+  message: "should contain a valid item",
+}
 
 const def: CodeKeywordDefinition = {
   keyword: "contains",
   type: "array",
   schemaType: ["object", "boolean"],
   before: "uniqueItems",
+  error,
   code(cxt: KeywordContext) {
     const {gen, schema, data, it} = cxt
     const errsCount = gen.const("_errs", N.errors)
@@ -35,15 +40,7 @@ const def: CodeKeywordDefinition = {
       gen.if(valid, "break")
     })
 
-    // TODO refactor failCompoundOrReset? It is different from anyOf though
-    gen.if(`!${valid}`)
-    reportError(cxt, def.error as KeywordErrorDefinition)
-    gen.else()
-    resetErrorsCount(gen, errsCount)
-    if (it.allErrors) gen.endIf()
-  },
-  error: {
-    message: "should contain a valid item",
+    cxt.result(valid, () => resetErrorsCount(gen, errsCount))
   },
 }
 

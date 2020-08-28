@@ -25,15 +25,9 @@ const def: CodeKeywordDefinition = {
   error,
   code(cxt: KeywordContext) {
     const {gen, schema, parentSchema, data, it} = cxt
-    const {
-      allErrors,
-      usePattern,
-      opts: {removeAdditional},
-    } = it
+    const {allErrors, usePattern, opts} = it
 
-    if ((schema === undefined || alwaysValidSchema(it, schema)) && removeAdditional !== "all") {
-      return
-    }
+    if (alwaysValidSchema(it, schema) && opts.removeAdditional !== "all") return
 
     const props = allSchemaProperties(parentSchema.properties)
     const patProps = allSchemaProperties(parentSchema.patternProperties)
@@ -70,7 +64,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function additionalPropertyCode(key: Name): void {
-      if (removeAdditional === "all" || (removeAdditional && schema === false)) {
+      if (opts.removeAdditional === "all" || (opts.removeAdditional && schema === false)) {
         deleteAdditional(key)
         return
       }
@@ -84,15 +78,15 @@ const def: CodeKeywordDefinition = {
 
       if (typeof schema == "object" && !alwaysValidSchema(it, schema)) {
         const valid = gen.name("valid")
-        if (removeAdditional === "failing") {
+        if (opts.removeAdditional === "failing") {
           applyAdditionalSchema(key, valid, false)
-          gen.if(`!${valid}`, () => {
+          gen.ifNot(valid, () => {
             resetErrorsCount(gen, errsCount)
             deleteAdditional(key)
           })
         } else {
           applyAdditionalSchema(key, valid)
-          if (!allErrors) gen.if(`!${valid}`, "break")
+          if (!allErrors) gen.ifNot(valid, "break")
         }
       }
     }

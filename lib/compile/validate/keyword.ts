@@ -71,7 +71,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
       assignValid()
       if (def.modifying) modifyData(cxt)
     })
-    if (!def.valid) cxt.fail(`!${valid}`)
+    if (!def.valid) cxt.pass(valid)
   }
 
   function validateRuleWithErrors(): void {
@@ -135,7 +135,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
         addKeywordErrors(cxt, ruleErrs, errsCount)
         return cxt.ok("false") // TODO maybe add gen.skip() to remove code till the end of the block?
       default:
-        cxt.fail(`!${valid}`, () => addKeywordErrors(cxt, ruleErrs, errsCount))
+        cxt.pass(valid, () => addKeywordErrors(cxt, ruleErrs, errsCount))
     }
   }
 }

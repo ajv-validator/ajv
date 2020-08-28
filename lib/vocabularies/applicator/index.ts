@@ -19,5 +19,3 @@ const applicator: Vocabulary = [
 ]
 
 export default applicator
-
-module.exports = applicator

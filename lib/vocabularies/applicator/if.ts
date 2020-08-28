@@ -16,6 +16,7 @@ const def: CodeKeywordDefinition = {
   schemaType: ["object", "boolean"],
   // TODO
   // implements: ["then", "else"],
+  error,
   code(cxt: KeywordContext) {
     const {gen, it} = cxt
     const hasThen = hasSchema(it, "then")
@@ -39,7 +40,7 @@ const def: CodeKeywordDefinition = {
     } else if (hasThen) {
       gen.if(schValid, validateClause("then"))
     } else {
-      gen.if(`!${schValid}`, validateClause("else"))
+      gen.ifNot(schValid, validateClause("else"))
     }
 
     cxt.pass(valid, () => reportExtraError(cxt, error))
@@ -66,7 +67,6 @@ const def: CodeKeywordDefinition = {
       }
     }
   },
-  error,
 }
 
 module.exports = def

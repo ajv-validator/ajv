@@ -39,7 +39,7 @@ const def: CodeKeywordDefinition = {
             },
             valid
           )
-          if (!it.allErrors) gen.if(`!${valid}`, "break")
+          if (!it.allErrors) gen.ifNot(valid, "break")
         })
       })
     }

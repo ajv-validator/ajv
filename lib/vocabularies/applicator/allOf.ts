@@ -14,7 +14,6 @@ const def: CodeKeywordDefinition = {
       applySubschema(it, {keyword: "allOf", schemaProp: i}, valid)
       cxt.ok(valid)
     })
-    // TODO possibly add allOf error
   },
 }
 

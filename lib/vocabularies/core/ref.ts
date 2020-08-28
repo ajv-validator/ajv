@@ -34,7 +34,8 @@ const def: CodeKeywordDefinition = {
       switch (opts.missingRefs) {
         case "fail":
           logger.error(msg)
-          return cxt.fail()
+          cxt.fail()
+          return
         case "ignore":
           logger.warn(msg)
           return
@@ -64,19 +65,19 @@ const def: CodeKeywordDefinition = {
       gen.try(
         () => {
           gen.code(`await ${callValidate(cxt, v, passCxt)};`)
-          if (!allErrors) gen.code(`${valid} = true;`)
+          if (!allErrors) gen.assign(valid, true)
         },
         (e) => {
           gen.if(_`!(${e} instanceof ValidationError)`, `throw ${e}`)
           addErrorsFrom(e)
-          if (!allErrors) gen.code(`${valid} = false;`)
+          if (!allErrors) gen.assign(valid, false)
         }
       )
       cxt.ok(valid)
     }
 
     function validateRef(v: Expression): void {
-      cxt.fail(`!${callValidate(cxt, v, passCxt)}`, () => addErrorsFrom(v))
+      cxt.pass(callValidate(cxt, v, passCxt), () => addErrorsFrom(v))
     }
 
     function addErrorsFrom(source: Expression): void {
