@@ -4,7 +4,7 @@ var Ajv = require("../ajv")
 require("../chai").should()
 
 describe("removeAdditional option", () => {
-  it.skip("should remove all additional properties", () => {
+  it("should remove all additional properties", () => {
     var ajv = new Ajv({removeAdditional: "all"})
 
     ajv.addSchema({

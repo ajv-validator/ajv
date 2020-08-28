@@ -4,6 +4,9 @@ var Ajv = require("./ajv"),
   should = require("./chai").should(),
   stableStringify = require("fast-json-stable-stringify")
 
+const codegen = require("../dist/compile/codegen")
+const {_} = codegen
+
 describe("Ajv", () => {
   var ajv
 
@@ -51,22 +54,22 @@ describe("Ajv", () => {
       })
     })
 
-    // TODO replace with custom "code" keyword
-    it.skip("should throw if compiled schema has an invalid JavaScript code", () => {
-      ajv.addKeyword("even", {inline: badEvenCode})
+    it("should throw if compiled schema has an invalid JavaScript code", () => {
+      const _ajv = new Ajv({logger: false})
+      _ajv.addKeyword({keyword: "even", code: badEvenCode})
       var schema = {even: true}
-      var validate = ajv.compile(schema)
+      var validate = _ajv.compile(schema)
       validate(2).should.equal(true)
       validate(3).should.equal(false)
 
       schema = {even: false}
       should.throw(() => {
-        ajv.compile(schema)
+        _ajv.compile(schema)
       })
 
-      function badEvenCode(it, keyword, _schema) {
-        var op = _schema ? "===" : "!===" // invalid on purpose
-        return "data" + (it.dataLevel || "") + " % 2 " + op + " 0"
+      function badEvenCode(cxt) {
+        var op = cxt.schema ? _`===` : _`!===` // invalid on purpose
+        cxt.pass(_`${cxt.data} % 2 ${op} 0`)
       }
     })
   })

@@ -7,7 +7,7 @@ import {
 import {schemaRefOrVal} from "../vocabularies/util"
 import {getData} from "./util"
 import {reportError, keywordError} from "./errors"
-import CodeGen, {_, Name, Expression} from "./codegen"
+import CodeGen, {Name, Expression} from "./codegen"
 
 export default class KeywordContext implements KeywordErrorContext {
   gen: CodeGen
@@ -68,13 +68,17 @@ export default class KeywordContext implements KeywordErrorContext {
   fail(condition?: Expression): void {
     if (condition) {
       this.gen.if(condition)
-      reportError(this, this.def.error || keywordError)
+      this.error()
       if (this.allErrors) this.gen.endIf()
       else this.gen.else()
     } else {
-      reportError(this, this.def.error || keywordError)
+      this.error()
       if (!this.allErrors) this.gen.if(false) // TODO some other way to disable branch?
     }
+  }
+
+  error(): void {
+    reportError(this, this.def.error || keywordError)
   }
 
   _actionOrError(failAction?: () => void): void {

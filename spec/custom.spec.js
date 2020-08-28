@@ -4,6 +4,9 @@ var getAjvInstances = require("./ajv_instances"),
   should = require("./chai").should(),
   equal = require("../dist/compile/equal")
 
+const codegen = require("../dist/compile/codegen")
+const {_, nil} = codegen
+
 describe("Custom keywords", () => {
   var ajv, instances
 
@@ -19,7 +22,7 @@ describe("Custom keywords", () => {
   describe("custom rules", () => {
     describe('rule with "interpreted" keyword validation', () => {
       it("should add and validate rule", () => {
-        testEvenKeyword({type: "number", validate: validateEven})
+        testEvenKeyword({keyword: "x-even", type: "number", validate: validateEven})
 
         function validateEven(schema, data) {
           if (typeof schema != "boolean") {
@@ -31,6 +34,7 @@ describe("Custom keywords", () => {
 
       it("should add, validate keyword schema and validate rule", () => {
         testEvenKeyword({
+          keyword: "x-even",
           type: "number",
           validate: validateEven,
           metaSchema: {type: "boolean"},
@@ -118,7 +122,11 @@ describe("Custom keywords", () => {
 
     describe('rule with "compiled" keyword validation', () => {
       it("should add and validate rule", () => {
-        testEvenKeyword({type: "number", compile: compileEven})
+        testEvenKeyword({
+          keyword: "x-even",
+          type: "number",
+          compile: compileEven,
+        })
         shouldBeInvalidSchema({"x-even": "not_boolean"})
 
         function compileEven(schema) {
@@ -138,6 +146,7 @@ describe("Custom keywords", () => {
 
       it("should add, validate keyword schema and validate rule", () => {
         testEvenKeyword({
+          keyword: "x-even",
           type: "number",
           compile: compileEven,
           metaSchema: {type: "boolean"},
@@ -198,7 +207,7 @@ describe("Custom keywords", () => {
 
   describe("macro rules", () => {
     it('should add and validate rule with "macro" keyword', () => {
-      testEvenKeyword({type: "number", macro: macroEven}, 2)
+      testEvenKeyword({keyword: "x-even", type: "number", macro: macroEven}, 2)
     })
 
     it("should add and expand macro rule", () => {
@@ -497,73 +506,63 @@ describe("Custom keywords", () => {
     }
   })
 
-  // TODO replace with custom "code" keywords
-  describe.skip("inline rules", () => {
-    it('should add and validate rule with "inline" code keyword', () => {
-      testEvenKeyword({type: "number", inline: inlineEven})
+  describe("code rules", () => {
+    it('should add and validate rule with "code" keyword', () => {
+      testEvenKeyword({
+        keyword: "x-even",
+        type: "number",
+        code(cxt) {
+          const {schema, data} = cxt
+          const op = schema ? _`===` : _`!==`
+          cxt.pass(_`${data} % 2 ${op} 0`)
+        },
+      })
     })
 
     it('should pass parent schema to "inline" keyword', () => {
-      testRangeKeyword({type: "number", inline: inlineRange, statements: true})
+      testRangeKeyword({
+        keyword: "x-range",
+        type: "number",
+        code(cxt) {
+          const {
+            schema: [min, max],
+            parentSchema,
+            data,
+          } = cxt
+          const eq = parentSchema.exclusiveRange ? nil : _`=`
+          cxt.pass(_`${data} >${eq} ${min} && ${data} <${eq} ${max}`)
+        },
+      })
     })
 
-    it('should define "inline" keyword as template', () => {
-      // var inlineRangeTemplate = customRules.range
-      // testRangeKeyword({
-      //   type: "number",
-      //   inline: inlineRangeTemplate,
-      //   statements: true,
-      // })
+    it("should allow defining keyword error", () => {
+      testRangeKeyword({
+        keyword: "x-range",
+        type: "number",
+        code(cxt) {
+          const {
+            gen,
+            schema: [min, max],
+            parentSchema,
+            data,
+          } = cxt
+          const eq = parentSchema.exclusiveRange ? nil : _`=`
+          const minOk = gen.const("minOk", _`${data} >${eq} ${min}`)
+          const maxOk = gen.const("maxOk", _`${data} <${eq} ${max}`)
+          cxt.errorParams({minOk, maxOk, eq})
+          cxt.pass(`${minOk} && ${maxOk}`)
+        },
+        error: {
+          message: ({params: {minOk, eq}, schema: [min, max]}) =>
+            _`${minOk} ? "should be <${eq} ${max}" : "should be >${eq} ${min}"`,
+          params: ({params: {minOk, eq}, schema: [min, max], parentSchema}) => _`{
+            comparison: ${minOk} ? "<${eq}" : ">${eq}",
+            limit: ${minOk} ? ${max} : ${min},
+            exclusive: ${!!parentSchema.exclusiveRange}
+          }`,
+        },
+      })
     })
-
-    it('should define "inline" keyword without errors', () => {
-      // var inlineRangeTemplate = customRules.range
-      // testRangeKeyword({
-      //   type: "number",
-      //   inline: inlineRangeTemplate,
-      //   statements: true,
-      //   errors: false,
-      // })
-    })
-
-    it("should allow defining optional errors", () => {
-      // var inlineRangeTemplate = customRules.rangeWithErrors
-      // testRangeKeyword(
-      //   {
-      //     type: "number",
-      //     inline: inlineRangeTemplate,
-      //     statements: true,
-      //   },
-      //   true
-      // )
-    })
-
-    it("should allow defining required errors", () => {
-      // var inlineRangeTemplate = customRules.rangeWithErrors
-      // testRangeKeyword(
-      //   {
-      //     type: "number",
-      //     inline: inlineRangeTemplate,
-      //     statements: true,
-      //     errors: true,
-      //   },
-      //   true
-      // )
-    })
-
-    function inlineEven(it, keyword, schema) {
-      var op = schema ? "===" : "!=="
-      return "data" + (it.dataLevel || "") + " % 2 " + op + " 0"
-    }
-
-    function inlineRange(it, keyword, schema, parentSchema) {
-      var min = schema[0],
-        max = schema[1],
-        data = "data" + (it.dataLevel || ""),
-        gt = parentSchema.exclusiveRange ? " > " : " >= ",
-        lt = parentSchema.exclusiveRange ? " < " : " <= "
-      return "var valid" + it.level + " = " + data + gt + min + " && " + data + lt + max + ";"
-    }
   })
 
   describe("$data reference support with custom keywords (with $data option)", () => {
@@ -581,6 +580,7 @@ describe("Custom keywords", () => {
 
     it('should validate "interpreted" rule', () => {
       testEvenKeyword$data({
+        keyword: "x-even-$data",
         type: "number",
         $data: true,
         validate: validateEven,
@@ -595,6 +595,7 @@ describe("Custom keywords", () => {
     it('should validate rule with "compile" and "validate" funcs', () => {
       var compileCalled
       testEvenKeyword$data({
+        keyword: "x-even-$data",
         type: "number",
         $data: true,
         compile: compileEven,
@@ -626,6 +627,7 @@ describe("Custom keywords", () => {
     it('should validate with "compile" and "validate" funcs with meta-schema', () => {
       var compileCalled
       testEvenKeyword$data({
+        keyword: "x-even-$data",
         type: "number",
         $data: true,
         compile: compileEven,
@@ -656,6 +658,7 @@ describe("Custom keywords", () => {
       var macroCalled
       testEvenKeyword$data(
         {
+          keyword: "x-even-$data",
           type: "number",
           $data: true,
           macro: macroEven,
@@ -682,6 +685,7 @@ describe("Custom keywords", () => {
       var macroCalled
       testEvenKeyword$data(
         {
+          keyword: "x-even-$data",
           type: "number",
           $data: true,
           macro: macroEven,
@@ -704,54 +708,35 @@ describe("Custom keywords", () => {
       }
     })
 
-    // TODO replace with custom "code" keyword
-    it.skip('should validate rule with "inline" and "validate" funcs', () => {
-      var inlineCalled
+    it('should validate rule with "code" keyword', () => {
       testEvenKeyword$data({
+        keyword: "x-even-$data",
         type: "number",
         $data: true,
-        inline: inlineEven,
-        validate: validateEven,
+        code(cxt) {
+          const {gen, schemaCode: s, data} = cxt
+          gen.if(_`${s} !== undefined`)
+          cxt.pass(_`typeof ${s} == "boolean" && (${data} % 2 ? !${s} : ${s})`)
+        },
       })
-      inlineCalled.should.equal(true)
-
-      function validateEven(schema, data) {
-        if (typeof schema != "boolean") return false
-        return data % 2 ? !schema : schema
-      }
-
-      function inlineEven(it, keyword, schema) {
-        inlineCalled = true
-        var op = schema ? "===" : "!=="
-        return "data" + (it.dataLevel || "") + " % 2 " + op + " 0"
-      }
     })
 
-    // TODO replace with custom "code" keyword
-    it.skip('should validate with "inline" and "validate" funcs with meta-schema', () => {
-      var inlineCalled
+    it('should validate with "code" and meta-schema', () => {
       testEvenKeyword$data({
+        keyword: "x-even-$data",
         type: "number",
         $data: true,
-        inline: inlineEven,
-        validate: validateEven,
+        code(cxt) {
+          const {gen, schemaCode: s, data} = cxt
+          gen.if(_`${s} !== undefined`)
+          cxt.pass(_`typeof ${s} == "boolean" && (${data} % 2 ? !${s} : ${s})`)
+        },
         metaSchema: {type: "boolean"},
       })
-      inlineCalled.should.equal(true)
       shouldBeInvalidSchema({"x-even-$data": "false"})
-
-      function validateEven(schema, data) {
-        return data % 2 ? !schema : schema
-      }
-
-      function inlineEven(it, keyword, schema) {
-        inlineCalled = true
-        var op = schema ? "===" : "!=="
-        return "data" + (it.dataLevel || "") + " % 2 " + op + " 0"
-      }
     })
 
-    it('should fail if keyword definition has "$data" but no "validate"', () => {
+    it('should fail if "macro" keyword definition has "$data" but no "validate"', () => {
       should.throw(() => {
         ajv.addKeyword("even", {
           type: "number",
@@ -764,9 +749,9 @@ describe("Custom keywords", () => {
     })
   })
 
-  function testEvenKeyword(definition, numErrors) {
+  function testEvenKeyword(evenDefinition, numErrors) {
     instances.forEach((_ajv) => {
-      _ajv.addKeyword("x-even", definition)
+      _ajv.addKeyword(evenDefinition)
       var schema = {"x-even": true}
       var validate = _ajv.compile(schema)
 
@@ -779,7 +764,7 @@ describe("Custom keywords", () => {
 
   function testEvenKeyword$data(definition, numErrors) {
     instances.forEach((_ajv) => {
-      _ajv.addKeyword("x-even-$data", definition)
+      _ajv.addKeyword(definition)
 
       var schema = {"x-even-$data": true}
       var validate = _ajv.compile(schema)

@@ -26,7 +26,7 @@ const def: CodeKeywordDefinition = {
         cxt.pass(valid)
       } else {
         const vSchema = gen.const("schema", schemaCode)
-        const cond: string = orExpr(schema, (_, i) => equalCode(vSchema, i))
+        const cond: string = orExpr(schema, (_x, i) => equalCode(vSchema, i))
         cxt.pass(cond)
       }
     }

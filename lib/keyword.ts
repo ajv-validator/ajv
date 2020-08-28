@@ -1,8 +1,6 @@
 import {KeywordDefinition, Vocabulary, ErrorObject, ValidateFunction} from "./types"
-
 import {ValidationRules, Rule} from "./compile/rules"
 import {definitionSchema} from "./definition_schema"
-import {_} from "./compile/codegen"
 
 const IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i
 

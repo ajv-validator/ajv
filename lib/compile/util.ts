@@ -1,4 +1,4 @@
-import {_, Code, Name, Expression} from "./codegen"
+import {Code, Name, Expression} from "./codegen"
 import {CompilationContext} from "../types"
 import N from "./names"
 
