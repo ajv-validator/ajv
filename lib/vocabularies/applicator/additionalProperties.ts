@@ -3,13 +3,12 @@ import KeywordContext from "../../compile/context"
 import {
   allSchemaProperties,
   schemaRefOrVal,
-  quotedString,
   alwaysValidSchema,
   loopPropertiesCode,
   orExpr,
 } from "../util"
 import {applySubschema, SubschemaApplication, Expr} from "../../compile/subschema"
-import {Name} from "../../compile/codegen"
+import {_, Name, Expression} from "../../compile/codegen"
 import N from "../../compile/names"
 
 const def: CodeKeywordDefinition = {
@@ -38,13 +37,13 @@ const def: CodeKeywordDefinition = {
     }
 
     function isAdditional(key: Name): string {
-      let definedProp = ""
+      let definedProp: Expression = ""
       if (props.length > 8) {
         // TODO maybe an option instead of hard-coded 8?
         const propsSchema = schemaRefOrVal(it, parentSchema.properties, "properties")
         definedProp = `${propsSchema}.hasOwnProperty(${key})`
       } else if (props.length) {
-        definedProp = orExpr(props, (p) => `${key} === ${quotedString(p)}`)
+        definedProp = orExpr(props, (p) => _`${key} === ${p}`)
       }
       if (patProps.length) {
         definedProp +=
@@ -103,7 +102,7 @@ const def: CodeKeywordDefinition = {
   },
   error: {
     message: "should NOT have additional properties",
-    params: ({params}) => `{additionalProperty: ${params.additionalProperty}}`,
+    params: ({params}) => _`{additionalProperty: ${params.additionalProperty}}`,
   },
 }
 

@@ -1,5 +1,5 @@
 import Cache from "./cache"
-import CodeGen, {Name, Expression} from "./compile/codegen"
+import CodeGen, {Code, Name, Expression} from "./compile/codegen"
 import {ValidationRules} from "./compile/rules"
 import {ResolvedRef} from "./compile"
 import KeywordContext from "./compile/context"
@@ -130,7 +130,7 @@ export interface CompilationContext {
   // }
   compositeRule?: boolean
   usePattern: (str: string) => string
-  useDefault: (value: any) => string
+  useDefault: (value: any) => Expression
   customRules: KeywordCompilationResult[]
   self: any // TODO
   RULES: ValidationRules
@@ -209,8 +209,8 @@ export type KeywordDefinition =
   | CodeKeywordDefinition
 
 export interface KeywordErrorDefinition {
-  message: string | ((cxt: KeywordErrorContext) => Expression)
-  params?: (cxt: KeywordErrorContext) => Expression
+  message: string | ((cxt: KeywordErrorContext) => Code)
+  params?: (cxt: KeywordErrorContext) => Code
 }
 
 export type Vocabulary = KeywordDefinition[]

@@ -1,6 +1,4 @@
-import CodeGen, {_, nil, Expression} from "./codegen"
-import {toQuotedString} from "./util"
-import {quotedString} from "../vocabularies/util"
+import CodeGen, {_, nil, Code, Expression} from "./codegen"
 import {validateFunctionCode} from "./validate"
 import {ErrorObject, KeywordCompilationResult} from "../types"
 import N from "./names"
@@ -139,12 +137,11 @@ function compile(schema, root, localRefs, baseId) {
       self,
     })
 
-    let sourceCode =
-      vars(refVal, refValCode) +
-      vars(patterns, patternCode) +
-      vars(defaults, defaultCode) +
-      vars(customRules, customRuleCode) +
-      gen.toString()
+    let sourceCode = `${vars(refVal, refValCode)}
+                      ${vars(patterns, patternCode)}
+                      ${vars(defaults, defaultCode)}
+                      ${vars(customRules, customRuleCode)}
+                      ${gen.toString()}`
 
     if (opts.processCode) sourceCode = opts.processCode(sourceCode, _schema)
     // console.log("\n\n\n *** \n", sourceCode)
@@ -268,13 +265,12 @@ function compile(schema, root, localRefs, baseId) {
     return "pattern" + index
   }
 
-  function useDefault(value: any): string {
+  function useDefault(value: any): Expression {
     switch (typeof value) {
       case "boolean":
       case "number":
-        return "" + value
       case "string":
-        return toQuotedString(value)
+        return _`${value}`
       case "object":
         if (value === null) return "null"
         var valueStr = stableStringify(value)
@@ -341,22 +337,24 @@ function compIndex(schema, root, baseId) {
   return -1
 }
 
-function patternCode(i: number, patterns: string[]): string {
-  return `const pattern${i} = new RegExp(${quotedString(patterns[i])});`
+function patternCode(i: number, patterns): Code {
+  return _`const pattern${i} = new RegExp(${patterns[i]});`
 }
 
-function defaultCode(i: number): string {
-  return `const default${i} = defaults[${i}];`
+function defaultCode(i: number): Code {
+  return _`const default${i} = defaults[${i}];`
 }
 
-function refValCode(i: number, refVal): string {
-  return refVal[i] === undefined ? "" : `const refVal${i} = refVal[${i}];`
+function refValCode(i: number, refVal): Code {
+  return refVal[i] === undefined ? nil : _`const refVal${i} = refVal[${i}];`
 }
 
-function customRuleCode(i: number): string {
-  return `const customRule${i} = customRules[${i}];`
+function customRuleCode(i: number): Code {
+  return _`const customRule${i} = customRules[${i}];`
 }
 
-function vars(arr: unknown[], statement: (i: number, arr: any[]) => string) {
-  return arr.reduce((code: string, _, i: number) => code + statement(i, arr), "")
+function vars(arr: unknown[], statement: (i: number, arr?: unknown[]) => Code): Code {
+  return arr
+    .map((_el, i, arr) => statement(i, arr))
+    .reduce((res: Code, c: Code) => _`${res}${c}`, nil)
 }

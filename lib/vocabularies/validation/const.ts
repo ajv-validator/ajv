@@ -1,5 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
+import {_} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "const",
@@ -7,7 +8,7 @@ const def: CodeKeywordDefinition = {
   code: (cxt: KeywordContext) => cxt.fail(`!equal(${cxt.data}, ${cxt.schemaCode})`),
   error: {
     message: "should be equal to constant",
-    params: ({schemaCode}) => `{allowedValue: ${schemaCode}}`,
+    params: ({schemaCode}) => _`{allowedValue: ${schemaCode}}`,
   },
 }
 

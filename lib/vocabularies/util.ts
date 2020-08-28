@@ -4,12 +4,6 @@ import KeywordContext from "../compile/context"
 import {_, Code, Name, Expression} from "../compile/codegen"
 import N from "../compile/names"
 
-export function quotedString(str: string): string {
-  return JSON.stringify(str)
-    .replace(/\u2028/g, "\\u2028")
-    .replace(/\u2029/g, "\\u2029")
-}
-
 export function dataNotType(
   schemaCode: Expression | number | boolean,
   schemaType: string,
@@ -53,9 +47,8 @@ export function schemaProperties(it: CompilationContext, schema: object): string
   return allSchemaProperties(schema).filter((p) => !alwaysValidSchema(it, schema[p]))
 }
 
-export function isOwnProperty(data: Name, property: Expression): Expression {
-  const prop = property instanceof Code ? property : quotedString(property)
-  return `Object.prototype.hasOwnProperty.call(${data}, ${prop})`
+export function isOwnProperty(data: Name, property: Expression): Code {
+  return _`Object.prototype.hasOwnProperty.call(${data}, ${property})`
 }
 
 export function propertyInData(data: Name, property: Expression, ownProperties?: boolean): string {
@@ -74,8 +67,8 @@ export function noPropertyInData(
   return cond
 }
 
-export function accessProperty(property: Expression | number): string {
-  return property instanceof Code ? `[${property}]` : getProperty(property)
+export function accessProperty(property: Expression | number): Expression {
+  return property instanceof Code ? _`[${property}]` : getProperty(property)
 }
 
 export function loopPropertiesCode(
@@ -88,7 +81,10 @@ export function loopPropertiesCode(
   gen.for(`const ${key} ${iteration}`, () => loopBody(key))
 }
 
-export function orExpr(items: string[], mapCondition: (s: string, i: number) => string): string {
+export function orExpr(
+  items: string[],
+  mapCondition: (s: string, i: number) => Expression
+): Expression {
   return items.map(mapCondition).reduce((expr, cond) => `${expr} || ${cond}`)
 }
 

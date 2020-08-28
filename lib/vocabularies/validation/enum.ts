@@ -1,7 +1,7 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {quotedString, orExpr} from "../util"
-import {_, Name} from "../../compile/codegen"
+import {orExpr} from "../util"
+import {_, Name, Code, Expression} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "enum",
@@ -26,7 +26,7 @@ const def: CodeKeywordDefinition = {
         cxt.pass(valid)
       } else {
         const vSchema = gen.const("schema", schemaCode)
-        const cond: string = orExpr(schema, (_x, i) => equalCode(vSchema, i))
+        const cond: Expression = orExpr(schema, (_x, i) => equalCode(vSchema, i))
         cxt.pass(cond)
       }
     }
@@ -38,13 +38,12 @@ const def: CodeKeywordDefinition = {
       )
     }
 
-    function equalCode(vSchema: Name, i: number): string {
-      let sch: string = schema[i]
+    function equalCode(vSchema: Name, i: number): Code {
+      const sch: string = schema[i]
       if (sch && typeof sch === "object") {
-        return `equal(${data}, ${vSchema}[${i}])`
+        return _`equal(${data}, ${vSchema}[${i}])`
       }
-      if (typeof sch === "string") sch = quotedString(sch)
-      return `${data} === ${sch}`
+      return _`${data} === ${sch}`
     }
   },
   error: {

@@ -1,11 +1,10 @@
 import {KeywordErrorContext, KeywordErrorDefinition} from "../types"
-import {quotedString} from "../vocabularies/util"
-import CodeGen, {_, Name, Expression} from "./codegen"
+import CodeGen, {_, str, Name, Expression} from "./codegen"
 import N from "./names"
 
 export const keywordError: KeywordErrorDefinition = {
-  message: ({keyword}) => `'should pass "${keyword}" keyword validation'`,
-  params: ({keyword}) => `{keyword: "${keyword}"}`, // TODO possibly remove it as keyword is reported in the object
+  message: ({keyword}) => str`should pass ${keyword} keyword validation`,
+  params: ({keyword}) => _`{keyword: ${keyword}}`, // TODO possibly remove it as keyword is reported in the object
 }
 
 export function reportError(
@@ -93,11 +92,11 @@ function errorObjectCode(cxt: KeywordErrorContext, error: KeywordErrorDefinition
   let out = `{
     keyword: "${keyword}",
     dataPath: (${N.dataPath} || "") + ${errorPath},
-    schemaPath: ${quotedString(errSchemaPath + "/" + keyword)},
-    params: ${params ? params(cxt) : "{}"},`
+    schemaPath: ${str`${errSchemaPath}/${keyword}`},
+    params: ${params ? params(cxt) : _`{}`},`
   if (propertyName) out += `propertyName: ${propertyName},`
   if (opts.messages !== false) {
-    out += `message: ${typeof message == "string" ? quotedString(message) : message(cxt)},`
+    out += `message: ${typeof message == "string" ? _`${message}` : message(cxt)},`
   }
   if (opts.verbose) {
     // TODO trim whitespace

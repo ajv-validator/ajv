@@ -114,6 +114,7 @@ function initializeTop(gen: CodeGen): void {
   gen.let(N.vErrors, "null")
   gen.let(N.errors, 0)
   gen.if(_`${N.rootData} === undefined`, () => gen.assign(N.rootData, N.data))
+  // gen.if(_`${N.dataPath} === undefined`, () => gen.assign(N.dataPath, _`""`)) // TODO maybe add it
 }
 
 function updateContext(it: CompilationContext): void {

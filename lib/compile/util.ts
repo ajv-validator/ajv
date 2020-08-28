@@ -64,7 +64,7 @@ export function toHash(arr: string[]): {[key: string]: true} {
 const IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i
 const SINGLE_QUOTE = /'|\\/g
 export function getProperty(key: Expression | number): string {
-  // return key instanceof Name || (typeof key == "string" && IDENTIFIER.test(key))
+  // return typeof key == "string" && IDENTIFIER.test(key)
   //   ? _`.${key}`
   //   : _`[${key}]`
 
@@ -106,7 +106,7 @@ export function schemaUnknownRules(schema: object, rules: object): string | unde
   for (const key in schema) if (!rules[key]) return key
 }
 
-export function toQuotedString(str: string): string {
+function toQuotedString(str: string): string {
   return `'${escapeQuotes(str)}'`
 }
 
@@ -184,7 +184,7 @@ export function getData(
   }
 }
 
-export function joinPaths(a: string, b: string): string {
+function joinPaths(a: string, b: string): string {
   if (a === '""' || a === "''") return b
   if (b === '""' || b === "''") return a
   return `${a} + ${b}`.replace(/([^\\])' \+ '/g, "$1")

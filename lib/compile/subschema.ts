@@ -1,8 +1,8 @@
 import {CompilationContext} from "../types"
 import {subschemaCode} from "./validate"
 import {getProperty, escapeFragment, getPath, getPathExpr} from "./util"
-import {quotedString, accessProperty} from "../vocabularies/util"
-import {Code, Name, Expression} from "./codegen"
+import {accessProperty} from "../vocabularies/util"
+import {_, Code, Name, Expression} from "./codegen"
 
 export interface SubschemaContext {
   // TODO use Optional?
@@ -118,9 +118,7 @@ function extendSubschemaData(
         ? getPathExpr(errorPath, dataProp, opts.jsonPointers, expr === Expr.Num)
         : getPath(errorPath, dataProp, opts.jsonPointers)
 
-    subschema.parentDataProperty =
-      expr === Expr.Const && typeof dataProp == "string" ? quotedString(dataProp) : dataProp
-
+    subschema.parentDataProperty = _`${dataProp}`
     subschema.dataPathArr = [...dataPathArr, subschema.parentDataProperty]
   }
 
