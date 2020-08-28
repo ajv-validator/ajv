@@ -224,16 +224,10 @@ export interface KeywordErrorContext {
   parentSchema: any
   schemaCode: Expression | number | boolean
   schemaValue: Expression | number | boolean
+  errsCount?: Name
   params: KeywordContextParams
   it: CompilationContext
 }
-
-// export interface KeywordContext extends KeywordErrorContext {
-//   ok: (condition: Expression) => void
-//   pass: (condition: Expression, failAction?: () => void, context?: KeywordContext) => void
-//   fail: (condition?: Expression, failAction?: () => void, context?: KeywordContext) => void
-//   errorParams: (obj: KeywordContextParams, assing?: true) => void
-// }
 
 export type KeywordContextParams = {[x: string]: Expression | number}
 

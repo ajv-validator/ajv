@@ -38,10 +38,15 @@ export function resetErrorsCount(gen: CodeGen, errsCount: Name): void {
   )
 }
 
-export function extendErrors(
-  {gen, keyword, schemaValue, data, it}: KeywordErrorContext,
-  errsCount: Name
-): void {
+export function extendErrors({
+  gen,
+  keyword,
+  schemaValue,
+  data,
+  errsCount,
+  it,
+}: KeywordErrorContext): void {
+  if (errsCount === undefined) throw new Error("ajv implementation error")
   const err = gen.name("err")
   gen.for(_`let i=${errsCount}; i<${N.errors}; i++`, () => {
     gen.const(err, _`${N.vErrors}[i]`)

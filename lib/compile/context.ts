@@ -49,7 +49,7 @@ export default class KeywordContext implements KeywordErrorContext {
       }
     }
 
-    if ("code" in def && def.trackErrors) {
+    if ("code" in def ? def.trackErrors : def.errors !== false) {
       this.errsCount = it.gen.const("_errs", N.errors)
     }
   }
@@ -119,6 +119,10 @@ function validateKeywordUsage(
   def: KeywordDefinition,
   keyword: string
 ): void {
+  if (Array.isArray(def.keyword) ? !def.keyword.includes(keyword) : def.keyword !== keyword) {
+    throw new Error("ajv implementation error")
+  }
+
   const deps = def.dependencies
   if (deps?.some((kwd) => !Object.prototype.hasOwnProperty.call(it.schema, kwd))) {
     throw new Error(`parent schema must have dependencies of ${keyword}: ${deps.join(",")}`)

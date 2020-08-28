@@ -7,7 +7,7 @@ import {
 } from "../../types"
 import KeywordContext from "../context"
 import {applySubschema} from "../subschema"
-import {reportError, reportExtraError, extendErrors, keywordError} from "../errors"
+import {extendErrors} from "../errors"
 import {callValidate} from "../../vocabularies/util"
 import {_, Name, Expression} from "../codegen"
 import N from "../names"
@@ -48,7 +48,7 @@ function macroKeywordCode(cxt: KeywordContext, def: MacroKeywordDefinition) {
     },
     valid
   )
-  cxt.pass(valid, () => reportExtraError(cxt, keywordError))
+  cxt.pass(valid, () => cxt.error(true))
 }
 
 function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
@@ -77,11 +77,11 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
   function validateRuleWithErrors(): void {
     gen.block()
     if ($data) check$data()
-    const errsCount = gen.const("_errs", N.errors)
+    // const errsCount = gen.const("_errs", N.errors)
     const ruleErrs = def.async ? validateAsyncRule() : validateSyncRule()
     if (def.modifying) modifyData(cxt)
     gen.endBlock()
-    reportKeywordErrors(ruleErrs, errsCount)
+    reportKeywordErrors(ruleErrs)
   }
 
   function check$data(): void {
@@ -127,15 +127,15 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
     gen.code(`${valid} = ${await}${callValidate(cxt, validateRef, passCxt, passSchema)};`)
   }
 
-  function reportKeywordErrors(ruleErrs: Expression, errsCount: Name): void {
+  function reportKeywordErrors(ruleErrs: Expression): void {
     switch (def.valid) {
       case true:
         return
       case false:
-        addKeywordErrors(cxt, ruleErrs, errsCount)
+        addKeywordErrors(cxt, ruleErrs)
         return cxt.ok("false") // TODO maybe add gen.skip() to remove code till the end of the block?
       default:
-        cxt.pass(valid, () => addKeywordErrors(cxt, ruleErrs, errsCount))
+        cxt.pass(valid, () => addKeywordErrors(cxt, ruleErrs))
     }
   }
 }
@@ -145,16 +145,16 @@ function modifyData(cxt: KeywordContext) {
   gen.if(it.parentData, () => gen.assign(data, `${it.parentData}[${it.parentDataProperty}];`))
 }
 
-function addKeywordErrors(cxt: KeywordContext, errs: Expression, errsCount: Name): void {
+function addKeywordErrors(cxt: KeywordContext, errs: Expression): void {
   const {gen} = cxt
   gen.if(
     `Array.isArray(${errs})`,
     () => {
       gen.assign(N.vErrors, `${N.vErrors} === null ? ${errs} : ${N.vErrors}.concat(${errs})`) // TODO tagged
       gen.assign(N.errors, _`${N.vErrors}.length;`)
-      extendErrors(cxt, errsCount)
+      extendErrors(cxt)
     },
-    () => reportError(cxt, keywordError)
+    () => cxt.error()
   )
 }
 

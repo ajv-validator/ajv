@@ -30,6 +30,7 @@ export function addKeyword(
       // this.logger.warn("this method signature is deprecated, see docs for addKeyword")
       definition = defOrSkip
       if (definition.keyword === undefined) definition.keyword = keyword
+      else if (definition.keyword !== keyword) throw new Error("invalid addKeyword parameters")
     }
   } else if (typeof kwdOrDef == "object" && typeof defOrSkip != "object") {
     definition = kwdOrDef
