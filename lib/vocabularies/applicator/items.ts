@@ -38,14 +38,8 @@ const def: CodeKeywordDefinition = {
     }
 
     function validateDataLength(sch: (object | boolean)[]): void {
-      cxt.result(
-        `${len} <= ${sch.length}`,
-        () => {},
-        () =>
-          reportError(
-            {...cxt, keyword: "additionalItems", schemaValue: false},
-            additionalItemsError
-          )
+      cxt.pass(`${len} <= ${sch.length}`, () =>
+        reportError({...cxt, keyword: "additionalItems", schemaValue: false}, additionalItemsError)
       )
     }
 

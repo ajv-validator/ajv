@@ -2,17 +2,17 @@ import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {schemaProperties, propertyInData} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
+import apDef from "./additionalProperties"
 
 const def: CodeKeywordDefinition = {
   keyword: "properties",
   type: "object",
   schemaType: "object",
   code(cxt: KeywordContext) {
-    const {gen, schema, data, it} = cxt
-    // TODO
-    // if (it.opts.removeAdditional === "all" && parentSchema.additionalProperties === undefined) {
-    //   remove all additional properties - it will fix skipped tests
-    // }
+    const {gen, schema, parentSchema, data, it} = cxt
+    if (it.opts.removeAdditional === "all" && parentSchema.additionalProperties === undefined) {
+      apDef.code(new KeywordContext(it, apDef, "additionalProperties"))
+    }
     const properties = schemaProperties(it, schema)
     if (properties.length === 0) return
     const valid = gen.name("valid")

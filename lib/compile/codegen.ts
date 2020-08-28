@@ -120,7 +120,7 @@ export default class CodeGen {
     return this
   }
 
-  if(condition: Expression, thenBody?: Block, elseBody?: Block): CodeGen {
+  if(condition: Expression | boolean, thenBody?: Block, elseBody?: Block): CodeGen {
     this.#blocks.push(BlockKind.If)
     this.code(`if(${condition}){`)
     if (thenBody && elseBody) {
@@ -133,7 +133,7 @@ export default class CodeGen {
     return this
   }
 
-  ifNot(condition: Expression, thenBody?: Block, elseBody?: Block): CodeGen {
+  ifNot(condition: Expression | boolean, thenBody?: Block, elseBody?: Block): CodeGen {
     const cond = condition instanceof Name ? condition : `(${condition})`
     return this.if(`!${cond}`, thenBody, elseBody)
   }

@@ -21,7 +21,7 @@ const error: KeywordErrorDefinition = {
 const def: CodeKeywordDefinition = {
   keyword: "additionalProperties",
   type: "object",
-  schemaType: ["object", "boolean"],
+  schemaType: ["object", "boolean", "undefined"], // "undefined" is needed to support option removeAdditional: "all"
   error,
   code(cxt: KeywordContext) {
     const {gen, schema, parentSchema, data, it} = cxt
@@ -110,3 +110,5 @@ const def: CodeKeywordDefinition = {
 }
 
 module.exports = def
+
+export default def

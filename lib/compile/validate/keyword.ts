@@ -18,7 +18,7 @@ export function keywordCode(
   def: KeywordDefinition,
   ruleType?: string
 ): void {
-  const cxt = new KeywordContext(it, keyword, def)
+  const cxt = new KeywordContext(it, def, keyword)
   if ("code" in def) {
     def.code(cxt, ruleType)
   } else if (cxt.$data && "validate" in def) {
