@@ -2,6 +2,7 @@ import {Vocabulary} from "../../types"
 
 const applicator: Vocabulary = [
   // array
+  require("./additionalItems"),
   require("./items"),
   require("./contains"),
   // object

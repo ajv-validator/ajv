@@ -1,46 +1,21 @@
-import {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
-import {reportError} from "../../compile/errors"
-import {_, str} from "../../compile/codegen"
-
-const additionalItemsError: KeywordErrorDefinition = {
-  message: ({schema}) => str`should NOT have more than ${schema.length as number} items`,
-  params: ({schema}) => _`{limit: ${schema.length as number}}`,
-}
+import {_} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "items",
   type: "array",
   schemaType: ["object", "array", "boolean"],
   before: "uniqueItems",
-  // TODO
-  // implements: ["additionalItems"],
   code(cxt: KeywordContext) {
-    // TODO strict mode: fail or warning if "additionalItems" is present without "items"
-    const {gen, schema, parentSchema, data, it} = cxt
+    const {gen, schema, data, it} = cxt
     const len = gen.const("len", `${data}.length`)
-
     if (Array.isArray(schema)) {
-      validateItemsArray(schema)
-    } else if (!alwaysValidSchema(it, schema)) {
-      validateItems("items", 0)
-    }
-
-    function validateItemsArray(sch: (object | boolean)[]) {
-      const addIts = parentSchema.additionalItems
-      if (addIts === false) validateDataLength(sch)
       validateDefinedItems()
-      if (typeof addIts == "object" && !alwaysValidSchema(it, addIts)) {
-        gen.if(_`${len} > ${sch.length}`, () => validateItems("additionalItems", sch.length))
-      }
-    }
-
-    function validateDataLength(sch: (object | boolean)[]): void {
-      cxt.pass(`${len} <= ${sch.length}`, () =>
-        reportError({...cxt, keyword: "additionalItems", schemaValue: false}, additionalItemsError)
-      )
+    } else if (!alwaysValidSchema(it, schema)) {
+      validateItems()
     }
 
     function validateDefinedItems(): void {
@@ -63,11 +38,11 @@ const def: CodeKeywordDefinition = {
       })
     }
 
-    function validateItems(keyword: string, startFrom: number): void {
-      const i = gen.name("i")
+    function validateItems(): void {
       const valid = gen.name("valid")
-      gen.for(_`let ${i}=${startFrom}; ${i}<${len}; ${i}++`, () => {
-        applySubschema(it, {keyword, dataProp: i, expr: Expr.Num}, valid)
+      const i = gen.name("i")
+      gen.for(_`let ${i}=0; ${i}<${len}; ${i}++`, () => {
+        applySubschema(it, {keyword: "items", dataProp: i, expr: Expr.Num}, valid)
         if (!it.allErrors) gen.ifNot(valid, "break")
       })
       cxt.ok(valid)

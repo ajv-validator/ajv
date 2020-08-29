@@ -14,18 +14,14 @@ import N from "../../compile/names"
 const def: CodeKeywordDefinition = {
   keyword: "additionalProperties",
   type: "object",
-  schemaType: ["object", "boolean", "undefined"], // "undefined" is needed to support option removeAdditional: "all"
+  schemaType: ["boolean", "object", "undefined"], // "undefined" is needed to support option removeAdditional: "all"
   trackErrors: true,
   code(cxt: KeywordContext) {
     const {gen, schema, parentSchema, data, errsCount, it} = cxt
     const {allErrors, usePattern, opts} = it
-
     if (alwaysValidSchema(it, schema) && opts.removeAdditional !== "all") return
-
     const props = allSchemaProperties(parentSchema.properties)
     const patProps = allSchemaProperties(parentSchema.patternProperties)
-
-    // const errsCount = gen.const("_errs", N.errors)
     checkAdditionalProperties()
     if (!allErrors) gen.if(`${errsCount} === ${N.errors}`)
 

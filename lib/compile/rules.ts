@@ -37,7 +37,6 @@ export default function rules(): ValidationRules {
     "writeOnly",
     "contentMediaType",
     "contentEncoding",
-    "additionalItems",
     "then",
     "else",
   ]

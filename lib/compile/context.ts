@@ -72,15 +72,15 @@ export default class KeywordContext implements KeywordErrorContext {
   }
 
   fail(condition?: Expression): void {
-    if (condition) {
-      this.gen.if(condition)
-      this.error()
-      if (this.allErrors) this.gen.endIf()
-      else this.gen.else()
-    } else {
+    if (condition === undefined) {
       this.error()
       if (!this.allErrors) this.gen.if(false) // TODO some other way to disable branch?
+      return
     }
+    this.gen.if(condition)
+    this.error()
+    if (this.allErrors) this.gen.endIf()
+    else this.gen.else()
   }
 
   error(append?: true): void {
