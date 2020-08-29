@@ -1,5 +1,5 @@
 import {CompilationContext} from "../../types"
-import {getProperty} from "../util"
+import {_, getProperty} from "../codegen"
 
 export function assignDefaults(it: CompilationContext, ty?: string): void {
   const {properties, items} = it.schema
@@ -18,7 +18,7 @@ function assignDefault(
   defaultValue: any
 ): void {
   if (defaultValue === undefined) return
-  const childData = `${data}${getProperty(prop)}` // TODO tagged
+  const childData = _`${data}${getProperty(prop)}`
   if (compositeRule) {
     if (opts.strictDefaults) {
       const msg = `default is ignored for: ${childData}`

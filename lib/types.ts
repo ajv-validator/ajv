@@ -106,31 +106,31 @@ export type KeywordCompilationResult = object | boolean | SchemaValidateFunction
 export interface CompilationContext {
   gen: CodeGen
   allErrors: boolean
-  dataLevel: number
   data: Name
   parentData: Name
-  parentDataProperty: Expression | number
+  parentDataProperty: Code | number
   dataNames: Name[]
   dataPathArr: (Expression | number)[]
+  dataLevel: number
+  topSchemaRef: Code
+  async: boolean
   schema: any
   isRoot: boolean
-  schemaPath: string
-  errorPath: string
-  errSchemaPath: string
-  propertyName?: Name
-  createErrors?: boolean // TODO maybe remove later
-  baseId: string
-  async: boolean
-  opts: Options
-  formats: {[index: string]: AddedFormat}
-  compositeRule?: boolean
-  self: any // TODO
-  RULES: ValidationRules
-  logger: Logger // TODO ?
   root: SchemaRoot // TODO ?
   rootId: string // TODO ?
-  topSchemaRef: Expression // TODO must be Code - depends on global names
+  baseId: string
+  schemaPath: Code
+  errSchemaPath: string // this is actual string, should not be changed to Code
+  errorPath: string
+  propertyName?: Name
+  compositeRule?: boolean
+  createErrors?: boolean // TODO maybe remove later
+  RULES: ValidationRules
+  formats: {[index: string]: AddedFormat}
+  opts: Options
   resolveRef: (...args: any[]) => ResolvedRef | void
+  logger: Logger // TODO ?
+  self: any // TODO
 }
 
 interface SchemaRoot {

@@ -1,8 +1,7 @@
 import {CodeKeywordDefinition, AddedFormat, FormatValidate} from "../../types"
 import KeywordContext from "../../compile/context"
 import {dataNotType} from "../util"
-import {getProperty} from "../../compile/util"
-import {_, str} from "../../compile/codegen"
+import {_, str, nil, Code, getProperty} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "format",
@@ -27,22 +26,22 @@ const def: CodeKeywordDefinition = {
         _`${fmtType} = "string"; ${format} = ${fmtDef}`
       )
       const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
-      cxt.fail(dnt + unknownFmt() + invalidFmt())
+      cxt.fail(_`${dnt} ${unknownFmt()} ${invalidFmt()}`)
 
-      function unknownFmt(): string {
-        if (opts.unknownFormats === "ignore") return ""
-        let unknown = `(${schemaCode} && !${format}`
+      function unknownFmt(): Code {
+        if (opts.unknownFormats === "ignore") return nil
+        let unknown = _`(${schemaCode} && !${format}`
         if (Array.isArray(opts.unknownFormats)) {
-          unknown += ` && !self._opts.unknownFormats.includes(${schemaCode})`
+          unknown = _`${unknown} && !self._opts.unknownFormats.includes(${schemaCode})`
         }
-        return unknown + ") || "
+        return _`${unknown}) || `
       }
 
-      function invalidFmt(): string {
-        const fmt = `${format}(${data})`
-        const callFormat = it.async ? `${fmtDef}.async ? await ${fmt} : ${fmt}` : fmt
-        const validData = `typeof ${format} == "function" ? ${callFormat} : ${format}.test(${data})`
-        return `(${format} && ${fmtType} === "${<string>ruleType}" && !(${validData}))`
+      function invalidFmt(): Code {
+        const fmt = _`${format}(${data})`
+        const callFormat = it.async ? _`${fmtDef}.async ? await ${fmt} : ${fmt}` : fmt
+        const validData = _`typeof ${format} == "function" ? ${callFormat} : ${format}.test(${data})`
+        return _`(${format} && ${fmtType} === ${<string>ruleType} && !(${validData}))`
       }
     }
 
@@ -65,22 +64,21 @@ const def: CodeKeywordDefinition = {
         }
       }
 
-      function getFormat(fmtDef: AddedFormat): [string, FormatValidate, string] {
-        const fmt = `formats${getProperty(schema)}`
+      function getFormat(fmtDef: AddedFormat): [string, FormatValidate, Code] {
+        const fmt = _`formats${getProperty(schema)}` // TODO use scope for formats?
         if (typeof fmtDef == "object" && !(fmtDef instanceof RegExp)) {
-          return [fmtDef.type || "string", fmtDef.validate as FormatValidate, `${fmt}.validate`]
+          return [fmtDef.type || "string", fmtDef.validate as FormatValidate, _`${fmt}.validate`]
         }
 
         return ["string", fmtDef, fmt]
       }
 
-      function validCondition(): string {
+      function validCondition(): Code {
         if (typeof formatDef == "object" && !(formatDef instanceof RegExp) && formatDef.async) {
           if (!it.async) throw new Error("async format in sync schema")
-          return `await ${fmtRef}(${data})`
+          return _`await ${fmtRef}(${data})`
         }
-
-        return fmtRef + (typeof format == "function" ? "" : ".test") + `(${data})`
+        return typeof format == "function" ? _`${fmtRef}(${data})` : _`${fmtRef}.test(${data})`
       }
     }
   },

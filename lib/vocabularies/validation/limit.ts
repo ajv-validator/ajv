@@ -1,13 +1,15 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {dataNotType} from "../util"
-import {_, str} from "../../compile/codegen"
+import {_, str, operators, Code} from "../../compile/codegen"
 
-const OPS: {[index: string]: {fail: string; ok: string}} = {
-  maximum: {fail: ">", ok: "<="},
-  minimum: {fail: "<", ok: ">="},
-  exclusiveMaximum: {fail: ">=", ok: "<"},
-  exclusiveMinimum: {fail: "<=", ok: ">"},
+const ops = operators
+
+const OPS: {[index: string]: {fail: Code; ok: Code; okStr: string}} = {
+  maximum: {okStr: "<=", ok: ops.LTE, fail: ops.GT},
+  minimum: {okStr: ">=", ok: ops.GTE, fail: ops.LT},
+  exclusiveMaximum: {okStr: "<", ok: ops.LT, fail: ops.GTE},
+  exclusiveMinimum: {okStr: ">", ok: ops.GT, fail: ops.LTE},
 }
 
 const def: CodeKeywordDefinition = {
@@ -18,11 +20,11 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordContext) {
     const {keyword, data, $data, schemaCode} = cxt
     const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
-    cxt.fail(dnt + data + OPS[keyword].fail + schemaCode + ` || isNaN(${data})`)
+    cxt.fail(_`${dnt} ${data} ${OPS[keyword].fail} ${schemaCode} || isNaN(${data})`)
   },
   error: {
-    message: ({keyword, schemaCode}) => str`should be ${OPS[keyword].ok} ${schemaCode}`,
-    params: ({keyword, schemaCode}) => _`{comparison: ${OPS[keyword].ok}, limit: ${schemaCode}}`,
+    message: ({keyword, schemaCode}) => str`should be ${OPS[keyword].okStr} ${schemaCode}`,
+    params: ({keyword, schemaCode}) => _`{comparison: ${OPS[keyword].okStr}, limit: ${schemaCode}}`,
   },
 }
 

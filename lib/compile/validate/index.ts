@@ -131,7 +131,7 @@ function commentKeyword({gen, schema, errSchemaPath, opts: {$comment}}: Compilat
     gen.code(_`console.log(${msg})`) // should it use logger?
   } else if (typeof $comment == "function") {
     const schemaPath = str`${errSchemaPath}/$comment`
-    gen.code(_`${N.self}._opts.$comment(${msg}, ${schemaPath}, ${N.validate}.root.schema)`) // TODO chained properties?
+    gen.code(_`${N.self}._opts.$comment(${msg}, ${schemaPath}, ${N.validate}.root.schema)`)
   }
 }
 

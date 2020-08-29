@@ -116,7 +116,7 @@ export function getKeyword(this, keyword: string): KeywordDefinition | boolean {
 /**
  * Remove keyword
  * @this  Ajv
- * @param {String} keyword pre-defined or custom keyword.
+ * @param {String} keyword keyword.
  * @return {Ajv} this for method chaining
  */
 export function removeKeyword(keyword: string): object {

@@ -12,23 +12,30 @@ export type Value = string | Name | Code | number | boolean | null
 export type Block = string | Name | Code | (() => void)
 
 export class Code {
-  _str: string
+  #str: string
 
-  constructor(name: string) {
-    this._str = name
+  constructor(s: string) {
+    this.#str = s
   }
 
   toString(): string {
-    return this._str
+    return this.#str
   }
 
   isQuoted(): boolean {
-    const len = this._str.length
-    return len >= 2 && this._str[0] === '"' && this._str[len - 1] === '"'
+    const len = this.#str.length
+    return len >= 2 && this.#str[0] === '"' && this.#str[len - 1] === '"'
   }
 }
 
 export const nil = new Code("")
+
+export const operators = {
+  GT: new Code(">"),
+  GTE: new Code(">="),
+  LT: new Code("<"),
+  LTE: new Code("<="),
+}
 
 export class Name extends Code {}
 
@@ -61,7 +68,7 @@ export interface Scope {
   [prefix: string]: ValueReference[]
 }
 
-type TemplateArg = Expression | number | boolean
+type TemplateArg = Expression | number | boolean | null
 
 export class ValueError extends Error {
   value: NameValue
@@ -93,7 +100,9 @@ export function str(strings: TemplateStringsArray, ...args: TemplateArg[]): Code
 }
 
 function interpolate(x: TemplateArg): TemplateArg {
-  return x instanceof Code || typeof x == "number" || typeof x == "boolean" ? x : quoteString(x)
+  return x instanceof Code || typeof x == "number" || typeof x == "boolean" || x === null
+    ? x
+    : quoteString(x)
 }
 
 const IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i
@@ -196,14 +205,9 @@ export default class CodeGen {
     return this._def(varKinds.var, nameOrPrefix, rhs)
   }
 
-  assign(name: Expression, rhs: Value): CodeGen {
+  assign(name: Code, rhs: Value): CodeGen {
     this.code(`${name} = ${rhs};`)
     return this
-  }
-
-  prop(name: Code, key: Expression | number): Code {
-    name = name instanceof Name ? name : _`(${name})`
-    return typeof key == "string" && IDENTIFIER.test(key) ? _`${name}.${key}` : _`${name}[${key}]`
   }
 
   code(c?: Block | Value): CodeGen {
@@ -346,4 +350,8 @@ export function quoteString(s: string): string {
   return JSON.stringify(s)
     .replace(/\u2028/g, "\\u2028")
     .replace(/\u2029/g, "\\u2029")
+}
+
+export function getProperty(key: Expression | number): Code {
+  return typeof key == "string" && IDENTIFIER.test(key) ? new Code(`.${key}`) : _`[${key}]`
 }

@@ -1,4 +1,4 @@
-import {Code, Name, Expression} from "./codegen"
+import {_, Name, Expression, getProperty} from "./codegen"
 import {CompilationContext} from "../types"
 import N from "./names"
 
@@ -61,20 +61,7 @@ export function toHash(arr: string[]): {[key: string]: true} {
   return hash
 }
 
-const IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i
 const SINGLE_QUOTE = /'|\\/g
-export function getProperty(key: Expression | number): string {
-  // return typeof key == "string" && IDENTIFIER.test(key)
-  //   ? _`.${key}`
-  //   : _`[${key}]`
-
-  return key instanceof Name || (typeof key == "string" && IDENTIFIER.test(key))
-    ? `.${key}`
-    : key instanceof Code || typeof key === "number"
-    ? `[${key}]`
-    : `['${escapeQuotes(key)}']`
-}
-
 export function escapeQuotes(str: string): string {
   return str
     .replace(SINGLE_QUOTE, "\\$&")
@@ -132,7 +119,7 @@ export function getPath(
   const path = toQuotedString(
     jsonPointers // false by default
       ? "/" + (typeof prop == "number" ? prop : escapeJsonPointer(prop))
-      : getProperty(prop)
+      : getProperty(prop).toString()
   )
   return joinPaths(currentPath, path)
 }

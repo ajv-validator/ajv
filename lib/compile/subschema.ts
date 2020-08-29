@@ -1,20 +1,19 @@
 import {CompilationContext} from "../types"
 import {subschemaCode} from "./validate"
-import {getProperty, escapeFragment, getPath, getPathExpr} from "./util"
-import {accessProperty} from "../vocabularies/util"
-import {_, Code, Name, Expression} from "./codegen"
+import {escapeFragment, getPath, getPathExpr} from "./util"
+import {_, Code, Name, Expression, getProperty} from "./codegen"
 
 export interface SubschemaContext {
   // TODO use Optional?
   schema: object | boolean
-  schemaPath: string
+  schemaPath: Code
   errSchemaPath: string
-  topSchemaRef?: Expression
+  topSchemaRef?: Code
   errorPath?: string
   dataLevel?: number
   data?: Name
   parentData?: Name
-  parentDataProperty?: Expression | number
+  parentDataProperty?: Code | number
   dataNames?: Name[]
   dataPathArr?: (Expression | number)[]
   propertyName?: Name
@@ -35,9 +34,9 @@ interface SubschemaApplicationParams {
   keyword: string
   schemaProp: string | number
   schema: object | boolean
-  schemaPath: string
+  schemaPath: Code
   errSchemaPath: string
-  topSchemaRef: Expression
+  topSchemaRef: Code
   data: Name | Code
   dataProp: Expression | number
   propertyName: Name
@@ -72,12 +71,12 @@ function getSubschema(
     return schemaProp === undefined
       ? {
           schema: sch,
-          schemaPath: it.schemaPath + getProperty(keyword),
+          schemaPath: _`${it.schemaPath}${getProperty(keyword)}`,
           errSchemaPath: `${it.errSchemaPath}/${keyword}`,
         }
       : {
           schema: sch[schemaProp],
-          schemaPath: it.schemaPath + getProperty(keyword) + getProperty(schemaProp),
+          schemaPath: _`${it.schemaPath}${getProperty(keyword)}${getProperty(schemaProp)}`,
           errSchemaPath: `${it.errSchemaPath}/${keyword}/${escapeFragment("" + schemaProp)}`,
         }
   }
@@ -110,7 +109,7 @@ function extendSubschemaData(
 
   if (dataProp !== undefined) {
     const {errorPath, dataPathArr, opts} = it
-    const nextData = gen.var("data", `${it.data}${accessProperty(dataProp)}`) // TODO var, tagged
+    const nextData = gen.var("data", _`${it.data}${getProperty(dataProp)}`) // TODO var
     dataContextProps(nextData)
     // TODO possibly refactor getPath and getPathExpr to one function using Expr enum
     subschema.errorPath =

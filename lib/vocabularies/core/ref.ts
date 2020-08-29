@@ -4,7 +4,7 @@ import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {ResolvedRef, InlineResolvedRef} from "../../compile"
 import {callValidate} from "../util"
-import {_, str, Expression} from "../../compile/codegen"
+import {_, str, nil, Expression} from "../../compile/codegen"
 import N from "../../compile/names"
 
 const def: CodeKeywordDefinition = {
@@ -24,7 +24,7 @@ const def: CodeKeywordDefinition = {
       if (schema === "#" || schema === "#/") {
         return isRoot
           ? {code: N.validate, $async: it.async}
-          : {code: "root.refVal[0]", $async: root.schema.$async === true}
+          : {code: _`root.refVal[0]`, $async: root.schema.$async === true}
       }
       return resolveRef(baseId, schema, isRoot)
     }
@@ -50,7 +50,7 @@ const def: CodeKeywordDefinition = {
         it,
         {
           schema: inlineRef.schema,
-          schemaPath: "",
+          schemaPath: nil,
           topSchemaRef: inlineRef.code,
           errSchemaPath: schema,
         },

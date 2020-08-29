@@ -2,6 +2,7 @@ import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
+import {_} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "contains",
@@ -13,7 +14,7 @@ const def: CodeKeywordDefinition = {
     const {gen, schema, data, it} = cxt
 
     if (alwaysValidSchema(it, schema)) {
-      cxt.fail(`${data}.length === 0`)
+      cxt.fail(_`${data}.length === 0`)
       return
     }
 

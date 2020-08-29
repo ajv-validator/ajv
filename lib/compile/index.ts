@@ -1,4 +1,4 @@
-import CodeGen, {_, nil, Code, Expression, Scope} from "./codegen"
+import CodeGen, {_, nil, Code, Scope} from "./codegen"
 import {validateFunctionCode} from "./validate"
 import {ErrorObject} from "../types"
 import N from "./names"
@@ -20,13 +20,13 @@ module.exports = compile
 export type ResolvedRef = InlineResolvedRef | FuncResolvedRef
 
 export interface InlineResolvedRef {
-  code: Expression
+  code: Code
   schema: object | boolean
   inline: true
 }
 
 export interface FuncResolvedRef {
-  code: Expression
+  code: Code
   $async?: boolean
   inline?: false
 }
@@ -111,6 +111,7 @@ function compile(schema, root, localRefs, baseId) {
       parentDataProperty: N.parentDataProperty,
       dataNames: [N.data],
       dataPathArr: [nil],
+      dataLevel: 0,
       topSchemaRef: _`${N.validate}.schema`,
       async: _schema.$async === true,
       schema: _schema,
@@ -118,14 +119,13 @@ function compile(schema, root, localRefs, baseId) {
       root: _root,
       rootId,
       baseId: baseId || rootId,
-      schemaPath: "",
+      schemaPath: nil,
       errSchemaPath: "#",
       errorPath: '""',
-      dataLevel: 0,
       RULES, // TODO refactor - it is available on the instance
-      resolveRef, // TODO move to gen.globals
-      opts,
       formats,
+      opts,
+      resolveRef, // TODO move to gen.globals
       logger: self.logger,
       self,
     })
@@ -224,11 +224,11 @@ function compile(schema, root, localRefs, baseId) {
   }
 
   // TODO gen.globals
-  function addLocalRef(ref, v?: any): string {
+  function addLocalRef(ref, v?: any): Code {
     var refId = refVal.length
     refVal[refId] = v
     refs[ref] = refId
-    return "refVal" + refId
+    return _`refVal${refId}`
   }
 
   // TODO gen.globals remove?

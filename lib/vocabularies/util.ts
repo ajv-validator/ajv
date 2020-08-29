@@ -1,15 +1,15 @@
-import {getProperty, schemaHasRules} from "../compile/util"
+import {schemaHasRules} from "../compile/util"
 import {CompilationContext} from "../types"
 import KeywordContext from "../compile/context"
-import CodeGen, {_, Code, Name, Expression} from "../compile/codegen"
+import CodeGen, {_, nil, Code, Name, Expression, getProperty} from "../compile/codegen"
 import N from "../compile/names"
 
 export function dataNotType(
-  schemaCode: Expression | number | boolean,
+  schemaCode: Code | number | boolean,
   schemaType: string,
   $data?: string | false
-): string {
-  return $data ? `(${schemaCode}!==undefined && typeof ${schemaCode}!=="${schemaType}") || ` : ""
+): Code {
+  return $data ? _`(${schemaCode}!==undefined && typeof ${schemaCode}!==${schemaType}) || ` : nil
 }
 
 export function schemaRefOrVal(
@@ -17,7 +17,7 @@ export function schemaRefOrVal(
   schema: unknown,
   keyword: string,
   $data?: string | false
-): Expression | number | boolean {
+): Code | number | boolean {
   // return $data || typeof schema === "object"
   //   ? `${topSchemaRef}${schemaPath + getProperty(keyword)}`
   //   : _`${schema}`
@@ -25,7 +25,7 @@ export function schemaRefOrVal(
     if (typeof schema == "number" || typeof schema == "boolean") return schema
     if (typeof schema == "string") return _`${schema}`
   }
-  return `${topSchemaRef}${schemaPath + getProperty(keyword)}`
+  return _`${topSchemaRef}${schemaPath}${getProperty(keyword)}`
 }
 
 export function alwaysValidSchema(
@@ -51,24 +51,14 @@ export function isOwnProperty(data: Name, property: Expression): Code {
   return _`Object.prototype.hasOwnProperty.call(${data}, ${property})`
 }
 
-export function propertyInData(data: Name, property: Expression, ownProperties?: boolean): string {
-  let cond = `${data}${accessProperty(property)} !== undefined`
-  if (ownProperties) cond += ` && ${isOwnProperty(data, property)}`
-  return cond
+export function propertyInData(data: Name, property: Expression, ownProperties?: boolean): Code {
+  const cond = _`${data}${getProperty(property)} !== undefined`
+  return ownProperties ? _`${cond} && ${isOwnProperty(data, property)}` : cond
 }
 
-export function noPropertyInData(
-  data: Name,
-  property: Expression,
-  ownProperties?: boolean
-): string {
-  let cond = `${data}${accessProperty(property)} === undefined`
-  if (ownProperties) cond += ` || !${isOwnProperty(data, property)}`
-  return cond
-}
-
-export function accessProperty(property: Expression | number): Expression {
-  return property instanceof Code ? _`[${property}]` : getProperty(property)
+export function noPropertyInData(data: Name, property: Expression, ownProperties?: boolean): Code {
+  const cond = _`${data}${getProperty(property)} === undefined`
+  return ownProperties ? _`${cond} || !${isOwnProperty(data, property)}` : cond
 }
 
 export function loopPropertiesCode(
@@ -77,20 +67,16 @@ export function loopPropertiesCode(
 ): void {
   // TODO maybe always iterate own properties in v7?
   const key = gen.name("key")
-  const iteration = it.opts.ownProperties ? `of Object.keys(${data})` : `in ${data}`
-  gen.for(`const ${key} ${iteration}`, () => loopBody(key))
+  const iteration = it.opts.ownProperties ? _`of Object.keys(${data})` : _`in ${data}`
+  gen.for(_`const ${key} ${iteration}`, () => loopBody(key))
 }
 
-export function orExpr(
-  items: string[],
-  mapCondition: (s: string, i: number) => Expression
-): Expression {
-  return items.map(mapCondition).reduce((expr, cond) => `${expr} || ${cond}`)
+export function orExpr(items: string[], mapCondition: (s: string, i: number) => Code): Code {
+  return items.map(mapCondition).reduce(orCode)
 }
 
-export interface ParentData {
-  data: Name
-  property: Expression | number
+function orCode(x: Code, y: Code) {
+  return _`${x} || ${y}`
 }
 
 export function callValidate(
@@ -100,7 +86,7 @@ export function callValidate(
   passSchema?: boolean
 ): string {
   const dataAndSchema = passSchema
-    ? `${schemaCode}, ${data}, ${it.topSchemaRef}${it.schemaPath}`
+    ? _`${schemaCode}, ${data}, ${it.topSchemaRef}${it.schemaPath}`
     : data
   const dataPath = `(${N.dataPath} || '')${it.errorPath === '""' ? "" : ` + ${it.errorPath}`}` // TODO joinPaths?
   const args = `${dataAndSchema}, ${dataPath}, ${it.parentData}, ${it.parentDataProperty}, ${N.rootData}`

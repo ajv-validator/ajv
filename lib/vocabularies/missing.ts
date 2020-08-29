@@ -1,6 +1,6 @@
 import KeywordContext from "../compile/context"
 import {noPropertyInData, orExpr} from "./util"
-import {_, Name, Expression} from "../compile/codegen"
+import {_, Code, Name} from "../compile/codegen"
 
 export function checkReportMissingProp(cxt: KeywordContext, prop: string): void {
   const {gen, data, it} = cxt
@@ -14,10 +14,10 @@ export function checkMissingProp(
   {data, it: {opts}}: KeywordContext,
   properties: string[],
   missing: Name
-): Expression {
+): Code {
   return orExpr(properties, (prop) => {
     const hasNoProp = noPropertyInData(data, prop, opts.ownProperties)
-    return `(${hasNoProp} && (${missing} = ${_`${prop}`}))`
+    return _`(${hasNoProp} && (${missing} = ${prop}))`
   })
 }
 

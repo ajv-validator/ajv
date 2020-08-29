@@ -9,7 +9,7 @@ import KeywordContext from "../context"
 import {applySubschema} from "../subschema"
 import {extendErrors} from "../errors"
 import {callValidate} from "../../vocabularies/util"
-import CodeGen, {_, Name, Expression} from "../codegen"
+import CodeGen, {_, nil, Name, Expression} from "../codegen"
 import N from "../names"
 
 export function keywordCode(
@@ -41,7 +41,7 @@ function macroKeywordCode(cxt: KeywordContext, def: MacroKeywordDefinition) {
     it,
     {
       schema: macroSchema,
-      schemaPath: "",
+      schemaPath: nil,
       errSchemaPath: `${it.errSchemaPath}/${keyword}`,
       topSchemaRef: schemaRef,
       compositeRule: true,
@@ -115,8 +115,8 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
   }
 
   function validateSyncRule(): Expression {
-    const validateErrs = `${validateRef}.errors`
-    gen.code(`${validateErrs} = null;`)
+    const validateErrs = _`${validateRef}.errors`
+    gen.assign(validateErrs, null)
     assignValid("")
     return validateErrs
   }
@@ -133,7 +133,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
         return
       case false:
         addKeywordErrors(cxt, ruleErrs)
-        return cxt.ok("false") // TODO maybe add gen.skip() to remove code till the end of the block?
+        return cxt.ok(false) // TODO maybe add gen.skip() to remove code till the end of the block?
       default:
         cxt.pass(valid, () => addKeywordErrors(cxt, ruleErrs))
     }

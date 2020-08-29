@@ -1,7 +1,7 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {orExpr} from "../util"
-import {_, Name, Code, Expression} from "../../compile/codegen"
+import {_, Name, Code} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "enum",
@@ -13,9 +13,9 @@ const def: CodeKeywordDefinition = {
     if ($data) {
       const valid = gen.let("valid")
       gen.if(
-        `${schemaCode} === undefined`,
+        _`${schemaCode} === undefined`,
         () => gen.assign(valid, true),
-        () => gen.assign(valid, false).if(`Array.isArray(${schemaCode})`, () => loopEnum(valid))
+        () => gen.assign(valid, false).if(_`Array.isArray(${schemaCode})`, () => loopEnum(valid))
       )
       cxt.pass(valid)
     } else {
@@ -26,14 +26,14 @@ const def: CodeKeywordDefinition = {
         cxt.pass(valid)
       } else {
         const vSchema = gen.const("schema", schemaCode)
-        const cond: Expression = orExpr(schema, (_x, i) => equalCode(vSchema, i))
+        const cond: Code = orExpr(schema, (_x, i) => equalCode(vSchema, i))
         cxt.pass(cond)
       }
     }
 
     function loopEnum(valid: Name): void {
       const v = gen.name("v")
-      gen.for(`const ${v} of ${schemaCode}`, () =>
+      gen.for(_`const ${v} of ${schemaCode}`, () =>
         gen.if(_`equal(${data}, ${v})`, _`${valid} = true; break;`)
       )
     }

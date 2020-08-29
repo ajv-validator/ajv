@@ -53,7 +53,7 @@ export function extendErrors({
       _`${err}.dataPath === undefined`,
       `${err}.dataPath = (${N.dataPath} || '') + ${it.errorPath}`
     )
-    gen.code(_`${err}.schemaPath = ${it.errSchemaPath + "/" + keyword};`)
+    gen.code(_`${err}.schemaPath = ${str`${it.errSchemaPath}/${keyword}`};`)
     if (it.opts.verbose) {
       gen.code(
         _`${err}.schema = ${schemaValue};

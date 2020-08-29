@@ -16,7 +16,7 @@ const def: CodeKeywordDefinition = {
     const invalid = prec
       ? _`Math.abs(Math.round(${res}) - ${res}) > 1e-${prec}`
       : _`${res} !== parseInt(${res})`
-    cxt.fail(dnt + `(${res} = ${data}/${schemaCode}, ${invalid})`) // TODO pass
+    cxt.fail(_`${dnt} (${res} = ${data}/${schemaCode}, ${invalid})`) // TODO pass
   },
   error: {
     message: ({schemaCode}) => str`should be multiple of ${schemaCode}`,

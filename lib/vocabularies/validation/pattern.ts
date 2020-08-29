@@ -11,8 +11,8 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordContext) {
     const {gen, data, $data, schema, schemaCode} = cxt
     const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
-    const regExp = $data ? _`(new RegExp(${schemaCode}))` : usePattern(gen, schema)
-    cxt.fail(dnt + `!${regExp}.test(${data})`) // TODO pass?
+    const regExp = $data ? _`(new RegExp(${schemaCode}))` : usePattern(gen, schema) // TODO regexp should be wrapped in try/catch
+    cxt.fail(_`${dnt} !${regExp}.test(${data})`) // TODO pass?
   },
   error: {
     message: ({schemaCode}) => str`should match pattern "${schemaCode}"`,

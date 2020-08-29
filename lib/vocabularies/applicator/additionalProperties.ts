@@ -45,7 +45,7 @@ const def: CodeKeywordDefinition = {
       if (patProps.length) {
         definedProp +=
           (definedProp ? " || " : "") +
-          orExpr(patProps, (p) => `${usePattern(gen, p)}.test(${key})`)
+          orExpr(patProps, (p) => _`${usePattern(gen, p)}.test(${key})`)
       }
       return `!(${definedProp})`
     }

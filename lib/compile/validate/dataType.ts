@@ -124,11 +124,11 @@ export function coerceData(it: CompilationContext, coerceTo: string[]): void {
 
 function assignParentData(
   {gen, parentData, parentDataProperty}: CompilationContext,
-  expr: string | Name
+  expr: Name
 ): void {
   // TODO use gen.property
   gen.if(_`${parentData} !== undefined`, () =>
-    gen.assign(`${parentData}[${parentDataProperty}]`, expr)
+    gen.assign(_`${parentData}[${parentDataProperty}]`, expr)
   )
 }
 

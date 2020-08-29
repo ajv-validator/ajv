@@ -7,7 +7,7 @@ import {
 import {schemaRefOrVal} from "../vocabularies/util"
 import {getData} from "./util"
 import {reportError, reportExtraError, resetErrorsCount, keywordError} from "./errors"
-import CodeGen, {Name, Expression} from "./codegen"
+import CodeGen, {Code, Name, Expression} from "./codegen"
 import N from "./names"
 
 export default class KeywordContext implements KeywordErrorContext {
@@ -17,8 +17,8 @@ export default class KeywordContext implements KeywordErrorContext {
   data: Name
   $data?: string | false
   schema: any
-  schemaValue: Expression | number | boolean // Code reference to keyword schema value or primitive value
-  schemaCode: Expression | number | boolean // Code reference to resolved schema value (different if schema is $data)
+  schemaValue: Code | number | boolean // Code reference to keyword schema value or primitive value
+  schemaCode: Code | number | boolean // Code reference to resolved schema value (different if schema is $data)
   parentSchema: any
   errsCount?: Name
   params: KeywordContextParams
@@ -71,7 +71,7 @@ export default class KeywordContext implements KeywordErrorContext {
     this.result(condition, undefined, failAction)
   }
 
-  fail(condition?: Expression): void {
+  fail(condition?: Code): void {
     if (condition === undefined) {
       this.error()
       if (!this.allErrors) this.gen.if(false) // TODO some other way to disable branch?
@@ -96,7 +96,7 @@ export default class KeywordContext implements KeywordErrorContext {
     resetErrorsCount(this.gen, this.errsCount)
   }
 
-  ok(cond: Expression): void {
+  ok(cond: Code | boolean): void {
     if (!this.allErrors) this.gen.if(cond)
   }
 
