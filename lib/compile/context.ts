@@ -87,6 +87,10 @@ export default class KeywordContext implements KeywordErrorContext {
     ;(append ? reportExtraError : reportError)(this, this.def.error || keywordError)
   }
 
+  $dataError(): void {
+    reportError(this, this.def.$dataError || this.def.error || keywordError)
+  }
+
   reset(): void {
     if (this.errsCount === undefined) throw new Error('add "trackErrors" to keyword definition')
     resetErrorsCount(this.gen, this.errsCount)

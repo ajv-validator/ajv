@@ -156,7 +156,8 @@ interface _KeywordDef {
   metaSchema?: object
   validateSchema?: ValidateFunction // compiled keyword metaSchema - should not be passed
   dependencies?: string[] // keywords that must be present in the same schema
-  error?: KeywordErrorDefinition // TODO all keyword types should support error
+  error?: KeywordErrorDefinition
+  $dataError?: KeywordErrorDefinition
 }
 
 export interface CodeKeywordDefinition extends _KeywordDef {

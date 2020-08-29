@@ -20,7 +20,7 @@ const def: CodeKeywordDefinition = {
       if (loopRequired) {
         if ($data) {
           gen.if(_`${schemaCode} !== undefined`, () => {
-            gen.if(_`!Array.isArray(${schemaCode})`, () => cxt.error(), loopAllRequired)
+            gen.if(_`Array.isArray(${schemaCode})`, loopAllRequired, () => cxt.$dataError())
           })
         } else {
           loopAllRequired()
@@ -40,7 +40,7 @@ const def: CodeKeywordDefinition = {
           gen.if(_`${schemaCode} === undefined`)
           gen.assign(valid, true)
           gen.elseIf(_`!Array.isArray(${schemaCode})`)
-          cxt.error()
+          cxt.$dataError()
           gen.assign(valid, false)
           gen.else()
           loopUntilMissing(missing, valid)
@@ -76,13 +76,12 @@ const def: CodeKeywordDefinition = {
     }
   },
   error: {
-    message: ({params: {missingProperty}}) => {
-      return missingProperty
-        ? str`should have required property '${missingProperty}'`
-        : str`"required" keyword value must be array`
-    },
-    params: ({params: {missingProperty}}) =>
-      missingProperty ? _`{missingProperty: ${missingProperty}}` : _`{}`,
+    message: ({params: {missingProperty}}) =>
+      str`should have required property '${missingProperty}'`,
+    params: ({params: {missingProperty}}) => _`{missingProperty: ${missingProperty}}`,
+  },
+  $dataError: {
+    message: '"required" keyword value must be array',
   },
 }
 

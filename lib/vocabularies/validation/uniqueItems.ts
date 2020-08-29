@@ -18,7 +18,7 @@ const def: CodeKeywordDefinition = {
       gen.if(_`${schemaCode} === false || ${schemaCode} === undefined`)
       gen.assign(valid, true)
       gen.elseIf(_`typeof ${schemaCode} != "boolean"`)
-      cxt.error()
+      cxt.$dataError()
       gen.assign(valid, false)
       gen.else()
       validateUniqueItems()
@@ -78,10 +78,11 @@ const def: CodeKeywordDefinition = {
   },
   error: {
     message: ({params: {i, j}}) =>
-      i
-        ? str`should NOT have duplicate items (items ## ${j} and ${i} are identical)`
-        : str`uniqueItems must be boolean ($data)`,
-    params: ({params: {i, j}}) => (i ? _`{i: ${i}, j: ${j}}` : _`{}`),
+      str`should NOT have duplicate items (items ## ${j} and ${i} are identical)`,
+    params: ({params: {i, j}}) => _`{i: ${i}, j: ${j}}`,
+  },
+  $dataError: {
+    message: "uniqueItems must be boolean ($data)",
   },
 }
 
