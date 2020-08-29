@@ -15,6 +15,7 @@ const names = {
   this: new Name("this"),
   // "globals"
   self: new Name("self"),
+  scope: new Name("scope"),
 }
 
 export default names

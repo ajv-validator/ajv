@@ -1,7 +1,8 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {schemaProperties, loopPropertiesCode} from "../util"
+import {schemaProperties, loopPropertiesCode, usePattern} from "../util"
 import {applySubschema, Expr} from "../../compile/subschema"
+import {_} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "patternProperties",
@@ -28,7 +29,7 @@ const def: CodeKeywordDefinition = {
 
     function validateProperties(pat: string) {
       loopPropertiesCode(cxt, (key) => {
-        gen.if(`${it.usePattern(pat)}.test(${key})`, () => {
+        gen.if(_`${usePattern(gen, pat)}.test(${key})`, () => {
           applySubschema(
             it,
             {

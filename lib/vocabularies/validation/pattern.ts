@@ -1,6 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {dataNotType} from "../util"
+import {dataNotType, usePattern} from "../util"
 import {_, str} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
@@ -9,9 +9,9 @@ const def: CodeKeywordDefinition = {
   schemaType: "string",
   $data: true,
   code(cxt: KeywordContext) {
-    const {data, $data, schema, schemaCode, it} = cxt
+    const {gen, data, $data, schema, schemaCode} = cxt
     const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
-    const regExp = $data ? _`(new RegExp(${schemaCode}))` : it.usePattern(schema)
+    const regExp = $data ? _`(new RegExp(${schemaCode}))` : usePattern(gen, schema)
     cxt.fail(dnt + `!${regExp}.test(${data})`) // TODO pass?
   },
   error: {

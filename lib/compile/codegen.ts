@@ -49,13 +49,27 @@ interface NameRec {
   value: NameValue
 }
 
+type ValueReference = any // possibly make CodeGen parameterized type on this type
+
 export interface NameValue {
-  ref: any // this is the reference to any value that can be referred to from generated code via `globals` var in the closure
+  ref: ValueReference // this is the reference to any value that can be referred to from generated code via `globals` var in the closure
   key?: unknown // any key to identify a global to avoid duplicates, if not passed ref is used
   code?: Code // this is the code creating the value needed for standalone code without closure - can be a primitive value, function or import (`require`)
 }
 
+export interface ValueStore {
+  [prefix: string]: ValueReference[]
+}
+
 type TemplateArg = Expression | number | boolean
+
+export class ValueError extends Error {
+  value: NameValue
+  constructor({name, value}: NameRec) {
+    super(`CodeGen: code for ${name} not defined`)
+    this.value = value
+  }
+}
 
 export function _(strs: TemplateStringsArray, ...args: TemplateArg[]): Code {
   return new Code(strs.reduce((res, s, i) => res + interpolate(args[i - 1]) + s))
@@ -86,6 +100,7 @@ const IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i
 
 export default class CodeGen {
   #names: {[prefix: string]: NameGroup} = {}
+  #valuePrefixes: {[prefix: string]: Name} = {}
   // TODO make private. Possibly stack?
   _out = ""
   #blocks: BlockKind[] = []
@@ -102,7 +117,7 @@ export default class CodeGen {
   }
 
   _name(ng: NameGroup): Name {
-    return new Name(`${ng.prefix}_${ng.index++}`)
+    return new Name(ng.prefix + ng.index++)
   }
 
   name(prefix: string): Name {
@@ -110,10 +125,50 @@ export default class CodeGen {
     return this._name(ng)
   }
 
-  // global(prefix: string, value: NameValue): Name {
-  //   const ng = this._nameGroup(prefix)
-  //   const name = this._name(ng)
-  // }
+  value(prefix: string, value: NameValue): Name {
+    const {ref, key} = value
+    const ng = this._nameGroup(prefix)
+    this.#valuePrefixes[prefix] = new Name(prefix)
+    if (!ng.values) {
+      ng.values = new Map()
+    } else {
+      const rec = ng.values.get(key || ref)
+      if (rec) return rec.name
+    }
+    const name = this._name(ng)
+    ng.values.set(key || ref, {name, value})
+    return name
+  }
+
+  valuesClosure(valuesName: Name, store: ValueStore): Code {
+    return this._reduceValues(({value: {ref}}, prefix, i) => {
+      if (!store[prefix]) store[prefix] = []
+      store[prefix][i] = ref
+      const prefName = this.#valuePrefixes[prefix]
+      return _`${valuesName}.${prefName}[${i}]`
+    })
+  }
+
+  valuesCode(): Code {
+    return this._reduceValues((rec: NameRec) => {
+      const c = rec.value.code
+      if (!c) throw new ValueError(rec)
+      return c
+    })
+  }
+
+  _reduceValues(valueCode: (n: NameRec, pref: string, index: number) => Code): Code {
+    let code: Code = nil
+    for (const prefix in this.#valuePrefixes) {
+      let i = 0
+      const values = this.#names[prefix].values
+      if (!values) throw new Error("ajv implementation error")
+      values.forEach((rec: NameRec) => {
+        code = _`${code}const ${rec.name} = ${valueCode(rec, prefix, i++)};`
+      })
+    }
+    return code
+  }
 
   _def(varKind: Name, nameOrPrefix: Name | string, rhs?: Expression | number | boolean): Name {
     const name = nameOrPrefix instanceof Name ? nameOrPrefix : this.name(nameOrPrefix)

@@ -1,7 +1,7 @@
 import {getProperty, schemaHasRules} from "../compile/util"
 import {CompilationContext} from "../types"
 import KeywordContext from "../compile/context"
-import {_, Code, Name, Expression} from "../compile/codegen"
+import CodeGen, {_, Code, Name, Expression} from "../compile/codegen"
 import N from "../compile/names"
 
 export function dataNotType(
@@ -105,4 +105,12 @@ export function callValidate(
   const dataPath = `(${N.dataPath} || '')${it.errorPath === '""' ? "" : ` + ${it.errorPath}`}` // TODO joinPaths?
   const args = `${dataAndSchema}, ${dataPath}, ${it.parentData}, ${it.parentDataProperty}, ${N.rootData}`
   return context ? `${func}.call(${context}, ${args})` : `${func}(${args})`
+}
+
+export function usePattern(gen: CodeGen, pattern: string): Name {
+  return gen.value("pattern", {
+    key: pattern,
+    ref: new RegExp(pattern),
+    code: _`new RegExp(${pattern})`,
+  })
 }

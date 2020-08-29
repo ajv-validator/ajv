@@ -5,6 +5,7 @@ import {
   schemaRefOrVal,
   alwaysValidSchema,
   loopPropertiesCode,
+  usePattern,
   orExpr,
 } from "../util"
 import {applySubschema, SubschemaApplication, Expr} from "../../compile/subschema"
@@ -18,7 +19,7 @@ const def: CodeKeywordDefinition = {
   trackErrors: true,
   code(cxt: KeywordContext) {
     const {gen, schema, parentSchema, data, errsCount, it} = cxt
-    const {allErrors, usePattern, opts} = it
+    const {allErrors, opts} = it
     if (alwaysValidSchema(it, schema) && opts.removeAdditional !== "all") return
     const props = allSchemaProperties(parentSchema.properties)
     const patProps = allSchemaProperties(parentSchema.patternProperties)
@@ -43,7 +44,8 @@ const def: CodeKeywordDefinition = {
       }
       if (patProps.length) {
         definedProp +=
-          (definedProp ? " || " : "") + orExpr(patProps, (p) => `${usePattern(p)}.test(${key})`)
+          (definedProp ? " || " : "") +
+          orExpr(patProps, (p) => `${usePattern(gen, p)}.test(${key})`)
       }
       return `!(${definedProp})`
     }

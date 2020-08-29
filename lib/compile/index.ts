@@ -47,9 +47,9 @@ function compile(schema, root, localRefs, baseId) {
     opts = this._opts,
     refVal = [undefined],
     refs = {},
-    patterns: string[] = [],
-    patternsHash = {},
     customRules: KeywordCompilationResult[] = []
+
+  const scope = {}
 
   root = root || {schema: schema, refVal: refVal, refs: refs}
 
@@ -125,7 +125,6 @@ function compile(schema, root, localRefs, baseId) {
       dataLevel: 0,
       RULES, // TODO refactor - it is available on the instance
       resolveRef, // TODO move to gen.globals
-      usePattern, // TODO move to gen.globals
       customRules, // TODO move to gen.globals
       opts,
       formats,
@@ -134,7 +133,7 @@ function compile(schema, root, localRefs, baseId) {
     })
 
     let sourceCode = `${vars(refVal, refValCode)}
-                      ${vars(patterns, patternCode)}
+                      ${gen.valuesClosure(N.scope, scope)}
                       ${vars(customRules, customRuleCode)}
                       ${gen.toString()}`
 
@@ -149,6 +148,7 @@ function compile(schema, root, localRefs, baseId) {
         "root",
         "refVal",
         "customRules",
+        "scope",
         "equal",
         "ucs2length",
         "ValidationError",
@@ -162,6 +162,7 @@ function compile(schema, root, localRefs, baseId) {
         root,
         refVal,
         customRules,
+        scope,
         equal,
         ucs2length,
         ValidationError
@@ -182,7 +183,7 @@ function compile(schema, root, localRefs, baseId) {
     if (opts.sourceCode === true) {
       validate.source = {
         code: sourceCode,
-        patterns,
+        scope,
       }
     }
 
@@ -250,15 +251,6 @@ function compile(schema, root, localRefs, baseId) {
       ? {code: code, schema: refVal, inline: true}
       : {code: code, $async: refVal && !!refVal.$async}
   }
-
-  function usePattern(regexStr) {
-    var index = patternsHash[regexStr]
-    if (index === undefined) {
-      index = patternsHash[regexStr] = patterns.length
-      patterns[index] = regexStr
-    }
-    return "pattern" + index
-  }
 }
 
 /**
@@ -310,10 +302,6 @@ function compIndex(schema, root, baseId) {
     if (c.schema === schema && c.root === root && c.baseId === baseId) return i
   }
   return -1
-}
-
-function patternCode(i: number, patterns): Code {
-  return _`const pattern${i} = new RegExp(${patterns[i]});`
 }
 
 function refValCode(i: number, refVal): Code {
