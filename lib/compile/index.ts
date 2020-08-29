@@ -124,9 +124,9 @@ function compile(schema, root, localRefs, baseId) {
       errorPath: '""',
       dataLevel: 0,
       RULES, // TODO refactor - it is available on the instance
-      resolveRef, // TODO remove to imports
-      usePattern, // TODO remove to imports
-      customRules,
+      resolveRef, // TODO move to gen.globals
+      usePattern, // TODO move to gen.globals
+      customRules, // TODO move to gen.globals
       opts,
       formats,
       logger: self.logger,
@@ -226,6 +226,7 @@ function compile(schema, root, localRefs, baseId) {
     }
   }
 
+  // TODO gen.globals
   function addLocalRef(ref, v?: any): string {
     var refId = refVal.length
     refVal[refId] = v
@@ -233,10 +234,12 @@ function compile(schema, root, localRefs, baseId) {
     return "refVal" + refId
   }
 
+  // TODO gen.globals remove?
   function removeLocalRef(ref) {
     delete refs[ref]
   }
 
+  // TODO gen.globals remove?
   function replaceLocalRef(ref, v) {
     var refId = refs[ref]
     refVal[refId] = v

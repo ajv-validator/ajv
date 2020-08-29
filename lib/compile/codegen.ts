@@ -38,6 +38,23 @@ const varKinds = {
   var: new Name("var"),
 }
 
+interface NameGroup {
+  prefix: string
+  index: number
+  values?: Map<unknown, NameRec> // same key as passed in GlobalValue
+}
+
+interface NameRec {
+  name: Name
+  value: NameValue
+}
+
+export interface NameValue {
+  ref: any // this is the reference to any value that can be referred to from generated code via `globals` var in the closure
+  key?: unknown // any key to identify a global to avoid duplicates, if not passed ref is used
+  code?: Code // this is the code creating the value needed for standalone code without closure - can be a primitive value, function or import (`require`)
+}
+
 type TemplateArg = Expression | number | boolean
 
 export function _(strs: TemplateStringsArray, ...args: TemplateArg[]): Code {
@@ -68,7 +85,7 @@ function interpolate(x: TemplateArg): TemplateArg {
 const IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i
 
 export default class CodeGen {
-  #names: {[key: string]: number} = {}
+  #names: {[prefix: string]: NameGroup} = {}
   // TODO make private. Possibly stack?
   _out = ""
   #blocks: BlockKind[] = []
@@ -78,11 +95,25 @@ export default class CodeGen {
     return this._out
   }
 
-  name(prefix: string): Name {
-    if (!this.#names[prefix]) this.#names[prefix] = 0
-    const num = this.#names[prefix]++
-    return new Name(`${prefix}_${num}`)
+  _nameGroup(prefix: string): NameGroup {
+    let ng = this.#names[prefix]
+    if (!ng) ng = this.#names[prefix] = {prefix, index: 0}
+    return ng
   }
+
+  _name(ng: NameGroup): Name {
+    return new Name(`${ng.prefix}_${ng.index++}`)
+  }
+
+  name(prefix: string): Name {
+    const ng = this._nameGroup(prefix)
+    return this._name(ng)
+  }
+
+  // global(prefix: string, value: NameValue): Name {
+  //   const ng = this._nameGroup(prefix)
+  //   const name = this._name(ng)
+  // }
 
   _def(varKind: Name, nameOrPrefix: Name | string, rhs?: Expression | number | boolean): Name {
     const name = nameOrPrefix instanceof Name ? nameOrPrefix : this.name(nameOrPrefix)
