@@ -9,7 +9,7 @@ import KeywordContext from "../context"
 import {applySubschema} from "../subschema"
 import {extendErrors} from "../errors"
 import {callValidate} from "../../vocabularies/util"
-import {_, Name, Expression} from "../codegen"
+import CodeGen, {_, Name, Expression} from "../codegen"
 import N from "../names"
 
 export function keywordCode(
@@ -33,7 +33,7 @@ export function keywordCode(
 function macroKeywordCode(cxt: KeywordContext, def: MacroKeywordDefinition) {
   const {gen, keyword, schema, parentSchema, it} = cxt
   const macroSchema = def.macro.call(it.self, schema, parentSchema, it)
-  const schemaRef = addCustomRule(it, keyword, macroSchema)
+  const schemaRef = useKeyword(gen, keyword, macroSchema)
   if (it.opts.validateSchema !== false) it.self.validateSchema(macroSchema, true)
 
   const valid = gen.name("valid")
@@ -56,7 +56,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
   checkAsync(it, def)
   const validate =
     "compile" in def && !$data ? def.compile.call(it.self, schema, parentSchema, it) : def.validate
-  const validateRef = addCustomRule(it, keyword, validate)
+  const validateRef = useKeyword(gen, keyword, validate)
   const valid = gen.let("valid")
 
   if (def.errors === false) {
@@ -92,7 +92,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
       .code(`${valid} = true;`)
       .else()
     if (def.validateSchema) {
-      const validateSchemaRef = addCustomRule(it, keyword, def.validateSchema)
+      const validateSchemaRef = useKeyword(gen, keyword, def.validateSchema)
       gen.code(`${valid} = ${validateSchemaRef}(${schemaCode});`)
       // TODO fail if schema fails validation
       // gen.if(`!${valid}`)
@@ -162,13 +162,7 @@ function checkAsync(it: CompilationContext, def: FuncKeywordDefinition) {
   if (def.async && !it.async) throw new Error("async keyword in sync schema")
 }
 
-function addCustomRule(
-  it: CompilationContext,
-  keyword: string,
-  res?: KeywordCompilationResult
-): string {
-  if (res === undefined) throw new Error(`custom keyword "${keyword}" failed to compile`)
-  const idx = it.customRules.length
-  it.customRules[idx] = res
-  return `customRule${idx}`
+function useKeyword(gen: CodeGen, keyword: string, result?: KeywordCompilationResult): Name {
+  if (result === undefined) throw new Error(`keyword "${keyword}" failed to compile`)
+  return gen.value("keyword", {ref: result}) // TODO value.code
 }

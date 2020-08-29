@@ -152,7 +152,7 @@ export const validateKeyword: KeywordValidator = function (definition, throwErro
   if (v(definition)) return true
   validateKeyword.errors = v.errors
   if (throwError) {
-    throw new Error("custom keyword definition is invalid: " + this.errorsText(v.errors))
+    throw new Error("keyword definition is invalid: " + this.errorsText(v.errors))
   }
   return false
 }

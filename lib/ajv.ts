@@ -30,12 +30,12 @@ Ajv.prototype._addSchema = _addSchema
 Ajv.prototype._compile = _compile
 
 Ajv.prototype.compileAsync = require("./compile/async")
-var customKeyword = require("./keyword")
-Ajv.prototype.addVocabulary = customKeyword.addVocabulary
-Ajv.prototype.addKeyword = customKeyword.addKeyword
-Ajv.prototype.getKeyword = customKeyword.getKeyword
-Ajv.prototype.removeKeyword = customKeyword.removeKeyword
-Ajv.prototype.validateKeyword = customKeyword.validateKeyword
+var keywordMethods = require("./keyword")
+Ajv.prototype.addVocabulary = keywordMethods.addVocabulary
+Ajv.prototype.addKeyword = keywordMethods.addKeyword
+Ajv.prototype.getKeyword = keywordMethods.getKeyword
+Ajv.prototype.removeKeyword = keywordMethods.removeKeyword
+Ajv.prototype.validateKeyword = keywordMethods.validateKeyword
 Ajv.prototype.$dataMetaSchema = $dataMetaSchema
 
 Ajv.ValidationError = ValidationError
@@ -118,7 +118,7 @@ function validate(schemaKeyRef, data) {
  * Create validating function for passed schema.
  * @this   Ajv
  * @param  {Object} schema schema object
- * @param  {Boolean} _meta true if schema is a meta-schema. Used internally to compile meta schemas of custom keywords.
+ * @param  {Boolean} _meta true if schema is a meta-schema.
  * @return {Function} validating function
  */
 function compile(schema, _meta) {
@@ -407,7 +407,7 @@ function errorsText(errors, options) {
 }
 
 /**
- * Add custom format
+ * Add format
  * @this   Ajv
  * @param {String} name format name
  * @param {String|RegExp|Function} format string is converted to RegExp; function should return boolean (true when valid)

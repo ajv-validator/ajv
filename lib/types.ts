@@ -122,14 +122,8 @@ export interface CompilationContext {
   baseId: string
   async: boolean
   opts: Options
-  formats: {
-    [index: string]: AddedFormat
-  }
-  // keywords: {
-  //   [index: string]: KeywordDefinition | undefined
-  // }
+  formats: {[index: string]: AddedFormat}
   compositeRule?: boolean
-  customRules: KeywordCompilationResult[]
   self: any // TODO
   RULES: ValidationRules
   logger: Logger // TODO ?

@@ -6,7 +6,6 @@ export interface ValidationRules {
   all: {[key: string]: boolean | Rule} // rules that have to be validated
   keywords: {[key: string]: boolean} // all known keywords (superset of "all")
   types: {[key: string]: boolean | RuleGroup}
-  custom: {[key: string]: Rule}
 }
 
 export interface RuleGroup {
@@ -20,48 +19,40 @@ export interface Rule {
   definition: KeywordDefinition
 }
 
+const ALL = ["type", "$comment"]
+const KEYWORDS = [
+  "$schema",
+  "$id",
+  "id",
+  "$data",
+  "$async",
+  "title",
+  "description",
+  "default",
+  "definitions",
+  "examples",
+  "readOnly",
+  "writeOnly",
+  "contentMediaType",
+  "contentEncoding",
+  "then",
+  "else",
+]
+
 export default function rules(): ValidationRules {
-  const ALL = ["type", "$comment"]
-  const KEYWORDS = [
-    "$schema",
-    "$id",
-    "id",
-    "$data",
-    "$async",
-    "title",
-    "description",
-    "default",
-    "definitions",
-    "examples",
-    "readOnly",
-    "writeOnly",
-    "contentMediaType",
-    "contentEncoding",
-    "then",
-    "else",
-  ]
-  const TYPES = ["number", "integer", "string", "array", "object", "boolean", "null"]
-
-  const RULES: ValidationRules = {
-    rules: [
-      {type: "number", rules: []},
-      {type: "string", rules: []},
-      {type: "array", rules: []},
-      {type: "object", rules: []},
-      {rules: []},
-    ],
-    all: toHash(ALL),
-    keywords: {},
-    types: toHash(TYPES),
-    custom: {},
+  const types = {
+    number: {type: "number", rules: []},
+    integer: true,
+    string: {type: "string", rules: []},
+    array: {type: "array", rules: []},
+    object: {type: "object", rules: []},
+    boolean: true,
+    null: true,
   }
-
-  RULES.rules.forEach((group) => {
-    if (group.type) RULES.types[group.type] = group
-  })
-
-  RULES.keywords = toHash(ALL.concat(KEYWORDS))
-  RULES.custom = {}
-
-  return RULES
+  return {
+    types,
+    rules: [types.number, types.string, types.array, types.object, {rules: []}],
+    all: toHash(ALL),
+    keywords: toHash(ALL.concat(KEYWORDS)),
+  }
 }

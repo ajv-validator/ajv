@@ -52,12 +52,12 @@ interface NameRec {
 type ValueReference = any // possibly make CodeGen parameterized type on this type
 
 export interface NameValue {
-  ref: ValueReference // this is the reference to any value that can be referred to from generated code via `globals` var in the closure
+  ref?: ValueReference // this is the reference to any value that can be referred to from generated code via `globals` var in the closure
   key?: unknown // any key to identify a global to avoid duplicates, if not passed ref is used
   code?: Code // this is the code creating the value needed for standalone code without closure - can be a primitive value, function or import (`require`)
 }
 
-export interface ValueStore {
+export interface Scope {
   [prefix: string]: ValueReference[]
 }
 
@@ -65,8 +65,8 @@ type TemplateArg = Expression | number | boolean
 
 export class ValueError extends Error {
   value: NameValue
-  constructor({name, value}: NameRec) {
-    super(`CodeGen: code for ${name} not defined`)
+  constructor(fields: string, {name, value}: NameRec) {
+    super(`CodeGen: ${fields} for ${name} not defined`)
     this.value = value
   }
 }
@@ -126,34 +126,41 @@ export default class CodeGen {
   }
 
   value(prefix: string, value: NameValue): Name {
-    const {ref, key} = value
+    const {ref, key, code} = value
+    const valueKey = key ?? ref ?? code
+    if (!valueKey) throw new Error("CodeGen: ref or code must be passed in value")
     const ng = this._nameGroup(prefix)
     this.#valuePrefixes[prefix] = new Name(prefix)
     if (!ng.values) {
       ng.values = new Map()
     } else {
-      const rec = ng.values.get(key || ref)
+      const rec = ng.values.get(valueKey)
       if (rec) return rec.name
     }
     const name = this._name(ng)
-    ng.values.set(key || ref, {name, value})
+    ng.values.set(valueKey, {name, value})
     return name
   }
 
-  valuesClosure(valuesName: Name, store: ValueStore): Code {
-    return this._reduceValues(({value: {ref}}, prefix, i) => {
-      if (!store[prefix]) store[prefix] = []
-      store[prefix][i] = ref
-      const prefName = this.#valuePrefixes[prefix]
-      return _`${valuesName}.${prefName}[${i}]`
+  scopeRefs(valuesName: Name, scope: Scope): Code {
+    return this._reduceValues((rec: NameRec, prefix: string, i: number) => {
+      const {value: v} = rec
+      if (v.ref) {
+        if (!scope[prefix]) scope[prefix] = []
+        scope[prefix][i] = v.ref
+        const prefName = this.#valuePrefixes[prefix]
+        return _`${valuesName}.${prefName}[${i}]`
+      }
+      if (v.code) return v.code
+      throw new ValueError("ref and code", rec)
     })
   }
 
-  valuesCode(): Code {
+  scopeCode(): Code {
     return this._reduceValues((rec: NameRec) => {
       const c = rec.value.code
-      if (!c) throw new ValueError(rec)
-      return c
+      if (c) return c
+      throw new ValueError("code", rec)
     })
   }
 

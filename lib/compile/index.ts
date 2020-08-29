@@ -1,6 +1,6 @@
-import CodeGen, {_, nil, Code, Expression} from "./codegen"
+import CodeGen, {_, nil, Code, Expression, Scope} from "./codegen"
 import {validateFunctionCode} from "./validate"
-import {ErrorObject, KeywordCompilationResult} from "../types"
+import {ErrorObject} from "../types"
 import N from "./names"
 
 const equal = require("fast-deep-equal")
@@ -46,10 +46,9 @@ function compile(schema, root, localRefs, baseId) {
   var self = this,
     opts = this._opts,
     refVal = [undefined],
-    refs = {},
-    customRules: KeywordCompilationResult[] = []
+    refs = {}
 
-  const scope = {}
+  const scope: Scope = {}
 
   root = root || {schema: schema, refVal: refVal, refs: refs}
 
@@ -125,7 +124,6 @@ function compile(schema, root, localRefs, baseId) {
       dataLevel: 0,
       RULES, // TODO refactor - it is available on the instance
       resolveRef, // TODO move to gen.globals
-      customRules, // TODO move to gen.globals
       opts,
       formats,
       logger: self.logger,
@@ -133,21 +131,20 @@ function compile(schema, root, localRefs, baseId) {
     })
 
     let sourceCode = `${vars(refVal, refValCode)}
-                      ${gen.valuesClosure(N.scope, scope)}
-                      ${vars(customRules, customRuleCode)}
+                      ${gen.scopeRefs(N.scope, scope)}
                       ${gen.toString()}`
 
     if (opts.processCode) sourceCode = opts.processCode(sourceCode, _schema)
     // console.log("\n\n\n *** \n", sourceCode)
     var validate
     try {
+      // TODO refactor to fewer variables - maybe only self and scope
       var makeValidate = new Function(
         "self",
         "RULES",
         "formats",
         "root",
         "refVal",
-        "customRules",
         "scope",
         "equal",
         "ucs2length",
@@ -161,7 +158,6 @@ function compile(schema, root, localRefs, baseId) {
         formats,
         root,
         refVal,
-        customRules,
         scope,
         equal,
         ucs2length,
@@ -306,10 +302,6 @@ function compIndex(schema, root, baseId) {
 
 function refValCode(i: number, refVal): Code {
   return refVal[i] === undefined ? nil : _`const refVal${i} = refVal[${i}];`
-}
-
-function customRuleCode(i: number): Code {
-  return _`const customRule${i} = customRules[${i}];`
 }
 
 function vars(arr: unknown[], statement: (i: number, arr?: unknown[]) => Code): Code {
