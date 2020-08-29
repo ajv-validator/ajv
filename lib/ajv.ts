@@ -36,10 +36,10 @@ Ajv.prototype.addKeyword = customKeyword.addKeyword
 Ajv.prototype.getKeyword = customKeyword.getKeyword
 Ajv.prototype.removeKeyword = customKeyword.removeKeyword
 Ajv.prototype.validateKeyword = customKeyword.validateKeyword
+Ajv.prototype.$dataMetaSchema = $dataMetaSchema
 
 Ajv.ValidationError = ValidationError
 Ajv.MissingRefError = MissingRefError
-Ajv.$dataMetaSchema = $dataMetaSchema
 
 var META_SCHEMA_ID = "http://json-schema.org/draft-07/schema"
 
@@ -428,7 +428,7 @@ function addDefaultMetaSchema(self) {
   if (self._opts.meta === false) return
   var metaSchema = require("./refs/json-schema-draft-07.json")
   if (self._opts.$data) {
-    metaSchema = $dataMetaSchema(metaSchema, META_SUPPORT_DATA)
+    metaSchema = self.$dataMetaSchema(metaSchema, META_SUPPORT_DATA)
   }
   self.addMetaSchema(metaSchema, META_SCHEMA_ID, true)
   self._refs["http://json-schema.org/schema"] = META_SCHEMA_ID

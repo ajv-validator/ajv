@@ -1,6 +1,7 @@
 import {KeywordDefinition, Vocabulary, ErrorObject, ValidateFunction} from "./types"
 import {ValidationRules, Rule} from "./compile/rules"
 import {definitionSchema} from "./definition_schema"
+import {schemaOrData} from "./data"
 
 const IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i
 
@@ -99,17 +100,11 @@ function eachItem<T>(xs: T | T[], f: (x: T) => void): void {
   }
 }
 
-const $dataRef = {
-  $ref: "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#",
-}
-
 function keywordMetaschema(this: any, def: KeywordDefinition): void {
   // TODO this Ajv
   let metaSchema = def.metaSchema
   if (metaSchema === undefined) return
-  if (def.$data && this._opts.$data) {
-    metaSchema = {anyOf: [metaSchema, $dataRef]}
-  }
+  if (def.$data && this._opts.$data) metaSchema = schemaOrData(metaSchema)
   def.validateSchema = this.compile(metaSchema, true)
 }
 
