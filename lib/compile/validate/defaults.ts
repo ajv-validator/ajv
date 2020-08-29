@@ -13,7 +13,7 @@ export function assignDefaults(it: CompilationContext, ty?: string): void {
 }
 
 function assignDefault(
-  {gen, compositeRule, data, useDefault, opts, logger}: CompilationContext,
+  {gen, compositeRule, data, opts, logger}: CompilationContext,
   prop: string | number,
   defaultValue: any
 ): void {
@@ -31,7 +31,5 @@ function assignDefault(
   const condition =
     `${childData} === undefined` +
     (opts.useDefaults === "empty" ? ` || ${childData} === null || ${childData} === ""` : "")
-  // TODO remove option `useDefaults === "shared"`
-  const defaultExpr = opts.useDefaults === "shared" ? useDefault : JSON.stringify
-  gen.if(condition, `${childData} = ${defaultExpr(defaultValue)}`)
+  gen.if(condition, `${childData} = ${JSON.stringify(defaultValue)}`)
 }

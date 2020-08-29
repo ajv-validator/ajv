@@ -6,8 +6,7 @@ import N from "./names"
 const equal = require("fast-deep-equal")
 const ucs2length = require("./ucs2length")
 
-var resolve = require("./resolve"),
-  stableStringify = require("fast-json-stable-stringify")
+const resolve = require("./resolve")
 
 /**
  * Functions below are used inside compiled validations function
@@ -50,8 +49,6 @@ function compile(schema, root, localRefs, baseId) {
     refs = {},
     patterns: string[] = [],
     patternsHash = {},
-    defaults: any[] = [],
-    defaultsHash = {},
     customRules: KeywordCompilationResult[] = []
 
   root = root || {schema: schema, refVal: refVal, refs: refs}
@@ -129,8 +126,7 @@ function compile(schema, root, localRefs, baseId) {
       RULES, // TODO refactor - it is available on the instance
       resolveRef, // TODO remove to imports
       usePattern, // TODO remove to imports
-      useDefault, // TODO remove to imports
-      customRules, // TODO add to types
+      customRules,
       opts,
       formats,
       logger: self.logger,
@@ -139,7 +135,6 @@ function compile(schema, root, localRefs, baseId) {
 
     let sourceCode = `${vars(refVal, refValCode)}
                       ${vars(patterns, patternCode)}
-                      ${vars(defaults, defaultCode)}
                       ${vars(customRules, customRuleCode)}
                       ${gen.toString()}`
 
@@ -153,7 +148,6 @@ function compile(schema, root, localRefs, baseId) {
         "formats",
         "root",
         "refVal",
-        "defaults",
         "customRules",
         "equal",
         "ucs2length",
@@ -167,7 +161,6 @@ function compile(schema, root, localRefs, baseId) {
         formats,
         root,
         refVal,
-        defaults,
         customRules,
         equal,
         ucs2length,
@@ -189,8 +182,7 @@ function compile(schema, root, localRefs, baseId) {
     if (opts.sourceCode === true) {
       validate.source = {
         code: sourceCode,
-        patterns: patterns,
-        defaults: defaults,
+        patterns,
       }
     }
 
@@ -264,26 +256,6 @@ function compile(schema, root, localRefs, baseId) {
     }
     return "pattern" + index
   }
-
-  function useDefault(value: any): Expression {
-    switch (typeof value) {
-      case "boolean":
-      case "number":
-      case "string":
-        return _`${value}`
-      case "object":
-        if (value === null) return "null"
-        var valueStr = stableStringify(value)
-        var index = defaultsHash[valueStr]
-        if (index === undefined) {
-          index = defaultsHash[valueStr] = defaults.length
-          defaults[index] = value
-        }
-        return "default" + index
-      default:
-        throw new Error(`unsupported default type "${typeof value}"`)
-    }
-  }
 }
 
 /**
@@ -339,10 +311,6 @@ function compIndex(schema, root, baseId) {
 
 function patternCode(i: number, patterns): Code {
   return _`const pattern${i} = new RegExp(${patterns[i]});`
-}
-
-function defaultCode(i: number): Code {
-  return _`const default${i} = defaults[${i}];`
 }
 
 function refValCode(i: number, refVal): Code {

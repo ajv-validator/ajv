@@ -68,7 +68,7 @@ export default function Ajv(opts: Options): void {
   this._compilations = []
   this.RULES = rules()
   if (opts.schemaId !== undefined && opts.schemaId !== "$id") {
-    throw new Error("option schemaId is not supported from v7")
+    throw new Error("option schemaId is not supported in v7")
   }
 
   opts.loopRequired = opts.loopRequired || Infinity

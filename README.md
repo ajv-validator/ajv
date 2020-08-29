@@ -1189,7 +1189,6 @@ Defaults:
   - `false` (default) - do not use defaults
   - `true` - insert defaults by value (object literal is used).
   - `"empty"` - in addition to missing or undefined, use defaults for properties and items that are equal to `null` or `""` (an empty string).
-  - `"shared"` (deprecated) - insert defaults by reference. If the default is an object, it will be shared by all instances of validated data. If you modify the inserted default in the validated data, it will be modified in the schema as well.
 - _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](#coercing-data-types) and [coercion rules](https://github.com/ajv-validator/ajv/blob/master/COERCION.md). Option values:
   - `false` (default) - no type coercion.
   - `true` - coerce scalar data types.

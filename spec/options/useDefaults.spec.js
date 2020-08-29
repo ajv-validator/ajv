@@ -118,22 +118,15 @@ describe("useDefaults option", () => {
     }
   })
 
-  describe("useDefaults: by value / by reference", () => {
-    describe("using by value", () => {
-      it("should NOT modify underlying defaults when modifying validated data", () => {
-        test("value", new Ajv({useDefaults: true}))
-        test("value", new Ajv({useDefaults: true, allErrors: true}))
-      })
+  describe("useDefaults: defaults are always passed by value", () => {
+    it("should NOT modify underlying defaults when modifying validated data", () => {
+      test(new Ajv({useDefaults: true}))
+      test(new Ajv({useDefaults: true, allErrors: true}))
+      test(new Ajv({useDefaults: "shared"}))
+      test(new Ajv({useDefaults: "shared", allErrors: true}))
     })
 
-    describe("using by reference", () => {
-      it("should modify underlying defaults when modifying validated data", () => {
-        test("reference", new Ajv({useDefaults: "shared"}))
-        test("reference", new Ajv({useDefaults: "shared", allErrors: true}))
-      })
-    })
-
-    function test(useDefaultsMode, ajv) {
+    function test(ajv) {
       var schema = {
         properties: {
           items: {
@@ -155,13 +148,7 @@ describe("useDefaults option", () => {
       var data2 = {}
       validate(data2).should.equal(true)
 
-      if (useDefaultsMode === "reference") {
-        data2.items.should.eql(["a-default", "another-value"])
-      } else if (useDefaultsMode === "value") {
-        data2.items.should.eql(["a-default"])
-      } else {
-        throw new Error("unknown useDefaults mode")
-      }
+      data2.items.should.eql(["a-default"])
     }
   })
 

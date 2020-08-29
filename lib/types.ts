@@ -23,7 +23,7 @@ export interface Options {
     cb?: (err: Error, schema: object) => void
   ) => PromiseLike<object | boolean>
   removeAdditional?: boolean | "all" | "failing"
-  useDefaults?: boolean | "empty" | "shared"
+  useDefaults?: boolean | "empty"
   coerceTypes?: boolean | "array"
   strictDefaults?: boolean | "log"
   strictKeywords?: boolean | "log"
@@ -130,7 +130,6 @@ export interface CompilationContext {
   // }
   compositeRule?: boolean
   usePattern: (str: string) => string
-  useDefault: (value: any) => Expression
   customRules: KeywordCompilationResult[]
   self: any // TODO
   RULES: ValidationRules
