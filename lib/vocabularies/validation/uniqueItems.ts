@@ -52,7 +52,7 @@ const def: CodeKeywordDefinition = {
       )
       const indices = gen.const("indices", _`{}`)
       gen.for(_`;${i}--;`, () => {
-        gen.let(item, _`${data}[${i}];`)
+        gen.let(item, _`${data}[${i}]`)
         gen.if(wrongType, _`continue`)
         if (Array.isArray(itemType)) gen.if(_`typeof ${item} == "string"`, _`${item} += "_"`)
         gen
@@ -61,16 +61,17 @@ const def: CodeKeywordDefinition = {
             cxt.error()
             gen.assign(valid, false).break()
           })
-          .code(_`${indices}[${item}] = ${i};`)
+          .code(_`${indices}[${item}] = ${i}`)
       })
     }
 
     function loopN2(i: Name, j: Name): void {
-      gen.code(_`outer:`).for(_`;${i}--;`, () =>
+      const outer = gen.name("outer")
+      gen.label(outer).for(_`;${i}--;`, () =>
         gen.for(_`${j} = ${i}; ${j}--;`, () =>
           gen.if(_`equal(${data}[${i}], ${data}[${j}])`, () => {
             cxt.error()
-            gen.assign(valid, false).break(_`outer`)
+            gen.assign(valid, false).break(outer)
           })
         )
       )

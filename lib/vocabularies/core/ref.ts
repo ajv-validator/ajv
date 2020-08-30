@@ -64,11 +64,11 @@ const def: CodeKeywordDefinition = {
       const valid = gen.let("valid")
       gen.try(
         () => {
-          gen.code(_`await ${callValidateCode(cxt, v, passCxt)};`)
+          gen.code(_`await ${callValidateCode(cxt, v, passCxt)}`)
           if (!allErrors) gen.assign(valid, true)
         },
         (e) => {
-          gen.if(_`!(${e} instanceof ValidationError)`, _`throw ${e}`)
+          gen.if(_`!(${e} instanceof ValidationError)`, () => gen.throw(e))
           addErrorsFrom(e)
           if (!allErrors) gen.assign(valid, false)
         }

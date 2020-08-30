@@ -43,14 +43,12 @@ const def: CodeKeywordDefinition = {
         if (i > 0) {
           gen
             .if(_`${schValid} && ${valid}`)
-            .code(
-              _`${valid} = false;
-                ${passing} = [${passing}, ${i}];`
-            )
+            .assign(valid, false)
+            .assign(passing, _`[${passing}, ${i}]`)
             .else()
         }
 
-        gen.if(schValid, _`${valid} = true; ${passing} = ${i};`)
+        gen.if(schValid, () => gen.assign(valid, true).assign(passing, i))
       })
     }
   },

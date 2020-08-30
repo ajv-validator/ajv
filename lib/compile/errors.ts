@@ -53,12 +53,9 @@ export function extendErrors({
       _`${err}.dataPath === undefined`,
       _`${err}.dataPath = (${N.dataPath} || '') + ${it.errorPath}`
     )
-    gen.code(_`${err}.schemaPath = ${str`${it.errSchemaPath}/${keyword}`};`)
+    gen.code(_`${err}.schemaPath = ${str`${it.errSchemaPath}/${keyword}`}`)
     if (it.opts.verbose) {
-      gen.code(
-        _`${err}.schema = ${schemaValue};
-        ${err}.data = ${data};`
-      )
+      gen.code(_`${err}.schema = ${schemaValue}; ${err}.data = ${data}`)
     }
   })
 }
@@ -66,7 +63,7 @@ export function extendErrors({
 function addError(gen: CodeGen, errObj: Code): void {
   const err = gen.const("err", errObj)
   gen.if(_`${N.vErrors} === null`, _`${N.vErrors} = [${err}]`, _`${N.vErrors}.push(${err})`)
-  gen.code(_`${N.errors}++;`)
+  gen.code(_`${N.errors}++`)
 }
 
 function returnErrors(gen: CodeGen, async: boolean, errs: Code): void {

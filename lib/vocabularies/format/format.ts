@@ -17,13 +17,14 @@ const def: CodeKeywordDefinition = {
     else validateFormat()
 
     function validate$DataFormat() {
-      const fmtDef = gen.const("fmtDef", _`formats[${schemaCode}]`)
-      const fmtType = gen.let("fmtType")
+      const fDef = gen.const("fDef", _`formats[${schemaCode}]`)
+      const fType = gen.let("fType")
       const format = gen.let("format")
+      // TODO simplify
       gen.if(
-        _`typeof ${fmtDef} == "object" && !(${fmtDef} instanceof RegExp)`,
-        _`${fmtType} = ${fmtDef}.type || "string"; ${format} = ${fmtDef}.validate;`,
-        _`${fmtType} = "string"; ${format} = ${fmtDef}`
+        _`typeof ${fDef} == "object" && !(${fDef} instanceof RegExp)`,
+        () => gen.assign(fType, _`${fDef}.type || "string"`).assign(format, _`${fDef}.validate`),
+        () => gen.assign(fType, _`"string"`).assign(format, fDef)
       )
       const bdt = bad$DataType(schemaCode, <string>def.schemaType, $data)
       cxt.fail(or(bdt, unknownFmt(), invalidFmt()))
@@ -39,9 +40,9 @@ const def: CodeKeywordDefinition = {
 
       function invalidFmt(): Code {
         const fmt = _`${format}(${data})`
-        const callFormat = it.async ? _`${fmtDef}.async ? await ${fmt} : ${fmt}` : fmt
+        const callFormat = it.async ? _`${fDef}.async ? await ${fmt} : ${fmt}` : fmt
         const validData = _`typeof ${format} == "function" ? ${callFormat} : ${format}.test(${data})`
-        return _`(${format} && ${fmtType} === ${<string>ruleType} && !(${validData}))`
+        return _`(${format} && ${fType} === ${<string>ruleType} && !(${validData}))`
       }
     }
 

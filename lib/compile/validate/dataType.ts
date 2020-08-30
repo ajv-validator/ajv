@@ -55,8 +55,9 @@ export function coerceData(it: CompilationContext, coerceTo: string[]): void {
   if (opts.coerceTypes === "array") {
     gen.if(_`${dataType} == 'object' && Array.isArray(${data}) && ${data}.length == 1`, () =>
       gen
-        .code(_`${data} = ${data}[0]; ${dataType} = typeof ${data};`)
-        .if(checkDataType(schema.type, data, opts.strictNumbers), _`${coerced} = ${data}`)
+        .assign(data, _`${data}[0]`)
+        .assign(dataType, _`typeof ${data}`)
+        .if(checkDataType(schema.type, data, opts.strictNumbers), () => gen.assign(coerced, data))
     )
   }
   gen.if(_`${coerced} !== undefined`)
@@ -70,7 +71,7 @@ export function coerceData(it: CompilationContext, coerceTo: string[]): void {
   gen.endIf()
 
   gen.if(_`${coerced} !== undefined`, () => {
-    gen.code(_`${data} = ${coerced};`)
+    gen.assign(data, coerced)
     assignParentData(it, coerced)
   })
 

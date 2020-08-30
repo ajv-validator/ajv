@@ -107,9 +107,11 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
     gen.try(
       () => assignValid(_`await `),
       (e) =>
-        gen
-          .code(_`${valid} = false;`)
-          .if(_`${e} instanceof ValidationError`, _`${ruleErrs} = ${e}.errors;`, _`throw ${e};`)
+        gen.assign(valid, false).if(
+          _`${e} instanceof ValidationError`,
+          () => gen.assign(ruleErrs, _`${e}.errors`),
+          () => gen.throw(e)
+        )
     )
     return ruleErrs
   }
@@ -124,7 +126,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
   function assignValid(await: Code = def.async ? _`await ` : nil): void {
     const passCxt = it.opts.passContext ? N.this : N.self
     const passSchema = !(("compile" in def && !$data) || def.schema === false)
-    gen.code(_`${valid} = ${await}${callValidateCode(cxt, validateRef, passCxt, passSchema)};`)
+    gen.assign(valid, _`${await}${callValidateCode(cxt, validateRef, passCxt, passSchema)}`)
   }
 
   function reportKeywordErrors(ruleErrs: Code): void {
@@ -142,7 +144,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
 
 function modifyData(cxt: KeywordContext) {
   const {gen, data, it} = cxt
-  gen.if(it.parentData, () => gen.assign(data, _`${it.parentData}[${it.parentDataProperty}];`))
+  gen.if(it.parentData, () => gen.assign(data, _`${it.parentData}[${it.parentDataProperty}]`))
 }
 
 function addKeywordErrors(cxt: KeywordContext, errs: Code): void {
@@ -150,8 +152,9 @@ function addKeywordErrors(cxt: KeywordContext, errs: Code): void {
   gen.if(
     _`Array.isArray(${errs})`,
     () => {
-      gen.assign(N.vErrors, _`${N.vErrors} === null ? ${errs} : ${N.vErrors}.concat(${errs})`) // TODO tagged
-      gen.assign(N.errors, _`${N.vErrors}.length;`)
+      gen
+        .assign(N.vErrors, _`${N.vErrors} === null ? ${errs} : ${N.vErrors}.concat(${errs})`)
+        .assign(N.errors, _`${N.vErrors}.length`)
       extendErrors(cxt)
     },
     () => cxt.error()

@@ -53,8 +53,8 @@ const def: CodeKeywordDefinition = {
     function validateClause(keyword: string, ifClause?: Name): () => void {
       return () => {
         applySubschema(it, {keyword}, schValid)
-        gen.code(_`${valid} = ${schValid};`)
-        if (ifClause) gen.code(_`${ifClause} = ${keyword};`)
+        gen.assign(valid, schValid)
+        if (ifClause) gen.assign(ifClause, _`${keyword}`)
         else cxt.setParams({ifClause: keyword})
       }
     }

@@ -33,7 +33,7 @@ const def: CodeKeywordDefinition = {
     function loopEnum(valid: Name): void {
       const v = gen.name("v")
       gen.for(_`const ${v} of ${schemaCode}`, () =>
-        gen.if(_`equal(${data}, ${v})`, _`${valid} = true; break;`)
+        gen.if(_`equal(${data}, ${v})`, () => gen.assign(valid, true).break())
       )
     }
 

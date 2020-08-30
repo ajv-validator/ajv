@@ -51,7 +51,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function deleteAdditional(key: Name): void {
-      gen.code(_`delete ${data}[${key}];`)
+      gen.code(_`delete ${data}[${key}]`)
     }
 
     function additionalPropertyCode(key: Name): void {

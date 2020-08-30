@@ -94,17 +94,18 @@ export class ValueError extends Error {
 }
 
 export function _(strs: TemplateStringsArray, ...args: TemplateArg[]): Code {
+  // TODO benchmark if loop is faster than reduce
+  // let res = strs[0]
+  // for (let i = 0; i < args.length; i++) {
+  //   res += interpolate(args[i]) + strs[i + 1]
+  // }
+  // return new Code(res)
   return new Code(strs.reduce((res, s, i) => res + interpolate(args[i - 1]) + s))
 }
 
-// TODO this is unsafe tagged template that should be removed later
-export function $(strs: TemplateStringsArray, ...args: TemplateArg[]): Code {
-  return new Code(strs.reduce((res, s, i) => res + args[i - 1] + s))
-}
-
-export function str(strings: TemplateStringsArray, ...args: TemplateArg[]): Code {
+export function str(strs: TemplateStringsArray, ...args: TemplateArg[]): Code {
   return new Code(
-    strings.map(quoteString).reduce((res, s, i) => {
+    strs.map(quoteString).reduce((res, s, i) => {
       let aStr = interpolate(args[i - 1])
       if (aStr instanceof Code && aStr.isQuoted()) aStr = aStr.toString()
       return typeof aStr === "string"
@@ -125,13 +126,12 @@ const IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i
 export default class CodeGen {
   #names: {[prefix: string]: NameGroup} = {}
   #valuePrefixes: {[prefix: string]: Name} = {}
-  // TODO make private. Possibly stack?
-  _out = ""
+  #out = ""
   #blocks: BlockKind[] = []
   #blockStarts: number[] = []
 
   toString(): string {
-    return this._out
+    return this.#out
   }
 
   _nameGroup(prefix: string): NameGroup {
@@ -203,8 +203,8 @@ export default class CodeGen {
 
   _def(varKind: Name, nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
     const name = nameOrPrefix instanceof Name ? nameOrPrefix : this.name(nameOrPrefix)
-    if (rhs === undefined) this.code(_`${varKind} ${name};`)
-    else this.code(_`${varKind} ${name} = ${rhs};`)
+    if (rhs === undefined) this.#out += `${varKind} ${name};`
+    else this.#out += `${varKind} ${name} = ${rhs};`
     return name
   }
 
@@ -221,20 +221,22 @@ export default class CodeGen {
   }
 
   assign(name: Code, rhs: SafeExpr): CodeGen {
-    this.code(_`${name} = ${rhs};`)
+    this.#out += `${name} = ${rhs};`
     return this
   }
 
   code(c?: Block | SafeExpr): CodeGen {
     // TODO optionally strip whitespace
     if (typeof c == "function") c()
-    else if (c !== undefined) this._out += c + "\n" // TODO fails without line breaks
+    else if (c !== undefined) this.#out += c + ";" //+ "\n" // TODO fails without line breaks
     return this
   }
 
-  if(condition: Code | boolean, thenBody?: Block, elseBody?: Block): CodeGen {
+  if(condition: Code | boolean, thenBody?: Block, elseBody?: Block, _negate?: true): CodeGen {
     this.#blocks.push(BlockKind.If)
-    this.code(_`if(${condition}){`)
+    this.#out += `if(${
+      _negate ? (condition instanceof Name ? `!${condition}` : `!(${condition})`) : condition
+    }){`
     if (thenBody && elseBody) {
       this.code(thenBody).else().code(elseBody).endIf()
     } else if (thenBody) {
@@ -246,20 +248,19 @@ export default class CodeGen {
   }
 
   ifNot(condition: Code, thenBody?: Block, elseBody?: Block): CodeGen {
-    const cond = condition instanceof Name ? condition : _`(${condition})`
-    return this.if(_`!${cond}`, thenBody, elseBody)
+    return this.if(condition, thenBody, elseBody, true)
   }
 
   elseIf(condition: Code): CodeGen {
     if (this._lastBlock !== BlockKind.If) throw new Error('CodeGen: "else if" without "if"')
-    this.code(_`}else if(${condition}){`)
+    this.#out += `}else if(${condition}){`
     return this
   }
 
   else(): CodeGen {
     if (this._lastBlock !== BlockKind.If) throw new Error('CodeGen: "else" without "if"')
     this._lastBlock = BlockKind.Else
-    this.code(_`}else{`)
+    this.#out += "}else{"
     return this
   }
 
@@ -268,13 +269,13 @@ export default class CodeGen {
     const b = this._lastBlock
     if (b !== BlockKind.If && b !== BlockKind.Else) throw new Error('CodeGen: "endIf" without "if"')
     this.#blocks.pop()
-    this.code(_`}`)
+    this.#out += "}"
     return this
   }
 
   for(iteration: Code, forBody?: Block): CodeGen {
     this.#blocks.push(BlockKind.For)
-    this.code(_`for(${iteration}){`)
+    this.#out += `for(${iteration}){`
     if (forBody) this.code(forBody).endFor()
     return this
   }
@@ -283,32 +284,46 @@ export default class CodeGen {
     const b = this._lastBlock
     if (b !== BlockKind.For) throw new Error('CodeGen: "endFor" without "for"')
     this.#blocks.pop()
-    this.code(_`}`)
+    this.#out += "}"
+    return this
+  }
+
+  label(label?: Code): CodeGen {
+    this.#out += label + ":"
     return this
   }
 
   break(label?: Code): CodeGen {
-    this.code(label ? _`break ${label};` : _`break;`)
+    this.#out += label ? `break ${label};` : "break;"
     return this
   }
 
   return(value: Block | SafeExpr): CodeGen {
-    this._out += "return "
+    this.#out += "return "
     this.code(value)
-    this._out += ";"
+    this.#out += ";"
     return this
   }
 
   try(tryBody: Block, catchCode?: (e: Name) => void, finallyCode?: Block): CodeGen {
     if (!catchCode && !finallyCode) throw new Error('CodeGen: "try" without "catch" and "finally"')
-    this.code(_`try{`).code(tryBody)
+    this.#out += "try{"
+    this.code(tryBody)
     if (catchCode) {
       const err = this.name("e")
-      this.code(_`}catch(${err}){`)
+      this.#out += `}catch(${err}){`
       catchCode(err)
     }
-    if (finallyCode) this.code(_`}finally{`).code(finallyCode)
-    this.code(_`}`)
+    if (finallyCode) {
+      this.#out += "}finally{"
+      this.code(finallyCode)
+    }
+    this.#out += "}"
+    return this
+  }
+
+  throw(err: Code): CodeGen {
+    this.#out += `throw ${err};`
     return this
   }
 
@@ -327,13 +342,13 @@ export default class CodeGen {
       throw new Error("CodeGen: block sequence already ended or incorrect number of blocks")
     }
     this.#blocks.length = len
-    if (toClose > 0) this.code(new Code("}".repeat(toClose)))
+    if (toClose > 0) this.#out += "}".repeat(toClose)
     return this
   }
 
   func(name: Name, args: Code = nil, async?: boolean, funcBody?: Block): CodeGen {
     this.#blocks.push(BlockKind.Func)
-    this.code(_`${async ? _`async ` : nil}function ${name}(${args}){`)
+    this.#out += `${async ? "async " : ""}function ${name}(${args}){`
     if (funcBody) this.code(funcBody).endFunc()
     return this
   }
@@ -342,7 +357,7 @@ export default class CodeGen {
     const b = this._lastBlock
     if (b !== BlockKind.Func) throw new Error('CodeGen: "endFunc" without "func"')
     this.#blocks.pop()
-    this.code(_`}`)
+    this.#out += "}"
     return this
   }
 
