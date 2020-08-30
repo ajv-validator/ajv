@@ -1,5 +1,5 @@
 import {CompilationContext} from "../../types"
-import {_, getProperty} from "../codegen"
+import {_, getProperty, stringify} from "../codegen"
 
 export function assignDefaults(it: CompilationContext, ty?: string): void {
   const {properties, items} = it.schema
@@ -34,5 +34,5 @@ function assignDefault(
   }
   // `${childData} === undefined` +
   // (opts.useDefaults === "empty" ? ` || ${childData} === null || ${childData} === ""` : "")
-  gen.if(condition, `${childData} = ${JSON.stringify(defaultValue)}`)
+  gen.if(condition, _`${childData} = ${stringify(defaultValue)}`)
 }

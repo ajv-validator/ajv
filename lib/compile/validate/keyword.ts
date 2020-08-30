@@ -89,11 +89,11 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
       // TODO add support for schemaType in keyword definition
       // .if(`${bad$DataType(schemaCode, <string>def.schemaType, $data)} false`) // TODO refactor
       .if(_`${schemaCode} === undefined`)
-      .code(`${valid} = true;`)
+      .assign(valid, true)
       .else()
     if (def.validateSchema) {
       const validateSchemaRef = useKeyword(gen, keyword, def.validateSchema)
-      gen.code(`${valid} = ${validateSchemaRef}(${schemaCode});`)
+      gen.assign(valid, _`${validateSchemaRef}(${schemaCode})`)
       // TODO fail if schema fails validation
       // gen.if(`!${valid}`)
       // reportError(cxt, keywordError)
@@ -124,7 +124,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
   function assignValid(await: Code = def.async ? _`await ` : nil): void {
     const passCxt = it.opts.passContext ? N.this : N.self
     const passSchema = !(("compile" in def && !$data) || def.schema === false)
-    gen.code(`${valid} = ${await}${callValidateCode(cxt, validateRef, passCxt, passSchema)};`)
+    gen.code(_`${valid} = ${await}${callValidateCode(cxt, validateRef, passCxt, passSchema)};`)
   }
 
   function reportKeywordErrors(ruleErrs: Code): void {
@@ -142,7 +142,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
 
 function modifyData(cxt: KeywordContext) {
   const {gen, data, it} = cxt
-  gen.if(it.parentData, () => gen.assign(data, `${it.parentData}[${it.parentDataProperty}];`))
+  gen.if(it.parentData, () => gen.assign(data, _`${it.parentData}[${it.parentDataProperty}];`))
 }
 
 function addKeywordErrors(cxt: KeywordContext, errs: Code): void {

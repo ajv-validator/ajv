@@ -59,14 +59,14 @@ const def: CodeKeywordDefinition = {
     function loopAllRequired(): void {
       const prop = gen.name("prop")
       cxt.setParams({missingProperty: prop})
-      gen.for(`const ${prop} of ${schemaCode}`, () =>
+      gen.for(_`const ${prop} of ${schemaCode}`, () =>
         gen.if(noPropertyInData(data, prop, it.opts.ownProperties), () => cxt.error())
       )
     }
 
     function loopUntilMissing(missing: Name, valid: Name): void {
       cxt.setParams({missingProperty: missing})
-      gen.for(`${missing} of ${schemaCode}`, () => {
+      gen.for(_`${missing} of ${schemaCode}`, () => {
         gen.assign(valid, propertyInData(data, missing, it.opts.ownProperties))
         gen.ifNot(valid, () => {
           cxt.error()

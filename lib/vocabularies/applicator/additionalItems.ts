@@ -28,7 +28,7 @@ const def: CodeKeywordDefinition = {
       const i = gen.name("i")
       gen.for(_`let ${i}=${items.length}; ${i}<${len}; ${i}++`, () => {
         applySubschema(it, {keyword: "additionalItems", dataProp: i, expr: Expr.Num}, valid)
-        if (!it.allErrors) gen.ifNot(valid, "break")
+        if (!it.allErrors) gen.ifNot(valid, _`break`)
       })
     }
   },

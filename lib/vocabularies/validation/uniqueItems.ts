@@ -53,7 +53,7 @@ const def: CodeKeywordDefinition = {
       const indices = gen.const("indices", _`{}`)
       gen.for(_`;${i}--;`, () => {
         gen.let(item, _`${data}[${i}];`)
-        gen.if(wrongType, "continue")
+        gen.if(wrongType, _`continue`)
         if (Array.isArray(itemType)) gen.if(_`typeof ${item} == "string"`, _`${item} += "_"`)
         gen
           .if(_`typeof ${indices}[${item}] == "number"`, () => {

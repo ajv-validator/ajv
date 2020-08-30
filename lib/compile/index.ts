@@ -46,7 +46,7 @@ function compile(schema, root, localRefs, baseId) {
   var self = this,
     opts = this._opts,
     refVal = [undefined],
-    refs = {}
+    refs: {[ref: string]: number} = {}
 
   const scope: Scope = {}
 
@@ -192,7 +192,7 @@ function compile(schema, root, localRefs, baseId) {
     var _refVal, refCode
     if (refIndex !== undefined) {
       _refVal = refVal[refIndex]
-      refCode = "refVal[" + refIndex + "]"
+      refCode = _`refVal[${refIndex}]`
       return resolvedRef(_refVal, refCode)
     }
     if (!isRoot && root.refs) {
@@ -242,7 +242,7 @@ function compile(schema, root, localRefs, baseId) {
     refVal[refId] = v
   }
 
-  function resolvedRef(refVal, code): ResolvedRef {
+  function resolvedRef(refVal, code: Code): ResolvedRef {
     return typeof refVal == "object" || typeof refVal == "boolean"
       ? {code: code, schema: refVal, inline: true}
       : {code: code, $async: refVal && !!refVal.$async}

@@ -7,7 +7,7 @@ import {
 import {schemaRefOrVal} from "../vocabularies/util"
 import {getData} from "./util"
 import {reportError, reportExtraError, resetErrorsCount, keywordError} from "./errors"
-import CodeGen, {Code, Name, Expression} from "./codegen"
+import CodeGen, {Code, Name} from "./codegen"
 import N from "./names"
 
 export default class KeywordContext implements KeywordErrorContext {
@@ -54,7 +54,7 @@ export default class KeywordContext implements KeywordErrorContext {
     }
   }
 
-  result(condition: Expression, successAction?: () => void, failAction?: () => void): void {
+  result(condition: Code, successAction?: () => void, failAction?: () => void): void {
     this.gen.ifNot(condition)
     failAction ? failAction() : this.error()
     if (successAction) {
@@ -67,7 +67,7 @@ export default class KeywordContext implements KeywordErrorContext {
     }
   }
 
-  pass(condition: Expression, failAction?: () => void): void {
+  pass(condition: Code, failAction?: () => void): void {
     this.result(condition, undefined, failAction)
   }
 

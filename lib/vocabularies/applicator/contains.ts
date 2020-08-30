@@ -20,7 +20,7 @@ const def: CodeKeywordDefinition = {
 
     const valid = gen.name("valid")
     const i = gen.name("i")
-    gen.for(`let ${i}=0; ${i}<${data}.length; ${i}++`, () => {
+    gen.for(_`let ${i}=0; ${i}<${data}.length; ${i}++`, () => {
       applySubschema(
         it,
         {
@@ -31,7 +31,7 @@ const def: CodeKeywordDefinition = {
         },
         valid
       )
-      gen.if(valid, "break")
+      gen.if(valid, _`break`)
     })
 
     cxt.result(valid, () => cxt.reset())

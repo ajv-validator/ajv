@@ -550,7 +550,7 @@ describe("Custom keywords", () => {
           const minOk = gen.const("minOk", _`${data} >${eq} ${min}`)
           const maxOk = gen.const("maxOk", _`${data} <${eq} ${max}`)
           cxt.setParams({minOk, maxOk, eq})
-          cxt.pass(`${minOk} && ${maxOk}`)
+          cxt.pass(_`${minOk} && ${maxOk}`)
         },
         error: {
           message: ({params: {minOk, eq}, schema: [min, max]}) =>

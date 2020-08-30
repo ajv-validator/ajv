@@ -14,7 +14,7 @@ export function topBoolOrEmptySchema(it: CompilationContext): void {
   } else if (schema.$async === true) {
     gen.return(N.data)
   } else {
-    gen.assign(_`${N.validate}.errors`, "null")
+    gen.assign(_`${N.validate}.errors`, null)
     gen.return(true)
   }
 }

@@ -51,7 +51,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function deleteAdditional(key: Name): void {
-      gen.code(`delete ${data}[${key}];`)
+      gen.code(_`delete ${data}[${key}];`)
     }
 
     function additionalPropertyCode(key: Name): void {
@@ -77,7 +77,7 @@ const def: CodeKeywordDefinition = {
           })
         } else {
           applyAdditionalSchema(key, valid)
-          if (!allErrors) gen.ifNot(valid, "break")
+          if (!allErrors) gen.ifNot(valid, _`break`)
         }
       }
     }

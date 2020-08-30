@@ -1,5 +1,5 @@
 import Cache from "./cache"
-import CodeGen, {Code, Name, Expression} from "./compile/codegen"
+import CodeGen, {Code, Name} from "./compile/codegen"
 import {ValidationRules} from "./compile/rules"
 import {ResolvedRef} from "./compile"
 import KeywordContext from "./compile/context"
@@ -215,14 +215,14 @@ export interface KeywordErrorContext {
   $data?: string | false
   schema: any
   parentSchema: any
-  schemaCode: Expression | number | boolean
-  schemaValue: Expression | number | boolean
+  schemaCode: Code | number | boolean
+  schemaValue: Code | number | boolean
   errsCount?: Name
   params: KeywordContextParams
   it: CompilationContext
 }
 
-export type KeywordContextParams = {[x: string]: Expression | number}
+export type KeywordContextParams = {[x: string]: Code | string | number}
 
 export type FormatMode = "fast" | "full"
 

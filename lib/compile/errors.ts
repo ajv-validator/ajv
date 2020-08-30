@@ -1,5 +1,5 @@
 import {KeywordErrorContext, KeywordErrorDefinition} from "../types"
-import CodeGen, {_, str, Name, Expression} from "./codegen"
+import CodeGen, {_, str, Code, Name} from "./codegen"
 import N from "./names"
 
 export const keywordError: KeywordErrorDefinition = {
@@ -17,7 +17,7 @@ export function reportError(
   if (overrideAllErrors ?? (compositeRule || allErrors)) {
     addError(gen, errObj)
   } else {
-    returnErrors(gen, async, `[${errObj}]`)
+    returnErrors(gen, async, _`[${errObj}]`)
   }
 }
 
@@ -51,7 +51,7 @@ export function extendErrors({
     gen.const(err, _`${N.vErrors}[i]`)
     gen.if(
       _`${err}.dataPath === undefined`,
-      `${err}.dataPath = (${N.dataPath} || '') + ${it.errorPath}`
+      _`${err}.dataPath = (${N.dataPath} || '') + ${it.errorPath}`
     )
     gen.code(_`${err}.schemaPath = ${str`${it.errSchemaPath}/${keyword}`};`)
     if (it.opts.verbose) {
@@ -63,47 +63,47 @@ export function extendErrors({
   })
 }
 
-function addError(gen: CodeGen, errObj: string): void {
+function addError(gen: CodeGen, errObj: Code): void {
   const err = gen.const("err", errObj)
   gen.if(_`${N.vErrors} === null`, _`${N.vErrors} = [${err}]`, _`${N.vErrors}.push(${err})`)
   gen.code(_`${N.errors}++;`)
 }
 
-function returnErrors(gen: CodeGen, async: boolean, errs: Expression): void {
+function returnErrors(gen: CodeGen, async: boolean, errs: Code): void {
   if (async) {
-    gen.code(`throw new ValidationError(${errs})`)
+    gen.code(_`throw new ValidationError(${errs})`)
   } else {
     gen.assign(_`${N.validate}.errors`, errs)
-    gen.return("false")
+    gen.return(false)
   }
 }
 
-function errorObjectCode(cxt: KeywordErrorContext, error: KeywordErrorDefinition): string {
+function errorObjectCode(cxt: KeywordErrorContext, error: KeywordErrorDefinition): Code {
   const {
     keyword,
     data,
     schemaValue,
     it: {createErrors, topSchemaRef, schemaPath, errorPath, errSchemaPath, propertyName, opts},
   } = cxt
-  if (createErrors === false) return "{}"
+  if (createErrors === false) return _`{}`
   if (!error) throw new Error('keyword definition must have "error" property')
   const {params, message} = error
   // TODO trim whitespace
-  let out = `{
-    keyword: "${keyword}",
+  let out = _`{
+    keyword: ${keyword},
     dataPath: (${N.dataPath} || "") + ${errorPath},
     schemaPath: ${str`${errSchemaPath}/${keyword}`},
     params: ${params ? params(cxt) : _`{}`},`
-  if (propertyName) out += `propertyName: ${propertyName},`
+  if (propertyName) out = _`${out} propertyName: ${propertyName},`
   if (opts.messages !== false) {
-    out += `message: ${typeof message == "string" ? _`${message}` : message(cxt)},`
+    out = _`${out} message: ${typeof message == "string" ? message : message(cxt)},`
   }
   if (opts.verbose) {
     // TODO trim whitespace
-    out += `
+    out = _`${out} 
       schema: ${schemaValue},
       parentSchema: ${topSchemaRef}${schemaPath},
       data: ${data},`
   }
-  return out + "}"
+  return _`${out} }`
 }

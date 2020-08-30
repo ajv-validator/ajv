@@ -4,7 +4,7 @@ import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {ResolvedRef, InlineResolvedRef} from "../../compile"
 import {callValidateCode} from "../util"
-import {_, str, nil, Code, Expression} from "../../compile/codegen"
+import {_, str, nil, Code} from "../../compile/codegen"
 import N from "../../compile/names"
 
 const def: CodeKeywordDefinition = {
@@ -64,11 +64,11 @@ const def: CodeKeywordDefinition = {
       const valid = gen.let("valid")
       gen.try(
         () => {
-          gen.code(`await ${callValidateCode(cxt, v, passCxt)};`)
+          gen.code(_`await ${callValidateCode(cxt, v, passCxt)};`)
           if (!allErrors) gen.assign(valid, true)
         },
         (e) => {
-          gen.if(_`!(${e} instanceof ValidationError)`, `throw ${e}`)
+          gen.if(_`!(${e} instanceof ValidationError)`, _`throw ${e}`)
           addErrorsFrom(e)
           if (!allErrors) gen.assign(valid, false)
         }
@@ -80,9 +80,9 @@ const def: CodeKeywordDefinition = {
       cxt.pass(callValidateCode(cxt, v, passCxt), () => addErrorsFrom(v))
     }
 
-    function addErrorsFrom(source: Expression): void {
-      const errs = `${source}.errors`
-      gen.assign(N.vErrors, `${N.vErrors} === null ? ${errs} : ${N.vErrors}.concat(${errs})`) // TODO tagged
+    function addErrorsFrom(source: Code): void {
+      const errs = _`${source}.errors`
+      gen.assign(N.vErrors, _`${N.vErrors} === null ? ${errs} : ${N.vErrors}.concat(${errs})`) // TODO tagged
       gen.assign(N.errors, _`${N.vErrors}.length`)
     }
   },

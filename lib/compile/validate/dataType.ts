@@ -79,9 +79,9 @@ export function coerceData(it: CompilationContext, coerceTo: string[]): void {
       case "string":
         gen
           .elseIf(_`${dataType} == "number" || ${dataType} == "boolean"`)
-          .code(_`${coerced} = "" + ${data}`)
+          .assign(coerced, _`"" + ${data}`)
           .elseIf(_`${data} === null`)
-          .code(_`${coerced} = ""`)
+          .assign(coerced, _`""`)
         return
       case "number":
         gen
@@ -89,7 +89,7 @@ export function coerceData(it: CompilationContext, coerceTo: string[]): void {
             _`${dataType} == "boolean" || ${data} === null
               || (${dataType} == "string" && ${data} && ${data} == +${data})`
           )
-          .code(_`${coerced} = +${data}`)
+          .assign(coerced, _`+${data}`)
         return
       case "integer":
         gen
@@ -97,18 +97,18 @@ export function coerceData(it: CompilationContext, coerceTo: string[]): void {
             _`${dataType} === "boolean" || ${data} === null
               || (${dataType} === "string" && ${data} && ${data} == +${data} && !(${data} % 1))`
           )
-          .code(`${coerced} = +${data}`)
+          .assign(coerced, _`+${data}`)
         return
       case "boolean":
         gen
           .elseIf(_`${data} === "false" || ${data} === 0 || ${data} === null`)
-          .code(_`${coerced} = false`)
+          .assign(coerced, false)
           .elseIf(_`${data} === "true" || ${data} === 1`)
-          .code(_`${coerced} = true`)
+          .assign(coerced, true)
         return
       case "null":
         gen.elseIf(_`${data} === "" || ${data} === 0 || ${data} === false`)
-        gen.code(_`${coerced} = null`)
+        gen.assign(coerced, null)
         return
 
       case "array":
@@ -117,7 +117,7 @@ export function coerceData(it: CompilationContext, coerceTo: string[]): void {
             _`${dataType} === "string" || ${dataType} === "number"
               || ${dataType} === "boolean" || ${data} === null`
           )
-          .code(`${coerced} = [${data}]`)
+          .assign(coerced, _`[${data}]`)
     }
   }
 }
