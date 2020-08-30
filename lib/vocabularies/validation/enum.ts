@@ -31,8 +31,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function loopEnum(valid: Name): void {
-      const v = gen.name("v")
-      gen.for(_`const ${v} of ${schemaCode}`, () =>
+      gen.forOf("v", schemaCode, (v) =>
         gen.if(_`equal(${data}, ${v})`, () => gen.assign(valid, true).break())
       )
     }

@@ -130,12 +130,21 @@ function interpolate(x: TemplateArg): TemplateArg {
     : quoteString(x)
 }
 
+interface CodeGenOptions {
+  ownProperties?: boolean
+}
+
 export default class CodeGen {
   #names: {[prefix: string]: NameGroup} = {}
   #valuePrefixes: {[prefix: string]: Name} = {}
   #out = ""
   #blocks: BlockKind[] = []
   #blockStarts: number[] = []
+  opts: CodeGenOptions
+
+  constructor(opts: CodeGenOptions = {}) {
+    this.opts = opts
+  }
 
   toString(): string {
     return this.#out
@@ -284,6 +293,39 @@ export default class CodeGen {
     this.#blocks.push(BlockKind.For)
     this.#out += `for(${iteration}){`
     if (forBody) this.code(forBody).endFor()
+    return this
+  }
+
+  forOf(
+    nameOrPrefix: Name | string,
+    iterable: SafeExpr,
+    forBody: (n: Name) => void,
+    varKind: Code = varKinds.const
+  ): CodeGen {
+    // TODO define enum for var kinds
+    const name = nameOrPrefix instanceof Name ? nameOrPrefix : this.name(nameOrPrefix)
+    return this._for(new _Code(`for(${varKind} ${name} of ${iterable}){`), name, forBody)
+  }
+
+  forIn(
+    nameOrPrefix: Name | string,
+    obj: SafeExpr,
+    forBody: (n: Name) => void,
+    varKind: Code = varKinds.const
+  ): CodeGen {
+    // TODO define enum for var kinds
+    if (this.opts.ownProperties) {
+      return this.forOf(nameOrPrefix, new _Code(`Object.keys(${obj})`), forBody)
+    }
+    const name = nameOrPrefix instanceof Name ? nameOrPrefix : this.name(nameOrPrefix) // TODO refactor with others
+    return this._for(new _Code(`for(${varKind} ${name} in ${obj}){`), name, forBody)
+  }
+
+  _for(forCode: _Code, name: Name, forBody: (n: Name) => void): CodeGen {
+    this.#blocks.push(BlockKind.For)
+    this.#out += forCode
+    if (forBody) forBody(name)
+    this.endFor()
     return this
   }
 

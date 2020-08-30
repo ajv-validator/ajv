@@ -1,12 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {
-  allSchemaProperties,
-  schemaRefOrVal,
-  alwaysValidSchema,
-  loopPropertiesCode,
-  usePattern,
-} from "../util"
+import {allSchemaProperties, schemaRefOrVal, alwaysValidSchema, usePattern} from "../util"
 import {applySubschema, SubschemaApplication, Type} from "../../compile/subschema"
 import {_, nil, or, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
@@ -27,7 +21,7 @@ const def: CodeKeywordDefinition = {
     if (!allErrors) gen.if(_`${errsCount} === ${N.errors}`)
 
     function checkAdditionalProperties(): void {
-      loopPropertiesCode(cxt, (key: Name) => {
+      gen.forIn("key", data, (key: Name) => {
         if (!props.length && !patProps.length) additionalPropertyCode(key)
         else gen.if(isAdditional(key), () => additionalPropertyCode(key))
       })

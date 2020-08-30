@@ -101,7 +101,7 @@ function compile(schema, root, localRefs, baseId) {
     var $async = _schema.$async === true
     const rootId = resolve.fullPath(_root.schema.$id)
 
-    const gen = new CodeGen()
+    const gen = new CodeGen({ownProperties: opts.ownProperties})
 
     validateFunctionCode({
       gen,

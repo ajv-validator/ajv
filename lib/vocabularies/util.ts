@@ -65,16 +65,6 @@ export function noPropertyInData(
   return ownProperties ? _`${cond} || !${isOwnProperty(data, property)}` : cond
 }
 
-export function loopPropertiesCode(
-  {gen, data, it}: KeywordContext,
-  loopBody: (key: Name) => void
-): void {
-  // TODO maybe always iterate own properties in v7?
-  const key = gen.name("key")
-  const iteration = it.opts.ownProperties ? _`of Object.keys(${data})` : _`in ${data}`
-  gen.for(_`const ${key} ${iteration}`, () => loopBody(key))
-}
-
 export function callValidateCode(
   {schemaCode, data, it}: KeywordContext,
   func: Code,

@@ -1,6 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {schemaProperties, loopPropertiesCode, usePattern} from "../util"
+import {schemaProperties, usePattern} from "../util"
 import {applySubschema, Type} from "../../compile/subschema"
 import {_} from "../../compile/codegen"
 
@@ -9,7 +9,7 @@ const def: CodeKeywordDefinition = {
   type: "object",
   schemaType: "object",
   code(cxt: KeywordContext) {
-    const {gen, schema, it} = cxt
+    const {gen, schema, data, it} = cxt
     const patterns = schemaProperties(it, schema)
     if (patterns.length === 0) return
     const valid = gen.name("valid")
@@ -28,7 +28,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function validateProperties(pat: string) {
-      loopPropertiesCode(cxt, (key) => {
+      gen.forIn("key", data, (key) => {
         gen.if(_`${usePattern(gen, pat)}.test(${key})`, () => {
           applySubschema(
             it,

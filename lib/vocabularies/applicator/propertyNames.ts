@@ -1,6 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {alwaysValidSchema, loopPropertiesCode} from "../util"
+import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {_, str} from "../../compile/codegen"
 
@@ -9,11 +9,11 @@ const def: CodeKeywordDefinition = {
   type: "object",
   schemaType: ["object", "boolean"],
   code(cxt: KeywordContext) {
-    const {gen, schema, it} = cxt
+    const {gen, schema, data, it} = cxt
     if (alwaysValidSchema(it, schema)) return
     const valid = gen.name("valid")
 
-    loopPropertiesCode(cxt, (key) => {
+    gen.forIn("key", data, (key) => {
       cxt.setParams({propertyName: key})
       applySubschema(
         it,

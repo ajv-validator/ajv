@@ -2,7 +2,7 @@ import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {propertyInData, noPropertyInData} from "../util"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"
-import {_, str, Name} from "../../compile/codegen"
+import {_, str, nil, Name} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "required",
@@ -57,22 +57,26 @@ const def: CodeKeywordDefinition = {
     }
 
     function loopAllRequired(): void {
-      const prop = gen.name("prop")
-      cxt.setParams({missingProperty: prop})
-      gen.for(_`const ${prop} of ${schemaCode}`, () =>
+      gen.forOf("prop", schemaCode, (prop) => {
+        cxt.setParams({missingProperty: prop})
         gen.if(noPropertyInData(data, prop, it.opts.ownProperties), () => cxt.error())
-      )
+      })
     }
 
     function loopUntilMissing(missing: Name, valid: Name): void {
       cxt.setParams({missingProperty: missing})
-      gen.for(_`${missing} of ${schemaCode}`, () => {
-        gen.assign(valid, propertyInData(data, missing, it.opts.ownProperties))
-        gen.ifNot(valid, () => {
-          cxt.error()
-          gen.break()
-        })
-      })
+      gen.forOf(
+        missing,
+        schemaCode,
+        () => {
+          gen.assign(valid, propertyInData(data, missing, it.opts.ownProperties))
+          gen.ifNot(valid, () => {
+            cxt.error()
+            gen.break()
+          })
+        },
+        nil
+      )
     }
   },
   error: {
