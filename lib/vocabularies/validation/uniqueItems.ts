@@ -1,6 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {checkDataType, checkDataTypes} from "../../compile/util"
+import {checkDataType, checkDataTypes, DataType} from "../../compile/util"
 import {_, str, Name} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
@@ -48,7 +48,7 @@ const def: CodeKeywordDefinition = {
         itemType,
         item,
         it.opts.strictNumbers,
-        true
+        DataType.Wrong
       )
       const indices = gen.const("indices", _`{}`)
       gen.for(_`;${i}--;`, () => {

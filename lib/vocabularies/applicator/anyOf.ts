@@ -27,7 +27,7 @@ const def: CodeKeywordDefinition = {
           },
           schValid
         )
-        gen.code(_`${valid} = ${valid} || ${schValid};`)
+        gen.assign(valid, _`${valid} || ${schValid}`)
         gen.ifNot(valid)
       })
     }, schema.length)

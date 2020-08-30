@@ -85,21 +85,19 @@ function errorObjectCode(cxt: KeywordErrorContext, error: KeywordErrorDefinition
   if (createErrors === false) return _`{}`
   if (!error) throw new Error('keyword definition must have "error" property')
   const {params, message} = error
-  // TODO trim whitespace
-  const out = _`{
-    keyword: ${keyword},
-    dataPath: (${N.dataPath} || "") + ${errorPath},
-    schemaPath: ${str`${errSchemaPath}/${keyword}`},
-    params: ${params ? params(cxt) : _`{}`}`
-  if (propertyName) out.append(_`, propertyName: ${propertyName}`)
+  const msg = typeof message == "string" ? message : message(cxt)
+  const par = params ? params(cxt) : _`{}`
+  const out = _`{keyword: ${keyword}, dataPath: (${N.dataPath} || "") + ${errorPath}`
+  out.add(_`, schemaPath: ${str`${errSchemaPath}/${keyword}`}, params: ${par}`)
+  if (propertyName) {
+    out.add(_`, propertyName: ${propertyName}`)
+  }
   if (opts.messages !== false) {
-    out.append(_`, message: ${typeof message == "string" ? message : message(cxt)}`)
+    out.add(_`, message: ${msg}`)
   }
   if (opts.verbose) {
-    out.append(
-      _`, schema: ${schemaValue}, parentSchema: ${topSchemaRef}${schemaPath}, data: ${data}`
-    )
+    out.add(_`, schema: ${schemaValue}, parentSchema: ${topSchemaRef}${schemaPath}, data: ${data}`)
   }
-  out.append(_`}`)
+  out.add(_`}`)
   return out
 }

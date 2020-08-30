@@ -1,11 +1,11 @@
 import {CompilationContext, KeywordErrorDefinition, KeywordErrorContext} from "../../types"
-import {toHash, checkDataType, checkDataTypes} from "../util"
+import {toHash, checkDataType, checkDataTypes, DataType} from "../util"
 import {schemaRefOrVal} from "../../vocabularies/util"
 import {schemaHasRulesForType} from "./applicability"
 import {reportError} from "../errors"
 import {_, str, Name} from "../codegen"
 
-export function getSchemaTypes({schema, opts}: CompilationContext): string[] {
+export function getSchemaTypes({schema, opts, RULES}: CompilationContext): string[] {
   const st: undefined | string | string[] = schema.type
   const types: string[] = Array.isArray(st) ? st : st ? [st] : []
   types.forEach(checkType)
@@ -20,8 +20,8 @@ export function getSchemaTypes({schema, opts}: CompilationContext): string[] {
   return types
 
   function checkType(t: string): void {
-    // TODO check that type is allowed
-    if (typeof t != "string") throw new Error('"type" keyword must be string or string[]: ' + t)
+    if (typeof t == "string" && t in RULES.types) return
+    throw new Error('"type" keyword must be allowed string or string[]: ' + t)
   }
 }
 
@@ -32,7 +32,7 @@ export function coerceAndCheckDataType(it: CompilationContext, types: string[]):
     types.length > 0 &&
     !(coerceTo.length === 0 && types.length === 1 && schemaHasRulesForType(it, types[0]))
   if (checkTypes) {
-    const wrongType = checkDataTypes(types, data, opts.strictNumbers, true)
+    const wrongType = checkDataTypes(types, data, opts.strictNumbers, DataType.Wrong)
     gen.if(wrongType, () => {
       if (coerceTo.length) coerceData(it, coerceTo)
       else reportTypeError(it)

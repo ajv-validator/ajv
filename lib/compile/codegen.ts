@@ -25,7 +25,7 @@ export class Code {
     return len >= 2 && this.#str[0] === '"' && this.#str[len - 1] === '"'
   }
 
-  append(c: Code): void {
+  add(c: Code): void {
     this.#str += c.#str
   }
 }
@@ -49,8 +49,8 @@ export class Name extends Code {
     return false
   }
 
-  append(_c: Code): void {
-    throw new Error("CodeGen: can't append Name")
+  add(_c: Code): void {
+    throw new Error("CodeGen: can't add to Name")
   }
 }
 

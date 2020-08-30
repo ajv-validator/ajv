@@ -2,13 +2,18 @@ import {_, nil, and, operators, Code, Name, getProperty} from "./codegen"
 import {CompilationContext} from "../types"
 import N from "./names"
 
+export enum DataType {
+  Correct,
+  Wrong,
+}
+
 export function checkDataType(
   dataType: string,
   data: Name,
   strictNumbers?: boolean,
-  negate?: boolean
+  correct = DataType.Correct
 ): Code {
-  const EQ = negate ? operators.NEQ : operators.EQ
+  const EQ = correct === DataType.Correct ? operators.EQ : operators.NEQ
   let cond: Code
   switch (dataType) {
     case "null":
@@ -28,7 +33,7 @@ export function checkDataType(
     default:
       return _`typeof ${data} ${EQ} ${dataType}`
   }
-  return negate ? _`!(${cond})` : cond
+  return correct === DataType.Correct ? cond : _`!(${cond})`
 
   function numCond(cond: Code = nil): Code {
     return and(_`typeof ${data} === "number"`, cond, strictNumbers ? _`isFinite(${data})` : nil)
@@ -39,10 +44,10 @@ export function checkDataTypes(
   dataTypes: string[],
   data: Name,
   strictNumbers?: boolean,
-  _negate?: true
+  correct?: DataType
 ): Code {
   if (dataTypes.length === 1) {
-    return checkDataType(dataTypes[0], data, strictNumbers, true)
+    return checkDataType(dataTypes[0], data, strictNumbers, correct)
   }
   let cond: Code
   const types = toHash(dataTypes)
@@ -56,7 +61,7 @@ export function checkDataTypes(
     cond = nil
   }
   if (types.number) delete types.integer
-  for (const t in types) cond = and(cond, checkDataType(t, data, strictNumbers, true))
+  for (const t in types) cond = and(cond, checkDataType(t, data, strictNumbers, correct))
   return cond
 }
 
