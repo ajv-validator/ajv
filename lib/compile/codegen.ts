@@ -24,6 +24,10 @@ export class Code {
     const len = this.#str.length
     return len >= 2 && this.#str[0] === '"' && this.#str[len - 1] === '"'
   }
+
+  append(c: Code): void {
+    this.#str += c.#str
+  }
 }
 
 export const nil = new Code("")
@@ -40,7 +44,15 @@ export const operators = {
   AND: new Code("&&"),
 }
 
-export class Name extends Code {}
+export class Name extends Code {
+  isQuoted() {
+    return false
+  }
+
+  append(_c: Code): void {
+    throw new Error("CodeGen: can't append Name")
+  }
+}
 
 const varKinds = {
   const: new Name("const"),

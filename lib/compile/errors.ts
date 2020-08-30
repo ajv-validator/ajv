@@ -89,21 +89,20 @@ function errorObjectCode(cxt: KeywordErrorContext, error: KeywordErrorDefinition
   if (!error) throw new Error('keyword definition must have "error" property')
   const {params, message} = error
   // TODO trim whitespace
-  let out = _`{
+  const out = _`{
     keyword: ${keyword},
     dataPath: (${N.dataPath} || "") + ${errorPath},
     schemaPath: ${str`${errSchemaPath}/${keyword}`},
-    params: ${params ? params(cxt) : _`{}`},`
-  if (propertyName) out = _`${out} propertyName: ${propertyName},`
+    params: ${params ? params(cxt) : _`{}`}`
+  if (propertyName) out.append(_`, propertyName: ${propertyName}`)
   if (opts.messages !== false) {
-    out = _`${out} message: ${typeof message == "string" ? message : message(cxt)},`
+    out.append(_`, message: ${typeof message == "string" ? message : message(cxt)}`)
   }
   if (opts.verbose) {
-    // TODO trim whitespace
-    out = _`${out} 
-      schema: ${schemaValue},
-      parentSchema: ${topSchemaRef}${schemaPath},
-      data: ${data},`
+    out.append(
+      _`, schema: ${schemaValue}, parentSchema: ${topSchemaRef}${schemaPath}, data: ${data}`
+    )
   }
-  return _`${out} }`
+  out.append(_`}`)
+  return out
 }
