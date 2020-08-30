@@ -4,12 +4,12 @@ import KeywordContext from "../compile/context"
 import CodeGen, {_, nil, Code, Name, Expression, getProperty} from "../compile/codegen"
 import N from "../compile/names"
 
-export function dataNotType(
+export function bad$DataType(
   schemaCode: Code | number | boolean,
   schemaType: string,
   $data?: string | false
 ): Code {
-  return $data ? _`(${schemaCode}!==undefined && typeof ${schemaCode}!==${schemaType}) || ` : nil
+  return $data ? _`(${schemaCode}!==undefined && typeof ${schemaCode}!==${schemaType})` : nil
 }
 
 export function schemaRefOrVal(
@@ -71,12 +71,16 @@ export function loopPropertiesCode(
   gen.for(_`const ${key} ${iteration}`, () => loopBody(key))
 }
 
-export function orExpr(items: string[], mapCondition: (s: string, i: number) => Code): Code {
-  return items.map(mapCondition).reduce(orCode)
+export function orExpr(items: string[], condition: (s: string, i: number) => Code): Code {
+  return items.map(condition).reduce(orCode)
 }
 
-function orCode(x: Code, y: Code) {
-  return _`${x} || ${y}`
+export function or(...args: Code[]): Code {
+  return args.reduce(orCode)
+}
+
+function orCode(x: Code, y: Code): Code {
+  return x === nil ? y : y === nil ? x : _`${x} || ${y}`
 }
 
 export function callValidate(

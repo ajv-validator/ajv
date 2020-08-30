@@ -87,7 +87,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
   function check$data(): void {
     gen
       // TODO add support for schemaType in keyword definition
-      // .if(`${dataNotType(schemaCode, <string>def.schemaType, $data)} false`) // TODO refactor
+      // .if(`${bad$DataType(schemaCode, <string>def.schemaType, $data)} false`) // TODO refactor
       .if(`${schemaCode} === undefined`)
       .code(`${valid} = true;`)
       .else()

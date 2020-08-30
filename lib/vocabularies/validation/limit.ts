@@ -1,6 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {dataNotType} from "../util"
+import {bad$DataType, or} from "../util"
 import {_, str, operators, Code} from "../../compile/codegen"
 
 const ops = operators
@@ -19,8 +19,8 @@ const def: CodeKeywordDefinition = {
   $data: true,
   code(cxt: KeywordContext) {
     const {keyword, data, $data, schemaCode} = cxt
-    const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
-    cxt.fail(_`${dnt} ${data} ${OPS[keyword].fail} ${schemaCode} || isNaN(${data})`)
+    const bdt = bad$DataType(schemaCode, <string>def.schemaType, $data)
+    cxt.fail(or(bdt, _`${data} ${OPS[keyword].fail} ${schemaCode} || isNaN(${data})`))
   },
   error: {
     message: ({keyword, schemaCode}) => str`should be ${OPS[keyword].okStr} ${schemaCode}`,

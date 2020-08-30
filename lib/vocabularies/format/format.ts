@@ -1,6 +1,6 @@
 import {CodeKeywordDefinition, AddedFormat, FormatValidate} from "../../types"
 import KeywordContext from "../../compile/context"
-import {dataNotType} from "../util"
+import {bad$DataType, or} from "../util"
 import {_, str, nil, Code, getProperty} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
@@ -25,16 +25,16 @@ const def: CodeKeywordDefinition = {
         _`${fmtType} = ${fmtDef}.type || "string"; ${format} = ${fmtDef}.validate;`,
         _`${fmtType} = "string"; ${format} = ${fmtDef}`
       )
-      const dnt = dataNotType(schemaCode, <string>def.schemaType, $data)
-      cxt.fail(_`${dnt} ${unknownFmt()} ${invalidFmt()}`)
+      const bdt = bad$DataType(schemaCode, <string>def.schemaType, $data)
+      cxt.fail(or(bdt, unknownFmt(), invalidFmt()))
 
       function unknownFmt(): Code {
         if (opts.unknownFormats === "ignore") return nil
-        let unknown = _`(${schemaCode} && !${format}`
+        let unknown = _`${schemaCode} && !${format}`
         if (Array.isArray(opts.unknownFormats)) {
           unknown = _`${unknown} && !self._opts.unknownFormats.includes(${schemaCode})`
         }
-        return _`${unknown}) || `
+        return _`(${unknown})`
       }
 
       function invalidFmt(): Code {
