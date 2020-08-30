@@ -41,7 +41,7 @@ export default class KeywordContext implements KeywordErrorContext {
 
     if (this.$data) {
       this.schemaCode = it.gen.name("schema")
-      it.gen.const(this.schemaCode, `${getData(this.$data, it)}`)
+      it.gen.const(this.schemaCode, getData(this.$data, it))
     } else {
       this.schemaCode = this.schemaValue
       if (def.schemaType && !validSchemaType(this.schema, def.schemaType)) {

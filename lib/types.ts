@@ -110,7 +110,7 @@ export interface CompilationContext {
   parentData: Name
   parentDataProperty: Code | number
   dataNames: Name[]
-  dataPathArr: (Expression | number)[]
+  dataPathArr: (Code | number)[]
   dataLevel: number
   topSchemaRef: Code
   async: boolean
@@ -121,7 +121,7 @@ export interface CompilationContext {
   baseId: string
   schemaPath: Code
   errSchemaPath: string // this is actual string, should not be changed to Code
-  errorPath: string
+  errorPath: Code
   propertyName?: Name
   compositeRule?: boolean
   createErrors?: boolean // TODO maybe remove later

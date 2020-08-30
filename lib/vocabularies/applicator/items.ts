@@ -11,7 +11,7 @@ const def: CodeKeywordDefinition = {
   before: "uniqueItems",
   code(cxt: KeywordContext) {
     const {gen, schema, data, it} = cxt
-    const len = gen.const("len", `${data}.length`)
+    const len = gen.const("len", _`${data}.length`)
     if (Array.isArray(schema)) {
       validateDefinedItems()
     } else if (!alwaysValidSchema(it, schema)) {

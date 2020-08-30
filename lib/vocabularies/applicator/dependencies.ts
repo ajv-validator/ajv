@@ -53,7 +53,7 @@ const def: CodeKeywordDefinition = {
             }
           })
         } else {
-          gen.if(`${hasProperty} && (${checkMissingProp(cxt, deps, missing)})`)
+          gen.if(_`${hasProperty} && (${checkMissingProp(cxt, deps, missing)})`)
           reportMissingProp(cxt, missing)
           gen.else()
         }

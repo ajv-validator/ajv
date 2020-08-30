@@ -1,7 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {orExpr} from "../util"
-import {_, Name, Code} from "../../compile/codegen"
+import {_, or, Name, Code} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "enum",
@@ -26,7 +25,7 @@ const def: CodeKeywordDefinition = {
         cxt.pass(valid)
       } else {
         const vSchema = gen.const("schema", schemaCode)
-        const cond: Code = orExpr(schema, (_x, i) => equalCode(vSchema, i))
+        const cond: Code = or(...schema.map((_x, i) => equalCode(vSchema, i)))
         cxt.pass(cond)
       }
     }

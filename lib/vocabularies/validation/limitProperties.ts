@@ -1,7 +1,7 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {bad$DataType, or} from "../util"
-import {_, str, operators} from "../../compile/codegen"
+import {bad$DataType} from "../util"
+import {_, str, or, operators} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: ["maxProperties", "minProperties"],

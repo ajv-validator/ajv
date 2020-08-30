@@ -6,10 +6,9 @@ import {
   alwaysValidSchema,
   loopPropertiesCode,
   usePattern,
-  orExpr,
 } from "../util"
 import {applySubschema, SubschemaApplication, Expr} from "../../compile/subschema"
-import {_, Name, Expression} from "../../compile/codegen"
+import {_, nil, or, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 
 const def: CodeKeywordDefinition = {
@@ -19,12 +18,13 @@ const def: CodeKeywordDefinition = {
   trackErrors: true,
   code(cxt: KeywordContext) {
     const {gen, schema, parentSchema, data, errsCount, it} = cxt
+    if (!errsCount) throw new Error("ajv implementation error")
     const {allErrors, opts} = it
     if (alwaysValidSchema(it, schema) && opts.removeAdditional !== "all") return
     const props = allSchemaProperties(parentSchema.properties)
     const patProps = allSchemaProperties(parentSchema.patternProperties)
     checkAdditionalProperties()
-    if (!allErrors) gen.if(`${errsCount} === ${N.errors}`)
+    if (!allErrors) gen.if(_`${errsCount} === ${N.errors}`)
 
     function checkAdditionalProperties(): void {
       loopPropertiesCode(cxt, (key: Name) => {
@@ -33,21 +33,21 @@ const def: CodeKeywordDefinition = {
       })
     }
 
-    function isAdditional(key: Name): string {
-      let definedProp: Expression = ""
+    function isAdditional(key: Name): Code {
+      let definedProp: Code
       if (props.length > 8) {
         // TODO maybe an option instead of hard-coded 8?
         const propsSchema = schemaRefOrVal(it, parentSchema.properties, "properties")
-        definedProp = `${propsSchema}.hasOwnProperty(${key})`
+        definedProp = _`${propsSchema}.hasOwnProperty(${key})`
       } else if (props.length) {
-        definedProp = orExpr(props, (p) => _`${key} === ${p}`)
+        definedProp = or(...props.map((p) => _`${key} === ${p}`))
+      } else {
+        definedProp = nil
       }
       if (patProps.length) {
-        definedProp +=
-          (definedProp ? " || " : "") +
-          orExpr(patProps, (p) => _`${usePattern(gen, p)}.test(${key})`)
+        definedProp = or(definedProp, ...patProps.map((p) => _`${usePattern(gen, p)}.test(${key})`))
       }
-      return `!(${definedProp})`
+      return _`!(${definedProp})`
     }
 
     function deleteAdditional(key: Name): void {

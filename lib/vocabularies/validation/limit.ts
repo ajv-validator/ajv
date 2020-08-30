@@ -1,7 +1,7 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {bad$DataType, or} from "../util"
-import {_, str, operators, Code} from "../../compile/codegen"
+import {bad$DataType} from "../util"
+import {_, str, or, operators, Code} from "../../compile/codegen"
 
 const ops = operators
 

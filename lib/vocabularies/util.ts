@@ -71,30 +71,19 @@ export function loopPropertiesCode(
   gen.for(_`const ${key} ${iteration}`, () => loopBody(key))
 }
 
-export function orExpr(items: string[], condition: (s: string, i: number) => Code): Code {
-  return items.map(condition).reduce(orCode)
-}
-
-export function or(...args: Code[]): Code {
-  return args.reduce(orCode)
-}
-
-function orCode(x: Code, y: Code): Code {
-  return x === nil ? y : y === nil ? x : _`${x} || ${y}`
-}
-
-export function callValidate(
+export function callValidateCode(
   {schemaCode, data, it}: KeywordContext,
-  func: Expression,
-  context?: string,
+  func: Code,
+  context: Code,
   passSchema?: boolean
-): string {
+): Expression {
   const dataAndSchema = passSchema
     ? _`${schemaCode}, ${data}, ${it.topSchemaRef}${it.schemaPath}`
     : data
-  const dataPath = `(${N.dataPath} || '')${it.errorPath === '""' ? "" : ` + ${it.errorPath}`}` // TODO joinPaths?
-  const args = `${dataAndSchema}, ${dataPath}, ${it.parentData}, ${it.parentDataProperty}, ${N.rootData}`
-  return context ? `${func}.call(${context}, ${args})` : `${func}(${args})`
+  const appendErrPath = it.errorPath.toString() === '""' ? nil : _` + ${it.errorPath}`
+  const dataPath = _`(${N.dataPath} || '')${appendErrPath}` // TODO concat?
+  const args = _`${dataAndSchema}, ${dataPath}, ${it.parentData}, ${it.parentDataProperty}, ${N.rootData}`
+  return context !== nil ? `${func}.call(${context}, ${args})` : `${func}(${args})`
 }
 
 export function usePattern(gen: CodeGen, pattern: string): Name {

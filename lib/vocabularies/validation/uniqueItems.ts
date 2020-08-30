@@ -33,7 +33,7 @@ const def: CodeKeywordDefinition = {
       const j = gen.let("j")
       cxt.setParams({i, j})
       gen.assign(valid, true)
-      gen.if(`${i} > 1`, () => (canOptimize() ? loopN : loopN2)(i, j))
+      gen.if(_`${i} > 1`, () => (canOptimize() ? loopN : loopN2)(i, j))
     }
 
     function canOptimize(): boolean {
@@ -52,7 +52,7 @@ const def: CodeKeywordDefinition = {
       )
       const indices = gen.const("indices", _`{}`)
       gen.for(_`;${i}--;`, () => {
-        gen.let(item, `${data}[${i}];`)
+        gen.let(item, _`${data}[${i}];`)
         gen.if(wrongType, "continue")
         if (Array.isArray(itemType)) gen.if(_`typeof ${item} == "string"`, _`${item} += "_"`)
         gen

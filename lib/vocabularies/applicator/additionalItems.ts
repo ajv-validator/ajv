@@ -11,7 +11,7 @@ const def: CodeKeywordDefinition = {
   before: "uniqueItems",
   code(cxt: KeywordContext) {
     const {gen, schema, parentSchema, data, it} = cxt
-    const len = gen.const("len", `${data}.length`)
+    const len = gen.const("len", _`${data}.length`)
     const items = parentSchema.items
     // TODO strict mode: fail or warning if "additionalItems" is present without "items" Array
     if (!Array.isArray(items)) return

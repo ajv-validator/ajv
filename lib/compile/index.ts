@@ -1,4 +1,4 @@
-import CodeGen, {_, nil, Code, Scope} from "./codegen"
+import CodeGen, {_, str, nil, Code, Scope} from "./codegen"
 import {validateFunctionCode} from "./validate"
 import {ErrorObject} from "../types"
 import N from "./names"
@@ -121,7 +121,7 @@ function compile(schema, root, localRefs, baseId) {
       baseId: baseId || rootId,
       schemaPath: nil,
       errSchemaPath: "#",
-      errorPath: '""',
+      errorPath: str``,
       RULES, // TODO refactor - it is available on the instance
       formats,
       opts,

@@ -1,7 +1,7 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {bad$DataType, or} from "../util"
-import {_, str} from "../../compile/codegen"
+import {bad$DataType} from "../util"
+import {_, str, or} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "multipleOf",

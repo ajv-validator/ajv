@@ -1,7 +1,7 @@
 import {CompilationContext} from "../types"
 import {subschemaCode} from "./validate"
-import {escapeFragment, getPath, getPathExpr} from "./util"
-import {_, Code, Name, Expression, getProperty} from "./codegen"
+import {escapeFragment, escapeJsonPointer} from "./util"
+import {_, str, nil, Code, Name, getProperty} from "./codegen"
 
 export interface SubschemaContext {
   // TODO use Optional?
@@ -9,13 +9,13 @@ export interface SubschemaContext {
   schemaPath: Code
   errSchemaPath: string
   topSchemaRef?: Code
-  errorPath?: string
+  errorPath?: Code
   dataLevel?: number
   data?: Name
   parentData?: Name
   parentDataProperty?: Code | number
   dataNames?: Name[]
-  dataPathArr?: (Expression | number)[]
+  dataPathArr?: (Code | number)[]
   propertyName?: Name
   compositeRule?: true
   createErrors?: boolean
@@ -38,9 +38,9 @@ interface SubschemaApplicationParams {
   errSchemaPath: string
   topSchemaRef: Code
   data: Name | Code
-  dataProp: Expression | number
+  dataProp: Code | string | number
   propertyName: Name
-  expr: Expr
+  expr: Expr // TODO dataPropType
   compositeRule: true
   createErrors: boolean
   allErrors: boolean
@@ -111,12 +111,7 @@ function extendSubschemaData(
     const {errorPath, dataPathArr, opts} = it
     const nextData = gen.var("data", _`${it.data}${getProperty(dataProp)}`) // TODO var
     dataContextProps(nextData)
-    // TODO possibly refactor getPath and getPathExpr to one function using Expr enum
-    subschema.errorPath =
-      dataProp instanceof Code
-        ? getPathExpr(errorPath, dataProp, opts.jsonPointers, expr === Expr.Num)
-        : getPath(errorPath, dataProp, opts.jsonPointers)
-
+    subschema.errorPath = str`${errorPath}${getErrorPath(dataProp, expr, opts.jsonPointers)}`
     subschema.parentDataProperty = _`${dataProp}`
     subschema.dataPathArr = [...dataPathArr, subschema.parentDataProperty]
   }
@@ -125,7 +120,7 @@ function extendSubschemaData(
     const nextData = data instanceof Name ? data : gen.var("data", data) // TODO var, replaceable if used once?
     dataContextProps(nextData)
     if (propertyName !== undefined) subschema.propertyName = propertyName
-    // TODO something is wrong here with not changing parentDataProperty and not appending dataPathArr
+    // TODO something is possibly wrong here with not changing parentDataProperty and not appending dataPathArr
   }
 
   function dataContextProps(_nextData: Name) {
@@ -143,4 +138,23 @@ function extendSubschemaMode(
   if (compositeRule !== undefined) subschema.compositeRule = compositeRule
   if (createErrors !== undefined) subschema.createErrors = createErrors
   if (allErrors !== undefined) subschema.allErrors = allErrors
+}
+
+function getErrorPath(
+  dataProp: Code | string | number,
+  dataPropType?: Expr,
+  jsonPointers?: boolean
+): Code | string {
+  // let path
+  if (dataProp instanceof Code) {
+    const isNumber = dataPropType === Expr.Num
+    return jsonPointers
+      ? _`"/" + ${dataProp}${isNumber ? nil : _`.replace(/~/g, "~0").replace(/\\//g, "~1")`}` // TODO maybe use global escapePointer
+      : isNumber
+      ? _`"[" + ${dataProp} + "]"`
+      : _`"['" + ${dataProp} + "']"` // TODO needs global string escaping
+  }
+  return jsonPointers
+    ? "/" + (typeof dataProp == "number" ? dataProp : escapeJsonPointer(dataProp))
+    : getProperty(dataProp).toString()
 }

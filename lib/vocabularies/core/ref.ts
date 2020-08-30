@@ -3,8 +3,8 @@ import KeywordContext from "../../compile/context"
 import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {ResolvedRef, InlineResolvedRef} from "../../compile"
-import {callValidate} from "../util"
-import {_, str, nil, Expression} from "../../compile/codegen"
+import {callValidateCode} from "../util"
+import {_, str, nil, Code, Expression} from "../../compile/codegen"
 import N from "../../compile/names"
 
 const def: CodeKeywordDefinition = {
@@ -14,7 +14,7 @@ const def: CodeKeywordDefinition = {
     const {gen, schema, it} = cxt
     const {resolveRef, allErrors, baseId, isRoot, root, opts, logger} = it
     const ref = getRef()
-    const passCxt = opts.passContext ? "this" : ""
+    const passCxt = opts.passContext ? N.this : nil
     if (ref === undefined) missingRef()
     else if (ref.inline) applyRefSchema(ref)
     else if (ref.$async || it.async) validateAsyncRef(ref.code)
@@ -59,12 +59,12 @@ const def: CodeKeywordDefinition = {
       cxt.ok(valid)
     }
 
-    function validateAsyncRef(v: Expression): void {
+    function validateAsyncRef(v: Code): void {
       if (!it.async) throw new Error("async schema referenced by sync schema")
       const valid = gen.let("valid")
       gen.try(
         () => {
-          gen.code(`await ${callValidate(cxt, v, passCxt)};`)
+          gen.code(`await ${callValidateCode(cxt, v, passCxt)};`)
           if (!allErrors) gen.assign(valid, true)
         },
         (e) => {
@@ -76,8 +76,8 @@ const def: CodeKeywordDefinition = {
       cxt.ok(valid)
     }
 
-    function validateRef(v: Expression): void {
-      cxt.pass(callValidate(cxt, v, passCxt), () => addErrorsFrom(v))
+    function validateRef(v: Code): void {
+      cxt.pass(callValidateCode(cxt, v, passCxt), () => addErrorsFrom(v))
     }
 
     function addErrorsFrom(source: Expression): void {

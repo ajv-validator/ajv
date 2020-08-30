@@ -9,6 +9,8 @@ export type Expression = string | Name | Code
 
 export type Value = string | Name | Code | number | boolean | null
 
+export type SafeExpr = Code | number | boolean | null
+
 export type Block = string | Name | Code | (() => void)
 
 export class Code {
@@ -35,6 +37,11 @@ export const operators = {
   GTE: new Code(">="),
   LT: new Code("<"),
   LTE: new Code("<="),
+  EQ: new Code("==="),
+  NEQ: new Code("!=="),
+  NOT: new Code("!"),
+  OR: new Code("||"),
+  AND: new Code("&&"),
 }
 
 export class Name extends Code {}
@@ -186,22 +193,22 @@ export default class CodeGen {
     return code
   }
 
-  _def(varKind: Name, nameOrPrefix: Name | string, rhs?: Expression | number | boolean): Name {
+  _def(varKind: Name, nameOrPrefix: Name | string, rhs?: Value): Name {
     const name = nameOrPrefix instanceof Name ? nameOrPrefix : this.name(nameOrPrefix)
     if (rhs === undefined) this.code(`${varKind} ${name};`)
     else this.code(`${varKind} ${name} = ${rhs};`)
     return name
   }
 
-  const(nameOrPrefix: Name | string, rhs?: Expression | number | boolean): Name {
+  const(nameOrPrefix: Name | string, rhs?: Value): Name {
     return this._def(varKinds.const, nameOrPrefix, rhs)
   }
 
-  let(nameOrPrefix: Name | string, rhs?: Expression | number | boolean): Name {
+  let(nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
     return this._def(varKinds.let, nameOrPrefix, rhs)
   }
 
-  var(nameOrPrefix: Name | string, rhs?: Expression | number | boolean): Name {
+  var(nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
     return this._def(varKinds.var, nameOrPrefix, rhs)
   }
 
@@ -235,9 +242,9 @@ export default class CodeGen {
     return this.if(`!${cond}`, thenBody, elseBody)
   }
 
-  elseIf(condition: Expression): CodeGen {
+  elseIf(condition: Code): CodeGen {
     if (this._lastBlock !== BlockKind.If) throw new Error('CodeGen: "else if" without "if"')
-    this.code(`}else if(${condition}){`)
+    this.code(_`}else if(${condition}){`)
     return this
   }
 
@@ -354,4 +361,22 @@ export function quoteString(s: string): string {
 
 export function getProperty(key: Expression | number): Code {
   return typeof key == "string" && IDENTIFIER.test(key) ? new Code(`.${key}`) : _`[${key}]`
+}
+
+const andCode = mappend(operators.AND)
+
+export function and(...args: Code[]): Code {
+  return args.reduce(andCode)
+}
+
+const orCode = mappend(operators.OR)
+
+export function or(...args: Code[]): Code {
+  return args.reduce(orCode)
+}
+
+type MAppend = (x: Code, y: Code) => Code
+
+function mappend(op: Code): MAppend {
+  return (x, y) => (x === nil ? y : y === nil ? x : _`${x} ${op} ${y}`)
 }

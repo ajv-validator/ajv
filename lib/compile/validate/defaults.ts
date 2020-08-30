@@ -28,8 +28,11 @@ function assignDefault(
     return
   }
 
-  const condition =
-    `${childData} === undefined` +
-    (opts.useDefaults === "empty" ? ` || ${childData} === null || ${childData} === ""` : "")
+  let condition = _`${childData} === undefined`
+  if (opts.useDefaults === "empty") {
+    condition = _`${condition} || ${childData} === null || ${childData} === ""`
+  }
+  // `${childData} === undefined` +
+  // (opts.useDefaults === "empty" ? ` || ${childData} === null || ${childData} === ""` : "")
   gen.if(condition, `${childData} = ${JSON.stringify(defaultValue)}`)
 }

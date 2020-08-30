@@ -1,4 +1,4 @@
-import {_, Name, Expression, getProperty} from "./codegen"
+import {_, nil, and, operators, Code, Name, getProperty} from "./codegen"
 import {CompilationContext} from "../types"
 import N from "./names"
 
@@ -7,26 +7,31 @@ export function checkDataType(
   data: Name,
   strictNumbers?: boolean,
   negate?: boolean
-): string {
-  const EQ = negate ? " !== " : " === "
-  const OK = negate ? "!" : ""
+): Code {
+  const EQ = negate ? operators.NEQ : operators.EQ
+  let cond: Code
   switch (dataType) {
     case "null":
-      return data + EQ + "null"
+      return _`${data} ${EQ} null`
     case "array":
-      return OK + `Array.isArray(${data})`
+      cond = _`Array.isArray(${data})`
+      break
     case "object":
-      return OK + `(${data} && typeof ${data} === "object" && !Array.isArray(${data}))`
+      cond = _`${data} && typeof ${data} === "object" && !Array.isArray(${data})`
+      break
     case "integer":
-      return (
-        OK +
-        `(typeof ${data} === "number" && !(${data} % 1) && !isNaN(${data})` +
-        (strictNumbers ? ` && isFinite(${data}))` : ")")
-      )
+      cond = numCond(_`!(${data} % 1) && !isNaN(${data})`)
+      break
     case "number":
-      return OK + `(typeof ${data} === "number"` + (strictNumbers ? `&& isFinite(${data}))` : ")")
+      cond = numCond()
+      break
     default:
-      return `typeof ${data} ${EQ} "${dataType}"`
+      return _`typeof ${data} ${EQ} ${dataType}`
+  }
+  return negate ? _`!(${cond})` : cond
+
+  function numCond(cond: Code = nil): Code {
+    return and(_`typeof ${data} === "number"`, cond, strictNumbers ? _`isFinite(${data})` : nil)
   }
 }
 
@@ -34,41 +39,31 @@ export function checkDataTypes(
   dataTypes: string[],
   data: Name,
   strictNumbers?: boolean,
-  negate?: true
-): string {
+  _negate?: true
+): Code {
   if (dataTypes.length === 1) {
     return checkDataType(dataTypes[0], data, strictNumbers, true)
   }
-  let code = ""
+  let cond: Code
   const types = toHash(dataTypes)
   if (types.array && types.object) {
-    code = types.null ? "(" : `(!${data} || `
-    code += `typeof ${data} !== "object")`
+    const notObj = _`typeof ${data} !== "object"`
+    cond = types.null ? notObj : _`(!${data} || ${notObj})`
     delete types.null
     delete types.array
     delete types.object
+  } else {
+    cond = nil
   }
   if (types.number) delete types.integer
-  for (const t in types) {
-    code += (code ? " && " : "") + checkDataType(t, data, strictNumbers, negate)
-  }
-  return code
+  for (const t in types) cond = and(cond, checkDataType(t, data, strictNumbers, true))
+  return cond
 }
 
 export function toHash(arr: string[]): {[key: string]: true} {
   const hash = {}
   for (const item of arr) hash[item] = true
   return hash
-}
-
-const SINGLE_QUOTE = /'|\\/g
-export function escapeQuotes(str: string): string {
-  return str
-    .replace(SINGLE_QUOTE, "\\$&")
-    .replace(/\n/g, "\\n")
-    .replace(/\r/g, "\\r")
-    .replace(/\f/g, "\\f")
-    .replace(/\t/g, "\\t")
 }
 
 // TODO rules, schema?
@@ -93,65 +88,29 @@ export function schemaUnknownRules(schema: object, rules: object): string | unde
   for (const key in schema) if (!rules[key]) return key
 }
 
-function toQuotedString(str: string): string {
-  return `'${escapeQuotes(str)}'`
-}
-
-export function getPathExpr(
-  currentPath: string,
-  expr: Expression,
-  jsonPointers?: boolean,
-  isNumber?: boolean
-): string {
-  const path = jsonPointers // false by default
-    ? `'/' + ${expr}` + (isNumber ? "" : ".replace(/~/g, '~0').replace(/\\//g, '~1')")
-    : isNumber
-    ? `'[' + ${expr} + ']'`
-    : `'[\\'' + ${expr} + '\\']'`
-  return joinPaths(currentPath, path)
-}
-
-export function getPath(
-  currentPath: string,
-  prop: string | number,
-  jsonPointers?: boolean
-): string {
-  const path = toQuotedString(
-    jsonPointers // false by default
-      ? "/" + (typeof prop == "number" ? prop : escapeJsonPointer(prop))
-      : getProperty(prop).toString()
-  )
-  return joinPaths(currentPath, path)
-}
-
 const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/
 const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/
 export function getData(
   $data: string,
   {dataLevel, dataNames, dataPathArr}: CompilationContext
-): Expression | number {
-  let jsonPointer, data
+): Code | number {
+  let jsonPointer
+  let data: Code
   if ($data === "") return N.rootData
   if ($data[0] === "/") {
-    if (!JSON_POINTER.test($data)) {
-      throw new Error("Invalid JSON-pointer: " + $data)
-    }
+    if (!JSON_POINTER.test($data)) throw new Error(`Invalid JSON-pointer: ${$data}`)
     jsonPointer = $data
     data = N.rootData
   } else {
     const matches = RELATIVE_JSON_POINTER.exec($data)
-    if (!matches) throw new Error("Invalid JSON-pointer: " + $data)
+    if (!matches) throw new Error(`Invalid JSON-pointer: ${$data}`)
     const up: number = +matches[1]
     jsonPointer = matches[2]
     if (jsonPointer === "#") {
-      if (up >= dataLevel) {
-        throw new Error(errorMsg("property/index", up))
-      }
+      if (up >= dataLevel) throw new Error(errorMsg("property/index", up))
       return dataPathArr[dataLevel - up]
     }
-
     if (up > dataLevel) throw new Error(errorMsg("data", up))
-
     data = dataNames[dataLevel - up]
     if (!jsonPointer) return data
   }
@@ -160,8 +119,8 @@ export function getData(
   const segments = jsonPointer.split("/")
   for (const segment of segments) {
     if (segment) {
-      data += getProperty(unescapeJsonPointer(segment))
-      expr += " && " + data
+      data = _`${data}${getProperty(unescapeJsonPointer(segment))}`
+      expr = _`${expr} && ${data}`
     }
   }
   return expr
@@ -169,12 +128,6 @@ export function getData(
   function errorMsg(pointerType: string, up: number): string {
     return `Cannot access ${pointerType} ${up} levels up, current level is ${dataLevel}`
   }
-}
-
-function joinPaths(a: string, b: string): string {
-  if (a === '""' || a === "''") return b
-  if (b === '""' || b === "''") return a
-  return `${a} + ${b}`.replace(/([^\\])' \+ '/g, "$1")
 }
 
 export function unescapeFragment(str: string): string {
@@ -189,6 +142,6 @@ export function escapeJsonPointer(str: string): string {
   return str.replace(/~/g, "~0").replace(/\//g, "~1")
 }
 
-export function unescapeJsonPointer(str: string): string {
+function unescapeJsonPointer(str: string): string {
   return str.replace(/~1/g, "/").replace(/~0/g, "~")
 }

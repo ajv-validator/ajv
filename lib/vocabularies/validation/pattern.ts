@@ -1,7 +1,7 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {bad$DataType, usePattern, or} from "../util"
-import {_, str} from "../../compile/codegen"
+import {bad$DataType, usePattern} from "../util"
+import {_, str, or} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "pattern",

@@ -50,7 +50,7 @@ const def: CodeKeywordDefinition = {
         }
         cxt.ok(valid)
       } else {
-        gen.if(`${checkMissingProp(cxt, schema, missing)}`)
+        gen.if(checkMissingProp(cxt, schema, missing))
         reportMissingProp(cxt, missing)
         gen.else()
       }

@@ -1,7 +1,7 @@
 import {CodeKeywordDefinition, AddedFormat, FormatValidate} from "../../types"
 import KeywordContext from "../../compile/context"
-import {bad$DataType, or} from "../util"
-import {_, str, nil, Code, getProperty} from "../../compile/codegen"
+import {bad$DataType} from "../util"
+import {_, str, nil, or, Code, getProperty} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "format",
@@ -17,7 +17,7 @@ const def: CodeKeywordDefinition = {
     else validateFormat()
 
     function validate$DataFormat() {
-      const fmtDef = gen.const("fmtDef", `formats[${schemaCode}]`)
+      const fmtDef = gen.const("fmtDef", _`formats[${schemaCode}]`)
       const fmtType = gen.let("fmtType")
       const format = gen.let("format")
       gen.if(

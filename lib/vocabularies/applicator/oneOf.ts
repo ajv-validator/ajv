@@ -11,7 +11,7 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordContext) {
     const {gen, schema, it} = cxt
     const valid = gen.let("valid", false)
-    const passing = gen.let("passing", "null")
+    const passing = gen.let("passing", null)
     const schValid = gen.name("_valid")
     cxt.setParams({passing})
     // TODO possibly fail straight away (with warning or exception) if there are two empty always valid schemas

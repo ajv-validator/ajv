@@ -8,8 +8,8 @@ import {
 import KeywordContext from "../context"
 import {applySubschema} from "../subschema"
 import {extendErrors} from "../errors"
-import {callValidate} from "../../vocabularies/util"
-import CodeGen, {_, nil, Name, Expression} from "../codegen"
+import {callValidateCode} from "../../vocabularies/util"
+import CodeGen, {_, nil, Code, Name} from "../codegen"
 import N from "../names"
 
 export function keywordCode(
@@ -88,7 +88,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
     gen
       // TODO add support for schemaType in keyword definition
       // .if(`${bad$DataType(schemaCode, <string>def.schemaType, $data)} false`) // TODO refactor
-      .if(`${schemaCode} === undefined`)
+      .if(_`${schemaCode} === undefined`)
       .code(`${valid} = true;`)
       .else()
     if (def.validateSchema) {
@@ -103,31 +103,31 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
   }
 
   function validateAsyncRule(): Name {
-    const ruleErrs = gen.let("ruleErrs", "null")
+    const ruleErrs = gen.let("ruleErrs", null)
     gen.try(
-      () => assignValid("await "),
+      () => assignValid(_`await `),
       (e) =>
         gen
-          .code(`${valid} = false;`)
-          .if(`${e} instanceof ValidationError`, `${ruleErrs} = ${e}.errors;`, `throw ${e};`)
+          .code(_`${valid} = false;`)
+          .if(_`${e} instanceof ValidationError`, _`${ruleErrs} = ${e}.errors;`, _`throw ${e};`)
     )
     return ruleErrs
   }
 
-  function validateSyncRule(): Expression {
+  function validateSyncRule(): Code {
     const validateErrs = _`${validateRef}.errors`
     gen.assign(validateErrs, null)
-    assignValid("")
+    assignValid(nil)
     return validateErrs
   }
 
-  function assignValid(await: string = def.async ? "await " : ""): void {
-    const passCxt = it.opts.passContext ? "this" : "self"
+  function assignValid(await: Code = def.async ? _`await ` : nil): void {
+    const passCxt = it.opts.passContext ? N.this : N.self
     const passSchema = !(("compile" in def && !$data) || def.schema === false)
-    gen.code(`${valid} = ${await}${callValidate(cxt, validateRef, passCxt, passSchema)};`)
+    gen.code(`${valid} = ${await}${callValidateCode(cxt, validateRef, passCxt, passSchema)};`)
   }
 
-  function reportKeywordErrors(ruleErrs: Expression): void {
+  function reportKeywordErrors(ruleErrs: Code): void {
     switch (def.valid) {
       case true:
         return
@@ -145,12 +145,12 @@ function modifyData(cxt: KeywordContext) {
   gen.if(it.parentData, () => gen.assign(data, `${it.parentData}[${it.parentDataProperty}];`))
 }
 
-function addKeywordErrors(cxt: KeywordContext, errs: Expression): void {
+function addKeywordErrors(cxt: KeywordContext, errs: Code): void {
   const {gen} = cxt
   gen.if(
-    `Array.isArray(${errs})`,
+    _`Array.isArray(${errs})`,
     () => {
-      gen.assign(N.vErrors, `${N.vErrors} === null ? ${errs} : ${N.vErrors}.concat(${errs})`) // TODO tagged
+      gen.assign(N.vErrors, _`${N.vErrors} === null ? ${errs} : ${N.vErrors}.concat(${errs})`) // TODO tagged
       gen.assign(N.errors, _`${N.vErrors}.length;`)
       extendErrors(cxt)
     },
