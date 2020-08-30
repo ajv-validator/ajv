@@ -1,7 +1,7 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
-import {applySubschema, Expr} from "../../compile/subschema"
+import {applySubschema, Type} from "../../compile/subschema"
 import {_, Name, str} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
@@ -27,7 +27,7 @@ const def: CodeKeywordDefinition = {
     function validateItems(valid: Name): void {
       const i = gen.name("i")
       gen.for(_`let ${i}=${items.length}; ${i}<${len}; ${i}++`, () => {
-        applySubschema(it, {keyword: "additionalItems", dataProp: i, expr: Expr.Num}, valid)
+        applySubschema(it, {keyword: "additionalItems", dataProp: i, dataPropType: Type.Num}, valid)
         if (!it.allErrors) gen.ifNot(valid, _`break`)
       })
     }

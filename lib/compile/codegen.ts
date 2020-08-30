@@ -9,7 +9,9 @@ export type SafeExpr = Code | number | boolean | null
 
 export type Block = Code | (() => void)
 
-export class Code {
+export type Code = _Code | Name
+
+class _Code {
   #str: string
 
   constructor(s: string) {
@@ -25,26 +27,33 @@ export class Code {
     return len >= 2 && this.#str[0] === '"' && this.#str[len - 1] === '"'
   }
 
-  add(c: Code): void {
+  add(c: _Code): void {
     this.#str += c.#str
   }
 }
 
-export const nil = new Code("")
+export const nil = new _Code("")
 
 export const operators = {
-  GT: new Code(">"),
-  GTE: new Code(">="),
-  LT: new Code("<"),
-  LTE: new Code("<="),
-  EQ: new Code("==="),
-  NEQ: new Code("!=="),
-  NOT: new Code("!"),
-  OR: new Code("||"),
-  AND: new Code("&&"),
+  GT: new _Code(">"),
+  GTE: new _Code(">="),
+  LT: new _Code("<"),
+  LTE: new _Code("<="),
+  EQ: new _Code("==="),
+  NEQ: new _Code("!=="),
+  NOT: new _Code("!"),
+  OR: new _Code("||"),
+  AND: new _Code("&&"),
 }
 
-export class Name extends Code {
+const IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i
+
+export class Name extends _Code {
+  constructor(s: string) {
+    super(s)
+    if (!IDENTIFIER.test(s)) throw new Error("CodeGen: name must be a valid identifier")
+  }
+
   isQuoted() {
     return false
   }
@@ -99,15 +108,15 @@ export function _(strs: TemplateStringsArray, ...args: TemplateArg[]): Code {
   // for (let i = 0; i < args.length; i++) {
   //   res += interpolate(args[i]) + strs[i + 1]
   // }
-  // return new Code(res)
-  return new Code(strs.reduce((res, s, i) => res + interpolate(args[i - 1]) + s))
+  // return new _Code(res)
+  return new _Code(strs.reduce((res, s, i) => res + interpolate(args[i - 1]) + s))
 }
 
 export function str(strs: TemplateStringsArray, ...args: TemplateArg[]): Code {
-  return new Code(
+  return new _Code(
     strs.map(quoteString).reduce((res, s, i) => {
       let aStr = interpolate(args[i - 1])
-      if (aStr instanceof Code && aStr.isQuoted()) aStr = aStr.toString()
+      if (aStr instanceof _Code && aStr.isQuoted()) aStr = aStr.toString()
       return typeof aStr === "string"
         ? res.slice(0, -1) + aStr.slice(1, -1) + s.slice(1)
         : `${res} + ${aStr} + ${s}`
@@ -116,12 +125,10 @@ export function str(strs: TemplateStringsArray, ...args: TemplateArg[]): Code {
 }
 
 function interpolate(x: TemplateArg): TemplateArg {
-  return x instanceof Code || typeof x == "number" || typeof x == "boolean" || x === null
+  return x instanceof _Code || typeof x == "number" || typeof x == "boolean" || x === null
     ? x
     : quoteString(x)
 }
-
-const IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i
 
 export default class CodeGen {
   #names: {[prefix: string]: NameGroup} = {}
@@ -383,11 +390,11 @@ function quoteString(s: string): string {
 }
 
 export function stringify(s: string): Code {
-  return new Code(JSON.stringify(s))
+  return new _Code(JSON.stringify(s))
 }
 
 export function getProperty(key: Code | string | number): Code {
-  return typeof key == "string" && IDENTIFIER.test(key) ? new Code(`.${key}`) : _`[${key}]`
+  return typeof key == "string" && IDENTIFIER.test(key) ? new _Code(`.${key}`) : _`[${key}]`
 }
 
 const andCode = mappend(operators.AND)

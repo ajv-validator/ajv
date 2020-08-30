@@ -1,7 +1,7 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {schemaProperties, loopPropertiesCode, usePattern} from "../util"
-import {applySubschema, Expr} from "../../compile/subschema"
+import {applySubschema, Type} from "../../compile/subschema"
 import {_} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
@@ -36,7 +36,7 @@ const def: CodeKeywordDefinition = {
               keyword: "patternProperties",
               schemaProp: pat,
               dataProp: key,
-              expr: Expr.Str,
+              dataPropType: Type.Str,
             },
             valid
           )

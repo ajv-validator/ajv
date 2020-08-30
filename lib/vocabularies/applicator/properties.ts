@@ -1,7 +1,7 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {schemaProperties, propertyInData} from "../util"
-import {applySubschema, Expr} from "../../compile/subschema"
+import {applySubschema} from "../../compile/subschema"
 import apDef from "./additionalProperties"
 
 const def: CodeKeywordDefinition = {
@@ -40,7 +40,6 @@ const def: CodeKeywordDefinition = {
           keyword: "properties",
           schemaProp: prop,
           dataProp: prop,
-          expr: Expr.Const,
         },
         valid
       )

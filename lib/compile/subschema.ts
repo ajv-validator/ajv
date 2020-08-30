@@ -22,8 +22,7 @@ export interface SubschemaContext {
   allErrors?: boolean
 }
 
-export enum Expr {
-  Const,
+export enum Type {
   Num,
   Str,
 }
@@ -40,7 +39,7 @@ interface SubschemaApplicationParams {
   data: Name | Code
   dataProp: Code | string | number
   propertyName: Name
-  expr: Expr // TODO dataPropType
+  dataPropType: Type
   compositeRule: true
   createErrors: boolean
   allErrors: boolean
@@ -99,7 +98,7 @@ function getSubschema(
 function extendSubschemaData(
   subschema: SubschemaContext,
   it: CompilationContext,
-  {dataProp, expr, data, propertyName}: SubschemaApplication
+  {dataProp, dataPropType: dpType, data, propertyName}: SubschemaApplication
 ) {
   if (data !== undefined && dataProp !== undefined) {
     throw new Error('both "data" and "dataProp" passed, only one allowed')
@@ -111,7 +110,7 @@ function extendSubschemaData(
     const {errorPath, dataPathArr, opts} = it
     const nextData = gen.var("data", _`${it.data}${getProperty(dataProp)}`) // TODO var
     dataContextProps(nextData)
-    subschema.errorPath = str`${errorPath}${getErrorPath(dataProp, expr, opts.jsonPointers)}`
+    subschema.errorPath = str`${errorPath}${getErrorPath(dataProp, dpType, opts.jsonPointers)}`
     subschema.parentDataProperty = _`${dataProp}`
     subschema.dataPathArr = [...dataPathArr, subschema.parentDataProperty]
   }
@@ -141,18 +140,18 @@ function extendSubschemaMode(
 }
 
 function getErrorPath(
-  dataProp: Code | string | number,
-  dataPropType?: Expr,
+  dataProp: Name | string | number,
+  dataPropType?: Type,
   jsonPointers?: boolean
 ): Code | string {
   // let path
-  if (dataProp instanceof Code) {
-    const isNumber = dataPropType === Expr.Num
+  if (dataProp instanceof Name) {
+    const isNumber = dataPropType === Type.Num
     return jsonPointers
       ? _`"/" + ${dataProp}${isNumber ? nil : _`.replace(/~/g, "~0").replace(/\\//g, "~1")`}` // TODO maybe use global escapePointer
       : isNumber
       ? _`"[" + ${dataProp} + "]"`
-      : _`"['" + ${dataProp} + "']"` // TODO needs global string escaping
+      : _`"['" + ${dataProp} + "']"`
   }
   return jsonPointers
     ? "/" + (typeof dataProp == "number" ? dataProp : escapeJsonPointer(dataProp))

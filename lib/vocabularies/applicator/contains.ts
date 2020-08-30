@@ -1,7 +1,7 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
-import {applySubschema, Expr} from "../../compile/subschema"
+import {applySubschema, Type} from "../../compile/subschema"
 import {_} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
@@ -26,7 +26,7 @@ const def: CodeKeywordDefinition = {
         {
           keyword: "contains",
           dataProp: i,
-          expr: Expr.Num,
+          dataPropType: Type.Num,
           compositeRule: true,
         },
         valid

@@ -7,7 +7,7 @@ import {
   loopPropertiesCode,
   usePattern,
 } from "../util"
-import {applySubschema, SubschemaApplication, Expr} from "../../compile/subschema"
+import {applySubschema, SubschemaApplication, Type} from "../../compile/subschema"
 import {_, nil, or, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 
@@ -86,7 +86,7 @@ const def: CodeKeywordDefinition = {
       const subschema: SubschemaApplication = {
         keyword: "additionalProperties",
         dataProp: key,
-        expr: Expr.Str,
+        dataPropType: Type.Str,
       }
       if (errors === false) {
         Object.assign(subschema, {
