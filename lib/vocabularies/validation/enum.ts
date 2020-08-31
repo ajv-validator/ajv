@@ -8,29 +8,20 @@ const def: CodeKeywordDefinition = {
   $data: true,
   code(cxt: KeywordContext) {
     const {gen, data, $data, schema, schemaCode, it} = cxt
-    const {opts} = it
-    if ($data) {
-      const valid = gen.let("valid")
-      gen.if(
-        _`${schemaCode} === undefined`,
-        () => gen.assign(valid, true),
-        () => gen.assign(valid, false).if(_`Array.isArray(${schemaCode})`, () => loopEnum(valid))
-      )
-      cxt.pass(valid)
+    if (!$data && schema.length === 0) throw new Error("enum must have non-empty array")
+    const useLoop = typeof it.opts.loopEnum == "number" && schema.length >= it.opts.loopEnum
+    let valid: Code
+    if (useLoop || $data) {
+      valid = gen.let("valid")
+      cxt.block$data(valid, loopEnum)
     } else {
-      if (schema.length === 0) throw new Error("enum must have non-empty array")
-      if (schema.length > (opts.loopEnum as number)) {
-        const valid = gen.let("valid", false)
-        loopEnum(valid)
-        cxt.pass(valid)
-      } else {
-        const vSchema = gen.const("schema", schemaCode)
-        const cond: Code = or(...schema.map((_x, i) => equalCode(vSchema, i)))
-        cxt.pass(cond)
-      }
+      const vSchema = gen.const("schema", schemaCode)
+      valid = or(...schema.map((_x, i) => equalCode(vSchema, i)))
     }
+    cxt.pass(valid)
 
-    function loopEnum(valid: Name): void {
+    function loopEnum(): void {
+      gen.assign(valid, false)
       gen.forOf("v", schemaCode, (v) =>
         gen.if(_`equal(${data}, ${v})`, () => gen.assign(valid, true).break())
       )

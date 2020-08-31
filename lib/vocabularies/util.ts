@@ -4,14 +4,6 @@ import KeywordContext from "../compile/context"
 import CodeGen, {_, nil, Code, Name, getProperty} from "../compile/codegen"
 import N from "../compile/names"
 
-export function bad$DataType(
-  schemaCode: Code | number | boolean,
-  schemaType: string,
-  $data?: string | false
-): Code {
-  return $data ? _`(${schemaCode} !== undefined && typeof ${schemaCode} != ${schemaType})` : nil
-}
-
 export function schemaRefOrVal(
   {topSchemaRef, schemaPath}: CompilationContext,
   schema: unknown,

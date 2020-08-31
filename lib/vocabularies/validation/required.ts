@@ -7,47 +7,30 @@ import {_, str, nil, Name} from "../../compile/codegen"
 const def: CodeKeywordDefinition = {
   keyword: "required",
   type: "object",
-  schemaType: ["array"],
+  schemaType: "array",
   $data: true,
   code(cxt: KeywordContext) {
     const {gen, schema, schemaCode, data, $data, it} = cxt
     if (!$data && schema.length === 0) return
-    const loopRequired = $data || schema.length >= <number>it.opts.loopRequired
+    const useLoop = typeof it.opts.loopRequired == "number" && schema.length >= it.opts.loopRequired
     if (it.allErrors) allErrorsMode()
     else exitOnErrorMode()
 
     function allErrorsMode(): void {
-      if (loopRequired) {
-        if ($data) {
-          gen.if(_`${schemaCode} !== undefined`, () => {
-            gen.if(_`Array.isArray(${schemaCode})`, loopAllRequired, () => cxt.$dataError())
-          })
-        } else {
-          loopAllRequired()
+      if (useLoop || $data) {
+        cxt.block$data(nil, loopAllRequired)
+      } else {
+        for (const prop of schema) {
+          checkReportMissingProp(cxt, prop)
         }
-        return
-      }
-      for (const prop of schema) {
-        checkReportMissingProp(cxt, prop)
       }
     }
 
     function exitOnErrorMode(): void {
       const missing = gen.let("missing")
-      if (loopRequired) {
+      if (useLoop || $data) {
         const valid = gen.let("valid", true)
-        if ($data) {
-          gen.if(_`${schemaCode} === undefined`)
-          gen.assign(valid, true)
-          gen.elseIf(_`!Array.isArray(${schemaCode})`)
-          cxt.$dataError()
-          gen.assign(valid, false)
-          gen.else()
-          loopUntilMissing(missing, valid)
-          gen.endIf()
-        } else {
-          loopUntilMissing(missing, valid)
-        }
+        cxt.block$data(valid, () => loopUntilMissing(missing, valid))
         cxt.ok(valid)
       } else {
         gen.if(checkMissingProp(cxt, schema, missing))

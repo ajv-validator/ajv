@@ -1,7 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {bad$DataType} from "../util"
-import {_, str, or, operators} from "../../compile/codegen"
+import {_, str, operators} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: ["maxLength", "minLength"],
@@ -9,11 +8,10 @@ const def: CodeKeywordDefinition = {
   schemaType: "number",
   $data: true,
   code(cxt: KeywordContext) {
-    const {keyword, data, $data, schemaCode, it} = cxt
+    const {keyword, data, schemaCode, it} = cxt
     const op = keyword === "maxLength" ? operators.GT : operators.LT
-    const bdt = bad$DataType(schemaCode, <string>def.schemaType, $data)
     const len = it.opts.unicode === false ? _`${data}.length` : _`ucs2length(${data})`
-    cxt.fail(or(bdt, _`${len} ${op} ${schemaCode}`))
+    cxt.fail$data(_`${len} ${op} ${schemaCode}`)
   },
   error: {
     message({keyword, schemaCode}) {

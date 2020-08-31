@@ -5,7 +5,7 @@ import {
   CompilationContext,
 } from "../types"
 import {schemaRefOrVal} from "../vocabularies/util"
-import {getData} from "./util"
+import {getData, checkDataTypes, DataType} from "./util"
 import {
   reportError,
   reportExtraError,
@@ -13,7 +13,7 @@ import {
   keywordError,
   keyword$DataError,
 } from "./errors"
-import CodeGen, {Code, Name} from "./codegen"
+import CodeGen, {_, nil, or, Code, Name} from "./codegen"
 import N from "./names"
 
 export default class KeywordContext implements KeywordErrorContext {
@@ -48,8 +48,7 @@ export default class KeywordContext implements KeywordErrorContext {
     this.def = def
 
     if (this.$data) {
-      this.schemaCode = it.gen.name("schema")
-      it.gen.const(this.schemaCode, getData(this.$data, it))
+      this.schemaCode = it.gen.const("schema", getData(this.$data, it))
     } else {
       this.schemaCode = this.schemaValue
       if (def.schemaType && !validSchemaType(this.schema, def.schemaType)) {
@@ -91,6 +90,12 @@ export default class KeywordContext implements KeywordErrorContext {
     else this.gen.else()
   }
 
+  fail$data(condition: Code): void {
+    if (!this.$data) return this.fail(condition)
+    const {schemaCode} = this
+    this.fail(_`${schemaCode} !== undefined && (${or(this.invalid$data(), condition)})`)
+  }
+
   error(append?: true): void {
     ;(append ? reportExtraError : reportError)(this, this.def.error || keywordError)
   }
@@ -111,6 +116,48 @@ export default class KeywordContext implements KeywordErrorContext {
   setParams(obj: KeywordContextParams, assign?: true): void {
     if (assign) Object.assign(this.params, obj)
     else this.params = obj
+  }
+
+  block$data(valid: Name = nil, codeBlock: () => void, $dataValid: Code = nil): void {
+    this.gen.block(() => {
+      this.check$data(valid, $dataValid)
+      codeBlock()
+    })
+  }
+
+  check$data(valid: Name = nil, $dataValid: Code = nil): void {
+    if (!this.$data) return
+    const {gen, schemaCode, schemaType, def} = this
+    gen.if(or(_`${schemaCode} === undefined`, $dataValid))
+    if (valid !== nil) gen.assign(valid, true)
+    if (schemaType || def.validateSchema) {
+      gen.elseIf(this.invalid$data())
+      this.$dataError()
+      if (valid !== nil) gen.assign(valid, false)
+    }
+    gen.else()
+  }
+
+  invalid$data(): Code {
+    const {gen, schemaCode, schemaType, def, it} = this
+    return or(wrong$DataType(), invalid$DataSchema())
+
+    function wrong$DataType(): Code {
+      if (schemaType) {
+        if (!(schemaCode instanceof Name)) throw new Error("ajv implementation error")
+        const st = Array.isArray(schemaType) ? schemaType : [schemaType]
+        return _`(${checkDataTypes(st, schemaCode, it.opts.strictNumbers, DataType.Wrong)})`
+      }
+      return nil
+    }
+
+    function invalid$DataSchema(): Code {
+      if (def.validateSchema) {
+        const validateSchemaRef = gen.value("validate$data", {ref: def.validateSchema}) // TODO value.code
+        return _`!${validateSchemaRef}(${schemaCode})`
+      }
+      return nil
+    }
   }
 }
 

@@ -1,6 +1,5 @@
 import {CodeKeywordDefinition, AddedFormat, FormatValidate} from "../../types"
 import KeywordContext from "../../compile/context"
-import {bad$DataType} from "../util"
 import {_, str, nil, or, Code, getProperty} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
@@ -26,8 +25,7 @@ const def: CodeKeywordDefinition = {
         () => gen.assign(fType, _`${fDef}.type || "string"`).assign(format, _`${fDef}.validate`),
         () => gen.assign(fType, _`"string"`).assign(format, fDef)
       )
-      const bdt = bad$DataType(schemaCode, <string>def.schemaType, $data)
-      cxt.fail(or(bdt, unknownFmt(), invalidFmt()))
+      cxt.fail$data(or(unknownFmt(), invalidFmt())) // TODO this is not tested. Possibly require ajv-formats to test formats in ajv as well
 
       function unknownFmt(): Code {
         if (opts.unknownFormats === "ignore") return nil

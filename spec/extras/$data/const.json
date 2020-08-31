@@ -39,6 +39,13 @@
           "thisOne": "5"
         },
         "valid": false
+      },
+      {
+        "description": "valid when another property ('const') not defined",
+        "data": {
+          "sameAs": 5
+        },
+        "valid": true
       }
     ]
   },

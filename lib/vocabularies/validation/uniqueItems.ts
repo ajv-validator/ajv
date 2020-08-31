@@ -14,19 +14,7 @@ const def: CodeKeywordDefinition = {
     if (it.opts.uniqueItems === false || !($data || schema)) return
     const valid = gen.let("valid")
     const itemTypes = parentSchema.items ? getSchemaTypes(it, parentSchema.items) : []
-
-    if ($data) {
-      gen.if(_`${schemaCode} === false || ${schemaCode} === undefined`)
-      gen.assign(valid, true)
-      gen.elseIf(_`typeof ${schemaCode} != "boolean"`)
-      cxt.$dataError()
-      gen.assign(valid, false)
-      gen.else()
-      validateUniqueItems()
-      gen.endIf()
-    } else {
-      validateUniqueItems()
-    }
+    cxt.block$data(valid, validateUniqueItems, _`${schemaCode} === false`)
     cxt.ok(valid)
 
     function validateUniqueItems() {

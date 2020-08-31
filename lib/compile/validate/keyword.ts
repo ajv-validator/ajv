@@ -8,9 +8,8 @@ import {
 import KeywordContext from "../context"
 import {applySubschema} from "../subschema"
 import {extendErrors} from "../errors"
-import {checkDataTypes, DataType} from "../util"
 import {callValidateCode} from "../../vocabularies/util"
-import CodeGen, {_, nil, or, Code, Name} from "../codegen"
+import CodeGen, {_, nil, Code, Name} from "../codegen"
 import N from "../names"
 
 export function keywordCode(
@@ -53,58 +52,28 @@ function macroKeywordCode(cxt: KeywordContext, def: MacroKeywordDefinition) {
 }
 
 function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
-  const {gen, keyword, schema, schemaCode, schemaType, parentSchema, $data, it} = cxt
+  const {gen, keyword, schema, parentSchema, $data, it} = cxt
   checkAsync(it, def)
   const validate =
     "compile" in def && !$data ? def.compile.call(it.self, schema, parentSchema, it) : def.validate
   const validateRef = useKeyword(gen, keyword, validate)
   const valid = gen.let("valid")
-
-  gen.block(def.errors === false ? validateNoErrorsRule : validateRuleWithErrors)
+  cxt.block$data(valid, validateKeyword)
   cxt.ok(def.valid ?? valid)
 
-  function validateNoErrorsRule(): void {
-    if ($data) check$data()
-    assignValid()
-    if (def.modifying) modifyData(cxt)
-    reportKeywordErrors(() => cxt.error())
-  }
-
-  function validateRuleWithErrors(): void {
-    if ($data) check$data()
-    const ruleErrs = def.async ? validateAsyncRule() : validateSyncRule()
-    if (def.modifying) modifyData(cxt)
-    reportKeywordErrors(() => addKeywordErrors(cxt, ruleErrs))
-  }
-
-  function check$data(): void {
-    gen.if(_`${schemaCode} === undefined`).assign(valid, true)
-    if (schemaType || def.validateSchema) {
-      gen.elseIf(or(wrong$DataType(), invalid$DataSchema()))
-      cxt.$dataError()
-      gen.assign(valid, false)
+  function validateKeyword() {
+    if (def.errors === false) {
+      assignValid()
+      if (def.modifying) modifyData(cxt)
+      reportErrs(() => cxt.error())
+    } else {
+      const ruleErrs = def.async ? validateAsync() : validateSync()
+      if (def.modifying) modifyData(cxt)
+      reportErrs(() => addErrs(cxt, ruleErrs))
     }
-    gen.else()
   }
 
-  function wrong$DataType(): Code {
-    if (schemaType) {
-      if (!(schemaCode instanceof Name)) throw new Error("ajv implementation error")
-      const st = Array.isArray(schemaType) ? schemaType : [schemaType]
-      return _`(${checkDataTypes(st, schemaCode, it.opts.strictNumbers, DataType.Wrong)})`
-    }
-    return nil
-  }
-
-  function invalid$DataSchema(): Code {
-    if (def.validateSchema) {
-      const validateSchemaRef = useKeyword(gen, keyword, def.validateSchema)
-      return _`!${validateSchemaRef}(${schemaCode})`
-    }
-    return nil
-  }
-
-  function validateAsyncRule(): Name {
+  function validateAsync(): Name {
     const ruleErrs = gen.let("ruleErrs", null)
     gen.try(
       () => assignValid(_`await `),
@@ -118,7 +87,7 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
     return ruleErrs
   }
 
-  function validateSyncRule(): Code {
+  function validateSync(): Code {
     const validateErrs = _`${validateRef}.errors`
     gen.assign(validateErrs, null)
     assignValid(nil)
@@ -132,9 +101,9 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
   }
 
   // TODO maybe refactor to gen.ifNot(def.valid ?? valid, repErrs) once dead branches are removed
-  function reportKeywordErrors(repErrs: () => void): void {
-    if (def.valid === false) repErrs()
-    else if (def.valid !== true) gen.ifNot(valid, repErrs)
+  function reportErrs(errors: () => void): void {
+    if (def.valid === false) errors()
+    else if (def.valid !== true) gen.ifNot(valid, errors)
   }
 }
 
@@ -143,7 +112,7 @@ function modifyData(cxt: KeywordContext) {
   gen.if(it.parentData, () => gen.assign(data, _`${it.parentData}[${it.parentDataProperty}]`))
 }
 
-function addKeywordErrors(cxt: KeywordContext, errs: Code): void {
+function addErrs(cxt: KeywordContext, errs: Code): void {
   const {gen} = cxt
   gen.if(
     _`Array.isArray(${errs})`,
