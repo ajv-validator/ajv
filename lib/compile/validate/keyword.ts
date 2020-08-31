@@ -94,10 +94,10 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
     return validateErrs
   }
 
-  function assignValid(await: Code = def.async ? _`await ` : nil): void {
+  function assignValid(_await: Code = def.async ? _`await ` : nil): void {
     const passCxt = it.opts.passContext ? N.this : N.self
     const passSchema = !(("compile" in def && !$data) || def.schema === false)
-    gen.assign(valid, _`${await}${callValidateCode(cxt, validateRef, passCxt, passSchema)}`)
+    gen.assign(valid, _`${_await}${callValidateCode(cxt, validateRef, passCxt, passSchema)}`)
   }
 
   // TODO maybe refactor to gen.ifNot(def.valid ?? valid, repErrs) once dead branches are removed

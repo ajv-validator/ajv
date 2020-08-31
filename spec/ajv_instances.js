@@ -11,9 +11,9 @@ function getAjvInstances(options, extraOpts) {
 function _getAjvInstances(opts, useOpts) {
   var optNames = Object.keys(opts)
   if (optNames.length) {
-    opts = {...opts}
-    var useOpts1 = {...useOpts},
-      optName = optNames[0]
+    opts = Object.assign({}, opts)
+    var useOpts1 = Object.assign({}, useOpts)
+    var optName = optNames[0]
     useOpts1[optName] = opts[optName]
     delete opts[optName]
     var instances = _getAjvInstances(opts, useOpts),

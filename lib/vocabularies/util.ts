@@ -66,7 +66,6 @@ export function callValidateCode(
   const dataAndSchema = passSchema
     ? _`${schemaCode}, ${data}, ${it.topSchemaRef}${it.schemaPath}`
     : data
-  // const appendErrPath = it.errorPath.toString() === '""' ? nil : _` + ${it.errorPath}`
   const dataPath = _`(${N.dataPath} || '') + ${it.errorPath}` // TODO refactor other places
   const args = _`${dataAndSchema}, ${dataPath}, ${it.parentData}, ${it.parentDataProperty}, ${N.rootData}`
   return context !== nil ? _`${func}.call(${context}, ${args})` : _`${func}(${args})`

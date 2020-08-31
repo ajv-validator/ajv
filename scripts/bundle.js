@@ -1,69 +1,46 @@
 "use strict"
 
-var fs = require("fs"),
-  path = require("path"),
-  browserify = require("browserify"),
-  uglify = require("uglify-js")
+const fs = require("fs")
+const path = require("path")
+const browserify = require("browserify")
+const {minify} = require("terser")
 
-var pkg = process.argv[2],
-  standalone = process.argv[3],
-  compress = process.argv[4]
+const json = require(path.join(__dirname, "..", "package.json"))
+const bundleDir = path.join(__dirname, "..", "bundle")
+if (!fs.existsSync(bundleDir)) fs.mkdirSync(bundleDir)
 
-var packageDir = path.join(__dirname, "..")
-if (pkg !== ".") packageDir = path.join(packageDir, "node_modules", pkg)
+browserify({standalone: "Ajv"})
+  .require(path.join(__dirname, "..", json.main), {expose: json.name})
+  .bundle(saveAndMinify)
 
-var json = require(path.join(packageDir, "package.json"))
+async function saveAndMinify(err, buf) {
+  if (err) {
+    console.error("browserify error:", err)
+    process.exit(1)
+  }
 
-var distDir = path.join(__dirname, "..", "dist")
-if (!fs.existsSync(distDir)) fs.mkdirSync(distDir)
+  const bundlePath = path.join(bundleDir, json.name)
+  const opts = {
+    ecma: 2018,
+    warnings: true,
+    compress: {
+      pure_getters: true,
+      keep_infinity: true,
+      unsafe_methods: true,
+    },
+    format: {
+      preamble: `/* ${json.name} ${json.version}: ${json.description} */`,
+    },
+    sourceMap: {
+      filename: json.name + ".min.js",
+      url: json.name + ".min.js.map",
+    },
+  }
 
-var bOpts = {}
-if (standalone) bOpts.standalone = standalone
+  const result = await minify(buf.toString(), opts)
 
-browserify(bOpts)
-  .require(path.join(packageDir, json.main), {expose: json.name})
-  .bundle((err, buf) => {
-    if (err) {
-      console.error("browserify error:", err)
-      process.exit(1)
-    }
-
-    var outputFile = path.join(distDir, json.name)
-    var uglifyOpts = {
-      warnings: true,
-      compress: {},
-      output: {
-        preamble:
-          "/* " +
-          json.name +
-          " " +
-          json.version +
-          ": " +
-          json.description +
-          " */",
-      },
-    }
-    if (compress) {
-      var compressOpts = compress.split(",")
-      for (var i = 0, il = compressOpts.length; i < il; ++i) {
-        var pair = compressOpts[i].split("=")
-        uglifyOpts.compress[pair[0]] = pair.length < 1 || pair[1] !== "false"
-      }
-    }
-    if (standalone) {
-      uglifyOpts.sourceMap = {
-        filename: json.name + ".min.js",
-        url: json.name + ".min.js.map",
-      }
-    }
-
-    var result = uglify.minify(buf.toString(), uglifyOpts)
-    fs.writeFileSync(outputFile + ".min.js", result.code)
-    if (result.map) fs.writeFileSync(outputFile + ".min.js.map", result.map)
-    if (standalone) fs.writeFileSync(outputFile + ".bundle.js", buf)
-    if (result.warnings) {
-      for (var j = 0, jl = result.warnings.length; j < jl; ++j) {
-        console.warn("UglifyJS warning:", result.warnings[j])
-      }
-    }
-  })
+  fs.writeFileSync(bundlePath + ".bundle.js", buf)
+  fs.writeFileSync(bundlePath + ".min.js", result.code)
+  fs.writeFileSync(bundlePath + ".min.js.map", result.map)
+  if (result.warnings) result.warnings.forEach((msg) => console.warn("terser.minify warning:", msg))
+}

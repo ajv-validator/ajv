@@ -32,7 +32,10 @@ node_modules
 # Browserified tests
 .browser
 
-# bundles
+# compiled typescript
 dist/
+
+# browser bundles
+bundle/
 
 package-lock.json
