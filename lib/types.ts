@@ -1,5 +1,5 @@
 import Cache from "./cache"
-import CodeGen, {Code, Name} from "./compile/codegen"
+import CodeGen, {Code, Name, CodeGenOptions} from "./compile/codegen"
 import {ValidationRules} from "./compile/rules"
 import {ResolvedRef} from "./compile"
 import KeywordContext from "./compile/context"
@@ -42,6 +42,7 @@ export interface Options {
   messages?: boolean
   sourceCode?: boolean
   processCode?: (code: string, schema: object) => string
+  codegen?: CodeGenOptions
   cache?: Cache
   logger?: Logger | false
   nullable?: boolean

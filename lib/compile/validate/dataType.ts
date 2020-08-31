@@ -51,7 +51,7 @@ function coerceToTypes(types: string[], coerceTypes?: boolean | "array"): string
 export function coerceData(it: CompilationContext, coerceTo: string[]): void {
   const {gen, schema, data, opts} = it
   const dataType = gen.let("dataType", _`typeof ${data}`)
-  const coerced = gen.let("coerced")
+  const coerced = gen.let("coerced", _`undefined`)
   if (opts.coerceTypes === "array") {
     gen.if(_`${dataType} == 'object' && Array.isArray(${data}) && ${data}.length == 1`, () =>
       gen

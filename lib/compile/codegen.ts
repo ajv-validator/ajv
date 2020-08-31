@@ -130,8 +130,9 @@ function interpolate(x: TemplateArg): TemplateArg {
     : quoteString(x)
 }
 
-interface CodeGenOptions {
-  ownProperties?: boolean
+export interface CodeGenOptions {
+  forInOwn?: boolean
+  es5?: boolean
 }
 
 export default class CodeGen {
@@ -219,6 +220,7 @@ export default class CodeGen {
 
   _def(varKind: Name, nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
     const name = nameOrPrefix instanceof Name ? nameOrPrefix : this.name(nameOrPrefix)
+    if (this.opts.es5) varKind = varKinds.var
     if (rhs === undefined) this.#out += `${varKind} ${name};`
     else this.#out += `${varKind} ${name} = ${rhs};`
     return name
@@ -304,7 +306,16 @@ export default class CodeGen {
   ): CodeGen {
     // TODO define enum for var kinds
     const name = nameOrPrefix instanceof Name ? nameOrPrefix : this.name(nameOrPrefix)
-    return this._for(new _Code(`for(${varKind} ${name} of ${iterable}){`), name, forBody)
+    if (this.opts.es5) {
+      const i = this.name("_i")
+      return this._for(_`for(${varKinds.let} ${i}=0; ${i}<${iterable}.length; ${i}++){`, i, () => {
+        const item = _`${iterable}[${i}]`
+        if (nameOrPrefix instanceof Name) this.assign(name, item)
+        else this.const(name, item)
+        forBody(name)
+      })
+    }
+    return this._for(_`for(${varKind} ${name} of ${iterable}){`, name, forBody)
   }
 
   forIn(
@@ -314,17 +325,17 @@ export default class CodeGen {
     varKind: Code = varKinds.const
   ): CodeGen {
     // TODO define enum for var kinds
-    if (this.opts.ownProperties) {
-      return this.forOf(nameOrPrefix, new _Code(`Object.keys(${obj})`), forBody)
+    if (this.opts.forInOwn) {
+      return this.forOf(nameOrPrefix, _`Object.keys(${obj})`, forBody)
     }
     const name = nameOrPrefix instanceof Name ? nameOrPrefix : this.name(nameOrPrefix) // TODO refactor with others
-    return this._for(new _Code(`for(${varKind} ${name} in ${obj}){`), name, forBody)
+    return this._for(_`for(${varKind} ${name} in ${obj}){`, name, forBody)
   }
 
   _for(forCode: _Code, name: Name, forBody: (n: Name) => void): CodeGen {
     this.#blocks.push(BlockKind.For)
     this.#out += forCode
-    if (forBody) forBody(name)
+    forBody(name)
     this.endFor()
     return this
   }
