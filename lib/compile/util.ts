@@ -35,8 +35,8 @@ export function checkDataType(
   }
   return correct === DataType.Correct ? cond : _`!(${cond})`
 
-  function numCond(cond: Code = nil): Code {
-    return and(_`typeof ${data} === "number"`, cond, strictNumbers ? _`isFinite(${data})` : nil)
+  function numCond(_cond: Code = nil): Code {
+    return and(_`typeof ${data} === "number"`, _cond, strictNumbers ? _`isFinite(${data})` : nil)
   }
 }
 

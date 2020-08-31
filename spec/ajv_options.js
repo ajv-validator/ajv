@@ -10,9 +10,9 @@ var options = fullTest
       extendRefs: "ignore",
       inlineRefs: false,
       jsonPointers: true,
-      codegen: {es5: true},
+      codegen: {es5: true, lines: true},
     }
-  : {allErrors: true}
+  : {allErrors: true, codegen: {es5: true, lines: true}}
 
 if (fullTest && !isBrowser) {
   options.processCode = require("js-beautify").js_beautify
