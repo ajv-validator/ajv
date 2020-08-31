@@ -7,8 +7,7 @@ import {_, str, Name} from "../../compile/codegen"
 const def: CodeKeywordDefinition = {
   keyword: "if",
   schemaType: ["object", "boolean"],
-  // TODO
-  // implements: ["then", "else"],
+  implements: ["then", "else"],
   trackErrors: true,
   code(cxt: KeywordContext) {
     const {gen, it} = cxt

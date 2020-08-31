@@ -37,8 +37,6 @@ const KEYWORDS = [
   "writeOnly",
   "contentMediaType",
   "contentEncoding",
-  "then",
-  "else",
 ]
 
 export default function rules(): ValidationRules {

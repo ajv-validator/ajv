@@ -11,9 +11,8 @@ export function shouldUseGroup(schema: object, group: RuleGroup): boolean {
 }
 
 export function shouldUseRule(schema: object, rule: Rule): boolean | undefined {
-  return schema[rule.keyword] !== undefined || ruleImplementsSomeKeyword(schema, rule)
-}
-
-function ruleImplementsSomeKeyword(schema: object, rule: Rule): boolean | undefined {
-  return rule.definition.implements?.some((kwd) => schema[kwd] !== undefined)
+  return (
+    schema[rule.keyword] !== undefined ||
+    rule.definition.implements?.some((kwd) => schema[kwd] !== undefined)
+  )
 }

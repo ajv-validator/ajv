@@ -1,5 +1,5 @@
 import {KeywordDefinition, Vocabulary, ErrorObject, ValidateFunction} from "./types"
-import {ValidationRules, Rule} from "./compile/rules"
+import {ValidationRules, Rule, RuleGroup} from "./compile/rules"
 import {definitionSchema} from "./definition_schema"
 import {schemaOrData} from "./data"
 
@@ -28,6 +28,7 @@ export function addKeyword(
   if (typeof kwdOrDef == "string") {
     keyword = kwdOrDef
     if (typeof defOrSkip == "object") {
+      // TODO enable once tests are updated
       // this.logger.warn("this method signature is deprecated, see docs for addKeyword")
       definition = defOrSkip
       if (definition.keyword === undefined) definition.keyword = keyword
@@ -60,36 +61,31 @@ export function addKeyword(
   return this
 }
 
-function _addRule(keyword: string, dataType?: string, definition?: KeywordDefinition) {
+function _addRule(keyword: string, dataType?: string, definition?: KeywordDefinition): void {
   const RULES: ValidationRules = this.RULES
   let ruleGroup = RULES.rules.find(({type: t}) => t === dataType)
   if (!ruleGroup) {
     ruleGroup = {type: dataType, rules: []}
     RULES.rules.push(ruleGroup)
   }
-
   RULES.keywords[keyword] = true
   if (!definition) return
 
-  const rule: Rule = {
-    keyword,
-    definition,
-  }
+  const rule: Rule = {keyword, definition}
+  if (definition.before) _addBeforeRule.call(this, ruleGroup, rule, definition.before)
+  else ruleGroup.rules.push(rule)
+  RULES.all[keyword] = rule
+  definition.implements?.forEach((kwd) => this.addKeyword(kwd))
+}
 
-  if (definition?.before) {
-    const i = ruleGroup.rules.findIndex((rule) => rule.keyword === definition.before)
-    if (i >= 0) {
-      ruleGroup.rules.splice(i, 0, rule)
-    } else {
-      ruleGroup.rules.push(rule)
-      // TODO replace with Ajv this.logger
-      this.logger.log(`rule ${definition.before} is not defined`)
-    }
+function _addBeforeRule(this, ruleGroup: RuleGroup, rule: Rule, before: string): void {
+  const i = ruleGroup.rules.findIndex((rule) => rule.keyword === before)
+  if (i >= 0) {
+    ruleGroup.rules.splice(i, 0, rule)
   } else {
     ruleGroup.rules.push(rule)
+    this.logger.warn(`rule ${before} is not defined`)
   }
-
-  RULES.all[keyword] = rule
 }
 
 function eachItem<T>(xs: T | T[], f: (x: T) => void): void {
