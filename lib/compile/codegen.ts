@@ -112,10 +112,10 @@ export function _(strs: TemplateStringsArray, ...args: TemplateArg[]): _Code {
   return new _Code(strs.reduce((res, s, i) => res + interpolate(args[i - 1]) + s))
 }
 
-export function str(strs: TemplateStringsArray, ...args: TemplateArg[]): _Code {
+export function str(strs: TemplateStringsArray, ...args: (TemplateArg | string[])[]): _Code {
   return new _Code(
     strs.map(safeStringify).reduce((res, s, i) => {
-      let aStr = interpolate(args[i - 1])
+      let aStr = interpolateStr(args[i - 1])
       if (aStr instanceof _Code && aStr.isQuoted()) aStr = aStr.toString()
       return typeof aStr === "string"
         ? res.slice(0, -1) + aStr.slice(1, -1) + s.slice(1)
@@ -128,6 +128,11 @@ function interpolate(x: TemplateArg): TemplateArg {
   return x instanceof _Code || typeof x == "number" || typeof x == "boolean" || x === null
     ? x
     : safeStringify(x)
+}
+
+function interpolateStr(x: TemplateArg | string[]): TemplateArg {
+  if (Array.isArray(x)) x = x.join(",")
+  return interpolate(x)
 }
 
 export interface CodeGenOptions {

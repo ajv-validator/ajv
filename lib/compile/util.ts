@@ -22,7 +22,7 @@ export function checkDataType(
       cond = _`Array.isArray(${data})`
       break
     case "object":
-      cond = _`${data} && typeof ${data} === "object" && !Array.isArray(${data})`
+      cond = _`${data} && typeof ${data} == "object" && !Array.isArray(${data})`
       break
     case "integer":
       cond = numCond(_`!(${data} % 1) && !isNaN(${data})`)
@@ -36,7 +36,7 @@ export function checkDataType(
   return correct === DataType.Correct ? cond : _`!(${cond})`
 
   function numCond(_cond: Code = nil): Code {
-    return and(_`typeof ${data} === "number"`, _cond, strictNumbers ? _`isFinite(${data})` : nil)
+    return and(_`typeof ${data} == "number"`, _cond, strictNumbers ? _`isFinite(${data})` : nil)
   }
 }
 
@@ -52,7 +52,7 @@ export function checkDataTypes(
   let cond: Code
   const types = toHash(dataTypes)
   if (types.array && types.object) {
-    const notObj = _`typeof ${data} !== "object"`
+    const notObj = _`typeof ${data} != "object"`
     cond = types.null ? notObj : _`(!${data} || ${notObj})`
     delete types.null
     delete types.array

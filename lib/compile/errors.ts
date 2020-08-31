@@ -3,8 +3,14 @@ import CodeGen, {_, str, Code, Name} from "./codegen"
 import N from "./names"
 
 export const keywordError: KeywordErrorDefinition = {
-  message: ({keyword}) => str`should pass ${keyword} keyword validation`,
-  params: ({keyword}) => _`{keyword: ${keyword}}`, // TODO possibly remove it as keyword is reported in the object
+  message: ({keyword}) => str`should pass "${keyword}" keyword validation`,
+}
+
+export const keyword$DataError: KeywordErrorDefinition = {
+  message: ({keyword, schemaType}) =>
+    schemaType
+      ? str`"${keyword}" keyword must be ${schemaType} ($data)`
+      : str`"${keyword}" keyword is invalid ($data)`,
 }
 
 export function reportError(

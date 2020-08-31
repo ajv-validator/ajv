@@ -9,7 +9,7 @@ export function bad$DataType(
   schemaType: string,
   $data?: string | false
 ): Code {
-  return $data ? _`(${schemaCode}!==undefined && typeof ${schemaCode}!==${schemaType})` : nil
+  return $data ? _`(${schemaCode} !== undefined && typeof ${schemaCode} != ${schemaType})` : nil
 }
 
 export function schemaRefOrVal(

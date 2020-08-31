@@ -218,6 +218,7 @@ export interface KeywordErrorContext {
   parentSchema: any
   schemaCode: Code | number | boolean
   schemaValue: Code | number | boolean
+  schemaType?: string | string[]
   errsCount?: Name
   params: KeywordContextParams
   it: CompilationContext

@@ -6,7 +6,13 @@ import {
 } from "../types"
 import {schemaRefOrVal} from "../vocabularies/util"
 import {getData} from "./util"
-import {reportError, reportExtraError, resetErrorsCount, keywordError} from "./errors"
+import {
+  reportError,
+  reportExtraError,
+  resetErrorsCount,
+  keywordError,
+  keyword$DataError,
+} from "./errors"
 import CodeGen, {Code, Name} from "./codegen"
 import N from "./names"
 
@@ -19,6 +25,7 @@ export default class KeywordContext implements KeywordErrorContext {
   schema: any
   schemaValue: Code | number | boolean // Code reference to keyword schema value or primitive value
   schemaCode: Code | number | boolean // Code reference to resolved schema value (different if schema is $data)
+  schemaType?: string | string[]
   parentSchema: any
   errsCount?: Name
   params: KeywordContextParams
@@ -34,6 +41,7 @@ export default class KeywordContext implements KeywordErrorContext {
     this.schema = it.schema[keyword]
     this.$data = def.$data && it.opts.$data && this.schema && this.schema.$data
     this.schemaValue = schemaRefOrVal(it, this.schema, keyword, this.$data)
+    this.schemaType = def.schemaType
     this.parentSchema = it.schema
     this.params = {}
     this.it = it
@@ -88,7 +96,7 @@ export default class KeywordContext implements KeywordErrorContext {
   }
 
   $dataError(): void {
-    reportError(this, this.def.$dataError || this.def.error || keywordError)
+    reportError(this, this.def.$dataError || keyword$DataError)
   }
 
   reset(): void {

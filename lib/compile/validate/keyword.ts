@@ -8,8 +8,9 @@ import {
 import KeywordContext from "../context"
 import {applySubschema} from "../subschema"
 import {extendErrors} from "../errors"
+import {checkDataTypes, DataType} from "../util"
 import {callValidateCode} from "../../vocabularies/util"
-import CodeGen, {_, nil, Code, Name} from "../codegen"
+import CodeGen, {_, nil, or, Code, Name} from "../codegen"
 import N from "../names"
 
 export function keywordCode(
@@ -52,54 +53,55 @@ function macroKeywordCode(cxt: KeywordContext, def: MacroKeywordDefinition) {
 }
 
 function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
-  const {gen, keyword, schema, schemaCode, parentSchema, $data, it} = cxt
+  const {gen, keyword, schema, schemaCode, schemaType, parentSchema, $data, it} = cxt
   checkAsync(it, def)
   const validate =
     "compile" in def && !$data ? def.compile.call(it.self, schema, parentSchema, it) : def.validate
   const validateRef = useKeyword(gen, keyword, validate)
   const valid = gen.let("valid")
 
-  if (def.errors === false) {
-    validateNoErrorsRule()
-  } else {
-    validateRuleWithErrors()
-  }
+  gen.block(def.errors === false ? validateNoErrorsRule : validateRuleWithErrors)
+  cxt.ok(def.valid ?? valid)
 
   function validateNoErrorsRule(): void {
-    gen.block(() => {
-      if ($data) check$data()
-      assignValid()
-      if (def.modifying) modifyData(cxt)
-    })
-    if (!def.valid) cxt.pass(valid)
+    if ($data) check$data()
+    assignValid()
+    if (def.modifying) modifyData(cxt)
+    reportKeywordErrors(() => cxt.error())
   }
 
   function validateRuleWithErrors(): void {
-    gen.block()
     if ($data) check$data()
-    // const errsCount = gen.const("_errs", N.errors)
     const ruleErrs = def.async ? validateAsyncRule() : validateSyncRule()
     if (def.modifying) modifyData(cxt)
-    gen.endBlock()
-    reportKeywordErrors(ruleErrs)
+    reportKeywordErrors(() => addKeywordErrors(cxt, ruleErrs))
   }
 
   function check$data(): void {
-    gen
-      // TODO add support for schemaType in keyword definition
-      // .if(`${bad$DataType(schemaCode, <string>def.schemaType, $data)} false`) // TODO refactor
-      .if(_`${schemaCode} === undefined`)
-      .assign(valid, true)
-      .else()
+    gen.if(_`${schemaCode} === undefined`).assign(valid, true)
+    if (schemaType || def.validateSchema) {
+      gen.elseIf(or(wrong$DataType(), invalid$DataSchema()))
+      cxt.$dataError()
+      gen.assign(valid, false)
+    }
+    gen.else()
+  }
+
+  function wrong$DataType(): Code {
+    if (schemaType) {
+      if (!(schemaCode instanceof Name)) throw new Error("ajv implementation error")
+      const st = Array.isArray(schemaType) ? schemaType : [schemaType]
+      return _`(${checkDataTypes(st, schemaCode, it.opts.strictNumbers, DataType.Wrong)})`
+    }
+    return nil
+  }
+
+  function invalid$DataSchema(): Code {
     if (def.validateSchema) {
       const validateSchemaRef = useKeyword(gen, keyword, def.validateSchema)
-      gen.assign(valid, _`${validateSchemaRef}(${schemaCode})`)
-      // TODO fail if schema fails validation
-      // gen.if(`!${valid}`)
-      // reportError(cxt, keywordError)
-      // gen.else()
-      gen.if(valid)
+      return _`!${validateSchemaRef}(${schemaCode})`
     }
+    return nil
   }
 
   function validateAsyncRule(): Name {
@@ -129,16 +131,10 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
     gen.assign(valid, _`${await}${callValidateCode(cxt, validateRef, passCxt, passSchema)}`)
   }
 
-  function reportKeywordErrors(ruleErrs: Code): void {
-    switch (def.valid) {
-      case true:
-        return
-      case false:
-        addKeywordErrors(cxt, ruleErrs)
-        return cxt.ok(false) // TODO maybe add gen.skip() to remove code till the end of the block?
-      default:
-        cxt.pass(valid, () => addKeywordErrors(cxt, ruleErrs))
-    }
+  // TODO maybe refactor to gen.ifNot(def.valid ?? valid, repErrs) once dead branches are removed
+  function reportKeywordErrors(repErrs: () => void): void {
+    if (def.valid === false) repErrs()
+    else if (def.valid !== true) gen.ifNot(valid, repErrs)
   }
 }
 

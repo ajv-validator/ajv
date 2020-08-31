@@ -118,6 +118,15 @@ describe("Custom keywords", () => {
           return valid
         }
       })
+
+      it("should support schemaType", () => {
+        testEvenKeyword({
+          keyword: "x-even",
+          type: "number",
+          schemaType: "boolean",
+          validate: (schema, data) => (data % 2 ? !schema : schema),
+        })
+      })
     })
 
     describe('rule with "compiled" keyword validation', () => {
@@ -179,6 +188,21 @@ describe("Custom keywords", () => {
 
       it("should allow multiple parent schemas for the same keyword", () => {
         testMultipleRangeKeyword({type: "number", compile: compileRange})
+      })
+
+      it("should support schemaType", () => {
+        testEvenKeyword({
+          keyword: "x-even",
+          type: "number",
+          schemaType: "boolean",
+          compile: compileEven,
+        })
+        shouldBeInvalidSchema({"x-even": "not_boolean"})
+
+        function compileEven(schema) {
+          if (schema) return (data) => data % 2 === 0
+          return (data) => data % 2 !== 0
+        }
       })
     })
 
@@ -746,6 +770,20 @@ describe("Custom keywords", () => {
           },
         })
       })
+    })
+
+    it("should support schemaType with $data", () => {
+      testEvenKeyword$data({
+        keyword: "x-even-$data",
+        type: "number",
+        schemaType: "boolean",
+        $data: true,
+        validate: validateEven,
+      })
+
+      function validateEven(schema, data) {
+        return data % 2 ? !schema : schema
+      }
     })
   })
 

@@ -84,9 +84,6 @@ const def: CodeKeywordDefinition = {
       str`should have required property '${missingProperty}'`,
     params: ({params: {missingProperty}}) => _`{missingProperty: ${missingProperty}}`,
   },
-  $dataError: {
-    message: '"required" keyword value must be array',
-  },
 }
 
 module.exports = def

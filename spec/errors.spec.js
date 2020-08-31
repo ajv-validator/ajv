@@ -330,7 +330,7 @@ describe("Validation errors", () => {
           "required",
           "#/required",
           "",
-          '"required" keyword value must be array',
+          '"required" keyword must be array ($data)',
           {}
         )
       }

@@ -1,11 +1,11 @@
 import {CompilationContext, KeywordErrorDefinition, KeywordErrorContext} from "../../types"
-import {toHash, checkDataType, checkDataTypes, DataType} from "../util"
+import {toHash, checkDataTypes, DataType} from "../util"
 import {schemaRefOrVal} from "../../vocabularies/util"
 import {schemaHasRulesForType} from "./applicability"
 import {reportError} from "../errors"
 import {_, str, Name} from "../codegen"
 
-export function getSchemaTypes({schema, opts, RULES}: CompilationContext): string[] {
+export function getSchemaTypes({opts, RULES}: CompilationContext, schema): string[] {
   const st: undefined | string | string[] = schema.type
   const types: string[] = Array.isArray(st) ? st : st ? [st] : []
   types.forEach(checkType)
@@ -34,7 +34,7 @@ export function coerceAndCheckDataType(it: CompilationContext, types: string[]):
   if (checkTypes) {
     const wrongType = checkDataTypes(types, data, opts.strictNumbers, DataType.Wrong)
     gen.if(wrongType, () => {
-      if (coerceTo.length) coerceData(it, coerceTo)
+      if (coerceTo.length) coerceData(it, types, coerceTo)
       else reportTypeError(it)
     })
   }
@@ -48,8 +48,8 @@ function coerceToTypes(types: string[], coerceTypes?: boolean | "array"): string
     : []
 }
 
-export function coerceData(it: CompilationContext, coerceTo: string[]): void {
-  const {gen, schema, data, opts} = it
+function coerceData(it: CompilationContext, types: string[], coerceTo: string[]): void {
+  const {gen, data, opts} = it
   const dataType = gen.let("dataType", _`typeof ${data}`)
   const coerced = gen.let("coerced", _`undefined`)
   if (opts.coerceTypes === "array") {
@@ -57,7 +57,7 @@ export function coerceData(it: CompilationContext, coerceTo: string[]): void {
       gen
         .assign(data, _`${data}[0]`)
         .assign(dataType, _`typeof ${data}`)
-        .if(checkDataType(schema.type, data, opts.strictNumbers), () => gen.assign(coerced, data))
+        .if(checkDataTypes(types, data, opts.strictNumbers), () => gen.assign(coerced, data))
     )
   }
   gen.if(_`${coerced} !== undefined`)
@@ -134,25 +134,24 @@ function assignParentData(
 }
 
 const typeError: KeywordErrorDefinition = {
-  message: ({schema}) =>
-    str`should be ${Array.isArray(schema) ? schema.join(",") : <string>schema}`,
-  // TODO change: return type as array here
-  params: ({schema}) => _`{type: ${Array.isArray(schema) ? schema.join(",") : <string>schema}}`,
+  message: ({schema}) => str`should be ${schema}`,
+  params: ({schema, schemaValue}) =>
+    typeof schema == "string" ? _`{type: ${schema}}` : _`{type: ${schemaValue}}`,
 }
 
 export function reportTypeError(it: CompilationContext): void {
-  const cxt = getErrorContext(it, "type")
+  const cxt = getTypeErrorContext(it)
   reportError(cxt, typeError)
 }
 
-function getErrorContext(it: CompilationContext, keyword: string): KeywordErrorContext {
+function getTypeErrorContext(it: CompilationContext): KeywordErrorContext {
   const {gen, data, schema} = it
-  const schemaCode = schemaRefOrVal(it, schema, keyword)
+  const schemaCode = schemaRefOrVal(it, schema, "type")
   return {
     gen,
-    keyword,
+    keyword: "type",
     data,
-    schema: schema[keyword],
+    schema: schema.type,
     schemaCode,
     schemaValue: schemaCode,
     parentSchema: schema,

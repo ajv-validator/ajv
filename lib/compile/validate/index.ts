@@ -70,7 +70,7 @@ function isBoolOrEmpty({schema, RULES}: CompilationContext): boolean {
 }
 
 function typeAndKeywords(it: CompilationContext, errsCount?: Name): void {
-  const types = getSchemaTypes(it)
+  const types = getSchemaTypes(it, it.schema)
   const checkedTypes = coerceAndCheckDataType(it, types)
   schemaKeywords(it, types, !checkedTypes, errsCount)
 }

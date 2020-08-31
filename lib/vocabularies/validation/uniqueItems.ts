@@ -1,6 +1,7 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {checkDataType, checkDataTypes, DataType} from "../../compile/util"
+import {getSchemaTypes} from "../../compile/validate/dataType"
+import {checkDataTypes, DataType} from "../../compile/util"
 import {_, str, Name} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
@@ -12,7 +13,7 @@ const def: CodeKeywordDefinition = {
     const {gen, data, $data, schema, parentSchema, schemaCode, it} = cxt
     if (it.opts.uniqueItems === false || !($data || schema)) return
     const valid = gen.let("valid")
-    const itemType = parentSchema.items?.type
+    const itemTypes = parentSchema.items ? getSchemaTypes(it, parentSchema.items) : []
 
     if ($data) {
       gen.if(_`${schemaCode} === false || ${schemaCode} === undefined`)
@@ -37,24 +38,17 @@ const def: CodeKeywordDefinition = {
     }
 
     function canOptimize(): boolean {
-      return Array.isArray(itemType)
-        ? !itemType.some((t) => t === "object" || t === "array")
-        : itemType && itemType !== "object" && itemType !== "array"
+      return itemTypes.length > 0 && !itemTypes.some((t) => t === "object" || t === "array")
     }
 
     function loopN(i: Name, j: Name): void {
       const item = gen.name("item")
-      const wrongType = (Array.isArray(itemType) ? checkDataTypes : checkDataType)(
-        itemType,
-        item,
-        it.opts.strictNumbers,
-        DataType.Wrong
-      )
+      const wrongType = checkDataTypes(itemTypes, item, it.opts.strictNumbers, DataType.Wrong)
       const indices = gen.const("indices", _`{}`)
       gen.for(_`;${i}--;`, () => {
         gen.let(item, _`${data}[${i}]`)
         gen.if(wrongType, _`continue`)
-        if (Array.isArray(itemType)) gen.if(_`typeof ${item} == "string"`, _`${item} += "_"`)
+        if (itemTypes.length > 1) gen.if(_`typeof ${item} == "string"`, _`${item} += "_"`)
         gen
           .if(_`typeof ${indices}[${item}] == "number"`, () => {
             gen.assign(j, _`${indices}[${item}]`)
@@ -81,9 +75,6 @@ const def: CodeKeywordDefinition = {
     message: ({params: {i, j}}) =>
       str`should NOT have duplicate items (items ## ${j} and ${i} are identical)`,
     params: ({params: {i, j}}) => _`{i: ${i}, j: ${j}}`,
-  },
-  $dataError: {
-    message: "uniqueItems must be boolean ($data)",
   },
 }
 
