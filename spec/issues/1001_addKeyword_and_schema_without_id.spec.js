@@ -13,7 +13,7 @@ describe("issue #1001: addKeyword breaks schema without ID", () => {
 
     var ajv = new Ajv()
     ajv.addSchema(schema)
-    ajv.addKeyword("myKeyword", {})
+    ajv.addKeyword("myKeyword")
     ajv.getSchema("#/definitions/foo").should.be.a("function")
   })
 })

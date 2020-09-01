@@ -23,10 +23,8 @@ export function addKeyword(
   if (typeof kwdOrDef == "string") {
     keyword = kwdOrDef
     if (typeof def == "object") {
-      // TODO enable once tests are updated
-      // this.logger.warn("these parameters are deprecated, see docs for addKeyword")
-      if (def.keyword === undefined) def.keyword = keyword
-      else if (def.keyword !== keyword) throw new Error("invalid addKeyword parameters")
+      this.logger.warn("these parameters are deprecated, see docs for addKeyword")
+      def.keyword = keyword
     }
   } else if (typeof kwdOrDef == "object" && def === undefined) {
     def = kwdOrDef

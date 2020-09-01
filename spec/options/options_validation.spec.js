@@ -38,14 +38,15 @@ describe("validation options", () => {
   describe("keywords", () => {
     it("should add keywords from options", () => {
       var ajv = new Ajv({
-        keywords: {
-          identifier: {
+        keywords: [
+          {
+            keyword: "identifier",
             type: "string",
             validate: function (schema, data) {
               return /^[a-z_$][a-z0-9_$]*$/i.test(data)
             },
           },
-        },
+        ],
       })
 
       var validate = ajv.compile({identifier: true})

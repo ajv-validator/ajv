@@ -1,9 +1,9 @@
+import {Vocabulary, KeywordDefinition, Options} from "./types"
 import SchemaObject from "./compile/schema_obj"
 import Cache from "./cache"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
 import rules from "./compile/rules"
 import $dataMetaSchema from "./data"
-import {Options} from "./types"
 
 var compileSchema = require("./compile"),
   resolve = require("./compile/resolve"),
@@ -445,10 +445,16 @@ function addInitialFormats(self) {
   }
 }
 
-function addInitialKeywords(self, keywords, skipValidation?: boolean) {
-  for (var name in keywords) {
-    var keyword = keywords[name]
-    self.addKeyword(name, keyword, skipValidation)
+function addInitialKeywords(self, defs: Vocabulary | {[x: string]: KeywordDefinition}) {
+  if (Array.isArray(defs)) {
+    self.addVocabulary(defs)
+    return
+  }
+  self.logger.warn("keywords option as map is deprecated, pass array")
+  for (var keyword in defs) {
+    var def = defs[name]
+    if (!def.keyword) def.keyword = keyword
+    self.addKeyword(def)
   }
 }
 

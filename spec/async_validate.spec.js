@@ -80,14 +80,16 @@ describe("async schemas, formats and keywords", function () {
   describe("async custom keywords", () => {
     beforeEach(() => {
       instances.forEach((_ajv) => {
-        _ajv.addKeyword("idExists", {
+        _ajv.addKeyword({
+          keyword: "idExists",
           async: true,
           type: "number",
           validate: checkIdExists,
           errors: false,
         })
 
-        _ajv.addKeyword("idExistsWithError", {
+        _ajv.addKeyword({
+          keyword: "idExistsWithError",
           async: true,
           type: "number",
           validate: checkIdExistsWithError,
@@ -138,12 +140,8 @@ describe("async schemas, formats and keywords", function () {
           var validate = _ajv.compile(schema)
 
           return Promise.all([
-            shouldBeInvalid(validate({userId: 5, postId: 10}), [
-              "id not found in table posts",
-            ]),
-            shouldBeInvalid(validate({userId: 9, postId: 25}), [
-              "id not found in table users",
-            ]),
+            shouldBeInvalid(validate({userId: 5, postId: 10}), ["id not found in table posts"]),
+            shouldBeInvalid(validate({userId: 9, postId: 25}), ["id not found in table users"]),
           ])
         })
       )
@@ -378,16 +376,10 @@ describe("async schemas, formats and keywords", function () {
               shouldBeInvalid(validate({foo: {foo: "manana"}})),
               shouldBeInvalid(validate({foo: {foo: 1}})),
               shouldThrow(validate({foo: {foo: "today"}}), "unknown word"),
-              shouldBeValid(
-                validate((data = {foo: {foo: {foo: "tomorrow"}}})),
-                data
-              ),
+              shouldBeValid(validate((data = {foo: {foo: {foo: "tomorrow"}}})), data),
               shouldBeInvalid(validate({foo: {foo: {foo: "manana"}}})),
               shouldBeInvalid(validate({foo: {foo: {foo: 1}}})),
-              shouldThrow(
-                validate({foo: {foo: {foo: "today"}}}),
-                "unknown word"
-              ),
+              shouldThrow(validate({foo: {foo: {foo: "today"}}}), "unknown word"),
             ])
           })
         )

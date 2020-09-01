@@ -13,9 +13,7 @@ instances.forEach(addAsyncFormatsAndKeywords)
 
 jsonSchemaTest(instances, {
   description:
-    "asynchronous schemas tests of " +
-    instances.length +
-    " ajv instances with different options",
+    "asynchronous schemas tests of " + instances.length + " ajv instances with different options",
   suites: {
     "async schemas":
       typeof window == "object"
@@ -41,21 +39,24 @@ function addAsyncFormatsAndKeywords(ajv) {
     validate: checkWordOnServer,
   })
 
-  ajv.addKeyword("idExists", {
+  ajv.addKeyword({
+    keyword: "idExists",
     async: true,
     type: "number",
     validate: checkIdExists,
     errors: false,
   })
 
-  ajv.addKeyword("idExistsWithError", {
+  ajv.addKeyword({
+    keyword: "idExistsWithError",
     async: true,
     type: "number",
     validate: checkIdExistsWithError,
     errors: true,
   })
 
-  ajv.addKeyword("idExistsCompiled", {
+  ajv.addKeyword({
+    keyword: "idExistsCompiled",
     async: true,
     type: "number",
     compile: compileCheckIdExists,

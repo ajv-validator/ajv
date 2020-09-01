@@ -13,7 +13,7 @@ export interface Options {
   unicode?: boolean
   format?: false | string
   formats?: object
-  keywords?: object
+  keywords?: Vocabulary | {[x: string]: KeywordDefinition} // map is deprecated
   unknownFormats?: true | string[] | "ignore"
   schemas?: object[] | object
   missingRefs?: true | "ignore" | "fail"
@@ -196,7 +196,7 @@ export interface KeywordErrorDefinition {
   params?: (cxt: KeywordErrorContext) => Code
 }
 
-export type Vocabulary = KeywordDefinition[]
+export type Vocabulary = (KeywordDefinition | string)[]
 
 export interface KeywordErrorContext {
   gen: CodeGen

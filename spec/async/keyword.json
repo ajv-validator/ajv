@@ -1,6 +1,6 @@
 [
   {
-    "description": "async custom keywords (validated)",
+    "description": "async keywords (validated)",
     "schema": {
       "$async": true,
       "properties": {

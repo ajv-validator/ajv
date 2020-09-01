@@ -76,8 +76,8 @@ describe("code generation options", () => {
 
     function getValidate(passContext) {
       ajv = new Ajv({passContext: passContext, inlineRefs: false})
-      ajv.addKeyword("testValidate", {validate: storeContext})
-      ajv.addKeyword("testCompile", {compile: compileTestValidate})
+      ajv.addKeyword({keyword: "testValidate", validate: storeContext})
+      ajv.addKeyword({keyword: "testCompile", compile: compileTestValidate})
 
       var schema = {
         definitions: {

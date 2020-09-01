@@ -193,7 +193,8 @@ describe("compileAsync method", () => {
     })
 
     function test(schema, expectedLoadCallCount) {
-      ajv.addKeyword("myFooBar", {
+      ajv.addKeyword({
+        keyword: "myFooBar",
         type: "string",
         validate: function (sch, data) {
           return sch === data
@@ -326,7 +327,7 @@ describe("compileAsync method", () => {
     })
 
     it("if schema compilation throws some other exception", (done) => {
-      ajv.addKeyword("badkeyword", {compile: badCompile})
+      ajv.addKeyword({keyword: "badkeyword", compile: badCompile})
       var schema = {badkeyword: true}
       ajv.compileAsync(schema, shouldFail(done))
 
@@ -390,7 +391,7 @@ describe("compileAsync method", () => {
     })
 
     it("if schema compilation throws some other exception", () => {
-      ajv.addKeyword("badkeyword", {compile: badCompile})
+      ajv.addKeyword({keyword: "badkeyword", compile: badCompile})
       var schema = {badkeyword: true}
       return shouldReject(ajv.compileAsync(schema))
 

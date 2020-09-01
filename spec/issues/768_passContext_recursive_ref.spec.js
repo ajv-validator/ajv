@@ -50,7 +50,7 @@ describe("issue #768, fix passContext in recursive $ref", () => {
 
   function getValidate(passContext) {
     ajv = new Ajv({passContext: passContext})
-    ajv.addKeyword("testValidate", {validate: storeContext})
+    ajv.addKeyword({keyword: "testValidate", validate: storeContext})
 
     var schema = {
       $id: "foo",
@@ -69,7 +69,7 @@ describe("issue #768, fix passContext in recursive $ref", () => {
 
   function getValidateFragments(passContext) {
     ajv = new Ajv({passContext: passContext})
-    ajv.addKeyword("testValidate", {validate: storeContext})
+    ajv.addKeyword({keyword: "testValidate", validate: storeContext})
 
     ajv.addSchema({
       $id: "foo",
