@@ -3,10 +3,10 @@
 var Ajv = require("./ajv")
 require("./chai").should()
 
-describe("boolean schemas", function () {
+describe("boolean schemas", () => {
   var ajvs
 
-  before(function () {
+  before(() => {
     ajvs = [
       new Ajv(),
       new Ajv({allErrors: true}),
@@ -15,15 +15,15 @@ describe("boolean schemas", function () {
     ]
   })
 
-  describe("top level schema", function () {
-    describe("schema = true", function () {
-      it("should validate any data as valid", function () {
+  describe("top level schema", () => {
+    describe("schema = true", () => {
+      it("should validate any data as valid", () => {
         ajvs.forEach(test(true, true))
       })
     })
 
-    describe("schema = false", function () {
-      it("should validate any data as invalid", function () {
+    describe("schema = false", () => {
+      it("should validate any data as invalid", () => {
         ajvs.forEach(test(false, false))
       })
     })
@@ -36,15 +36,15 @@ describe("boolean schemas", function () {
     }
   })
 
-  describe("in properties / sub-properties", function () {
-    describe("schema = true", function () {
-      it("should be valid with any property value", function () {
+  describe("in properties / sub-properties", () => {
+    describe("schema = true", () => {
+      it("should be valid with any property value", () => {
         ajvs.forEach(test(true, true))
       })
     })
 
-    describe("schema = false", function () {
-      it("should be invalid with any property value", function () {
+    describe("schema = false", () => {
+      it("should be invalid with any property value", () => {
         ajvs.forEach(test(false, false))
       })
     })
@@ -78,15 +78,15 @@ describe("boolean schemas", function () {
     }
   })
 
-  describe("in items / sub-items", function () {
-    describe("schema = true", function () {
-      it("should be valid with any item value", function () {
+  describe("in items / sub-items", () => {
+    describe("schema = true", () => {
+      it("should be valid with any item value", () => {
         ajvs.forEach(test(true, true))
       })
     })
 
-    describe("schema = false", function () {
-      it("should be invalid with any item value", function () {
+    describe("schema = false", () => {
+      it("should be invalid with any item value", () => {
         ajvs.forEach(test(false, false))
       })
     })
@@ -135,15 +135,15 @@ describe("boolean schemas", function () {
     }
   })
 
-  describe("in dependencies and sub-dependencies", function () {
-    describe("schema = true", function () {
-      it("should be valid with any property value", function () {
+  describe("in dependencies and sub-dependencies", () => {
+    describe("schema = true", () => {
+      it("should be valid with any property value", () => {
         ajvs.forEach(test(true, true))
       })
     })
 
-    describe("schema = false", function () {
-      it("should be invalid with any property value", function () {
+    describe("schema = false", () => {
+      it("should be invalid with any property value", () => {
         ajvs.forEach(test(false, false))
       })
     })
@@ -177,15 +177,15 @@ describe("boolean schemas", function () {
     }
   })
 
-  describe("in patternProperties", function () {
-    describe("schema = true", function () {
-      it("should be valid with any property matching pattern", function () {
+  describe("in patternProperties", () => {
+    describe("schema = true", () => {
+      it("should be valid with any property matching pattern", () => {
         ajvs.forEach(test(true, true))
       })
     })
 
-    describe("schema = false", function () {
-      it("should be invalid with any property matching pattern", function () {
+    describe("schema = false", () => {
+      it("should be invalid with any property matching pattern", () => {
         ajvs.forEach(test(false, false))
       })
     })
@@ -219,15 +219,15 @@ describe("boolean schemas", function () {
     }
   })
 
-  describe("in propertyNames", function () {
-    describe("schema = true", function () {
-      it("should be valid with any property", function () {
+  describe("in propertyNames", () => {
+    describe("schema = true", () => {
+      it("should be valid with any property", () => {
         ajvs.forEach(test(true, true))
       })
     })
 
-    describe("schema = false", function () {
-      it("should be invalid with any property", function () {
+    describe("schema = false", () => {
+      it("should be invalid with any property", () => {
         ajvs.forEach(test(false, false))
       })
     })
@@ -248,15 +248,15 @@ describe("boolean schemas", function () {
     }
   })
 
-  describe("in contains", function () {
-    describe("schema = true", function () {
-      it("should be valid with any items", function () {
+  describe("in contains", () => {
+    describe("schema = true", () => {
+      it("should be valid with any items", () => {
         ajvs.forEach(test(true, true))
       })
     })
 
-    describe("schema = false", function () {
-      it("should be invalid with any items", function () {
+    describe("schema = false", () => {
+      it("should be invalid with any items", () => {
         ajvs.forEach(test(false, false))
       })
     })
@@ -282,15 +282,15 @@ describe("boolean schemas", function () {
     }
   })
 
-  describe("in not", function () {
-    describe("schema = true", function () {
-      it("should be invalid with any data", function () {
+  describe("in not", () => {
+    describe("schema = true", () => {
+      it("should be invalid with any data", () => {
         ajvs.forEach(test(true, false))
       })
     })
 
-    describe("schema = false", function () {
-      it("should be valid with any data", function () {
+    describe("schema = false", () => {
+      it("should be valid with any data", () => {
         ajvs.forEach(test(false, true))
       })
     })
@@ -307,15 +307,15 @@ describe("boolean schemas", function () {
     }
   })
 
-  describe("in allOf", function () {
-    describe("schema = true", function () {
-      it("should be valid with any data", function () {
+  describe("in allOf", () => {
+    describe("schema = true", () => {
+      it("should be valid with any data", () => {
         ajvs.forEach(test(true, true))
       })
     })
 
-    describe("schema = false", function () {
-      it("should be invalid with any data", function () {
+    describe("schema = false", () => {
+      it("should be invalid with any data", () => {
         ajvs.forEach(test(false, false))
       })
     })
@@ -339,15 +339,15 @@ describe("boolean schemas", function () {
     }
   })
 
-  describe("in anyOf", function () {
-    describe("schema = true", function () {
-      it("should be valid with any data", function () {
+  describe("in anyOf", () => {
+    describe("schema = true", () => {
+      it("should be valid with any data", () => {
         ajvs.forEach(test(true, true))
       })
     })
 
-    describe("schema = false", function () {
-      it("should be invalid with any data", function () {
+    describe("schema = false", () => {
+      it("should be invalid with any data", () => {
         ajvs.forEach(test(false, false))
       })
     })
@@ -371,15 +371,15 @@ describe("boolean schemas", function () {
     }
   })
 
-  describe("in oneOf", function () {
-    describe("schema = true", function () {
-      it("should be valid with any data", function () {
+  describe("in oneOf", () => {
+    describe("schema = true", () => {
+      it("should be valid with any data", () => {
         ajvs.forEach(test(true, true))
       })
     })
 
-    describe("schema = false", function () {
-      it("should be invalid with any data", function () {
+    describe("schema = false", () => {
+      it("should be invalid with any data", () => {
         ajvs.forEach(test(false, false))
       })
     })
@@ -403,15 +403,15 @@ describe("boolean schemas", function () {
     }
   })
 
-  describe("in $ref", function () {
-    describe("schema = true", function () {
-      it("should be valid with any data", function () {
+  describe("in $ref", () => {
+    describe("schema = true", () => {
+      it("should be valid with any data", () => {
         ajvs.forEach(test(true, true))
       })
     })
 
-    describe("schema = false", function () {
-      it("should be invalid with any data", function () {
+    describe("schema = false", () => {
+      it("should be invalid with any data", () => {
         ajvs.forEach(test(false, false))
       })
     })

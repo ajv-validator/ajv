@@ -2,19 +2,19 @@
 
 var Ajv = require("../ajv")
 
-describe("structNumbers option", function () {
+describe("structNumbers option", () => {
   var ajv
   describe("strictNumbers default", testWithoutStrictNumbers(new Ajv()))
   describe(
     "strictNumbers = false",
     testWithoutStrictNumbers(new Ajv({strictNumbers: false}))
   )
-  describe("strictNumbers = true", function () {
-    beforeEach(function () {
+  describe("strictNumbers = true", () => {
+    beforeEach(() => {
       ajv = new Ajv({strictNumbers: true})
     })
 
-    it("should fail validation for NaN/Infinity as type number", function () {
+    it("should fail validation for NaN/Infinity as type number", () => {
       var validate = ajv.compile({type: "number"})
       validate("1.1").should.equal(false)
       validate(1.1).should.equal(true)
@@ -23,7 +23,7 @@ describe("structNumbers option", function () {
       validate(Infinity).should.equal(false)
     })
 
-    it("should fail validation for NaN as type integer", function () {
+    it("should fail validation for NaN as type integer", () => {
       var validate = ajv.compile({type: "integer"})
       validate("1.1").should.equal(false)
       validate(1.1).should.equal(false)
@@ -35,8 +35,8 @@ describe("structNumbers option", function () {
 })
 
 function testWithoutStrictNumbers(_ajv) {
-  return function () {
-    it("should NOT fail validation for NaN/Infinity as type number", function () {
+  return () => {
+    it("should NOT fail validation for NaN/Infinity as type number", () => {
       var validate = _ajv.compile({type: "number"})
       validate("1.1").should.equal(false)
       validate(1.1).should.equal(true)
@@ -45,7 +45,7 @@ function testWithoutStrictNumbers(_ajv) {
       validate(Infinity).should.equal(true)
     })
 
-    it("should NOT fail validation for NaN/Infinity as type integer", function () {
+    it("should NOT fail validation for NaN/Infinity as type integer", () => {
       var validate = _ajv.compile({type: "integer"})
       validate("1.1").should.equal(false)
       validate(1.1).should.equal(false)

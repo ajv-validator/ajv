@@ -4,10 +4,10 @@ var Ajv = require("./ajv"),
   should = require("./chai").should(),
   getAjvInstances = require("./ajv_instances")
 
-describe("resolve", function () {
+describe("resolve", () => {
   var instances
 
-  beforeEach(function () {
+  beforeEach(() => {
     instances = getAjvInstances({
       allErrors: true,
       verbose: true,
@@ -15,8 +15,8 @@ describe("resolve", function () {
     })
   })
 
-  describe("resolve.ids method", function () {
-    it("should resolve ids in schema", function () {
+  describe("resolve.ids method", () => {
+    it("should resolve ids in schema", () => {
       // Example from http://json-schema.org/latest/json-schema-core.html#anchor29
       var schema = {
         $id: "http://x.y.z/rootschema.json#",
@@ -53,20 +53,20 @@ describe("resolve", function () {
         required: ["foo", "bar", "baz", "bax"],
       }
 
-      instances.forEach(function (ajv) {
+      instances.forEach((ajv) => {
         var validate = ajv.compile(schema)
         var data = {foo: 1, bar: "abc", baz: true, bax: null}
         validate(data).should.equal(true)
       })
     })
 
-    it("should throw if the same id resolves to two different schemas", function () {
-      instances.forEach(function (ajv) {
+    it("should throw if the same id resolves to two different schemas", () => {
+      instances.forEach((ajv) => {
         ajv.compile({
           $id: "http://example.com/1.json",
           type: "integer",
         })
-        should.throw(function () {
+        should.throw(() => {
           ajv.compile({
             additionalProperties: {
               $id: "http://example.com/1.json",
@@ -75,7 +75,7 @@ describe("resolve", function () {
           })
         })
 
-        should.throw(function () {
+        should.throw(() => {
           ajv.compile({
             items: {
               $id: "#int",
@@ -90,7 +90,7 @@ describe("resolve", function () {
       })
     })
 
-    it("should resolve ids defined as urn's (issue #423)", function () {
+    it("should resolve ids defined as urn's (issue #423)", () => {
       var schema = {
         type: "object",
         properties: {
@@ -110,16 +110,16 @@ describe("resolve", function () {
         ip1: "0.0.0.0",
         ip2: "0.0.0.0",
       }
-      instances.forEach(function (ajv) {
+      instances.forEach((ajv) => {
         var validate = ajv.compile(schema)
         validate(data).should.equal(true)
       })
     })
   })
 
-  describe("protocol-relative URIs", function () {
-    it("should resolve fragment", function () {
-      instances.forEach(function (ajv) {
+  describe("protocol-relative URIs", () => {
+    it("should resolve fragment", () => {
+      instances.forEach((ajv) => {
         var schema = {
           $id: "//e.com/types",
           definitions: {
@@ -138,7 +138,7 @@ describe("resolve", function () {
   describe("missing schema error", function () {
     this.timeout(4000)
 
-    it("should contain missingRef and missingSchema", function () {
+    it("should contain missingRef and missingSchema", () => {
       testMissingSchemaError({
         baseId: "http://example.com/1.json",
         ref: "http://another.com/int.json",
@@ -147,7 +147,7 @@ describe("resolve", function () {
       })
     })
 
-    it("should resolve missingRef and missingSchema relative to base id", function () {
+    it("should resolve missingRef and missingSchema relative to base id", () => {
       testMissingSchemaError({
         baseId: "http://example.com/folder/1.json",
         ref: "int.json",
@@ -156,7 +156,7 @@ describe("resolve", function () {
       })
     })
 
-    it("should resolve missingRef and missingSchema relative to base id from root", function () {
+    it("should resolve missingRef and missingSchema relative to base id from root", () => {
       testMissingSchemaError({
         baseId: "http://example.com/folder/1.json",
         ref: "/int.json",
@@ -165,7 +165,7 @@ describe("resolve", function () {
       })
     })
 
-    it("missingRef should and missingSchema should NOT include JSON path (hash fragment)", function () {
+    it("missingRef should and missingSchema should NOT include JSON path (hash fragment)", () => {
       testMissingSchemaError({
         baseId: "http://example.com/1.json",
         ref: "int.json#/definitions/positive",
@@ -174,7 +174,7 @@ describe("resolve", function () {
       })
     })
 
-    it("should throw missing schema error if same path exist in the current schema but id is different (issue #220)", function () {
+    it("should throw missing schema error if same path exist in the current schema but id is different (issue #220)", () => {
       testMissingSchemaError({
         baseId: "http://example.com/parent.json",
         ref: "object.json#/properties/a",
@@ -184,7 +184,7 @@ describe("resolve", function () {
     })
 
     function testMissingSchemaError(opts) {
-      instances.forEach(function (ajv) {
+      instances.forEach((ajv) => {
         try {
           ajv.compile({
             $id: opts.baseId,
@@ -198,7 +198,7 @@ describe("resolve", function () {
     }
   })
 
-  describe("inline referenced schemas without refs in them", function () {
+  describe("inline referenced schemas without refs in them", () => {
     var schemas = [
       {$id: "http://e.com/obj.json#", properties: {a: {$ref: "int.json#"}}},
       {$id: "http://e.com/int.json#", type: "integer", minimum: 2, maximum: 4},
@@ -210,27 +210,27 @@ describe("resolve", function () {
       {$id: "http://e.com/list.json#", items: {$ref: "obj.json#"}},
     ]
 
-    it("by default should inline schema if it doesn't contain refs", function () {
+    it("by default should inline schema if it doesn't contain refs", () => {
       var ajv = new Ajv({schemas: schemas})
       testSchemas(ajv, true)
     })
 
-    it("should NOT inline schema if option inlineRefs == false", function () {
+    it("should NOT inline schema if option inlineRefs == false", () => {
       var ajv = new Ajv({schemas: schemas, inlineRefs: false})
       testSchemas(ajv, false)
     })
 
-    it("should inline schema if option inlineRefs is bigger than number of keys in referenced schema", function () {
+    it("should inline schema if option inlineRefs is bigger than number of keys in referenced schema", () => {
       var ajv = new Ajv({schemas: schemas, inlineRefs: 3})
       testSchemas(ajv, true)
     })
 
-    it("should NOT inline schema if option inlineRefs is less than number of keys in referenced schema", function () {
+    it("should NOT inline schema if option inlineRefs is less than number of keys in referenced schema", () => {
       var ajv = new Ajv({schemas: schemas, inlineRefs: 2})
       testSchemas(ajv, false)
     })
 
-    it("should avoid schema substitution when refs are inlined (issue #77)", function () {
+    it("should avoid schema substitution when refs are inlined (issue #77)", () => {
       var ajv = new Ajv({verbose: true})
 
       var schemaMessage = {

@@ -1,0 +1,14 @@
+{
+  "extends": "@ajv-validator/config",
+  "include": ["lib"],
+  "compilerOptions": {
+    "outDir": "dist",
+    "lib": ["ES2018", "DOM"],
+    "types": ["node"],
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "noImplicitReturns": false,
+    "allowJs": true,
+    "target": "ES2018"
+  }
+}

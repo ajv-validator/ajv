@@ -19,7 +19,7 @@
         "valid": true
       },
       {
-        "description": "non-unique array of is invalid",
+        "description": "non-unique array is invalid",
         "data": {
           "list": [1, 1],
           "unique": true

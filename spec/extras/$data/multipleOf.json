@@ -62,6 +62,14 @@
           "multiple": 10
         },
         "valid": true
+      },
+      {
+        "description": "invalid if value of multipleOf is 0",
+        "data": {
+          "divider": 0,
+          "multiple": 10
+        },
+        "valid": false
       }
     ]
   },

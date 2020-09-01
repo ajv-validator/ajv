@@ -7,7 +7,7 @@ var jsonSchemaTest = require("json-schema-test"),
   after = require("./after_test")
 
 var instances = getAjvInstances(options, {
-  schemas: [require("../lib/refs/json-schema-secure.json")],
+  schemas: [require("../dist/refs/json-schema-secure.json")],
 })
 
 jsonSchemaTest(instances, {

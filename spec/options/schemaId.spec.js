@@ -3,19 +3,19 @@
 var Ajv = require("../ajv")
 var should = require("../chai").should()
 
-describe("removed schemaId option", function () {
-  it('should throw error if schemaId option is used and it is not equal to "$id"', function () {
+describe("removed schemaId option", () => {
+  it('should throw error if schemaId option is used and it is not equal to "$id"', () => {
     new Ajv()
     new Ajv({schemaId: "$id"})
-    should.throw(function () {
+    should.throw(() => {
       new Ajv({schemaId: "id"})
     })
-    should.throw(function () {
+    should.throw(() => {
       new Ajv({schemaId: "auto"})
     })
   })
 
-  it("should use $id and ignore id", function () {
+  it("should use $id and ignore id", () => {
     test(new Ajv())
     test(new Ajv({schemaId: "$id"}))
 

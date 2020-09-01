@@ -13,7 +13,8 @@ exports.each = function (res) {
     should.equal(res.errors, null)
   } else {
     res.errors.should.be.an("array")
-    for (var i = 0; i < res.errors.length; i++)
+    for (var i = 0; i < res.errors.length; i++) {
       res.errors[i].should.be.an("object")
+    }
   }
 }

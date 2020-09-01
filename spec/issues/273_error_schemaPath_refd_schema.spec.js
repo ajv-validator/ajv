@@ -3,8 +3,8 @@
 var Ajv = require("../ajv")
 require("../chai").should()
 
-describe.skip("issue #273, schemaPath in error in referenced schema", function () {
-  it("should have canonic reference with hash after file name", function () {
+describe.skip("issue #273, schemaPath in error in referenced schema", () => {
+  it("should have canonic reference with hash after file name", () => {
     test(new Ajv())
     test(new Ajv({inlineRefs: false}))
 

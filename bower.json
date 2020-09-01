@@ -1,7 +1,7 @@
 {
   "name": "ajv",
   "description": "Another JSON Schema Validator",
-  "main": "dist/ajv.min.js",
+  "main": "bundle/ajv.min.js",
   "authors": ["Evgeny Poberezkin"],
   "license": "MIT",
   "keywords": ["JSON", "schema", "validator"],

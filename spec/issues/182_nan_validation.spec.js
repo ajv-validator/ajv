@@ -3,17 +3,17 @@
 var Ajv = require("../ajv")
 require("../chai").should()
 
-describe("issue #182, NaN validation", function () {
-  it("should not pass minimum/maximum validation", function () {
+describe("issue #182, NaN validation", () => {
+  it("should not pass minimum/maximum validation", () => {
     testNaN({minimum: 1}, false)
     testNaN({maximum: 1}, false)
   })
 
-  it("should pass type: number validation", function () {
+  it("should pass type: number validation", () => {
     testNaN({type: "number"}, true)
   })
 
-  it("should not pass type: integer validation", function () {
+  it("should not pass type: integer validation", () => {
     testNaN({type: "integer"}, false)
   })
 

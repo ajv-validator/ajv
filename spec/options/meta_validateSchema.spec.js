@@ -3,8 +3,8 @@
 var Ajv = require("../ajv")
 var should = require("../chai").should()
 
-describe("meta and validateSchema options", function () {
-  it("should add draft-7 meta schema by default", function () {
+describe("meta and validateSchema options", () => {
+  it("should add draft-7 meta schema by default", () => {
     testOptionMeta(new Ajv())
     testOptionMeta(new Ajv({meta: true}))
 
@@ -14,41 +14,41 @@ describe("meta and validateSchema options", function () {
         .should.be.a("function")
       ajv.validateSchema({type: "integer"}).should.equal(true)
       ajv.validateSchema({type: 123}).should.equal(false)
-      should.not.throw(function () {
+      should.not.throw(() => {
         ajv.addSchema({type: "integer"})
       })
-      should.throw(function () {
+      should.throw(() => {
         ajv.addSchema({type: 123})
       })
     }
   })
 
-  it("should throw if meta: false and validateSchema: true", function () {
+  it("should throw if meta: false and validateSchema: true", () => {
     var ajv = new Ajv({meta: false})
     should.not.exist(ajv.getSchema("http://json-schema.org/draft-07/schema"))
-    should.not.throw(function () {
+    should.not.throw(() => {
       ajv.addSchema({type: "wrong_type"}, "integer")
     })
   })
 
-  it("should skip schema validation with validateSchema: false", function () {
+  it("should skip schema validation with validateSchema: false", () => {
     var ajv = new Ajv()
-    should.throw(function () {
+    should.throw(() => {
       ajv.addSchema({type: 123}, "integer")
     })
 
     ajv = new Ajv({validateSchema: false})
-    should.not.throw(function () {
+    should.not.throw(() => {
       ajv.addSchema({type: 123}, "integer")
     })
 
     ajv = new Ajv({validateSchema: false, meta: false})
-    should.not.throw(function () {
+    should.not.throw(() => {
       ajv.addSchema({type: 123}, "integer")
     })
   })
 
-  it('should not throw on invalid schema with validateSchema: "log"', function () {
+  it('should not throw on invalid schema with validateSchema: "log"', () => {
     var logError = console.error
     var loggedError = false
     console.error = function () {
@@ -57,27 +57,27 @@ describe("meta and validateSchema options", function () {
     }
 
     var ajv = new Ajv({validateSchema: "log"})
-    should.not.throw(function () {
+    should.not.throw(() => {
       ajv.addSchema({type: 123}, "integer")
     })
     loggedError.should.equal(true)
 
     loggedError = false
     ajv = new Ajv({validateSchema: "log", meta: false})
-    should.not.throw(function () {
+    should.not.throw(() => {
       ajv.addSchema({type: 123}, "integer")
     })
     loggedError.should.equal(false)
     console.error = logError
   })
 
-  it("should validate v6 schema", function () {
+  it("should validate v6 schema", () => {
     var ajv = new Ajv()
     ajv.validateSchema({contains: {minimum: 2}}).should.equal(true)
     ajv.validateSchema({contains: 2}).should.equal(false)
   })
 
-  it("should use option meta as default meta schema", function () {
+  it("should use option meta as default meta schema", () => {
     var meta = {
       $schema: "http://json-schema.org/draft-07/schema",
       properties: {

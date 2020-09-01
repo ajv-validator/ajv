@@ -3,13 +3,13 @@
 var Ajv = require("../ajv")
 require("../chai").should()
 
-describe("issue #8: schema with shared references", function () {
+describe("issue #8: schema with shared references", () => {
   it("should be supported by addSchema", spec("addSchema"))
 
   it("should be supported by compile", spec("compile"))
 
   function spec(method) {
-    return function () {
+    return () => {
       var ajv = new Ajv()
 
       var propertySchema = {

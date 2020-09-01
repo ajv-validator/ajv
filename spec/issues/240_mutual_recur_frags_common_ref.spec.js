@@ -3,7 +3,7 @@
 var Ajv = require("../ajv")
 require("../chai").should()
 
-describe("issue #240, mutually recursive fragment refs reference a common schema", function () {
+describe("issue #240, mutually recursive fragment refs reference a common schema", () => {
   var apiSchema = {
     $schema: "http://json-schema.org/draft-07/schema#",
     $id: "schema://api.schema#",
@@ -35,7 +35,7 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
     },
   }
 
-  it("should compile and validate schema when one ref is fragment", function () {
+  it("should compile and validate schema when one ref is fragment", () => {
     var ajv = new Ajv()
 
     var librarySchema = {
@@ -128,7 +128,7 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
     testSchema(validate)
   })
 
-  it("should compile and validate schema when both refs are fragments", function () {
+  it("should compile and validate schema when both refs are fragments", () => {
     var ajv = new Ajv()
 
     var librarySchema = {

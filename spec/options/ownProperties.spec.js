@@ -3,16 +3,16 @@
 var Ajv = require("../ajv")
 require("../chai").should()
 
-describe("ownProperties option", function () {
+describe("ownProperties option", () => {
   var ajv, ajvOP, ajvOP1
 
-  beforeEach(function () {
+  beforeEach(() => {
     ajv = new Ajv({allErrors: true})
     ajvOP = new Ajv({ownProperties: true, allErrors: true})
     ajvOP1 = new Ajv({ownProperties: true})
   })
 
-  it("should only validate own properties with additionalProperties", function () {
+  it("should only validate own properties with additionalProperties", () => {
     var schema = {
       properties: {a: {type: "number"}},
       additionalProperties: false,
@@ -23,7 +23,7 @@ describe("ownProperties option", function () {
     test(schema, obj, proto)
   })
 
-  it("should only validate own properties with properties keyword", function () {
+  it("should only validate own properties with properties keyword", () => {
     var schema = {
       properties: {
         a: {type: "number"},
@@ -36,7 +36,7 @@ describe("ownProperties option", function () {
     test(schema, obj, proto)
   })
 
-  it("should only validate own properties with required keyword", function () {
+  it("should only validate own properties with required keyword", () => {
     var schema = {
       required: ["a", "b"],
     }
@@ -46,7 +46,7 @@ describe("ownProperties option", function () {
     test(schema, obj, proto, 1, true)
   })
 
-  it("should only validate own properties with required keyword - many properties", function () {
+  it("should only validate own properties with required keyword - many properties", () => {
     ajv = new Ajv({allErrors: true, loopRequired: 1})
     ajvOP = new Ajv({ownProperties: true, allErrors: true, loopRequired: 1})
     ajvOP1 = new Ajv({ownProperties: true, loopRequired: 1})
@@ -60,7 +60,7 @@ describe("ownProperties option", function () {
     test(schema, obj, proto, 2, true)
   })
 
-  it("should only validate own properties with required keyword as $data", function () {
+  it("should only validate own properties with required keyword as $data", () => {
     ajv = new Ajv({allErrors: true, $data: true})
     ajvOP = new Ajv({ownProperties: true, allErrors: true, $data: true})
     ajvOP1 = new Ajv({ownProperties: true, $data: true})
@@ -83,7 +83,7 @@ describe("ownProperties option", function () {
     test(schema, obj, proto, 1, true)
   })
 
-  it("should only validate own properties with properties and required keyword", function () {
+  it("should only validate own properties with properties and required keyword", () => {
     var schema = {
       properties: {
         a: {type: "number"},
@@ -97,7 +97,7 @@ describe("ownProperties option", function () {
     test(schema, obj, proto, 1, true)
   })
 
-  it("should only validate own properties with dependencies keyword", function () {
+  it("should only validate own properties with dependencies keyword", () => {
     var schema = {
       dependencies: {
         a: ["c"],
@@ -114,7 +114,7 @@ describe("ownProperties option", function () {
     test(schema, obj, proto, 1, true)
   })
 
-  it("should only validate own properties with schema dependencies", function () {
+  it("should only validate own properties with schema dependencies", () => {
     var schema = {
       dependencies: {
         a: {not: {required: ["c"]}},
@@ -131,7 +131,7 @@ describe("ownProperties option", function () {
     test(schema, obj, proto)
   })
 
-  it("should only validate own properties with patternProperties", function () {
+  it("should only validate own properties with patternProperties", () => {
     var schema = {
       patternProperties: {"f.*o": {type: "integer"}},
     }
@@ -141,7 +141,7 @@ describe("ownProperties option", function () {
     test(schema, obj, proto)
   })
 
-  it("should only validate own properties with propertyNames", function () {
+  it("should only validate own properties with propertyNames", () => {
     var schema = {
       propertyNames: {
         pattern: "foo",

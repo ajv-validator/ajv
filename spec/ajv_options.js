@@ -7,14 +7,11 @@ var options = fullTest
   ? {
       allErrors: true,
       verbose: true,
-      format: "full",
       extendRefs: "ignore",
       inlineRefs: false,
       jsonPointers: true,
+      codegen: {es5: true, lines: true},
     }
-  : {allErrors: true}
-
-if (fullTest && !isBrowser)
-  options.processCode = require("js-beautify").js_beautify
+  : {allErrors: true, codegen: {es5: true, lines: true}}
 
 module.exports = options

@@ -80,14 +80,7 @@
             },
             "type": {
               "type": "string",
-              "enum": [
-                "string",
-                "number",
-                "integer",
-                "date",
-                "boolean",
-                "file"
-              ],
+              "enum": ["string", "number", "integer", "date", "boolean", "file"],
               "default": "string",
               "description": "The type attribute specifies the primitive type of the parameter's resolved value. If the type is not specified, it defaults to string. API clients MUST return/throw an error if the parameter's resolved value does not match the specified type."
             },
@@ -189,11 +182,7 @@
                 },
                 "settings": {
                   "type": "object",
-                  "required": [
-                    "requestTokenUri",
-                    "authorizationUri",
-                    "tokenCredentialsUri"
-                  ],
+                  "required": ["requestTokenUri", "authorizationUri", "tokenCredentialsUri"],
                   "properties": {
                     "requestTokenUri": {
                       "type": "string",
@@ -220,11 +209,7 @@
                 },
                 "settings": {
                   "type": "object",
-                  "required": [
-                    "authorizationUri",
-                    "accessTokenUri",
-                    "authorizationGrants"
-                  ],
+                  "required": ["authorizationUri", "accessTokenUri", "authorizationGrants"],
                   "properties": {
                     "authorizationUri": {
                       "type": "string",

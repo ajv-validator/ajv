@@ -1,6 +1,6 @@
 [
   {
-    "description": "async custom formats",
+    "description": "async user-defined formats",
     "schema": {
       "$async": true,
       "type": "string",

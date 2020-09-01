@@ -26,7 +26,7 @@ See [#65](https://github.com/ajv-validator/ajv/issues/65), [#212](https://github
 
 The reasons are history (other fast validators with the same api) and performance (returning boolean is faster). Although more code is written to process errors than to handle successful results, almost all server-side validations pass. The existing API is more efficient from the performance point of view.
 
-Ajv also supports asynchronous validation (with custom asynchronous formats and keywords) that returns a promise that either resolves to `true` or rejects with an error.
+Ajv also supports asynchronous validation (with asynchronous formats and keywords) that returns a promise that either resolves to `true` or rejects with an error.
 
 ##### Would errors get overwritten in case of "concurrent" validations?
 
@@ -34,7 +34,7 @@ No. There is no concurrency in JavaScript - it is single-threaded. While a valid
 
 ##### Can we change / extend API to add a method that would return errors (rather than assign them to `errors` property)?
 
-No. In many cases there is a module responsible for the validation in the application, usually to load schemas and to process errors. This module is the right place to introduce any custom API. Convenience is a subjective thing, changing or extending API purely because of convenience would either break backward compatibility (even if it's done in a new major version it still complicates migration) or bloat API (making it more difficult to maintain).
+No. In many cases there is a module responsible for the validation in the application, usually to load schemas and to process errors. This module is the right place to introduce any user-defined API. Convenience is a subjective thing, changing or extending API purely because of convenience would either break backward compatibility (even if it's done in a new major version it still complicates migration) or bloat API (making it more difficult to maintain).
 
 ##### Why don't `"additionalProperties": false` errors display the property name?
 
@@ -90,4 +90,4 @@ There were many conversations about the meaning of `$ref` in [JSON Schema GitHub
 There are two possible approaches:
 
 1. Traverse schema (e.g. with json-schema-traverse) and replace every `$ref` with the referenced schema.
-2. Use a specially constructed JSON Schema with a [custom keyword](https://github.com/ajv-validator/ajv/blob/master/CUSTOM.md) to traverse and modify your schema.
+2. Use a specially constructed JSON Schema with a [user-defined keyword](https://github.com/ajv-validator/ajv/blob/master/CUSTOM.md) to traverse and modify your schema.

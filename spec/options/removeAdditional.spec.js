@@ -3,8 +3,8 @@
 var Ajv = require("../ajv")
 require("../chai").should()
 
-describe("removeAdditional option", function () {
-  it("should remove all additional properties", function () {
+describe("removeAdditional option", () => {
+  it("should remove all additional properties", () => {
     var ajv = new Ajv({removeAdditional: "all"})
 
     ajv.addSchema({
@@ -24,7 +24,7 @@ describe("removeAdditional option", function () {
     object.should.not.have.property("baz")
   })
 
-  it("should remove properties that would error when `additionalProperties = false`", function () {
+  it("should remove properties that would error when `additionalProperties = false`", () => {
     var ajv = new Ajv({removeAdditional: true})
 
     ajv.addSchema({
@@ -45,7 +45,7 @@ describe("removeAdditional option", function () {
     object.should.not.have.property("baz")
   })
 
-  it("should remove properties that would error when `additionalProperties = false` (many properties, boolean schema)", function () {
+  it("should remove properties that would error when `additionalProperties = false` (many properties, boolean schema)", () => {
     var ajv = new Ajv({removeAdditional: true})
 
     var schema = {
@@ -84,7 +84,7 @@ describe("removeAdditional option", function () {
     })
   })
 
-  it("should remove properties that would error when `additionalProperties` is a schema", function () {
+  it("should remove properties that would error when `additionalProperties` is a schema", () => {
     var ajv = new Ajv({removeAdditional: "failing"})
 
     ajv.addSchema({

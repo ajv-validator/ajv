@@ -3,17 +3,17 @@
 var Ajv = require("../ajv")
 var should = require("../chai").should()
 
-describe("nullable option", function () {
+describe("nullable option", () => {
   var ajv
 
-  describe("= true", function () {
-    beforeEach(function () {
+  describe("= true", () => {
+    beforeEach(() => {
       ajv = new Ajv({
         nullable: true,
       })
     })
 
-    it('should add keyword "nullable"', function () {
+    it('should add keyword "nullable"', () => {
       testNullable({
         type: "number",
         nullable: true,
@@ -38,7 +38,7 @@ describe("nullable option", function () {
       testNotNullable({type: ["number"]})
     })
 
-    it('should respect "nullable" == false with opts.nullable == true', function () {
+    it('should respect "nullable" == false with opts.nullable == true', () => {
       testNotNullable({
         type: "number",
         nullable: false,
@@ -51,8 +51,8 @@ describe("nullable option", function () {
     })
   })
 
-  describe('without option "nullable"', function () {
-    it("should ignore keyword nullable", function () {
+  describe('without option "nullable"', () => {
+    it("should ignore keyword nullable", () => {
       ajv = new Ajv()
 
       testNotNullable({
@@ -74,7 +74,7 @@ describe("nullable option", function () {
         nullable: true,
       })
 
-      should.not.throw(function () {
+      should.not.throw(() => {
         ajv.compile({nullable: false})
       })
     })
