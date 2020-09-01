@@ -1,64 +1,60 @@
-import {KeywordDefinition, Vocabulary, ErrorObject, ValidateFunction} from "./types"
+import {KeywordDefinition, Vocabulary, ErrorObject} from "./types"
 import {ValidationRules, Rule, RuleGroup} from "./compile/rules"
-import {definitionSchema} from "./definition_schema"
 import {schemaOrData} from "./data"
+import {checkType} from "./compile/validate/dataType"
 
 const IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i
 
-export function addVocabulary(this, definitions: Vocabulary, _skipValidation?: boolean): object {
+export function addVocabulary(this, definitions: Vocabulary): object {
   // TODO return type Ajv
-  for (const def of definitions) {
-    if (!def.keyword) throw new Error('Keyword definition must have "keyword" property')
-    this.addKeyword(def, _skipValidation)
-  }
+  for (const def of definitions) this.addKeyword(def)
   return this
 }
 
 // TODO Ajv
-export function addKeyword(this, def: KeywordDefinition, _skipValidation?: boolean): object
+export function addKeyword(this, def: KeywordDefinition): object
 export function addKeyword(this, keyword: string): object
 export function addKeyword(
   this: any, // TODO Ajv
   kwdOrDef: string | KeywordDefinition,
-  defOrSkip?: KeywordDefinition | boolean, // deprecated
-  _skipValidation?: boolean // deprecated
+  def?: KeywordDefinition // deprecated
 ): object {
   let keyword: string | string[]
-  let definition: KeywordDefinition | undefined
   if (typeof kwdOrDef == "string") {
     keyword = kwdOrDef
-    if (typeof defOrSkip == "object") {
+    if (typeof def == "object") {
       // TODO enable once tests are updated
-      // this.logger.warn("this method signature is deprecated, see docs for addKeyword")
-      definition = defOrSkip
-      if (definition.keyword === undefined) definition.keyword = keyword
-      else if (definition.keyword !== keyword) throw new Error("invalid addKeyword parameters")
+      // this.logger.warn("these parameters are deprecated, see docs for addKeyword")
+      if (def.keyword === undefined) def.keyword = keyword
+      else if (def.keyword !== keyword) throw new Error("invalid addKeyword parameters")
     }
-  } else if (typeof kwdOrDef == "object" && typeof defOrSkip != "object") {
-    definition = kwdOrDef
-    keyword = definition.keyword
-    _skipValidation = defOrSkip
+  } else if (typeof kwdOrDef == "object" && def === undefined) {
+    def = kwdOrDef
+    keyword = def.keyword
   } else {
     throw new Error("invalid addKeywords parameters")
   }
 
+  checkKeyword.call(this, keyword, def)
+  if (def) keywordMetaschema.call(this, def)
+  eachItem(keyword, (kwd) => {
+    eachItem(def?.type, (t) => _addRule.call(this, kwd, t, def))
+  })
+  return this
+}
+
+function checkKeyword(keyword: string | string[], def?: KeywordDefinition) {
   /* eslint no-shadow: 0 */
   const RULES: ValidationRules = this.RULES
   eachItem(keyword, (kwd) => {
     if (RULES.keywords[kwd]) throw new Error(`Keyword ${kwd} is already defined`)
     if (!IDENTIFIER.test(kwd)) throw new Error(`Keyword ${kwd} has invalid name`)
   })
-
-  if (definition) {
-    if (!_skipValidation) this.validateKeyword(definition, true)
-    keywordMetaschema.call(this, definition)
+  if (!def) return
+  if (def.type) eachItem(def.type, (t) => checkType(t, RULES))
+  if (def.$data && !("code" in def || "validate" in def)) {
+    throw new Error('$data keyword must have "code" or "validate" function')
   }
-  const types = definition?.type
-  eachItem(keyword, (kwd) => {
-    eachItem(types, (t) => _addRule.call(this, kwd, t, definition))
-  })
-
-  return this
 }
 
 function _addRule(keyword: string, dataType?: string, definition?: KeywordDefinition): void {
@@ -117,7 +113,6 @@ export function getKeyword(this, keyword: string): KeywordDefinition | boolean {
  */
 export function removeKeyword(keyword: string): object {
   // TODO return type should be Ajv
-  /* jshint validthis: true */
   const RULES: ValidationRules = this.RULES
   delete RULES.keywords[keyword]
   delete RULES.all[keyword]
@@ -131,24 +126,4 @@ export function removeKeyword(keyword: string): object {
 export interface KeywordValidator {
   (definition: KeywordDefinition, throwError: boolean): boolean
   errors?: ErrorObject[] | null
-}
-
-/**
- * Validate keyword definition
- * @this  Ajv
- * @param {Object} definition keyword definition object.
- * @param {Boolean} throwError true to throw exception if definition is invalid
- * @return {boolean} validation result
- */
-export const validateKeyword: KeywordValidator = function (definition, throwError) {
-  validateKeyword.errors = null
-  const v: ValidateFunction = (this._validateKeyword =
-    this._validateKeyword || this.compile(definitionSchema, true))
-
-  if (v(definition)) return true
-  validateKeyword.errors = v.errors
-  if (throwError) {
-    throw new Error("keyword definition is invalid: " + this.errorsText(v.errors))
-  }
-  return false
 }

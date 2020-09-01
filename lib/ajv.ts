@@ -13,6 +13,7 @@ import coreVocabulary from "./vocabularies/core"
 import validationVocabulary from "./vocabularies/validation"
 import applicatorVocabulary from "./vocabularies/applicator"
 import formatVocabulary from "./vocabularies/format"
+import {addVocabulary, addKeyword, getKeyword, removeKeyword} from "./keyword"
 
 module.exports = Ajv
 
@@ -25,17 +26,15 @@ Ajv.prototype.getSchema = getSchema
 Ajv.prototype.removeSchema = removeSchema
 Ajv.prototype.addFormat = addFormat
 Ajv.prototype.errorsText = errorsText
+Ajv.prototype.addVocabulary = addVocabulary
+Ajv.prototype.addKeyword = addKeyword
+Ajv.prototype.getKeyword = getKeyword
+Ajv.prototype.removeKeyword = removeKeyword
 
 Ajv.prototype._addSchema = _addSchema
 Ajv.prototype._compile = _compile
 
 Ajv.prototype.compileAsync = require("./compile/async")
-var keywordMethods = require("./keyword")
-Ajv.prototype.addVocabulary = keywordMethods.addVocabulary
-Ajv.prototype.addKeyword = keywordMethods.addKeyword
-Ajv.prototype.getKeyword = keywordMethods.getKeyword
-Ajv.prototype.removeKeyword = keywordMethods.removeKeyword
-Ajv.prototype.validateKeyword = keywordMethods.validateKeyword
 Ajv.prototype.$dataMetaSchema = $dataMetaSchema
 
 Ajv.ValidationError = ValidationError
@@ -84,9 +83,7 @@ export default function Ajv(opts: Options): void {
   if (opts.keywords) addInitialKeywords(this, opts.keywords)
   addDefaultMetaSchema(this)
   if (typeof opts.meta == "object") this.addMetaSchema(opts.meta)
-  if (opts.nullable) {
-    this.addKeyword("nullable", {metaSchema: {type: "boolean"}})
-  }
+  if (opts.nullable) this.addKeyword({keyword: "nullable", schemaType: "boolean"})
   addInitialSchemas(this)
   opts.format = formatOpt
 }

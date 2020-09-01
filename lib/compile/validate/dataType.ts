@@ -4,11 +4,12 @@ import {schemaRefOrVal} from "../../vocabularies/util"
 import {schemaHasRulesForType} from "./applicability"
 import {reportError} from "../errors"
 import {_, str, Name} from "../codegen"
+import {ValidationRules} from "../rules"
 
 export function getSchemaTypes({opts, RULES}: CompilationContext, schema): string[] {
   const st: undefined | string | string[] = schema.type
   const types: string[] = Array.isArray(st) ? st : st ? [st] : []
-  types.forEach(checkType)
+  types.forEach((t) => checkType(t, RULES))
   if (opts.nullable) {
     const hasNull = types.includes("null")
     if (hasNull && schema.nullable === false) {
@@ -18,11 +19,11 @@ export function getSchemaTypes({opts, RULES}: CompilationContext, schema): strin
     }
   }
   return types
+}
 
-  function checkType(t: string): void {
-    if (typeof t == "string" && t in RULES.types) return
-    throw new Error('"type" keyword must be allowed string or string[]: ' + t)
-  }
+export function checkType(t: string, RULES: ValidationRules): void {
+  if (typeof t == "string" && t in RULES.types) return
+  throw new Error('"type" keyword must be allowed string or string[]: ' + t)
 }
 
 export function coerceAndCheckDataType(it: CompilationContext, types: string[]): boolean {

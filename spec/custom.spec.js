@@ -760,7 +760,7 @@ describe("Custom keywords", () => {
       shouldBeInvalidSchema({"x-even-$data": "false"})
     })
 
-    it('should fail if "macro" keyword definition has "$data" but no "validate"', () => {
+    it('should fail if "macro" keyword definition has "$data" but no "code" or "validate"', () => {
       should.throw(() => {
         ajv.addKeyword("even", {
           type: "number",
@@ -1083,15 +1083,15 @@ describe("Custom keywords", () => {
 
     it("should throw if unknown type is passed", () => {
       should.throw(() => {
-        addKeyword("custom1", "wrongtype")
+        addKeyword("custom1", {type: "wrongtype"})
       })
 
       should.throw(() => {
-        addKeyword("custom2", ["number", "wrongtype"])
+        addKeyword("custom2", {type: ["number", "wrongtype"]})
       })
 
       should.throw(() => {
-        addKeyword("custom3", ["number", undefined])
+        addKeyword("custom3", {type: ["number", undefined]})
       })
     })
 
@@ -1278,26 +1278,6 @@ describe("Custom keywords", () => {
       ajv.validate({pass: ""}, 1).should.equal(true)
       ajv.validate({fail: ""}, 1).should.equal(false)
     })
-
-    it("should throw exception if used with macro keyword", () => {
-      should.throw(() => {
-        ajv.addKeyword("pass", {
-          macro: () => {
-            return {}
-          },
-          valid: true,
-        })
-      })
-
-      should.throw(() => {
-        ajv.addKeyword("fail", {
-          macro: () => {
-            return {not: {}}
-          },
-          valid: false,
-        })
-      })
-    })
   })
 
   describe('"dependencies" in keyword definition', () => {
@@ -1328,20 +1308,6 @@ describe("Custom keywords", () => {
       var v = ajv.compile(schema)
       v({foo: 1}).should.equal(true)
       v({}).should.equal(false)
-    })
-
-    it("'dependencies'should be array of valid strings", () => {
-      ajv.addKeyword("newKeyword1", {
-        metaSchema: {type: "boolean"},
-        dependencies: ["dep1"],
-      })
-
-      should.throw(() => {
-        ajv.addKeyword("newKeyword2", {
-          metaSchema: {type: "boolean"},
-          dependencies: [1],
-        })
-      })
     })
   })
 })

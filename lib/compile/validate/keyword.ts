@@ -21,16 +21,16 @@ export function keywordCode(
   const cxt = new KeywordContext(it, def, keyword)
   if ("code" in def) {
     def.code(cxt, ruleType)
-  } else if (cxt.$data && "validate" in def) {
-    funcKeywordCode(cxt, def as FuncKeywordDefinition)
+  } else if (cxt.$data && def.validate) {
+    funcKeywordCode(cxt, def)
   } else if ("macro" in def) {
     macroKeywordCode(cxt, def)
-  } else if ("compile" in def || "validate" in def) {
+  } else if (def.compile || def.validate) {
     funcKeywordCode(cxt, def)
   }
 }
 
-function macroKeywordCode(cxt: KeywordContext, def: MacroKeywordDefinition) {
+function macroKeywordCode(cxt: KeywordContext, def: MacroKeywordDefinition): void {
   const {gen, keyword, schema, parentSchema, it} = cxt
   const macroSchema = def.macro.call(it.self, schema, parentSchema, it)
   const schemaRef = useKeyword(gen, keyword, macroSchema)
@@ -51,11 +51,11 @@ function macroKeywordCode(cxt: KeywordContext, def: MacroKeywordDefinition) {
   cxt.pass(valid, () => cxt.error(true))
 }
 
-function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition) {
+function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition): void {
   const {gen, keyword, schema, parentSchema, $data, it} = cxt
   checkAsync(it, def)
   const validate =
-    "compile" in def && !$data ? def.compile.call(it.self, schema, parentSchema, it) : def.validate
+    !$data && def.compile ? def.compile.call(it.self, schema, parentSchema, it) : def.validate
   const validateRef = useKeyword(gen, keyword, validate)
   const valid = gen.let("valid")
   cxt.block$data(valid, validateKeyword)

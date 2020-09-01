@@ -144,6 +144,7 @@ interface _KeywordDef {
   keyword: string | string[]
   type?: string | string[]
   schemaType?: string | string[]
+  $data?: boolean
   implements?: string[]
   before?: string
   metaSchema?: object
@@ -155,7 +156,6 @@ interface _KeywordDef {
 
 export interface CodeKeywordDefinition extends _KeywordDef {
   code: (cxt: KeywordContext, ruleType?: string) => void
-  $data?: boolean
   trackErrors?: boolean
 }
 
@@ -165,17 +165,15 @@ export type MacroKeywordFunc = (
   it: CompilationContext
 ) => object | boolean
 
-export type FuncKeywordDefinition = CompiledKeywordDefinition | ValidatedKeywordDefinition
-
 export type CompileKeywordFunc = (
   schema: any,
   parentSchema: object,
   it: CompilationContext
 ) => ValidateFunction
 
-interface $DataKeywordDef extends _KeywordDef {
+export interface FuncKeywordDefinition extends _KeywordDef {
   validate?: SchemaValidateFunction | ValidateFunction
-  $data?: boolean // requires "validate"
+  compile?: CompileKeywordFunc
   // schema: false makes validate not to expect schema (ValidateFunction)
   schema?: boolean // requires "validate"
   modifying?: boolean
@@ -184,23 +182,14 @@ interface $DataKeywordDef extends _KeywordDef {
   errors?: boolean | "full"
 }
 
-export interface MacroKeywordDefinition extends $DataKeywordDef {
+export interface MacroKeywordDefinition extends FuncKeywordDefinition {
   macro: MacroKeywordFunc
 }
 
-export interface CompiledKeywordDefinition extends $DataKeywordDef {
-  compile: CompileKeywordFunc
-}
-
-export interface ValidatedKeywordDefinition extends $DataKeywordDef {
-  validate: SchemaValidateFunction | ValidateFunction
-}
-
 export type KeywordDefinition =
-  | MacroKeywordDefinition
-  | CompiledKeywordDefinition
-  | ValidatedKeywordDefinition
   | CodeKeywordDefinition
+  | FuncKeywordDefinition
+  | MacroKeywordDefinition
 
 export interface KeywordErrorDefinition {
   message: string | ((cxt: KeywordErrorContext) => Code)
