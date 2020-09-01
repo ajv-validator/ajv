@@ -3,9 +3,9 @@
 var Ajv = require("../ajv")
 require("../chai").should()
 
-describe("issue #181, custom keyword is not validated in allErrors mode if there were previous error", () => {
-  it("should validate custom keyword that doesn't create errors", () => {
-    testCustomKeywordErrors({
+describe("issue #181, user-defined keyword is not validated in allErrors mode if there were previous error", () => {
+  it("should validate user-defined keyword that doesn't create errors", () => {
+    testKeywordErrors({
       keyword: "alwaysFails",
       type: "object",
       errors: true,
@@ -16,7 +16,7 @@ describe("issue #181, custom keyword is not validated in allErrors mode if there
   })
 
   it("should validate keyword that creates errors", () => {
-    testCustomKeywordErrors({
+    testKeywordErrors({
       keyword: "alwaysFails",
       type: "object",
       errors: true,
@@ -35,7 +35,7 @@ describe("issue #181, custom keyword is not validated in allErrors mode if there
     })
   })
 
-  function testCustomKeywordErrors(def) {
+  function testKeywordErrors(def) {
     var ajv = new Ajv({allErrors: true})
 
     ajv.addKeyword(def)
