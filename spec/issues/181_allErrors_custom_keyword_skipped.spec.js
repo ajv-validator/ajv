@@ -15,7 +15,7 @@ describe("issue #181, custom keyword is not validated in allErrors mode if there
     })
   })
 
-  it("should validate custom keyword that creates errors", () => {
+  it("should validate keyword that creates errors", () => {
     testCustomKeywordErrors({
       keyword: "alwaysFails",
       type: "object",

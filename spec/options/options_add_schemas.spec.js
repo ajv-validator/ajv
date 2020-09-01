@@ -115,7 +115,7 @@ describe("options to add schemas", () => {
   describe("serialize", () => {
     var serializeCalled
 
-    it("should use custom function to serialize schema to string", () => {
+    it("should use user-defined function to serialize schema to string", () => {
       serializeCalled = undefined
       var ajv = new Ajv({serialize: serialize})
       ajv.addSchema({type: "string"})

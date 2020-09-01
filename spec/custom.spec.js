@@ -7,7 +7,7 @@ var getAjvInstances = require("./ajv_instances"),
 const codegen = require("../dist/compile/codegen")
 const {_, nil} = codegen
 
-describe("Custom keywords", () => {
+describe("User-defined keywords", () => {
   var ajv, instances
 
   beforeEach(() => {
@@ -19,7 +19,7 @@ describe("Custom keywords", () => {
     ajv = instances[0]
   })
 
-  describe("custom rules", () => {
+  describe("user-defined rules", () => {
     describe('rule with "interpreted" keyword validation', () => {
       it("should add and validate rule", () => {
         testEvenKeyword({keyword: "x-even", type: "number", validate: validateEven})
@@ -85,7 +85,7 @@ describe("Custom keywords", () => {
         }
       })
 
-      it('should allow defining custom errors for "interpreted" keyword', () => {
+      it('should allow defining errors for "validate" keyword', () => {
         testRangeKeyword({keyword: "x-range", type: "number", validate: validateRange}, true)
 
         function validateRange(schema, data, parentSchema) {
@@ -593,7 +593,7 @@ describe("Custom keywords", () => {
     })
   })
 
-  describe("$data reference support with custom keywords (with $data option)", () => {
+  describe('$data reference support with "validate" keywords (with $data option)', () => {
     beforeEach(() => {
       instances = getAjvInstances(
         {
@@ -881,7 +881,7 @@ describe("Custom keywords", () => {
     })
   }
 
-  function testRangeKeyword(definition, customErrors, numErrors) {
+  function testRangeKeyword(definition, createsErrors, numErrors) {
     instances.forEach((_ajv) => {
       _ajv.addKeyword(definition)
       _ajv.addKeyword({keyword: "exclusiveRange", schemaType: "boolean"})
@@ -895,11 +895,11 @@ describe("Custom keywords", () => {
       shouldBeValid(validate, "abc")
 
       shouldBeInvalid(validate, 1.99, numErrors)
-      if (customErrors) {
+      if (createsErrors) {
         shouldBeRangeError(validate.errors[0], "", "#/x-range", ">=", 2)
       }
       shouldBeInvalid(validate, 4.01, numErrors)
-      if (customErrors) {
+      if (createsErrors) {
         shouldBeRangeError(validate.errors[0], "", "#/x-range", "<=", 4)
       }
 
@@ -918,11 +918,11 @@ describe("Custom keywords", () => {
       shouldBeValid(validate, {foo: 3.99})
 
       shouldBeInvalid(validate, {foo: 2}, numErrors)
-      if (customErrors) {
+      if (createsErrors) {
         shouldBeRangeError(validate.errors[0], ".foo", "#/properties/foo/x-range", ">", 2, true)
       }
       shouldBeInvalid(validate, {foo: 4}, numErrors)
-      if (customErrors) {
+      if (createsErrors) {
         shouldBeRangeError(validate.errors[0], ".foo", "#/properties/foo/x-range", "<", 4, true)
       }
     })
@@ -1010,7 +1010,7 @@ describe("Custom keywords", () => {
 
     it("should throw if defined keyword is passed", () => {
       testThrow(["minimum", "maximum", "multipleOf", "minLength", "maxLength"])
-      testThrowDuplicate("custom")
+      testThrowDuplicate("user-defined")
 
       function testThrow(keywords) {
         TEST_TYPES.forEach((dataType, index) => {
@@ -1063,15 +1063,15 @@ describe("Custom keywords", () => {
 
     it("should throw if unknown type is passed", () => {
       should.throw(() => {
-        _addKeyword("custom1", "wrongtype")
+        _addKeyword("user-defined1", "wrongtype")
       })
 
       should.throw(() => {
-        _addKeyword("custom2", ["number", "wrongtype"])
+        _addKeyword("user-defined2", ["number", "wrongtype"])
       })
 
       should.throw(() => {
-        _addKeyword("custom3", ["number", undefined])
+        _addKeyword("user-defined3", ["number", undefined])
       })
     })
 
@@ -1106,7 +1106,7 @@ describe("Custom keywords", () => {
   })
 
   describe("removeKeyword", () => {
-    it("should remove and allow redefining custom keyword", () => {
+    it("should remove and allow redefining keyword", () => {
       ajv.addKeyword({
         keyword: "positive",
         type: "number",
@@ -1184,7 +1184,7 @@ describe("Custom keywords", () => {
     })
   })
 
-  describe("custom keywords mutating data", () => {
+  describe("user-defined keywords mutating data", () => {
     it("should NOT update data without option modifying", () => {
       should.throw(() => {
         testModifying(false)
@@ -1238,7 +1238,7 @@ describe("Custom keywords", () => {
     }
   })
 
-  describe("custom keywords with predefined validation result", () => {
+  describe('"validate" keywords with predefined validation result', () => {
     it("should ignore result from validation function", () => {
       ajv.addKeyword({
         keyword: "pass",

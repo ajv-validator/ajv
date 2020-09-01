@@ -11,7 +11,7 @@ describe("issue #768, fix passContext in recursive $ref", () => {
   })
 
   describe("passContext = true", () => {
-    it("should pass this value as context to custom keyword validation function", () => {
+    it("should pass this value as context to user-defined keyword validation function", () => {
       var validate = getValidate(true)
       var self = {}
       validate.call(self, {bar: "a", baz: {bar: "b"}})
@@ -21,7 +21,7 @@ describe("issue #768, fix passContext in recursive $ref", () => {
   })
 
   describe("passContext = false", () => {
-    it("should pass ajv instance as context to custom keyword validation function", () => {
+    it("should pass ajv instance as context to user-defined keyword validation function", () => {
       var validate = getValidate(false)
       validate({bar: "a", baz: {bar: "b"}})
       contexts.should.have.length(2)
@@ -30,7 +30,7 @@ describe("issue #768, fix passContext in recursive $ref", () => {
   })
 
   describe("ref is fragment and passContext = true", () => {
-    it("should pass this value as context to custom keyword validation function", () => {
+    it("should pass this value as context to user-defined keyword validation function", () => {
       var validate = getValidateFragments(true)
       var self = {}
       validate.call(self, {baz: {corge: "a", quux: {baz: {corge: "b"}}}})
@@ -40,7 +40,7 @@ describe("issue #768, fix passContext in recursive $ref", () => {
   })
 
   describe("ref is fragment and passContext = false", () => {
-    it("should pass ajv instance as context to custom keyword validation function", () => {
+    it("should pass ajv instance as context to user-defined keyword validation function", () => {
       var validate = getValidateFragments(false)
       validate({baz: {corge: "a", quux: {baz: {corge: "b"}}}})
       contexts.should.have.length(2)

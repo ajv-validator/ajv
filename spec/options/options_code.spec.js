@@ -55,7 +55,7 @@ describe("code generation options", () => {
     })
 
     describe("= true", () => {
-      it("should pass this value as context to custom keyword validation function", () => {
+      it("should pass this value as context to user-defined keyword validation function", () => {
         var validate = getValidate(true)
         var self = {}
         validate.call(self, {})
@@ -65,7 +65,7 @@ describe("code generation options", () => {
     })
 
     describe("= false", () => {
-      it("should pass ajv instance as context to custom keyword validation function", () => {
+      it("should pass ajv instance as context to user-defined keyword validation function", () => {
         var validate = getValidate(false)
         var self = {}
         validate.call(self, {})

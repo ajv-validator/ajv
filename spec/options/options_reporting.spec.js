@@ -86,7 +86,7 @@ describe("reporting options", () => {
       console.warn = origConsoleWarn
     })
 
-    it("no custom logger is given - global console should be used", () => {
+    it("no user-defined logger is given - global console should be used", () => {
       var ajv = new Ajv({
         meta: false,
       })
@@ -99,7 +99,7 @@ describe("reporting options", () => {
       should.equal(consoleCalled, true)
     })
 
-    it("custom logger is an object - logs should only report to it", () => {
+    it("user-defined logger is an object - logs should only report to it", () => {
       var loggerCalled = false
 
       var logger = {
@@ -146,10 +146,7 @@ describe("reporting options", () => {
           meta: false,
           logger: {},
         })
-      }).should.throw(
-        Error,
-        /logger must implement log, warn and error methods/
-      )
+      }).should.throw(Error, /logger must implement log, warn and error methods/)
     })
   })
 })

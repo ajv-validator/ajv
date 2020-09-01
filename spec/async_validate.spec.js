@@ -77,7 +77,7 @@ describe("async schemas, formats and keywords", function () {
     })
   })
 
-  describe("async custom keywords", () => {
+  describe("async user-defined keywords", () => {
     beforeEach(() => {
       instances.forEach((_ajv) => {
         _ajv.addKeyword({
@@ -119,7 +119,7 @@ describe("async schemas, formats and keywords", function () {
       })
     })
 
-    it("should return custom error", () => {
+    it("should return user-defined error", () => {
       return Promise.all(
         instances.map((_ajv) => {
           var schema = {

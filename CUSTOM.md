@@ -1,17 +1,21 @@
-# Defining custom keywords
+# User defined keywords
 
 ## Contents
 
 - Define keyword with:
+  - code generation function - used by all pre-defined keywords
   - [validation function](#define-keyword-with-validation-function)
   - [compilation function](#define-keyword-with-compilation-function)
   - [macro function](#define-keyword-with-macro-function)
-  - [inline compilation function](#define-keyword-with-inline-compilation-function)
 - [Schema compilation context](#schema-compilation-context)
 - [Validation time variables](#validation-time-variables)
 - [Ajv utilities](#ajv-utilities)
-- [Reporting errors in custom keywords](#reporting-errors-in-custom-keywords)
+- [Reporting errors](#reporting-errors)
 - [Short-circuit validation](#short-circuit-validation)
+
+### Define keyword with code generation function
+
+TODO
 
 ### Define keyword with validation function
 
@@ -67,7 +71,7 @@ console.log(validate({foo: "baz"})) // false
 
 `const` keyword is already available in Ajv.
 
-**Please note:** If the keyword does not define custom errors (see [Reporting errors in custom keywords](#reporting-errors-in-custom-keywords)) pass `errors: false` in its definition; it will make generated code more efficient.
+**Please note:** If the keyword does not define errors (see [Reporting errors](#reporting-errors)) pass `errors: false` in its definition; it will make generated code more efficient.
 
 To add asynchronous keyword pass `async: true` in its definition.
 
@@ -87,9 +91,9 @@ The function should return validation result as boolean. It can return an array 
 
 In some cases it is the best approach to define keywords, but it has the performance cost of an extra function call during validation. If keyword logic can be expressed via some other JSON Schema then `macro` keyword definition is more efficient (see below).
 
-All custom keywords types can have an optional `metaSchema` property in their definitions. It is a schema against which the value of keyword will be validated during schema compilation.
+All keywords can have an optional `metaSchema` property in their definitions. It is a schema against which the value of keyword will be validated during schema compilation.
 
-Custom keyword can also have an optional `dependencies` property in their definitions - it is a list of required keywords in a containing (parent) schema.
+Keywords can also have an optional `dependencies` property in their definitions - it is a list of required keywords in a containing (parent) schema.
 
 Example. `range` and `exclusiveRange` keywords using compiled schema:
 
@@ -127,7 +131,7 @@ console.log(validate(2)) // false
 console.log(validate(4)) // false
 ```
 
-See note on custom errors and asynchronous keywords in the previous section.
+See note on errors and asynchronous keywords in the previous section.
 
 ### Define keyword with "macro" function
 
@@ -191,7 +195,7 @@ console.log(validate([3, 4, 5])) // true, number 5 matches schema inside "contai
 
 `contains` keyword is already available in Ajv with option `v5: true`.
 
-See the example of defining recursive macro keyword `deepProperties` in the [test](https://github.com/ajv-validator/ajv/blob/master/spec/custom.spec.js#L151).
+See the example of defining recursive macro keyword `deepProperties` in the [test](https://github.com/ajv-validator/ajv/blob/master/spec/keyword.spec.js#L151).
 
 ### Define keyword with "inline" compilation function
 
@@ -282,7 +286,7 @@ The first parameter passed to inline keyword compilation function (and the 3rd p
 - _baseId_ - the current schema base URI that should be used as the base for resolving URIs in references (\$ref).
 - _async_ - truthy if the current schema is asynchronous.
 - _opts_ - Ajv instance option. You should not be changing them.
-- _formats_ - all formats available in Ajv instance, including the custom ones.
+- _formats_ - all formats available in Ajv instance.
 - _compositeRule_ - boolean indicating that the current schema is inside the compound keyword where failing some rule doesn't mean validation failure (`anyOf`, `oneOf`, `not`, `if` in `switch`). This flag is used to determine whether you can return validation result immediately after any error in case the option `allErrors` is not `true. You only need to do it if you have many steps in your keywords and potentially can define multiple errors.
 - _validate_ - the function you need to use to compile subschemas in your keywords (see the [implementation](https://github.com/ajv-validator/ajv-keywords/blob/master/keywords/dot/switch.jst) of `switch` keyword for example).
 - _util_ - [Ajv utilities](#ajv-utilities) you can use in your inline compilation functions.
@@ -292,20 +296,16 @@ The first parameter passed to inline keyword compilation function (and the 3rd p
 
 There is a number of variables and expressions you can use in the generated (validation-time) code of your keywords.
 
-- `'data' + (it.dataLevel || '')` - the variable name for the data at the current level.
-- `'data' + ((it.dataLevel-1)||'')` - parent data if `it.dataLevel > 0`.
+TODO
+
 - `'rootData'` - the root data.
 - `it.dataPathArr[it.dataLevel]` - the name of the property in the parent object that points to the current data if `it.dataLevel > 0`.
-- `'validate.schema'` - top level schema of the current validation function at validation-time.
-- `'validate.schema' + it.schemaPath` - current level schema available at validation time (the same schema at compile time is `it.schema`).
-- `'validate.schema' + it.schemaPath + '.' + keyword` - the value of your custom keyword at validation-time. Keyword is passed as the second parameter to the inline compilation function to allow using the same function to compile multiple keywords.
-- `'valid' + it.level` - the variable that you have to declare and to assign the validation result to if your keyword returns statements rather than expression (`statements: true`).
-- `'errors'` - the number of encountered errors. See [Reporting errors in custom keywords](https://github.com/ajv-validator/ajv/blob/master/CUSTOM.md#reporting-errors-in-custom-keywords).
-- `'vErrors'` - the array with errors collected so far. See [Reporting errors in custom keywords](https://github.com/ajv-validator/ajv/blob/master/CUSTOM.md#reporting-errors-in-custom-keywords).
+- `'errors'` - the number of encountered errors. See [Reporting errors](#reporting-errors).
+- `'vErrors'` - the array with errors collected so far. See [Reporting errors](#reporting-errors).
 
 ## Ajv utilities
 
-There are sevral useful functions you can use in your inline keywords. These functions are available as properties of `it.util` object:
+There are sevral useful functions you can use in your _code_ keywords. These functions can be imported from TODO:
 
 ##### .toHash(Array arr) -&gt; Object
 
@@ -317,9 +317,9 @@ toHash(["a", "b", "c"]) // { a: true, b: true, c: true }
 
 ##### .equal(value1, value2) -&gt; Boolean
 
-Performs deep equality comparison. This function is used in keywords `enum`, `constant`, `uniqueItems` and can be used in custom keywords.
+Performs deep equality comparison. This function is used in keywords `enum`, `constant`, `uniqueItems` and can be used in user-defined keywords.
 
-##### .getProperty(String key) -&gt; String
+##### gen.getProperty(String key) -&gt; String
 
 Converts the string that is the key/index to access the property/item to the JavaScript syntax to access the property (either "." notation or "[...]" notation).
 
@@ -336,18 +336,6 @@ Determines whether the passed schema has rules that should be validated. This fu
 
 ```javascript
 schemaHasRules(schema, it.RULES.all) // true or false
-```
-
-##### .escapeQuotes(String str) -&gt; String
-
-Escapes single quotes in the string, so it can be inserted in the generated code inside the string constant with the single quotes.
-
-##### .toQuotedString(String str) -&gt; String
-
-Converts the string to the JavaScript string constant in single quotes (using the escaped string).
-
-```javascript
-toQuotedString("a'b") // "'a\\'b'"
 ```
 
 ##### .getData(String jsonPointer, Number dataLevel, Array paths) -&gt; String
@@ -376,15 +364,15 @@ Converts the property name to the JSON-Pointer fragment that can be used in URI.
 
 Converts the JSON-Pointer fragment from URI to the property name.
 
-## Reporting errors in custom keywords
+## Reporting errors
 
-All custom keywords but macro keywords can optionally create custom error messages.
+All keywords but _macro_ can optionally create or define error messages.
 
-Synchronous validating and compiled keywords should define errors by assigning them to `.errors` property of the validation function. Asynchronous keywords can return promise that rejects with `new Ajv.ValidationError(errors)`, where `errors` is an array of custom validation errors (if you don't want to define custom errors in asynchronous keyword, its validation function can return the promise that resolves with `false`).
+Synchronous validating and compiled keywords should define errors by assigning them to `.errors` property of the validation function. Asynchronous keywords can return promise that rejects with `new Ajv.ValidationError(errors)`, where `errors` is an array of validation errors (if you don't want to create errors in asynchronous keyword, its validation function can return the promise that resolves with `false`).
 
 TODO replace "inline" keywords with "code" keywords
 
-Inline custom keyword should increase error counter `errors` and add error to `vErrors` array (it can be null). This can be done for both synchronous and asynchronous keywords.
+Inline keyword should increase error counter `errors` and add error to `vErrors` array (it can be null). This can be done for both synchronous and asynchronous keywords.
 
 When inline keyword performs validation Ajv checks whether it created errors by comparing errors count before and after validation. To skip this check add option `errors` (can be `"full"`, `true` or `false`) to keyword definition:
 
@@ -393,7 +381,7 @@ ajv.addKeyword("range", {
   type: "number",
   inline: inlineRangeTemplate,
   statements: true,
-  errors: true, // keyword should create custom errors when validation fails
+  errors: true, // keyword should create errors when validation fails
   // errors: 'full' // created errors should have dataPath already set
   // errors: false // keyword never creates errors, Ajv will add a default error
 })
@@ -403,7 +391,7 @@ Each error object should at least have properties `keyword`, `message` and `para
 
 Inlined keywords can optionally define `dataPath` and `schemaPath` properties in error objects, that will be assigned by Ajv unless `errors` option of the keyword is `"full"`.
 
-If custom keyword doesn't create errors, the default error will be created in case the keyword fails validation (see [Validation errors](https://github.com/ajv-validator/ajv#validation-errors)).
+If keyword doesn't create errors, the default error will be created in case the keyword fails validation (see [Validation errors](https://github.com/ajv-validator/ajv#validation-errors)).
 
 ## Short-circuit validation
 

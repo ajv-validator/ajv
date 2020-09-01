@@ -48,7 +48,7 @@
     ]
   },
   {
-    "description": "async custom keywords (validated with errors)",
+    "description": "async user-defined keywords (validated with errors)",
     "schema": {
       "$async": true,
       "properties": {
@@ -96,7 +96,7 @@
     ]
   },
   {
-    "description": "async custom keywords (compiled)",
+    "description": "async user-defined keywords (compiled)",
     "schema": {
       "$async": true,
       "properties": {
@@ -134,7 +134,7 @@
     ]
   },
   {
-    "description": "custom keyword in async schema",
+    "description": "keyword in async schema",
     "schema": {
       "$async": true,
       "const": 5
