@@ -1146,6 +1146,7 @@ Defaults:
 {
   // strict mode options
   strict:           true,
+  allowMatchingProperties: false,
   // validation and reporting options:
   $data:            false,
   allErrors:        false,
@@ -1164,8 +1165,6 @@ Defaults:
   removeAdditional: false,
   useDefaults:      false,
   coerceTypes:      false,
-  // asynchronous validation options:
-  transpile:        undefined, // requires ajv-async package
   // advanced options:
   meta:             true,
   validateSchema:   true,
@@ -1185,14 +1184,13 @@ Defaults:
 }
 ```
 
-##### Strict mode option
+##### Strict mode options
 
 - _strict_: By default Ajv executes in strict mode, that is designed to prevent any unexpected behaviours or silently ignored mistakes in schemas (see [Strict Mode](#strict-mode) for more details). It does not change any validation results, but it makes some schemas invalid that would be otherwise valid according to JSON Schema specification. Option values:
   - `true` (default) - use strict mode and throw an exception when any strict mode restrictions is violated.
   - `"log"` - log warning when any strict mode restriction is violated.
   - `false` - ignore any strict mode restriction.
-
-This option replaced v6 options `strictDefaults`, `strictKeywords` and `strictNumbers` and added additional restrictions - see [Strict Mode](#strict-mode).
+- _allowMatchingProperties_: pass true to allow overlap between "properties" and "patternProperties". See [Strict Mode](#strict-mode).
 
 ##### Validation and reporting options
 
@@ -1245,13 +1243,6 @@ This option replaced v6 options `strictDefaults`, `strictKeywords` and `strictNu
   - `true` - coerce scalar data types.
   - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
-##### Asynchronous validation options
-
-- _transpile_: Requires [ajv-async](https://github.com/ajv-validator/ajv-async) package. It determines whether Ajv transpiles compiled asynchronous validation function. Option values:
-  - `undefined` (default) - transpile with [nodent](https://github.com/MatAtBread/nodent) if async functions are not supported.
-  - `true` - always transpile with nodent.
-  - `false` - do not transpile; if async functions are not supported an exception will be thrown.
-
 ##### Advanced options
 
 - _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default). If an object is passed, it will be used as the default meta-schema for schemas that have no `$schema` keyword. This default meta-schema MUST have `$schema` keyword.
@@ -1271,9 +1262,7 @@ This option replaced v6 options `strictDefaults`, `strictKeywords` and `strictNu
 - _multipleOfPrecision_: by default `multipleOf` keyword is validated by comparing the result of division with parseInt() of that result. It works for dividers that are bigger than 1. For small dividers such as 0.01 the result of the division is usually not integer (even when it should be integer, see issue [#84](https://github.com/ajv-validator/ajv/issues/84)). If you need to use fractional dividers set this option to some positive integer N to have `multipleOf` validated using this formula: `Math.abs(Math.round(division) - division) < 1e-N` (it is slower but allows for float arithmetics deviations).
 - _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when messages are generated outside of Ajv code (e.g. with [ajv-i18n](https://github.com/ajv-validator/ajv-i18n)).
 - _sourceCode_: add `sourceCode` property to validating function (for debugging; this code can be different from the result of toString call).
-- _processCode_: an optional function to process generated code before it is passed to Function constructor. It can be used to either beautify (the validating function is generated without line-breaks) or to transpile code. Starting from version 5.0.0 this option replaced options:
-  - `beautify` that formatted the generated function using [js-beautify](https://github.com/beautify-web/js-beautify). If you want to beautify the generated code pass a function calling `require('js-beautify').js_beautify` as `processCode: code => js_beautify(code)`.
-  - `transpile` that transpiled asynchronous validation function. You can still use `transpile` option with [ajv-async](https://github.com/ajv-validator/ajv-async) package. See [Asynchronous validation](#asynchronous-validation) for more information.
+- _processCode_: an optional function to process generated code before it is passed to Function constructor. It can be used to either beautify (the validating function is generated without line-breaks) or to transpile code.
 - _cache_: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache [sacjs](https://github.com/epoberezkin/sacjs) can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods `put(key, value)`, `get(key)`, `del(key)` and `clear()`.
 - _serialize_: an optional function to serialize schema to cache key. Pass `false` to use schema itself as a key (e.g., if WeakMap used as a cache). By default [fast-json-stable-stringify](https://github.com/epoberezkin/fast-json-stable-stringify) is used.
 - _jsPropertySyntax_ (deprecated) - set to `true` to report `dataPath` in errors as in v6, using JavaScript property syntax (e.g., `".prop[1].subProp"`). By default `dataPath` in errors is reported as JSON pointer. This option is added for backward compatibility and is not recommended - this format is difficult to parse even in JS code.
