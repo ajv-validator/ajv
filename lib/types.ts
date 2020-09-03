@@ -9,7 +9,6 @@ export interface Options {
   allErrors?: boolean
   verbose?: boolean
   jsonPointers?: boolean
-  uniqueItems?: boolean
   unicode?: boolean
   format?: false | string
   formats?: object

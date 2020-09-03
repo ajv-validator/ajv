@@ -1098,7 +1098,6 @@ Defaults:
   verbose:          false,
   $comment:         false, // NEW in Ajv version 6.0
   jsonPointers:     false,
-  uniqueItems:      true,
   unicode:          true,
   nullable:         false,
   format:           true,
@@ -1148,7 +1147,6 @@ Defaults:
   - `true`: log the keyword value to console.
   - function: pass the keyword value, its schema path and root schema to the specified function
 - _jsonPointers_: set `dataPath` property of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
-- _uniqueItems_: validate `uniqueItems` keyword (true by default).
 - _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.
 - _nullable_: support keyword "nullable" from [Open API 3 specification](https://swagger.io/docs/specification/data-models/data-types/).
 - _format_: formats validation mode. Option values:
