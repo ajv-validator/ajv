@@ -1,6 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {alwaysValidSchema} from "../util"
+import {alwaysValidSchema, checkStrictMode} from "../util"
 import {applySubschema, Type} from "../../compile/subschema"
 import {_, Name, str} from "../../compile/codegen"
 
@@ -14,12 +14,7 @@ const def: CodeKeywordDefinition = {
     const len = gen.const("len", _`${data}.length`)
     const items = parentSchema.items
     if (!Array.isArray(items)) {
-      const {opts, logger} = it
-      if (opts.strict) {
-        const msg = '"additionalItems" without "items" is ignored, remove it'
-        if (opts.strict === "log") logger.warn(msg)
-        else throw new Error(msg)
-      }
+      checkStrictMode(it, '"additionalItems" without "items" is ignored')
       return
     }
     if (schema === false) {

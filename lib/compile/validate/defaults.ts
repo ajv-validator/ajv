@@ -1,5 +1,6 @@
 import {CompilationContext} from "../../types"
 import {_, getProperty, stringify} from "../codegen"
+import {checkStrictMode} from "../../vocabularies/util"
 
 export function assignDefaults(it: CompilationContext, ty?: string): void {
   const {properties, items} = it.schema
@@ -12,19 +13,12 @@ export function assignDefaults(it: CompilationContext, ty?: string): void {
   }
 }
 
-function assignDefault(
-  {gen, compositeRule, data, opts, logger}: CompilationContext,
-  prop: string | number,
-  defaultValue: any
-): void {
+function assignDefault(it: CompilationContext, prop: string | number, defaultValue: any): void {
+  const {gen, compositeRule, data, opts} = it
   if (defaultValue === undefined) return
   const childData = _`${data}${getProperty(prop)}`
   if (compositeRule) {
-    if (opts.strict) {
-      const msg = `default is ignored for: ${childData}`
-      if (opts.strict === "log") logger.warn(msg)
-      else throw new Error(msg)
-    }
+    checkStrictMode(it, `default is ignored for: ${childData}`)
     return
   }
 

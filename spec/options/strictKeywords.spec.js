@@ -17,7 +17,7 @@ describe("strict option with keywords (replaced strictKeywords)", () => {
       }
 
       ajv.compile(schema)
-      should.not.exist(output.error)
+      should.not.exist(output.warning)
     })
   })
 
@@ -50,7 +50,7 @@ describe("strict option with keywords (replaced strictKeywords)", () => {
         unknownKeyword: 1,
       }
       ajv.compile(schema)
-      should.equal(output.error, 'unknown keyword: "unknownKeyword"')
+      should.equal(output.warning, 'unknown keyword: "unknownKeyword"')
     })
   })
 
@@ -79,11 +79,11 @@ describe("strict option with keywords (replaced strictKeywords)", () => {
       log() {
         throw new Error("log should not be called")
       },
-      warn() {
-        throw new Error("warn should not be called")
+      warn(msg) {
+        output.warning = msg
       },
-      error(msg) {
-        output.error = msg
+      error() {
+        throw new Error("warn should not be called")
       },
     }
   }

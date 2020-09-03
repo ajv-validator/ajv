@@ -1,6 +1,6 @@
 import {CodeKeywordDefinition, CompilationContext} from "../../types"
 import KeywordContext from "../../compile/context"
-import {alwaysValidSchema} from "../util"
+import {alwaysValidSchema, checkStrictMode} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {_, str, Name} from "../../compile/codegen"
 
@@ -14,7 +14,7 @@ const def: CodeKeywordDefinition = {
     const hasThen = hasSchema(it, "then")
     const hasElse = hasSchema(it, "else")
     if (!hasThen && !hasElse) {
-      // TODO strict mode: fail or warning if both "then" and "else" are not present
+      checkStrictMode(it, '"if" without "then" and "else" is ignored')
       return
     }
 

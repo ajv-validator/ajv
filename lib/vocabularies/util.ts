@@ -76,3 +76,11 @@ export function usePattern(gen: CodeGen, pattern: string): Name {
     code: _`new RegExp(${pattern})`,
   })
 }
+
+export function checkStrictMode(it: CompilationContext, msg: string): void {
+  const {opts, logger} = it
+  if (opts.strict) {
+    if (opts.strict === "log") logger.warn(msg)
+    else throw new Error(msg)
+  }
+}

@@ -1157,7 +1157,7 @@ Defaults:
 
 - _strict_: By default Ajv executes in strict mode, that is designed to prevent any unexpected behaviours or silently ignored mistakes in schemas (see [Strict Mode](#strict-mode) for more details). It does not change any validation results, but it makes some schemas invalid that would be otherwise valid according to JSON Schema specification. Option values:
   - `true` (default) - use strict mode and throw an exception when any strict mode restrictions is violated.
-  - `"log"` - log error or warning when any strict mode restriction is violated (depeding on the severity).
+  - `"log"` - log warning when any strict mode restriction is violated.
   - `false` - ignore any strict mode restriction.
 
 This option replaced v6 options `strictDefaults`, `strictKeywords` and `strictNumbers` and added additional restrictions - see [Strict Mode](#strict-mode).

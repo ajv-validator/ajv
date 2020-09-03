@@ -1,5 +1,6 @@
 import {CompilationContext, Options} from "../../types"
 import {schemaUnknownRules, schemaHasRules, schemaHasRulesExcept} from "../util"
+import {checkStrictMode} from "../../vocabularies/util"
 import {topBoolOrEmptySchema, boolOrEmptySchema} from "./boolSchema"
 import {getSchemaTypes, coerceAndCheckDataType} from "./dataType"
 import {schemaKeywords} from "./iterate"
@@ -75,15 +76,10 @@ function typeAndKeywords(it: CompilationContext, errsCount?: Name): void {
   schemaKeywords(it, types, !checkedTypes, errsCount)
 }
 
-function checkUnknownKeywords({schema, RULES, opts, logger}: CompilationContext): void {
-  if (opts.strict) {
-    const unknownKeyword = schemaUnknownRules(schema, RULES.keywords)
-    if (unknownKeyword) {
-      const msg = `unknown keyword: "${unknownKeyword}"`
-      if (opts.strict === "log") logger.error(msg)
-      else throw new Error(msg)
-    }
-  }
+function checkUnknownKeywords(it: CompilationContext): void {
+  if (!it.opts.strict) return
+  const unknownKeyword = schemaUnknownRules(it.schema, it.RULES.keywords)
+  if (unknownKeyword) checkStrictMode(it, `unknown keyword: "${unknownKeyword}"`)
 }
 
 function checkRefsAndKeywords({
