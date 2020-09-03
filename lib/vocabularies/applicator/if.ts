@@ -7,20 +7,18 @@ import {_, str, Name} from "../../compile/codegen"
 const def: CodeKeywordDefinition = {
   keyword: "if",
   schemaType: ["object", "boolean"],
-  implements: ["then", "else"],
   trackErrors: true,
   code(cxt: KeywordContext) {
-    const {gen, it} = cxt
+    const {gen, parentSchema, it} = cxt
+    if (parentSchema.then === undefined && parentSchema.else === undefined) {
+      checkStrictMode(it, '"if" without "then" and "else" is ignored')
+    }
     const hasThen = hasSchema(it, "then")
     const hasElse = hasSchema(it, "else")
-    if (!hasThen && !hasElse) {
-      checkStrictMode(it, '"if" without "then" and "else" is ignored')
-      return
-    }
+    if (!hasThen && !hasElse) return
 
     const valid = gen.let("valid", true)
     const schValid = gen.name("_valid")
-
     validateIf()
     cxt.reset()
 

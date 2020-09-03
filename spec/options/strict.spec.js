@@ -9,7 +9,11 @@ describe("strict mode", () => {
     testStrictMode({type: "array", additionalItems: false}, /additionalItems/)
   )
 
-  describe('"if" without "then" and "else"', testStrictMode({if: true}, /if/))
+  describe('"if" without "then" and "else"', testStrictMode({if: true}, /if.*then.*else/))
+
+  describe('"then" without "if"', testStrictMode({then: true}, /then.*if/))
+
+  describe('"else" without "if"', testStrictMode({else: true}, /else.*if/))
 
   describe(
     '"properties" matching "patternProperties"',
