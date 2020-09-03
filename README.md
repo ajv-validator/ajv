@@ -123,6 +123,7 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 
 - Ajv implements full JSON Schema [draft-06/07](http://json-schema.org/) standards (draft-04 is supported in v6):
   - all validation keywords (see [JSON Schema validation keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md))
+  - keyword "nullable" from [Open API 3 specification](https://swagger.io/docs/specification/data-models/data-types/).
   - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
   - support of circular references between schemas
   - correct string lengths for strings with unicode pairs
@@ -1097,7 +1098,6 @@ Defaults:
   allErrors:        false,
   verbose:          false,
   $comment:         false,
-  nullable:         false,
   format:           true,
   formats:          {},
   unknownFormats:   true,
@@ -1145,7 +1145,6 @@ Defaults:
   - `false` (default): ignore \$comment keyword.
   - `true`: log the keyword value to console.
   - function: pass the keyword value, its schema path and root schema to the specified function
-- _nullable_: support keyword "nullable" from [Open API 3 specification](https://swagger.io/docs/specification/data-models/data-types/).
 - _format_: formats validation mode. Option values:
   - `true` (default) - validate added formats (see [Formats](#formats)).
   - `false` - ignore all format keywords.

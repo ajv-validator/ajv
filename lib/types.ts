@@ -42,17 +42,17 @@ export interface CurrentOptions {
   codegen?: CodeGenOptions
   cache?: Cache
   logger?: Logger | false
-  nullable?: boolean
   serialize?: false | ((schema: object | boolean) => any)
   $comment?: true | ((comment: string, schemaPath?: string, rootSchema?: any) => any)
 }
 
 export interface Options extends CurrentOptions {
   errorDataPath?: "object" | "property" // removed
-  jsPropertySyntax?: boolean
+  nullable?: boolean // removed, "nullable" keyword is supported by default
   schemaId?: string // removed
-  unicode?: boolean // deprecated
   uniqueItems?: boolean // removed
+  jsPropertySyntax?: boolean // deprecated
+  unicode?: boolean // deprecated
 }
 
 interface Logger {

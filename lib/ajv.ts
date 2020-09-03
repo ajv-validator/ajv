@@ -82,7 +82,6 @@ export default function Ajv(opts: Options): void {
   if (opts.keywords) addInitialKeywords(this, opts.keywords)
   addDefaultMetaSchema(this)
   if (typeof opts.meta == "object") this.addMetaSchema(opts.meta)
-  if (opts.nullable) this.addKeyword({keyword: "nullable", schemaType: "boolean"})
   addInitialSchemas(this)
   opts.format = formatOpt
 }

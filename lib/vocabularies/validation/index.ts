@@ -14,6 +14,7 @@ const validation: Vocabulary = [
   require("./limitItems"),
   require("./uniqueItems"),
   // any
+  {keyword: "nullable", schemaType: "boolean"},
   require("./const"),
   require("./enum"),
 ]
