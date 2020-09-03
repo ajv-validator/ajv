@@ -766,7 +766,8 @@ describe("User-defined keywords", () => {
 
     it('should fail if "macro" keyword definition has "$data" but no "code" or "validate"', () => {
       should.throw(() => {
-        ajv.addKeyword("even", {
+        ajv.addKeyword({
+          keyword: "even",
           type: "number",
           $data: true,
           macro: () => {

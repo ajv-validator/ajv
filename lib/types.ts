@@ -9,7 +9,7 @@ export interface Options {
   allErrors?: boolean
   verbose?: boolean
   jsonPointers?: boolean
-  unicode?: boolean
+  unicode?: boolean // deprecated
   format?: false | string
   formats?: object
   keywords?: Vocabulary | {[x: string]: KeywordDefinition} // map is deprecated

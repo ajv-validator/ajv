@@ -125,7 +125,7 @@ Performance of different validators by [json-schema-benchmark](https://github.co
   - all validation keywords (see [JSON Schema validation keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md))
   - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
   - support of circular references between schemas
-  - correct string lengths for strings with unicode pairs (can be turned off)
+  - correct string lengths for strings with unicode pairs
   - [formats](#formats) defined by JSON Schema draft-07 standard (with [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin) and additional formats (can be turned off)
   - [validates schemas against meta-schema](#api-validateschema)
 - supports [browsers](#using-in-browser) and Node.js 0.10-14.x
@@ -1098,7 +1098,6 @@ Defaults:
   verbose:          false,
   $comment:         false, // NEW in Ajv version 6.0
   jsonPointers:     false,
-  unicode:          true,
   nullable:         false,
   format:           true,
   formats:          {},
@@ -1147,7 +1146,6 @@ Defaults:
   - `true`: log the keyword value to console.
   - function: pass the keyword value, its schema path and root schema to the specified function
 - _jsonPointers_: set `dataPath` property of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
-- _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.
 - _nullable_: support keyword "nullable" from [Open API 3 specification](https://swagger.io/docs/specification/data-models/data-types/).
 - _format_: formats validation mode. Option values:
   - `true` (default) - validate added formats (see [Formats](#formats)).
