@@ -32,7 +32,7 @@ export function schemaKeywords(
 
   function groupKeywords(group: RuleGroup): void {
     if (group.type) {
-      gen.if(checkDataType(group.type, data, opts.strictNumbers))
+      gen.if(checkDataType(group.type, data, opts.strict))
       iterateKeywords(it, group)
       if (types.length === 1 && types[0] === group.type && typeErrors) {
         gen.else()

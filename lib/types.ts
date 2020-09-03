@@ -53,10 +53,6 @@ export interface Options extends CurrentOptions {
   // deprecated:
   jsPropertySyntax?: boolean // added instead of jsonPointers
   unicode?: boolean
-  // replaced with option "strict":
-  strictDefaults?: boolean | "log"
-  strictKeywords?: boolean | "log"
-  strictNumbers?: boolean
 }
 
 interface Logger {

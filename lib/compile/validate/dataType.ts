@@ -31,7 +31,7 @@ export function coerceAndCheckDataType(it: CompilationContext, types: string[]):
     types.length > 0 &&
     !(coerceTo.length === 0 && types.length === 1 && schemaHasRulesForType(it, types[0]))
   if (checkTypes) {
-    const wrongType = checkDataTypes(types, data, opts.strictNumbers, DataType.Wrong)
+    const wrongType = checkDataTypes(types, data, opts.strict, DataType.Wrong)
     gen.if(wrongType, () => {
       if (coerceTo.length) coerceData(it, types, coerceTo)
       else reportTypeError(it)
@@ -56,7 +56,7 @@ function coerceData(it: CompilationContext, types: string[], coerceTo: string[])
       gen
         .assign(data, _`${data}[0]`)
         .assign(dataType, _`typeof ${data}`)
-        .if(checkDataTypes(types, data, opts.strictNumbers), () => gen.assign(coerced, data))
+        .if(checkDataTypes(types, data, opts.strict), () => gen.assign(coerced, data))
     )
   }
   gen.if(_`${coerced} !== undefined`)

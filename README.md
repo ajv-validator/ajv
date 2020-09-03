@@ -1132,9 +1132,6 @@ Defaults:
   removeAdditional: false,
   useDefaults:      false,
   coerceTypes:      false,
-  // strict mode options
-  strictDefaults:   false,
-  strictNumbers:    false,
   // asynchronous validation options:
   transpile:        undefined, // requires ajv-async package
   // advanced options:

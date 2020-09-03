@@ -146,7 +146,7 @@ export default class KeywordContext implements KeywordErrorContext {
       if (schemaType) {
         if (!(schemaCode instanceof Name)) throw new Error("ajv implementation error")
         const st = Array.isArray(schemaType) ? schemaType : [schemaType]
-        return _`(${checkDataTypes(st, schemaCode, it.opts.strictNumbers, DataType.Wrong)})`
+        return _`(${checkDataTypes(st, schemaCode, it.opts.strict, DataType.Wrong)})`
       }
       return nil
     }
