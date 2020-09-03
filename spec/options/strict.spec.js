@@ -1,35 +1,32 @@
 "use strict"
 
-var Ajv = require("../ajv")
-var should = require("../chai").should()
+const Ajv = require("../ajv")
+const should = require("../chai").should()
 
-describe("strict option with keywords (replaced strictKeywords)", () => {
+describe("strict option with additionalItems", () => {
   describe("strict = false", () => {
-    it("should NOT throw an error or log a warning given an unknown keyword", () => {
-      var output = {}
-      var ajv = new Ajv({
+    it('should NOT throw an error or log a warning when "additionalItems" is used without "items"', () => {
+      const output = {}
+      const ajv = new Ajv({
         strict: false,
         logger: getLogger(output),
       })
-      var schema = {
-        properties: {},
-        unknownKeyword: 1,
+      const schema = {
+        additionalItems: false,
       }
-
       ajv.compile(schema)
-      should.not.exist(output.error)
+      should.not.exist(output.warning)
     })
   })
 
   describe("strict = true or undefined", () => {
-    it("should throw an error given an unknown keyword in the schema root when strict is true", () => {
+    it('should throw an error when "additionalItems" is used without "items"', () => {
       test(new Ajv({strict: true}))
       test(new Ajv())
 
       function test(ajv) {
         const schema = {
-          properties: {},
-          unknownKeyword: 1,
+          additionalItems: false,
         }
         should.throw(() => {
           ajv.compile(schema)
@@ -39,18 +36,17 @@ describe("strict option with keywords (replaced strictKeywords)", () => {
   })
 
   describe('strict = "log"', () => {
-    it("should log an error given an unknown keyword in the schema root", () => {
-      var output = {}
-      var ajv = new Ajv({
+    it('should log a warning when "additionalItems" is used without "items"', () => {
+      const output = {}
+      const ajv = new Ajv({
         strict: "log",
         logger: getLogger(output),
       })
-      var schema = {
-        properties: {},
-        unknownKeyword: 1,
+      const schema = {
+        additionalItems: false,
       }
       ajv.compile(schema)
-      should.equal(output.error, 'unknown keyword: "unknownKeyword"')
+      ;/additionalItems/.test(output.warning).should.equal(true)
     })
   })
 
@@ -63,7 +59,7 @@ describe("strict option with keywords (replaced strictKeywords)", () => {
         const schema = {
           anyOf: [
             {
-              unknownKeyword: 1,
+              additionalItems: false,
             },
           ],
         }
@@ -79,11 +75,11 @@ describe("strict option with keywords (replaced strictKeywords)", () => {
       log() {
         throw new Error("log should not be called")
       },
-      warn() {
-        throw new Error("warn should not be called")
+      warn(msg) {
+        output.warning = msg
       },
-      error(msg) {
-        output.error = msg
+      error() {
+        throw new Error("error should not be called")
       },
     }
   }

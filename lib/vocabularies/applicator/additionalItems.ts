@@ -13,8 +13,15 @@ const def: CodeKeywordDefinition = {
     const {gen, schema, parentSchema, data, it} = cxt
     const len = gen.const("len", _`${data}.length`)
     const items = parentSchema.items
-    // TODO strict mode: fail or warning if "additionalItems" is present without "items" Array
-    if (!Array.isArray(items)) return
+    if (!Array.isArray(items)) {
+      const {opts, logger} = it
+      if (opts.strict) {
+        const msg = '"additionalItems" without "items" is ignored, remove it'
+        if (opts.strict === "log") logger.warn(msg)
+        else throw new Error(msg)
+      }
+      return
+    }
     if (schema === false) {
       cxt.setParams({len: items.length})
       cxt.pass(_`${len} <= ${items.length}`)
