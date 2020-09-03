@@ -153,7 +153,7 @@ npm install ajv
 
 ## <a name="usage"></a>Getting started
 
-Try it in the Node.js REPL: https://tonicdev.com/npm/ajv
+Try it in the Node.js REPL: https://runkit.com/npm/ajv
 
 The fastest validation call:
 
@@ -622,7 +622,7 @@ function loadSchema(uri) {
 
 ## Asynchronous validation
 
-Example in Node.js REPL: https://tonicdev.com/esp/ajv-asynchronous-validation
+Example in Node.js REPL: https://runkit.com/esp/ajv-asynchronous-validation
 
 You can define formats and keywords that perform validation asynchronously by accessing database or some other service. You should add `async: true` in the keyword or format definition (see [addFormat](#api-addformat), [addKeyword](#api-addkeyword) and [User-defined keywords](user-defined-keywords)).
 
@@ -632,7 +632,7 @@ If your schema uses asynchronous formats/keywords or refers to some schema that 
 
 Validation function for an asynchronous format/keyword should return a promise that resolves with `true` or `false` (or rejects with `new Ajv.ValidationError(errors)` if you want to return errors from the keyword function).
 
-Ajv compiles asynchronous schemas to [es7 async functions](http://tc39.github.io/ecmascript-asyncawait/) that can optionally be transpiled with [nodent](https://github.com/MatAtBread/nodent). Async functions are supported in Node.js 7+ and all modern browsers. You can also supply any other transpiler as a function via `processCode` option. See [Options](#options).
+Ajv compiles asynchronous schemas to [async functions](http://tc39.github.io/ecmascript-asyncawait/). Async functions are supported in Node.js 7+ and all modern browsers. You can supply a transpiler as a function via `processCode` option. See [Options](#options).
 
 The compiled validation function has `$async: true` property (if the schema is asynchronous), so you can differentiate these functions if you are using both synchronous and asynchronous schemas.
 
@@ -641,10 +641,10 @@ Validation result will be a promise that resolves with validated data or rejects
 Example:
 
 ```javascript
-var ajv = new Ajv()
-// require('ajv-async')(ajv);
+const ajv = new Ajv()
 
-ajv.addKeyword("idExists", {
+ajv.addKeyword({
+  keyword: "idExists"
   async: true,
   type: "number",
   validate: checkIdExists,
@@ -686,22 +686,7 @@ validate({userId: 1, postId: 19})
   })
 ```
 
-### Using transpilers with asynchronous validation functions.
-
-[ajv-async](https://github.com/ajv-validator/ajv-async) uses [nodent](https://github.com/MatAtBread/nodent) to transpile async functions. To use another transpiler you should separately install it (or load its bundle in the browser).
-
-#### Using nodent
-
-```javascript
-var ajv = new Ajv()
-require("ajv-async")(ajv)
-// in the browser if you want to load ajv-async bundle separately you can:
-// window.ajvAsync(ajv);
-var validate = ajv.compile(schema) // transpiled es7 async function
-validate(data).then(successFunc).catch(errorFunc)
-```
-
-#### Using other transpilers
+#### Using transpilers
 
 ```javascript
 var ajv = new Ajv({processCode: transpileFunc})

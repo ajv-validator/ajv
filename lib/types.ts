@@ -23,8 +23,6 @@ export interface CurrentOptions {
   removeAdditional?: boolean | "all" | "failing"
   useDefaults?: boolean | "empty"
   coerceTypes?: boolean | "array"
-  async?: boolean | string
-  transpile?: string | ((code: string) => string)
   meta?: boolean | object
   validateSchema?: boolean | "log"
   addUsedSchema?: boolean
