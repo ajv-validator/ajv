@@ -5,6 +5,7 @@ import {ResolvedRef} from "./compile"
 import KeywordContext from "./compile/context"
 
 export interface CurrentOptions {
+  strict?: boolean | "log"
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
@@ -22,9 +23,6 @@ export interface CurrentOptions {
   removeAdditional?: boolean | "all" | "failing"
   useDefaults?: boolean | "empty"
   coerceTypes?: boolean | "array"
-  strictDefaults?: boolean | "log"
-  strictKeywords?: boolean | "log"
-  strictNumbers?: boolean
   async?: boolean | string
   transpile?: string | ((code: string) => string)
   meta?: boolean | object
@@ -47,12 +45,18 @@ export interface CurrentOptions {
 }
 
 export interface Options extends CurrentOptions {
-  errorDataPath?: "object" | "property" // removed
-  nullable?: boolean // removed, "nullable" keyword is supported by default
-  schemaId?: string // removed
-  uniqueItems?: boolean // removed
-  jsPropertySyntax?: boolean // deprecated
-  unicode?: boolean // deprecated
+  // removed:
+  errorDataPath?: "object" | "property"
+  nullable?: boolean // "nullable" keyword is supported by default
+  schemaId?: string
+  uniqueItems?: boolean
+  // deprecated:
+  jsPropertySyntax?: boolean // added instead of jsonPointers
+  unicode?: boolean
+  // replaced with option "strict":
+  strictDefaults?: boolean | "log"
+  strictKeywords?: boolean | "log"
+  strictNumbers?: boolean
 }
 
 interface Logger {

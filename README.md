@@ -75,6 +75,7 @@ ajv.addMetaSchema(require("ajv/lib/refs/json-schema-draft-06.json"))
   - [Ajv and Content Security Policies (CSP)](#ajv-and-content-security-policies-csp)
 - [Command line interface](#command-line-interface)
 - Validation
+  - [Strict mode](#strict-mode)
   - [Keywords](#validation-keywords)
   - [Annotation keywords](#annotation-keywords)
   - [Formats](#formats)
@@ -243,6 +244,22 @@ CLI is available as a separate npm package [ajv-cli](https://github.com/ajv-vali
 - files in JSON, JSON5, YAML, and JavaScript format
 - all Ajv options
 - reporting changes in data after validation in [JSON-patch](https://tools.ietf.org/html/rfc6902) format
+
+## Strict mode
+
+TODO
+
+- _strictDefaults_: report ignored `default` keywords in schemas. Option values:
+  - `false` (default) - ignored defaults are not reported
+  - `true` - if an ignored default is present, throw an error
+  - `"log"` - if an ignored default is present, log warning
+- _strictKeywords_: report unknown keywords in schemas. Option values:
+  - `false` (default) - unknown keywords are not reported
+  - `true` - if an unknown keyword is present, throw an error
+  - `"log"` - if an unknown keyword is present, log warning
+- _strictNumbers_: validate numbers strictly, failing validation for NaN and Infinity. Option values:
+  - `false` (default) - NaN or Infinity will pass validation for numeric types
+  - `true` - NaN or Infinity will not pass validation for numeric types
 
 ## Validation keywords
 
@@ -1093,6 +1110,8 @@ Defaults:
 
 ```javascript
 {
+  // strict mode options
+  strict:           true,
   // validation and reporting options:
   $data:            false,
   allErrors:        false,
@@ -1105,7 +1124,7 @@ Defaults:
   logger:           undefined,
   // referenced schema options:
   missingRefs:      true,
-  extendRefs:       'ignore', // recommended 'fail'
+  extendRefs:       "ignore", // recommended 'fail'
   loadSchema:       undefined, // function(uri: string): Promise {}
   // options to modify validated data:
   removeAdditional: false,
@@ -1113,7 +1132,6 @@ Defaults:
   coerceTypes:      false,
   // strict mode options
   strictDefaults:   false,
-  strictKeywords:   false,
   strictNumbers:    false,
   // asynchronous validation options:
   transpile:        undefined, // requires ajv-async package
@@ -1135,6 +1153,15 @@ Defaults:
   jsPropertySyntax: false, // deprecated
 }
 ```
+
+##### Strict mode
+
+- _strict_: By default Ajv executes in strict mode, that is designed to prevent any unexpected behaviours or silently ignored mistakes in schemas (see [Strict Mode](#strict-mode) for more details). It does not change any validation results, but it makes some schemas invalid that would be otherwise valid according to JSON Schema specification. Option values:
+  - `true` (default) - use strict mode and throw an exception when any strict mode restrictions is violated.
+  - `"log"` - log error or warning when any strict mode restriction is violated (depeding on the severity).
+  - `false` - ignore any strict mode restriction.
+
+This option replaced v6 options `strictDefaults`, `strictKeywords` and `strictNumbers` and added additional restrictions - see [Strict Mode](#strict-mode).
 
 ##### Validation and reporting options
 
@@ -1186,20 +1213,6 @@ Defaults:
   - `false` (default) - no type coercion.
   - `true` - coerce scalar data types.
   - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
-
-##### Strict mode options
-
-- _strictDefaults_: report ignored `default` keywords in schemas. Option values:
-  - `false` (default) - ignored defaults are not reported
-  - `true` - if an ignored default is present, throw an error
-  - `"log"` - if an ignored default is present, log warning
-- _strictKeywords_: report unknown keywords in schemas. Option values:
-  - `false` (default) - unknown keywords are not reported
-  - `true` - if an unknown keyword is present, throw an error
-  - `"log"` - if an unknown keyword is present, log warning
-- _strictNumbers_: validate numbers strictly, failing validation for NaN and Infinity. Option values:
-  - `false` (default) - NaN or Infinity will pass validation for numeric types
-  - `true` - NaN or Infinity will not pass validation for numeric types
 
 ##### Asynchronous validation options
 

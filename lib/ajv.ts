@@ -52,9 +52,9 @@ const META_SUPPORT_DATA = ["/properties"]
  * @param {Object} opts optional options
  * @return {Object} ajv instance
  */
-export default function Ajv(opts: Options): void {
+export default function Ajv(opts: Options = {}): void {
   if (!(this instanceof Ajv)) return new Ajv(opts)
-  opts = this._opts = {...(opts || {})}
+  opts = this._opts = {strict: true, ...opts}
   setLogger(this)
   this._schemas = {}
   this._refs = {}

@@ -21,14 +21,12 @@ export function schemaRefOrVal(
 }
 
 export function alwaysValidSchema(
-  {RULES, opts: {strictKeywords}}: CompilationContext,
+  {RULES}: CompilationContext,
   schema: boolean | object
 ): boolean | void {
   return typeof schema == "boolean"
     ? schema === true
-    : strictKeywords
-    ? Object.keys(schema).length === 0
-    : !schemaHasRules(schema, RULES.all)
+    : Object.keys(schema).length === 0 && !schemaHasRules(schema, RULES.all)
 }
 
 export function allSchemaProperties(schema?: object): string[] {

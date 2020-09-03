@@ -4,6 +4,7 @@ var getAjvInstances = require("./ajv_instances"),
   should = require("./chai").should(),
   equal = require("../dist/compile/equal")
 
+const Ajv = require("..")
 const codegen = require("../dist/compile/codegen")
 const {_, nil} = codegen
 
@@ -1108,6 +1109,8 @@ describe("User-defined keywords", () => {
 
   describe("removeKeyword", () => {
     it("should remove and allow redefining keyword", () => {
+      ajv = new Ajv({strict: false})
+
       ajv.addKeyword({
         keyword: "positive",
         type: "number",
@@ -1151,6 +1154,8 @@ describe("User-defined keywords", () => {
     })
 
     it("should remove and allow redefining standard keyword", () => {
+      ajv = new Ajv({strict: false})
+
       var schema = {minimum: 1}
       var validate = ajv.compile(schema)
       validate(0).should.equal(false)

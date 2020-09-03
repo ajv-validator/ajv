@@ -20,29 +20,33 @@ describe("resolve", () => {
       // Example from http://json-schema.org/latest/json-schema-core.html#anchor29
       var schema = {
         $id: "http://x.y.z/rootschema.json#",
-        schema1: {
-          $id: "#foo",
-          description: "schema1",
-          type: "integer",
-        },
-        schema2: {
-          $id: "otherschema.json",
-          description: "schema2",
-          nested: {
-            $id: "#bar",
-            description: "nested",
-            type: "string",
+        $defs: {
+          schema1: {
+            $id: "#foo",
+            description: "schema1",
+            type: "integer",
           },
-          alsonested: {
-            $id: "t/inner.json#a",
-            description: "alsonested",
-            type: "boolean",
+          schema2: {
+            $id: "otherschema.json",
+            description: "schema2",
+            $defs: {
+              nested: {
+                $id: "#bar",
+                description: "nested",
+                type: "string",
+              },
+              alsonested: {
+                $id: "t/inner.json#a",
+                description: "alsonested",
+                type: "boolean",
+              },
+            },
           },
-        },
-        schema3: {
-          $id: "some://where.else/completely#",
-          description: "schema3",
-          type: "null",
+          schema3: {
+            $id: "some://where.else/completely#",
+            description: "schema3",
+            type: "null",
+          },
         },
         properties: {
           foo: {$ref: "#foo"},
@@ -240,10 +244,7 @@ describe("resolve", () => {
         required: ["header"],
         properties: {
           header: {
-            allOf: [
-              {$ref: "header.json"},
-              {properties: {msgType: {enum: [0]}}},
-            ],
+            allOf: [{$ref: "header.json"}, {properties: {msgType: {enum: [0]}}}],
           },
         },
       }

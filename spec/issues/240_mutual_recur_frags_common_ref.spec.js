@@ -7,17 +7,19 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
   var apiSchema = {
     $schema: "http://json-schema.org/draft-07/schema#",
     $id: "schema://api.schema#",
-    resource: {
-      $id: "#resource",
-      properties: {
-        id: {type: "string"},
+    $defs: {
+      resource: {
+        $id: "#resource",
+        properties: {
+          id: {type: "string"},
+        },
       },
-    },
-    resourceIdentifier: {
-      $id: "#resource_identifier",
-      properties: {
-        id: {type: "string"},
-        type: {type: "string"},
+      resourceIdentifier: {
+        $id: "#resource_identifier",
+        properties: {
+          id: {type: "string"},
+          type: {type: "string"},
+        },
       },
     },
   }

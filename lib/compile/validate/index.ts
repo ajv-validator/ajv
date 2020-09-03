@@ -76,11 +76,11 @@ function typeAndKeywords(it: CompilationContext, errsCount?: Name): void {
 }
 
 function checkUnknownKeywords({schema, RULES, opts, logger}: CompilationContext): void {
-  if (opts.strictKeywords) {
+  if (opts.strict) {
     const unknownKeyword = schemaUnknownRules(schema, RULES.keywords)
     if (unknownKeyword) {
       const msg = `unknown keyword: "${unknownKeyword}"`
-      if (opts.strictKeywords === "log") logger.warn(msg)
+      if (opts.strict === "log") logger.error(msg)
       else throw new Error(msg)
     }
   }

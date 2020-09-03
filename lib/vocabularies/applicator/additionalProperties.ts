@@ -14,7 +14,7 @@ const def: CodeKeywordDefinition = {
     const {gen, schema, parentSchema, data, errsCount, it} = cxt
     if (!errsCount) throw new Error("ajv implementation error")
     const {allErrors, opts} = it
-    if (alwaysValidSchema(it, schema) && opts.removeAdditional !== "all") return
+    if (opts.removeAdditional !== "all" && alwaysValidSchema(it, schema)) return
     const props = allSchemaProperties(parentSchema.properties)
     const patProps = allSchemaProperties(parentSchema.patternProperties)
     checkAdditionalProperties()
