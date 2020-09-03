@@ -247,19 +247,66 @@ CLI is available as a separate npm package [ajv-cli](https://github.com/ajv-vali
 
 ## Strict mode
 
+Strict mode intends to prevent any unexpected behaviours or silently ignored mistakes in user schemas. It does not change any validation results compared with JSON Schema specification, but it makes some schemas invalid and throws exception or logs warning (with `strict: "log"` option) in case any restriction is violated.
+
+The strict mode restrictions are below. To disable these restrictions use option `strict: false`.
+
+##### Prohibit unknown keywords
+
+JSON Schema [section 6.5](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-6.5) requires to ignore unknown keywords. The motivation is to increase cross-platform portability of schemas, so that implementations that do not support certain keywords can still do partial validation.
+
+The problems with this approach are:
+
+- Different validation results with the same schema and data, leading to bugs and inconsistent behaviours.
+- Typos in keywords resulting in keywords being quietly ignored, requiring extensive test coverage of schemas to avoid these mistakes.
+
+By default Ajv fails schema compilation when unknown keywords are used. Users can explicitly define the keywords that should be allowed and ignored:
+
+```javascript
+ajv.addKeyword("allowedKeyword")
+```
+
+or
+
+```javascript
+ajv.addVocabulary(["allowed1", "allowed2"])
+```
+
+#### Prohibit ignored "additionalItems" keyword
+
+JSON Schema section [9.3.1.2](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-9.3.1.2) requires to ignore "additionalItems" keyword if "items" keyword is absent. This is inconsistent with the interaction of "additionalProperties" and "properties", and may cause unexpected results.
+
+By default Ajv fails schema compilation when "additionalItems" is used without "items.
+
+#### Prohibit ignored "if", "then", "else" keywords
+
+JSON Schema section [9.2.2](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-9.2.2) requires to ignore "if" (only annotations are collected) if both "then" and "else" are absent, and ignore "then"/"else" if "if" is absent.
+
+By default Ajv fails schema compilation in these cases.
+
+#### Prohibit overlap between "properties" and "patternProperties" keywords
+
+The expectation of users (see #196, #286) is that "patternProperties" only apply to properties not already defined in "properties" keyword, but JSON Schema section [9.3.2](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-9.3.2) defines these two keywords as independent. It means that to some properties two subschemas can be applied - one defined in "properties" keyword and another defined in "patternProperties" for the pattern matching this property.
+
+By default Ajv fails schema compilation if a pattern in "patternProperties" matches a property in "properties" in the same schema.
+
+In addition to allowing such patterns by using option `strict: false`, there is an option `allowMatchingProperties: true` to only allow this case without disabling other strict mode restrictions - there are some rare cases when this is necessary.
+
+To reiterate, neither this nor other strict mode restrictions change the validation results - they only restrict which schemas are valid.
+
+#### Prohibit unknown formats
+
 TODO
 
-- _strictDefaults_: report ignored `default` keywords in schemas. Option values:
-  - `false` (default) - ignored defaults are not reported
-  - `true` - if an ignored default is present, throw an error
-  - `"log"` - if an ignored default is present, log warning
-- _strictKeywords_: report unknown keywords in schemas. Option values:
-  - `false` (default) - unknown keywords are not reported
-  - `true` - if an unknown keyword is present, throw an error
-  - `"log"` - if an unknown keyword is present, log warning
-- _strictNumbers_: validate numbers strictly, failing validation for NaN and Infinity. Option values:
-  - `false` (default) - NaN or Infinity will pass validation for numeric types
-  - `true` - NaN or Infinity will not pass validation for numeric types
+This will supercede unknownFormats option.
+
+#### Prohibit ignored defaults
+
+With `useDefaults` option Ajv modifies validated data by assigning defaults from the schema, but there are different limitations when the defaults can be ignored (see [Assigning defaults](#assigning-defaults)). In strict mode Ajv fails schema compilation if such defaults are used in the schema.
+
+#### Number validation
+
+Strict mode also affects number validation. By default Ajv fails `{"type": "number"}` (or `"integer"`) validation for `Infinity` and `NaN`.
 
 ## Validation keywords
 
