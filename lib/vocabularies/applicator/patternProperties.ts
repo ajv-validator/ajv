@@ -1,6 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {schemaProperties, usePattern} from "../util"
+import {schemaProperties, usePattern, checkStrictMode} from "../util"
 import {applySubschema, Type} from "../../compile/subschema"
 import {_} from "../../compile/codegen"
 
@@ -9,20 +9,34 @@ const def: CodeKeywordDefinition = {
   type: "object",
   schemaType: "object",
   code(cxt: KeywordContext) {
-    const {gen, schema, data, it} = cxt
+    const {gen, schema, data, parentSchema, it} = cxt
     const patterns = schemaProperties(it, schema)
     if (patterns.length === 0) return
+    const checkProperties =
+      it.opts.strict && !it.opts.allowMatchingProperties && parentSchema.properties
     const valid = gen.name("valid")
     validatePatternProperties()
 
     function validatePatternProperties() {
       for (const pat of patterns) {
+        if (checkProperties) assertNoProperty(pat)
         if (it.allErrors) {
           validateProperties(pat)
         } else {
           gen.var(valid, true) // TODO var
           validateProperties(pat)
           gen.if(valid)
+        }
+      }
+    }
+
+    function assertNoProperty(pat: string): void {
+      for (const prop in checkProperties) {
+        if (new RegExp(pat).test(prop)) {
+          checkStrictMode(
+            it,
+            `property ${prop} matches pattern ${pat} (use allowMatchingProperties)`
+          )
         }
       }
     }

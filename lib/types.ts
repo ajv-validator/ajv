@@ -42,6 +42,7 @@ export interface CurrentOptions {
   logger?: Logger | false
   serialize?: false | ((schema: object | boolean) => any)
   $comment?: true | ((comment: string, schemaPath?: string, rootSchema?: any) => any)
+  allowMatchingProperties?: boolean // exclusion to strict mode
 }
 
 export interface Options extends CurrentOptions {
