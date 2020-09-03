@@ -77,9 +77,7 @@ describe("reporting options", () => {
 
     beforeEach(() => {
       consoleCalled = false
-      console.warn = () => {
-        consoleCalled = true
-      }
+      console.warn = () => (consoleCalled = true)
     })
 
     afterEach(() => {
@@ -87,9 +85,7 @@ describe("reporting options", () => {
     })
 
     it("no user-defined logger is given - global console should be used", () => {
-      var ajv = new Ajv({
-        meta: false,
-      })
+      var ajv = new Ajv({meta: false})
 
       ajv.compile({
         type: "number",

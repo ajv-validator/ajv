@@ -17,8 +17,8 @@ describe("referenced schema options", () => {
 
     describe('= "ignore" and default', () => {
       it("should ignore other keywords when $ref is used", () => {
-        test(new Ajv())
-        test(new Ajv({extendRefs: "ignore"}), false)
+        test(new Ajv({logger: false}))
+        test(new Ajv({extendRefs: "ignore", logger: false}), false)
       })
 
       it("should log warning when other keywords are used with $ref", () => {
@@ -126,8 +126,8 @@ describe("referenced schema options", () => {
     })
 
     it('should not throw and pass validation with missingRef == "ignore"', () => {
-      testMissingRefsIgnore(new Ajv({missingRefs: "ignore"}))
-      testMissingRefsIgnore(new Ajv({missingRefs: "ignore", allErrors: true}))
+      testMissingRefsIgnore(new Ajv({missingRefs: "ignore", logger: false}))
+      testMissingRefsIgnore(new Ajv({missingRefs: "ignore", allErrors: true, logger: false}))
 
       function testMissingRefsIgnore(ajv) {
         var validate = ajv.compile({$ref: "missing_reference"})
@@ -136,10 +136,12 @@ describe("referenced schema options", () => {
     })
 
     it('should not throw and fail validation with missingRef == "fail" if the ref is used', () => {
-      testMissingRefsFail(new Ajv({missingRefs: "fail"}))
-      testMissingRefsFail(new Ajv({missingRefs: "fail", verbose: true}))
-      testMissingRefsFail(new Ajv({missingRefs: "fail", allErrors: true}))
-      testMissingRefsFail(new Ajv({missingRefs: "fail", allErrors: true, verbose: true}))
+      testMissingRefsFail(new Ajv({missingRefs: "fail", logger: false}))
+      testMissingRefsFail(new Ajv({missingRefs: "fail", verbose: true, logger: false}))
+      testMissingRefsFail(new Ajv({missingRefs: "fail", allErrors: true, logger: false}))
+      testMissingRefsFail(
+        new Ajv({missingRefs: "fail", allErrors: true, verbose: true, logger: false})
+      )
 
       function testMissingRefsFail(ajv) {
         var validate = ajv.compile({

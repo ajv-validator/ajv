@@ -5,8 +5,8 @@ var should = require("../chai").should()
 
 describe("removed schemaId option", () => {
   it("should use $id and ignore id", () => {
-    test(new Ajv())
-    test(new Ajv({schemaId: "$id"}))
+    test(new Ajv({logger: false}))
+    test(new Ajv({schemaId: "$id", logger: false}))
 
     function test(ajv) {
       ajv.addSchema({$id: "mySchema1", type: "string"})

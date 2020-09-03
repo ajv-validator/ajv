@@ -4,8 +4,8 @@ var Ajv = require("./ajv")
 
 module.exports = getAjvInstances
 
-function getAjvInstances(options, extraOpts) {
-  return _getAjvInstances(options, extraOpts || {})
+function getAjvInstances(options, extraOpts = {}) {
+  return _getAjvInstances(options, {...extraOpts, logger: false})
 }
 
 function _getAjvInstances(opts, useOpts) {

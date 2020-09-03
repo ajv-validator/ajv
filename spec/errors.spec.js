@@ -18,8 +18,9 @@ describe("Validation errors", () => {
     fullAjv = new Ajv({
       allErrors: true,
       verbose: true,
-      jsonPointers: false, // deprecated
+      jsPropertySyntax: true, // deprecated
       loopRequired: 21,
+      logger: false,
     })
   }
 
@@ -790,7 +791,8 @@ describe("Validation errors", () => {
         $data: true,
         allErrors: true,
         verbose: true,
-        jsonPointers: true,
+        jsPropertySyntax: true, // deprecated
+        logger: false,
       })
       ;[ajv, fullAjv].forEach((_ajv) => {
         var validate = _ajv.compile(schema)
@@ -809,7 +811,7 @@ describe("Validation errors", () => {
             err,
             "exclusiveMaximum",
             "#/properties/smaller/exclusiveMaximum",
-            _ajv._opts.jsonPointers === false ? ".smaller" : "/smaller",
+            _ajv._opts.jsPropertySyntax ? ".smaller" : "/smaller",
             "should be < 4",
             {comparison: "<", limit: 4}
           )
@@ -923,8 +925,8 @@ describe("Validation errors", () => {
 
         var expectedErrors = _ajv._opts.allErrors ? 2 : 1
         shouldBeInvalid(validate, [1, "2", "2", 2], expectedErrors)
-        testTypeError(0, _ajv._opts.jsonPointers === false ? "[1]" : "/1")
-        if (expectedErrors === 2) testTypeError(1, _ajv._opts.jsonPointers === false ? "[2]" : "/2")
+        testTypeError(0, _ajv._opts.jsPropertySyntax ? "[1]" : "/1")
+        if (expectedErrors === 2) testTypeError(1, _ajv._opts.jsPropertySyntax ? "[2]" : "/2")
 
         function testTypeError(i, dataPath) {
           var err = validate.errors[i]
@@ -936,7 +938,7 @@ describe("Validation errors", () => {
 
   describe("$ref errors", () => {
     it("should have correct message and params", () => {
-      const _ajv = new Ajv({missingRefs: "fail"})
+      const _ajv = new Ajv({missingRefs: "fail", logger: false})
       const schema = {$ref: "#/unknown"}
       const validate = _ajv.compile(schema)
       shouldBeInvalid(validate, {})
@@ -965,7 +967,7 @@ describe("Validation errors", () => {
       validate.errors[0],
       "type",
       schPath,
-      _ajv._opts.jsonPointers === false ? ".foo" : "/foo"
+      _ajv._opts.jsPropertySyntax ? ".foo" : "/foo"
     )
   }
 

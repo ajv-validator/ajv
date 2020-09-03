@@ -1,7 +1,7 @@
 import {CompilationContext} from "../types"
 import {subschemaCode} from "./validate"
 import {escapeFragment, escapeJsonPointer} from "./util"
-import {_, str, nil, Code, Name, getProperty} from "./codegen"
+import {_, str, Code, Name, getProperty} from "./codegen"
 
 export interface SubschemaContext {
   // TODO use Optional?
@@ -110,7 +110,7 @@ function extendSubschemaData(
     const {errorPath, dataPathArr, opts} = it
     const nextData = gen.var("data", _`${it.data}${getProperty(dataProp)}`) // TODO var
     dataContextProps(nextData)
-    subschema.errorPath = str`${errorPath}${getErrorPath(dataProp, dpType, opts.jsonPointers)}`
+    subschema.errorPath = str`${errorPath}${getErrorPath(dataProp, dpType, opts.jsPropertySyntax)}`
     subschema.parentDataProperty = _`${dataProp}`
     subschema.dataPathArr = [...dataPathArr, subschema.parentDataProperty]
   }
@@ -142,18 +142,20 @@ function extendSubschemaMode(
 function getErrorPath(
   dataProp: Name | string | number,
   dataPropType?: Type,
-  jsonPointers?: boolean
+  jsPropertySyntax?: boolean
 ): Code | string {
   // let path
   if (dataProp instanceof Name) {
     const isNumber = dataPropType === Type.Num
-    return jsonPointers === false
+    return jsPropertySyntax
       ? isNumber
         ? _`"[" + ${dataProp} + "]"`
         : _`"['" + ${dataProp} + "']"`
-      : _`"/" + ${dataProp}${isNumber ? nil : _`.replace(/~/g, "~0").replace(/\\//g, "~1")`}` // TODO maybe use global escapePointer
+      : isNumber
+      ? _`"/" + ${dataProp}`
+      : _`"/" + ${dataProp}.replace(/~/g, "~0").replace(/\\//g, "~1")` // TODO maybe use global escapePointer
   }
-  return jsonPointers === false
+  return jsPropertySyntax
     ? getProperty(dataProp).toString()
     : "/" + (typeof dataProp == "number" ? dataProp : escapeJsonPointer(dataProp))
 }

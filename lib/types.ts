@@ -49,7 +49,7 @@ export interface CurrentOptions {
 
 export interface Options extends CurrentOptions {
   errorDataPath?: "object" | "property" // removed
-  jsonPointers?: boolean
+  jsPropertySyntax?: boolean
   schemaId?: string // removed
   unicode?: boolean // deprecated
   uniqueItems?: boolean // removed

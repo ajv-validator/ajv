@@ -59,10 +59,10 @@ describe("validation options", () => {
   })
 
   describe("unicode", () => {
-    it("should use String.prototype.length with unicode option == false", () => {
+    it("should use String.prototype.length with deprecated unicode option == false", () => {
       var ajvUnicode = new Ajv()
-      testUnicode(new Ajv({unicode: false}))
-      testUnicode(new Ajv({unicode: false, allErrors: true}))
+      testUnicode(new Ajv({unicode: false, logger: false}))
+      testUnicode(new Ajv({unicode: false, allErrors: true, logger: false}))
 
       function testUnicode(ajv) {
         var validateWithUnicode = ajvUnicode.compile({minLength: 2})

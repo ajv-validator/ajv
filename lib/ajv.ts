@@ -84,10 +84,11 @@ export default function Ajv(opts: Options): void {
 }
 
 function checkDeprecatedOptions(this, opts: Options) {
-  if (opts.errorDataPath) this.logger.error("NOT SUPPORTED: option errorDataPath")
-  if (opts.schemaId) this.logger.error("NOT SUPPORTED: option schemaId")
-  if (opts.unicode !== undefined) this.logger.warn("DEPRECATED: option unicode")
+  if (opts.errorDataPath !== undefined) this.logger.error("NOT SUPPORTED: option errorDataPath")
+  if (opts.schemaId !== undefined) this.logger.error("NOT SUPPORTED: option schemaId")
   if (opts.uniqueItems !== undefined) this.logger.error("NOT SUPPORTED: option uniqueItems")
+  if (opts.jsPropertySyntax !== undefined) this.logger.warn("DEPRECATED: option jsPropertySyntax")
+  if (opts.unicode !== undefined) this.logger.warn("DEPRECATED: option unicode")
 }
 
 /**
@@ -474,10 +475,12 @@ function getMetaSchemaOptions(self) {
   return metaOpts
 }
 
+const noLogs = {log() {}, warn() {}, error() {}}
+
 function setLogger(self) {
   var logger = self._opts.logger
   if (logger === false) {
-    self.logger = {log: noop, warn: noop, error: noop}
+    self.logger = noLogs
   } else {
     if (logger === undefined) logger = console
     if (!(typeof logger == "object" && logger.log && logger.warn && logger.error)) {
@@ -486,5 +489,3 @@ function setLogger(self) {
     self.logger = logger
   }
 }
-
-function noop() {}

@@ -29,10 +29,7 @@ var remoteRefsWithIds = [
 instances.forEach(addRemoteRefsAndFormats)
 
 jsonSchemaTest(instances, {
-  description:
-    "Schema tests of " +
-    instances.length +
-    " ajv instances with different options",
+  description: "Schema tests of " + instances.length + " ajv instances with different options",
   suites: {
     "Advanced schema tests":
       typeof window == "object"
