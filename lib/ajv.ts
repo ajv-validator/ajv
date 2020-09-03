@@ -13,6 +13,7 @@ import coreVocabulary from "./vocabularies/core"
 import validationVocabulary from "./vocabularies/validation"
 import applicatorVocabulary from "./vocabularies/applicator"
 import formatVocabulary from "./vocabularies/format"
+import {metadataVocabulary, contentVocabulary} from "./vocabularies/metadata"
 import {addVocabulary, addKeyword, getKeyword, removeKeyword} from "./keyword"
 
 module.exports = Ajv
@@ -71,10 +72,13 @@ export default function Ajv(opts: Options): void {
   this._metaOpts = getMetaSchemaOptions(this)
 
   if (opts.formats) addInitialFormats(this)
-  this.addVocabulary(coreVocabulary, true)
-  this.addVocabulary(validationVocabulary, true)
-  this.addVocabulary(applicatorVocabulary, true)
-  this.addVocabulary(formatVocabulary, true)
+  this.addVocabulary(["$async"])
+  this.addVocabulary(coreVocabulary)
+  this.addVocabulary(validationVocabulary)
+  this.addVocabulary(applicatorVocabulary)
+  this.addVocabulary(formatVocabulary)
+  this.addVocabulary(metadataVocabulary)
+  this.addVocabulary(contentVocabulary)
   if (opts.keywords) addInitialKeywords(this, opts.keywords)
   addDefaultMetaSchema(this)
   if (typeof opts.meta == "object") this.addMetaSchema(opts.meta)

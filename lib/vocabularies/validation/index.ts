@@ -19,5 +19,3 @@ const validation: Vocabulary = [
 ]
 
 export default validation
-
-module.exports = validation
