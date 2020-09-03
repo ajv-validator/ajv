@@ -4,13 +4,12 @@ import {ValidationRules} from "./compile/rules"
 import {ResolvedRef} from "./compile"
 import KeywordContext from "./compile/context"
 
-export interface Options {
+export interface CurrentOptions {
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
   jsonPointers?: boolean
-  unicode?: boolean // deprecated
-  format?: false | string
+  format?: false
   formats?: object
   keywords?: Vocabulary | {[x: string]: KeywordDefinition} // map is deprecated
   unknownFormats?: true | string[] | "ignore"
@@ -47,7 +46,13 @@ export interface Options {
   nullable?: boolean
   serialize?: false | ((schema: object | boolean) => any)
   $comment?: true | ((comment: string, schemaPath?: string, rootSchema?: any) => any)
-  schemaId?: string // not supported
+}
+
+export interface Options extends CurrentOptions {
+  errorDataPath?: "object" | "property" // removed
+  schemaId?: string // removed
+  unicode?: boolean // deprecated
+  uniqueItems?: boolean // removed
 }
 
 interface Logger {

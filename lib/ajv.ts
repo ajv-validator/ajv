@@ -67,8 +67,6 @@ export default function Ajv(opts: Options): void {
   this._compilations = []
   this.RULES = rules()
   checkDeprecatedOptions.call(this, opts)
-  opts.loopRequired = opts.loopRequired || Infinity
-  opts.loopEnum = opts.loopEnum || Infinity
   if (opts.serialize === undefined) opts.serialize = stableStringify
   this._metaOpts = getMetaSchemaOptions(this)
 
@@ -86,13 +84,10 @@ export default function Ajv(opts: Options): void {
 }
 
 function checkDeprecatedOptions(this, opts: Options) {
-  if (opts.unicode === false) {
-    this.logger.warn("DEPRECATED: option unicode will be removed in the next version")
-  }
-  if (opts.schemaId !== undefined) {
-    if (opts.schemaId === "$id") this.logger.warn("DEPRECATED: option schemaId")
-    else throw new Error("Not supported in v7: option schemaId")
-  }
+  if (opts.errorDataPath) this.logger.error("NOT SUPPORTED: option errorDataPath")
+  if (opts.schemaId) this.logger.error("NOT SUPPORTED: option schemaId")
+  if (opts.unicode !== undefined) this.logger.warn("DEPRECATED: option unicode")
+  if (opts.uniqueItems !== undefined) this.logger.error("NOT SUPPORTED: option uniqueItems")
 }
 
 /**
