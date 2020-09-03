@@ -43,7 +43,7 @@ Ajv.MissingRefError = MissingRefError
 
 var META_SCHEMA_ID = "http://json-schema.org/draft-07/schema"
 
-var META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes", "strictDefaults"]
+var META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"]
 const META_SUPPORT_DATA = ["/properties"]
 
 /**

@@ -103,9 +103,9 @@ function checkRefsAndKeywords({
 }
 
 function checkNoDefault({schema, opts, logger}: CompilationContext): void {
-  if (schema.default !== undefined && opts.useDefaults && opts.strictDefaults) {
+  if (schema.default !== undefined && opts.useDefaults && opts.strict) {
     const msg = "default is ignored in the schema root"
-    if (opts.strictDefaults === "log") logger.warn(msg)
+    if (opts.strict === "log") logger.warn(msg)
     else throw new Error(msg)
   }
 }

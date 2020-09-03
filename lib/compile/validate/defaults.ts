@@ -20,9 +20,9 @@ function assignDefault(
   if (defaultValue === undefined) return
   const childData = _`${data}${getProperty(prop)}`
   if (compositeRule) {
-    if (opts.strictDefaults) {
+    if (opts.strict) {
       const msg = `default is ignored for: ${childData}`
-      if (opts.strictDefaults === "log") logger.warn(msg)
+      if (opts.strict === "log") logger.warn(msg)
       else throw new Error(msg)
     }
     return
