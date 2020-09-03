@@ -19,7 +19,7 @@ const def: CodeKeywordDefinition = {
 
     function validatePatternProperties() {
       for (const pat of patterns) {
-        if (checkProperties) assertNoProperty(pat)
+        if (checkProperties) checkMatchingProperties(pat)
         if (it.allErrors) {
           validateProperties(pat)
         } else {
@@ -30,7 +30,7 @@ const def: CodeKeywordDefinition = {
       }
     }
 
-    function assertNoProperty(pat: string): void {
+    function checkMatchingProperties(pat: string): void {
       for (const prop in checkProperties) {
         if (new RegExp(pat).test(prop)) {
           checkStrictMode(
