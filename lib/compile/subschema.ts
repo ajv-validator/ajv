@@ -147,13 +147,13 @@ function getErrorPath(
   // let path
   if (dataProp instanceof Name) {
     const isNumber = dataPropType === Type.Num
-    return jsonPointers
-      ? _`"/" + ${dataProp}${isNumber ? nil : _`.replace(/~/g, "~0").replace(/\\//g, "~1")`}` // TODO maybe use global escapePointer
-      : isNumber
-      ? _`"[" + ${dataProp} + "]"`
-      : _`"['" + ${dataProp} + "']"`
+    return jsonPointers === false
+      ? isNumber
+        ? _`"[" + ${dataProp} + "]"`
+        : _`"['" + ${dataProp} + "']"`
+      : _`"/" + ${dataProp}${isNumber ? nil : _`.replace(/~/g, "~0").replace(/\\//g, "~1")`}` // TODO maybe use global escapePointer
   }
-  return jsonPointers
-    ? "/" + (typeof dataProp == "number" ? dataProp : escapeJsonPointer(dataProp))
-    : getProperty(dataProp).toString()
+  return jsonPointers === false
+    ? getProperty(dataProp).toString()
+    : "/" + (typeof dataProp == "number" ? dataProp : escapeJsonPointer(dataProp))
 }

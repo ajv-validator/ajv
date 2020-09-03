@@ -920,11 +920,11 @@ describe("User-defined keywords", () => {
 
       shouldBeInvalid(validate, {foo: 2}, numErrors)
       if (createsErrors) {
-        shouldBeRangeError(validate.errors[0], ".foo", "#/properties/foo/x-range", ">", 2, true)
+        shouldBeRangeError(validate.errors[0], "/foo", "#/properties/foo/x-range", ">", 2, true)
       }
       shouldBeInvalid(validate, {foo: 4}, numErrors)
       if (createsErrors) {
-        shouldBeRangeError(validate.errors[0], ".foo", "#/properties/foo/x-range", "<", 4, true)
+        shouldBeRangeError(validate.errors[0], "/foo", "#/properties/foo/x-range", "<", 4, true)
       }
     })
   }

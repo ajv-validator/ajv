@@ -13,13 +13,12 @@ describe("Validation errors", () => {
   function createInstances() {
     ajv = new Ajv({loopRequired: 21})
     ajvJP = new Ajv({
-      jsonPointers: true,
       loopRequired: 21,
     })
     fullAjv = new Ajv({
       allErrors: true,
       verbose: true,
-      jsonPointers: true,
+      jsonPointers: false, // deprecated
       loopRequired: 21,
     })
   }
@@ -134,7 +133,7 @@ describe("Validation errors", () => {
       var validate = ajv.compile(schema)
       shouldBeValid(validate, data)
       shouldBeInvalid(validate, invalidData)
-      shouldBeError(validate.errors[0], "type", schPath, "['baz'].quux", "should be string", {
+      shouldBeError(validate.errors[0], "type", schPath, "/baz/quux", "should be string", {
         type: "string",
       })
 
@@ -148,10 +147,10 @@ describe("Validation errors", () => {
       var fullValidate = fullAjv.compile(schema)
       shouldBeValid(fullValidate, data)
       shouldBeInvalid(fullValidate, invalidData, 2)
-      shouldBeError(fullValidate.errors[0], "type", schPath, "/baz/quux", "should be string", {
+      shouldBeError(fullValidate.errors[0], "type", schPath, "['baz'].quux", "should be string", {
         type: "string",
       })
-      shouldBeError(fullValidate.errors[1], "type", schPath, "/boo/quux", "should be string", {
+      shouldBeError(fullValidate.errors[1], "type", schPath, "['boo'].quux", "should be string", {
         type: "string",
       })
     }
@@ -476,9 +475,9 @@ describe("Validation errors", () => {
     var validate = ajv.compile(schema1)
     shouldBeValid(validate, data)
     shouldBeInvalid(validate, invalidData1)
-    shouldBeError(validate.errors[0], "minimum", "#/items/minimum", "[0]", "should be >= 10")
+    shouldBeError(validate.errors[0], "minimum", "#/items/minimum", "/0", "should be >= 10")
     shouldBeInvalid(validate, invalidData2)
-    shouldBeError(validate.errors[0], "minimum", "#/items/minimum", "[1]", "should be >= 10")
+    shouldBeError(validate.errors[0], "minimum", "#/items/minimum", "/1", "should be >= 10")
 
     var validateJP = ajvJP.compile(schema1)
     shouldBeValid(validateJP, data)
@@ -490,10 +489,10 @@ describe("Validation errors", () => {
     var fullValidate = fullAjv.compile(schema1)
     shouldBeValid(fullValidate, data)
     shouldBeInvalid(fullValidate, invalidData1)
-    shouldBeError(fullValidate.errors[0], "minimum", "#/items/minimum", "/0", "should be >= 10")
+    shouldBeError(fullValidate.errors[0], "minimum", "#/items/minimum", "[0]", "should be >= 10")
     shouldBeInvalid(fullValidate, invalidData2, 2)
-    shouldBeError(fullValidate.errors[0], "minimum", "#/items/minimum", "/1", "should be >= 10")
-    shouldBeError(fullValidate.errors[1], "minimum", "#/items/minimum", "/3", "should be >= 10")
+    shouldBeError(fullValidate.errors[0], "minimum", "#/items/minimum", "[1]", "should be >= 10")
+    shouldBeError(fullValidate.errors[1], "minimum", "#/items/minimum", "[3]", "should be >= 10")
 
     var schema2 = {
       $id: "schema2",
@@ -504,9 +503,9 @@ describe("Validation errors", () => {
     validate = ajv.compile(schema2)
     shouldBeValid(validate, data)
     shouldBeInvalid(validate, invalidData1)
-    shouldBeError(validate.errors[0], "minimum", "#/items/0/minimum", "[0]", "should be >= 10")
+    shouldBeError(validate.errors[0], "minimum", "#/items/0/minimum", "/0", "should be >= 10")
     shouldBeInvalid(validate, invalidData2)
-    shouldBeError(validate.errors[0], "minimum", "#/items/2/minimum", "[2]", "should be >= 12")
+    shouldBeError(validate.errors[0], "minimum", "#/items/2/minimum", "/2", "should be >= 12")
   })
 
   it("should have correct schema path for additionalItems", () => {
@@ -810,7 +809,7 @@ describe("Validation errors", () => {
             err,
             "exclusiveMaximum",
             "#/properties/smaller/exclusiveMaximum",
-            _ajv._opts.jsonPointers ? "/smaller" : ".smaller",
+            _ajv._opts.jsonPointers === false ? ".smaller" : "/smaller",
             "should be < 4",
             {comparison: "<", limit: 4}
           )
@@ -924,8 +923,8 @@ describe("Validation errors", () => {
 
         var expectedErrors = _ajv._opts.allErrors ? 2 : 1
         shouldBeInvalid(validate, [1, "2", "2", 2], expectedErrors)
-        testTypeError(0, "/1")
-        if (expectedErrors === 2) testTypeError(1, "/2")
+        testTypeError(0, _ajv._opts.jsonPointers === false ? "[1]" : "/1")
+        if (expectedErrors === 2) testTypeError(1, _ajv._opts.jsonPointers === false ? "[2]" : "/2")
 
         function testTypeError(i, dataPath) {
           var err = validate.errors[i]
@@ -962,7 +961,12 @@ describe("Validation errors", () => {
     var validate = _ajv.compile(schema)
     shouldBeValid(validate, data)
     shouldBeInvalid(validate, invalidData)
-    shouldBeError(validate.errors[0], "type", schPath, _ajv._opts.jsonPointers ? "/foo" : ".foo")
+    shouldBeError(
+      validate.errors[0],
+      "type",
+      schPath,
+      _ajv._opts.jsonPointers === false ? ".foo" : "/foo"
+    )
   }
 
   function shouldBeValid(validate, data) {

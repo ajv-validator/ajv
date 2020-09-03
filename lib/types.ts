@@ -8,7 +8,6 @@ export interface CurrentOptions {
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
-  jsonPointers?: boolean
   format?: false
   formats?: object
   keywords?: Vocabulary | {[x: string]: KeywordDefinition} // map is deprecated
@@ -50,6 +49,7 @@ export interface CurrentOptions {
 
 export interface Options extends CurrentOptions {
   errorDataPath?: "object" | "property" // removed
+  jsonPointers?: boolean
   schemaId?: string // removed
   unicode?: boolean // deprecated
   uniqueItems?: boolean // removed
