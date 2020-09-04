@@ -43,7 +43,7 @@ var SKIP = {
 }
 
 runTest(
-  getAjvInstances(options, {meta: false}),
+  getAjvInstances(options, {meta: false, strict: false}),
   6,
   typeof window == "object"
     ? suite(
@@ -55,7 +55,7 @@ runTest(
 )
 
 runTest(
-  getAjvInstances(options),
+  getAjvInstances(options, {strict: false}),
   7,
   typeof window == "object"
     ? suite(

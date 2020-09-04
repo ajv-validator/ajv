@@ -11,7 +11,7 @@ describe("boolean schemas", () => {
       new Ajv(),
       new Ajv({allErrors: true}),
       new Ajv({inlineRefs: false}),
-      new Ajv({strictKeywords: true}),
+      new Ajv({strict: false}),
     ]
   })
 

@@ -4,14 +4,12 @@ import {ValidationRules} from "./compile/rules"
 import {ResolvedRef} from "./compile"
 import KeywordContext from "./compile/context"
 
-export interface Options {
+export interface CurrentOptions {
+  strict?: boolean | "log"
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
-  jsonPointers?: boolean
-  uniqueItems?: boolean
-  unicode?: boolean
-  format?: false | string
+  format?: false
   formats?: object
   keywords?: Vocabulary | {[x: string]: KeywordDefinition} // map is deprecated
   unknownFormats?: true | string[] | "ignore"
@@ -25,11 +23,6 @@ export interface Options {
   removeAdditional?: boolean | "all" | "failing"
   useDefaults?: boolean | "empty"
   coerceTypes?: boolean | "array"
-  strictDefaults?: boolean | "log"
-  strictKeywords?: boolean | "log"
-  strictNumbers?: boolean
-  async?: boolean | string
-  transpile?: string | ((code: string) => string)
   meta?: boolean | object
   validateSchema?: boolean | "log"
   addUsedSchema?: boolean
@@ -45,10 +38,20 @@ export interface Options {
   codegen?: CodeGenOptions
   cache?: Cache
   logger?: Logger | false
-  nullable?: boolean
   serialize?: false | ((schema: object | boolean) => any)
   $comment?: true | ((comment: string, schemaPath?: string, rootSchema?: any) => any)
-  schemaId?: string // not supported
+  allowMatchingProperties?: boolean // disables a strict mode restriction
+}
+
+export interface Options extends CurrentOptions {
+  // removed:
+  errorDataPath?: "object" | "property"
+  nullable?: boolean // "nullable" keyword is supported by default
+  schemaId?: string
+  uniqueItems?: boolean
+  // deprecated:
+  jsPropertySyntax?: boolean // added instead of jsonPointers
+  unicode?: boolean
 }
 
 interface Logger {

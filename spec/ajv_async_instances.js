@@ -1,38 +1,16 @@
 "use strict"
 
-var Ajv = require("./ajv"),
-  setupAsync = require("./ajv-async")
+const getAjvInstances = require("./ajv_instances")
 
-module.exports = getAjvInstances
+module.exports = getAjvSyncInstances
 
-var firstTime = true
-
-function getAjvInstances(opts) {
-  opts = opts || {}
-  var instances = []
-  var options = [
-    {},
-    {transpile: true},
-    {allErrors: true},
-    {transpile: true, allErrors: true},
-  ]
-
-  options.forEach((_opts) => {
-    Object.assign(_opts, opts)
-    var ajv = getAjv(_opts)
-    if (ajv) instances.push(ajv)
-  })
-
-  if (firstTime) {
-    console.log("Testing", instances.length, "ajv instances:")
-    firstTime = false
-  }
-
-  return instances
-}
-
-function getAjv(opts) {
-  try {
-    return setupAsync(new Ajv(opts))
-  } catch (e) {}
+function getAjvSyncInstances(extraOpts) {
+  return getAjvInstances(
+    {
+      strict: false,
+      allErrors: true,
+      codegen: {lines: true},
+    },
+    extraOpts
+  )
 }

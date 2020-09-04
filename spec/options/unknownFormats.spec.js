@@ -42,7 +42,7 @@ describe("unknownFormats option", () => {
 
   describe('= "ignore (default before 5.0.0)"', () => {
     it("should pass schema compilation and be valid if unknown format is used", () => {
-      test(new Ajv({unknownFormats: "ignore"}))
+      test(new Ajv({unknownFormats: "ignore", logger: false}))
 
       function test(ajv) {
         var validate = ajv.compile({format: "unknown"})

@@ -1,6 +1,6 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordContext from "../../compile/context"
-import {alwaysValidSchema} from "../util"
+import {alwaysValidSchema, checkStrictMode} from "../util"
 import {applySubschema, Type} from "../../compile/subschema"
 import {_, Name, str} from "../../compile/codegen"
 
@@ -13,8 +13,10 @@ const def: CodeKeywordDefinition = {
     const {gen, schema, parentSchema, data, it} = cxt
     const len = gen.const("len", _`${data}.length`)
     const items = parentSchema.items
-    // TODO strict mode: fail or warning if "additionalItems" is present without "items" Array
-    if (!Array.isArray(items)) return
+    if (!Array.isArray(items)) {
+      checkStrictMode(it, '"additionalItems" without "items" is ignored')
+      return
+    }
     if (schema === false) {
       cxt.setParams({len: items.length})
       cxt.pass(_`${len} <= ${items.length}`)

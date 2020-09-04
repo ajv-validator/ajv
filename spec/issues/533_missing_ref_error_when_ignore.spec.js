@@ -13,7 +13,7 @@ describe('issue #533, throwing missing ref exception with option missingRefs: "i
   }
 
   it("should pass validation without throwing exception", () => {
-    var ajv = new Ajv({missingRefs: "ignore"})
+    var ajv = new Ajv({missingRefs: "ignore", logger: false})
     var validate = ajv.compile(schema)
     validate({foo: "anything"}).should.equal(true)
     validate({foo: "anything", bar: "whatever"}).should.equal(true)

@@ -17,6 +17,7 @@ const applicator: Vocabulary = [
   require("./oneOf"),
   require("./allOf"),
   require("./if"),
+  require("./thenElse"),
 ]
 
 export default applicator

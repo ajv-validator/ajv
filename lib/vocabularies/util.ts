@@ -21,14 +21,12 @@ export function schemaRefOrVal(
 }
 
 export function alwaysValidSchema(
-  {RULES, opts: {strictKeywords}}: CompilationContext,
+  {RULES}: CompilationContext,
   schema: boolean | object
 ): boolean | void {
   return typeof schema == "boolean"
     ? schema === true
-    : strictKeywords
-    ? Object.keys(schema).length === 0
-    : !schemaHasRules(schema, RULES.all)
+    : Object.keys(schema).length === 0 && !schemaHasRules(schema, RULES.all)
 }
 
 export function allSchemaProperties(schema?: object): string[] {
@@ -77,4 +75,12 @@ export function usePattern(gen: CodeGen, pattern: string): Name {
     ref: new RegExp(pattern),
     code: _`new RegExp(${pattern})`,
   })
+}
+
+export function checkStrictMode(it: CompilationContext, msg: string): void {
+  const {opts, logger} = it
+  if (opts.strict) {
+    if (opts.strict === "log") logger.warn(msg)
+    else throw new Error(msg)
+  }
 }

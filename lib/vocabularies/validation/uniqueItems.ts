@@ -11,7 +11,7 @@ const def: CodeKeywordDefinition = {
   $data: true,
   code(cxt: KeywordContext) {
     const {gen, data, $data, schema, parentSchema, schemaCode, it} = cxt
-    if (it.opts.uniqueItems === false || !($data || schema)) return
+    if (!$data && !schema) return
     const valid = gen.let("valid")
     const itemTypes = parentSchema.items ? getSchemaTypes(it, parentSchema.items) : []
     cxt.block$data(valid, validateUniqueItems, _`${schemaCode} === false`)
@@ -31,7 +31,7 @@ const def: CodeKeywordDefinition = {
 
     function loopN(i: Name, j: Name): void {
       const item = gen.name("item")
-      const wrongType = checkDataTypes(itemTypes, item, it.opts.strictNumbers, DataType.Wrong)
+      const wrongType = checkDataTypes(itemTypes, item, it.opts.strict, DataType.Wrong)
       const indices = gen.const("indices", _`{}`)
       gen.for(_`;${i}--;`, () => {
         gen.let(item, _`${data}[${i}]`)

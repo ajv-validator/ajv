@@ -6,17 +6,15 @@ import {reportError} from "../errors"
 import {_, str, Name} from "../codegen"
 import {ValidationRules} from "../rules"
 
-export function getSchemaTypes({opts, RULES}: CompilationContext, schema): string[] {
+export function getSchemaTypes({RULES}: CompilationContext, schema): string[] {
   const st: undefined | string | string[] = schema.type
   const types: string[] = Array.isArray(st) ? st : st ? [st] : []
   types.forEach((t) => checkType(t, RULES))
-  if (opts.nullable) {
-    const hasNull = types.includes("null")
-    if (hasNull && schema.nullable === false) {
-      throw new Error('{"type": "null"} contradicts {"nullable": "false"}')
-    } else if (!hasNull && schema.nullable === true) {
-      types.push("null")
-    }
+  const hasNull = types.includes("null")
+  if (hasNull && schema.nullable === false) {
+    throw new Error('{"type": "null"} contradicts {"nullable": "false"}')
+  } else if (!hasNull && schema.nullable === true) {
+    types.push("null")
   }
   return types
 }
@@ -33,7 +31,7 @@ export function coerceAndCheckDataType(it: CompilationContext, types: string[]):
     types.length > 0 &&
     !(coerceTo.length === 0 && types.length === 1 && schemaHasRulesForType(it, types[0]))
   if (checkTypes) {
-    const wrongType = checkDataTypes(types, data, opts.strictNumbers, DataType.Wrong)
+    const wrongType = checkDataTypes(types, data, opts.strict, DataType.Wrong)
     gen.if(wrongType, () => {
       if (coerceTo.length) coerceData(it, types, coerceTo)
       else reportTypeError(it)
@@ -58,7 +56,7 @@ function coerceData(it: CompilationContext, types: string[], coerceTo: string[])
       gen
         .assign(data, _`${data}[0]`)
         .assign(dataType, _`typeof ${data}`)
-        .if(checkDataTypes(types, data, opts.strictNumbers), () => gen.assign(coerced, data))
+        .if(checkDataTypes(types, data, opts.strict), () => gen.assign(coerced, data))
     )
   }
   gen.if(_`${coerced} !== undefined`)

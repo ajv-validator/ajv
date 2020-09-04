@@ -1,19 +1,16 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 
-describe("structNumbers option", () => {
-  var ajv
-  describe("strictNumbers default", testWithoutStrictNumbers(new Ajv()))
-  describe(
-    "strictNumbers = false",
-    testWithoutStrictNumbers(new Ajv({strictNumbers: false}))
-  )
-  describe("strictNumbers = true", () => {
-    beforeEach(() => {
-      ajv = new Ajv({strictNumbers: true})
-    })
+describe("strict option with keywords (replaced structNumbers)", () => {
+  describe("strict default", testStrict(new Ajv()))
+  describe("strict = true", testStrict(new Ajv({strict: true})))
+  describe('strict = "log"', testStrict(new Ajv({strict: "log"})))
+  describe("strict = false", testNotStrict(new Ajv({strict: false})))
+})
 
+function testStrict(ajv) {
+  return () => {
     it("should fail validation for NaN/Infinity as type number", () => {
       var validate = ajv.compile({type: "number"})
       validate("1.1").should.equal(false)
@@ -31,10 +28,10 @@ describe("structNumbers option", () => {
       validate(NaN).should.equal(false)
       validate(Infinity).should.equal(false)
     })
-  })
-})
+  }
+}
 
-function testWithoutStrictNumbers(_ajv) {
+function testNotStrict(_ajv) {
   return () => {
     it("should NOT fail validation for NaN/Infinity as type number", () => {
       var validate = _ajv.compile({type: "number"})

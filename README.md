@@ -75,6 +75,7 @@ ajv.addMetaSchema(require("ajv/lib/refs/json-schema-draft-06.json"))
   - [Ajv and Content Security Policies (CSP)](#ajv-and-content-security-policies-csp)
 - [Command line interface](#command-line-interface)
 - Validation
+  - [Strict mode](#strict-mode)
   - [Keywords](#validation-keywords)
   - [Annotation keywords](#annotation-keywords)
   - [Formats](#formats)
@@ -123,9 +124,10 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 
 - Ajv implements full JSON Schema [draft-06/07](http://json-schema.org/) standards (draft-04 is supported in v6):
   - all validation keywords (see [JSON Schema validation keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md))
+  - keyword "nullable" from [Open API 3 specification](https://swagger.io/docs/specification/data-models/data-types/).
   - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
   - support of circular references between schemas
-  - correct string lengths for strings with unicode pairs (can be turned off)
+  - correct string lengths for strings with unicode pairs
   - [formats](#formats) defined by JSON Schema draft-07 standard (with [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin) and additional formats (can be turned off)
   - [validates schemas against meta-schema](#api-validateschema)
 - supports [browsers](#using-in-browser) and Node.js 0.10-14.x
@@ -151,7 +153,7 @@ npm install ajv
 
 ## <a name="usage"></a>Getting started
 
-Try it in the Node.js REPL: https://tonicdev.com/npm/ajv
+Try it in the Node.js REPL: https://runkit.com/npm/ajv
 
 The fastest validation call:
 
@@ -242,6 +244,69 @@ CLI is available as a separate npm package [ajv-cli](https://github.com/ajv-vali
 - files in JSON, JSON5, YAML, and JavaScript format
 - all Ajv options
 - reporting changes in data after validation in [JSON-patch](https://tools.ietf.org/html/rfc6902) format
+
+## Strict mode
+
+Strict mode intends to prevent any unexpected behaviours or silently ignored mistakes in user schemas. It does not change any validation results compared with JSON Schema specification, but it makes some schemas invalid and throws exception or logs warning (with `strict: "log"` option) in case any restriction is violated.
+
+The strict mode restrictions are below. To disable these restrictions use option `strict: false`.
+
+##### Prohibit unknown keywords
+
+JSON Schema [section 6.5](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-6.5) requires to ignore unknown keywords. The motivation is to increase cross-platform portability of schemas, so that implementations that do not support certain keywords can still do partial validation.
+
+The problems with this approach are:
+
+- Different validation results with the same schema and data, leading to bugs and inconsistent behaviours.
+- Typos in keywords resulting in keywords being quietly ignored, requiring extensive test coverage of schemas to avoid these mistakes.
+
+By default Ajv fails schema compilation when unknown keywords are used. Users can explicitly define the keywords that should be allowed and ignored:
+
+```javascript
+ajv.addKeyword("allowedKeyword")
+```
+
+or
+
+```javascript
+ajv.addVocabulary(["allowed1", "allowed2"])
+```
+
+#### Prohibit ignored "additionalItems" keyword
+
+JSON Schema section [9.3.1.2](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-9.3.1.2) requires to ignore "additionalItems" keyword if "items" keyword is absent. This is inconsistent with the interaction of "additionalProperties" and "properties", and may cause unexpected results.
+
+By default Ajv fails schema compilation when "additionalItems" is used without "items.
+
+#### Prohibit ignored "if", "then", "else" keywords
+
+JSON Schema section [9.2.2](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-9.2.2) requires to ignore "if" (only annotations are collected) if both "then" and "else" are absent, and ignore "then"/"else" if "if" is absent.
+
+By default Ajv fails schema compilation in these cases.
+
+#### Prohibit overlap between "properties" and "patternProperties" keywords
+
+The expectation of users (see #196, #286) is that "patternProperties" only apply to properties not already defined in "properties" keyword, but JSON Schema section [9.3.2](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-9.3.2) defines these two keywords as independent. It means that to some properties two subschemas can be applied - one defined in "properties" keyword and another defined in "patternProperties" for the pattern matching this property.
+
+By default Ajv fails schema compilation if a pattern in "patternProperties" matches a property in "properties" in the same schema.
+
+In addition to allowing such patterns by using option `strict: false`, there is an option `allowMatchingProperties: true` to only allow this case without disabling other strict mode restrictions - there are some rare cases when this is necessary.
+
+To reiterate, neither this nor other strict mode restrictions change the validation results - they only restrict which schemas are valid.
+
+#### Prohibit unknown formats
+
+TODO
+
+This will supercede unknownFormats option.
+
+#### Prohibit ignored defaults
+
+With `useDefaults` option Ajv modifies validated data by assigning defaults from the schema, but there are different limitations when the defaults can be ignored (see [Assigning defaults](#assigning-defaults)). In strict mode Ajv fails schema compilation if such defaults are used in the schema.
+
+#### Number validation
+
+Strict mode also affects number validation. By default Ajv fails `{"type": "number"}` (or `"integer"`) validation for `Infinity` and `NaN`.
 
 ## Validation keywords
 
@@ -557,7 +622,7 @@ function loadSchema(uri) {
 
 ## Asynchronous validation
 
-Example in Node.js REPL: https://tonicdev.com/esp/ajv-asynchronous-validation
+Example in Node.js REPL: https://runkit.com/esp/ajv-asynchronous-validation
 
 You can define formats and keywords that perform validation asynchronously by accessing database or some other service. You should add `async: true` in the keyword or format definition (see [addFormat](#api-addformat), [addKeyword](#api-addkeyword) and [User-defined keywords](user-defined-keywords)).
 
@@ -567,7 +632,7 @@ If your schema uses asynchronous formats/keywords or refers to some schema that 
 
 Validation function for an asynchronous format/keyword should return a promise that resolves with `true` or `false` (or rejects with `new Ajv.ValidationError(errors)` if you want to return errors from the keyword function).
 
-Ajv compiles asynchronous schemas to [es7 async functions](http://tc39.github.io/ecmascript-asyncawait/) that can optionally be transpiled with [nodent](https://github.com/MatAtBread/nodent). Async functions are supported in Node.js 7+ and all modern browsers. You can also supply any other transpiler as a function via `processCode` option. See [Options](#options).
+Ajv compiles asynchronous schemas to [async functions](http://tc39.github.io/ecmascript-asyncawait/). Async functions are supported in Node.js 7+ and all modern browsers. You can supply a transpiler as a function via `processCode` option. See [Options](#options).
 
 The compiled validation function has `$async: true` property (if the schema is asynchronous), so you can differentiate these functions if you are using both synchronous and asynchronous schemas.
 
@@ -576,10 +641,10 @@ Validation result will be a promise that resolves with validated data or rejects
 Example:
 
 ```javascript
-var ajv = new Ajv()
-// require('ajv-async')(ajv);
+const ajv = new Ajv()
 
-ajv.addKeyword("idExists", {
+ajv.addKeyword({
+  keyword: "idExists"
   async: true,
   type: "number",
   validate: checkIdExists,
@@ -621,22 +686,7 @@ validate({userId: 1, postId: 19})
   })
 ```
 
-### Using transpilers with asynchronous validation functions.
-
-[ajv-async](https://github.com/ajv-validator/ajv-async) uses [nodent](https://github.com/MatAtBread/nodent) to transpile async functions. To use another transpiler you should separately install it (or load its bundle in the browser).
-
-#### Using nodent
-
-```javascript
-var ajv = new Ajv()
-require("ajv-async")(ajv)
-// in the browser if you want to load ajv-async bundle separately you can:
-// window.ajvAsync(ajv);
-var validate = ajv.compile(schema) // transpiled es7 async function
-validate(data).then(successFunc).catch(errorFunc)
-```
-
-#### Using other transpilers
+#### Using transpilers
 
 ```javascript
 var ajv = new Ajv({processCode: transpileFunc})
@@ -852,14 +902,16 @@ console.log(validate(data)) // true
 console.log(data) // [ 1, "foo" ]
 ```
 
-`default` keywords in other cases are ignored:
+With `useDefaults` option `default` keywords throws exception during schema compilation when used in:
 
 - not in `properties` or `items` subschemas
 - in schemas inside `anyOf`, `oneOf` and `not` (see [#42](https://github.com/ajv-validator/ajv/issues/42))
-- in `if` subschema of `switch` keyword
+- in `if` schema
 - in schemas generated by user-defined _macro_ keywords
 
-The [`strictDefaults` option](#options) changes Ajv's behavior for the defaults that Ajv ignores (`true` raises an error, and `"log"` outputs a warning).
+The strict mode option can change the behavior for these unsupported defaults (`strict: false` to ignore them, `"log"` to log a warning).
+
+See [Strict mode](#strict-mode).
 
 ## Coercing data types
 
@@ -1092,15 +1144,14 @@ Defaults:
 
 ```javascript
 {
+  // strict mode options
+  strict:           true,
+  allowMatchingProperties: false,
   // validation and reporting options:
   $data:            false,
   allErrors:        false,
   verbose:          false,
-  $comment:         false, // NEW in Ajv version 6.0
-  jsonPointers:     false,
-  uniqueItems:      true,
-  unicode:          true,
-  nullable:         false,
+  $comment:         false,
   format:           true,
   formats:          {},
   unknownFormats:   true,
@@ -1108,18 +1159,12 @@ Defaults:
   logger:           undefined,
   // referenced schema options:
   missingRefs:      true,
-  extendRefs:       'ignore', // recommended 'fail'
+  extendRefs:       "ignore", // recommended 'fail'
   loadSchema:       undefined, // function(uri: string): Promise {}
   // options to modify validated data:
   removeAdditional: false,
   useDefaults:      false,
   coerceTypes:      false,
-  // strict mode options
-  strictDefaults:   false,
-  strictKeywords:   false,
-  strictNumbers:    false,
-  // asynchronous validation options:
-  transpile:        undefined, // requires ajv-async package
   // advanced options:
   meta:             true,
   validateSchema:   true,
@@ -1135,8 +1180,17 @@ Defaults:
   processCode:      undefined, // function (str: string, schema: object): string {}
   cache:            new Cache,
   serialize:        undefined
+  jsPropertySyntax: false, // deprecated
 }
 ```
+
+##### Strict mode options
+
+- _strict_: By default Ajv executes in strict mode, that is designed to prevent any unexpected behaviours or silently ignored mistakes in schemas (see [Strict Mode](#strict-mode) for more details). It does not change any validation results, but it makes some schemas invalid that would be otherwise valid according to JSON Schema specification. Option values:
+  - `true` (default) - use strict mode and throw an exception when any strict mode restrictions is violated.
+  - `"log"` - log warning when any strict mode restriction is violated.
+  - `false` - ignore any strict mode restriction.
+- _allowMatchingProperties_: pass true to allow overlap between "properties" and "patternProperties". See [Strict Mode](#strict-mode).
 
 ##### Validation and reporting options
 
@@ -1147,10 +1201,6 @@ Defaults:
   - `false` (default): ignore \$comment keyword.
   - `true`: log the keyword value to console.
   - function: pass the keyword value, its schema path and root schema to the specified function
-- _jsonPointers_: set `dataPath` property of errors using [JSON Pointers](https://tools.ietf.org/html/rfc6901) instead of JavaScript property access notation.
-- _uniqueItems_: validate `uniqueItems` keyword (true by default).
-- _unicode_: calculate correct length of strings with unicode pairs (true by default). Pass `false` to use `.length` of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.
-- _nullable_: support keyword "nullable" from [Open API 3 specification](https://swagger.io/docs/specification/data-models/data-types/).
 - _format_: formats validation mode. Option values:
   - `true` (default) - validate added formats (see [Formats](#formats)).
   - `false` - ignore all format keywords.
@@ -1193,27 +1243,6 @@ Defaults:
   - `true` - coerce scalar data types.
   - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
-##### Strict mode options
-
-- _strictDefaults_: report ignored `default` keywords in schemas. Option values:
-  - `false` (default) - ignored defaults are not reported
-  - `true` - if an ignored default is present, throw an error
-  - `"log"` - if an ignored default is present, log warning
-- _strictKeywords_: report unknown keywords in schemas. Option values:
-  - `false` (default) - unknown keywords are not reported
-  - `true` - if an unknown keyword is present, throw an error
-  - `"log"` - if an unknown keyword is present, log warning
-- _strictNumbers_: validate numbers strictly, failing validation for NaN and Infinity. Option values:
-  - `false` (default) - NaN or Infinity will pass validation for numeric types
-  - `true` - NaN or Infinity will not pass validation for numeric types
-
-##### Asynchronous validation options
-
-- _transpile_: Requires [ajv-async](https://github.com/ajv-validator/ajv-async) package. It determines whether Ajv transpiles compiled asynchronous validation function. Option values:
-  - `undefined` (default) - transpile with [nodent](https://github.com/MatAtBread/nodent) if async functions are not supported.
-  - `true` - always transpile with nodent.
-  - `false` - do not transpile; if async functions are not supported an exception will be thrown.
-
 ##### Advanced options
 
 - _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default). If an object is passed, it will be used as the default meta-schema for schemas that have no `$schema` keyword. This default meta-schema MUST have `$schema` keyword.
@@ -1233,11 +1262,10 @@ Defaults:
 - _multipleOfPrecision_: by default `multipleOf` keyword is validated by comparing the result of division with parseInt() of that result. It works for dividers that are bigger than 1. For small dividers such as 0.01 the result of the division is usually not integer (even when it should be integer, see issue [#84](https://github.com/ajv-validator/ajv/issues/84)). If you need to use fractional dividers set this option to some positive integer N to have `multipleOf` validated using this formula: `Math.abs(Math.round(division) - division) < 1e-N` (it is slower but allows for float arithmetics deviations).
 - _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when messages are generated outside of Ajv code (e.g. with [ajv-i18n](https://github.com/ajv-validator/ajv-i18n)).
 - _sourceCode_: add `sourceCode` property to validating function (for debugging; this code can be different from the result of toString call).
-- _processCode_: an optional function to process generated code before it is passed to Function constructor. It can be used to either beautify (the validating function is generated without line-breaks) or to transpile code. Starting from version 5.0.0 this option replaced options:
-  - `beautify` that formatted the generated function using [js-beautify](https://github.com/beautify-web/js-beautify). If you want to beautify the generated code pass a function calling `require('js-beautify').js_beautify` as `processCode: code => js_beautify(code)`.
-  - `transpile` that transpiled asynchronous validation function. You can still use `transpile` option with [ajv-async](https://github.com/ajv-validator/ajv-async) package. See [Asynchronous validation](#asynchronous-validation) for more information.
+- _processCode_: an optional function to process generated code before it is passed to Function constructor. It can be used to either beautify (the validating function is generated without line-breaks) or to transpile code.
 - _cache_: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache [sacjs](https://github.com/epoberezkin/sacjs) can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods `put(key, value)`, `get(key)`, `del(key)` and `clear()`.
 - _serialize_: an optional function to serialize schema to cache key. Pass `false` to use schema itself as a key (e.g., if WeakMap used as a cache). By default [fast-json-stable-stringify](https://github.com/epoberezkin/fast-json-stable-stringify) is used.
+- _jsPropertySyntax_ (deprecated) - set to `true` to report `dataPath` in errors as in v6, using JavaScript property syntax (e.g., `".prop[1].subProp"`). By default `dataPath` in errors is reported as JSON pointer. This option is added for backward compatibility and is not recommended - this format is difficult to parse even in JS code.
 
 ## Validation errors
 
@@ -1248,7 +1276,7 @@ In case of validation failure, Ajv assigns the array of errors to `errors` prope
 Each error is an object with the following properties:
 
 - _keyword_: validation keyword.
-- _dataPath_: the path to the part of the data that was validated. By default `dataPath` uses JavaScript property access notation (e.g., `".prop[1].subProp"`). When the option `jsonPointers` is true (see [Options](#options)) `dataPath` will be set using JSON pointer standard (e.g., `"/prop/1/subProp"`).
+- _dataPath_: JSON pointer to the part of the data that was validated (e.g., `"/prop/1/subProp"`).
 - _schemaPath_: the path (JSON-pointer as a URI fragment) to the schema of the keyword that failed validation.
 - _params_: the object with the additional information about error that can be used to generate error messages (e.g., using [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) package). See below for parameters set by all keywords.
 - _message_: the standard error message (can be excluded with option `messages` set to false).

@@ -58,24 +58,11 @@ describe("validation options", () => {
     })
   })
 
-  describe("uniqueItems", () => {
-    it("should not validate uniqueItems with uniqueItems option == false", () => {
-      testUniqueItems(new Ajv({uniqueItems: false}))
-      testUniqueItems(new Ajv({uniqueItems: false, allErrors: true}))
-
-      function testUniqueItems(ajv) {
-        var validate = ajv.compile({uniqueItems: true})
-        validate([1, 2, 3]).should.equal(true)
-        validate([1, 1, 1]).should.equal(true)
-      }
-    })
-  })
-
   describe("unicode", () => {
-    it("should use String.prototype.length with unicode option == false", () => {
+    it("should use String.prototype.length with deprecated unicode option == false", () => {
       var ajvUnicode = new Ajv()
-      testUnicode(new Ajv({unicode: false}))
-      testUnicode(new Ajv({unicode: false, allErrors: true}))
+      testUnicode(new Ajv({unicode: false, logger: false}))
+      testUnicode(new Ajv({unicode: false, allErrors: true, logger: false}))
 
       function testUnicode(ajv) {
         var validateWithUnicode = ajvUnicode.compile({minLength: 2})

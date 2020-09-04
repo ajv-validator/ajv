@@ -12,9 +12,7 @@ var instances = getAjvInstances(options, {
 
 jsonSchemaTest(instances, {
   description:
-    "Secure schemas tests of " +
-    instances.length +
-    " ajv instances with different options",
+    "Secure schemas tests of " + instances.length + " ajv instances with different options",
   suites: {
     security:
       typeof window == "object"

@@ -13,6 +13,7 @@ import coreVocabulary from "./vocabularies/core"
 import validationVocabulary from "./vocabularies/validation"
 import applicatorVocabulary from "./vocabularies/applicator"
 import formatVocabulary from "./vocabularies/format"
+import {metadataVocabulary, contentVocabulary} from "./vocabularies/metadata"
 import {addVocabulary, addKeyword, getKeyword, removeKeyword} from "./keyword"
 
 module.exports = Ajv
@@ -42,7 +43,7 @@ Ajv.MissingRefError = MissingRefError
 
 var META_SCHEMA_ID = "http://json-schema.org/draft-07/schema"
 
-var META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes", "strictDefaults"]
+var META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"]
 const META_SUPPORT_DATA = ["/properties"]
 
 /**
@@ -51,9 +52,9 @@ const META_SUPPORT_DATA = ["/properties"]
  * @param {Object} opts optional options
  * @return {Object} ajv instance
  */
-export default function Ajv(opts: Options): void {
+export default function Ajv(opts: Options = {}): void {
   if (!(this instanceof Ajv)) return new Ajv(opts)
-  opts = this._opts = {...(opts || {})}
+  opts = this._opts = {strict: true, ...opts}
   setLogger(this)
   this._schemas = {}
   this._refs = {}
@@ -66,26 +67,31 @@ export default function Ajv(opts: Options): void {
   this._loadingSchemas = {}
   this._compilations = []
   this.RULES = rules()
-  if (opts.schemaId !== undefined && opts.schemaId !== "$id") {
-    throw new Error("option schemaId is not supported in v7")
-  }
-
-  opts.loopRequired = opts.loopRequired || Infinity
-  opts.loopEnum = opts.loopEnum || Infinity
+  checkDeprecatedOptions.call(this, opts)
   if (opts.serialize === undefined) opts.serialize = stableStringify
   this._metaOpts = getMetaSchemaOptions(this)
 
   if (opts.formats) addInitialFormats(this)
-  this.addVocabulary(coreVocabulary, true)
-  this.addVocabulary(validationVocabulary, true)
-  this.addVocabulary(applicatorVocabulary, true)
-  this.addVocabulary(formatVocabulary, true)
+  this.addVocabulary(["$async"])
+  this.addVocabulary(coreVocabulary)
+  this.addVocabulary(validationVocabulary)
+  this.addVocabulary(applicatorVocabulary)
+  this.addVocabulary(formatVocabulary)
+  this.addVocabulary(metadataVocabulary)
+  this.addVocabulary(contentVocabulary)
   if (opts.keywords) addInitialKeywords(this, opts.keywords)
   addDefaultMetaSchema(this)
   if (typeof opts.meta == "object") this.addMetaSchema(opts.meta)
-  if (opts.nullable) this.addKeyword({keyword: "nullable", schemaType: "boolean"})
   addInitialSchemas(this)
   opts.format = formatOpt
+}
+
+function checkDeprecatedOptions(this, opts: Options) {
+  if (opts.errorDataPath !== undefined) this.logger.error("NOT SUPPORTED: option errorDataPath")
+  if (opts.schemaId !== undefined) this.logger.error("NOT SUPPORTED: option schemaId")
+  if (opts.uniqueItems !== undefined) this.logger.error("NOT SUPPORTED: option uniqueItems")
+  if (opts.jsPropertySyntax !== undefined) this.logger.warn("DEPRECATED: option jsPropertySyntax")
+  if (opts.unicode !== undefined) this.logger.warn("DEPRECATED: option unicode")
 }
 
 /**
@@ -472,10 +478,12 @@ function getMetaSchemaOptions(self) {
   return metaOpts
 }
 
+const noLogs = {log() {}, warn() {}, error() {}}
+
 function setLogger(self) {
   var logger = self._opts.logger
   if (logger === false) {
-    self.logger = {log: noop, warn: noop, error: noop}
+    self.logger = noLogs
   } else {
     if (logger === undefined) logger = console
     if (!(typeof logger == "object" && logger.log && logger.warn && logger.error)) {
@@ -484,5 +492,3 @@ function setLogger(self) {
     self.logger = logger
   }
 }
-
-function noop() {}

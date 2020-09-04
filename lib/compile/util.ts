@@ -10,7 +10,7 @@ export enum DataType {
 export function checkDataType(
   dataType: string,
   data: Name,
-  strictNumbers?: boolean,
+  strictNums?: boolean | "log",
   correct = DataType.Correct
 ): Code {
   const EQ = correct === DataType.Correct ? operators.EQ : operators.NEQ
@@ -36,18 +36,18 @@ export function checkDataType(
   return correct === DataType.Correct ? cond : _`!(${cond})`
 
   function numCond(_cond: Code = nil): Code {
-    return and(_`typeof ${data} == "number"`, _cond, strictNumbers ? _`isFinite(${data})` : nil)
+    return and(_`typeof ${data} == "number"`, _cond, strictNums ? _`isFinite(${data})` : nil)
   }
 }
 
 export function checkDataTypes(
   dataTypes: string[],
   data: Name,
-  strictNumbers?: boolean,
+  strictNums?: boolean | "log",
   correct?: DataType
 ): Code {
   if (dataTypes.length === 1) {
-    return checkDataType(dataTypes[0], data, strictNumbers, correct)
+    return checkDataType(dataTypes[0], data, strictNums, correct)
   }
   let cond: Code
   const types = toHash(dataTypes)
@@ -61,7 +61,7 @@ export function checkDataTypes(
     cond = nil
   }
   if (types.number) delete types.integer
-  for (const t in types) cond = and(cond, checkDataType(t, data, strictNumbers, correct))
+  for (const t in types) cond = and(cond, checkDataType(t, data, strictNums, correct))
   return cond
 }
 

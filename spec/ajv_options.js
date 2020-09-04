@@ -9,7 +9,6 @@ var options = fullTest
       verbose: true,
       extendRefs: "ignore",
       inlineRefs: false,
-      jsonPointers: true,
       codegen: {es5: true, lines: true},
     }
   : {allErrors: true, codegen: {es5: true, lines: true}}

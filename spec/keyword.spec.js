@@ -4,6 +4,7 @@ var getAjvInstances = require("./ajv_instances"),
   should = require("./chai").should(),
   equal = require("../dist/compile/equal")
 
+const Ajv = require("..")
 const codegen = require("../dist/compile/codegen")
 const {_, nil} = codegen
 
@@ -766,7 +767,8 @@ describe("User-defined keywords", () => {
 
     it('should fail if "macro" keyword definition has "$data" but no "code" or "validate"', () => {
       should.throw(() => {
-        ajv.addKeyword("even", {
+        ajv.addKeyword({
+          keyword: "even",
           type: "number",
           $data: true,
           macro: () => {
@@ -919,11 +921,11 @@ describe("User-defined keywords", () => {
 
       shouldBeInvalid(validate, {foo: 2}, numErrors)
       if (createsErrors) {
-        shouldBeRangeError(validate.errors[0], ".foo", "#/properties/foo/x-range", ">", 2, true)
+        shouldBeRangeError(validate.errors[0], "/foo", "#/properties/foo/x-range", ">", 2, true)
       }
       shouldBeInvalid(validate, {foo: 4}, numErrors)
       if (createsErrors) {
-        shouldBeRangeError(validate.errors[0], ".foo", "#/properties/foo/x-range", "<", 4, true)
+        shouldBeRangeError(validate.errors[0], "/foo", "#/properties/foo/x-range", "<", 4, true)
       }
     })
   }
@@ -1107,6 +1109,8 @@ describe("User-defined keywords", () => {
 
   describe("removeKeyword", () => {
     it("should remove and allow redefining keyword", () => {
+      ajv = new Ajv({strict: false})
+
       ajv.addKeyword({
         keyword: "positive",
         type: "number",
@@ -1150,6 +1154,8 @@ describe("User-defined keywords", () => {
     })
 
     it("should remove and allow redefining standard keyword", () => {
+      ajv = new Ajv({strict: false})
+
       var schema = {minimum: 1}
       var validate = ajv.compile(schema)
       validate(0).should.equal(false)

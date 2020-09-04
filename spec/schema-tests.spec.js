@@ -7,7 +7,7 @@ var jsonSchemaTest = require("json-schema-test"),
   suite = require("./browser_test_suite"),
   after = require("./after_test")
 
-var instances = getAjvInstances(options, {unknownFormats: ["allowedUnknown"]})
+var instances = getAjvInstances(options, {strict: false, unknownFormats: ["allowedUnknown"]})
 
 var remoteRefs = {
   "http://localhost:1234/integer.json": require("./JSON-Schema-Test-Suite/remotes/integer.json"),
@@ -29,10 +29,7 @@ var remoteRefsWithIds = [
 instances.forEach(addRemoteRefsAndFormats)
 
 jsonSchemaTest(instances, {
-  description:
-    "Schema tests of " +
-    instances.length +
-    " ajv instances with different options",
+  description: "Schema tests of " + instances.length + " ajv instances with different options",
   suites: {
     "Advanced schema tests":
       typeof window == "object"

@@ -9,9 +9,7 @@ describe("meta and validateSchema options", () => {
     testOptionMeta(new Ajv({meta: true}))
 
     function testOptionMeta(ajv) {
-      ajv
-        .getSchema("http://json-schema.org/draft-07/schema")
-        .should.be.a("function")
+      ajv.getSchema("http://json-schema.org/draft-07/schema").should.be.a("function")
       ajv.validateSchema({type: "integer"}).should.equal(true)
       ajv.validateSchema({type: 123}).should.equal(false)
       should.not.throw(() => {
@@ -24,7 +22,7 @@ describe("meta and validateSchema options", () => {
   })
 
   it("should throw if meta: false and validateSchema: true", () => {
-    var ajv = new Ajv({meta: false})
+    var ajv = new Ajv({meta: false, logger: false})
     should.not.exist(ajv.getSchema("http://json-schema.org/draft-07/schema"))
     should.not.throw(() => {
       ajv.addSchema({type: "wrong_type"}, "integer")
@@ -48,27 +46,36 @@ describe("meta and validateSchema options", () => {
     })
   })
 
-  it('should not throw on invalid schema with validateSchema: "log"', () => {
-    var logError = console.error
-    var loggedError = false
-    console.error = function () {
-      loggedError = true
-      logError.apply(console, arguments)
+  describe('validateSchema: "log"', () => {
+    let loggedError, loggedWarning
+    const logger = {
+      log() {},
+      warn: () => (loggedWarning = true),
+      error: () => (loggedError = true),
     }
 
-    var ajv = new Ajv({validateSchema: "log"})
-    should.not.throw(() => {
-      ajv.addSchema({type: 123}, "integer")
+    beforeEach(() => {
+      loggedError = false
+      loggedWarning = false
     })
-    loggedError.should.equal(true)
 
-    loggedError = false
-    ajv = new Ajv({validateSchema: "log", meta: false})
-    should.not.throw(() => {
-      ajv.addSchema({type: 123}, "integer")
+    it("should not throw on invalid schema", () => {
+      const ajv = new Ajv({validateSchema: "log", logger})
+      should.not.throw(() => {
+        ajv.addSchema({type: 123}, "integer")
+      })
+      loggedError.should.equal(true)
+      loggedWarning.should.equal(false)
     })
-    loggedError.should.equal(false)
-    console.error = logError
+
+    it("should not throw on invalid schema with meta: false", () => {
+      const ajv = new Ajv({validateSchema: "log", meta: false, logger})
+      should.not.throw(() => {
+        ajv.addSchema({type: 123}, "integer")
+      })
+      loggedError.should.equal(false)
+      loggedWarning.should.equal(true)
+    })
   })
 
   it("should validate v6 schema", () => {
