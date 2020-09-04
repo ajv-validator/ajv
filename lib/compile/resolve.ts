@@ -1,4 +1,4 @@
-import SchemaObject from "./schema_obj"
+import StoredSchema from "./stored_schema"
 import {toHash, escapeFragment, unescapeFragment} from "./util"
 
 var URI = require("uri-js"),
@@ -29,7 +29,7 @@ function resolve(compile, root, ref) {
   }
 
   refVal = refVal || this._schemas[ref]
-  if (refVal instanceof SchemaObject) {
+  if (refVal instanceof StoredSchema) {
     return inlineRef(refVal.schema, this._opts.inlineRefs)
       ? refVal.schema
       : refVal.validate || this._compile(refVal)
@@ -43,7 +43,7 @@ function resolve(compile, root, ref) {
     baseId = res.baseId
   }
 
-  if (schema instanceof SchemaObject) {
+  if (schema instanceof StoredSchema) {
     v = schema.validate || compile.call(this, schema.schema, root, undefined, baseId)
   } else if (schema !== undefined) {
     v = inlineRef(schema, this._opts.inlineRefs)
@@ -71,12 +71,12 @@ function resolveSchema(root, ref) {
     var refVal = this._refs[id]
     if (typeof refVal == "string") {
       return resolveRecursive.call(this, root, refVal, p)
-    } else if (refVal instanceof SchemaObject) {
+    } else if (refVal instanceof StoredSchema) {
       if (!refVal.validate) this._compile(refVal)
       root = refVal
     } else {
       refVal = this._schemas[id]
-      if (refVal instanceof SchemaObject) {
+      if (refVal instanceof StoredSchema) {
         if (!refVal.validate) this._compile(refVal)
         if (id === normalizeId(ref)) {
           return {schema: refVal, root: root, baseId: baseId}

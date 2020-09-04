@@ -1,6 +1,6 @@
 import CodeGen, {_, str, nil, Code, Scope} from "./codegen"
 import {validateFunctionCode} from "./validate"
-import {ErrorObject} from "../types"
+import {ErrorObject, Schema} from "../types"
 import N from "./names"
 
 const equal = require("fast-deep-equal")
@@ -29,6 +29,18 @@ export interface FuncResolvedRef {
   code: Code
   $async?: boolean
   inline?: false
+}
+
+export interface SchemaRoot {
+  schema: Schema
+  refVal: unknown[]
+  refs: {[ref: string]: number}
+}
+
+export interface Compilation {
+  schema: Schema
+  root: SchemaRoot
+  baseId: string
 }
 
 /**

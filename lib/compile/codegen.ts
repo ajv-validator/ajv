@@ -54,11 +54,11 @@ export class Name extends _Code {
     if (!IDENTIFIER.test(s)) throw new Error("CodeGen: name must be a valid identifier")
   }
 
-  isQuoted() {
+  isQuoted(): boolean {
     return false
   }
 
-  add(_c: Code): void {
+  add(_c: _Code): void {
     throw new Error("CodeGen: can't add to Name")
   }
 }

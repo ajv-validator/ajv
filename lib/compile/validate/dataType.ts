@@ -1,4 +1,9 @@
-import {CompilationContext, KeywordErrorDefinition, KeywordErrorContext} from "../../types"
+import {
+  CompilationContext,
+  KeywordErrorDefinition,
+  KeywordErrorContext,
+  SchemaObject,
+} from "../../types"
 import {toHash, checkDataTypes, DataType} from "../util"
 import {schemaRefOrVal} from "../../vocabularies/util"
 import {schemaHasRulesForType} from "./applicability"
@@ -6,7 +11,7 @@ import {reportError} from "../errors"
 import {_, str, Name} from "../codegen"
 import {ValidationRules} from "../rules"
 
-export function getSchemaTypes({RULES}: CompilationContext, schema): string[] {
+export function getSchemaTypes({RULES}: CompilationContext, schema: SchemaObject): string[] {
   const st: undefined | string | string[] = schema.type
   const types: string[] = Array.isArray(st) ? st : st ? [st] : []
   types.forEach((t) => checkType(t, RULES))

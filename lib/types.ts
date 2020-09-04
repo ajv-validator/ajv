@@ -1,8 +1,22 @@
-import Cache from "./cache"
 import CodeGen, {Code, Name, CodeGenOptions} from "./compile/codegen"
 import {ValidationRules} from "./compile/rules"
 import {ResolvedRef} from "./compile"
 import KeywordContext from "./compile/context"
+import StoredSchema from "./compile/stored_schema"
+import Ajv from "./ajv"
+
+export interface SchemaObject {
+  $id?: string
+  $schema?: string
+  [x: string]: any
+}
+
+export type Schema = SchemaObject | boolean
+
+export type LoadSchemaFunction = (
+  uri: string,
+  cb?: (err: Error | null, schema?: SchemaObject) => void
+) => Promise<SchemaObject>
 
 export interface CurrentOptions {
   strict?: boolean | "log"
@@ -10,20 +24,18 @@ export interface CurrentOptions {
   allErrors?: boolean
   verbose?: boolean
   format?: false
-  formats?: object
+  formats?: {[name: string]: Format}
   keywords?: Vocabulary | {[x: string]: KeywordDefinition} // map is deprecated
   unknownFormats?: true | string[] | "ignore"
-  schemas?: object[] | object
+  schemas?: Schema[] | {[key: string]: Schema}
   missingRefs?: true | "ignore" | "fail"
   extendRefs?: true | "ignore" | "fail"
-  loadSchema?: (
-    uri: string,
-    cb?: (err: Error, schema: object) => void
-  ) => PromiseLike<object | boolean>
+  loadSchema?: LoadSchemaFunction
   removeAdditional?: boolean | "all" | "failing"
   useDefaults?: boolean | "empty"
   coerceTypes?: boolean | "array"
-  meta?: boolean | object
+  meta?: SchemaObject | false
+  defaultMeta?: string | SchemaObject
   validateSchema?: boolean | "log"
   addUsedSchema?: boolean
   inlineRefs?: boolean | number
@@ -36,7 +48,7 @@ export interface CurrentOptions {
   sourceCode?: boolean
   processCode?: (code: string, schema: object) => string
   codegen?: CodeGenOptions
-  cache?: Cache
+  cache?: CacheInterface
   logger?: Logger | false
   serialize?: false | ((schema: object | boolean) => any)
   $comment?: true | ((comment: string, schemaPath?: string, rootSchema?: any) => any)
@@ -54,20 +66,28 @@ export interface Options extends CurrentOptions {
   unicode?: boolean
 }
 
-interface Logger {
+export interface Logger {
   log(...args: any[]): any
   warn(...args: any[]): any
   error(...args: any[]): any
 }
 
+export interface CacheInterface {
+  put: (key: any, value: StoredSchema) => void
+  get: (key: any) => StoredSchema
+  del(key: any): void
+  clear(): void
+}
+
 export interface ValidateFunction {
   (
+    this: Ajv | any,
     data: any,
     dataPath?: string,
     parentData?: object | any[],
     parentDataProperty?: string | number,
     rootData?: object | any[]
-  ): boolean | PromiseLike<any>
+  ): boolean | Promise<any>
   schema?: object | boolean
   errors?: null | ErrorObject[]
   refs?: object
@@ -86,7 +106,7 @@ export interface SchemaValidateFunction {
     parentData?: object | any[],
     parentDataProperty?: string | number,
     rootData?: object | any[]
-  ): boolean | PromiseLike<any>
+  ): boolean | Promise<any>
   errors?: ErrorObject[]
 }
 
@@ -226,7 +246,7 @@ export type FormatValidator<T extends SN> = (data: T) => boolean
 
 export type FormatCompare<T extends SN> = (data1: T, data2: T) => boolean
 
-export type AsyncFormatValidator<T extends SN> = (data: T) => PromiseLike<boolean>
+export type AsyncFormatValidator<T extends SN> = (data: T) => Promise<boolean>
 
 export interface FormatDefinition<T extends SN> {
   type: T extends string ? "string" : "number"
