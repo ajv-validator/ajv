@@ -1,7 +1,7 @@
 import {Schema, ValidateFunction, SchemaObject} from "../types"
 import {SchemaEnv, SchemaRoot} from "./index"
 import StoredSchema from "./stored_schema"
-import {eachItem, toHash, schemaHasRulesExcept, escapeFragment, unescapeFragment} from "./util"
+import {eachItem, toHash, schemaHasRulesExcept, unescapeFragment} from "./util"
 import Ajv from "../ajv"
 import equal from "fast-deep-equal"
 import traverse = require("json-schema-traverse")
@@ -24,36 +24,38 @@ export function resolve(
   root: SchemaRoot, // information about the root schema for the current schema
   ref: string // reference to resolve
 ): Schema | ValidateFunction | undefined {
-  var refVal = this._refs[ref]
-  if (typeof refVal == "string") {
-    if (this._refs[refVal]) refVal = this._refs[refVal]
-    else return resolve.call(this, localCompile, root, refVal)
+  let schOrRef = this._refs[ref]
+  if (typeof schOrRef == "string") {
+    if (this._refs[schOrRef]) schOrRef = this._refs[schOrRef]
+    else return resolve.call(this, localCompile, root, schOrRef)
   }
 
-  refVal = refVal || this._schemas[ref]
-  if (refVal instanceof StoredSchema) {
-    return inlineRef(refVal.schema, this._opts.inlineRefs)
-      ? refVal.schema
-      : refVal.validate || this._compile(refVal)
+  schOrRef = schOrRef || this._schemas[ref]
+  if (schOrRef instanceof StoredSchema) {
+    return inlineRef(schOrRef.schema, this._opts.inlineRefs)
+      ? schOrRef.schema
+      : schOrRef.validate || this._compile(schOrRef)
   }
 
-  var res = resolveSchema.call(this, root, ref)
-  var schema, v, baseId
-  if (res) {
-    schema = res.schema
-    root = res.root
-    baseId = res.baseId
+  var env = resolveSchema.call(this, root, ref)
+  var schema, baseId
+  if (env) {
+    schema = env.schema
+    root = env.root
+    baseId = env.baseId
   }
 
   if (schema instanceof StoredSchema) {
-    v = schema.validate || localCompile.call(this, schema.schema, root, undefined, baseId)
-  } else if (schema !== undefined) {
-    v = inlineRef(schema, this._opts.inlineRefs)
+    if (!schema.validate) {
+      schema.validate = localCompile.call(this, schema.schema, root, undefined, baseId)
+    }
+    return schema.validate
+  }
+  if (schema !== undefined) {
+    return inlineRef(schema, this._opts.inlineRefs)
       ? schema
       : localCompile.call(this, schema, root, undefined, baseId)
   }
-
-  return v
 }
 
 // Resolve schema, its root and baseId
@@ -123,7 +125,7 @@ function getJsonPointer(
   if (typeof schema == "boolean") return
   parsedRef.fragment = parsedRef.fragment || ""
   if (parsedRef.fragment.slice(0, 1) !== "/") return
-  var parts = parsedRef.fragment.split("/")
+  const parts = parsedRef.fragment.split("/")
 
   for (let part of parts) {
     if (!part) continue
@@ -225,48 +227,38 @@ export function resolveUrl(baseId = "", id: string): string {
 
 export function getSchemaRefs(this: Ajv, schema: Schema): LocalRefs {
   if (typeof schema == "boolean") return {}
-  var schemaId = normalizeId(schema.$id)
-  var baseIds = {"": schemaId}
-  var fullPaths = {"": getFullPath(schemaId, false)}
+  const schemaId = normalizeId(schema.$id)
+  const baseIds: {[jsonPtr: string]: string} = {"": schemaId}
+  const pathPrefix = getFullPath(schemaId, false)
   const localRefs: LocalRefs = {}
-  var self = this
+  const self = this
 
-  traverse(
-    schema,
-    {allKeys: true},
-    (sch, jsonPtr, _1, parentJsonPtr, parentKeyword, _2, keyIndex) => {
-      if (jsonPtr === "") return
-      var id = sch.$id
-      var baseId = baseIds[parentJsonPtr]
-      var fullPath = fullPaths[parentJsonPtr] + "/" + parentKeyword
-      if (keyIndex !== undefined) {
-        fullPath += "/" + (typeof keyIndex == "number" ? keyIndex : escapeFragment(keyIndex))
-      }
-
-      if (typeof id == "string") {
-        id = baseId = normalizeId(baseId ? URI.resolve(baseId, id) : id)
-
-        var refVal = self._refs[id]
-        if (typeof refVal == "string") refVal = self._refs[refVal]
-        if (typeof refVal == "object" && refVal.schema) {
-          if (!equal(sch, refVal.schema)) {
-            throw new Error('id "' + id + '" resolves to more than one schema')
-          }
-        } else if (id !== normalizeId(fullPath)) {
-          if (id[0] === "#") {
-            if (localRefs[id] && !equal(sch, localRefs[id])) {
-              throw new Error('id "' + id + '" resolves to more than one schema')
-            }
-            localRefs[id] = sch
-          } else {
-            self._refs[id] = fullPath
-          }
+  traverse(schema, {allKeys: true}, (sch, jsonPtr, _, parentJsonPtr) => {
+    if (parentJsonPtr === undefined) return
+    const fullPath = pathPrefix + jsonPtr
+    let id = sch.$id
+    let baseId = baseIds[parentJsonPtr]
+    if (typeof id == "string") {
+      id = baseId = normalizeId(baseId ? URI.resolve(baseId, id) : id)
+      let schOrRef = self._refs[id]
+      if (typeof schOrRef == "string") schOrRef = self._refs[schOrRef]
+      if (typeof schOrRef == "object" && schOrRef.schema) {
+        checkAmbiguosId(sch, schOrRef.schema, id)
+      } else if (id !== normalizeId(fullPath)) {
+        if (id[0] === "#") {
+          if (localRefs[id]) checkAmbiguosId(sch, localRefs[id], id)
+          localRefs[id] = sch
+        } else {
+          self._refs[id] = fullPath
         }
       }
-      baseIds[jsonPtr] = baseId
-      fullPaths[jsonPtr] = fullPath
     }
-  )
+    baseIds[jsonPtr] = baseId
+  })
 
   return localRefs
+
+  function checkAmbiguosId(sch1: Schema, sch2: Schema, id: string) {
+    if (!equal(sch1, sch2)) throw new Error(`id "${id}" resolves to more than one schema`)
+  }
 }
