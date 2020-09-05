@@ -1,13 +1,12 @@
-import Ajv from "../ajv"
-import CodeGen, {_, str, nil, Code, Scope} from "./codegen"
-import {validateFunctionCode} from "./validate"
 import {Schema, SchemaObject, ValidateFunction} from "../types"
+import CodeGen, {_, nil, str, Code, Scope} from "./codegen"
 import N from "./names"
+import {LocalRefs, getFullPath, inlineRef, resolve, resolveUrl} from "./resolve"
+import {validateFunctionCode} from "./validate"
+import Ajv from "../ajv"
 
 const equal = require("fast-deep-equal")
 const ucs2length = require("./ucs2length")
-
-const resolve = require("./resolve")
 
 /**
  * Functions below are used inside compiled validations function
@@ -15,8 +14,6 @@ const resolve = require("./resolve")
 
 // this error is thrown by async schemas to return validation errors via exception
 const ValidationError = require("./error_classes").ValidationError
-
-module.exports = compile
 
 export type ResolvedRef = InlineResolvedRef | FuncResolvedRef
 
@@ -38,19 +35,10 @@ export interface SchemaRoot {
   refs: {[ref: string]: number}
 }
 
-export class SchemaEnv {
+export interface SchemaEnv {
   schema: Schema
   root: SchemaRoot
-  baseId: string
-  constructor(schema: Schema, root: SchemaRoot, baseId: string) {
-    this.schema = schema
-    this.root = root
-    this.baseId = baseId
-  }
-
-  equal(env: SchemaEnv): boolean {
-    return this.schema === env.schema && this.root === env.root && this.baseId === env.baseId
-  }
+  baseId?: string
 }
 
 export interface Compilation extends SchemaEnv {
@@ -59,14 +47,13 @@ export interface Compilation extends SchemaEnv {
 }
 
 // Compiles schema to validation function
-function compile(
+export function compileSchema(
   this: Ajv,
-  schema: SchemaObject, // TODO or SchemaObject?
-  root: SchemaRoot, // object with information about the root schema for this schema
-  localRefs, // the hash of local references inside the schema (created by resolve.id), used for inline resolution
-  baseId: string // base ID for IDs in the schema
-) {
-  /* eslint no-shadow: 0 */
+  schema: Schema,
+  passedRoot?: SchemaRoot, // object with information about the root schema for this schema
+  localRefs?: LocalRefs, // the hash of local references inside the schema (created by resolve.id), used for inline resolution
+  baseId?: string // base ID for IDs in the schema
+): ValidateFunction {
   var self = this,
     opts = this._opts,
     refVal = [undefined],
@@ -74,9 +61,13 @@ function compile(
 
   const scope: Scope = {}
 
-  root = root || {schema, refVal, refs}
+  const root: SchemaRoot = passedRoot || {
+    schema: typeof schema == "boolean" ? {} : schema,
+    refVal,
+    refs,
+  }
 
-  const env = new SchemaEnv(schema, root, baseId)
+  const env = {schema, root, baseId}
   let compilation = getCompilation.call(this, env)
 
   if (compilation) {
@@ -117,14 +108,19 @@ function compile(
     this._compilations.delete(compilation)
   }
 
-  function localCompile(_schema: SchemaObject, _root: SchemaRoot, localRefs, baseId: string) {
+  function localCompile(
+    _schema: Schema,
+    _root: SchemaRoot,
+    _localRefs?: LocalRefs,
+    _baseId?: string
+  ): ValidateFunction {
     var isRoot = !_root || (_root && _root.schema === _schema)
     if (_root.schema !== root.schema) {
-      return compile.call(self, _schema, _root, localRefs, baseId)
+      return compileSchema.call(self, _schema, _root, _localRefs, _baseId)
     }
 
-    var $async = _schema.$async === true
-    const rootId = resolve.fullPath(_root.schema.$id)
+    var $async = typeof _schema == "object" && _schema.$async === true
+    const rootId = getFullPath(_root.schema.$id)
 
     const gen = new CodeGen({...opts.codegen, forInOwn: opts.ownProperties})
 
@@ -138,12 +134,12 @@ function compile(
       dataPathArr: [nil],
       dataLevel: 0,
       topSchemaRef: _`${N.validate}.schema`,
-      async: _schema.$async === true,
+      async: $async,
       schema: _schema,
       isRoot,
       root: _root,
       rootId,
-      baseId: baseId || rootId,
+      baseId: _baseId || rootId,
       schemaPath: nil,
       errSchemaPath: "#",
       errorPath: str``,
@@ -211,8 +207,8 @@ function compile(
     return validate
   }
 
-  function resolveRef(baseId: string, ref: string, isRoot: boolean): ResolvedRef | void {
-    ref = resolve.url(baseId, ref)
+  function resolveRef(_baseId: string, ref: string, isRoot: boolean): ResolvedRef | void {
+    ref = resolveUrl(_baseId, ref)
     var refIndex = refs[ref]
     var _refVal, refCode
     if (refIndex !== undefined) {
@@ -230,28 +226,28 @@ function compile(
     }
 
     refCode = addLocalRef(ref)
-    var v = resolve.call(self, localCompile, root, ref)
-    if (v === undefined) {
+    let _v = resolve.call(self, localCompile, root, ref)
+    if (_v === undefined) {
       var localSchema = localRefs && localRefs[ref]
       if (localSchema) {
-        v = resolve.inlineRef(localSchema, opts.inlineRefs)
+        _v = inlineRef(localSchema, opts.inlineRefs)
           ? localSchema
-          : compile.call(self, localSchema, root, localRefs, baseId)
+          : compileSchema.call(self, localSchema, root, localRefs, _baseId)
       }
     }
 
-    if (v === undefined) {
+    if (_v === undefined) {
       removeLocalRef(ref)
     } else {
-      replaceLocalRef(ref, v)
-      return resolvedRef(v, refCode)
+      replaceLocalRef(ref, _v)
+      return resolvedRef(_v, refCode)
     }
   }
 
   // TODO gen.globals
-  function addLocalRef(ref: string, v?: any): Code {
+  function addLocalRef(ref: string, _v?): Code {
     var refId = refVal.length
-    refVal[refId] = v
+    refVal[refId] = _v
     refs[ref] = refId
     return _`refVal${refId}`
   }
@@ -262,23 +258,27 @@ function compile(
   }
 
   // TODO gen.globals remove?
-  function replaceLocalRef(ref, v) {
+  function replaceLocalRef(ref: string, _v) {
     var refId = refs[ref]
-    refVal[refId] = v
+    refVal[refId] = _v
   }
 
-  function resolvedRef(refVal, code: Code): ResolvedRef {
-    return typeof refVal == "object" || typeof refVal == "boolean"
-      ? {code: code, schema: refVal, inline: true}
-      : {code: code, $async: refVal && !!refVal.$async}
+  function resolvedRef(_refVal, code: Code): ResolvedRef {
+    return typeof _refVal == "object" || typeof _refVal == "boolean"
+      ? {code: code, schema: _refVal, inline: true}
+      : {code: code, $async: _refVal && !!_refVal.$async}
   }
 }
 
 // Index of schema compilation in the currently compiled list
 function getCompilation(this: Ajv, env: SchemaEnv): Compilation | void {
   for (const c of this._compilations) {
-    if (c.equal(env)) return c
+    if (equalEnv(c, env)) return c
   }
+}
+
+function equalEnv(e1: SchemaEnv, e2: SchemaEnv): boolean {
+  return e1.schema === e2.schema && e1.root === e2.root && e1.baseId === e2.baseId
 }
 
 function refValCode(i: number, refVal): Code {
@@ -286,7 +286,5 @@ function refValCode(i: number, refVal): Code {
 }
 
 function vars(arr: unknown[], statement: (i: number, arr?: unknown[]) => Code): Code {
-  return arr
-    .map((_el, i, arr) => statement(i, arr))
-    .reduce((res: Code, c: Code) => _`${res}${c}`, nil)
+  return arr.map((_el, i) => statement(i, arr)).reduce((res: Code, c: Code) => _`${res}${c}`, nil)
 }

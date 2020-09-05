@@ -1,13 +1,12 @@
 import {CompilationContext, Options} from "../../types"
-import {schemaUnknownRules, schemaHasRules, schemaHasRulesExcept} from "../util"
-import {checkStrictMode} from "../../vocabularies/util"
-import {topBoolOrEmptySchema, boolOrEmptySchema} from "./boolSchema"
-import {getSchemaTypes, coerceAndCheckDataType} from "./dataType"
+import {boolOrEmptySchema, topBoolOrEmptySchema} from "./boolSchema"
+import {coerceAndCheckDataType, getSchemaTypes} from "./dataType"
 import {schemaKeywords} from "./iterate"
-import CodeGen, {_, str, nil, Block, Code, Name} from "../codegen"
+import CodeGen, {_, nil, str, Block, Code, Name} from "../codegen"
 import N from "../names"
-
-const resolve = require("../resolve")
+import {resolveUrl} from "../resolve"
+import {schemaHasRules, schemaHasRulesExcept, schemaUnknownRules} from "../util"
+import {checkStrictMode} from "../../vocabularies/util"
 
 // schema compilation - generates validation function, subschemaCode (below) is used for subschemas
 export function validateFunctionCode(it: CompilationContext): void {
@@ -113,7 +112,7 @@ function initializeTop(gen: CodeGen): void {
 }
 
 function updateContext(it: CompilationContext): void {
-  if (it.schema.$id) it.baseId = resolve.url(it.baseId, it.schema.$id)
+  if (it.schema.$id) it.baseId = resolveUrl(it.baseId, it.schema.$id)
 }
 
 function checkAsync(it: CompilationContext): void {

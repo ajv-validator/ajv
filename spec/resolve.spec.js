@@ -225,7 +225,7 @@ describe("resolve", () => {
     })
 
     it("should inline schema if option inlineRefs is bigger than number of keys in referenced schema", () => {
-      var ajv = new Ajv({schemas: schemas, inlineRefs: 3})
+      var ajv = new Ajv({schemas: schemas, inlineRefs: 4})
       testSchemas(ajv, true)
     })
 
@@ -299,13 +299,13 @@ describe("resolve", () => {
     function testSchemas(ajv, expectedInlined) {
       var v1 = ajv.getSchema("http://e.com/obj.json"),
         v2 = ajv.getSchema("http://e.com/obj1.json"),
-        vl = ajv.getSchema("http://e.com/list.json")
+        v3 = ajv.getSchema("http://e.com/list.json")
       testObjSchema(v1)
       testObjSchema(v2)
-      testListSchema(vl)
+      testListSchema(v3)
       testInlined(v1, expectedInlined)
       testInlined(v2, expectedInlined)
-      testInlined(vl, false)
+      testInlined(v3, false)
     }
 
     function testObjSchema(validate) {

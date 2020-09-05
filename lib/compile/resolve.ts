@@ -1,32 +1,33 @@
+import {Schema, ValidateFunction, SchemaObject} from "../types"
+import {SchemaEnv, SchemaRoot} from "./index"
 import StoredSchema from "./stored_schema"
-import {toHash, escapeFragment, unescapeFragment} from "./util"
+import {eachItem, toHash, schemaHasRulesExcept, escapeFragment, unescapeFragment} from "./util"
 import Ajv from "../ajv"
-import {SchemaRoot} from "./index"
-import {ValidateFunction, Schema} from "../types"
+import equal from "fast-deep-equal"
+import traverse = require("json-schema-traverse")
+import URI = require("uri-js")
 
-var URI = require("uri-js"),
-  equal = require("fast-deep-equal"),
-  traverse = require("json-schema-traverse")
-
-resolve.normalizeId = normalizeId
-resolve.fullPath = getFullPath
-resolve.url = resolveUrl
-resolve.ids = resolveIds
-resolve.inlineRef = inlineRef
-resolve.schema = resolveSchema
+export interface LocalRefs {
+  [ref: string]: SchemaObject
+}
 
 // resolve and compile the references ($ref)
 // TODO returns SchemaObject (if the schema can be inlined) or validation function
-function resolve(
+export function resolve(
   this: Ajv,
-  compile, // reference to schema compilation funciton (localCompile)
+  localCompile: (
+    _schema: Schema,
+    _root: SchemaRoot,
+    localRefs?: LocalRefs,
+    baseId?: string
+  ) => ValidateFunction, // reference to schema compilation function (localCompile)
   root: SchemaRoot, // information about the root schema for the current schema
   ref: string // reference to resolve
 ): Schema | ValidateFunction | undefined {
   var refVal = this._refs[ref]
   if (typeof refVal == "string") {
     if (this._refs[refVal]) refVal = this._refs[refVal]
-    else return resolve.call(this, compile, root, refVal)
+    else return resolve.call(this, localCompile, root, refVal)
   }
 
   refVal = refVal || this._schemas[ref]
@@ -45,23 +46,22 @@ function resolve(
   }
 
   if (schema instanceof StoredSchema) {
-    v = schema.validate || compile.call(this, schema.schema, root, undefined, baseId)
+    v = schema.validate || localCompile.call(this, schema.schema, root, undefined, baseId)
   } else if (schema !== undefined) {
     v = inlineRef(schema, this._opts.inlineRefs)
       ? schema
-      : compile.call(this, schema, root, undefined, baseId)
+      : localCompile.call(this, schema, root, undefined, baseId)
   }
 
   return v
 }
 
 // Resolve schema, its root and baseId
-// TODO returns object with properties schema, root, baseId
-function resolveSchema(
+export function resolveSchema(
   this: Ajv,
   root: SchemaRoot, // root object with properties schema, refVal, refs TODO below StoredSchema is assigned to it
   ref: string // reference to resolve
-) {
+): SchemaEnv | undefined {
   const p = URI.parse(ref)
   const refPath = _getFullPath(p)
   let baseId = getFullPath(root.schema.$id)
@@ -70,7 +70,8 @@ function resolveSchema(
     var refVal = this._refs[id]
     if (typeof refVal == "string") {
       return resolveRecursive.call(this, root, refVal, p)
-    } else if (refVal instanceof StoredSchema) {
+    }
+    if (refVal instanceof StoredSchema) {
       if (!refVal.validate) this._compile(refVal)
       root = <SchemaRoot>refVal
     } else {
@@ -88,19 +89,22 @@ function resolveSchema(
     if (!root.schema) return
     baseId = getFullPath(root.schema.$id)
   }
-  return getJsonPointer.call(this, p, baseId, root.schema, root)
+  return getJsonPointer.call(this, p, {schema: root.schema, root, baseId})
 }
 
-function resolveRecursive(this: Ajv, root, ref, parsedRef) {
-  var res = resolveSchema.call(this, root, ref)
-  if (res) {
-    var schema = res.schema
-    var baseId = res.baseId
-    root = res.root
-    var id = schema.$id
-    if (id) baseId = resolveUrl(baseId, id)
-    return getJsonPointer.call(this, parsedRef, baseId, schema, root)
+function resolveRecursive(
+  this: Ajv,
+  root: SchemaRoot,
+  ref: string,
+  parsedRef: URI.URIComponents
+): SchemaEnv | undefined {
+  const env = resolveSchema.call(this, root, ref)
+  if (!env) return
+  const {schema, baseId} = env
+  if (typeof schema == "object" && schema.$id) {
+    env.baseId = resolveUrl(baseId, schema.$id)
   }
+  return getJsonPointer.call(this, parsedRef, env)
 }
 
 var PREVENT_SCOPE_CHANGE = toHash([
@@ -111,39 +115,45 @@ var PREVENT_SCOPE_CHANGE = toHash([
   "definitions",
 ])
 
-function getJsonPointer(this: Ajv, parsedRef, baseId, schema, root) {
-  /* jshint validthis: true */
+function getJsonPointer(
+  this: Ajv,
+  parsedRef: URI.URIComponents,
+  {baseId, schema, root}: SchemaEnv
+): SchemaEnv | undefined {
+  if (typeof schema == "boolean") return
   parsedRef.fragment = parsedRef.fragment || ""
   if (parsedRef.fragment.slice(0, 1) !== "/") return
   var parts = parsedRef.fragment.split("/")
 
-  for (var i = 1; i < parts.length; i++) {
-    var part = parts[i]
-    if (part) {
-      part = unescapeFragment(part)
-      schema = schema[part]
-      if (schema === undefined) break
-      var id
-      if (!PREVENT_SCOPE_CHANGE[part]) {
-        id = schema.$id
-        if (id) baseId = resolveUrl(baseId, id)
-        if (schema.$ref) {
-          var $ref = resolveUrl(baseId, schema.$ref)
-          var res = resolveSchema.call(this, root, $ref)
-          if (res) {
-            schema = res.schema
-            root = res.root
-            baseId = res.baseId
-          }
-        }
-      }
+  for (let part of parts) {
+    if (!part) continue
+    part = unescapeFragment(part)
+    schema = schema[part]
+    if (schema === undefined) return
+    if (PREVENT_SCOPE_CHANGE[part]) continue
+    if (typeof schema == "object" && schema.$id) {
+      baseId = resolveUrl(baseId, schema.$id)
     }
   }
-  if (schema !== undefined && schema !== root.schema) {
-    return {schema, root, baseId}
+  if (schema === undefined) return
+  if (
+    typeof schema != "boolean" &&
+    schema.$ref &&
+    !schemaHasRulesExcept(schema, this.RULES.all, "$ref")
+  ) {
+    const $ref = resolveUrl(baseId, schema.$ref)
+    const _env = resolveSchema.call(this, root, $ref)
+    if (_env && !isRootEnv(_env)) return _env
   }
+  const env = {schema, root, baseId}
+  if (!isRootEnv(env)) return env
 }
 
+function isRootEnv({schema, root}: SchemaEnv): boolean {
+  return schema === root.schema
+}
+
+// TODO refactor to use keyword definitions
 var SIMPLE_INLINED = toHash([
   "type",
   "format",
@@ -160,61 +170,46 @@ var SIMPLE_INLINED = toHash([
   "multipleOf",
   "required",
   "enum",
+  "const",
 ])
-function inlineRef(schema, limit) {
-  if (limit === false) return false
-  if (limit === undefined || limit === true) return checkNoRef(schema)
-  else if (limit) return countKeys(schema) <= limit
+export function inlineRef(schema: Schema, limit: boolean | number = true): boolean {
+  if (typeof schema == "boolean") return true
+  if (limit === true) return !hasRef(schema)
+  if (!limit) return false
+  return countKeys(schema) <= limit
 }
 
-function checkNoRef(schema) {
-  var item
-  if (Array.isArray(schema)) {
-    for (var i = 0; i < schema.length; i++) {
-      item = schema[i]
-      if (typeof item == "object" && !checkNoRef(item)) return false
-    }
-  } else {
-    for (var key in schema) {
-      if (key === "$ref") return false
-      item = schema[key]
-      if (typeof item == "object" && !checkNoRef(item)) return false
-    }
+function hasRef(schema: SchemaObject): boolean {
+  for (const key in schema) {
+    if (key === "$ref") return true
+    const sch = schema[key]
+    if (Array.isArray(sch) && sch.some(hasRef)) return true
+    if (typeof sch == "object" && hasRef(sch)) return true
   }
-  return true
+  return false
 }
 
-function countKeys(schema) {
-  var count = 0,
-    item
-  if (Array.isArray(schema)) {
-    for (var i = 0; i < schema.length; i++) {
-      item = schema[i]
-      if (typeof item == "object") count += countKeys(item)
-      if (count === Infinity) return Infinity
+function countKeys(schema: SchemaObject): number {
+  let count = 0
+  for (const key in schema) {
+    if (key === "$ref") return Infinity
+    count++
+    if (SIMPLE_INLINED[key]) continue
+    if (typeof schema[key] == "object") {
+      eachItem(schema[key], (sch) => (count += countKeys(sch)))
     }
-  } else {
-    for (var key in schema) {
-      if (key === "$ref") return Infinity
-      if (SIMPLE_INLINED[key]) {
-        count++
-      } else {
-        item = schema[key]
-        if (typeof item == "object") count += countKeys(item) + 1
-        if (count === Infinity) return Infinity
-      }
-    }
+    if (count === Infinity) return Infinity
   }
   return count
 }
 
-export function getFullPath(id: string | undefined, normalize?: boolean): string {
+export function getFullPath(id = "", normalize?: boolean): string {
   if (normalize !== false) id = normalizeId(id)
   var p = URI.parse(id)
   return _getFullPath(p)
 }
 
-function _getFullPath(p) {
+function _getFullPath(p: URI.URIComponents): string {
   return URI.serialize(p).split("#")[0] + "#"
 }
 
@@ -223,17 +218,17 @@ export function normalizeId(id: string | undefined): string {
   return id ? id.replace(TRAILING_SLASH_HASH, "") : ""
 }
 
-export function resolveUrl(baseId: string, id: string): string {
+export function resolveUrl(baseId = "", id: string): string {
   id = normalizeId(id)
   return URI.resolve(baseId, id)
 }
 
-/* @this Ajv */
-function resolveIds(this: Ajv, schema) {
+export function getSchemaRefs(this: Ajv, schema: Schema): LocalRefs {
+  if (typeof schema == "boolean") return {}
   var schemaId = normalizeId(schema.$id)
   var baseIds = {"": schemaId}
   var fullPaths = {"": getFullPath(schemaId, false)}
-  var localRefs = {}
+  const localRefs: LocalRefs = {}
   var self = this
 
   traverse(
@@ -275,5 +270,3 @@ function resolveIds(this: Ajv, schema) {
 
   return localRefs
 }
-
-module.exports = resolve

@@ -1,5 +1,5 @@
 import {_, nil, and, operators, Code, Name, getProperty} from "./codegen"
-import {CompilationContext} from "../types"
+import {CompilationContext, Schema} from "../types"
 import N from "./names"
 
 export enum DataType {
@@ -79,7 +79,7 @@ export function schemaHasRules(schema: object | boolean, rules: object): boolean
 
 // TODO rules, schema?
 export function schemaHasRulesExcept(
-  schema: object,
+  schema: Schema,
   rules: object,
   exceptKeyword: string
 ): boolean | undefined {
@@ -149,4 +149,12 @@ export function escapeJsonPointer(str: string): string {
 
 function unescapeJsonPointer(str: string): string {
   return str.replace(/~1/g, "/").replace(/~0/g, "~")
+}
+
+export function eachItem<T>(xs: T | T[], f: (x: T) => void): void {
+  if (Array.isArray(xs)) {
+    for (const x of xs) f(x)
+  } else {
+    f(xs)
+  }
 }

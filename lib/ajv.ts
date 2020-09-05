@@ -17,17 +17,15 @@ import Cache from "./cache"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
 import rules, {ValidationRules, Rule, RuleGroup} from "./compile/rules"
 import {checkType} from "./compile/validate/dataType"
-import {SchemaRoot, Compilation} from "./compile"
-
-const compileSchema = require("./compile"),
-  resolve = require("./compile/resolve"),
-  stableStringify = require("fast-json-stable-stringify")
-
+import {compileSchema, SchemaRoot, Compilation} from "./compile"
+import {resolveSchema, normalizeId, getSchemaRefs} from "./compile/resolve"
 import coreVocabulary from "./vocabularies/core"
 import validationVocabulary from "./vocabularies/validation"
 import applicatorVocabulary from "./vocabularies/applicator"
 import formatVocabulary from "./vocabularies/format"
 import {metadataVocabulary, contentVocabulary} from "./vocabularies/metadata"
+import stableStringify from "fast-json-stable-stringify"
+import {eachItem} from "./compile/util"
 
 const META_SCHEMA_ID = "http://json-schema.org/draft-07/schema"
 
@@ -212,7 +210,7 @@ export default class Ajv {
       id = schema.$id
       if (id !== undefined && typeof id != "string") throw new Error("schema id must be string")
     }
-    key = <string>resolve.normalizeId(key || id)
+    key = normalizeId(key || id)
     checkUnique.call(this, key)
     this._schemas[key] = _addSchema.call(this, schema, _skipValidation, _meta, true)
     return this
@@ -295,7 +293,7 @@ export default class Ajv {
         this._cache.del(cacheKey)
         let id = schemaKeyRef.$id
         if (id) {
-          id = <string>resolve.normalizeId(id)
+          id = normalizeId(id)
           delete this._schemas[id]
           delete this._refs[id]
         }
@@ -418,7 +416,8 @@ function defaultMeta(this: Ajv): string | SchemaObject | undefined {
 }
 
 function _getSchemaFragment(this: Ajv, ref: string): ValidateFunction | undefined {
-  const res = resolve.schema.call(this, {schema: {}}, ref)
+  const _root: SchemaRoot = {schema: {}, refVal: [undefined], refs: {}}
+  const res = resolveSchema.call(this, _root, ref)
   if (!res) return
   const schema = res.schema
   const root = res.root
@@ -436,7 +435,7 @@ function _getSchemaFragment(this: Ajv, ref: string): ValidateFunction | undefine
 }
 
 function _getSchemaObj(this: Ajv, keyRef: string): StoredSchema | undefined {
-  keyRef = resolve.normalizeId(keyRef)
+  keyRef = normalizeId(keyRef)
   return this._schemas[keyRef] || this._refs[keyRef] || this._fragments[keyRef]
 }
 
@@ -480,16 +479,16 @@ function _addSchema(
     $id = schema.$id
     $schema = schema.$schema
   }
-  const id = resolve.normalizeId($id)
+  const id = normalizeId($id)
   if (id && shouldAddSchema) checkUnique.call(this, id)
 
   const willValidate = this._opts.validateSchema !== false && !skipValidation
   let recursiveMeta
-  if (willValidate && !(recursiveMeta = id && id === resolve.normalizeId($schema))) {
+  if (willValidate && !(recursiveMeta = id && id === normalizeId($schema))) {
     this.validateSchema(schema, true)
   }
 
-  const localRefs = resolve.ids.call(this, schema)
+  const localRefs = getSchemaRefs.call(this, schema)
 
   const schemaObj = new StoredSchema({id, schema, localRefs, cacheKey, meta})
 
@@ -643,14 +642,6 @@ function _addBeforeRule(this: Ajv, ruleGroup: RuleGroup, rule: Rule, before: str
   } else {
     ruleGroup.rules.push(rule)
     this.logger.warn(`rule ${before} is not defined`)
-  }
-}
-
-function eachItem<T>(xs: T | T[], f: (x: T) => void): void {
-  if (Array.isArray(xs)) {
-    for (const x of xs) f(x)
-  } else {
-    f(xs)
   }
 }
 

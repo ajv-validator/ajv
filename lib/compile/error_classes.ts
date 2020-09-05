@@ -1,6 +1,6 @@
 import {ErrorObject} from "../types"
-
-const resolve = require("./resolve")
+import {resolveUrl, normalizeId, getFullPath} from "./resolve"
+// const resolve = require("./resolve")
 
 export class ValidationError extends Error {
   errors: ErrorObject[]
@@ -24,8 +24,8 @@ export class MissingRefError extends Error {
 
   constructor(baseId: string, ref: string, message?: string) {
     super(message || MissingRefError.message(baseId, ref))
-    this.missingRef = resolve.url(baseId, ref)
-    this.missingSchema = resolve.normalizeId(resolve.fullPath(this.missingRef))
+    this.missingRef = resolveUrl(baseId, ref)
+    this.missingSchema = normalizeId(getFullPath(this.missingRef))
   }
 }
 

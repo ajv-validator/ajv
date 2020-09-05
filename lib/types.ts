@@ -46,7 +46,7 @@ export interface CurrentOptions {
   multipleOfPrecision?: boolean | number
   messages?: boolean
   sourceCode?: boolean
-  processCode?: (code: string, schema: object) => string
+  processCode?: (code: string, schema: Schema) => string
   codegen?: CodeGenOptions
   cache?: CacheInterface
   logger?: Logger | false
@@ -88,11 +88,11 @@ export interface ValidateFunction {
     parentDataProperty?: string | number,
     rootData?: object | any[]
   ): boolean | Promise<any>
-  schema?: object | boolean
+  schema?: Schema
   errors?: null | ErrorObject[]
-  refs?: object
+  refs?: {[ref: string]: number}
   refVal?: any[]
-  root?: ValidateFunction | object
+  root?: ValidateFunction | SchemaRoot
   $async?: true
   source?: object
 }
