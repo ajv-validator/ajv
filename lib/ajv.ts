@@ -43,7 +43,7 @@ export default class Ajv {
   _refs: {[ref: string]: StoredSchema | string} = {}
   _fragments: {[key: string]: StoredSchema} = {}
   _formats: {[name: string]: AddedFormat} = {}
-  _compilations: Compilation[] = []
+  _compilations: Set<Compilation> = new Set()
   _loadingSchemas: {[ref: string]: Promise<SchemaObject>} = {}
   _metaOpts: Options
   RULES: ValidationRules

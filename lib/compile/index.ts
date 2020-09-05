@@ -34,14 +34,26 @@ export interface FuncResolvedRef {
 
 export interface SchemaRoot {
   schema: SchemaObject
-  refVal: unknown[]
+  refVal: (string | undefined)[]
   refs: {[ref: string]: number}
 }
 
-export interface Compilation {
+export class SchemaEnv {
   schema: Schema
   root: SchemaRoot
   baseId: string
+  constructor(schema: Schema, root: SchemaRoot, baseId: string) {
+    this.schema = schema
+    this.root = root
+    this.baseId = baseId
+  }
+
+  equal(env: SchemaEnv): boolean {
+    return this.schema === env.schema && this.root === env.root && this.baseId === env.baseId
+  }
+}
+
+export interface Compilation extends SchemaEnv {
   validate?: ValidateFunction
   callValidate?: ValidateFunction
 }
@@ -49,7 +61,7 @@ export interface Compilation {
 // Compiles schema to validation function
 function compile(
   this: Ajv,
-  schema: Schema, // TODO or SchemaObject?
+  schema: SchemaObject, // TODO or SchemaObject?
   root: SchemaRoot, // object with information about the root schema for this schema
   localRefs, // the hash of local references inside the schema (created by resolve.id), used for inline resolution
   baseId: string // base ID for IDs in the schema
@@ -62,20 +74,27 @@ function compile(
 
   const scope: Scope = {}
 
-  root = root || {schema: schema, refVal: refVal, refs: refs}
+  root = root || {schema, refVal, refs}
 
-  var c = checkCompiling.call(this, schema, root, baseId)
-  const compilation = this._compilations[c.index]
+  const env = new SchemaEnv(schema, root, baseId)
+  let compilation = getCompilation.call(this, env)
 
-  const callValidate: ValidateFunction = function (...args) {
-    var validate = <ValidateFunction>compilation.validate
-    /* eslint-disable no-invalid-this */
-    var result = validate.apply(this, args)
-    callValidate.errors = validate.errors
-    return result
+  if (compilation) {
+    const c: Compilation = compilation
+    if (!c.callValidate) {
+      const validate: ValidateFunction = function (this: Ajv | any, ...args) {
+        const v = <ValidateFunction>c.validate
+        const valid = v.apply(this, args)
+        validate.errors = v.errors
+        return valid
+      }
+      c.callValidate = validate
+    }
+    return c.callValidate
   }
 
-  if (c.compiling) return (compilation.callValidate = callValidate)
+  compilation = env
+  this._compilations.add(compilation)
 
   var formats = this._formats
   var RULES = this.RULES
@@ -95,10 +114,10 @@ function compile(
     }
     return v
   } finally {
-    endCompiling.call(this, schema, root, baseId)
+    this._compilations.delete(compilation)
   }
 
-  function localCompile(_schema, _root, localRefs, baseId) {
+  function localCompile(_schema: SchemaObject, _root: SchemaRoot, localRefs, baseId: string) {
     var isRoot = !_root || (_root && _root.schema === _schema)
     if (_root.schema !== root.schema) {
       return compile.call(self, _schema, _root, localRefs, baseId)
@@ -230,7 +249,7 @@ function compile(
   }
 
   // TODO gen.globals
-  function addLocalRef(ref, v?: any): Code {
+  function addLocalRef(ref: string, v?: any): Code {
     var refId = refVal.length
     refVal[refId] = v
     refs[ref] = refId
@@ -238,7 +257,7 @@ function compile(
   }
 
   // TODO gen.globals remove?
-  function removeLocalRef(ref) {
+  function removeLocalRef(ref: string) {
     delete refs[ref]
   }
 
@@ -255,32 +274,11 @@ function compile(
   }
 }
 
-// Checks if the schema is currently compiled
-function checkCompiling(
-  this: Ajv,
-  schema: Schema, // TODO or SchemaObject?
-  root: SchemaRoot,
-  baseId: string
-): {index: number; compiling: boolean} {
-  /* jshint validthis: true */
-  var index = compIndex.call(this, schema, root, baseId)
-  if (index >= 0) return {index: index, compiling: true}
-  index = this._compilations.length
-  this._compilations[index] = {schema, root, baseId}
-  return {index, compiling: false}
-}
-
-// Removes the schema from the currently compiled list
-function endCompiling(this: Ajv, schema: Schema, root: SchemaRoot, baseId: string) {
-  var i = compIndex.call(this, schema, root, baseId)
-  if (i >= 0) this._compilations.splice(i, 1)
-}
-
 // Index of schema compilation in the currently compiled list
-function compIndex(this: Ajv, schema: Schema, root: SchemaRoot, baseId: string) {
-  return this._compilations.findIndex(
-    (c) => c.schema === schema && c.root === root && c.baseId === baseId
-  )
+function getCompilation(this: Ajv, env: SchemaEnv): Compilation | void {
+  for (const c of this._compilations) {
+    if (c.equal(env)) return c
+  }
 }
 
 function refValCode(i: number, refVal): Code {

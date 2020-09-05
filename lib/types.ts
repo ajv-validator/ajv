@@ -1,6 +1,6 @@
 import CodeGen, {Code, Name, CodeGenOptions} from "./compile/codegen"
 import {ValidationRules} from "./compile/rules"
-import {ResolvedRef} from "./compile"
+import {ResolvedRef, SchemaRoot} from "./compile"
 import KeywordContext from "./compile/context"
 import StoredSchema from "./compile/stored_schema"
 import Ajv from "./ajv"
@@ -155,12 +155,6 @@ export interface CompilationContext {
   resolveRef: (...args: any[]) => ResolvedRef | void
   logger: Logger // TODO ?
   self: any // TODO
-}
-
-interface SchemaRoot {
-  schema: any
-  refVal: (string | undefined)[] // TODO
-  refs: {[key: string]: any} // TODO
 }
 
 interface _KeywordDef {
