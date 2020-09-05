@@ -1,6 +1,7 @@
+import Ajv from "../ajv"
 import CodeGen, {_, str, nil, Code, Scope} from "./codegen"
 import {validateFunctionCode} from "./validate"
-import {ErrorObject, Schema} from "../types"
+import {Schema, SchemaObject, ValidateFunction} from "../types"
 import N from "./names"
 
 const equal = require("fast-deep-equal")
@@ -32,7 +33,7 @@ export interface FuncResolvedRef {
 }
 
 export interface SchemaRoot {
-  schema: Schema
+  schema: SchemaObject
   refVal: unknown[]
   refs: {[ref: string]: number}
 }
@@ -41,19 +42,18 @@ export interface Compilation {
   schema: Schema
   root: SchemaRoot
   baseId: string
+  validate?: ValidateFunction
+  callValidate?: ValidateFunction
 }
 
-/**
- * Compiles schema to validation function
- * @this   Ajv
- * @param  {Object} schema schema object
- * @param  {Object} root object with information about the root schema for this schema
- * @param  {Object} localRefs the hash of local references inside the schema (created by resolve.id), used for inline resolution
- * @param  {String} baseId base ID for IDs in the schema
- * @return {Function} validation function
- */
-function compile(schema, root, localRefs, baseId) {
-  /* jshint validthis: true, evil: true */
+// Compiles schema to validation function
+function compile(
+  this: Ajv,
+  schema: Schema, // TODO or SchemaObject?
+  root: SchemaRoot, // object with information about the root schema for this schema
+  localRefs, // the hash of local references inside the schema (created by resolve.id), used for inline resolution
+  baseId: string // base ID for IDs in the schema
+) {
   /* eslint no-shadow: 0 */
   var self = this,
     opts = this._opts,
@@ -64,17 +64,11 @@ function compile(schema, root, localRefs, baseId) {
 
   root = root || {schema: schema, refVal: refVal, refs: refs}
 
-  interface CallValidate {
-    (): any
-    errors?: null | ErrorObject[]
-  }
-
   var c = checkCompiling.call(this, schema, root, baseId)
   const compilation = this._compilations[c.index]
 
-  /* @this   {*} - custom context, see passContext option */
-  const callValidate: CallValidate = function (...args) {
-    var validate = compilation.validate
+  const callValidate: ValidateFunction = function (...args) {
+    var validate = <ValidateFunction>compilation.validate
     /* eslint-disable no-invalid-this */
     var result = validate.apply(this, args)
     callValidate.errors = validate.errors
@@ -261,55 +255,32 @@ function compile(schema, root, localRefs, baseId) {
   }
 }
 
-/**
- * Checks if the schema is currently compiled
- * @this   Ajv
- * @param  {Object} schema schema to compile
- * @param  {Object} root root object
- * @param  {String} baseId base schema ID
- * @return {Object} object with properties "index" (compilation index) and "compiling" (boolean)
- */
-function checkCompiling(schema, root, baseId) {
+// Checks if the schema is currently compiled
+function checkCompiling(
+  this: Ajv,
+  schema: Schema, // TODO or SchemaObject?
+  root: SchemaRoot,
+  baseId: string
+): {index: number; compiling: boolean} {
   /* jshint validthis: true */
   var index = compIndex.call(this, schema, root, baseId)
   if (index >= 0) return {index: index, compiling: true}
   index = this._compilations.length
-  this._compilations[index] = {
-    schema: schema,
-    root: root,
-    baseId: baseId,
-  }
-  return {index: index, compiling: false}
+  this._compilations[index] = {schema, root, baseId}
+  return {index, compiling: false}
 }
 
-/**
- * Removes the schema from the currently compiled list
- * @this   Ajv
- * @param  {Object} schema schema to compile
- * @param  {Object} root root object
- * @param  {String} baseId base schema ID
- */
-function endCompiling(schema, root, baseId) {
-  /* jshint validthis: true */
+// Removes the schema from the currently compiled list
+function endCompiling(this: Ajv, schema: Schema, root: SchemaRoot, baseId: string) {
   var i = compIndex.call(this, schema, root, baseId)
   if (i >= 0) this._compilations.splice(i, 1)
 }
 
-/**
- * Index of schema compilation in the currently compiled list
- * @this   Ajv
- * @param  {Object} schema schema to compile
- * @param  {Object} root root object
- * @param  {String} baseId base schema ID
- * @return {Integer} compilation index
- */
-function compIndex(schema, root, baseId) {
-  /* jshint validthis: true */
-  for (var i = 0; i < this._compilations.length; i++) {
-    var c = this._compilations[i]
-    if (c.schema === schema && c.root === root && c.baseId === baseId) return i
-  }
-  return -1
+// Index of schema compilation in the currently compiled list
+function compIndex(this: Ajv, schema: Schema, root: SchemaRoot, baseId: string) {
+  return this._compilations.findIndex(
+    (c) => c.schema === schema && c.root === root && c.baseId === baseId
+  )
 }
 
 function refValCode(i: number, refVal): Code {

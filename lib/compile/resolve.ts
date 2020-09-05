@@ -1,5 +1,8 @@
 import StoredSchema from "./stored_schema"
 import {toHash, escapeFragment, unescapeFragment} from "./util"
+import Ajv from "../ajv"
+import {SchemaRoot} from "./index"
+import {ValidateFunction, Schema} from "../types"
 
 var URI = require("uri-js"),
   equal = require("fast-deep-equal"),
@@ -12,16 +15,14 @@ resolve.ids = resolveIds
 resolve.inlineRef = inlineRef
 resolve.schema = resolveSchema
 
-/**
- * [resolve and compile the references ($ref)]
- * @this   Ajv
- * @param  {Function} compile reference to schema compilation funciton (localCompile)
- * @param  {Object} root object with information about the root schema for the current schema
- * @param  {String} ref reference to resolve
- * @return {Object|Function} schema object (if the schema can be inlined) or validation function
- */
-function resolve(compile, root, ref) {
-  /* jshint validthis: true */
+// resolve and compile the references ($ref)
+// TODO returns SchemaObject (if the schema can be inlined) or validation function
+function resolve(
+  this: Ajv,
+  compile, // reference to schema compilation funciton (localCompile)
+  root: SchemaRoot, // information about the root schema for the current schema
+  ref: string // reference to resolve
+): Schema | ValidateFunction | undefined {
   var refVal = this._refs[ref]
   if (typeof refVal == "string") {
     if (this._refs[refVal]) refVal = this._refs[refVal]
@@ -54,18 +55,16 @@ function resolve(compile, root, ref) {
   return v
 }
 
-/**
- * Resolve schema, its root and baseId
- * @this Ajv
- * @param  {Object} root root object with properties schema, refVal, refs
- * @param  {String} ref  reference to resolve
- * @return {Object} object with properties schema, root, baseId
- */
-function resolveSchema(root, ref) {
-  /* jshint validthis: true */
-  var p = URI.parse(ref),
-    refPath = _getFullPath(p),
-    baseId = getFullPath(root.schema.$id)
+// Resolve schema, its root and baseId
+// TODO returns object with properties schema, root, baseId
+function resolveSchema(
+  this: Ajv,
+  root: SchemaRoot, // root object with properties schema, refVal, refs TODO below StoredSchema is assigned to it
+  ref: string // reference to resolve
+) {
+  const p = URI.parse(ref)
+  const refPath = _getFullPath(p)
+  let baseId = getFullPath(root.schema.$id)
   if (Object.keys(root.schema).length === 0 || refPath !== baseId) {
     var id = normalizeId(refPath)
     var refVal = this._refs[id]
@@ -73,15 +72,15 @@ function resolveSchema(root, ref) {
       return resolveRecursive.call(this, root, refVal, p)
     } else if (refVal instanceof StoredSchema) {
       if (!refVal.validate) this._compile(refVal)
-      root = refVal
+      root = <SchemaRoot>refVal
     } else {
       refVal = this._schemas[id]
       if (refVal instanceof StoredSchema) {
         if (!refVal.validate) this._compile(refVal)
         if (id === normalizeId(ref)) {
-          return {schema: refVal, root: root, baseId: baseId}
+          return {schema: refVal, root, baseId}
         }
-        root = refVal
+        root = <SchemaRoot>refVal
       } else {
         return
       }
@@ -92,9 +91,7 @@ function resolveSchema(root, ref) {
   return getJsonPointer.call(this, p, baseId, root.schema, root)
 }
 
-/* @this Ajv */
-function resolveRecursive(root, ref, parsedRef) {
-  /* jshint validthis: true */
+function resolveRecursive(this: Ajv, root, ref, parsedRef) {
   var res = resolveSchema.call(this, root, ref)
   if (res) {
     var schema = res.schema
@@ -113,8 +110,8 @@ var PREVENT_SCOPE_CHANGE = toHash([
   "dependencies",
   "definitions",
 ])
-/* @this Ajv */
-function getJsonPointer(parsedRef, baseId, schema, root) {
+
+function getJsonPointer(this: Ajv, parsedRef, baseId, schema, root) {
   /* jshint validthis: true */
   parsedRef.fragment = parsedRef.fragment || ""
   if (parsedRef.fragment.slice(0, 1) !== "/") return
@@ -143,7 +140,7 @@ function getJsonPointer(parsedRef, baseId, schema, root) {
     }
   }
   if (schema !== undefined && schema !== root.schema) {
-    return {schema: schema, root: root, baseId: baseId}
+    return {schema, root, baseId}
   }
 }
 
@@ -211,7 +208,7 @@ function countKeys(schema) {
   return count
 }
 
-export function getFullPath(id: string, normalize?: boolean): string {
+export function getFullPath(id: string | undefined, normalize?: boolean): string {
   if (normalize !== false) id = normalizeId(id)
   var p = URI.parse(id)
   return _getFullPath(p)
@@ -222,7 +219,7 @@ function _getFullPath(p) {
 }
 
 var TRAILING_SLASH_HASH = /#\/?$/
-export function normalizeId(id: string): string {
+export function normalizeId(id: string | undefined): string {
   return id ? id.replace(TRAILING_SLASH_HASH, "") : ""
 }
 
@@ -232,7 +229,7 @@ export function resolveUrl(baseId: string, id: string): string {
 }
 
 /* @this Ajv */
-function resolveIds(schema) {
+function resolveIds(this: Ajv, schema) {
   var schemaId = normalizeId(schema.$id)
   var baseIds = {"": schemaId}
   var fullPaths = {"": getFullPath(schemaId, false)}
@@ -256,7 +253,7 @@ function resolveIds(schema) {
 
         var refVal = self._refs[id]
         if (typeof refVal == "string") refVal = self._refs[refVal]
-        if (refVal && refVal.schema) {
+        if (typeof refVal == "object" && refVal.schema) {
           if (!equal(sch, refVal.schema)) {
             throw new Error('id "' + id + '" resolves to more than one schema')
           }
