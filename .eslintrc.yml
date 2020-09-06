@@ -64,7 +64,6 @@ rules:
   radix: error
   semi: 0
   valid-jsdoc: [error, requireReturn: false]
-  no-control-regex: 0
   no-useless-escape: error
   no-void: error
-  # no-var: error
+  no-var: error
