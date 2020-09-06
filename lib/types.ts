@@ -1,7 +1,7 @@
 import CodeGen, {Code, Name, CodeGenOptions, Scope} from "./compile/codegen"
 import {ValidationRules} from "./compile/rules"
 import {RefVal, ResolvedRef, SchemaRoot, StoredSchema} from "./compile"
-import KeywordContext from "./compile/context"
+import KeywordCtx from "./compile/context"
 import Ajv from "./ajv"
 
 export interface SchemaObject {
@@ -11,6 +11,10 @@ export interface SchemaObject {
 }
 
 export type Schema = SchemaObject | boolean
+
+export interface SchemaMap {
+  [key: string]: Schema
+}
 
 export type LoadSchemaFunction = (
   uri: string,
@@ -49,8 +53,8 @@ export interface CurrentOptions {
   codegen?: CodeGenOptions
   cache?: CacheInterface
   logger?: Logger | false
-  serialize?: false | ((schema: object | boolean) => any)
-  $comment?: true | ((comment: string, schemaPath?: string, rootSchema?: any) => any)
+  serialize?: false | ((schema: Schema) => any)
+  $comment?: true | ((comment: string, schemaPath?: string, rootSchema?: SchemaObject) => any)
   allowMatchingProperties?: boolean // disables a strict mode restriction
 }
 
@@ -109,7 +113,7 @@ export interface SchemaValidateFunction {
   (
     schema: any,
     data: any,
-    parentSchema?: object,
+    parentSchema?: SchemaObject,
     dataPath?: string,
     parentData?: object | any[],
     parentDataProperty?: string | number,
@@ -129,13 +133,13 @@ export interface ErrorObject {
   message?: string
   // These are added with the `verbose` option.
   schema?: any
-  parentSchema?: object
+  parentSchema?: SchemaObject
   data?: any
 }
 
 export type KeywordCompilationResult = object | boolean | SchemaValidateFunction | ValidateFunction
 
-export interface CompilationContext {
+export interface SchemaCtx {
   gen: CodeGen
   allErrors: boolean
   data: Name
@@ -146,9 +150,9 @@ export interface CompilationContext {
   dataLevel: number
   topSchemaRef: Code
   async: boolean
-  schema: any
+  schema: Schema
   isRoot: boolean
-  root: SchemaRoot // TODO ?
+  root: SchemaRoot
   rootId: string // TODO ?
   baseId: string
   schemaPath: Code
@@ -160,9 +164,13 @@ export interface CompilationContext {
   RULES: ValidationRules
   formats: {[index: string]: AddedFormat}
   opts: Options
-  resolveRef: (...args: any[]) => ResolvedRef | void
-  logger: Logger // TODO ?
-  self: any // TODO
+  resolveRef: (baseId: string, ref: string, isRoot: boolean) => ResolvedRef | void
+  logger: Logger
+  self: Ajv
+}
+
+export interface SchemaObjCtx extends SchemaCtx {
+  schema: SchemaObject
 }
 
 interface _KeywordDef {
@@ -180,20 +188,20 @@ interface _KeywordDef {
 }
 
 export interface CodeKeywordDefinition extends _KeywordDef {
-  code: (cxt: KeywordContext, ruleType?: string) => void
+  code: (cxt: KeywordCtx, ruleType?: string) => void
   trackErrors?: boolean
 }
 
 export type MacroKeywordFunc = (
   schema: any,
   parentSchema: object,
-  it: CompilationContext
+  it: SchemaCtx
 ) => object | boolean
 
 export type CompileKeywordFunc = (
   schema: any,
   parentSchema: object,
-  it: CompilationContext
+  it: SchemaCtx
 ) => ValidateFunction
 
 export interface FuncKeywordDefinition extends _KeywordDef {
@@ -217,28 +225,28 @@ export type KeywordDefinition =
   | MacroKeywordDefinition
 
 export interface KeywordErrorDefinition {
-  message: string | ((cxt: KeywordErrorContext) => Code)
-  params?: (cxt: KeywordErrorContext) => Code
+  message: string | ((cxt: KeywordErrorCtx) => Code)
+  params?: (cxt: KeywordErrorCtx) => Code
 }
 
 export type Vocabulary = (KeywordDefinition | string)[]
 
-export interface KeywordErrorContext {
+export interface KeywordErrorCtx {
   gen: CodeGen
   keyword: string
   data: Name
   $data?: string | false
   schema: any
-  parentSchema: any
+  parentSchema?: SchemaObject
   schemaCode: Code | number | boolean
   schemaValue: Code | number | boolean
   schemaType?: string | string[]
   errsCount?: Name
-  params: KeywordContextParams
-  it: CompilationContext
+  params: KeywordCtxParams
+  it: SchemaCtx
 }
 
-export type KeywordContextParams = {[x: string]: Code | string | number}
+export type KeywordCtxParams = {[x: string]: Code | string | number}
 
 export type FormatMode = "fast" | "full"
 

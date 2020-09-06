@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
-import KeywordContext from "../../compile/context"
+import KeywordCtx from "../../compile/context"
 import {allSchemaProperties, schemaRefOrVal, alwaysValidSchema, usePattern} from "../util"
 import {applySubschema, SubschemaApplication, Type} from "../../compile/subschema"
 import {_, nil, or, Code, Name} from "../../compile/codegen"
@@ -10,7 +10,7 @@ const def: CodeKeywordDefinition = {
   type: "object",
   schemaType: ["boolean", "object", "undefined"], // "undefined" is needed to support option removeAdditional: "all"
   trackErrors: true,
-  code(cxt: KeywordContext) {
+  code(cxt: KeywordCtx) {
     const {gen, schema, parentSchema, data, errsCount, it} = cxt
     if (!errsCount) throw new Error("ajv implementation error")
     const {allErrors, opts} = it

@@ -1,19 +1,15 @@
 import {schemaHasRules} from "../compile/util"
-import {CompilationContext} from "../types"
-import KeywordContext from "../compile/context"
+import {Schema, SchemaMap, SchemaCtx, SchemaObjCtx} from "../types"
+import KeywordCtx from "../compile/context"
 import CodeGen, {_, nil, Code, Name, getProperty} from "../compile/codegen"
 import N from "../compile/names"
-import {SchemaObject} from "json-schema-traverse"
 
 export function schemaRefOrVal(
-  {topSchemaRef, schemaPath}: CompilationContext,
+  {topSchemaRef, schemaPath}: SchemaObjCtx,
   schema: unknown,
   keyword: string,
   $data?: string | false
 ): Code | number | boolean {
-  // return $data || typeof schema === "object"
-  //   ? `${topSchemaRef}${schemaPath + getProperty(keyword)}`
-  //   : _`${schema}`
   if (!$data) {
     if (typeof schema == "number" || typeof schema == "boolean") return schema
     if (typeof schema == "string") return _`${schema}`
@@ -21,21 +17,28 @@ export function schemaRefOrVal(
   return _`${topSchemaRef}${schemaPath}${getProperty(keyword)}`
 }
 
-export function alwaysValidSchema(
-  {RULES}: CompilationContext,
-  schema: boolean | object
-): boolean | void {
-  return typeof schema == "boolean"
-    ? schema === true
-    : Object.keys(schema).length === 0 && !schemaHasRules(schema, RULES.all)
+export function alwaysValidSchema(it: SchemaCtx, schema: Schema): boolean | void {
+  if (typeof schema == "boolean") return schema
+  if (Object.keys(schema).length === 0) return true
+  checkUnknownRules(it, schema)
+  return !schemaHasRules(schema, it.RULES.all)
 }
 
-export function allSchemaProperties(schema?: object): string[] {
-  return schema ? Object.keys(schema).filter((p) => p !== "__proto__") : []
+export function checkUnknownRules(it: SchemaCtx, schema: Schema = it.schema): void {
+  if (!it.opts.strict) return
+  if (typeof schema === "boolean") return
+  const rules = it.RULES.keywords
+  for (const key in schema) {
+    if (!rules[key]) checkStrictMode(it, `unknown keyword: "${key}"`)
+  }
 }
 
-export function schemaProperties(it: CompilationContext, schema: SchemaObject): string[] {
-  return allSchemaProperties(schema).filter((p) => !alwaysValidSchema(it, schema[p]))
+export function allSchemaProperties(schemaMap?: SchemaMap): string[] {
+  return schemaMap ? Object.keys(schemaMap).filter((p) => p !== "__proto__") : []
+}
+
+export function schemaProperties(it: SchemaCtx, schemaMap: SchemaMap): string[] {
+  return allSchemaProperties(schemaMap).filter((p) => !alwaysValidSchema(it, schemaMap[p]))
 }
 
 function isOwnProperty(data: Name, property: Name | string): Code {
@@ -57,7 +60,7 @@ export function noPropertyInData(
 }
 
 export function callValidateCode(
-  {schemaCode, data, it}: KeywordContext,
+  {schemaCode, data, it}: KeywordCtx,
   func: Code,
   context: Code,
   passSchema?: boolean
@@ -78,7 +81,7 @@ export function usePattern(gen: CodeGen, pattern: string): Name {
   })
 }
 
-export function checkStrictMode(it: CompilationContext, msg: string): void {
+export function checkStrictMode(it: SchemaCtx, msg: string): void {
   const {opts, logger} = it
   if (opts.strict) {
     if (opts.strict === "log") logger.warn(msg)

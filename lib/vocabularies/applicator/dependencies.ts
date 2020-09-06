@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
-import KeywordContext from "../../compile/context"
+import KeywordCtx from "../../compile/context"
 import {alwaysValidSchema, propertyInData} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"
@@ -16,7 +16,7 @@ const def: CodeKeywordDefinition = {
   keyword: "dependencies",
   type: "object",
   schemaType: "object",
-  code(cxt: KeywordContext) {
+  code(cxt: KeywordCtx) {
     const {gen, schema, data, it} = cxt
     const [propDeps, schDeps] = splitDependencies()
     const valid = gen.name("valid")

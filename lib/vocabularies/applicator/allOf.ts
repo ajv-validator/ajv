@@ -1,12 +1,12 @@
 import {CodeKeywordDefinition} from "../../types"
-import KeywordContext from "../../compile/context"
+import KeywordCtx from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 
 const def: CodeKeywordDefinition = {
   keyword: "allOf",
   schemaType: "array",
-  code(cxt: KeywordContext) {
+  code(cxt: KeywordCtx) {
     const {gen, schema, it} = cxt
     const valid = gen.name("valid")
     schema.forEach((sch: object | boolean, i: number) => {

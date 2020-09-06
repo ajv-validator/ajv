@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition, Schema} from "../../types"
-import KeywordContext from "../../compile/context"
+import KeywordCtx from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {_} from "../../compile/codegen"
@@ -8,7 +8,7 @@ const def: CodeKeywordDefinition = {
   keyword: "oneOf",
   schemaType: "array",
   trackErrors: true,
-  code(cxt: KeywordContext) {
+  code(cxt: KeywordCtx) {
     const {gen, schema, it} = cxt
     const valid = gen.let("valid", false)
     const passing = gen.let("passing", null)

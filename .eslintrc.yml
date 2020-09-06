@@ -39,7 +39,7 @@ overrides:
 rules:
   block-scoped-var: error
   callback-return: error
-  complexity: [error, 17]
+  complexity: [error, 18]
   curly: [error, multi-line, consistent]
   dot-location: [error, property]
   dot-notation: error

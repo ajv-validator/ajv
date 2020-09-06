@@ -1,7 +1,7 @@
 import {_, nil, and, operators, Code, Name, getProperty} from "./codegen"
-import {CompilationContext, Schema} from "../types"
+import {SchemaCtx, Schema} from "../types"
 import N from "./names"
-import {Rule} from "./rules"
+import {Rule, ValidationRules} from "./rules"
 
 export enum DataType {
   Correct,
@@ -73,39 +73,34 @@ export function toHash(arr: string[]): {[key: string]: true} {
   return hash
 }
 
-// TODO rules, schema?
 export function schemaHasRules(schema: Schema, rules: {[key: string]: boolean | Rule}): boolean {
   if (typeof schema == "boolean") return !schema
   for (const key in schema) if (rules[key]) return true
   return false
 }
 
-// TODO rules, schema?
-export function schemaHasRulesExcept(
-  schema: Schema,
-  rules: {[key: string]: boolean | Rule},
-  exceptKeyword: string
-): boolean {
-  if (typeof schema == "boolean") return !schema && exceptKeyword !== "not"
-  for (const key in schema) if (key !== exceptKeyword && rules[key]) return true
+export function schemaCtxHasRules({schema, RULES}: SchemaCtx): boolean {
+  if (typeof schema == "boolean") return !schema
+  for (const key in schema) if (RULES.all[key]) return true
   return false
 }
 
-// TODO rules, schema?
-export function schemaUnknownRules(
-  schema: object,
-  rules: {[key: string]: boolean | Rule}
-): string | undefined {
-  if (typeof schema === "boolean") return
-  for (const key in schema) if (!rules[key]) return key
-  return
+interface SchemaAndRules {
+  schema: Schema
+  RULES: ValidationRules
+}
+
+export function schemaHasRulesButRef({schema, RULES}: SchemaAndRules): boolean {
+  if (typeof schema == "boolean") return !schema
+  for (const key in schema) if (key !== "$ref" && RULES.all[key]) return true
+  return false
 }
 
 const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/
 const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/
 export function getData(
   $data: string,
-  {dataLevel, dataNames, dataPathArr}: CompilationContext
+  {dataLevel, dataNames, dataPathArr}: SchemaCtx
 ): Code | number {
   let jsonPointer
   let data: Code

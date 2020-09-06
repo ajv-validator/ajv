@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
-import KeywordContext from "../../compile/context"
+import KeywordCtx from "../../compile/context"
 // import {bad$DataType} from "../util"
 import {_, str} from "../../compile/codegen"
 
@@ -8,7 +8,7 @@ const def: CodeKeywordDefinition = {
   type: "number",
   schemaType: "number",
   $data: true,
-  code(cxt: KeywordContext) {
+  code(cxt: KeywordCtx) {
     const {gen, data, schemaCode, it} = cxt
     // const bdt = bad$DataType(schemaCode, <string>def.schemaType, $data)
     const prec = it.opts.multipleOfPrecision

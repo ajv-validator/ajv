@@ -2,7 +2,7 @@ import {Schema, SchemaObject, ValidateFunction, ValidateWrapper} from "../types"
 import CodeGen, {_, nil, str, Code, Scope} from "./codegen"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
-import {toHash, schemaHasRulesExcept, unescapeFragment} from "./util"
+import {toHash, schemaHasRulesButRef, unescapeFragment} from "./util"
 import {validateFunctionCode} from "./validate"
 import Ajv from "../ajv"
 import URI = require("uri-js")
@@ -29,7 +29,7 @@ interface _StoredSchema extends Compilation {
   refVal?: (RefVal | undefined)[]
   localRefs?: LocalRefs
   baseId?: string
-  validate?: ValidateFunction | ValidateWrapper
+  validate?: ValidateFunction
   callValidate?: ValidateWrapper
   compiling?: boolean
 }
@@ -46,7 +46,7 @@ export class StoredSchema implements _StoredSchema {
   refVal?: (RefVal | undefined)[]
   localRefs?: LocalRefs
   baseId?: string
-  validate?: ValidateFunction | ValidateWrapper
+  validate?: ValidateFunction
   callValidate?: ValidateWrapper
   compiling?: boolean
 
@@ -498,6 +498,7 @@ function getJsonPointer(
 
   for (let part of parts) {
     if (!part) continue
+    if (typeof schema == "boolean") return
     part = unescapeFragment(part)
     schema = schema[part]
     if (schema === undefined) return
@@ -510,7 +511,7 @@ function getJsonPointer(
   if (
     typeof schema != "boolean" &&
     schema.$ref &&
-    !schemaHasRulesExcept(schema, this.RULES.all, "$ref")
+    !schemaHasRulesButRef({schema, RULES: this.RULES})
   ) {
     const $ref = resolveUrl(baseId, schema.$ref)
     const _env = resolveSchema.call(this, root, $ref)

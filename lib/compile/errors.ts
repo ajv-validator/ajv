@@ -1,4 +1,4 @@
-import {KeywordErrorContext, KeywordErrorDefinition} from "../types"
+import {KeywordErrorCtx, KeywordErrorDefinition} from "../types"
 import CodeGen, {_, str, Code, Name} from "./codegen"
 import N from "./names"
 
@@ -14,7 +14,7 @@ export const keyword$DataError: KeywordErrorDefinition = {
 }
 
 export function reportError(
-  cxt: KeywordErrorContext,
+  cxt: KeywordErrorCtx,
   error: KeywordErrorDefinition,
   overrideAllErrors?: boolean
 ): void {
@@ -27,7 +27,7 @@ export function reportError(
   }
 }
 
-export function reportExtraError(cxt: KeywordErrorContext, error: KeywordErrorDefinition): void {
+export function reportExtraError(cxt: KeywordErrorCtx, error: KeywordErrorDefinition): void {
   const {gen, compositeRule, allErrors, async} = cxt.it
   const errObj = errorObjectCode(cxt, error)
   addError(gen, errObj)
@@ -50,7 +50,7 @@ export function extendErrors({
   data,
   errsCount,
   it,
-}: KeywordErrorContext): void {
+}: KeywordErrorCtx): void {
   if (errsCount === undefined) throw new Error("ajv implementation error")
   const err = gen.name("err")
   gen.for(_`let i=${errsCount}; i<${N.errors}; i++`, () => {
@@ -81,7 +81,7 @@ function returnErrors(gen: CodeGen, async: boolean, errs: Code): void {
   }
 }
 
-function errorObjectCode(cxt: KeywordErrorContext, error: KeywordErrorDefinition): Code {
+function errorObjectCode(cxt: KeywordErrorCtx, error: KeywordErrorDefinition): Code {
   const {
     keyword,
     data,

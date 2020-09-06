@@ -2,10 +2,10 @@ import {
   KeywordDefinition,
   MacroKeywordDefinition,
   FuncKeywordDefinition,
-  CompilationContext,
+  SchemaObjCtx,
   KeywordCompilationResult,
 } from "../../types"
-import KeywordContext from "../context"
+import KeywordCtx from "../context"
 import {applySubschema} from "../subschema"
 import {extendErrors} from "../errors"
 import {callValidateCode} from "../../vocabularies/util"
@@ -13,12 +13,12 @@ import CodeGen, {_, nil, Code, Name} from "../codegen"
 import N from "../names"
 
 export function keywordCode(
-  it: CompilationContext,
+  it: SchemaObjCtx,
   keyword: string,
   def: KeywordDefinition,
   ruleType?: string
 ): void {
-  const cxt = new KeywordContext(it, def, keyword)
+  const cxt = new KeywordCtx(it, def, keyword)
   if ("code" in def) {
     def.code(cxt, ruleType)
   } else if (cxt.$data && def.validate) {
@@ -30,7 +30,7 @@ export function keywordCode(
   }
 }
 
-function macroKeywordCode(cxt: KeywordContext, def: MacroKeywordDefinition): void {
+function macroKeywordCode(cxt: KeywordCtx, def: MacroKeywordDefinition): void {
   const {gen, keyword, schema, parentSchema, it} = cxt
   const macroSchema = def.macro.call(it.self, schema, parentSchema, it)
   const schemaRef = useKeyword(gen, keyword, macroSchema)
@@ -51,7 +51,7 @@ function macroKeywordCode(cxt: KeywordContext, def: MacroKeywordDefinition): voi
   cxt.pass(valid, () => cxt.error(true))
 }
 
-function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition): void {
+function funcKeywordCode(cxt: KeywordCtx, def: FuncKeywordDefinition): void {
   const {gen, keyword, schema, parentSchema, $data, it} = cxt
   checkAsync(it, def)
   const validate =
@@ -107,12 +107,12 @@ function funcKeywordCode(cxt: KeywordContext, def: FuncKeywordDefinition): void 
   }
 }
 
-function modifyData(cxt: KeywordContext) {
+function modifyData(cxt: KeywordCtx) {
   const {gen, data, it} = cxt
   gen.if(it.parentData, () => gen.assign(data, _`${it.parentData}[${it.parentDataProperty}]`))
 }
 
-function addErrs(cxt: KeywordContext, errs: Code): void {
+function addErrs(cxt: KeywordCtx, errs: Code): void {
   const {gen} = cxt
   gen.if(
     _`Array.isArray(${errs})`,
@@ -126,7 +126,7 @@ function addErrs(cxt: KeywordContext, errs: Code): void {
   )
 }
 
-function checkAsync(it: CompilationContext, def: FuncKeywordDefinition) {
+function checkAsync(it: SchemaObjCtx, def: FuncKeywordDefinition) {
   if (def.async && !it.async) throw new Error("async keyword in sync schema")
 }
 

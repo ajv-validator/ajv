@@ -1,11 +1,11 @@
-import {CompilationContext} from "../types"
+import {Schema, SchemaObjCtx} from "../types"
 import {subschemaCode} from "./validate"
 import {escapeFragment, escapeJsonPointer} from "./util"
 import {_, str, Code, Name, getProperty} from "./codegen"
 
 export interface SubschemaContext {
   // TODO use Optional?
-  schema: object | boolean
+  schema: Schema
   schemaPath: Code
   errSchemaPath: string
   topSchemaRef?: Code
@@ -32,7 +32,7 @@ export type SubschemaApplication = Partial<SubschemaApplicationParams>
 interface SubschemaApplicationParams {
   keyword: string
   schemaProp: string | number
-  schema: object | boolean
+  schema: Schema
   schemaPath: Code
   errSchemaPath: string
   topSchemaRef: Code
@@ -45,11 +45,7 @@ interface SubschemaApplicationParams {
   allErrors: boolean
 }
 
-export function applySubschema(
-  it: CompilationContext,
-  appl: SubschemaApplication,
-  valid: Name
-): void {
+export function applySubschema(it: SchemaObjCtx, appl: SubschemaApplication, valid: Name): void {
   const subschema = getSubschema(it, appl)
   extendSubschemaData(subschema, it, appl)
   extendSubschemaMode(subschema, appl)
@@ -58,7 +54,7 @@ export function applySubschema(
 }
 
 function getSubschema(
-  it: CompilationContext,
+  it: SchemaObjCtx,
   {keyword, schemaProp, schema, schemaPath, errSchemaPath, topSchemaRef}: SubschemaApplication
 ): SubschemaContext {
   if (keyword !== undefined && schema !== undefined) {
@@ -97,7 +93,7 @@ function getSubschema(
 
 function extendSubschemaData(
   subschema: SubschemaContext,
-  it: CompilationContext,
+  it: SchemaObjCtx,
   {dataProp, dataPropType: dpType, data, propertyName}: SubschemaApplication
 ) {
   if (data !== undefined && dataProp !== undefined) {

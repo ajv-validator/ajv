@@ -1,4 +1,4 @@
-import {KeywordErrorDefinition, CompilationContext, KeywordErrorContext} from "../../types"
+import {KeywordErrorDefinition, SchemaCtx, KeywordErrorCtx} from "../../types"
 import {reportError} from "../errors"
 import {_, Name} from "../codegen"
 import N from "../names"
@@ -7,11 +7,11 @@ const boolError: KeywordErrorDefinition = {
   message: "boolean schema is false",
 }
 
-export function topBoolOrEmptySchema(it: CompilationContext): void {
+export function topBoolOrEmptySchema(it: SchemaCtx): void {
   const {gen, schema} = it
   if (schema === false) {
     falseSchemaError(it, false)
-  } else if (schema.$async === true) {
+  } else if (typeof schema == "object" && schema.$async === true) {
     gen.return(N.data)
   } else {
     gen.assign(_`${N.validate}.errors`, null)
@@ -19,7 +19,7 @@ export function topBoolOrEmptySchema(it: CompilationContext): void {
   }
 }
 
-export function boolOrEmptySchema(it: CompilationContext, valid: Name): void {
+export function boolOrEmptySchema(it: SchemaCtx, valid: Name): void {
   const {gen, schema} = it
   if (schema === false) {
     gen.var(valid, false) // TODO var
@@ -29,17 +29,16 @@ export function boolOrEmptySchema(it: CompilationContext, valid: Name): void {
   }
 }
 
-function falseSchemaError(it: CompilationContext, overrideAllErrors?: boolean) {
+function falseSchemaError(it: SchemaCtx, overrideAllErrors?: boolean) {
   const {gen, data} = it
   // TODO maybe some other interface should be used for non-keyword validation errors...
-  const cxt: KeywordErrorContext = {
+  const cxt: KeywordErrorCtx = {
     gen,
     keyword: "false schema",
     data,
     schema: false,
     schemaCode: false,
     schemaValue: false,
-    parentSchema: false,
     params: {},
     it,
   }

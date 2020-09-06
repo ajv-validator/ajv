@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
-import KeywordContext from "../../compile/context"
+import KeywordCtx from "../../compile/context"
 import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {ResolvedRef, InlineResolvedRef} from "../../compile"
@@ -10,7 +10,7 @@ import N from "../../compile/names"
 const def: CodeKeywordDefinition = {
   keyword: "$ref",
   schemaType: "string",
-  code(cxt: KeywordContext) {
+  code(cxt: KeywordCtx) {
     const {gen, schema, it} = cxt
     const {resolveRef, allErrors, baseId, isRoot, root, opts, logger} = it
     const ref = getRef()

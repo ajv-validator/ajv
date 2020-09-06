@@ -5,7 +5,6 @@
     "outDir": "dist",
     "lib": ["ES2018", "DOM"],
     "types": ["node"],
-    "noImplicitAny": false,
     "allowJs": true,
     "target": "ES2018"
   }

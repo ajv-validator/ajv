@@ -1,8 +1,8 @@
-import {CompilationContext} from "../../types"
+import {SchemaObjCtx} from "../../types"
 import {_, getProperty, stringify} from "../codegen"
 import {checkStrictMode} from "../../vocabularies/util"
 
-export function assignDefaults(it: CompilationContext, ty?: string): void {
+export function assignDefaults(it: SchemaObjCtx, ty?: string): void {
   const {properties, items} = it.schema
   if (ty === "object" && properties) {
     for (const key in properties) {
@@ -13,7 +13,7 @@ export function assignDefaults(it: CompilationContext, ty?: string): void {
   }
 }
 
-function assignDefault(it: CompilationContext, prop: string | number, defaultValue: any): void {
+function assignDefault(it: SchemaObjCtx, prop: string | number, defaultValue: any): void {
   const {gen, compositeRule, data, opts} = it
   if (defaultValue === undefined) return
   const childData = _`${data}${getProperty(prop)}`

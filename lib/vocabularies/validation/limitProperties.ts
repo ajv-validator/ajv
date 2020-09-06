@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
-import KeywordContext from "../../compile/context"
+import KeywordCtx from "../../compile/context"
 import {_, str, operators} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
@@ -7,7 +7,7 @@ const def: CodeKeywordDefinition = {
   type: "object",
   schemaType: "number",
   $data: true,
-  code(cxt: KeywordContext) {
+  code(cxt: KeywordCtx) {
     const {keyword, data, schemaCode} = cxt
     const op = keyword === "maxProperties" ? operators.GT : operators.LT
     cxt.fail$data(_`Object.keys(${data}).length ${op} ${schemaCode}`)

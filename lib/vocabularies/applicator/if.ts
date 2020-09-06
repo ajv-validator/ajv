@@ -1,5 +1,5 @@
-import {CodeKeywordDefinition, CompilationContext} from "../../types"
-import KeywordContext from "../../compile/context"
+import {CodeKeywordDefinition, SchemaObjCtx} from "../../types"
+import KeywordCtx from "../../compile/context"
 import {alwaysValidSchema, checkStrictMode} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {_, str, Name} from "../../compile/codegen"
@@ -8,7 +8,7 @@ const def: CodeKeywordDefinition = {
   keyword: "if",
   schemaType: ["object", "boolean"],
   trackErrors: true,
-  code(cxt: KeywordContext) {
+  code(cxt: KeywordCtx) {
     const {gen, parentSchema, it} = cxt
     if (parentSchema.then === undefined && parentSchema.else === undefined) {
       checkStrictMode(it, '"if" without "then" and "else" is ignored')
@@ -64,7 +64,7 @@ const def: CodeKeywordDefinition = {
 
 module.exports = def
 
-function hasSchema(it: CompilationContext, keyword: string): boolean {
+function hasSchema(it: SchemaObjCtx, keyword: string): boolean {
   const schema = it.schema[keyword]
   return schema !== undefined && !alwaysValidSchema(it, schema)
 }

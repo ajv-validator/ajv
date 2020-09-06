@@ -1,8 +1,9 @@
 import {
   KeywordDefinition,
-  KeywordErrorContext,
-  KeywordContextParams,
-  CompilationContext,
+  KeywordErrorCtx,
+  KeywordCtxParams,
+  SchemaObjCtx,
+  SchemaObject,
 } from "../types"
 import {schemaRefOrVal} from "../vocabularies/util"
 import {getData, checkDataTypes, DataType} from "./util"
@@ -16,7 +17,7 @@ import {
 import CodeGen, {_, nil, or, Code, Name} from "./codegen"
 import N from "./names"
 
-export default class KeywordContext implements KeywordErrorContext {
+export default class KeywordCtx implements KeywordErrorCtx {
   gen: CodeGen
   allErrors: boolean
   keyword: string
@@ -26,13 +27,13 @@ export default class KeywordContext implements KeywordErrorContext {
   schemaValue: Code | number | boolean // Code reference to keyword schema value or primitive value
   schemaCode: Code | number | boolean // Code reference to resolved schema value (different if schema is $data)
   schemaType?: string | string[]
-  parentSchema: any
+  parentSchema: SchemaObject
   errsCount?: Name
-  params: KeywordContextParams
-  it: CompilationContext
+  params: KeywordCtxParams
+  it: SchemaObjCtx
   def: KeywordDefinition
 
-  constructor(it: CompilationContext, def: KeywordDefinition, keyword: string) {
+  constructor(it: SchemaObjCtx, def: KeywordDefinition, keyword: string) {
     validateKeywordUsage(it, def, keyword)
     this.gen = it.gen
     this.allErrors = it.allErrors
@@ -113,7 +114,7 @@ export default class KeywordContext implements KeywordErrorContext {
     if (!this.allErrors) this.gen.if(cond)
   }
 
-  setParams(obj: KeywordContextParams, assign?: true): void {
+  setParams(obj: KeywordCtxParams, assign?: true): void {
     if (assign) Object.assign(this.params, obj)
     else this.params = obj
   }
@@ -173,11 +174,7 @@ function validSchemaType(schema: any, schemaType: string | string[]): boolean {
     : typeof schema == schemaType
 }
 
-function validateKeywordUsage(
-  it: CompilationContext,
-  def: KeywordDefinition,
-  keyword: string
-): void {
+function validateKeywordUsage(it: SchemaObjCtx, def: KeywordDefinition, keyword: string): void {
   if (Array.isArray(def.keyword) ? !def.keyword.includes(keyword) : def.keyword !== keyword) {
     throw new Error("ajv implementation error")
   }
