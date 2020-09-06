@@ -415,6 +415,7 @@ export function resolve(
       ? schema
       : localCompile.call(this, {schema, root, baseId})
   }
+  return undefined
 }
 
 // Resolve schema, its root and baseId
@@ -508,6 +509,7 @@ function getJsonPointer(
   }
   const env = {schema, root, baseId}
   if (!isRootEnv(env)) return env
+  return undefined
 }
 
 function isRootEnv({schema, root}: SchemaEnv): boolean {

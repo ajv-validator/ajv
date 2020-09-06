@@ -72,9 +72,10 @@ export function toHash(arr: string[]): {[key: string]: true} {
 }
 
 // TODO rules, schema?
-export function schemaHasRules(schema: object | boolean, rules: object): boolean | undefined {
+export function schemaHasRules(schema: object | boolean, rules: object): boolean {
   if (typeof schema == "boolean") return !schema
   for (const key in schema) if (rules[key]) return true
+  return false
 }
 
 // TODO rules, schema?
@@ -82,15 +83,17 @@ export function schemaHasRulesExcept(
   schema: Schema,
   rules: object,
   exceptKeyword: string
-): boolean | undefined {
+): boolean {
   if (typeof schema == "boolean") return !schema && exceptKeyword !== "not"
   for (const key in schema) if (key !== exceptKeyword && rules[key]) return true
+  return false
 }
 
 // TODO rules, schema?
 export function schemaUnknownRules(schema: object, rules: object): string | undefined {
   if (typeof schema === "boolean") return
   for (const key in schema) if (!rules[key]) return key
+  return
 }
 
 const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/

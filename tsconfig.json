@@ -6,7 +6,6 @@
     "lib": ["ES2018", "DOM"],
     "types": ["node"],
     "noImplicitAny": false,
-    "noImplicitReturns": false,
     "allowJs": true,
     "target": "ES2018"
   }
