@@ -11,7 +11,7 @@ export interface LocalRefs {
 }
 
 // TODO refactor to use keyword definitions
-var SIMPLE_INLINED = toHash([
+const SIMPLE_INLINED = toHash([
   "type",
   "format",
   "pattern",
@@ -62,7 +62,7 @@ function countKeys(schema: SchemaObject): number {
 
 export function getFullPath(id = "", normalize?: boolean): string {
   if (normalize !== false) id = normalizeId(id)
-  var p = URI.parse(id)
+  const p = URI.parse(id)
   return _getFullPath(p)
 }
 
@@ -70,7 +70,7 @@ export function _getFullPath(p: URI.URIComponents): string {
   return URI.serialize(p).split("#")[0] + "#"
 }
 
-var TRAILING_SLASH_HASH = /#\/?$/
+const TRAILING_SLASH_HASH = /#\/?$/
 export function normalizeId(id: string | undefined): string {
   return id ? id.replace(TRAILING_SLASH_HASH, "") : ""
 }

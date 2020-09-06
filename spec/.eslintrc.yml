@@ -1,6 +1,7 @@
 parserOptions:
   sourceType: script
 rules:
+  no-var: 0
   no-console: 0
   no-empty: [2, allowEmptyCatch: true]
   quotes: 0

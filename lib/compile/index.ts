@@ -203,12 +203,12 @@ export function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | Va
 
   function localCompile(_env: SchemaEnv): ValidateFunction {
     const {schema: _schema, root: _root, baseId} = _env
-    var isRoot = isRootEnv(_env)
+    const isRoot = isRootEnv(_env)
     if (_root !== root) {
       return compileSchema.call(self, _env)
     }
 
-    var $async = typeof _schema == "object" && _schema.$async === true
+    const $async = typeof _schema == "object" && _schema.$async === true
     const rootId = getFullPath(_root.schema.$id)
 
     const gen = new CodeGen({...opts.codegen, forInOwn: opts.ownProperties})
@@ -338,7 +338,7 @@ export function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | Va
 
   // TODO gen.globals
   function localRefCode(ref: string, schOrFunc?: RefVal): Code {
-    var refId = refVal.length
+    const refId = refVal.length
     refVal[refId] = schOrFunc
     refs[ref] = refId
     return _`refVal${refId}`
@@ -351,7 +351,7 @@ export function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | Va
 
   // TODO gen.globals remove?
   function replaceLocalRef(ref: string, schOrFunc: RefVal) {
-    var refId = refs[ref]
+    const refId = refs[ref]
     if (refId !== undefined) refVal[refId] = schOrFunc
   }
 
@@ -405,8 +405,8 @@ export function resolve(
       : schOrRef.validate || compileStoredSchema.call(this, schOrRef)
   }
 
-  var env = resolveSchema.call(this, root, ref)
-  var schema, baseId
+  const env = resolveSchema.call(this, root, ref)
+  let schema, baseId
   if (env) {
     schema = env.schema
     root = env.root
@@ -437,8 +437,8 @@ export function resolveSchema(
   const refPath = _getFullPath(p)
   let baseId = getFullPath(root.schema.$id)
   if (Object.keys(root.schema).length === 0 || refPath !== baseId) {
-    var id = normalizeId(refPath)
-    var schOrRef = this._refs[id]
+    const id = normalizeId(refPath)
+    let schOrRef = this._refs[id]
     if (typeof schOrRef == "string") {
       return resolveRecursive.call(this, root, schOrRef, p)
     }
@@ -478,7 +478,7 @@ function resolveRecursive(
   return getJsonPointer.call(this, parsedRef, env)
 }
 
-var PREVENT_SCOPE_CHANGE = toHash([
+const PREVENT_SCOPE_CHANGE = toHash([
   "properties",
   "patternProperties",
   "enum",

@@ -20,7 +20,6 @@ overrides:
       project: ["./tsconfig.json"]
     plugins: ["@typescript-eslint"]
     rules:
-      no-var: 0
       "@typescript-eslint/restrict-template-expressions": off
       "@typescript-eslint/no-unsafe-member-access": off
       "@typescript-eslint/no-unsafe-assignment": off
