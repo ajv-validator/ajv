@@ -1,6 +1,5 @@
 import {ErrorObject} from "../types"
 import {resolveUrl, normalizeId, getFullPath} from "./resolve"
-// const resolve = require("./resolve")
 
 export class ValidationError extends Error {
   errors: ErrorObject[]

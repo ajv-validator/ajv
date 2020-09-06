@@ -12,13 +12,12 @@ import {
   AddedFormat,
   LoadSchemaFunction,
 } from "./types"
-import StoredSchema from "./compile/stored_schema"
 import Cache from "./cache"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
 import rules, {ValidationRules, Rule, RuleGroup} from "./compile/rules"
 import {checkType} from "./compile/validate/dataType"
-import {compileSchema, SchemaRoot, Compilation} from "./compile"
-import {resolveSchema, normalizeId, getSchemaRefs} from "./compile/resolve"
+import {StoredSchema, compileSchemaFragment, compileStoredSchema, Compilation} from "./compile"
+import {normalizeId, getSchemaRefs} from "./compile/resolve"
 import coreVocabulary from "./vocabularies/core"
 import validationVocabulary from "./vocabularies/validation"
 import applicatorVocabulary from "./vocabularies/applicator"
@@ -91,7 +90,7 @@ export default class Ajv {
       if (!v) throw new Error('no schema with key or ref "' + schemaKeyRef + '"')
     } else {
       const schemaObj = _addSchema.call(this, schemaKeyRef)
-      v = schemaObj.validate || this._compile(schemaObj)
+      v = schemaObj.validate || compileStoredSchema.call(this, schemaObj)
     }
 
     const valid = v(data)
@@ -105,18 +104,7 @@ export default class Ajv {
     _meta?: boolean // true if schema is a meta-schema. Used internally to compile meta schemas of custom keywords.
   ): ValidateFunction {
     const schemaObj = _addSchema.call(this, schema, undefined, _meta)
-    return schemaObj.validate || this._compile(schemaObj)
-  }
-
-  _compile(this: Ajv, schemaObj: StoredSchema, root?: SchemaRoot): ValidateFunction {
-    if (schemaObj.compiling) return _makeValidate(schemaObj, root)
-    schemaObj.compiling = true
-    const v = _tryCompile.call(this, schemaObj, root)
-    schemaObj.validate = v
-    schemaObj.refs = v.refs
-    schemaObj.refVal = v.refVal
-    schemaObj.root = v.root
-    return v
+    return schemaObj.validate || compileStoredSchema.call(this, schemaObj)
   }
 
   // Creates validating function for passed schema with asynchronous loading of missing schemas.
@@ -156,7 +144,7 @@ export default class Ajv {
 
     function _compileAsync(schemaObj: StoredSchema): ValidateFunction | Promise<ValidateFunction> {
       try {
-        return self._compile(schemaObj)
+        return compileStoredSchema.call(self, schemaObj)
       } catch (e) {
         if (e instanceof MissingRefError) return loadMissingSchema(schemaObj, e)
         throw e
@@ -256,11 +244,11 @@ export default class Ajv {
     const schemaObj = _getSchemaObj.call(this, keyRef)
     switch (typeof schemaObj) {
       case "object":
-        return schemaObj.validate || this._compile(schemaObj)
+        return schemaObj.validate || compileStoredSchema.call(this, schemaObj)
       case "string":
         return this.getSchema(schemaObj)
       case "undefined":
-        return _getSchemaFragment.call(this, keyRef)
+        return compileSchemaFragment.call(this, keyRef)
     }
   }
 
@@ -415,25 +403,6 @@ function defaultMeta(this: Ajv): string | SchemaObject | undefined {
   return this._opts.defaultMeta
 }
 
-function _getSchemaFragment(this: Ajv, ref: string): ValidateFunction | undefined {
-  const _root: SchemaRoot = {schema: {}, refVal: [undefined], refs: {}}
-  const res = resolveSchema.call(this, _root, ref)
-  if (!res) return
-  const schema = res.schema
-  const root = res.root
-  const baseId = res.baseId
-  const validate = compileSchema.call(this, schema, root, undefined, baseId)
-  this._fragments[ref] = new StoredSchema({
-    ref,
-    fragment: true,
-    schema,
-    root,
-    baseId,
-    validate,
-  })
-  return validate
-}
-
 function _getSchemaObj(this: Ajv, keyRef: string): StoredSchema | undefined {
   keyRef = normalizeId(keyRef)
   return this._schemas[keyRef] || this._refs[keyRef] || this._fragments[keyRef]
@@ -498,38 +467,6 @@ function _addSchema(
   if (willValidate && recursiveMeta) this.validateSchema(schema, true)
 
   return schemaObj
-}
-
-function _tryCompile(this: Ajv, schemaObj: StoredSchema, root?: SchemaRoot) {
-  const currentOpts = this._opts
-  if (schemaObj.meta) this._opts = this._metaOpts
-
-  try {
-    return compileSchema.call(this, schemaObj.schema, root, schemaObj.localRefs)
-  } catch (e) {
-    delete schemaObj.validate
-    throw e
-  } finally {
-    schemaObj.compiling = false
-    if (schemaObj.meta) this._opts = currentOpts
-  }
-}
-
-function _makeValidate(schemaObj: StoredSchema, root?: SchemaRoot): ValidateFunction {
-  const callValidate: ValidateFunction = function (this: Ajv | any, ...args) {
-    if (schemaObj.validate === undefined) throw new Error("ajv implementation error")
-    const _validate = schemaObj.validate
-    const result = _validate.apply(this, args)
-    callValidate.errors = _validate.errors
-    return result
-  }
-  const sch = schemaObj.schema
-  schemaObj.validate = callValidate
-  callValidate.schema = sch
-  callValidate.errors = null
-  callValidate.root = root ? root : callValidate
-  if (typeof sch == "object" && sch.$async === true) callValidate.$async = true
-  return callValidate
 }
 
 function addDefaultMetaSchema(this: Ajv): void {

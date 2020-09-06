@@ -1,4 +1,4 @@
-import StoredSchema from "./compile/stored_schema"
+import {StoredSchema} from "./compile"
 import {CacheInterface} from "./types"
 
 export default class Cache implements CacheInterface {

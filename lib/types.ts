@@ -1,8 +1,7 @@
 import CodeGen, {Code, Name, CodeGenOptions} from "./compile/codegen"
 import {ValidationRules} from "./compile/rules"
-import {ResolvedRef, SchemaRoot} from "./compile"
+import {ResolvedRef, SchemaRoot, StoredSchema} from "./compile"
 import KeywordContext from "./compile/context"
-import StoredSchema from "./compile/stored_schema"
 import Ajv from "./ajv"
 
 export interface SchemaObject {
@@ -92,9 +91,13 @@ export interface ValidateFunction {
   errors?: null | ErrorObject[]
   refs?: {[ref: string]: number}
   refVal?: any[]
-  root?: ValidateFunction | SchemaRoot
+  root?: SchemaRoot
   $async?: true
   source?: object
+}
+
+export interface ValidateWrapper extends ValidateFunction {
+  validate?: ValidateFunction
 }
 
 export interface SchemaValidateFunction {
