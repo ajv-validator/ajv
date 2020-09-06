@@ -1,6 +1,6 @@
-import CodeGen, {Code, Name, CodeGenOptions} from "./compile/codegen"
+import CodeGen, {Code, Name, CodeGenOptions, Scope} from "./compile/codegen"
 import {ValidationRules} from "./compile/rules"
-import {ResolvedRef, SchemaRoot, StoredSchema} from "./compile"
+import {RefVal, ResolvedRef, SchemaRoot, StoredSchema} from "./compile"
 import KeywordContext from "./compile/context"
 import Ajv from "./ajv"
 
@@ -78,6 +78,11 @@ export interface CacheInterface {
   clear(): void
 }
 
+interface SourceCode {
+  code: string
+  scope: Scope
+}
+
 export interface ValidateFunction {
   (
     this: Ajv | any,
@@ -89,11 +94,11 @@ export interface ValidateFunction {
   ): boolean | Promise<any>
   schema?: Schema
   errors?: null | ErrorObject[]
-  refs?: {[ref: string]: number}
-  refVal?: any[]
+  refs?: {[ref: string]: number | undefined}
+  refVal?: (RefVal | undefined)[]
   root?: SchemaRoot
   $async?: true
-  source?: object
+  source?: SourceCode
 }
 
 export interface ValidateWrapper extends ValidateFunction {

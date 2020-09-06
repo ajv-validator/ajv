@@ -7,6 +7,7 @@ import N from "../names"
 import {resolveUrl} from "../resolve"
 import {schemaHasRules, schemaHasRulesExcept, schemaUnknownRules} from "../util"
 import {checkStrictMode} from "../../vocabularies/util"
+import {SchemaObject} from "json-schema-traverse"
 
 // schema compilation - generates validation function, subschemaCode (below) is used for subschemas
 export function validateFunctionCode(it: CompilationContext): void {
@@ -36,9 +37,9 @@ function validateFunction({gen, schema, async, opts}: CompilationContext, body: 
   )
 }
 
-function funcSourceUrl(schema, opts: Options): Code {
+function funcSourceUrl(schema: SchemaObject, opts: Options): Code {
   return schema.$id && (opts.sourceCode || opts.processCode)
-    ? _`/*# sourceURL=${schema.$id as string} */`
+    ? _`/*# sourceURL=${schema.$id} */`
     : nil
 }
 

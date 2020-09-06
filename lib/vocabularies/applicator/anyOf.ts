@@ -1,4 +1,4 @@
-import {CodeKeywordDefinition} from "../../types"
+import {CodeKeywordDefinition, Schema} from "../../types"
 import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
@@ -17,7 +17,7 @@ const def: CodeKeywordDefinition = {
     const schValid = gen.name("_valid")
 
     gen.block(() => {
-      schema.forEach((_sch, i: number) => {
+      schema.forEach((_sch: Schema, i: number) => {
         applySubschema(
           it,
           {

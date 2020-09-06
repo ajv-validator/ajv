@@ -1,4 +1,4 @@
-import {CodeKeywordDefinition} from "../../types"
+import {CodeKeywordDefinition, Schema} from "../../types"
 import KeywordContext from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
@@ -25,7 +25,7 @@ const def: CodeKeywordDefinition = {
     )
 
     function validateOneOf() {
-      schema.forEach((sch, i: number) => {
+      schema.forEach((sch: Schema, i: number) => {
         if (alwaysValidSchema(it, sch)) {
           gen.var(schValid, true)
         } else {

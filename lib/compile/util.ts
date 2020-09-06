@@ -1,6 +1,7 @@
 import {_, nil, and, operators, Code, Name, getProperty} from "./codegen"
 import {CompilationContext, Schema} from "../types"
 import N from "./names"
+import {Rule} from "./rules"
 
 export enum DataType {
   Correct,
@@ -65,14 +66,15 @@ export function checkDataTypes(
   return cond
 }
 
+// TODO refactor to use Set
 export function toHash(arr: string[]): {[key: string]: true} {
-  const hash = {}
+  const hash: {[key: string]: true} = {}
   for (const item of arr) hash[item] = true
   return hash
 }
 
 // TODO rules, schema?
-export function schemaHasRules(schema: object | boolean, rules: object): boolean {
+export function schemaHasRules(schema: Schema, rules: {[key: string]: boolean | Rule}): boolean {
   if (typeof schema == "boolean") return !schema
   for (const key in schema) if (rules[key]) return true
   return false
@@ -81,7 +83,7 @@ export function schemaHasRules(schema: object | boolean, rules: object): boolean
 // TODO rules, schema?
 export function schemaHasRulesExcept(
   schema: Schema,
-  rules: object,
+  rules: {[key: string]: boolean | Rule},
   exceptKeyword: string
 ): boolean {
   if (typeof schema == "boolean") return !schema && exceptKeyword !== "not"
@@ -90,7 +92,10 @@ export function schemaHasRulesExcept(
 }
 
 // TODO rules, schema?
-export function schemaUnknownRules(schema: object, rules: object): string | undefined {
+export function schemaUnknownRules(
+  schema: object,
+  rules: {[key: string]: boolean | Rule}
+): string | undefined {
   if (typeof schema === "boolean") return
   for (const key in schema) if (!rules[key]) return key
   return

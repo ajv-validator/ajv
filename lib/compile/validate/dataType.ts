@@ -79,7 +79,7 @@ function coerceData(it: CompilationContext, types: string[], coerceTo: string[])
     assignParentData(it, coerced)
   })
 
-  function coerceSpecificType(t) {
+  function coerceSpecificType(t: string): void {
     switch (t) {
       case "string":
         gen

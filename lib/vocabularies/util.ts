@@ -3,6 +3,7 @@ import {CompilationContext} from "../types"
 import KeywordContext from "../compile/context"
 import CodeGen, {_, nil, Code, Name, getProperty} from "../compile/codegen"
 import N from "../compile/names"
+import {SchemaObject} from "json-schema-traverse"
 
 export function schemaRefOrVal(
   {topSchemaRef, schemaPath}: CompilationContext,
@@ -33,7 +34,7 @@ export function allSchemaProperties(schema?: object): string[] {
   return schema ? Object.keys(schema).filter((p) => p !== "__proto__") : []
 }
 
-export function schemaProperties(it: CompilationContext, schema: object): string[] {
+export function schemaProperties(it: CompilationContext, schema: SchemaObject): string[] {
   return allSchemaProperties(schema).filter((p) => !alwaysValidSchema(it, schema[p]))
 }
 

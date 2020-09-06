@@ -33,8 +33,12 @@ const META_SUPPORT_DATA = ["/properties"]
 
 type CompileAsyncCallback = (err: Error | null, validate?: ValidateFunction) => void
 
+interface IndexableOptions extends Options {
+  [opt: string]: unknown
+}
+
 export default class Ajv {
-  _opts: Options
+  _opts: IndexableOptions
   _cache: CacheInterface
   _schemas: {[key: string]: StoredSchema} = {}
   _refs: {[ref: string]: StoredSchema | string} = {}
@@ -42,7 +46,7 @@ export default class Ajv {
   _formats: {[name: string]: AddedFormat} = {}
   _compilations: Set<Compilation> = new Set()
   _loadingSchemas: {[ref: string]: Promise<SchemaObject>} = {}
-  _metaOpts: Options
+  _metaOpts: IndexableOptions
   RULES: ValidationRules
   logger: Logger
   errors?: ErrorObject[] | null // errors from the last validation

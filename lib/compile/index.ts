@@ -25,8 +25,8 @@ interface _StoredSchema extends Compilation {
   fragment?: true
   meta?: boolean
   root?: SchemaRoot
-  refs?: {[ref: string]: number}
-  refVal?: (string | undefined)[]
+  refs?: {[ref: string]: number | undefined}
+  refVal?: (RefVal | undefined)[]
   localRefs?: LocalRefs
   baseId?: string
   validate?: ValidateFunction | ValidateWrapper
@@ -42,8 +42,8 @@ export class StoredSchema implements _StoredSchema {
   fragment?: true
   meta?: boolean
   root?: SchemaRoot
-  refs?: {[ref: string]: number}
-  refVal?: (string | undefined)[]
+  refs?: {[ref: string]: number | undefined}
+  refVal?: (RefVal | undefined)[]
   localRefs?: LocalRefs
   baseId?: string
   validate?: ValidateFunction | ValidateWrapper
@@ -70,10 +70,13 @@ export interface FuncResolvedRef {
   inline?: false
 }
 
+// reference to compiled schema or schema to be inlined
+export type RefVal = Schema | ValidateFunction
+
 export interface SchemaRoot {
   schema: SchemaObject
-  refVal: (string | undefined)[]
-  refs: {[ref: string]: number}
+  refVal: (RefVal | undefined)[]
+  refs: {[ref: string]: number | undefined}
 }
 
 export interface CompileEnv {
@@ -173,8 +176,8 @@ export function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | Va
   const {schema, root: passedRoot, localRefs} = env
   const self = this
   const opts = this._opts
-  const refVal = [undefined]
-  const refs: {[ref: string]: number} = {}
+  const refVal: (RefVal | undefined)[] = [undefined]
+  const refs: {[ref: string]: number | undefined} = {}
   const root: SchemaRoot = passedRoot || {
     schema: typeof schema == "boolean" ? {} : schema,
     refVal,
@@ -295,45 +298,48 @@ export function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | Va
 
   function resolveRef(_baseId: string, ref: string, isRoot: boolean): ResolvedRef | void {
     ref = resolveUrl(_baseId, ref)
-    var refIndex = refs[ref]
-    var _refVal, refCode
-    if (refIndex !== undefined) {
-      _refVal = refVal[refIndex]
-      refCode = _`refVal[${refIndex}]`
-      return resolvedRef(_refVal, refCode)
-    }
-    if (!isRoot && root.refs) {
-      var rootRefId = root.refs[ref]
-      if (rootRefId !== undefined) {
-        _refVal = root.refVal[rootRefId]
-        refCode = addLocalRef(ref, _refVal)
-        return resolvedRef(_refVal, refCode)
-      }
-    }
+    const res = getExistingRef(ref, isRoot)
+    if (res) return res
 
-    refCode = addLocalRef(ref)
-    let _v = resolve.call(self, localCompile, root, ref)
-    if (_v === undefined) {
-      var localSchema = localRefs && localRefs[ref]
+    const refCode = localRefCode(ref)
+    let schOrFunc = resolve.call(self, localCompile, root, ref)
+    if (schOrFunc === undefined) {
+      const localSchema = localRefs && localRefs[ref]
       if (localSchema) {
-        _v = inlineRef(localSchema, opts.inlineRefs)
+        schOrFunc = inlineRef(localSchema, opts.inlineRefs)
           ? localSchema
           : compileSchema.call(self, {schema: localSchema, root, localRefs, baseId: _baseId})
       }
     }
 
-    if (_v === undefined) {
+    if (schOrFunc === undefined) {
       removeLocalRef(ref)
     } else {
-      replaceLocalRef(ref, _v)
-      return resolvedRef(_v, refCode)
+      replaceLocalRef(ref, schOrFunc)
+      return resolvedRef(schOrFunc, refCode)
+    }
+  }
+
+  function getExistingRef(ref: string, isRoot: boolean): ResolvedRef | void {
+    const idx = refs[ref]
+    if (idx !== undefined) {
+      const schOrFunc = refVal[idx]
+      return resolvedRef(schOrFunc, _`refVal[${idx}]`)
+    }
+    if (!isRoot && root.refs) {
+      // TODO root.refs check should be unnecessary, it is only needed because in some cases root is passed without refs (see type casts to SchemaRoot)
+      const rootIdx = root.refs[ref]
+      if (rootIdx !== undefined) {
+        const schOrFunc = root.refVal[rootIdx]
+        return resolvedRef(schOrFunc, localRefCode(ref, schOrFunc))
+      }
     }
   }
 
   // TODO gen.globals
-  function addLocalRef(ref: string, _v?): Code {
+  function localRefCode(ref: string, schOrFunc?: RefVal): Code {
     var refId = refVal.length
-    refVal[refId] = _v
+    refVal[refId] = schOrFunc
     refs[ref] = refId
     return _`refVal${refId}`
   }
@@ -344,15 +350,15 @@ export function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | Va
   }
 
   // TODO gen.globals remove?
-  function replaceLocalRef(ref: string, _v) {
+  function replaceLocalRef(ref: string, schOrFunc: RefVal) {
     var refId = refs[ref]
-    refVal[refId] = _v
+    if (refId !== undefined) refVal[refId] = schOrFunc
   }
 
-  function resolvedRef(_refVal, code: Code): ResolvedRef {
-    return typeof _refVal == "object" || typeof _refVal == "boolean"
-      ? {code: code, schema: _refVal, inline: true}
-      : {code: code, $async: _refVal && !!_refVal.$async}
+  function resolvedRef(schOrFunc: RefVal | undefined, code: Code): ResolvedRef {
+    return typeof schOrFunc == "object" || typeof schOrFunc == "boolean"
+      ? {code: code, schema: schOrFunc, inline: true}
+      : {code: code, $async: schOrFunc && !!schOrFunc.$async}
   }
 }
 
@@ -367,11 +373,14 @@ function equalEnv(e1: CompileEnv, e2: CompileEnv): boolean {
   return e1.schema === e2.schema && e1.root === e2.root && e1.baseId === e2.baseId
 }
 
-function refValCode(i: number, refVal): Code {
+function refValCode(i: number, refVal: (RefVal | undefined)[]): Code {
   return refVal[i] === undefined ? nil : _`const refVal${i} = refVal[${i}];`
 }
 
-function vars(arr: unknown[], statement: (i: number, arr?: unknown[]) => Code): Code {
+function vars(
+  arr: (RefVal | undefined)[],
+  statement: (i: number, arr: (RefVal | undefined)[]) => Code
+): Code {
   return arr.map((_el, i) => statement(i, arr)).reduce((res: Code, c: Code) => _`${res}${c}`, nil)
 }
 
@@ -382,7 +391,7 @@ export function resolve(
   localCompile: (env: SchemaEnv) => ValidateFunction, // reference to schema compilation function (localCompile)
   root: SchemaRoot, // information about the root schema for the current schema
   ref: string // reference to resolve
-): Schema | ValidateFunction | undefined {
+): RefVal | undefined {
   let schOrRef = this._refs[ref]
   if (typeof schOrRef == "string") {
     if (this._refs[schOrRef]) schOrRef = this._refs[schOrRef]
@@ -429,21 +438,21 @@ export function resolveSchema(
   let baseId = getFullPath(root.schema.$id)
   if (Object.keys(root.schema).length === 0 || refPath !== baseId) {
     var id = normalizeId(refPath)
-    var refVal = this._refs[id]
-    if (typeof refVal == "string") {
-      return resolveRecursive.call(this, root, refVal, p)
+    var schOrRef = this._refs[id]
+    if (typeof schOrRef == "string") {
+      return resolveRecursive.call(this, root, schOrRef, p)
     }
-    if (refVal instanceof StoredSchema) {
-      if (!refVal.validate) compileStoredSchema.call(this, refVal)
-      root = <SchemaRoot>refVal
+    if (schOrRef instanceof StoredSchema) {
+      if (!schOrRef.validate) compileStoredSchema.call(this, schOrRef)
+      root = <SchemaRoot>schOrRef
     } else {
-      refVal = this._schemas[id]
-      if (refVal instanceof StoredSchema) {
-        if (!refVal.validate) compileStoredSchema.call(this, refVal)
+      schOrRef = this._schemas[id]
+      if (schOrRef instanceof StoredSchema) {
+        if (!schOrRef.validate) compileStoredSchema.call(this, schOrRef)
         if (id === normalizeId(ref)) {
-          return {schema: refVal, root, baseId}
+          return {schema: schOrRef, root, baseId}
         }
-        root = <SchemaRoot>refVal
+        root = <SchemaRoot>schOrRef
       } else {
         return
       }

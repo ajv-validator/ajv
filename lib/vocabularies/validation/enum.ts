@@ -16,7 +16,7 @@ const def: CodeKeywordDefinition = {
       cxt.block$data(valid, loopEnum)
     } else {
       const vSchema = gen.const("schema", schemaCode)
-      valid = or(...schema.map((_x, i) => equalCode(vSchema, i)))
+      valid = or(...schema.map((_x: any, i: number) => equalCode(vSchema, i)))
     }
     cxt.pass(valid)
 
