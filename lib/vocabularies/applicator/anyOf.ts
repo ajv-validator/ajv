@@ -10,7 +10,7 @@ const def: CodeKeywordDefinition = {
   trackErrors: true,
   code(cxt: KeywordCtx) {
     const {gen, schema, it} = cxt
-    const alwaysValid = schema.some((sch: object | boolean) => alwaysValidSchema(it, sch))
+    const alwaysValid = schema.some((sch: Schema) => alwaysValidSchema(it, sch))
     if (alwaysValid) return
 
     const valid = gen.let("valid", false)

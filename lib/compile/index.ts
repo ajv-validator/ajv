@@ -60,7 +60,7 @@ export type ResolvedRef = InlineResolvedRef | FuncResolvedRef
 
 export interface InlineResolvedRef {
   code: Code
-  schema: object | boolean
+  schema: Schema
   inline: true
 }
 

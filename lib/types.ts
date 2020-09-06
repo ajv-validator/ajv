@@ -92,9 +92,9 @@ export interface ValidateFunction {
     this: Ajv | any,
     data: any,
     dataPath?: string,
-    parentData?: object | any[],
+    parentData?: Record<string, unknown> | unknown[],
     parentDataProperty?: string | number,
-    rootData?: object | any[]
+    rootData?: Record<string, unknown> | unknown[]
   ): boolean | Promise<any>
   schema?: Schema
   errors?: null | ErrorObject[]
@@ -115,9 +115,9 @@ export interface SchemaValidateFunction {
     data: any,
     parentSchema?: SchemaObject,
     dataPath?: string,
-    parentData?: object | any[],
+    parentData?: Record<string, unknown> | unknown[],
     parentDataProperty?: string | number,
-    rootData?: object | any[]
+    rootData?: Record<string, unknown> | unknown[]
   ): boolean | Promise<any>
   errors?: ErrorObject[]
 }
@@ -126,7 +126,7 @@ export interface ErrorObject {
   keyword: string
   dataPath: string
   schemaPath: string
-  params: object // TODO add interface
+  params: Record<string, unknown> // TODO add interface
   // Added to validation errors of propertyNames keyword schema
   propertyName?: string
   // Excluded if messages set to false.
@@ -137,7 +137,7 @@ export interface ErrorObject {
   data?: any
 }
 
-export type KeywordCompilationResult = object | boolean | SchemaValidateFunction | ValidateFunction
+export type KeywordCompilationResult = Schema | SchemaValidateFunction | ValidateFunction
 
 export interface SchemaCtx {
   gen: CodeGen
@@ -180,7 +180,7 @@ interface _KeywordDef {
   $data?: boolean
   implements?: string[]
   before?: string
-  metaSchema?: object
+  metaSchema?: SchemaObject
   validateSchema?: ValidateFunction // compiled keyword metaSchema - should not be passed
   dependencies?: string[] // keywords that must be present in the same schema
   error?: KeywordErrorDefinition
@@ -192,16 +192,12 @@ export interface CodeKeywordDefinition extends _KeywordDef {
   trackErrors?: boolean
 }
 
-export type MacroKeywordFunc = (
-  schema: any,
-  parentSchema: object,
-  it: SchemaCtx
-) => object | boolean
+export type MacroKeywordFunc = (schema: any, parentSchema: SchemaObject, it: SchemaCtx) => Schema
 
 export type CompileKeywordFunc = (
   schema: any,
-  parentSchema: object,
-  it: SchemaCtx
+  parentSchema: SchemaObject,
+  it: SchemaObjCtx
 ) => ValidateFunction
 
 export interface FuncKeywordDefinition extends _KeywordDef {

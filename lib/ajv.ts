@@ -598,7 +598,7 @@ const $dataRef = {
   $ref: "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#",
 }
 
-function schemaOrData(schema: object | boolean): object {
+function schemaOrData(schema: Schema): SchemaObject {
   return {anyOf: [schema, $dataRef]}
 }
 
