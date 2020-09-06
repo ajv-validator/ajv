@@ -7,7 +7,7 @@ import Ajv from "./ajv"
 export interface SchemaObject {
   $id?: string
   $schema?: string
-  [x: string]: any
+  [x: string]: any // TODO
 }
 
 export type Schema = SchemaObject | boolean
@@ -53,8 +53,8 @@ export interface CurrentOptions {
   codegen?: CodeGenOptions
   cache?: CacheInterface
   logger?: Logger | false
-  serialize?: false | ((schema: Schema) => any)
-  $comment?: true | ((comment: string, schemaPath?: string, rootSchema?: SchemaObject) => any)
+  serialize?: false | ((schema: Schema) => unknown)
+  $comment?: true | ((comment: string, schemaPath?: string, rootSchema?: SchemaObject) => unknown)
   allowMatchingProperties?: boolean // disables a strict mode restriction
 }
 
@@ -70,15 +70,15 @@ export interface Options extends CurrentOptions {
 }
 
 export interface Logger {
-  log(...args: any[]): any
-  warn(...args: any[]): any
-  error(...args: any[]): any
+  log(...args: unknown[]): unknown
+  warn(...args: unknown[]): unknown
+  error(...args: unknown[]): unknown
 }
 
 export interface CacheInterface {
-  put: (key: any, value: StoredSchema) => void
-  get: (key: any) => StoredSchema
-  del(key: any): void
+  put(key: unknown, value: StoredSchema): void
+  get(key: unknown): StoredSchema
+  del(key: unknown): void
   clear(): void
 }
 
@@ -89,13 +89,13 @@ interface SourceCode {
 
 export interface ValidateFunction {
   (
-    this: Ajv | any,
-    data: any,
+    this: Ajv | unknown,
+    data: unknown,
     dataPath?: string,
     parentData?: Record<string, unknown> | unknown[],
     parentDataProperty?: string | number,
     rootData?: Record<string, unknown> | unknown[]
-  ): boolean | Promise<any>
+  ): boolean | Promise<unknown>
   schema?: Schema
   errors?: null | ErrorObject[]
   refs?: {[ref: string]: number | undefined}
@@ -111,14 +111,14 @@ export interface ValidateWrapper extends ValidateFunction {
 
 export interface SchemaValidateFunction {
   (
-    schema: any,
-    data: any,
+    schema: unknown,
+    data: unknown,
     parentSchema?: SchemaObject,
     dataPath?: string,
     parentData?: Record<string, unknown> | unknown[],
     parentDataProperty?: string | number,
     rootData?: Record<string, unknown> | unknown[]
-  ): boolean | Promise<any>
+  ): boolean | Promise<unknown>
   errors?: ErrorObject[]
 }
 
@@ -132,9 +132,9 @@ export interface ErrorObject {
   // Excluded if messages set to false.
   message?: string
   // These are added with the `verbose` option.
-  schema?: any
+  schema?: unknown
   parentSchema?: SchemaObject
-  data?: any
+  data?: unknown
 }
 
 export type KeywordCompilationResult = Schema | SchemaValidateFunction | ValidateFunction
@@ -192,10 +192,14 @@ export interface CodeKeywordDefinition extends _KeywordDef {
   trackErrors?: boolean
 }
 
-export type MacroKeywordFunc = (schema: any, parentSchema: SchemaObject, it: SchemaCtx) => Schema
+export type MacroKeywordFunc = (
+  schema: unknown,
+  parentSchema: SchemaObject,
+  it: SchemaCtx
+) => Schema
 
 export type CompileKeywordFunc = (
-  schema: any,
+  schema: unknown,
   parentSchema: SchemaObject,
   it: SchemaObjCtx
 ) => ValidateFunction
@@ -232,7 +236,7 @@ export interface KeywordErrorCtx {
   keyword: string
   data: Name
   $data?: string | false
-  schema: any
+  schema: any // TODO
   parentSchema?: SchemaObject
   schemaCode: Code | number | boolean
   schemaValue: Code | number | boolean
@@ -268,12 +272,12 @@ export interface AsyncFormatDefinition<T extends SN> {
   compare?: FormatCompare<T>
 }
 
-export type FormatValidate = FormatValidator<any> | AsyncFormatValidator<any> | RegExp
+export type FormatValidate = FormatValidator<SN> | AsyncFormatValidator<SN> | RegExp
 
 export type AddedFormat =
   | RegExp
-  | FormatValidator<string>
-  | FormatDefinition<any>
-  | AsyncFormatDefinition<any>
+  | FormatValidator<SN> // TODO should be string, not SN
+  | FormatDefinition<SN>
+  | AsyncFormatDefinition<SN>
 
 export type Format = AddedFormat | string

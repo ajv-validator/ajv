@@ -13,7 +13,7 @@ export function assignDefaults(it: SchemaObjCtx, ty?: string): void {
   }
 }
 
-function assignDefault(it: SchemaObjCtx, prop: string | number, defaultValue: any): void {
+function assignDefault(it: SchemaObjCtx, prop: string | number, defaultValue: unknown): void {
   const {gen, compositeRule, data, opts} = it
   if (defaultValue === undefined) return
   const childData = _`${data}${getProperty(prop)}`

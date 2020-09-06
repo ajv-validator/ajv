@@ -1,4 +1,4 @@
-import {CodeKeywordDefinition} from "../../types"
+import {CodeKeywordDefinition, Schema} from "../../types"
 import KeywordCtx from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema, Type} from "../../compile/subschema"
@@ -13,14 +13,14 @@ const def: CodeKeywordDefinition = {
     const {gen, schema, data, it} = cxt
     const len = gen.const("len", _`${data}.length`)
     if (Array.isArray(schema)) {
-      validateDefinedItems()
+      validateDefinedItems(schema)
     } else if (!alwaysValidSchema(it, schema)) {
       validateItems()
     }
 
-    function validateDefinedItems(): void {
+    function validateDefinedItems(schArr: Schema[]): void {
       const valid = gen.name("valid")
-      schema.forEach((sch: any, i: number) => {
+      schArr.forEach((sch: Schema, i: number) => {
         if (alwaysValidSchema(it, sch)) return
         gen.if(_`${len} > ${i}`, () =>
           applySubschema(

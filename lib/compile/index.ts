@@ -144,7 +144,7 @@ function _tryCompile(
 
 function validateWrapper(c: Compilation): ValidateWrapper {
   if (!c.callValidate) {
-    const wrapper: ValidateWrapper = function (this: Ajv | any, ...args) {
+    const wrapper: ValidateWrapper = function (this: Ajv | unknown, ...args) {
       if (wrapper.validate === undefined) throw new Error("ajv implementation error")
       const v = wrapper.validate
       const valid = v.apply(this, args)
@@ -246,10 +246,10 @@ export function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | Va
 
     if (opts.processCode) sourceCode = opts.processCode(sourceCode, _schema)
     // console.log("\n\n\n *** \n", sourceCode)
-    var validate
+    let validate: ValidateFunction
     try {
       // TODO refactor to fewer variables - maybe only self and scope
-      var makeValidate = new Function(
+      const makeValidate = new Function(
         "self",
         "RULES",
         "formats",
@@ -284,7 +284,7 @@ export function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | Va
     validate.errors = null
     validate.refs = refs
     validate.refVal = refVal
-    validate.root = isRoot ? validate : _root
+    validate.root = isRoot ? root : _root
     if ($async) validate.$async = true
     if (opts.sourceCode === true) {
       validate.source = {

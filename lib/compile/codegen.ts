@@ -80,7 +80,7 @@ interface NameRec {
   value: NameValue
 }
 
-type ValueReference = any // possibly make CodeGen parameterized type on this type
+type ValueReference = unknown // possibly make CodeGen parameterized type on this type
 
 export interface NameValue {
   ref?: ValueReference // this is the reference to any value that can be referred to from generated code via `globals` var in the closure

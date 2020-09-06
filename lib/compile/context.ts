@@ -162,7 +162,7 @@ export default class KeywordCtx implements KeywordErrorCtx {
   }
 }
 
-function validSchemaType(schema: any, schemaType: string | string[]): boolean {
+function validSchemaType(schema: unknown, schemaType: string | string[]): boolean {
   // TODO add tests
   if (Array.isArray(schemaType)) {
     return schemaType.some((st) => validSchemaType(schema, st))

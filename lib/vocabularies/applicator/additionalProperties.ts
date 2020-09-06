@@ -1,5 +1,4 @@
-import {CodeKeywordDefinition} from "../../types"
-import KeywordCtx from "../../compile/context"
+import {CodeKeywordDefinition, KeywordErrorCtx} from "../../types"
 import {allSchemaProperties, schemaRefOrVal, alwaysValidSchema, usePattern} from "../util"
 import {applySubschema, SubschemaApplication, Type} from "../../compile/subschema"
 import {_, nil, or, Code, Name} from "../../compile/codegen"
@@ -10,7 +9,7 @@ const def: CodeKeywordDefinition = {
   type: "object",
   schemaType: ["boolean", "object", "undefined"], // "undefined" is needed to support option removeAdditional: "all"
   trackErrors: true,
-  code(cxt: KeywordCtx) {
+  code(cxt) {
     const {gen, schema, parentSchema, data, errsCount, it} = cxt
     if (!errsCount) throw new Error("ajv implementation error")
     const {allErrors, opts} = it
@@ -94,7 +93,8 @@ const def: CodeKeywordDefinition = {
   },
   error: {
     message: "should NOT have additional properties",
-    params: ({params}) => _`{additionalProperty: ${params.additionalProperty}}`,
+    params: ({params}: KeywordErrorCtx): Code =>
+      _`{additionalProperty: ${params.additionalProperty}}`,
   },
 }
 

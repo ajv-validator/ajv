@@ -54,7 +54,10 @@ const def: CodeKeywordDefinition = {
       if (fmtType === ruleType) cxt.pass(validCondition())
 
       function unknownFormat() {
-        if (opts.unknownFormats === "ignore") return logger.warn(unknownMsg())
+        if (opts.unknownFormats === "ignore") {
+          logger.warn(unknownMsg())
+          return
+        }
         if (Array.isArray(opts.unknownFormats) && opts.unknownFormats.includes(schema)) return
         throw new Error(unknownMsg())
 

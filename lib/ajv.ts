@@ -358,7 +358,7 @@ export default class Ajv {
   ): string {
     if (!errors || errors.length === 0) return "No errors"
     return errors
-      .map((e) => dataVar + e.dataPath + " " + e.message)
+      .map((e) => `${dataVar}${e.dataPath} ${e.message}`)
       .reduce((text, msg) => text + msg + separator)
   }
 
@@ -586,8 +586,7 @@ function _addBeforeRule(this: Ajv, ruleGroup: RuleGroup, rule: Rule, before: str
   }
 }
 
-function keywordMetaschema(this: any, def: KeywordDefinition): void {
-  // TODO this Ajv
+function keywordMetaschema(this: Ajv, def: KeywordDefinition): void {
   let metaSchema = def.metaSchema
   if (metaSchema === undefined) return
   if (def.$data && this._opts.$data) metaSchema = schemaOrData(metaSchema)

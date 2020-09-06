@@ -10,6 +10,8 @@ const def: CodeKeywordDefinition = {
   trackErrors: true,
   code(cxt: KeywordCtx) {
     const {gen, schema, it} = cxt
+    if (!Array.isArray(schema)) throw new Error("ajv implementation error")
+    const schArr: Schema[] = schema
     const valid = gen.let("valid", false)
     const passing = gen.let("passing", null)
     const schValid = gen.name("_valid")
@@ -25,7 +27,7 @@ const def: CodeKeywordDefinition = {
     )
 
     function validateOneOf() {
-      schema.forEach((sch: Schema, i: number) => {
+      schArr.forEach((sch: Schema, i: number) => {
         if (alwaysValidSchema(it, sch)) {
           gen.var(schValid, true)
         } else {
