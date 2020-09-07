@@ -509,7 +509,7 @@ function addInitialKeywords(this: Ajv, defs: Vocabulary | {[x: string]: KeywordD
   }
   this.logger.warn("keywords option as map is deprecated, pass array")
   for (const keyword in defs) {
-    const def = defs[name]
+    const def = defs[keyword]
     if (!def.keyword) def.keyword = keyword
     this.addKeyword(def)
   }

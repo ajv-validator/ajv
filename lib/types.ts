@@ -1,4 +1,4 @@
-import CodeGen, {Code, Name, CodeGenOptions, Scope} from "./compile/codegen"
+import {CodeGen, Code, Name, CodeGenOptions, Scope} from "./compile/codegen"
 import {ValidationRules} from "./compile/rules"
 import {RefVal, ResolvedRef, SchemaRoot, StoredSchema} from "./compile"
 import KeywordCtx from "./compile/context"

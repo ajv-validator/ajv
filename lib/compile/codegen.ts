@@ -141,7 +141,7 @@ export interface CodeGenOptions {
   forInOwn?: boolean
 }
 
-export default class CodeGen {
+export class CodeGen {
   #names: {[prefix: string]: NameGroup} = {}
   #valuePrefixes: {[prefix: string]: Name} = {}
   #out = ""

@@ -1,7 +1,7 @@
 import {schemaHasRules} from "../compile/util"
 import {Schema, SchemaMap, SchemaCtx, SchemaObjCtx} from "../types"
 import KeywordCtx from "../compile/context"
-import CodeGen, {_, nil, Code, Name, getProperty} from "../compile/codegen"
+import {CodeGen, _, nil, Code, Name, getProperty} from "../compile/codegen"
 import N from "../compile/names"
 
 export function schemaRefOrVal(

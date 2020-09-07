@@ -1,10 +1,10 @@
-import {Schema, SchemaObject, ValidateFunction, ValidateWrapper} from "../types"
-import CodeGen, {_, nil, str, Code, Scope} from "./codegen"
+import type {Schema, SchemaObject, ValidateFunction, ValidateWrapper} from "../types"
+import type Ajv from "../ajv"
+import {CodeGen, _, nil, str, Code, Scope} from "./codegen"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
 import {toHash, schemaHasRulesButRef, unescapeFragment} from "./util"
 import {validateFunctionCode} from "./validate"
-import Ajv from "../ajv"
 import URI = require("uri-js")
 
 const equal = require("fast-deep-equal")
@@ -64,7 +64,7 @@ export interface InlineResolvedRef {
   inline: true
 }
 
-export interface FuncResolvedRef {
+interface FuncResolvedRef {
   code: Code
   $async?: boolean
   inline?: false
@@ -172,7 +172,7 @@ function extendValidateWrapper(v: ValidateFunction, c: Compilation, sourceCode?:
 }
 
 // Compiles schema to validation function
-export function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateWrapper {
+function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateWrapper {
   const {schema, root: passedRoot, localRefs} = env
   const self = this
   const opts = this._opts
@@ -386,7 +386,7 @@ function vars(
 
 // resolve and compile the references ($ref)
 // TODO returns SchemaObject (if the schema can be inlined) or validation function
-export function resolve(
+function resolve(
   this: Ajv,
   localCompile: (env: SchemaEnv) => ValidateFunction, // reference to schema compilation function (localCompile)
   root: SchemaRoot, // information about the root schema for the current schema
@@ -428,7 +428,7 @@ export function resolve(
 }
 
 // Resolve schema, its root and baseId
-export function resolveSchema(
+function resolveSchema(
   this: Ajv,
   root: SchemaRoot, // root object with properties schema, refVal, refs TODO below StoredSchema is assigned to it
   ref: string // reference to resolve

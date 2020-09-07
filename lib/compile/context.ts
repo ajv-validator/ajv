@@ -14,7 +14,7 @@ import {
   keywordError,
   keyword$DataError,
 } from "./errors"
-import CodeGen, {_, nil, or, Code, Name} from "./codegen"
+import {CodeGen, _, nil, or, Code, Name} from "./codegen"
 import N from "./names"
 
 export default class KeywordCtx implements KeywordErrorCtx {

@@ -9,7 +9,7 @@ import KeywordCtx from "../context"
 import {applySubschema} from "../subschema"
 import {extendErrors} from "../errors"
 import {callValidateCode} from "../../vocabularies/util"
-import CodeGen, {_, nil, Code, Name} from "../codegen"
+import {CodeGen, _, nil, Code, Name} from "../codegen"
 import N from "../names"
 
 export function keywordCode(

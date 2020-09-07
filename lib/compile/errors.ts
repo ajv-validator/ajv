@@ -1,5 +1,5 @@
 import {KeywordErrorCtx, KeywordErrorDefinition} from "../types"
-import CodeGen, {_, str, Code, Name} from "./codegen"
+import {CodeGen, _, str, Code, Name} from "./codegen"
 import N from "./names"
 
 export const keywordError: KeywordErrorDefinition = {
