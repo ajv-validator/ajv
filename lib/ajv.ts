@@ -117,7 +117,7 @@ export default class Ajv {
     schema: SchemaObject,
     metaOrCallback?: boolean | CompileAsyncCallback, // optional true to compile meta-schema; this parameter can be skipped
     callback?: CompileAsyncCallback
-  ): Promise<ValidateFunction | void> {
+  ): Promise<ValidateFunction> {
     /* eslint no-shadow: 0 */
     const self = this
     if (typeof this._opts.loadSchema != "function") {

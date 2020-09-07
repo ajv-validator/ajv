@@ -2,7 +2,7 @@
   "extends": "..",
   "include": ["."],
   "compilerOptions": {
-    "outDir": ".distspec",
+    "outDir": "../.distspec",
     "types": ["node", "mocha"],
     "noImplicitAny": false
   }

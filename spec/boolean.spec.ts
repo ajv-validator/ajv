@@ -1,17 +1,17 @@
-"use strict"
+import _Ajv from "./ajv"
+import type Ajv from "../dist/ajv"
 
-const Ajv = require("./ajv")
 require("./chai").should()
 
 describe("boolean schemas", () => {
-  let ajvs
+  let ajvs: Ajv[]
 
   before(() => {
     ajvs = [
-      new Ajv(),
-      new Ajv({allErrors: true}),
-      new Ajv({inlineRefs: false}),
-      new Ajv({strict: false}),
+      new _Ajv(),
+      new _Ajv({allErrors: true}),
+      new _Ajv({inlineRefs: false}),
+      new _Ajv({strict: false}),
     ]
   })
 

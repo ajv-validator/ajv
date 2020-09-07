@@ -2,11 +2,11 @@ import {ErrorObject} from "../types"
 import {resolveUrl, normalizeId, getFullPath} from "./resolve"
 
 export class ValidationError extends Error {
-  errors: ErrorObject[]
+  errors: Partial<ErrorObject>[]
   ajv: true
   validation: true
 
-  constructor(errors: ErrorObject[]) {
+  constructor(errors: Partial<ErrorObject>[]) {
     super("validation failed")
     this.errors = errors
     this.ajv = this.validation = true

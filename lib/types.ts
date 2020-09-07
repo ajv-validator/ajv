@@ -37,7 +37,7 @@ export interface CurrentOptions {
   removeAdditional?: boolean | "all" | "failing"
   useDefaults?: boolean | "empty"
   coerceTypes?: boolean | "array"
-  meta?: SchemaObject | false
+  meta?: SchemaObject | boolean
   defaultMeta?: string | SchemaObject
   validateSchema?: boolean | "log"
   addUsedSchema?: boolean
@@ -89,13 +89,13 @@ interface SourceCode {
 
 export interface ValidateFunction {
   (
-    this: Ajv | unknown,
-    data: unknown,
+    this: Ajv | any,
+    data: any,
     dataPath?: string,
-    parentData?: Record<string, unknown> | unknown[],
+    parentData?: Record<string, any> | any[],
     parentDataProperty?: string | number,
-    rootData?: Record<string, unknown> | unknown[]
-  ): boolean | Promise<unknown>
+    rootData?: Record<string, any> | any[]
+  ): boolean | Promise<any>
   schema?: Schema
   errors?: null | ErrorObject[]
   refs?: {[ref: string]: number | undefined}
@@ -111,14 +111,14 @@ export interface ValidateWrapper extends ValidateFunction {
 
 export interface SchemaValidateFunction {
   (
-    schema: unknown,
-    data: unknown,
+    schema: any,
+    data: any,
     parentSchema?: SchemaObject,
     dataPath?: string,
-    parentData?: Record<string, unknown> | unknown[],
+    parentData?: Record<string, any> | any[],
     parentDataProperty?: string | number,
-    rootData?: Record<string, unknown> | unknown[]
-  ): boolean | Promise<unknown>
+    rootData?: Record<string, any> | any[]
+  ): boolean | Promise<any>
   errors?: Partial<ErrorObject>[]
 }
 
@@ -192,14 +192,10 @@ export interface CodeKeywordDefinition extends _KeywordDef {
   trackErrors?: boolean
 }
 
-export type MacroKeywordFunc = (
-  schema: unknown,
-  parentSchema: SchemaObject,
-  it: SchemaCtx
-) => Schema
+export type MacroKeywordFunc = (schema: any, parentSchema: SchemaObject, it: SchemaCtx) => Schema
 
 export type CompileKeywordFunc = (
-  schema: unknown,
+  schema: any,
   parentSchema: SchemaObject,
   it: SchemaObjCtx
 ) => ValidateFunction

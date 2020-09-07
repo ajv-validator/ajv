@@ -12,10 +12,10 @@
     ".tonic_example.js"
   ],
   "scripts": {
-    "eslint": "eslint lib/{**/,}*.ts spec/{**/,}*.{ts,js} scripts --ignore-pattern spec/JSON-Schema-Test-Suite",
+    "eslint": "eslint lib/{**/,}*.ts spec/{**/,}*.*s scripts --ignore-pattern spec/JSON-Schema-Test-Suite",
     "prettier:write": "prettier --write './**/*.{md,json,yaml,js,ts}'",
     "prettier:check": "prettier --list-different './**/*.{md,json,yaml,js,ts}'",
-    "test-spec": "cross-env TS_NODE_PROJECT=spec/tsconfig.json mocha -r ts-node/register spec/{**/,}*.spec.{js,ts} -R dot",
+    "test-spec": "cross-env TS_NODE_PROJECT=spec/tsconfig.json mocha -r ts-node/register spec/{**/,}*.spec.ts -R dot",
     "test-debug": "npm run test-spec -- --inspect-brk",
     "test-cov": "nyc npm run test-spec",
     "bundle": "rm -rf bundle && node ./scripts/bundle.js",

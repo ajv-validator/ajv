@@ -29,6 +29,7 @@ overrides:
       "@typescript-eslint/no-this-alias": off
       "@typescript-eslint/no-implied-eval": off
       "@typescript-eslint/no-floating-promises": off
+      "@typescript-eslint/no-explicit-any": off
       no-invalid-this: off
 rules:
   block-scoped-var: error
