@@ -12,23 +12,23 @@ export type Block = Code | (() => void)
 export type Code = _Code | Name
 
 class _Code {
-  #str: string
+  _str: string
 
   constructor(s: string) {
-    this.#str = s
+    this._str = s
   }
 
   toString(): string {
-    return this.#str
+    return this._str
   }
 
   isQuoted(): boolean {
-    const len = this.#str.length
-    return len >= 2 && this.#str[0] === '"' && this.#str[len - 1] === '"'
+    const len = this._str.length
+    return len >= 2 && this._str[0] === '"' && this._str[len - 1] === '"'
   }
 
   add(c: _Code): void {
-    this.#str += c.#str
+    this._str += c._str
   }
 }
 
@@ -85,7 +85,7 @@ type ValueReference = unknown // possibly make CodeGen parameterized type on thi
 export interface NameValue {
   ref?: ValueReference // this is the reference to any value that can be referred to from generated code via `globals` var in the closure
   key?: unknown // any key to identify a global to avoid duplicates, if not passed ref is used
-  code?: Code // this is the code creating the value needed for standalone code without closure - can be a primitive value, function or import (`require`)
+  code?: Code // this is the code creating the value needed for standalone code wit_out closure - can be a primitive value, function or import (`require`)
 }
 
 export interface Scope {
@@ -142,26 +142,26 @@ export interface CodeGenOptions {
 }
 
 export class CodeGen {
-  #names: {[prefix: string]: NameGroup} = {}
-  #valuePrefixes: {[prefix: string]: Name} = {}
-  #out = ""
-  #blocks: BlockKind[] = []
-  #blockStarts: number[] = []
-  #n = ""
+  _names: {[prefix: string]: NameGroup} = {}
+  _valuePrefixes: {[prefix: string]: Name} = {}
+  _out = ""
+  _blocks: BlockKind[] = []
+  _blockStarts: number[] = []
+  _n = ""
   opts: CodeGenOptions
 
   constructor(opts: CodeGenOptions = {}) {
     this.opts = opts
-    if (opts.lines) this.#n = "\n"
+    if (opts.lines) this._n = "\n"
   }
 
   toString(): string {
-    return this.#out
+    return this._out
   }
 
   _nameGroup(prefix: string): NameGroup {
-    let ng = this.#names[prefix]
-    if (!ng) ng = this.#names[prefix] = {prefix, index: 0}
+    let ng = this._names[prefix]
+    if (!ng) ng = this._names[prefix] = {prefix, index: 0}
     return ng
   }
 
@@ -179,7 +179,7 @@ export class CodeGen {
     const valueKey = key ?? ref ?? code
     if (!valueKey) throw new Error("CodeGen: ref or code must be passed in value")
     const ng = this._nameGroup(prefix)
-    this.#valuePrefixes[prefix] = new Name(prefix)
+    this._valuePrefixes[prefix] = new Name(prefix)
     if (!ng.values) {
       ng.values = new Map()
     } else {
@@ -197,7 +197,7 @@ export class CodeGen {
       if (v.ref) {
         if (!scope[prefix]) scope[prefix] = []
         scope[prefix][i] = v.ref
-        const prefName = this.#valuePrefixes[prefix]
+        const prefName = this._valuePrefixes[prefix]
         return _`${scopeName}.${prefName}[${i}]`
       }
       if (v.code) return v.code
@@ -215,9 +215,9 @@ export class CodeGen {
 
   _reduceValues(valueCode: (n: NameRec, pref: string, index: number) => Code): Code {
     let code: Code = nil
-    for (const prefix in this.#valuePrefixes) {
+    for (const prefix in this._valuePrefixes) {
       let i = 0
-      const values = this.#names[prefix].values
+      const values = this._names[prefix].values
       if (!values) throw new Error("ajv implementation error")
       values.forEach((rec: NameRec) => {
         code = _`${code}const ${rec.name} = ${valueCode(rec, prefix, i++)};`
@@ -233,8 +233,8 @@ export class CodeGen {
   _def(varKind: Name, nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
     const name = this._toName(nameOrPrefix)
     if (this.opts.es5) varKind = varKinds.var
-    if (rhs === undefined) this.#out += `${varKind} ${name};` + this.#n
-    else this.#out += `${varKind} ${name} = ${rhs};` + this.#n
+    if (rhs === undefined) this._out += `${varKind} ${name};` + this._n
+    else this._out += `${varKind} ${name} = ${rhs};` + this._n
     return name
   }
 
@@ -251,26 +251,26 @@ export class CodeGen {
   }
 
   assign(name: Code, rhs: SafeExpr): CodeGen {
-    this.#out += `${name} = ${rhs};` + this.#n
+    this._out += `${name} = ${rhs};` + this._n
     return this
   }
 
   code(c: Block | SafeExpr): CodeGen {
     if (typeof c == "function") c()
-    else this.#out += c + ";" + this.#n
+    else this._out += c + ";" + this._n
 
     return this
   }
 
   if(condition: Code | boolean, thenBody?: Block, elseBody?: Block): CodeGen {
-    this.#blocks.push(BlockKind.If)
-    this.#out += `if(${condition}){` + this.#n
+    this._blocks.push(BlockKind.If)
+    this._out += `if(${condition}){` + this._n
     if (thenBody && elseBody) {
       this.code(thenBody).else().code(elseBody).endIf()
     } else if (thenBody) {
       this.code(thenBody).endIf()
     } else if (elseBody) {
-      throw new Error('CodeGen: "else" body without "then" body')
+      throw new Error('CodeGen: "else" body wit_out "then" body')
     }
     return this
   }
@@ -281,30 +281,30 @@ export class CodeGen {
   }
 
   elseIf(condition: Code): CodeGen {
-    if (this._lastBlock !== BlockKind.If) throw new Error('CodeGen: "else if" without "if"')
-    this.#out += `}else if(${condition}){` + this.#n
+    if (this._lastBlock !== BlockKind.If) throw new Error('CodeGen: "else if" wit_out "if"')
+    this._out += `}else if(${condition}){` + this._n
     return this
   }
 
   else(): CodeGen {
-    if (this._lastBlock !== BlockKind.If) throw new Error('CodeGen: "else" without "if"')
+    if (this._lastBlock !== BlockKind.If) throw new Error('CodeGen: "else" wit_out "if"')
     this._lastBlock = BlockKind.Else
-    this.#out += "}else{" + this.#n
+    this._out += "}else{" + this._n
     return this
   }
 
   endIf(): CodeGen {
     // TODO possibly remove empty branches here
     const b = this._lastBlock
-    if (b !== BlockKind.If && b !== BlockKind.Else) throw new Error('CodeGen: "endIf" without "if"')
-    this.#blocks.pop()
-    this.#out += "}" + this.#n
+    if (b !== BlockKind.If && b !== BlockKind.Else) throw new Error('CodeGen: "endIf" wit_out "if"')
+    this._blocks.pop()
+    this._out += "}" + this._n
     return this
   }
 
   for(iteration: Code, forBody?: Block): CodeGen {
-    this.#blocks.push(BlockKind.For)
-    this.#out += `for(${iteration}){` + this.#n
+    this._blocks.push(BlockKind.For)
+    this._out += `for(${iteration}){` + this._n
     if (forBody) this.code(forBody).endFor()
     return this
   }
@@ -346,8 +346,8 @@ export class CodeGen {
   }
 
   _loop(forCode: _Code, name: Name, forBody: (n: Name) => void): CodeGen {
-    this.#blocks.push(BlockKind.For)
-    this.#out += forCode + this.#n
+    this._blocks.push(BlockKind.For)
+    this._out += forCode + this._n
     forBody(name)
     this.endFor()
     return this
@@ -355,95 +355,95 @@ export class CodeGen {
 
   endFor(): CodeGen {
     const b = this._lastBlock
-    if (b !== BlockKind.For) throw new Error('CodeGen: "endFor" without "for"')
-    this.#blocks.pop()
-    this.#out += "}" + this.#n
+    if (b !== BlockKind.For) throw new Error('CodeGen: "endFor" wit_out "for"')
+    this._blocks.pop()
+    this._out += "}" + this._n
     return this
   }
 
   label(label?: Code): CodeGen {
-    this.#out += label + ":" + this.#n
+    this._out += label + ":" + this._n
     return this
   }
 
   break(label?: Code): CodeGen {
-    this.#out += (label ? `break ${label};` : "break;") + this.#n
+    this._out += (label ? `break ${label};` : "break;") + this._n
     return this
   }
 
   return(value: Block | SafeExpr): CodeGen {
-    this.#out += "return "
+    this._out += "return "
     this.code(value)
-    this.#out += ";" + this.#n
+    this._out += ";" + this._n
     return this
   }
 
   try(tryBody: Block, catchCode?: (e: Name) => void, finallyCode?: Block): CodeGen {
-    if (!catchCode && !finallyCode) throw new Error('CodeGen: "try" without "catch" and "finally"')
-    this.#out += "try{" + this.#n
+    if (!catchCode && !finallyCode) throw new Error('CodeGen: "try" wit_out "catch" and "finally"')
+    this._out += "try{" + this._n
     this.code(tryBody)
     if (catchCode) {
       const err = this.name("e")
-      this.#out += `}catch(${err}){` + this.#n
+      this._out += `}catch(${err}){` + this._n
       catchCode(err)
     }
     if (finallyCode) {
-      this.#out += "}finally{" + this.#n
+      this._out += "}finally{" + this._n
       this.code(finallyCode)
     }
-    this.#out += "}" + this.#n
+    this._out += "}" + this._n
     return this
   }
 
   throw(err: Code): CodeGen {
-    this.#out += `throw ${err};` + this.#n
+    this._out += `throw ${err};` + this._n
     return this
   }
 
   block(body?: Block, expectedToClose?: number): CodeGen {
-    this.#blockStarts.push(this.#blocks.length)
+    this._blockStarts.push(this._blocks.length)
     if (body) this.code(body).endBlock(expectedToClose)
     return this
   }
 
   endBlock(expectedToClose?: number): CodeGen {
     // TODO maybe close blocks one by one, eliminating empty branches
-    const len = this.#blockStarts.pop()
+    const len = this._blockStarts.pop()
     if (len === undefined) throw new Error("CodeGen: not in block sequence")
-    const toClose = this.#blocks.length - len
+    const toClose = this._blocks.length - len
     if (toClose < 0 || (expectedToClose !== undefined && toClose !== expectedToClose)) {
       throw new Error("CodeGen: block sequence already ended or incorrect number of blocks")
     }
-    this.#blocks.length = len
-    if (toClose > 0) this.#out += "}".repeat(toClose) + this.#n
+    this._blocks.length = len
+    if (toClose > 0) this._out += "}".repeat(toClose) + this._n
     return this
   }
 
   func(name: Name, args: Code = nil, async?: boolean, funcBody?: Block): CodeGen {
-    this.#blocks.push(BlockKind.Func)
-    this.#out += `${async ? "async " : ""}function ${name}(${args}){` + this.#n
+    this._blocks.push(BlockKind.Func)
+    this._out += `${async ? "async " : ""}function ${name}(${args}){` + this._n
     if (funcBody) this.code(funcBody).endFunc()
     return this
   }
 
   endFunc(): CodeGen {
     const b = this._lastBlock
-    if (b !== BlockKind.Func) throw new Error('CodeGen: "endFunc" without "func"')
-    this.#blocks.pop()
-    this.#out += "}" + this.#n
+    if (b !== BlockKind.Func) throw new Error('CodeGen: "endFunc" wit_out "func"')
+    this._blocks.pop()
+    this._out += "}" + this._n
     return this
   }
 
   get _lastBlock(): BlockKind {
-    return this.#blocks[this._last()]
+    return this._blocks[this._last()]
   }
 
   set _lastBlock(b: BlockKind) {
-    this.#blocks[this._last()] = b
+    this._blocks[this._last()] = b
   }
 
   _last(): number {
-    const len = this.#blocks.length
+    const len = this._blocks.length
     if (len === 0) throw new Error("CodeGen: not in block")
     return len - 1
   }
