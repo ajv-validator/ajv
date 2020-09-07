@@ -14,13 +14,17 @@ const fs = require("fs")
 
 for (const suite in testSuitePaths) {
   const p = testSuitePaths[suite]
-  const files = glob
-    .sync(`${p}{**/,}*.json`)
+  const files = glob.sync(`${p}{**/,}*.json`)
+  if (files.length === 0) {
+    console.error(`Missing folder ${p}\nTry: git submodule update --init\n`)
+    process.exit(1)
+  }
+  const code = files
     .map((f) => {
       const name = f.replace(p, "").replace(/\.json$/, "")
       const testPath = f.replace(/^spec/, "..")
       return `\n  {name: "${name}", test: require("${testPath}")},`
     })
     .reduce((list, f) => list + f)
-  fs.writeFileSync(`./spec/_json/${suite}.js`, `module.exports = [${files}\n]\n`)
+  fs.writeFileSync(`./spec/_json/${suite}.js`, `module.exports = [${code}\n]\n`)
 }
