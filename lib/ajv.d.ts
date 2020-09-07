@@ -137,7 +137,7 @@ declare namespace ajv {
     */
     errorsText(errors?: Array<ErrorObject> | null, options?: ErrorsTextOptions): string;
     errors?: Array<ErrorObject> | null;
-    _opts: any;
+    _opts: Options;
   }
 
   interface CustomLogger {
