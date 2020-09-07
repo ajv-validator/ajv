@@ -144,32 +144,50 @@ var coercionArrayRules = JSON.parse(JSON.stringify(coercionRules));
 coercionArrayRules.string.array = [
   { from: ['abc'], to: 'abc' },
   { from: [123], to: '123' },
+  { from: [true], to: 'true'},
+  { from: [null], to: ''},
+  { from: [{}], to: undefined },
   { from: ['abc', 'def'], to: undefined },
   { from: [], to: undefined }
 ];
 coercionArrayRules.number.array = [
   { from: [1.5], to: 1.5 },
-  { from: ['1.5'], to: 1.5 }
+  { from: ['1.5'], to: 1.5 },
+  { from: [true], to: 1 },
+  { from: [null], to: 0 },
+  { from: ['abc'], to: undefined },
+  { from: [{}], to: undefined },
 ];
 coercionArrayRules.integer.array =  [
   { from: [1], to: 1 },
   { from: ['1'], to: 1 },
   { from: [true], to: 1 },
-  { from: [null], to: 0 }
+  { from: [null], to: 0 },
+  { from: [1.5], to: undefined },
+  { from: ['abc'], to: undefined },
+  { from: [{}], to: undefined },
 ];
 coercionArrayRules.boolean.array =  [
   { from: [true], to: true },
   { from: ['true'], to: true },
-  { from: [1], to: true }
+  { from: [1], to: true },
+  { from: [null], to: false },
+  { from: ['abc'], to: undefined },
+  { from: [2], to: undefined },
+  { from: [{}], to: undefined },
 ];
 coercionArrayRules.null.array =  [
   { from: [null], to: null },
   { from: [''], to: null },
   { from: [0], to: null },
-  { from: [false], to: null }
+  { from: [false], to: null },
+  { from: ['abc'], to: undefined },
+  { from: [1], to: undefined },
+  { from: [true], to: undefined },
+  { from: [{}], to: undefined },
 ];
 coercionArrayRules.object.array =  [
-  {  from: [{}], to: undefined }
+  { from: [{}], to: undefined }
 ];
 
 coercionArrayRules.array = {
