@@ -1,18 +1,18 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
 
 describe("removeAdditional option", () => {
   it("should remove all additional properties", () => {
-    var ajv = new Ajv({removeAdditional: "all"})
+    const ajv = new Ajv({removeAdditional: "all"})
 
     ajv.addSchema({
       $id: "//test/fooBar",
       properties: {foo: {type: "string"}, bar: {type: "string"}},
     })
 
-    var object = {
+    const object = {
       foo: "foo",
       bar: "bar",
       baz: "baz-to-be-removed",
@@ -25,7 +25,7 @@ describe("removeAdditional option", () => {
   })
 
   it("should remove properties that would error when `additionalProperties = false`", () => {
-    var ajv = new Ajv({removeAdditional: true})
+    const ajv = new Ajv({removeAdditional: true})
 
     ajv.addSchema({
       $id: "//test/fooBar",
@@ -33,7 +33,7 @@ describe("removeAdditional option", () => {
       additionalProperties: false,
     })
 
-    var object = {
+    const object = {
       foo: "foo",
       bar: "bar",
       baz: "baz-to-be-removed",
@@ -46,9 +46,9 @@ describe("removeAdditional option", () => {
   })
 
   it("should remove properties that would error when `additionalProperties = false` (many properties, boolean schema)", () => {
-    var ajv = new Ajv({removeAdditional: true})
+    const ajv = new Ajv({removeAdditional: true})
 
-    var schema = {
+    const schema = {
       properties: {
         obj: {
           additionalProperties: false,
@@ -67,7 +67,7 @@ describe("removeAdditional option", () => {
       },
     }
 
-    var data = {
+    const data = {
       obj: {
         a: "valid",
         b: "should not be removed",
@@ -85,7 +85,7 @@ describe("removeAdditional option", () => {
   })
 
   it("should remove properties that would error when `additionalProperties` is a schema", () => {
-    var ajv = new Ajv({removeAdditional: "failing"})
+    const ajv = new Ajv({removeAdditional: "failing"})
 
     ajv.addSchema({
       $id: "//test/fooBar",
@@ -93,7 +93,7 @@ describe("removeAdditional option", () => {
       additionalProperties: {type: "string"},
     })
 
-    var object = {
+    let object = {
       foo: "foo",
       bar: "bar",
       baz: "baz-to-be-kept",

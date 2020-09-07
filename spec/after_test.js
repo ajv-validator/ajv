@@ -1,6 +1,6 @@
 "use strict"
 
-var should = require("./chai").should()
+const should = require("./chai").should()
 
 exports.error = function (res) {
   console.log("ajv options:", res.validator._opts)
@@ -13,7 +13,7 @@ exports.each = function (res) {
     should.equal(res.errors, null)
   } else {
     res.errors.should.be.an("array")
-    for (var i = 0; i < res.errors.length; i++) {
+    for (let i = 0; i < res.errors.length; i++) {
       res.errors[i].should.be.an("object")
     }
   }

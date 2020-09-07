@@ -1,12 +1,12 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
 
 describe("issue #485, order of type validation", () => {
   it("should validate types before keywords", () => {
-    var ajv = new Ajv({allErrors: true})
-    var validate = ajv.compile({
+    const ajv = new Ajv({allErrors: true})
+    const validate = ajv.compile({
       type: ["integer", "string"],
       required: ["foo"],
       minimum: 2,
@@ -23,9 +23,7 @@ describe("issue #485, order of type validation", () => {
 
     function checkErrors(expectedErrs) {
       validate.errors.should.have.length(expectedErrs.length)
-      expectedErrs.forEach((keyword, i) =>
-        validate.errors[i].keyword.should.equal(keyword)
-      )
+      expectedErrs.forEach((keyword, i) => validate.errors[i].keyword.should.equal(keyword))
     }
   })
 })

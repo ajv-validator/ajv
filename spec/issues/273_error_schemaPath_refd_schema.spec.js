@@ -1,6 +1,6 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
 
 describe.skip("issue #273, schemaPath in error in referenced schema", () => {
@@ -9,19 +9,19 @@ describe.skip("issue #273, schemaPath in error in referenced schema", () => {
     test(new Ajv({inlineRefs: false}))
 
     function test(ajv) {
-      var schema = {
+      const schema = {
         properties: {
           a: {$ref: "int"},
         },
       }
 
-      var referencedSchema = {
+      const referencedSchema = {
         id: "int",
         type: "integer",
       }
 
       ajv.addSchema(referencedSchema)
-      var validate = ajv.compile(schema)
+      const validate = ajv.compile(schema)
 
       validate({a: "foo"}).should.equal(false)
       validate.errors[0].schemaPath.should.equal("int#/type")

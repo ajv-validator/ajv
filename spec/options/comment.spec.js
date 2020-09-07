@@ -1,11 +1,11 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
 
 describe("$comment option", () => {
   describe("= true", () => {
-    var logCalls, consoleLog
+    let logCalls, consoleLog
 
     beforeEach(() => {
       consoleLog = console.log
@@ -21,7 +21,7 @@ describe("$comment option", () => {
     }
 
     it("should log the text from $comment keyword", () => {
-      var schema = {
+      const schema = {
         $comment: "object root",
         properties: {
           foo: {$comment: "property foo"},
@@ -29,11 +29,11 @@ describe("$comment option", () => {
         },
       }
 
-      var ajv = new Ajv({$comment: true})
-      var fullAjv = new Ajv({allErrors: true, $comment: true})
+      const ajv = new Ajv({$comment: true})
+      const fullAjv = new Ajv({allErrors: true, $comment: true})
 
       ;[ajv, fullAjv].forEach((_ajv) => {
-        var validate = _ajv.compile(schema)
+        const validate = _ajv.compile(schema)
 
         test({}, true, [["object root"]])
         test({foo: 1}, true, [["object root"], ["property foo"]])
@@ -52,14 +52,14 @@ describe("$comment option", () => {
   })
 
   describe("function hook", () => {
-    var hookCalls
+    let hookCalls
 
     function hook() {
       hookCalls.push(Array.prototype.slice.call(arguments))
     }
 
     it("should pass the text from $comment keyword to the hook", () => {
-      var schema = {
+      const schema = {
         $comment: "object root",
         properties: {
           foo: {$comment: "property foo"},
@@ -67,11 +67,11 @@ describe("$comment option", () => {
         },
       }
 
-      var ajv = new Ajv({$comment: hook})
-      var fullAjv = new Ajv({allErrors: true, $comment: hook})
+      const ajv = new Ajv({$comment: hook})
+      const fullAjv = new Ajv({allErrors: true, $comment: hook})
 
       ;[ajv, fullAjv].forEach((_ajv) => {
-        var validate = _ajv.compile(schema)
+        const validate = _ajv.compile(schema)
 
         test({}, true, [["object root", "#/$comment", schema]])
         test({foo: 1}, true, [

@@ -1,6 +1,6 @@
 "use strict"
 
-var Ajv = require("./ajv"),
+const Ajv = require("./ajv"),
   should = require("./chai").should(),
   stableStringify = require("fast-json-stable-stringify")
 
@@ -8,7 +8,7 @@ const codegen = require("../dist/compile/codegen")
 const {_} = codegen
 
 describe("Ajv", () => {
-  var ajv
+  let ajv
 
   beforeEach(() => {
     ajv = new Ajv()
@@ -20,7 +20,7 @@ describe("Ajv", () => {
 
   describe("compile method", () => {
     it("should compile schema and return validating function", () => {
-      var validate = ajv.compile({type: "integer"})
+      const validate = ajv.compile({type: "integer"})
       validate.should.be.a("function")
       validate(1).should.equal(true)
       validate(1.1).should.equal(false)
@@ -28,12 +28,12 @@ describe("Ajv", () => {
     })
 
     it("should cache compiled functions for the same schema", () => {
-      var v1 = ajv.compile({
+      const v1 = ajv.compile({
         $id: "//e.com/int.json",
         type: "integer",
         minimum: 1,
       })
-      var v2 = ajv.compile({
+      const v2 = ajv.compile({
         $id: "//e.com/int.json",
         minimum: 1,
         type: "integer",
@@ -57,8 +57,8 @@ describe("Ajv", () => {
     it("should throw if compiled schema has an invalid JavaScript code", () => {
       const _ajv = new Ajv({logger: false})
       _ajv.addKeyword({keyword: "even", code: badEvenCode})
-      var schema = {even: true}
-      var validate = _ajv.compile(schema)
+      let schema = {even: true}
+      const validate = _ajv.compile(schema)
       validate(2).should.equal(true)
       validate(3).should.equal(false)
 
@@ -68,7 +68,7 @@ describe("Ajv", () => {
       })
 
       function badEvenCode(cxt) {
-        var op = cxt.schema ? _`===` : _`!===` // invalid on purpose
+        const op = cxt.schema ? _`===` : _`!===` // invalid on purpose
         cxt.pass(_`${cxt.data} % 2 ${op} 0`)
       }
     })
@@ -130,7 +130,7 @@ describe("Ajv", () => {
   describe("addSchema method", () => {
     it("should add and compile schema with key", () => {
       ajv.addSchema({type: "integer"}, "int")
-      var validate = ajv.getSchema("int")
+      const validate = ajv.getSchema("int")
       validate.should.be.a("function")
 
       validate(1).should.equal(true)
@@ -170,8 +170,8 @@ describe("Ajv", () => {
         {$id: "//e.com/str.json", type: "string"},
       ])
 
-      var validate0 = ajv.getSchema("//e.com/int.json")
-      var validate1 = ajv.getSchema("//e.com/str.json")
+      const validate0 = ajv.getSchema("//e.com/int.json")
+      const validate1 = ajv.getSchema("//e.com/str.json")
 
       validate0(1).should.equal(true)
       validate0("1").should.equal(false)
@@ -230,7 +230,7 @@ describe("Ajv", () => {
     })
 
     it("should return instance of itself", () => {
-      var res = ajv.addSchema({type: "integer"}, "int")
+      const res = ajv.addSchema({type: "integer"}, "int")
       res.should.equal(ajv)
     })
   })
@@ -238,25 +238,25 @@ describe("Ajv", () => {
   describe("getSchema method", () => {
     it("should return compiled schema by key", () => {
       ajv.addSchema({type: "integer"}, "int")
-      var validate = ajv.getSchema("int")
+      const validate = ajv.getSchema("int")
       validate(1).should.equal(true)
       validate("1").should.equal(false)
     })
 
     it("should return compiled schema by id or ref", () => {
       ajv.addSchema({$id: "//e.com/int.json", type: "integer"})
-      var validate = ajv.getSchema("//e.com/int.json")
+      const validate = ajv.getSchema("//e.com/int.json")
       validate(1).should.equal(true)
       validate("1").should.equal(false)
     })
 
     it("should return compiled schema without key or with empty key", () => {
       ajv.addSchema({type: "integer"})
-      var validate = ajv.getSchema("")
+      const validate = ajv.getSchema("")
       validate(1).should.equal(true)
       validate("1").should.equal(false)
 
-      var v = ajv.getSchema()
+      const v = ajv.getSchema()
       v(1).should.equal(true)
       v("1").should.equal(false)
     })
@@ -270,7 +270,7 @@ describe("Ajv", () => {
         },
       })
 
-      var vInt = ajv.getSchema("http://e.com/types.json#/definitions/int")
+      const vInt = ajv.getSchema("http://e.com/types.json#/definitions/int")
       vInt(1).should.equal(true)
       vInt("1").should.equal(false)
     })
@@ -284,7 +284,7 @@ describe("Ajv", () => {
         },
       })
 
-      var vInt = ajv.getSchema("//e.com/types.json#/definitions/int")
+      const vInt = ajv.getSchema("//e.com/types.json#/definitions/int")
       vInt(1).should.equal(true)
       vInt("1").should.equal(false)
     })
@@ -298,7 +298,7 @@ describe("Ajv", () => {
         },
       })
 
-      var vInt = ajv.getSchema("http://e.com/types.json#int")
+      const vInt = ajv.getSchema("http://e.com/types.json#int")
       vInt(1).should.equal(true)
       vInt("1").should.equal(false)
     })
@@ -306,10 +306,10 @@ describe("Ajv", () => {
 
   describe("removeSchema method", () => {
     it("should remove schema by key", () => {
-      var schema = {type: "integer"},
+      const schema = {type: "integer"},
         str = stableStringify(schema)
       ajv.addSchema(schema, "int")
-      var v = ajv.getSchema("int")
+      const v = ajv.getSchema("int")
 
       v.should.be.a("function")
       ajv._cache.get(str).validate.should.equal(v)
@@ -320,11 +320,11 @@ describe("Ajv", () => {
     })
 
     it("should remove schema by id", () => {
-      var schema = {$id: "//e.com/int.json", type: "integer"},
+      const schema = {$id: "//e.com/int.json", type: "integer"},
         str = stableStringify(schema)
       ajv.addSchema(schema)
 
-      var v = ajv.getSchema("//e.com/int.json")
+      const v = ajv.getSchema("//e.com/int.json")
       v.should.be.a("function")
       ajv._cache.get(str).validate.should.equal(v)
 
@@ -334,7 +334,7 @@ describe("Ajv", () => {
     })
 
     it("should remove schema by schema object", () => {
-      var schema = {type: "integer"},
+      const schema = {type: "integer"},
         str = stableStringify(schema)
       ajv.addSchema(schema)
       ajv._cache.get(str).should.be.an("object")
@@ -343,7 +343,7 @@ describe("Ajv", () => {
     })
 
     it("should remove schema with id by schema object", () => {
-      var schema = {$id: "//e.com/int.json", type: "integer"},
+      const schema = {$id: "//e.com/int.json", type: "integer"},
         str = stableStringify(schema)
       ajv.addSchema(schema)
       ajv._cache.get(str).should.be.an("object")
@@ -360,12 +360,12 @@ describe("Ajv", () => {
     })
 
     it("should remove all schemas but meta-schemas if called without an arguments", () => {
-      var schema1 = {$id: "//e.com/int.json", type: "integer"},
+      const schema1 = {$id: "//e.com/int.json", type: "integer"},
         str1 = stableStringify(schema1)
       ajv.addSchema(schema1)
       ajv._cache.get(str1).should.be.an("object")
 
-      var schema2 = {type: "integer"},
+      const schema2 = {type: "integer"},
         str2 = stableStringify(schema2)
       ajv.addSchema(schema2)
       ajv._cache.get(str2).should.be.an("object")
@@ -376,17 +376,17 @@ describe("Ajv", () => {
     })
 
     it("should remove all schemas but meta-schemas with key/id matching pattern", () => {
-      var schema1 = {$id: "//e.com/int.json", type: "integer"},
+      const schema1 = {$id: "//e.com/int.json", type: "integer"},
         str1 = stableStringify(schema1)
       ajv.addSchema(schema1)
       ajv._cache.get(str1).should.be.an("object")
 
-      var schema2 = {$id: "str.json", type: "string"},
+      const schema2 = {$id: "str.json", type: "string"},
         str2 = stableStringify(schema2)
       ajv.addSchema(schema2, "//e.com/str.json")
       ajv._cache.get(str2).should.be.an("object")
 
-      var schema3 = {type: "integer"},
+      const schema3 = {type: "integer"},
         str3 = stableStringify(schema3)
       ajv.addSchema(schema3)
       ajv._cache.get(str3).should.be.an("object")
@@ -398,7 +398,7 @@ describe("Ajv", () => {
     })
 
     it("should return instance of itself", () => {
-      var res = ajv.addSchema({type: "integer"}, "int").removeSchema("int")
+      const res = ajv.addSchema({type: "integer"}, "int").removeSchema("int")
       res.should.equal(ajv)
     })
   })
@@ -427,12 +427,12 @@ describe("Ajv", () => {
     })
 
     it("should return instance of itself", () => {
-      var res = ajv.addFormat("identifier", /^[a-z_$][a-z0-9_$]*$/i)
+      const res = ajv.addFormat("identifier", /^[a-z_$][a-z0-9_$]*$/i)
       res.should.equal(ajv)
     })
 
     function testFormat() {
-      var validate = ajv.compile({format: "identifier"})
+      const validate = ajv.compile({format: "identifier"})
       validate("Abc1").should.equal(true)
       validate("123").should.equal(false)
       validate(123).should.equal(true)
@@ -447,7 +447,7 @@ describe("Ajv", () => {
           },
         })
 
-        var validate = ajv.compile({
+        const validate = ajv.compile({
           format: "positive",
         })
         validate(-2).should.equal(false)
@@ -465,7 +465,7 @@ describe("Ajv", () => {
           },
         })
 
-        var validate = ajv.compile({
+        const validate = ajv.compile({
           properties: {
             data: {format: {$data: "1/frmt"}},
             frmt: {type: "string"},
@@ -481,7 +481,7 @@ describe("Ajv", () => {
 
   describe("validateSchema method", () => {
     it("should validate schema against meta-schema", () => {
-      var valid = ajv.validateSchema({
+      let valid = ajv.validateSchema({
         $schema: "http://json-schema.org/draft-07/schema#",
         type: "number",
       })

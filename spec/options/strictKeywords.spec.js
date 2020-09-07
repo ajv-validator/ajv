@@ -1,17 +1,17 @@
 "use strict"
 
-var Ajv = require("../ajv")
-var should = require("../chai").should()
+const Ajv = require("../ajv")
+const should = require("../chai").should()
 
 describe("strict option with keywords (replaced strictKeywords)", () => {
   describe("strict = false", () => {
     it("should NOT throw an error or log a warning given an unknown keyword", () => {
-      var output = {}
-      var ajv = new Ajv({
+      const output = {}
+      const ajv = new Ajv({
         strict: false,
         logger: getLogger(output),
       })
-      var schema = {
+      const schema = {
         properties: {},
         unknownKeyword: 1,
       }
@@ -40,12 +40,12 @@ describe("strict option with keywords (replaced strictKeywords)", () => {
 
   describe('strict = "log"', () => {
     it("should log an error given an unknown keyword in the schema root", () => {
-      var output = {}
-      var ajv = new Ajv({
+      const output = {}
+      const ajv = new Ajv({
         strict: "log",
         logger: getLogger(output),
       })
-      var schema = {
+      const schema = {
         properties: {},
         unknownKeyword: 1,
       }

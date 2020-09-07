@@ -1,10 +1,10 @@
 "use strict"
 
-var Ajv = require("./ajv")
+const Ajv = require("./ajv")
 require("./chai").should()
 
 describe("boolean schemas", () => {
-  var ajvs
+  let ajvs
 
   before(() => {
     ajvs = [
@@ -30,7 +30,7 @@ describe("boolean schemas", () => {
 
     function test(boolSchema, valid) {
       return function (ajv) {
-        var validate = ajv.compile(boolSchema)
+        const validate = ajv.compile(boolSchema)
         testSchema(validate, valid)
       }
     }
@@ -51,7 +51,7 @@ describe("boolean schemas", () => {
 
     function test(boolSchema, valid) {
       return function (ajv) {
-        var schema = {
+        const schema = {
           type: "object",
           properties: {
             foo: boolSchema,
@@ -64,7 +64,7 @@ describe("boolean schemas", () => {
           },
         }
 
-        var validate = ajv.compile(schema)
+        const validate = ajv.compile(schema)
         validate({foo: 1, bar: {baz: 1}}).should.equal(valid)
         validate({foo: "1", bar: {baz: "1"}}).should.equal(valid)
         validate({foo: {}, bar: {baz: {}}}).should.equal(valid)
@@ -93,12 +93,12 @@ describe("boolean schemas", () => {
 
     function test(boolSchema, valid) {
       return function (ajv) {
-        var schema = {
+        let schema = {
           type: "array",
           items: boolSchema,
         }
 
-        var validate = ajv.compile(schema)
+        let validate = ajv.compile(schema)
         validate([1]).should.equal(valid)
         validate(["1"]).should.equal(valid)
         validate([{}]).should.equal(valid)
@@ -150,7 +150,7 @@ describe("boolean schemas", () => {
 
     function test(boolSchema, valid) {
       return function (ajv) {
-        var schema = {
+        const schema = {
           type: "object",
           dependencies: {
             foo: boolSchema,
@@ -163,7 +163,7 @@ describe("boolean schemas", () => {
           },
         }
 
-        var validate = ajv.compile(schema)
+        const validate = ajv.compile(schema)
         validate({foo: 1, bar: 1, baz: 1}).should.equal(valid)
         validate({foo: "1", bar: "1", baz: "1"}).should.equal(valid)
         validate({foo: {}, bar: {}, baz: {}}).should.equal(valid)
@@ -192,7 +192,7 @@ describe("boolean schemas", () => {
 
     function test(boolSchema, valid) {
       return function (ajv) {
-        var schema = {
+        const schema = {
           type: "object",
           patternProperties: {
             "^f": boolSchema,
@@ -205,7 +205,7 @@ describe("boolean schemas", () => {
           },
         }
 
-        var validate = ajv.compile(schema)
+        const validate = ajv.compile(schema)
         validate({foo: 1, bar: {baz: 1}}).should.equal(valid)
         validate({foo: "1", bar: {baz: "1"}}).should.equal(valid)
         validate({foo: {}, bar: {baz: {}}}).should.equal(valid)
@@ -234,12 +234,12 @@ describe("boolean schemas", () => {
 
     function test(boolSchema, valid) {
       return function (ajv) {
-        var schema = {
+        const schema = {
           type: "object",
           propertyNames: boolSchema,
         }
 
-        var validate = ajv.compile(schema)
+        const validate = ajv.compile(schema)
         validate({foo: 1}).should.equal(valid)
         validate({bar: 1}).should.equal(valid)
 
@@ -263,12 +263,12 @@ describe("boolean schemas", () => {
 
     function test(boolSchema, valid) {
       return function (ajv) {
-        var schema = {
+        const schema = {
           type: "array",
           contains: boolSchema,
         }
 
-        var validate = ajv.compile(schema)
+        const validate = ajv.compile(schema)
         validate([1]).should.equal(valid)
         validate(["foo"]).should.equal(valid)
         validate([{}]).should.equal(valid)
@@ -297,11 +297,11 @@ describe("boolean schemas", () => {
 
     function test(boolSchema, valid) {
       return function (ajv) {
-        var schema = {
+        const schema = {
           not: boolSchema,
         }
 
-        var validate = ajv.compile(schema)
+        const validate = ajv.compile(schema)
         testSchema(validate, valid)
       }
     }
@@ -322,11 +322,11 @@ describe("boolean schemas", () => {
 
     function test(boolSchema, valid) {
       return function (ajv) {
-        var schema = {
+        let schema = {
           allOf: [false, boolSchema],
         }
 
-        var validate = ajv.compile(schema)
+        let validate = ajv.compile(schema)
         testSchema(validate, false)
 
         schema = {
@@ -354,11 +354,11 @@ describe("boolean schemas", () => {
 
     function test(boolSchema, valid) {
       return function (ajv) {
-        var schema = {
+        let schema = {
           anyOf: [false, boolSchema],
         }
 
-        var validate = ajv.compile(schema)
+        let validate = ajv.compile(schema)
         testSchema(validate, valid)
 
         schema = {
@@ -386,11 +386,11 @@ describe("boolean schemas", () => {
 
     function test(boolSchema, valid) {
       return function (ajv) {
-        var schema = {
+        let schema = {
           oneOf: [false, boolSchema],
         }
 
-        var validate = ajv.compile(schema)
+        let validate = ajv.compile(schema)
         testSchema(validate, valid)
 
         schema = {
@@ -418,14 +418,14 @@ describe("boolean schemas", () => {
 
     function test(boolSchema, valid) {
       return function (ajv) {
-        var schema = {
+        const schema = {
           $ref: "#/definitions/bool",
           definitions: {
             bool: boolSchema,
           },
         }
 
-        var validate = ajv.compile(schema)
+        const validate = ajv.compile(schema)
         testSchema(validate, valid)
       }
     }

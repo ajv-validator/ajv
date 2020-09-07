@@ -1,0 +1,9 @@
+{
+  "extends": "..",
+  "include": ["."],
+  "compilerOptions": {
+    "outDir": ".distspec",
+    "types": ["node", "mocha"],
+    "noImplicitAny": false
+  }
+}

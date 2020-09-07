@@ -1,12 +1,12 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
 
 describe('issue #521, incorrect warning with "id" property', () => {
   it("should not log warning", () => {
-    var ajv = new Ajv()
-    var consoleWarn = console.warn
+    const ajv = new Ajv()
+    const consoleWarn = console.warn
     console.warn = () => {
       throw new Error("should not log warning")
     }

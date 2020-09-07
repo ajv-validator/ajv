@@ -1,17 +1,17 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
 
 describe("issue #204, options schemas and $data used together", () => {
   it("should use v5 metaschemas by default", () => {
-    var ajv = new Ajv({
+    const ajv = new Ajv({
       schemas: [{$id: "str", type: "string"}],
       $data: true,
     })
 
-    var schema = {const: 42}
-    var validate = ajv.compile(schema)
+    const schema = {const: 42}
+    const validate = ajv.compile(schema)
 
     validate(42).should.equal(true)
     validate(43).should.equal(false)

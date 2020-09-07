@@ -1,7 +1,7 @@
 "use strict"
 
-var Ajv = require("../ajv")
-var should = require("../chai").should()
+const Ajv = require("../ajv")
+const should = require("../chai").should()
 
 describe("code generation options", () => {
   describe("sourceCode", () => {
@@ -10,7 +10,7 @@ describe("code generation options", () => {
         test(new Ajv({sourceCode: true}))
 
         function test(ajv) {
-          var validate = ajv.compile({type: "number"})
+          const validate = ajv.compile({type: "number"})
           validate.source.code.should.be.a("string")
         }
       })
@@ -22,7 +22,7 @@ describe("code generation options", () => {
         test(new Ajv({sourceCode: false}))
 
         function test(ajv) {
-          var validate = ajv.compile({type: "number"})
+          const validate = ajv.compile({type: "number"})
           should.not.exist(validate.source)
           should.not.exist(validate.sourceCode)
         }
@@ -32,14 +32,14 @@ describe("code generation options", () => {
 
   describe("processCode", () => {
     it("should process generated code", () => {
-      var ajv = new Ajv()
-      var validate = ajv.compile({type: "string"})
+      const ajv = new Ajv()
+      let validate = ajv.compile({type: "string"})
       // TODO re-enable this test when option to strip whitespace is added
       // validate.toString().split("\n").length.should.equal(1)
       const unprocessedLines = validate.toString().split("\n").length
 
-      var beautify = require("js-beautify").js_beautify
-      var ajvPC = new Ajv({processCode: beautify})
+      const beautify = require("js-beautify").js_beautify
+      const ajvPC = new Ajv({processCode: beautify})
       validate = ajvPC.compile({type: "string"})
       validate.toString().split("\n").length.should.be.above(unprocessedLines)
       validate("foo").should.equal(true)
@@ -48,7 +48,7 @@ describe("code generation options", () => {
   })
 
   describe("passContext option", () => {
-    var ajv, contexts
+    let ajv, contexts
 
     beforeEach(() => {
       contexts = []
@@ -56,8 +56,8 @@ describe("code generation options", () => {
 
     describe("= true", () => {
       it("should pass this value as context to user-defined keyword validation function", () => {
-        var validate = getValidate(true)
-        var self = {}
+        const validate = getValidate(true)
+        const self = {}
         validate.call(self, {})
         contexts.should.have.length(4)
         contexts.forEach((ctx) => ctx.should.equal(self))
@@ -66,8 +66,8 @@ describe("code generation options", () => {
 
     describe("= false", () => {
       it("should pass ajv instance as context to user-defined keyword validation function", () => {
-        var validate = getValidate(false)
-        var self = {}
+        const validate = getValidate(false)
+        const self = {}
         validate.call(self, {})
         contexts.should.have.length(4)
         contexts.forEach((ctx) => ctx.should.equal(ajv))
@@ -79,7 +79,7 @@ describe("code generation options", () => {
       ajv.addKeyword({keyword: "testValidate", validate: storeContext})
       ajv.addKeyword({keyword: "testCompile", compile: compileTestValidate})
 
-      var schema = {
+      const schema = {
         definitions: {
           test1: {
             testValidate: true,

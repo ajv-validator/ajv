@@ -1,11 +1,11 @@
 "use strict"
 
-var Ajv = require("./ajv"),
+const Ajv = require("./ajv"),
   should = require("./chai").should(),
   getAjvInstances = require("./ajv_instances")
 
 describe("resolve", () => {
-  var instances
+  let instances
 
   beforeEach(() => {
     instances = getAjvInstances({
@@ -18,7 +18,7 @@ describe("resolve", () => {
   describe("resolve.ids method", () => {
     it("should resolve ids in schema", () => {
       // Example from http://json-schema.org/latest/json-schema-core.html#anchor29
-      var schema = {
+      const schema = {
         $id: "http://x.y.z/rootschema.json#",
         $defs: {
           schema1: {
@@ -58,8 +58,8 @@ describe("resolve", () => {
       }
 
       instances.forEach((ajv) => {
-        var validate = ajv.compile(schema)
-        var data = {foo: 1, bar: "abc", baz: true, bax: null}
+        const validate = ajv.compile(schema)
+        const data = {foo: 1, bar: "abc", baz: true, bax: null}
         validate(data).should.equal(true)
       })
     })
@@ -95,7 +95,7 @@ describe("resolve", () => {
     })
 
     it("should resolve ids defined as urn's (issue #423)", () => {
-      var schema = {
+      const schema = {
         type: "object",
         properties: {
           ip1: {
@@ -110,12 +110,12 @@ describe("resolve", () => {
         required: ["ip1", "ip2"],
       }
 
-      var data = {
+      const data = {
         ip1: "0.0.0.0",
         ip2: "0.0.0.0",
       }
       instances.forEach((ajv) => {
-        var validate = ajv.compile(schema)
+        const validate = ajv.compile(schema)
         validate(data).should.equal(true)
       })
     })
@@ -124,7 +124,7 @@ describe("resolve", () => {
   describe("protocol-relative URIs", () => {
     it("should resolve fragment", () => {
       instances.forEach((ajv) => {
-        var schema = {
+        const schema = {
           $id: "//e.com/types",
           definitions: {
             int: {type: "integer"},
@@ -132,7 +132,7 @@ describe("resolve", () => {
         }
 
         ajv.addSchema(schema)
-        var validate = ajv.compile({$ref: "//e.com/types#/definitions/int"})
+        const validate = ajv.compile({$ref: "//e.com/types#/definitions/int"})
         validate(1).should.equal(true)
         validate("foo").should.equal(false)
       })
@@ -203,7 +203,7 @@ describe("resolve", () => {
   })
 
   describe("inline referenced schemas without refs in them", () => {
-    var schemas = [
+    const schemas = [
       {$id: "http://e.com/obj.json#", properties: {a: {$ref: "int.json#"}}},
       {$id: "http://e.com/int.json#", type: "integer", minimum: 2, maximum: 4},
       {
@@ -215,29 +215,29 @@ describe("resolve", () => {
     ]
 
     it("by default should inline schema if it doesn't contain refs", () => {
-      var ajv = new Ajv({schemas: schemas})
+      const ajv = new Ajv({schemas: schemas})
       testSchemas(ajv, true)
     })
 
     it("should NOT inline schema if option inlineRefs == false", () => {
-      var ajv = new Ajv({schemas: schemas, inlineRefs: false})
+      const ajv = new Ajv({schemas: schemas, inlineRefs: false})
       testSchemas(ajv, false)
     })
 
     it("should inline schema if option inlineRefs is bigger than number of keys in referenced schema", () => {
-      var ajv = new Ajv({schemas: schemas, inlineRefs: 4})
+      const ajv = new Ajv({schemas: schemas, inlineRefs: 4})
       testSchemas(ajv, true)
     })
 
     it("should NOT inline schema if option inlineRefs is less than number of keys in referenced schema", () => {
-      var ajv = new Ajv({schemas: schemas, inlineRefs: 2})
+      const ajv = new Ajv({schemas: schemas, inlineRefs: 2})
       testSchemas(ajv, false)
     })
 
     it("should avoid schema substitution when refs are inlined (issue #77)", () => {
-      var ajv = new Ajv({verbose: true})
+      const ajv = new Ajv({verbose: true})
 
-      var schemaMessage = {
+      const schemaMessage = {
         $schema: "http://json-schema.org/draft-07/schema#",
         $id: "http://e.com/message.json#",
         type: "object",
@@ -250,7 +250,7 @@ describe("resolve", () => {
       }
 
       // header schema
-      var schemaHeader = {
+      const schemaHeader = {
         $schema: "http://json-schema.org/draft-07/schema#",
         $id: "http://e.com/header.json#",
         type: "object",
@@ -265,7 +265,7 @@ describe("resolve", () => {
       }
 
       // a good message
-      var validMessage = {
+      const validMessage = {
         header: {
           version: 4,
           msgType: 0,
@@ -273,7 +273,7 @@ describe("resolve", () => {
       }
 
       // a bad message
-      var invalidMessage = {
+      const invalidMessage = {
         header: {
           version: 6,
           msgType: 0,
@@ -283,7 +283,7 @@ describe("resolve", () => {
       // add schemas and get validator function
       ajv.addSchema(schemaHeader)
       ajv.addSchema(schemaMessage)
-      var v = ajv.getSchema("http://e.com/message.json#")
+      const v = ajv.getSchema("http://e.com/message.json#")
 
       v(validMessage).should.equal(true)
       v.schema.$id.should.equal("http://e.com/message.json#")
@@ -297,7 +297,7 @@ describe("resolve", () => {
     })
 
     function testSchemas(ajv, expectedInlined) {
-      var v1 = ajv.getSchema("http://e.com/obj.json"),
+      const v1 = ajv.getSchema("http://e.com/obj.json"),
         v2 = ajv.getSchema("http://e.com/obj1.json"),
         v3 = ajv.getSchema("http://e.com/list.json")
       testObjSchema(v1)
@@ -321,7 +321,7 @@ describe("resolve", () => {
     }
 
     function testInlined(validate, expectedInlined) {
-      var inlined = !/refVal/.test(validate.toString())
+      const inlined = !/refVal/.test(validate.toString())
       inlined.should.equal(expectedInlined)
     }
   })

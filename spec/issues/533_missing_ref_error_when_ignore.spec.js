@@ -1,10 +1,10 @@
 "use strict"
 
-var Ajv = require("../ajv")
-var should = require("../chai").should()
+const Ajv = require("../ajv")
+const should = require("../chai").should()
 
 describe('issue #533, throwing missing ref exception with option missingRefs: "ignore"', () => {
-  var schema = {
+  const schema = {
     type: "object",
     properties: {
       foo: {$ref: "#/definitions/missing"},
@@ -13,14 +13,14 @@ describe('issue #533, throwing missing ref exception with option missingRefs: "i
   }
 
   it("should pass validation without throwing exception", () => {
-    var ajv = new Ajv({missingRefs: "ignore", logger: false})
-    var validate = ajv.compile(schema)
+    const ajv = new Ajv({missingRefs: "ignore", logger: false})
+    const validate = ajv.compile(schema)
     validate({foo: "anything"}).should.equal(true)
     validate({foo: "anything", bar: "whatever"}).should.equal(true)
   })
 
   it("should throw exception during schema compilation with option missingRefs: true", () => {
-    var ajv = new Ajv()
+    const ajv = new Ajv()
     should.throw(() => {
       ajv.compile(schema)
     })

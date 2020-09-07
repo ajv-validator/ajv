@@ -1,13 +1,13 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
 
 describe("issue #743, property __proto__ should be removed with removeAdditional option", () => {
   it("should remove additional properties", () => {
-    var ajv = new Ajv({removeAdditional: true})
+    const ajv = new Ajv({removeAdditional: true})
 
-    var schema = {
+    const schema = {
       properties: {
         obj: {
           additionalProperties: false,
@@ -26,13 +26,13 @@ describe("issue #743, property __proto__ should be removed with removeAdditional
       },
     }
 
-    var obj = Object.create(null)
+    const obj = Object.create(null)
     obj.__proto__ = null // should be removed
     obj.additional = "will be removed"
     obj.a = "valid"
     obj.b = "valid"
 
-    var data = {obj: obj}
+    const data = {obj: obj}
 
     ajv.validate(schema, data).should.equal(true)
     Object.keys(data.obj).should.eql(["a", "b"])

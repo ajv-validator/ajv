@@ -1,15 +1,15 @@
-"use strict"
+import {ErrorObject, SchemaObject, SchemaValidateFunction} from "../lib/types"
+// currently most tests include compiled code, if any code re-compiled locally, instanceof would fail
+import {_, nil} from "../dist/compile/codegen"
 
-var getAjvInstances = require("./ajv_instances"),
+const getAjvInstances = require("./ajv_instances"),
   should = require("./chai").should(),
   equal = require("../dist/compile/equal")
 
-const Ajv = require("..")
-const codegen = require("../dist/compile/codegen")
-const {_, nil} = codegen
+const Ajv = require("./ajv")
 
 describe("User-defined keywords", () => {
-  var ajv, instances
+  let ajv, instances
 
   beforeEach(() => {
     instances = getAjvInstances({
@@ -87,22 +87,23 @@ describe("User-defined keywords", () => {
       })
 
       it('should allow defining errors for "validate" keyword', () => {
+        const validateRange: SchemaValidateFunction = _validateRange
         testRangeKeyword({keyword: "x-range", type: "number", validate: validateRange}, true)
 
-        function validateRange(schema, data, parentSchema) {
+        function _validateRange(schema, data, parentSchema) {
           validateRangeSchema(schema, parentSchema)
-          var min = schema[0],
+          const min = schema[0],
             max = schema[1],
             exclusive = parentSchema.exclusiveRange === true
 
-          var minOk = exclusive ? data > min : data >= min
-          var maxOk = exclusive ? data < max : data <= max
-          var valid = minOk && maxOk
+          const minOk = exclusive ? data > min : data >= min
+          const maxOk = exclusive ? data < max : data <= max
+          const valid = minOk && maxOk
 
           if (!valid) {
-            var err = {keyword: "x-range"}
+            const err: Partial<ErrorObject> = {keyword: "x-range"}
             validateRange.errors = [err]
-            var comparison, limit
+            let comparison, limit
             if (minOk) {
               comparison = exclusive ? "<" : "<="
               limit = max
@@ -223,8 +224,8 @@ describe("User-defined keywords", () => {
     function compileRange(schema, parentSchema) {
       validateRangeSchema(schema, parentSchema)
 
-      var min = schema[0]
-      var max = schema[1]
+      const min = schema[0]
+      const max = schema[1]
 
       return parentSchema.exclusiveRange === true
         ? (data) => data > min && data < max
@@ -257,10 +258,10 @@ describe("User-defined keywords", () => {
       instances.forEach((_ajv) => {
         _ajv.addKeyword({
           keyword: "macroRef",
-          macro: function (schema, parentSchema, it) {
+          macro: function (schema, _parentSchema, it) {
             it.baseId.should.equal("#")
-            var ref = schema.$ref
-            var validate = _ajv.getSchema(ref)
+            const ref = schema.$ref
+            const validate = _ajv.getSchema(ref)
             if (validate) return validate.schema
             throw new ajv.constructor.MissingRefError(it.baseId, ref)
           },
@@ -275,7 +276,7 @@ describe("User-defined keywords", () => {
             },
           },
         })
-        var schema = {
+        const schema = {
           macroRef: {
             $ref: "#/definitions/schema",
           },
@@ -285,10 +286,7 @@ describe("User-defined keywords", () => {
             },
           },
         }
-        var validate
-        ;(function compileMacroRef() {
-          validate = _ajv.compile(schema)
-        }.should.not.throw())
+        const validate = _ajv.compile(schema)
         shouldBeValid(validate, "foo")
         shouldBeInvalid(validate, 1, 2)
       })
@@ -303,7 +301,7 @@ describe("User-defined keywords", () => {
         })
         _ajv.addKeyword({keyword: "range", type: "number", macro: macroRange})
 
-        var schema = {
+        const schema = {
           deepProperties: {
             "a.b.c": {type: "number", range: [2, 4]},
             "d.e.f.g": {type: "string"},
@@ -355,7 +353,7 @@ describe("User-defined keywords", () => {
         }
         */
 
-        var validate = _ajv.compile(schema)
+        const validate = _ajv.compile(schema)
 
         shouldBeValid(validate, {
           a: {b: {c: 3}},
@@ -394,15 +392,15 @@ describe("User-defined keywords", () => {
             throw new Error("schema of deepProperty should be an object")
           }
 
-          var expanded = []
+          const expanded: any[] = []
 
-          for (var prop in _schema) {
-            var path = prop.split(".")
-            var properties = {}
+          for (const prop in _schema) {
+            const path = prop.split(".")
+            const properties = {}
             if (path.length === 1) {
               properties[prop] = _schema[prop]
             } else {
-              var deepProperties = {}
+              const deepProperties = {}
               deepProperties[path.slice(1).join(".")] = _schema[prop]
               properties[path[0]] = {deepProperties: deepProperties}
             }
@@ -419,13 +417,13 @@ describe("User-defined keywords", () => {
         _ajv.addKeyword({keyword: "range", type: "number", macro: macroRange})
         _ajv.addKeyword({keyword: "even", type: "number", macro: macroEven})
 
-        var schema = {
+        const schema = {
           range: [4, 6],
           even: true,
         }
 
-        var validate = _ajv.compile(schema)
-        var numErrors = _ajv._opts.allErrors ? 4 : 2
+        const validate = _ajv.compile(schema)
+        const numErrors = _ajv._opts.allErrors ? 4 : 2
 
         shouldBeInvalid(validate, 2, 2)
         shouldBeInvalid(validate, 3, numErrors)
@@ -441,12 +439,12 @@ describe("User-defined keywords", () => {
       instances.forEach((_ajv) => {
         _ajv.addKeyword({keyword: "range", type: "number", macro: macroRange})
 
-        var schema = {
+        const schema = {
           range: [1, 4],
           minimum: 2.5,
         }
 
-        var validate = _ajv.compile(schema)
+        const validate = _ajv.compile(schema)
 
         shouldBeValid(validate, 3)
         shouldBeInvalid(validate, 2)
@@ -457,11 +455,11 @@ describe("User-defined keywords", () => {
       instances.forEach((_ajv) => {
         _ajv.addKeyword({keyword: "range", type: "number", macro: macroRange})
 
-        var schema = {
+        const schema = {
           allOf: [{range: [4, 8]}, {range: [2, 6]}],
         }
 
-        var validate = _ajv.compile(schema)
+        const validate = _ajv.compile(schema)
 
         shouldBeInvalid(validate, 2, 2)
         shouldBeInvalid(validate, 3, 2)
@@ -479,7 +477,7 @@ describe("User-defined keywords", () => {
         _ajv.addKeyword({keyword: "exclusiveRange", metaSchema: {type: "boolean"}})
         _ajv.addKeyword({keyword: "myContains", type: "array", macro: macroContains})
 
-        var schema = {
+        const schema = {
           myContains: {
             type: "number",
             range: [4, 7],
@@ -487,7 +485,7 @@ describe("User-defined keywords", () => {
           },
         }
 
-        var validate = _ajv.compile(schema)
+        const validate = _ajv.compile(schema)
 
         shouldBeInvalid(validate, [1, 2, 3], 2)
         shouldBeInvalid(validate, [2, 3, 4], 2)
@@ -504,7 +502,7 @@ describe("User-defined keywords", () => {
 
     it("should throw exception if macro expansion is an invalid schema", () => {
       ajv.addKeyword({keyword: "invalid", macro: macroInvalid})
-      var schema = {invalid: true}
+      const schema = {invalid: true}
 
       should.throw(() => {
         ajv.compile(schema)
@@ -527,7 +525,7 @@ describe("User-defined keywords", () => {
 
     function macroRange(schema, parentSchema) {
       validateRangeSchema(schema, parentSchema)
-      var exclusive = !!parentSchema.exclusiveRange
+      const exclusive = !!parentSchema.exclusiveRange
 
       return exclusive
         ? {exclusiveMinimum: schema[0], exclusiveMaximum: schema[1]}
@@ -622,7 +620,7 @@ describe("User-defined keywords", () => {
     })
 
     it('should validate rule with "compile" and "validate" funcs', () => {
-      var compileCalled
+      let compileCalled
       testEvenKeyword$data({
         keyword: "x-even-$data",
         type: "number",
@@ -654,7 +652,7 @@ describe("User-defined keywords", () => {
     })
 
     it('should validate with "compile" and "validate" funcs with meta-schema', () => {
-      var compileCalled
+      let compileCalled
       testEvenKeyword$data({
         keyword: "x-even-$data",
         type: "number",
@@ -684,7 +682,7 @@ describe("User-defined keywords", () => {
     })
 
     it('should validate rule with "macro" and "validate" funcs', () => {
-      var macroCalled
+      let macroCalled
       testEvenKeyword$data(
         {
           keyword: "x-even-$data",
@@ -711,7 +709,7 @@ describe("User-defined keywords", () => {
     })
 
     it('should validate with "macro" and "validate" funcs with meta-schema', () => {
-      var macroCalled
+      let macroCalled
       testEvenKeyword$data(
         {
           keyword: "x-even-$data",
@@ -730,7 +728,7 @@ describe("User-defined keywords", () => {
         return data % 2 ? !schema : schema
       }
 
-      function macroEven(schema) {
+      function macroEven(schema): SchemaObject | void {
         macroCalled = true
         if (schema === true) return {multipleOf: 2}
         if (schema === false) return {not: {multipleOf: 2}}
@@ -793,11 +791,11 @@ describe("User-defined keywords", () => {
     })
   })
 
-  function testEvenKeyword(evenDefinition, numErrors) {
+  function testEvenKeyword(evenDefinition, numErrors = 1) {
     instances.forEach((_ajv) => {
       _ajv.addKeyword(evenDefinition)
-      var schema = {"x-even": true}
-      var validate = _ajv.compile(schema)
+      const schema = {"x-even": true}
+      const validate = _ajv.compile(schema)
 
       shouldBeValid(validate, 2)
       shouldBeValid(validate, "abc")
@@ -806,12 +804,12 @@ describe("User-defined keywords", () => {
     })
   }
 
-  function testEvenKeyword$data(definition, numErrors) {
+  function testEvenKeyword$data(definition, numErrors = 1) {
     instances.forEach((_ajv) => {
       _ajv.addKeyword(definition)
 
-      var schema = {"x-even-$data": true}
-      var validate = _ajv.compile(schema)
+      let schema: any = {"x-even-$data": true}
+      let validate = _ajv.compile(schema)
 
       shouldBeValid(validate, 2)
       shouldBeValid(validate, "abc")
@@ -843,12 +841,12 @@ describe("User-defined keywords", () => {
     })
   }
 
-  function testConstantKeyword(definition, numErrors) {
+  function testConstantKeyword(definition, numErrors?: number) {
     instances.forEach((_ajv) => {
       _ajv.addKeyword(definition)
 
-      var schema = {myConstant: "abc"}
-      var validate = _ajv.compile(schema)
+      const schema = {myConstant: "abc"}
+      const validate = _ajv.compile(schema)
 
       shouldBeValid(validate, "abc")
       shouldBeInvalid(validate, 2, numErrors)
@@ -856,11 +854,11 @@ describe("User-defined keywords", () => {
     })
   }
 
-  function testMultipleConstantKeyword(definition, numErrors) {
+  function testMultipleConstantKeyword(definition, numErrors?: number) {
     instances.forEach((_ajv) => {
       _ajv.addKeyword(definition)
 
-      var schema = {
+      const schema = {
         properties: {
           a: {"x-constant": 1},
           b: {"x-constant": 1},
@@ -868,7 +866,7 @@ describe("User-defined keywords", () => {
         additionalProperties: {"x-constant": {foo: "bar"}},
         items: {"x-constant": {foo: "bar"}},
       }
-      var validate = _ajv.compile(schema)
+      const validate = _ajv.compile(schema)
 
       shouldBeValid(validate, {a: 1, b: 1})
       shouldBeInvalid(validate, {a: 2, b: 1}, numErrors)
@@ -883,13 +881,13 @@ describe("User-defined keywords", () => {
     })
   }
 
-  function testRangeKeyword(definition, createsErrors, numErrors) {
+  function testRangeKeyword(definition, createsErrors?: boolean, numErrors?: number) {
     instances.forEach((_ajv) => {
       _ajv.addKeyword(definition)
       _ajv.addKeyword({keyword: "exclusiveRange", schemaType: "boolean"})
 
-      var schema = {"x-range": [2, 4]}
-      var validate = _ajv.compile(schema)
+      let schema: SchemaObject = {"x-range": [2, 4]}
+      let validate = _ajv.compile(schema)
 
       shouldBeValid(validate, 2)
       shouldBeValid(validate, 3)
@@ -930,12 +928,12 @@ describe("User-defined keywords", () => {
     })
   }
 
-  function testMultipleRangeKeyword(definition, numErrors) {
+  function testMultipleRangeKeyword(definition, numErrors?: number) {
     instances.forEach((_ajv) => {
       _ajv.addKeyword(definition)
       _ajv.addKeyword({keyword: "exclusiveRange", schemaType: "boolean"})
 
-      var schema = {
+      const schema = {
         properties: {
           a: {"x-range": [2, 4], exclusiveRange: true},
           b: {"x-range": [2, 4], exclusiveRange: false},
@@ -943,7 +941,7 @@ describe("User-defined keywords", () => {
         additionalProperties: {"x-range": [5, 7]},
         items: {"x-range": [5, 7]},
       }
-      var validate = _ajv.compile(schema)
+      const validate = _ajv.compile(schema)
 
       shouldBeValid(validate, {a: 3.99, b: 4})
       shouldBeInvalid(validate, {a: 4, b: 4}, numErrors)
@@ -956,7 +954,7 @@ describe("User-defined keywords", () => {
     })
   }
 
-  function shouldBeRangeError(error, dataPath, schemaPath, comparison, limit, exclusive) {
+  function shouldBeRangeError(error, dataPath, schemaPath, comparison, limit, exclusive?: boolean) {
     delete error.schema
     delete error.data
     error.should.eql({
@@ -973,7 +971,7 @@ describe("User-defined keywords", () => {
   }
 
   function validateRangeSchema(schema, parentSchema) {
-    var schemaValid =
+    const schemaValid =
       Array.isArray(schema) &&
       schema.length === 2 &&
       typeof schema[0] == "number" &&
@@ -982,7 +980,7 @@ describe("User-defined keywords", () => {
       throw new Error("Invalid schema for range keyword, should be array of 2 numbers")
     }
 
-    var exclusiveRangeSchemaValid =
+    const exclusiveRangeSchemaValid =
       parentSchema.exclusiveRange === undefined || typeof parentSchema.exclusiveRange == "boolean"
     if (!exclusiveRangeSchemaValid) {
       throw new Error("Invalid schema for exclusiveRange keyword, should be boolean")
@@ -994,9 +992,9 @@ describe("User-defined keywords", () => {
     should.not.exist(validate.errors)
   }
 
-  function shouldBeInvalid(validate, data, numErrors) {
+  function shouldBeInvalid(validate, data, numErrors = 1) {
     validate(data).should.equal(false)
-    validate.errors.should.have.length(numErrors || 1)
+    validate.errors.should.have.length(numErrors)
   }
 
   function shouldBeInvalidSchema(schema) {
@@ -1008,7 +1006,7 @@ describe("User-defined keywords", () => {
   }
 
   describe("addKeyword method", () => {
-    var TEST_TYPES = [undefined, "number", "string", "boolean", ["number", "string"]]
+    const TEST_TYPES = [undefined, "number", "string", "boolean", ["number", "string"]]
 
     it("should throw if defined keyword is passed", () => {
       testThrow(["minimum", "maximum", "multipleOf", "minLength", "maxLength"])
@@ -1059,7 +1057,7 @@ describe("User-defined keywords", () => {
     })
 
     it("should return instance of itself", () => {
-      var res = ajv.addKeyword("any")
+      const res = ajv.addKeyword("any")
       res.should.equal(ajv)
     })
 
@@ -1097,7 +1095,7 @@ describe("User-defined keywords", () => {
 
     // TODO change to account for pre-defined keywords with definitions
     it("should return keyword definition", () => {
-      var definition = {
+      const definition = {
         keyword: "mykeyword",
         validate: () => true,
       }
@@ -1117,9 +1115,9 @@ describe("User-defined keywords", () => {
         validate: (_schema, data) => data > 0,
       })
 
-      var schema = {positive: true}
+      const schema = {positive: true}
 
-      var validate = ajv.compile(schema)
+      let validate = ajv.compile(schema)
       validate(0).should.equal(false)
       validate(1).should.equal(true)
 
@@ -1127,7 +1125,7 @@ describe("User-defined keywords", () => {
         ajv.addKeyword({
           keyword: "positive",
           type: "number",
-          validate: function (sch, data) {
+          validate: function (_sch, data) {
             return data >= 0
           },
         })
@@ -1142,7 +1140,7 @@ describe("User-defined keywords", () => {
       ajv.addKeyword({
         keyword: "positive",
         type: "number",
-        validate: function (sch, data) {
+        validate: function (_sch, data) {
           return data >= 0
         },
       })
@@ -1156,8 +1154,8 @@ describe("User-defined keywords", () => {
     it("should remove and allow redefining standard keyword", () => {
       ajv = new Ajv({strict: false})
 
-      var schema = {minimum: 1}
-      var validate = ajv.compile(schema)
+      const schema = {minimum: 1}
+      let validate = ajv.compile(schema)
       validate(0).should.equal(false)
       validate(1).should.equal(true)
       validate(2).should.equal(true)
@@ -1185,7 +1183,7 @@ describe("User-defined keywords", () => {
     })
 
     it("should return instance of itself", () => {
-      var res = ajv.addKeyword("any").removeKeyword("any")
+      const res = ajv.addKeyword("any").removeKeyword("any")
       res.should.equal(ajv)
     })
   })
@@ -1202,8 +1200,8 @@ describe("User-defined keywords", () => {
     })
 
     function testModifying(withOption) {
-      var collectionFormat = {
-        csv: function (data, dataPath, parentData, parentDataProperty) {
+      const collectionFormat = {
+        csv: function (data, _dataPath, parentData, parentDataProperty) {
           parentData[parentDataProperty] = data.split(",")
           return true
         },
@@ -1221,7 +1219,7 @@ describe("User-defined keywords", () => {
         },
       })
 
-      var validate = ajv.compile({
+      const validate = ajv.compile({
         type: "object",
         properties: {
           foo: {
@@ -1237,7 +1235,7 @@ describe("User-defined keywords", () => {
         additionalProperties: false,
       })
 
-      var obj = {foo: "bar,baz,quux"}
+      const obj: any = {foo: "bar,baz,quux"}
 
       validate(obj).should.equal(true)
       obj.should.eql({foo: ["bar", "baz", "quux"]})
@@ -1281,14 +1279,14 @@ describe("User-defined keywords", () => {
         ajv.compile(invalidSchema)
       })
 
-      var schema = {
+      const schema = {
         properties: {
           foo: true,
         },
         allRequired: true,
       }
 
-      var v = ajv.compile(schema)
+      const v = ajv.compile(schema)
       v({foo: 1}).should.equal(true)
       v({}).should.equal(false)
     })

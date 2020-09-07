@@ -1,6 +1,6 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
 
 describe("issue #181, user-defined keyword is not validated in allErrors mode if there were previous error", () => {
@@ -36,16 +36,16 @@ describe("issue #181, user-defined keyword is not validated in allErrors mode if
   })
 
   function testKeywordErrors(def) {
-    var ajv = new Ajv({allErrors: true})
+    const ajv = new Ajv({allErrors: true})
 
     ajv.addKeyword(def)
 
-    var schema = {
+    const schema = {
       required: ["foo"],
       alwaysFails: true,
     }
 
-    var validate = ajv.compile(schema)
+    const validate = ajv.compile(schema)
 
     validate({foo: 1}).should.equal(false)
     validate.errors.should.have.length(1)

@@ -1,7 +1,7 @@
 "use strict"
 
-var Ajv = require("../ajv")
-var should = require("../chai").should()
+const Ajv = require("../ajv")
+const should = require("../chai").should()
 
 describe("reporting options", () => {
   describe("verbose", () => {
@@ -10,13 +10,13 @@ describe("reporting options", () => {
       testVerbose(new Ajv({verbose: true, allErrors: true}))
 
       function testVerbose(ajv) {
-        var schema = {properties: {foo: {minimum: 5}}}
-        var validate = ajv.compile(schema)
+        const schema = {properties: {foo: {minimum: 5}}}
+        const validate = ajv.compile(schema)
 
-        var data = {foo: 3}
+        const data = {foo: 3}
         validate(data).should.equal(false)
         validate.errors.should.have.length(1)
-        var err = validate.errors[0]
+        const err = validate.errors[0]
 
         should.equal(err.schema, 5)
         err.parentSchema.should.eql({minimum: 5})
@@ -32,7 +32,7 @@ describe("reporting options", () => {
       test(new Ajv({allErrors: true}), true)
 
       function test(ajv, allErrors) {
-        var format1called = false,
+        let format1called = false,
           format2called = false
 
         ajv.addFormat("format1", () => {
@@ -45,7 +45,7 @@ describe("reporting options", () => {
           return false
         })
 
-        var schema1 = {
+        const schema1 = {
           allOf: [{format: "format1"}, {format: "format2"}],
         }
 
@@ -54,7 +54,7 @@ describe("reporting options", () => {
         format1called.should.equal(true)
         format2called.should.equal(allErrors)
 
-        var schema2 = {
+        const schema2 = {
           not: schema1,
         }
 
@@ -72,8 +72,8 @@ describe("reporting options", () => {
      * The logger option tests are based on the meta scenario which writes into the logger.warn
      */
 
-    var origConsoleWarn = console.warn
-    var consoleCalled
+    const origConsoleWarn = console.warn
+    let consoleCalled
 
     beforeEach(() => {
       consoleCalled = false
@@ -85,7 +85,7 @@ describe("reporting options", () => {
     })
 
     it("no user-defined logger is given - global console should be used", () => {
-      var ajv = new Ajv({meta: false})
+      const ajv = new Ajv({meta: false})
 
       ajv.compile({
         type: "number",
@@ -96,15 +96,15 @@ describe("reporting options", () => {
     })
 
     it("user-defined logger is an object - logs should only report to it", () => {
-      var loggerCalled = false
+      let loggerCalled = false
 
-      var logger = {
+      const logger = {
         warn: log,
         log: log,
         error: log,
       }
 
-      var ajv = new Ajv({
+      const ajv = new Ajv({
         meta: false,
         logger: logger,
       })
@@ -123,7 +123,7 @@ describe("reporting options", () => {
     })
 
     it("logger option is false - no logs should be reported", () => {
-      var ajv = new Ajv({
+      const ajv = new Ajv({
         meta: false,
         logger: false,
       })

@@ -1,7 +1,6 @@
 parserOptions:
   sourceType: script
 rules:
-  no-var: 0
   no-console: 0
   no-empty: [2, allowEmptyCatch: true]
   quotes: 0
@@ -12,3 +11,24 @@ globals:
   before: false
   beforeEach: false
   afterEach: false
+overrides:
+  - files: ["*.ts"]
+    extends:
+      - "eslint:recommended"
+      - "plugin:@typescript-eslint/recommended"
+      - "plugin:@typescript-eslint/recommended-requiring-type-checking"
+      - "prettier/@typescript-eslint"
+    parser: "@typescript-eslint/parser"
+    parserOptions:
+      project: ["./spec/tsconfig.json"]
+    plugins: ["@typescript-eslint"]
+    rules:
+      "@typescript-eslint/no-unsafe-member-access": off
+      "@typescript-eslint/no-unsafe-assignment": off
+      "@typescript-eslint/no-unsafe-call": off
+      "@typescript-eslint/no-unsafe-return": off
+      "@typescript-eslint/restrict-plus-operands": off
+      "@typescript-eslint/no-var-requires": off
+      "@typescript-eslint/no-empty-function": off
+      "@typescript-eslint/no-explicit-any": off
+      no-invalid-this: off

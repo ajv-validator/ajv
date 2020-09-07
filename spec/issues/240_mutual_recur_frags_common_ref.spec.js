@@ -1,10 +1,10 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
 
 describe("issue #240, mutually recursive fragment refs reference a common schema", () => {
-  var apiSchema = {
+  const apiSchema = {
     $schema: "http://json-schema.org/draft-07/schema#",
     $id: "schema://api.schema#",
     $defs: {
@@ -24,7 +24,7 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
     },
   }
 
-  var domainSchema = {
+  const domainSchema = {
     $schema: "http://json-schema.org/draft-07/schema#",
     $id: "schema://domain.schema#",
     properties: {
@@ -38,9 +38,9 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
   }
 
   it("should compile and validate schema when one ref is fragment", () => {
-    var ajv = new Ajv()
+    const ajv = new Ajv()
 
-    var librarySchema = {
+    const librarySchema = {
       $schema: "http://json-schema.org/draft-07/schema#",
       $id: "schema://library.schema#",
       properties: {
@@ -74,7 +74,7 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
       },
     }
 
-    var catalogItemSchema = {
+    const catalogItemSchema = {
       $schema: "http://json-schema.org/draft-07/schema#",
       $id: "schema://catalog_item.schema#",
       properties: {
@@ -103,7 +103,7 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
       },
     }
 
-    var catalogItemResourceIdentifierSchema = {
+    const catalogItemResourceIdentifierSchema = {
       $schema: "http://json-schema.org/draft-07/schema#",
       $id: "schema://catalog_item_resource_identifier.schema#",
       allOf: [
@@ -126,14 +126,14 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
     ajv.addSchema(catalogItemResourceIdentifierSchema)
     ajv.addSchema(apiSchema)
 
-    var validate = ajv.compile(domainSchema)
+    const validate = ajv.compile(domainSchema)
     testSchema(validate)
   })
 
   it("should compile and validate schema when both refs are fragments", () => {
-    var ajv = new Ajv()
+    const ajv = new Ajv()
 
-    var librarySchema = {
+    const librarySchema = {
       $schema: "http://json-schema.org/draft-07/schema#",
       $id: "schema://library.schema#",
       properties: {
@@ -165,7 +165,7 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
       },
     }
 
-    var catalogItemSchema = {
+    const catalogItemSchema = {
       $schema: "http://json-schema.org/draft-07/schema#",
       $id: "schema://catalog_item.schema#",
       properties: {
@@ -198,7 +198,7 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
     ajv.addSchema(catalogItemSchema)
     ajv.addSchema(apiSchema)
 
-    var validate = ajv.compile(domainSchema)
+    const validate = ajv.compile(domainSchema)
     testSchema(validate)
   })
 

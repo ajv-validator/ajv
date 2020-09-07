@@ -1,22 +1,22 @@
 "use strict"
 
-var Ajv = require("./ajv")
+const Ajv = require("./ajv")
 
 module.exports = getAjvInstances
 
 function getAjvInstances(options, extraOpts = {}) {
-  return _getAjvInstances(options, {...extraOpts, logger: false})
+  return _getAjvInstances(options, {...extraOpts, logger: false, codegen: {lines: true}})
 }
 
 function _getAjvInstances(opts, useOpts) {
-  var optNames = Object.keys(opts)
+  const optNames = Object.keys(opts)
   if (optNames.length) {
     opts = Object.assign({}, opts)
-    var useOpts1 = Object.assign({}, useOpts)
-    var optName = optNames[0]
+    const useOpts1 = Object.assign({}, useOpts)
+    const optName = optNames[0]
     useOpts1[optName] = opts[optName]
     delete opts[optName]
-    var instances = _getAjvInstances(opts, useOpts),
+    const instances = _getAjvInstances(opts, useOpts),
       instances1 = _getAjvInstances(opts, useOpts1)
     return instances.concat(instances1)
   }

@@ -1,19 +1,19 @@
 "use strict"
 
-var Ajv = require("../ajv")
-var should = require("../chai").should()
+const Ajv = require("../ajv")
+const should = require("../chai").should()
 
 describe("strict option with defaults (replaced strictDefaults)", () => {
   describe("useDefaults = true", () => {
     describe("strict = false", () => {
       it("should NOT throw an error or log a warning given an ignored default", () => {
-        var output = {}
-        var ajv = new Ajv({
+        const output = {}
+        const ajv = new Ajv({
           useDefaults: true,
           strict: false,
           logger: getLogger(output),
         })
-        var schema = {
+        const schema = {
           default: 5,
           properties: {},
         }
@@ -23,13 +23,13 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
       })
 
       it("should NOT throw an error or log a warning given an ignored default #2", () => {
-        var output = {}
-        var ajv = new Ajv({
+        const output = {}
+        const ajv = new Ajv({
           useDefaults: true,
           strict: false,
           logger: getLogger(output),
         })
-        var schema = {
+        const schema = {
           oneOf: [
             {enum: ["foo", "bar"]},
             {
@@ -68,7 +68,7 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
         test(new Ajv({useDefaults: true, strict: true}))
 
         function test(ajv) {
-          var schema = {
+          const schema = {
             oneOf: [
               {enum: ["foo", "bar"]},
               {
@@ -89,13 +89,13 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
 
     describe('strict = "log"', () => {
       it('should log a warning given an ignored default in the schema root when strict is "log"', () => {
-        var output = {}
-        var ajv = new Ajv({
+        const output = {}
+        const ajv = new Ajv({
           useDefaults: true,
           strict: "log",
           logger: getLogger(output),
         })
-        var schema = {
+        const schema = {
           default: 5,
           properties: {},
         }
@@ -104,13 +104,13 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
       })
 
       it('should log a warning given an ignored default in oneOf when strict is "log"', () => {
-        var output = {}
-        var ajv = new Ajv({
+        const output = {}
+        const ajv = new Ajv({
           useDefaults: true,
           strict: "log",
           logger: getLogger(output),
         })
-        var schema = {
+        const schema = {
           oneOf: [
             {enum: ["foo", "bar"]},
             {
@@ -153,7 +153,7 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
       test(new Ajv({strict: true}))
 
       function test(ajv) {
-        var schema = {
+        const schema = {
           oneOf: [
             {enum: ["foo", "bar"]},
             {

@@ -1,8 +1,8 @@
 "use strict"
 
-var Ajv = require("../ajv")
-var should = require("../chai").should()
-var DATE_FORMAT = /^\d\d\d\d-[0-1]\d-[0-3]\d$/
+const Ajv = require("../ajv")
+const should = require("../chai").should()
+const DATE_FORMAT = /^\d\d\d\d-[0-1]\d-[0-3]\d$/
 
 describe("unknownFormats option", () => {
   describe("= true (default)", () => {
@@ -23,7 +23,7 @@ describe("unknownFormats option", () => {
 
       function test(ajv) {
         ajv.addFormat("date", DATE_FORMAT)
-        var validate = ajv.compile({
+        const validate = ajv.compile({
           properties: {
             foo: {format: {$data: "1/bar"}},
             bar: {type: "string"},
@@ -45,7 +45,7 @@ describe("unknownFormats option", () => {
       test(new Ajv({unknownFormats: "ignore", logger: false}))
 
       function test(ajv) {
-        var validate = ajv.compile({format: "unknown"})
+        const validate = ajv.compile({format: "unknown"})
         validate("anything").should.equal(true)
       }
     })
@@ -55,7 +55,7 @@ describe("unknownFormats option", () => {
 
       function test(ajv) {
         ajv.addFormat("date", DATE_FORMAT)
-        var validate = ajv.compile({
+        const validate = ajv.compile({
           properties: {
             foo: {format: {$data: "1/bar"}},
             bar: {type: "string"},
@@ -76,7 +76,7 @@ describe("unknownFormats option", () => {
       test(new Ajv({unknownFormats: ["allowed"]}))
 
       function test(ajv) {
-        var validate = ajv.compile({format: "allowed"})
+        const validate = ajv.compile({format: "allowed"})
         validate("anything").should.equal(true)
 
         should.throw(() => {
@@ -90,7 +90,7 @@ describe("unknownFormats option", () => {
 
       function test(ajv) {
         ajv.addFormat("date", DATE_FORMAT)
-        var validate = ajv.compile({
+        const validate = ajv.compile({
           properties: {
             foo: {format: {$data: "1/bar"}},
             bar: {type: "string"},

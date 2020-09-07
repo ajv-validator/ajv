@@ -1,11 +1,11 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
 
 describe("issue #955: option removeAdditional breaks user-defined keywords", () => {
   it("should support user-defined keywords with option removeAdditional", () => {
-    var ajv = new Ajv({removeAdditional: "all"})
+    const ajv = new Ajv({removeAdditional: "all"})
 
     ajv.addKeyword({
       keyword: "minTrimmedLength",
@@ -18,7 +18,7 @@ describe("issue #955: option removeAdditional breaks user-defined keywords", () 
       metaSchema: {type: "integer"},
     })
 
-    var schema = {
+    const schema = {
       type: "object",
       properties: {
         foo: {
@@ -29,9 +29,9 @@ describe("issue #955: option removeAdditional breaks user-defined keywords", () 
       required: ["foo"],
     }
 
-    var validate = ajv.compile(schema)
+    const validate = ajv.compile(schema)
 
-    var data = {
+    let data = {
       foo: "   bar   ",
       baz: "",
     }

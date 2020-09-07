@@ -1,12 +1,12 @@
 "use strict"
 
-var Ajv = require("../ajv")
-var getAjvInstances = require("../ajv_instances")
+const Ajv = require("../ajv")
+const getAjvInstances = require("../ajv_instances")
 require("../chai").should()
 
 describe("useDefaults option", () => {
   it("should replace undefined property with default value", () => {
-    var instances = getAjvInstances(
+    const instances = getAjvInstances(
       {
         allErrors: true,
         loopRequired: 3,
@@ -17,7 +17,7 @@ describe("useDefaults option", () => {
     instances.forEach(test)
 
     function test(ajv) {
-      var schema = {
+      const schema = {
         properties: {
           foo: {type: "string", default: "abc"},
           bar: {type: "number", default: 1},
@@ -30,9 +30,9 @@ describe("useDefaults option", () => {
         minProperties: 6,
       }
 
-      var validate = ajv.compile(schema)
+      const validate = ajv.compile(schema)
 
-      var data = {}
+      let data = {}
       validate(data).should.equal(true)
       data.should.eql({
         foo: "abc",
@@ -61,7 +61,7 @@ describe("useDefaults option", () => {
     test(new Ajv({useDefaults: true, allErrors: true}))
 
     function test(ajv) {
-      var schema = {
+      const schema = {
         items: [
           {type: "string", default: "abc"},
           {type: "number", default: 1},
@@ -70,9 +70,9 @@ describe("useDefaults option", () => {
         minItems: 3,
       }
 
-      var validate = ajv.compile(schema)
+      const validate = ajv.compile(schema)
 
-      var data = []
+      let data = []
       validate(data).should.equal(true)
       data.should.eql(["abc", 1, false])
 
@@ -92,7 +92,7 @@ describe("useDefaults option", () => {
     test(new Ajv({useDefaults: true, allErrors: true}))
 
     function test(ajv) {
-      var schema = {
+      const schema = {
         if: {required: ["foo"]},
         then: {
           properties: {
@@ -106,9 +106,9 @@ describe("useDefaults option", () => {
         },
       }
 
-      var validate = ajv.compile(schema)
+      const validate = ajv.compile(schema)
 
-      var data = {}
+      let data = {}
       validate(data).should.equal(true)
       data.should.eql({foo: 1})
 
@@ -127,7 +127,7 @@ describe("useDefaults option", () => {
     })
 
     function test(ajv) {
-      var schema = {
+      const schema = {
         properties: {
           items: {
             type: "array",
@@ -136,16 +136,16 @@ describe("useDefaults option", () => {
         },
       }
 
-      var validate = ajv.compile(schema)
+      const validate = ajv.compile(schema)
 
-      var data = {}
+      const data = {}
       validate(data).should.equal(true)
       data.items.should.eql(["a-default"])
 
       data.items.push("another-value")
       data.items.should.eql(["a-default", "another-value"])
 
-      var data2 = {}
+      const data2 = {}
       validate(data2).should.equal(true)
 
       data2.items.should.eql(["a-default"])
@@ -153,7 +153,7 @@ describe("useDefaults option", () => {
   })
 
   describe('defaults with "empty" values', () => {
-    var schema, data
+    let schema, data
 
     beforeEach(() => {
       schema = {
@@ -187,7 +187,7 @@ describe("useDefaults option", () => {
       test(new Ajv({useDefaults: "shared"}))
 
       function test(ajv) {
-        var validate = ajv.compile(schema)
+        const validate = ajv.compile(schema)
         validate(data).should.equal(true)
         data.should.eql({
           obj: {
@@ -202,8 +202,8 @@ describe("useDefaults option", () => {
     })
 
     it('should assign defaults when useDefaults = "empty"', () => {
-      var ajv = new Ajv({useDefaults: "empty"})
-      var validate = ajv.compile(schema)
+      const ajv = new Ajv({useDefaults: "empty"})
+      const validate = ajv.compile(schema)
       validate(data).should.equal(true)
       data.should.eql({
         obj: {

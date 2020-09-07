@@ -1,10 +1,10 @@
 "use strict"
 
-var Ajv = require("./ajv"),
+const Ajv = require("./ajv"),
   should = require("./chai").should()
 
 describe("Validation errors", () => {
-  var ajv, ajvJP, fullAjv
+  let ajv, ajvJP, fullAjv
 
   beforeEach(() => {
     createInstances()
@@ -25,7 +25,7 @@ describe("Validation errors", () => {
   }
 
   it("error should include dataPath", () => {
-    var schema = {
+    const schema = {
       properties: {
         foo: {type: "number"},
       },
@@ -35,7 +35,7 @@ describe("Validation errors", () => {
   })
 
   it('"refs" error should include dataPath', () => {
-    var schema = {
+    const schema = {
       definitions: {
         num: {type: "number"},
       },
@@ -53,7 +53,7 @@ describe("Validation errors", () => {
     })
 
     function testAdditional() {
-      var schema = {
+      const schema = {
         properties: {
           foo: {},
           bar: {},
@@ -61,19 +61,19 @@ describe("Validation errors", () => {
         additionalProperties: false,
       }
 
-      var data = {foo: 1, bar: 2},
+      const data = {foo: 1, bar: 2},
         invalidData = {foo: 1, bar: 2, baz: 3, quux: 4}
 
-      var msg = "should NOT have additional properties"
+      const msg = "should NOT have additional properties"
 
-      var validate = ajv.compile(schema)
+      const validate = ajv.compile(schema)
       shouldBeValid(validate, data)
       shouldBeInvalid(validate, invalidData)
       shouldBeError(validate.errors[0], "additionalProperties", "#/additionalProperties", "", msg, {
         additionalProperty: "baz",
       })
 
-      var validateJP = ajvJP.compile(schema)
+      const validateJP = ajvJP.compile(schema)
       shouldBeValid(validateJP, data)
       shouldBeInvalid(validateJP, invalidData)
       shouldBeError(
@@ -85,7 +85,7 @@ describe("Validation errors", () => {
         {additionalProperty: "baz"}
       )
 
-      var fullValidate = fullAjv.compile(schema)
+      const fullValidate = fullAjv.compile(schema)
       shouldBeValid(fullValidate, data)
       shouldBeInvalid(fullValidate, invalidData, 2)
       shouldBeError(
@@ -113,7 +113,7 @@ describe("Validation errors", () => {
     })
 
     function testAdditionalIsSchema() {
-      var schema = {
+      const schema = {
         properties: {
           foo: {type: "integer"},
           bar: {type: "integer"},
@@ -126,26 +126,26 @@ describe("Validation errors", () => {
         },
       }
 
-      var data = {foo: 1, bar: 2, baz: {quux: "abc"}},
+      const data = {foo: 1, bar: 2, baz: {quux: "abc"}},
         invalidData = {foo: 1, bar: 2, baz: {quux: 3}, boo: {quux: 4}}
 
-      var schPath = "#/additionalProperties/properties/quux/type"
+      const schPath = "#/additionalProperties/properties/quux/type"
 
-      var validate = ajv.compile(schema)
+      const validate = ajv.compile(schema)
       shouldBeValid(validate, data)
       shouldBeInvalid(validate, invalidData)
       shouldBeError(validate.errors[0], "type", schPath, "/baz/quux", "should be string", {
         type: "string",
       })
 
-      var validateJP = ajvJP.compile(schema)
+      const validateJP = ajvJP.compile(schema)
       shouldBeValid(validateJP, data)
       shouldBeInvalid(validateJP, invalidData)
       shouldBeError(validateJP.errors[0], "type", schPath, "/baz/quux", "should be string", {
         type: "string",
       })
 
-      var fullValidate = fullAjv.compile(schema)
+      const fullValidate = fullAjv.compile(schema)
       shouldBeValid(fullValidate, data)
       shouldBeInvalid(fullValidate, invalidData, 2)
       shouldBeError(fullValidate.errors[0], "type", schPath, "['baz'].quux", "should be string", {
@@ -163,7 +163,7 @@ describe("Validation errors", () => {
     })
 
     function testRequired() {
-      var schema = {
+      const schema = {
         required: ["foo", "bar", "baz"],
       }
 
@@ -175,11 +175,11 @@ describe("Validation errors", () => {
     })
 
     function testRequiredLargeSchema() {
-      var schema = {required: []},
-        data = {},
+      let schema = {required: []}
+      const data = {},
         invalidData1 = {},
         invalidData2 = {}
-      for (var i = 0; i < 100; i++) {
+      for (let i = 0; i < 100; i++) {
         schema.required.push("" + i) // properties from '0' to '99' are required
         data[i] = invalidData1[i] = invalidData2[i] = i
       }
@@ -195,8 +195,8 @@ describe("Validation errors", () => {
 
       function test(extraErrors, schemaPathPrefix) {
         extraErrors = extraErrors || 0
-        var schPath = (schemaPathPrefix || "#") + "/required"
-        var validate = ajv.compile(schema)
+        const schPath = (schemaPathPrefix || "#") + "/required"
+        const validate = ajv.compile(schema)
         shouldBeValid(validate, data)
         shouldBeInvalid(validate, invalidData1, 1 + extraErrors)
         shouldBeError(validate.errors[0], "required", schPath, "", requiredMsg("1"), {
@@ -207,7 +207,7 @@ describe("Validation errors", () => {
           missingProperty: "2",
         })
 
-        var validateJP = ajvJP.compile(schema)
+        const validateJP = ajvJP.compile(schema)
         shouldBeValid(validateJP, data)
         shouldBeInvalid(validateJP, invalidData1, 1 + extraErrors)
         shouldBeError(validateJP.errors[0], "required", schPath, "", requiredMsg("1"), {
@@ -218,7 +218,7 @@ describe("Validation errors", () => {
           missingProperty: "2",
         })
 
-        var fullValidate = fullAjv.compile(schema)
+        const fullValidate = fullAjv.compile(schema)
         shouldBeValid(fullValidate, data)
         shouldBeInvalid(fullValidate, invalidData1, 1 + extraErrors)
         shouldBeError(fullValidate.errors[0], "required", schPath, "", requiredMsg("1"), {
@@ -239,7 +239,7 @@ describe("Validation errors", () => {
     })
 
     function testRequiredAndProperties() {
-      var schema = {
+      const schema = {
         properties: {
           foo: {type: "number"},
           bar: {type: "number"},
@@ -256,7 +256,7 @@ describe("Validation errors", () => {
     })
 
     function testRequiredInAnyOf() {
-      var schema = {
+      const schema = {
         anyOf: [{required: ["foo", "bar", "baz"]}],
       }
 
@@ -266,7 +266,7 @@ describe("Validation errors", () => {
     it("should not validate required twice in large schemas with loopRequired option", () => {
       ajv = new Ajv({loopRequired: 1, allErrors: true})
 
-      var schema = {
+      const schema = {
         properties: {
           foo: {type: "integer"},
           bar: {type: "integer"},
@@ -274,7 +274,7 @@ describe("Validation errors", () => {
         required: ["foo", "bar"],
       }
 
-      var validate = ajv.compile(schema)
+      const validate = ajv.compile(schema)
 
       validate({}).should.equal(false)
       validate.errors.should.have.length(2)
@@ -283,7 +283,7 @@ describe("Validation errors", () => {
     it("should not validate required twice with $data ref", () => {
       ajv = new Ajv({$data: true, allErrors: true})
 
-      var schema = {
+      const schema = {
         properties: {
           foo: {type: "integer"},
           bar: {type: "integer"},
@@ -291,7 +291,7 @@ describe("Validation errors", () => {
         required: {$data: "0/requiredProperties"},
       }
 
-      var validate = ajv.compile(schema)
+      const validate = ajv.compile(schema)
 
       validate({requiredProperties: ["foo", "bar"]}).should.equal(false)
       validate.errors.should.have.length(2)
@@ -343,33 +343,33 @@ describe("Validation errors", () => {
     })
 
     function testDependencies() {
-      var schema = {
+      const schema = {
         dependencies: {
           a: ["foo", "bar", "baz"],
         },
       }
 
-      var data = {a: 0, foo: 1, bar: 2, baz: 3},
+      const data = {a: 0, foo: 1, bar: 2, baz: 3},
         invalidData1 = {a: 0, foo: 1, baz: 3},
         invalidData2 = {a: 0, bar: 2}
 
-      var msg = "should have properties foo, bar, baz when property a is present"
+      const msg = "should have properties foo, bar, baz when property a is present"
 
-      var validate = ajv.compile(schema)
+      const validate = ajv.compile(schema)
       shouldBeValid(validate, data)
       shouldBeInvalid(validate, invalidData1)
       shouldBeError(validate.errors[0], "dependencies", "#/dependencies", "", msg, params("bar"))
       shouldBeInvalid(validate, invalidData2)
       shouldBeError(validate.errors[0], "dependencies", "#/dependencies", "", msg, params("foo"))
 
-      var validateJP = ajvJP.compile(schema)
+      const validateJP = ajvJP.compile(schema)
       shouldBeValid(validateJP, data)
       shouldBeInvalid(validateJP, invalidData1)
       shouldBeError(validateJP.errors[0], "dependencies", "#/dependencies", "", msg, params("bar"))
       shouldBeInvalid(validateJP, invalidData2)
       shouldBeError(validateJP.errors[0], "dependencies", "#/dependencies", "", msg, params("foo"))
 
-      var fullValidate = fullAjv.compile(schema)
+      const fullValidate = fullAjv.compile(schema)
       shouldBeValid(fullValidate, data)
       shouldBeInvalid(fullValidate, invalidData1)
       shouldBeError(
@@ -399,7 +399,7 @@ describe("Validation errors", () => {
       )
 
       function params(missing) {
-        var p = {
+        const p = {
           property: "a",
           deps: "foo, bar, baz",
           depsCount: 3,
@@ -411,14 +411,14 @@ describe("Validation errors", () => {
   })
 
   function _testRequired(schema, schemaPathPrefix, extraErrors) {
-    var schPath = (schemaPathPrefix || "#") + "/required"
+    const schPath = (schemaPathPrefix || "#") + "/required"
     extraErrors = extraErrors || 0
 
-    var data = {foo: 1, bar: 2, baz: 3},
+    const data = {foo: 1, bar: 2, baz: 3},
       invalidData1 = {foo: 1, baz: 3},
       invalidData2 = {bar: 2}
 
-    var validate = ajv.compile(schema)
+    const validate = ajv.compile(schema)
     shouldBeValid(validate, data)
     shouldBeInvalid(validate, invalidData1, 1 + extraErrors)
     shouldBeError(validate.errors[0], "required", schPath, "", requiredMsg("bar"), {
@@ -429,7 +429,7 @@ describe("Validation errors", () => {
       missingProperty: "foo",
     })
 
-    var validateJP = ajvJP.compile(schema)
+    const validateJP = ajvJP.compile(schema)
     shouldBeValid(validateJP, data)
     shouldBeInvalid(validateJP, invalidData1, 1 + extraErrors)
     shouldBeError(validateJP.errors[0], "required", schPath, "", requiredMsg("bar"), {
@@ -440,7 +440,7 @@ describe("Validation errors", () => {
       missingProperty: "foo",
     })
 
-    var fullValidate = fullAjv.compile(schema)
+    const fullValidate = fullAjv.compile(schema)
     shouldBeValid(fullValidate, data)
     shouldBeInvalid(fullValidate, invalidData1, 1 + extraErrors)
     shouldBeError(fullValidate.errors[0], "required", schPath, "", requiredMsg("bar"), {
@@ -460,7 +460,7 @@ describe("Validation errors", () => {
   }
 
   it('"items" errors should include item index without quotes in dataPath (#48)', () => {
-    var schema1 = {
+    const schema1 = {
       $id: "schema1",
       type: "array",
       items: {
@@ -469,25 +469,25 @@ describe("Validation errors", () => {
       },
     }
 
-    var data = [10, 11, 12],
+    const data = [10, 11, 12],
       invalidData1 = [1, 10],
       invalidData2 = [10, 9, 11, 8, 12]
 
-    var validate = ajv.compile(schema1)
+    let validate = ajv.compile(schema1)
     shouldBeValid(validate, data)
     shouldBeInvalid(validate, invalidData1)
     shouldBeError(validate.errors[0], "minimum", "#/items/minimum", "/0", "should be >= 10")
     shouldBeInvalid(validate, invalidData2)
     shouldBeError(validate.errors[0], "minimum", "#/items/minimum", "/1", "should be >= 10")
 
-    var validateJP = ajvJP.compile(schema1)
+    const validateJP = ajvJP.compile(schema1)
     shouldBeValid(validateJP, data)
     shouldBeInvalid(validateJP, invalidData1)
     shouldBeError(validateJP.errors[0], "minimum", "#/items/minimum", "/0", "should be >= 10")
     shouldBeInvalid(validateJP, invalidData2)
     shouldBeError(validateJP.errors[0], "minimum", "#/items/minimum", "/1", "should be >= 10")
 
-    var fullValidate = fullAjv.compile(schema1)
+    const fullValidate = fullAjv.compile(schema1)
     shouldBeValid(fullValidate, data)
     shouldBeInvalid(fullValidate, invalidData1)
     shouldBeError(fullValidate.errors[0], "minimum", "#/items/minimum", "[0]", "should be >= 10")
@@ -495,7 +495,7 @@ describe("Validation errors", () => {
     shouldBeError(fullValidate.errors[0], "minimum", "#/items/minimum", "[1]", "should be >= 10")
     shouldBeError(fullValidate.errors[1], "minimum", "#/items/minimum", "[3]", "should be >= 10")
 
-    var schema2 = {
+    const schema2 = {
       $id: "schema2",
       type: "array",
       items: [{minimum: 10}, {minimum: 9}, {minimum: 12}],
@@ -510,13 +510,13 @@ describe("Validation errors", () => {
   })
 
   it("should have correct schema path for additionalItems", () => {
-    var schema = {
+    const schema = {
       type: "array",
       items: [{type: "integer"}, {type: "integer"}],
       additionalItems: false,
     }
 
-    var data = [1, 2],
+    const data = [1, 2],
       invalidData = [1, 2, 3]
 
     test(ajv)
@@ -524,7 +524,7 @@ describe("Validation errors", () => {
     test(fullAjv)
 
     function test(_ajv) {
-      var validate = _ajv.compile(schema)
+      const validate = _ajv.compile(schema)
       shouldBeValid(validate, data)
       shouldBeInvalid(validate, invalidData)
       shouldBeError(
@@ -539,17 +539,17 @@ describe("Validation errors", () => {
 
   describe('"propertyNames" errors', () => {
     it("should add propertyName to errors", () => {
-      var schema = {
+      const schema = {
         type: "object",
         propertyNames: {pattern: "bar"},
       }
 
-      var data = {
+      const data = {
         bar: {},
         "bar.baz@email.example.com": {},
       }
 
-      var invalidData = {
+      const invalidData = {
         bar: {},
         "bar.baz@email.example.com": {},
         foo: {},
@@ -561,7 +561,7 @@ describe("Validation errors", () => {
       test(fullAjv, 4)
 
       function test(_ajv, numErrors) {
-        var validate = _ajv.compile(schema)
+        const validate = _ajv.compile(schema)
         shouldBeValid(validate, data)
         shouldBeInvalid(validate, invalidData, numErrors)
         shouldBeError(
@@ -600,7 +600,7 @@ describe("Validation errors", () => {
 
   describe("oneOf errors", () => {
     it("should have errors from inner schemas", () => {
-      var schema = {
+      const schema = {
         oneOf: [{type: "number"}, {type: "integer"}],
       }
 
@@ -608,7 +608,7 @@ describe("Validation errors", () => {
       test(fullAjv)
 
       function test(_ajv) {
-        var validate = _ajv.compile(schema)
+        const validate = _ajv.compile(schema)
         validate("foo").should.equal(false)
         validate.errors.length.should.equal(3)
         validate(1).should.equal(false)
@@ -618,7 +618,7 @@ describe("Validation errors", () => {
     })
 
     it("should return passing schemas in error params", () => {
-      var schema = {
+      const schema = {
         oneOf: [{type: "number"}, {type: "integer"}, {const: 1.5}],
       }
 
@@ -626,9 +626,9 @@ describe("Validation errors", () => {
       test(fullAjv)
 
       function test(_ajv) {
-        var validate = _ajv.compile(schema)
+        const validate = _ajv.compile(schema)
         validate(1).should.equal(false)
-        var err = validate.errors.pop()
+        let err = validate.errors.pop()
         err.keyword.should.equal("oneOf")
         err.params.should.eql({passingSchemas: [0, 1]})
 
@@ -649,7 +649,7 @@ describe("Validation errors", () => {
 
   describe("anyOf errors", () => {
     it("should have errors from inner schemas", () => {
-      var schema = {
+      const schema = {
         anyOf: [{type: "number"}, {type: "integer"}],
       }
 
@@ -657,7 +657,7 @@ describe("Validation errors", () => {
       test(fullAjv)
 
       function test(_ajv) {
-        var validate = _ajv.compile(schema)
+        const validate = _ajv.compile(schema)
         validate("foo").should.equal(false)
         validate.errors.length.should.equal(3)
         validate(1).should.equal(true)
@@ -677,12 +677,12 @@ describe("Validation errors", () => {
       })
 
       function test(_ajv, numErrors) {
-        var schema = {
+        const schema = {
           type: "integer",
           minimum: 5,
         }
 
-        var validate = _ajv.compile(schema)
+        const validate = _ajv.compile(schema)
         shouldBeValid(validate, 5)
         shouldBeInvalid(validate, 5.5)
         shouldBeInvalid(validate, 4)
@@ -701,13 +701,13 @@ describe("Validation errors", () => {
       })
 
       function test(_ajv, numErrors) {
-        var schema = {
+        const schema = {
           type: "array",
           minItems: 2,
           minimum: 5,
         }
 
-        var validate = _ajv.compile(schema)
+        const validate = _ajv.compile(schema)
         shouldBeValid(validate, [1, 2])
         shouldBeInvalid(validate, [1])
         shouldBeInvalid(validate, 5)
@@ -725,14 +725,14 @@ describe("Validation errors", () => {
       })
 
       function test(_ajv, numErrors) {
-        var schema = {
+        const schema = {
           type: ["array", "object"],
           minItems: 2,
           minProperties: 2,
           minimum: 5,
         }
 
-        var validate = _ajv.compile(schema)
+        const validate = _ajv.compile(schema)
         shouldBeValid(validate, [1, 2])
         shouldBeValid(validate, {foo: 1, bar: 2})
         shouldBeInvalid(validate, [1])
@@ -745,14 +745,14 @@ describe("Validation errors", () => {
 
   describe("exclusiveMaximum/Minimum errors", () => {
     it("should include limits in error message", () => {
-      var schema = {
+      const schema = {
         type: "integer",
         exclusiveMinimum: 2,
         exclusiveMaximum: 5,
       }
 
       ;[ajv, fullAjv].forEach((_ajv) => {
-        var validate = _ajv.compile(schema)
+        const validate = _ajv.compile(schema)
         shouldBeValid(validate, 3)
         shouldBeValid(validate, 4)
 
@@ -769,14 +769,14 @@ describe("Validation errors", () => {
         })
 
         function testError(keyword, message, params) {
-          var err = validate.errors[0]
+          const err = validate.errors[0]
           shouldBeError(err, keyword, "#/" + keyword, "", message, params)
         }
       })
     })
 
     it("should include limits in error message with $data", () => {
-      var schema = {
+      const schema = {
         properties: {
           smaller: {
             type: "number",
@@ -795,7 +795,7 @@ describe("Validation errors", () => {
         logger: false,
       })
       ;[ajv, fullAjv].forEach((_ajv) => {
-        var validate = _ajv.compile(schema)
+        const validate = _ajv.compile(schema)
         shouldBeValid(validate, {smaller: 2, larger: 4})
         shouldBeValid(validate, {smaller: 3, larger: 4})
 
@@ -806,7 +806,7 @@ describe("Validation errors", () => {
         testError()
 
         function testError() {
-          var err = validate.errors[0]
+          const err = validate.errors[0]
           shouldBeError(
             err,
             "exclusiveMaximum",
@@ -821,10 +821,10 @@ describe("Validation errors", () => {
   })
 
   describe("if/then/else errors", () => {
-    var validate, numErrors
+    let validate, numErrors
 
     it("if/then/else should include failing keyword in message and params", () => {
-      var schema = {
+      const schema = {
         if: {maximum: 10},
         then: {multipleOf: 2},
         else: {multipleOf: 5},
@@ -844,7 +844,7 @@ describe("Validation errors", () => {
     })
 
     it("if/then should include failing keyword in message and params", () => {
-      var schema = {
+      const schema = {
         if: {maximum: 10},
         then: {multipleOf: 2},
       }
@@ -861,7 +861,7 @@ describe("Validation errors", () => {
     })
 
     it("if/else should include failing keyword in message and params", () => {
-      var schema = {
+      const schema = {
         if: {maximum: 10},
         else: {multipleOf: 5},
       }
@@ -883,7 +883,7 @@ describe("Validation errors", () => {
     }
 
     function testIfError(ifClause, multipleOf) {
-      var err = validate.errors[0]
+      let err = validate.errors[0]
       shouldBeError(
         err,
         "multipleOf",
@@ -904,13 +904,13 @@ describe("Validation errors", () => {
 
   describe("uniqueItems errors", () => {
     it("should not return uniqueItems error when non-unique items are of a different type than required", () => {
-      var schema = {
+      const schema = {
         items: {type: "number"},
         uniqueItems: true,
       }
 
       ;[ajvJP, fullAjv].forEach((_ajv) => {
-        var validate = _ajv.compile(schema)
+        const validate = _ajv.compile(schema)
         shouldBeValid(validate, [1, 2, 3])
 
         shouldBeInvalid(validate, [1, 2, 2])
@@ -923,13 +923,13 @@ describe("Validation errors", () => {
           {i: 1, j: 2}
         )
 
-        var expectedErrors = _ajv._opts.allErrors ? 2 : 1
+        const expectedErrors = _ajv._opts.allErrors ? 2 : 1
         shouldBeInvalid(validate, [1, "2", "2", 2], expectedErrors)
         testTypeError(0, _ajv._opts.jsPropertySyntax ? "[1]" : "/1")
         if (expectedErrors === 2) testTypeError(1, _ajv._opts.jsPropertySyntax ? "[2]" : "/2")
 
         function testTypeError(i, dataPath) {
-          var err = validate.errors[i]
+          const err = validate.errors[i]
           shouldBeError(err, "type", "#/items/type", dataPath, "should be number")
         }
       })
@@ -955,12 +955,12 @@ describe("Validation errors", () => {
   }
 
   function _testSchema1(_ajv, schema, schemaPathPrefix) {
-    var schPath = (schemaPathPrefix || "#/properties/foo") + "/type"
+    const schPath = (schemaPathPrefix || "#/properties/foo") + "/type"
 
-    var data = {foo: 1},
+    const data = {foo: 1},
       invalidData = {foo: "bar"}
 
-    var validate = _ajv.compile(schema)
+    const validate = _ajv.compile(schema)
     shouldBeValid(validate, data)
     shouldBeInvalid(validate, invalidData)
     shouldBeError(

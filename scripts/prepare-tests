@@ -7,6 +7,6 @@ mkdir -p .browser
 echo
 echo Preparing browser tests:
 
-find spec -type f -name '*.spec.js' | \
+find spec -type f -name '*.spec.*s' | \
 xargs -I {} sh -c \
-'export f="{}"; echo $f; browserify $f -t require-globify -t brfs -x ajv -u buffer -o $(echo $f | sed -e "s/spec/.browser/");'
+'export f="{}"; echo $f; browserify $f -p [ tsify -p ./spec/tsconfig.json ] -x ajv -u buffer -o $(echo $f | sed -e "s/spec/.browser/");'

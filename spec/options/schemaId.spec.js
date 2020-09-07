@@ -1,7 +1,7 @@
 "use strict"
 
-var Ajv = require("../ajv")
-var should = require("../chai").should()
+const Ajv = require("../ajv")
+const should = require("../chai").should()
 
 describe("removed schemaId option", () => {
   it("should use $id and throw exception when id is used", () => {
@@ -10,7 +10,7 @@ describe("removed schemaId option", () => {
 
     function test(ajv) {
       ajv.addSchema({$id: "mySchema1", type: "string"})
-      var validate = ajv.getSchema("mySchema1")
+      const validate = ajv.getSchema("mySchema1")
       validate("foo").should.equal(true)
       validate(1).should.equal(false)
 
@@ -24,7 +24,7 @@ describe("removed schemaId option", () => {
 
     function test(ajv) {
       ajv.addSchema({$id: "mySchema1", type: "string"})
-      var validate = ajv.getSchema("mySchema1")
+      let validate = ajv.getSchema("mySchema1")
       validate("foo").should.equal(true)
       validate(1).should.equal(false)
 

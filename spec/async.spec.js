@@ -1,12 +1,12 @@
 "use strict"
 
-var Ajv = require("./ajv"),
+const Ajv = require("./ajv"),
   should = require("./chai").should()
 
 describe("compileAsync method", () => {
-  var ajv, loadCallCount
+  let ajv, loadCallCount
 
-  var SCHEMAS = {
+  const SCHEMAS = {
     "http://example.com/object.json": {
       $id: "http://example.com/object.json",
       properties: {
@@ -85,7 +85,7 @@ describe("compileAsync method", () => {
   })
 
   it("should compile schemas loading missing schemas with options.loadSchema function", () => {
-    var schema = {
+    const schema = {
       $id: "http://example.com/parent.json",
       properties: {
         a: {$ref: "object.json"},
@@ -100,7 +100,7 @@ describe("compileAsync method", () => {
   })
 
   it("should compile schemas loading missing schemas and return function via callback", (done) => {
-    var schema = {
+    const schema = {
       $id: "http://example.com/parent.json",
       properties: {
         a: {$ref: "object.json"},
@@ -117,7 +117,7 @@ describe("compileAsync method", () => {
   })
 
   it("should correctly load schemas when missing reference has JSON path", () => {
-    var schema = {
+    const schema = {
       $id: "http://example.com/parent.json",
       properties: {
         a: {$ref: "object.json#/properties/b"},
@@ -132,7 +132,7 @@ describe("compileAsync method", () => {
   })
 
   it("should correctly compile with remote schemas that have mutual references", () => {
-    var schema = {
+    const schema = {
       $id: "http://example.com/root.json",
       properties: {
         tree: {$ref: "tree.json"},
@@ -140,17 +140,17 @@ describe("compileAsync method", () => {
     }
     return ajv.compileAsync(schema).then((validate) => {
       validate.should.be.a("function")
-      var validData = {
+      const validData = {
         tree: [{name: "a", subtree: [{name: "a.a"}]}, {name: "b"}],
       }
-      var invalidData = {tree: [{name: "a", subtree: [{name: 1}]}]}
+      const invalidData = {tree: [{name: "a", subtree: [{name: 1}]}]}
       validate(validData).should.equal(true)
       validate(invalidData).should.equal(false)
     })
   })
 
   it("should correctly compile with remote schemas that reference the compiled schema", () => {
-    var schema = {
+    const schema = {
       $id: "http://example.com/parent.json",
       properties: {
         a: {$ref: "recursive.json"},
@@ -159,15 +159,15 @@ describe("compileAsync method", () => {
     return ajv.compileAsync(schema).then((validate) => {
       should.equal(loadCallCount, 1)
       validate.should.be.a("function")
-      var validData = {a: {b: {a: {b: {}}}}}
-      var invalidData = {a: {b: {a: {}}}}
+      const validData = {a: {b: {a: {b: {}}}}}
+      const invalidData = {a: {b: {a: {}}}}
       validate(validData).should.equal(true)
       validate(invalidData).should.equal(false)
     })
   })
 
   it('should resolve reference containing "properties" segment with the same property (issue #220)', () => {
-    var schema = {
+    const schema = {
       $id: "http://example.com/parent.json",
       properties: {
         a: {
@@ -211,17 +211,17 @@ describe("compileAsync method", () => {
   })
 
   it("should return compiled schema on the next tick if there are no references (#51)", () => {
-    var schema = {
+    const schema = {
       $id: "http://example.com/int2plus.json",
       type: "integer",
       minimum: 2,
     }
-    var beforeCallback1
-    var p1 = ajv.compileAsync(schema).then((validate) => {
+    let beforeCallback1 = false
+    const p1 = ajv.compileAsync(schema).then((validate) => {
       beforeCallback1.should.equal(true)
       spec(validate)
-      var beforeCallback2
-      var p2 = ajv.compileAsync(schema).then((_validate) => {
+      let beforeCallback2 = false
+      const p2 = ajv.compileAsync(schema).then((_validate) => {
         beforeCallback2.should.equal(true)
         spec(_validate)
       })
@@ -234,15 +234,15 @@ describe("compileAsync method", () => {
     function spec(validate) {
       should.equal(loadCallCount, 0)
       validate.should.be.a("function")
-      var validData = 2
-      var invalidData = 1
+      const validData = 2
+      const invalidData = 1
       validate(validData).should.equal(true)
       validate(invalidData).should.equal(false)
     }
   })
 
   it("should queue calls so only one compileAsync executes at a time (#52)", () => {
-    var schema = {
+    const schema = {
       $id: "http://example.com/parent.json",
       properties: {
         a: {$ref: "object.json"},
@@ -264,7 +264,7 @@ describe("compileAsync method", () => {
   })
 
   it("should throw exception if loadSchema is not passed", (done) => {
-    var schema = {
+    const schema = {
       $id: "http://example.com/int2plus.json",
       type: "integer",
       minimum: 2,
@@ -283,7 +283,7 @@ describe("compileAsync method", () => {
 
   describe("should return error via callback", () => {
     it("if passed schema is invalid", (done) => {
-      var invalidSchema = {
+      const invalidSchema = {
         $id: "http://example.com/int2plus.json",
         type: "integer",
         minimum: "invalid",
@@ -292,7 +292,7 @@ describe("compileAsync method", () => {
     })
 
     it("if loaded schema is invalid", (done) => {
-      var schema = {
+      const schema = {
         $id: "http://example.com/parent.json",
         properties: {
           a: {$ref: "invalid.json"},
@@ -302,7 +302,7 @@ describe("compileAsync method", () => {
     })
 
     it("if required schema is loaded but the reference cannot be resolved", (done) => {
-      var schema = {
+      const schema = {
         $id: "http://example.com/parent.json",
         properties: {
           a: {$ref: "object.json#/definitions/not_found"},
@@ -312,7 +312,7 @@ describe("compileAsync method", () => {
     })
 
     it("if loadSchema returned error", (done) => {
-      var schema = {
+      const schema = {
         $id: "http://example.com/parent.json",
         properties: {
           a: {$ref: "object.json"},
@@ -328,7 +328,7 @@ describe("compileAsync method", () => {
 
     it("if schema compilation throws some other exception", (done) => {
       ajv.addKeyword({keyword: "badkeyword", compile: badCompile})
-      var schema = {badkeyword: true}
+      const schema = {badkeyword: true}
       ajv.compileAsync(schema, shouldFail(done))
 
       function badCompile(/* schema */) {
@@ -347,7 +347,7 @@ describe("compileAsync method", () => {
 
   describe("should return error via promise", () => {
     it("if passed schema is invalid", () => {
-      var invalidSchema = {
+      const invalidSchema = {
         $id: "http://example.com/int2plus.json",
         type: "integer",
         minimum: "invalid",
@@ -356,7 +356,7 @@ describe("compileAsync method", () => {
     })
 
     it("if loaded schema is invalid", () => {
-      var schema = {
+      const schema = {
         $id: "http://example.com/parent.json",
         properties: {
           a: {$ref: "invalid.json"},
@@ -366,7 +366,7 @@ describe("compileAsync method", () => {
     })
 
     it("if required schema is loaded but the reference cannot be resolved", () => {
-      var schema = {
+      const schema = {
         $id: "http://example.com/parent.json",
         properties: {
           a: {$ref: "object.json#/definitions/not_found"},
@@ -376,7 +376,7 @@ describe("compileAsync method", () => {
     })
 
     it("if loadSchema returned error", () => {
-      var schema = {
+      const schema = {
         $id: "http://example.com/parent.json",
         properties: {
           a: {$ref: "object.json"},
@@ -392,7 +392,7 @@ describe("compileAsync method", () => {
 
     it("if schema compilation throws some other exception", () => {
       ajv.addKeyword({keyword: "badkeyword", compile: badCompile})
-      var schema = {badkeyword: true}
+      const schema = {badkeyword: true}
       return shouldReject(ajv.compileAsync(schema))
 
       function badCompile(/* schema */) {
@@ -413,7 +413,7 @@ describe("compileAsync method", () => {
 
   describe("schema with multiple remote properties, the first is recursive schema (#801)", () => {
     it("should validate data", () => {
-      var schema = {
+      const schema = {
         $id: "http://example.com/list.json",
         type: "object",
         properties: {

@@ -1,12 +1,12 @@
 "use strict"
 
-var Ajv = require("../ajv")
-var should = require("../chai").should()
+const Ajv = require("../ajv")
+const should = require("../chai").should()
 
 describe("options to add schemas", () => {
   describe("schemas", () => {
     it("should add schemas from object", () => {
-      var ajv = new Ajv({
+      const ajv = new Ajv({
         schemas: {
           int: {type: "integer"},
           str: {type: "string"},
@@ -20,7 +20,7 @@ describe("options to add schemas", () => {
     })
 
     it("should add schemas from array", () => {
-      var ajv = new Ajv({
+      const ajv = new Ajv({
         schemas: [
           {$id: "int", type: "integer"},
           {$id: "str", type: "string"},
@@ -37,7 +37,7 @@ describe("options to add schemas", () => {
   describe("addUsedSchema", () => {
     ;[true, undefined].forEach((optionValue) => {
       describe("= " + optionValue, () => {
-        var ajv
+        let ajv
 
         beforeEach(() => {
           ajv = new Ajv({addUsedSchema: optionValue})
@@ -45,8 +45,8 @@ describe("options to add schemas", () => {
 
         describe("compile and validate", () => {
           it("should add schema", () => {
-            var schema = {$id: "str", type: "string"}
-            var validate = ajv.compile(schema)
+            let schema = {$id: "str", type: "string"}
+            const validate = ajv.compile(schema)
             validate("abc").should.equal(true)
             validate(1).should.equal(false)
             ajv.getSchema("str").should.equal(validate)
@@ -63,8 +63,8 @@ describe("options to add schemas", () => {
               ajv.compile({$id: "str", minLength: 2})
             })
 
-            var schema = {$id: "int", type: "integer"}
-            var schema2 = {$id: "int", minimum: 0}
+            const schema = {$id: "int", type: "integer"}
+            const schema2 = {$id: "int", minimum: 0}
             ajv.validate(schema, 1).should.equal(true)
             should.throw(() => {
               ajv.validate(schema2, 1)
@@ -75,7 +75,7 @@ describe("options to add schemas", () => {
     })
 
     describe("= false", () => {
-      var ajv
+      let ajv
 
       beforeEach(() => {
         ajv = new Ajv({addUsedSchema: false})
@@ -83,8 +83,8 @@ describe("options to add schemas", () => {
 
       describe("compile and validate", () => {
         it("should NOT add schema", () => {
-          var schema = {$id: "str", type: "string"}
-          var validate = ajv.compile(schema)
+          let schema = {$id: "str", type: "string"}
+          const validate = ajv.compile(schema)
           validate("abc").should.equal(true)
           validate(1).should.equal(false)
           should.equal(ajv.getSchema("str"), undefined)
@@ -101,8 +101,8 @@ describe("options to add schemas", () => {
             ajv.compile({$id: "str", minLength: 2})
           })
 
-          var schema = {$id: "int", type: "integer"}
-          var schema2 = {$id: "int", minimum: 0}
+          const schema = {$id: "int", type: "integer"}
+          const schema2 = {$id: "int", minimum: 0}
           ajv.validate(schema, 1).should.equal(true)
           should.not.throw(() => {
             ajv.validate(schema2, 1).should.equal(true)
@@ -113,11 +113,11 @@ describe("options to add schemas", () => {
   })
 
   describe("serialize", () => {
-    var serializeCalled
+    let serializeCalled
 
     it("should use user-defined function to serialize schema to string", () => {
       serializeCalled = undefined
-      var ajv = new Ajv({serialize: serialize})
+      const ajv = new Ajv({serialize: serialize})
       ajv.addSchema({type: "string"})
       should.equal(serializeCalled, true)
     })

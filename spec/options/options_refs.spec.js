@@ -1,7 +1,7 @@
 "use strict"
 
-var Ajv = require("../ajv")
-var should = require("../chai").should()
+const Ajv = require("../ajv")
+const should = require("../chai").should()
 
 describe("referenced schema options", () => {
   describe("extendRefs", () => {
@@ -33,7 +33,7 @@ describe("referenced schema options", () => {
 
         function testFail(ajv) {
           should.throw(() => {
-            var schema = {
+            const schema = {
               definitions: {
                 int: {type: "integer"},
               },
@@ -44,7 +44,7 @@ describe("referenced schema options", () => {
           })
 
           should.not.throw(() => {
-            var schema = {
+            const schema = {
               definitions: {
                 int: {type: "integer"},
               },
@@ -57,7 +57,7 @@ describe("referenced schema options", () => {
     })
 
     function test(ajv, shouldExtendRef) {
-      var schema = {
+      let schema = {
         definitions: {
           int: {type: "integer"},
         },
@@ -65,7 +65,7 @@ describe("referenced schema options", () => {
         minimum: 10,
       }
 
-      var validate = ajv.compile(schema)
+      let validate = ajv.compile(schema)
       validate(10).should.equal(true)
       validate(1).should.equal(!shouldExtendRef)
 
@@ -92,15 +92,15 @@ describe("referenced schema options", () => {
     }
 
     function testWarning(ajv, msgPattern) {
-      var oldConsole
+      let oldConsole
       try {
         oldConsole = console.warn
-        var consoleMsg
+        let consoleMsg
         console.warn = function () {
           consoleMsg = Array.prototype.join.call(arguments, " ")
         }
 
-        var schema = {
+        const schema = {
           definitions: {
             int: {type: "integer"},
           },
@@ -119,7 +119,7 @@ describe("referenced schema options", () => {
 
   describe("missingRefs", () => {
     it("should throw if ref is missing without this option", () => {
-      var ajv = new Ajv()
+      const ajv = new Ajv()
       should.throw(() => {
         ajv.compile({$ref: "missing_reference"})
       })
@@ -130,7 +130,7 @@ describe("referenced schema options", () => {
       testMissingRefsIgnore(new Ajv({missingRefs: "ignore", allErrors: true, logger: false}))
 
       function testMissingRefsIgnore(ajv) {
-        var validate = ajv.compile({$ref: "missing_reference"})
+        const validate = ajv.compile({$ref: "missing_reference"})
         validate({}).should.equal(true)
       }
     })
@@ -144,7 +144,7 @@ describe("referenced schema options", () => {
       )
 
       function testMissingRefsFail(ajv) {
-        var validate = ajv.compile({
+        let validate = ajv.compile({
           anyOf: [{type: "number"}, {$ref: "missing_reference"}],
         })
         validate(123).should.equal(true)

@@ -1,70 +1,47 @@
 "use strict"
 
-var jsonSchemaTest = require("json-schema-test"),
+const jsonSchemaTest = require("json-schema-test"),
   getAjvInstances = require("./ajv_instances"),
   options = require("./ajv_options"),
-  suite = require("./browser_test_suite"),
   after = require("./after_test")
 
-var remoteRefs = {
+const remoteRefs = {
   "http://localhost:1234/integer.json": require("./JSON-Schema-Test-Suite/remotes/integer.json"),
   "http://localhost:1234/subSchemas.json": require("./JSON-Schema-Test-Suite/remotes/subSchemas.json"),
   "http://localhost:1234/folder/folderInteger.json": require("./JSON-Schema-Test-Suite/remotes/folder/folderInteger.json"),
   "http://localhost:1234/name.json": require("./JSON-Schema-Test-Suite/remotes/name.json"),
 }
 
-var SKIP = {
+const SKIP = {
   6: [
     "optional/ecmascript-regex", // TODO only format needs to be skipped, too much is skipped here
     "optional/format",
-    "format",
   ],
   7: [
     "optional/ecmascript-regex", // TODO only format needs to be skipped, too much is skipped here
     "optional/content",
-    "format/date",
-    "format/date-time",
-    "format/email",
-    "format/hostname",
-    "format/idn-email",
-    "format/idn-hostname",
-    "format/ipv4",
-    "format/ipv6",
-    "format/iri",
-    "format/iri-reference",
-    "format/json-pointer",
-    "format/regex",
-    "format/relative-json-pointer",
-    "format/time",
-    "format/uri",
-    "format/uri-reference",
-    "format/uri-template",
+    "optional/format/date",
+    "optional/format/date-time",
+    "optional/format/email",
+    "optional/format/hostname",
+    "optional/format/idn-email",
+    "optional/format/idn-hostname",
+    "optional/format/ipv4",
+    "optional/format/ipv6",
+    "optional/format/iri",
+    "optional/format/iri-reference",
+    "optional/format/json-pointer",
+    "optional/format/regex",
+    "optional/format/relative-json-pointer",
+    "optional/format/time",
+    "optional/format/uri",
+    "optional/format/uri-reference",
+    "optional/format/uri-template",
   ],
 }
 
-runTest(
-  getAjvInstances(options, {meta: false, strict: false}),
-  6,
-  typeof window == "object"
-    ? suite(
-        require("./JSON-Schema-Test-Suite/tests/draft6/{**/,}*.json", {
-          mode: "list",
-        })
-      )
-    : "./JSON-Schema-Test-Suite/tests/draft6/{**/,}*.json"
-)
-
-runTest(
-  getAjvInstances(options, {strict: false}),
-  7,
-  typeof window == "object"
-    ? suite(
-        require("./JSON-Schema-Test-Suite/tests/draft7/{**/,}*.json", {
-          mode: "list",
-        })
-      )
-    : "./JSON-Schema-Test-Suite/tests/draft7/{**/,}*.json"
-)
+runTest(getAjvInstances(options, {meta: false, strict: false}), 6, require("./_json/draft6"))
+runTest(getAjvInstances(options, {strict: false}), 7, require("./_json/draft7"))
 
 function runTest(instances, draft, tests) {
   instances.forEach((ajv) => {
@@ -74,7 +51,7 @@ function runTest(instances, draft, tests) {
         ajv._opts.defaultMeta = "http://json-schema.org/draft-06/schema#"
         break
     }
-    for (var id in remoteRefs) ajv.addSchema(remoteRefs[id], id)
+    for (const id in remoteRefs) ajv.addSchema(remoteRefs[id], id)
   })
 
   jsonSchemaTest(instances, {
@@ -84,7 +61,7 @@ function runTest(instances, draft, tests) {
       ": " +
       instances.length +
       " ajv instances with different options",
-    suites: {tests: tests},
+    suites: {tests},
     only: [],
     skip: SKIP[draft],
     assert: require("./chai").assert,

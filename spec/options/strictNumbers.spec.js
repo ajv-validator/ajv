@@ -12,7 +12,7 @@ describe("strict option with keywords (replaced structNumbers)", () => {
 function testStrict(ajv) {
   return () => {
     it("should fail validation for NaN/Infinity as type number", () => {
-      var validate = ajv.compile({type: "number"})
+      const validate = ajv.compile({type: "number"})
       validate("1.1").should.equal(false)
       validate(1.1).should.equal(true)
       validate(1).should.equal(true)
@@ -21,7 +21,7 @@ function testStrict(ajv) {
     })
 
     it("should fail validation for NaN as type integer", () => {
-      var validate = ajv.compile({type: "integer"})
+      const validate = ajv.compile({type: "integer"})
       validate("1.1").should.equal(false)
       validate(1.1).should.equal(false)
       validate(1).should.equal(true)
@@ -34,7 +34,7 @@ function testStrict(ajv) {
 function testNotStrict(_ajv) {
   return () => {
     it("should NOT fail validation for NaN/Infinity as type number", () => {
-      var validate = _ajv.compile({type: "number"})
+      const validate = _ajv.compile({type: "number"})
       validate("1.1").should.equal(false)
       validate(1.1).should.equal(true)
       validate(1).should.equal(true)
@@ -43,7 +43,7 @@ function testNotStrict(_ajv) {
     })
 
     it("should NOT fail validation for NaN/Infinity as type integer", () => {
-      var validate = _ajv.compile({type: "integer"})
+      const validate = _ajv.compile({type: "integer"})
       validate("1.1").should.equal(false)
       validate(1.1).should.equal(false)
       validate(1).should.equal(true)

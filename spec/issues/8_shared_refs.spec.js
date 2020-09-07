@@ -1,6 +1,6 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
 
 describe("issue #8: schema with shared references", () => {
@@ -10,14 +10,14 @@ describe("issue #8: schema with shared references", () => {
 
   function spec(method) {
     return () => {
-      var ajv = new Ajv()
+      const ajv = new Ajv()
 
-      var propertySchema = {
+      const propertySchema = {
         type: "string",
         maxLength: 4,
       }
 
-      var schema = {
+      const schema = {
         $id: "obj.json#",
         type: "object",
         properties: {
@@ -28,7 +28,7 @@ describe("issue #8: schema with shared references", () => {
 
       ajv[method](schema)
 
-      var result = ajv.validate("obj.json#", {foo: "abc", bar: "def"})
+      let result = ajv.validate("obj.json#", {foo: "abc", bar: "def"})
       result.should.equal(true)
 
       result = ajv.validate("obj.json#", {foo: "abcde", bar: "fghg"})

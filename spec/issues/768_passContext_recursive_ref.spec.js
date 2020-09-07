@@ -1,10 +1,10 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
 
 describe("issue #768, fix passContext in recursive $ref", () => {
-  var ajv, contexts
+  let ajv, contexts
 
   beforeEach(() => {
     contexts = []
@@ -12,8 +12,8 @@ describe("issue #768, fix passContext in recursive $ref", () => {
 
   describe("passContext = true", () => {
     it("should pass this value as context to user-defined keyword validation function", () => {
-      var validate = getValidate(true)
-      var self = {}
+      const validate = getValidate(true)
+      const self = {}
       validate.call(self, {bar: "a", baz: {bar: "b"}})
       contexts.should.have.length(2)
       contexts.forEach((ctx) => ctx.should.equal(self))
@@ -22,7 +22,7 @@ describe("issue #768, fix passContext in recursive $ref", () => {
 
   describe("passContext = false", () => {
     it("should pass ajv instance as context to user-defined keyword validation function", () => {
-      var validate = getValidate(false)
+      const validate = getValidate(false)
       validate({bar: "a", baz: {bar: "b"}})
       contexts.should.have.length(2)
       contexts.forEach((ctx) => ctx.should.equal(ajv))
@@ -31,8 +31,8 @@ describe("issue #768, fix passContext in recursive $ref", () => {
 
   describe("ref is fragment and passContext = true", () => {
     it("should pass this value as context to user-defined keyword validation function", () => {
-      var validate = getValidateFragments(true)
-      var self = {}
+      const validate = getValidateFragments(true)
+      const self = {}
       validate.call(self, {baz: {corge: "a", quux: {baz: {corge: "b"}}}})
       contexts.should.have.length(2)
       contexts.forEach((ctx) => ctx.should.equal(self))
@@ -41,7 +41,7 @@ describe("issue #768, fix passContext in recursive $ref", () => {
 
   describe("ref is fragment and passContext = false", () => {
     it("should pass ajv instance as context to user-defined keyword validation function", () => {
-      var validate = getValidateFragments(false)
+      const validate = getValidateFragments(false)
       validate({baz: {corge: "a", quux: {baz: {corge: "b"}}}})
       contexts.should.have.length(2)
       contexts.forEach((ctx) => ctx.should.equal(ajv))
@@ -52,7 +52,7 @@ describe("issue #768, fix passContext in recursive $ref", () => {
     ajv = new Ajv({passContext: passContext})
     ajv.addKeyword({keyword: "testValidate", validate: storeContext})
 
-    var schema = {
+    const schema = {
       $id: "foo",
       type: "object",
       required: ["bar"],

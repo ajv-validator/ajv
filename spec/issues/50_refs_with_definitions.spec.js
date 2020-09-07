@@ -1,7 +1,7 @@
 "use strict"
 
-var Ajv = require("../ajv")
-var should = require("../chai").should()
+const Ajv = require("../ajv")
+const should = require("../chai").should()
 
 describe('issue #50: references with "definitions"', () => {
   it("should be supported by addSchema", spec("addSchema"))
@@ -10,9 +10,7 @@ describe('issue #50: references with "definitions"', () => {
 
   function spec(method) {
     return () => {
-      var result
-
-      var ajv = new Ajv()
+      const ajv = new Ajv()
 
       ajv[method]({
         $id: "http://example.com/test/person.json#",
@@ -34,7 +32,7 @@ describe('issue #50: references with "definitions"', () => {
         },
       })
 
-      result = ajv.validate("http://example.com/test/employee.json#", {
+      const result = ajv.validate("http://example.com/test/employee.json#", {
         person: {
           name: "Alice",
         },

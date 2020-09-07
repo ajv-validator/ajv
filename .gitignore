@@ -39,3 +39,5 @@ dist/
 bundle/
 
 package-lock.json
+
+spec/_json/*.js

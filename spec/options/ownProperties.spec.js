@@ -1,10 +1,10 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
 
 describe("ownProperties option", () => {
-  var ajv, ajvOP, ajvOP1
+  let ajv, ajvOP, ajvOP1
 
   beforeEach(() => {
     ajv = new Ajv({allErrors: true})
@@ -13,36 +13,36 @@ describe("ownProperties option", () => {
   })
 
   it("should only validate own properties with additionalProperties", () => {
-    var schema = {
+    const schema = {
       properties: {a: {type: "number"}},
       additionalProperties: false,
     }
 
-    var obj = {a: 1}
-    var proto = {b: 2}
+    const obj = {a: 1}
+    const proto = {b: 2}
     test(schema, obj, proto)
   })
 
   it("should only validate own properties with properties keyword", () => {
-    var schema = {
+    const schema = {
       properties: {
         a: {type: "number"},
         b: {type: "number"},
       },
     }
 
-    var obj = {a: 1}
-    var proto = {b: "not a number"}
+    const obj = {a: 1}
+    const proto = {b: "not a number"}
     test(schema, obj, proto)
   })
 
   it("should only validate own properties with required keyword", () => {
-    var schema = {
+    const schema = {
       required: ["a", "b"],
     }
 
-    var obj = {a: 1}
-    var proto = {b: 2}
+    const obj = {a: 1}
+    const proto = {b: 2}
     test(schema, obj, proto, 1, true)
   })
 
@@ -51,12 +51,12 @@ describe("ownProperties option", () => {
     ajvOP = new Ajv({ownProperties: true, allErrors: true, loopRequired: 1})
     ajvOP1 = new Ajv({ownProperties: true, loopRequired: 1})
 
-    var schema = {
+    const schema = {
       required: ["a", "b", "c", "d"],
     }
 
-    var obj = {a: 1, b: 2}
-    var proto = {c: 3, d: 4}
+    const obj = {a: 1, b: 2}
+    const proto = {c: 3, d: 4}
     test(schema, obj, proto, 2, true)
   })
 
@@ -65,7 +65,7 @@ describe("ownProperties option", () => {
     ajvOP = new Ajv({ownProperties: true, allErrors: true, $data: true})
     ajvOP1 = new Ajv({ownProperties: true, $data: true})
 
-    var schema = {
+    const schema = {
       required: {$data: "0/req"},
       properties: {
         req: {
@@ -75,16 +75,16 @@ describe("ownProperties option", () => {
       },
     }
 
-    var obj = {
+    const obj = {
       req: ["a", "b"],
       a: 1,
     }
-    var proto = {b: 2}
+    const proto = {b: 2}
     test(schema, obj, proto, 1, true)
   })
 
   it("should only validate own properties with properties and required keyword", () => {
-    var schema = {
+    const schema = {
       properties: {
         a: {type: "number"},
         b: {type: "number"},
@@ -92,21 +92,21 @@ describe("ownProperties option", () => {
       required: ["a", "b"],
     }
 
-    var obj = {a: 1}
-    var proto = {b: 2}
+    const obj = {a: 1}
+    const proto = {b: 2}
     test(schema, obj, proto, 1, true)
   })
 
   it("should only validate own properties with dependencies keyword", () => {
-    var schema = {
+    const schema = {
       dependencies: {
         a: ["c"],
         b: ["d"],
       },
     }
 
-    var obj = {a: 1, c: 3}
-    var proto = {b: 2}
+    let obj = {a: 1, c: 3}
+    let proto = {b: 2}
     test(schema, obj, proto)
 
     obj = {a: 1, b: 2, c: 3}
@@ -115,15 +115,15 @@ describe("ownProperties option", () => {
   })
 
   it("should only validate own properties with schema dependencies", () => {
-    var schema = {
+    const schema = {
       dependencies: {
         a: {not: {required: ["c"]}},
         b: {not: {required: ["d"]}},
       },
     }
 
-    var obj = {a: 1, d: 3}
-    var proto = {b: 2}
+    let obj = {a: 1, d: 3}
+    let proto = {b: 2}
     test(schema, obj, proto)
 
     obj = {a: 1, b: 2}
@@ -132,34 +132,34 @@ describe("ownProperties option", () => {
   })
 
   it("should only validate own properties with patternProperties", () => {
-    var schema = {
+    const schema = {
       patternProperties: {"f.*o": {type: "integer"}},
     }
 
-    var obj = {fooo: 1}
-    var proto = {foo: "not a number"}
+    const obj = {fooo: 1}
+    const proto = {foo: "not a number"}
     test(schema, obj, proto)
   })
 
   it("should only validate own properties with propertyNames", () => {
-    var schema = {
+    const schema = {
       propertyNames: {
         pattern: "foo",
       },
     }
 
-    var obj = {foo: 2}
-    var proto = {bar: 1}
+    const obj = {foo: 2}
+    const proto = {bar: 1}
     test(schema, obj, proto, 2)
   })
 
   function test(schema, obj, proto, errors, reverse) {
     errors = errors || 1
-    var validate = ajv.compile(schema)
-    var validateOP = ajvOP.compile(schema)
-    var validateOP1 = ajvOP1.compile(schema)
-    var data = Object.create(proto)
-    for (var key in obj) data[key] = obj[key]
+    const validate = ajv.compile(schema)
+    const validateOP = ajvOP.compile(schema)
+    const validateOP1 = ajvOP1.compile(schema)
+    const data = Object.create(proto)
+    for (const key in obj) data[key] = obj[key]
 
     if (reverse) {
       validate(data).should.equal(true)

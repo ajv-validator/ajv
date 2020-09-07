@@ -1,9 +1,9 @@
 "use strict"
 
-var isBrowser = typeof window == "object"
-var fullTest = isBrowser || !process.env.AJV_FAST_TEST
+const isBrowser = typeof window == "object"
+const fullTest = isBrowser || !process.env.AJV_FAST_TEST
 
-var options = fullTest
+const options = fullTest
   ? {
       allErrors: true,
       verbose: true,

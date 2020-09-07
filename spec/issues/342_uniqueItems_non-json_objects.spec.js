@@ -1,13 +1,13 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
 
 describe("issue #342, support uniqueItems with some non-JSON objects", () => {
-  var validate
+  let validate
 
   before(() => {
-    var ajv = new Ajv()
+    const ajv = new Ajv()
     validate = ajv.compile({uniqueItems: true})
   })
 
@@ -18,12 +18,8 @@ describe("issue #342, support uniqueItems with some non-JSON objects", () => {
   })
 
   it("should allow different Dates", () => {
-    validate([new Date("2016-11-11"), new Date("2016-11-12")]).should.equal(
-      true
-    )
-    validate([new Date("2016-11-11"), new Date("2016-11-11")]).should.equal(
-      false
-    )
+    validate([new Date("2016-11-11"), new Date("2016-11-12")]).should.equal(true)
+    validate([new Date("2016-11-11"), new Date("2016-11-11")]).should.equal(false)
     validate([new Date("2016-11-11"), {}]).should.equal(true)
   })
 

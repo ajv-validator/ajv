@@ -1,29 +1,21 @@
 "use strict"
 
-var jsonSchemaTest = require("json-schema-test"),
-  Promise = require("./promise"),
+const jsonSchemaTest = require("json-schema-test"),
   getAjvInstances = require("./ajv_async_instances"),
   Ajv = require("./ajv"),
-  suite = require("./browser_test_suite"),
   after = require("./after_test")
 
-var instances = getAjvInstances({$data: true})
+const instances = getAjvInstances({$data: true})
 
 instances.forEach(addAsyncFormatsAndKeywords)
 
 jsonSchemaTest(instances, {
   description:
     "asynchronous schemas tests of " + instances.length + " ajv instances with different options",
-  suites: {
-    "async schemas":
-      typeof window == "object"
-        ? suite(require("./async/{**/,}*.json", {mode: "list"}))
-        : "./async/{**/,}*.json",
-  },
+  suites: {"async schemas": require("./_json/async")},
   async: true,
   asyncValid: "data",
   assert: require("./chai").assert,
-  Promise: Promise,
   afterError: after.error,
   // afterEach: after.each,
   cwd: __dirname,
@@ -87,7 +79,7 @@ function checkIdExists(schema, data) {
 }
 
 function checkIdExistsWithError(schema, data) {
-  var table = schema.table
+  const table = schema.table
   switch (table) {
     case "users":
       return check(table, [1, 5, 8])
@@ -100,7 +92,7 @@ function checkIdExistsWithError(schema, data) {
   function check(_table, IDs) {
     if (IDs.indexOf(data) >= 0) return Promise.resolve(true)
 
-    var error = {
+    const error = {
       keyword: "idExistsWithError",
       message: "id not found in table " + _table,
     }

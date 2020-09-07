@@ -1,17 +1,17 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
-var DATE_FORMAT = /^\d\d\d\d-[0-1]\d-[0-3]\d$/
+const DATE_FORMAT = /^\d\d\d\d-[0-1]\d-[0-3]\d$/
 
 describe("validation options", () => {
   describe("format", () => {
     it("should not validate formats if option format == false", () => {
-      var ajv = new Ajv({formats: {date: DATE_FORMAT}}),
+      const ajv = new Ajv({formats: {date: DATE_FORMAT}}),
         ajvFF = new Ajv({formats: {date: DATE_FORMAT}, format: false})
 
-      var schema = {format: "date"}
-      var invalideDateTime = "06/19/1963" // expects hyphens
+      const schema = {format: "date"}
+      const invalideDateTime = "06/19/1963" // expects hyphens
 
       ajv.validate(schema, invalideDateTime).should.equal(false)
       ajvFF.validate(schema, invalideDateTime).should.equal(true)
@@ -20,13 +20,13 @@ describe("validation options", () => {
 
   describe("formats", () => {
     it("should add formats from options", () => {
-      var ajv = new Ajv({
+      const ajv = new Ajv({
         formats: {
           identifier: /^[a-z_$][a-z0-9_$]*$/i,
         },
       })
 
-      var validate = ajv.compile({format: "identifier"})
+      const validate = ajv.compile({format: "identifier"})
 
       validate("Abc1").should.equal(true)
       validate("foo bar").should.equal(false)
@@ -37,7 +37,7 @@ describe("validation options", () => {
 
   describe("keywords", () => {
     it("should add keywords from options", () => {
-      var ajv = new Ajv({
+      const ajv = new Ajv({
         keywords: [
           {
             keyword: "identifier",
@@ -49,7 +49,7 @@ describe("validation options", () => {
         ],
       })
 
-      var validate = ajv.compile({identifier: true})
+      const validate = ajv.compile({identifier: true})
 
       validate("Abc1").should.equal(true)
       validate("foo bar").should.equal(false)
@@ -60,13 +60,13 @@ describe("validation options", () => {
 
   describe("unicode", () => {
     it("should use String.prototype.length with deprecated unicode option == false", () => {
-      var ajvUnicode = new Ajv()
+      const ajvUnicode = new Ajv()
       testUnicode(new Ajv({unicode: false, logger: false}))
       testUnicode(new Ajv({unicode: false, allErrors: true, logger: false}))
 
       function testUnicode(ajv) {
-        var validateWithUnicode = ajvUnicode.compile({minLength: 2})
-        var validate = ajv.compile({minLength: 2})
+        let validateWithUnicode = ajvUnicode.compile({minLength: 2})
+        let validate = ajv.compile({minLength: 2})
 
         validateWithUnicode("😀").should.equal(false)
         validate("😀").should.equal(true)
@@ -86,8 +86,8 @@ describe("validation options", () => {
       test(new Ajv({multipleOfPrecision: 7, allErrors: true}))
 
       function test(ajv) {
-        var schema = {multipleOf: 0.01}
-        var validate = ajv.compile(schema)
+        let schema = {multipleOf: 0.01}
+        let validate = ajv.compile(schema)
 
         validate(4.18).should.equal(true)
         validate(4.181).should.equal(false)

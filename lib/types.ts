@@ -119,7 +119,7 @@ export interface SchemaValidateFunction {
     parentDataProperty?: string | number,
     rootData?: Record<string, unknown> | unknown[]
   ): boolean | Promise<unknown>
-  errors?: ErrorObject[]
+  errors?: Partial<ErrorObject>[]
 }
 
 export interface ErrorObject {

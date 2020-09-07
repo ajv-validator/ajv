@@ -1,7 +1,7 @@
 "use strict"
 
-var Ajv = require("../ajv")
-var should = require("../chai").should()
+const Ajv = require("../ajv")
+const should = require("../chai").should()
 
 describe("meta and validateSchema options", () => {
   it("should add draft-7 meta schema by default", () => {
@@ -22,7 +22,7 @@ describe("meta and validateSchema options", () => {
   })
 
   it("should throw if meta: false and validateSchema: true", () => {
-    var ajv = new Ajv({meta: false, logger: false})
+    const ajv = new Ajv({meta: false, logger: false})
     should.not.exist(ajv.getSchema("http://json-schema.org/draft-07/schema"))
     should.not.throw(() => {
       ajv.addSchema({type: "wrong_type"}, "integer")
@@ -30,7 +30,7 @@ describe("meta and validateSchema options", () => {
   })
 
   it("should skip schema validation with validateSchema: false", () => {
-    var ajv = new Ajv()
+    let ajv = new Ajv()
     should.throw(() => {
       ajv.addSchema({type: 123}, "integer")
     })
@@ -79,19 +79,19 @@ describe("meta and validateSchema options", () => {
   })
 
   it("should validate v6 schema", () => {
-    var ajv = new Ajv()
+    const ajv = new Ajv()
     ajv.validateSchema({contains: {minimum: 2}}).should.equal(true)
     ajv.validateSchema({contains: 2}).should.equal(false)
   })
 
   it("should use option meta as default meta schema", () => {
-    var meta = {
+    const meta = {
       $schema: "http://json-schema.org/draft-07/schema",
       properties: {
         myKeyword: {type: "boolean"},
       },
     }
-    var ajv = new Ajv({meta: meta})
+    let ajv = new Ajv({meta: meta})
     ajv.validateSchema({myKeyword: true}).should.equal(true)
     ajv.validateSchema({myKeyword: 2}).should.equal(false)
     ajv

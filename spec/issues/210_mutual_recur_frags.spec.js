@@ -1,11 +1,11 @@
 "use strict"
 
-var Ajv = require("../ajv")
+const Ajv = require("../ajv")
 require("../chai").should()
 
 describe("issue #210, mutual recursive $refs that are schema fragments", () => {
   it("should compile and validate schema when one ref is fragment", () => {
-    var ajv = new Ajv()
+    const ajv = new Ajv()
 
     ajv.addSchema({
       $id: "foo",
@@ -29,14 +29,14 @@ describe("issue #210, mutual recursive $refs that are schema fragments", () => {
       },
     })
 
-    var validate = ajv.compile({$ref: "foo#/definitions/bar"})
+    const validate = ajv.compile({$ref: "foo#/definitions/bar"})
 
     validate({baz: {quux: {baz: 42}}}).should.equal(true)
     validate({baz: {quux: {baz: "foo"}}}).should.equal(false)
   })
 
   it("should compile and validate schema when both refs are fragments", () => {
-    var ajv = new Ajv()
+    const ajv = new Ajv()
 
     ajv.addSchema({
       $id: "foo",
@@ -64,7 +64,7 @@ describe("issue #210, mutual recursive $refs that are schema fragments", () => {
       },
     })
 
-    var validate = ajv.compile({$ref: "foo#/definitions/bar"})
+    const validate = ajv.compile({$ref: "foo#/definitions/bar"})
 
     validate({baz: {quux: {baz: 42}}}).should.equal(true)
     validate({baz: {quux: {baz: "foo"}}}).should.equal(false)
