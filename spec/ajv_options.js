@@ -1,7 +1,7 @@
 "use strict"
 
 const isBrowser = typeof window == "object"
-const fullTest = isBrowser || !process.env.AJV_FAST_TEST
+const fullTest = !isBrowser && process.env.AJV_FULL_TEST
 
 const options = fullTest
   ? {

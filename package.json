@@ -16,7 +16,6 @@
     "prettier:write": "prettier --write './**/*.{md,json,yaml,js,ts}'",
     "prettier:check": "prettier --list-different './**/*.{md,json,yaml,js,ts}'",
     "test-spec": "cross-env TS_NODE_PROJECT=spec/tsconfig.json mocha -r ts-node/register spec/{**/,}*.spec.{js,ts} -R dot",
-    "test-fast": "cross-env AJV_FAST_TEST=true npm run test-spec",
     "test-debug": "npm run test-spec -- --inspect-brk",
     "test-cov": "nyc npm run test-spec",
     "bundle": "rm -rf bundle && node ./scripts/bundle.js",
@@ -26,6 +25,7 @@
     "test-browser": "rm -rf .browser && npm run bundle && scripts/prepare-tests && karma start",
     "test-all": "npm run test-cov && if-node-version 12 npm run test-browser",
     "test": "npm run build && npm run json-tests && npm run eslint && npm run test-cov",
+    "test-ci": "AJV_FULL_TEST=true npm test",
     "prepublish": "npm run build",
     "watch": "watch \"npm run build\" ./lib"
   },
