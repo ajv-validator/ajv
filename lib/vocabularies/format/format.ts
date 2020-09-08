@@ -1,6 +1,7 @@
 import {CodeKeywordDefinition, AddedFormat, FormatValidate} from "../../types"
 import KeywordCtx from "../../compile/context"
 import {_, str, nil, or, Code, getProperty} from "../../compile/codegen"
+import N from "../../compile/names"
 
 const def: CodeKeywordDefinition = {
   keyword: "format",
@@ -31,7 +32,7 @@ const def: CodeKeywordDefinition = {
         if (opts.unknownFormats === "ignore") return nil
         let unknown = _`${schemaCode} && !${format}`
         if (Array.isArray(opts.unknownFormats)) {
-          unknown = _`${unknown} && !self._opts.unknownFormats.includes(${schemaCode})`
+          unknown = _`${unknown} && !${N.self}._opts.unknownFormats.includes(${schemaCode})`
         }
         return _`(${unknown})`
       }

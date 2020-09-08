@@ -251,7 +251,14 @@ function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateW
     let validate: ValidateFunction
     try {
       // TODO refactor to fewer variables - maybe only self and scope
-      const makeValidate = new Function("self", "formats", "root", "refVal", "scope", sourceCode)
+      const makeValidate = new Function(
+        N.self.toString(),
+        "formats",
+        "root",
+        "refVal",
+        N.scope.toString(),
+        sourceCode
+      )
       validate = makeValidate(self, formats, root, refVal, self._scope.get())
 
       refVal[0] = validate

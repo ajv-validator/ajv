@@ -124,7 +124,7 @@ function checkAsync(it: SchemaObjCtx): void {
 function commentKeyword({gen, schema, errSchemaPath, opts: {$comment}}: SchemaObjCtx): void {
   const msg = schema.$comment
   if ($comment === true) {
-    gen.code(_`console.log(${msg})`) // should it use logger?
+    gen.code(_`${N.self}.logger.log(${msg})`)
   } else if (typeof $comment == "function") {
     const schemaPath = str`${errSchemaPath}/$comment`
     gen.code(_`${N.self}._opts.$comment(${msg}, ${schemaPath}, ${N.validate}.root.schema)`)
