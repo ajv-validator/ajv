@@ -1,42 +1,3 @@
-type TemplateArg = SafeExpr | string
-
-export type Code = _Code | Name
-
-export type SafeExpr = Code | number | boolean | null
-
-export function _(strs: TemplateStringsArray, ...args: TemplateArg[]): _Code {
-  // TODO benchmark if loop is faster than reduce
-  // let res = strs[0]
-  // for (let i = 0; i < args.length; i++) {
-  //   res += interpolate(args[i]) + strs[i + 1]
-  // }
-  // return new _Code(res)
-  return new _Code(strs.reduce((res, s, i) => res + interpolate(args[i - 1]) + s))
-}
-
-export function str(strs: TemplateStringsArray, ...args: (TemplateArg | string[])[]): _Code {
-  return new _Code(
-    strs.map(safeStringify).reduce((res, s, i) => {
-      let aStr = interpolateStr(args[i - 1])
-      if (aStr instanceof _Code && aStr.isQuoted()) aStr = aStr.toString()
-      return typeof aStr === "string"
-        ? res.slice(0, -1) + aStr.slice(1, -1) + s.slice(1)
-        : `${res} + ${aStr} + ${s}`
-    })
-  )
-}
-
-function interpolate(x: TemplateArg): TemplateArg {
-  return x instanceof _Code || typeof x == "number" || typeof x == "boolean" || x === null
-    ? x
-    : safeStringify(x)
-}
-
-function interpolateStr(x: TemplateArg | string[]): TemplateArg {
-  if (Array.isArray(x)) x = x.join(",")
-  return interpolate(x)
-}
-
 export class _Code {
   _str: string
 
@@ -75,7 +36,46 @@ export class Name extends _Code {
   }
 }
 
+export type Code = _Code | Name
+
+export type SafeExpr = Code | number | boolean | null
+
 export const nil = new _Code("")
+
+type TemplateArg = SafeExpr | string
+
+export function _(strs: TemplateStringsArray, ...args: TemplateArg[]): _Code {
+  // TODO benchmark if loop is faster than reduce
+  // let res = strs[0]
+  // for (let i = 0; i < args.length; i++) {
+  //   res += interpolate(args[i]) + strs[i + 1]
+  // }
+  // return new _Code(res)
+  return new _Code(strs.reduce((res, s, i) => res + interpolate(args[i - 1]) + s))
+}
+
+export function str(strs: TemplateStringsArray, ...args: (TemplateArg | string[])[]): _Code {
+  return new _Code(
+    strs.map(safeStringify).reduce((res, s, i) => {
+      let aStr = interpolateStr(args[i - 1])
+      if (aStr instanceof _Code && aStr.isQuoted()) aStr = aStr.toString()
+      return typeof aStr === "string"
+        ? res.slice(0, -1) + aStr.slice(1, -1) + s.slice(1)
+        : `${res} + ${aStr} + ${s}`
+    })
+  )
+}
+
+function interpolate(x: TemplateArg): TemplateArg {
+  return x instanceof _Code || typeof x == "number" || typeof x == "boolean" || x === null
+    ? x
+    : safeStringify(x)
+}
+
+function interpolateStr(x: TemplateArg | string[]): TemplateArg {
+  if (Array.isArray(x)) x = x.join(",")
+  return interpolate(x)
+}
 
 export function stringify(x: unknown): Code {
   return new _Code(safeStringify(x))
