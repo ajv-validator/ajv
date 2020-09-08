@@ -31,7 +31,7 @@ const META_SCHEMA_ID = "http://json-schema.org/draft-07/schema"
 
 const META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"]
 const META_SUPPORT_DATA = ["/properties"]
-const EXT_SCOPE_NAMES = new Set(["keyword", "pattern", "validate$data"])
+const EXT_SCOPE_NAMES = new Set(["keyword", "pattern", "validate$data", "func", "Error"])
 
 type CompileAsyncCallback = (err: Error | null, validate?: ValidateFunction) => void
 

@@ -150,6 +150,7 @@ export interface SchemaCtx {
   dataLevel: number
   topSchemaRef: Code
   async: boolean
+  ValidationError?: Name
   schema: Schema
   isRoot: boolean
   root: SchemaRoot

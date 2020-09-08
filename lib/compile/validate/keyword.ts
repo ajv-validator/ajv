@@ -79,7 +79,7 @@ function funcKeywordCode(cxt: KeywordCtx, def: FuncKeywordDefinition): void {
       () => assignValid(_`await `),
       (e) =>
         gen.assign(valid, false).if(
-          _`${e} instanceof ValidationError`,
+          _`${e} instanceof ${it.ValidationError as Name}`,
           () => gen.assign(ruleErrs, _`${e}.errors`),
           () => gen.throw(e)
         )

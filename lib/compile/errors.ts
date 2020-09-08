@@ -1,4 +1,4 @@
-import {KeywordErrorCtx, KeywordErrorDefinition} from "../types"
+import {KeywordErrorCtx, KeywordErrorDefinition, SchemaCtx} from "../types"
 import {CodeGen, _, str, Code, Name} from "./codegen"
 import N from "./names"
 
@@ -18,21 +18,23 @@ export function reportError(
   error: KeywordErrorDefinition,
   overrideAllErrors?: boolean
 ): void {
-  const {gen, compositeRule, allErrors, async} = cxt.it
+  const {it} = cxt
+  const {gen, compositeRule, allErrors} = it
   const errObj = errorObjectCode(cxt, error)
   if (overrideAllErrors ?? (compositeRule || allErrors)) {
     addError(gen, errObj)
   } else {
-    returnErrors(gen, async, _`[${errObj}]`)
+    returnErrors(it, _`[${errObj}]`)
   }
 }
 
 export function reportExtraError(cxt: KeywordErrorCtx, error: KeywordErrorDefinition): void {
-  const {gen, compositeRule, allErrors, async} = cxt.it
+  const {it} = cxt
+  const {gen, compositeRule, allErrors} = it
   const errObj = errorObjectCode(cxt, error)
   addError(gen, errObj)
   if (!(compositeRule || allErrors)) {
-    returnErrors(gen, async, N.vErrors)
+    returnErrors(it, N.vErrors)
   }
 }
 
@@ -72,9 +74,10 @@ function addError(gen: CodeGen, errObj: Code): void {
   gen.code(_`${N.errors}++`)
 }
 
-function returnErrors(gen: CodeGen, async: boolean, errs: Code): void {
-  if (async) {
-    gen.code(_`throw new ValidationError(${errs})`)
+function returnErrors(it: SchemaCtx, errs: Code): void {
+  const {gen} = it
+  if (it.async) {
+    gen.code(_`throw new ${it.ValidationError as Name}(${errs})`)
   } else {
     gen.assign(_`${N.validate}.errors`, errs)
     gen.return(false)

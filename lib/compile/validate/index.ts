@@ -131,12 +131,12 @@ function commentKeyword({gen, schema, errSchemaPath, opts: {$comment}}: SchemaOb
   }
 }
 
-function returnResults({gen, async}: SchemaCtx) {
+function returnResults({gen, async, ValidationError}: SchemaCtx) {
   if (async) {
     gen.if(
       _`${N.errors} === 0`,
       () => gen.return(N.data),
-      _`throw new ValidationError(${N.vErrors})`
+      _`throw new ${ValidationError as Name}(${N.vErrors})`
     )
   } else {
     gen.assign(_`${N.validate}.errors`, N.vErrors)

@@ -4,7 +4,7 @@ import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {ResolvedRef, InlineResolvedRef} from "../../compile"
 import {callValidateCode} from "../util"
-import {_, str, nil, Code} from "../../compile/codegen"
+import {_, str, nil, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 
 const def: CodeKeywordDefinition = {
@@ -68,7 +68,7 @@ const def: CodeKeywordDefinition = {
           if (!allErrors) gen.assign(valid, true)
         },
         (e) => {
-          gen.if(_`!(${e} instanceof ValidationError)`, () => gen.throw(e))
+          gen.if(_`!(${e} instanceof ${it.ValidationError as Name})`, () => gen.throw(e))
           addErrorsFrom(e)
           if (!allErrors) gen.assign(valid, false)
         }

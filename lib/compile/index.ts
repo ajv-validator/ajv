@@ -1,21 +1,16 @@
 import type {Schema, SchemaObject, ValidateFunction, ValidateWrapper} from "../types"
 import type Ajv from "../ajv"
 import {CodeGen, _, nil, str, Code} from "./codegen"
+import {ValidationError} from "./error_classes"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
 import {toHash, schemaHasRulesButRef, unescapeFragment} from "./util"
 import {validateFunctionCode} from "./validate"
 import URI = require("uri-js")
 
-const equal = require("fast-deep-equal")
-const ucs2length = require("./ucs2length")
-
 /**
  * Functions below are used inside compiled validations function
  */
-
-// this error is thrown by async schemas to return validation errors via exception
-const ValidationError = require("./error_classes").ValidationError
 
 interface _StoredSchema extends Compilation {
   schema: Schema
@@ -211,6 +206,13 @@ function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateW
     const rootId = getFullPath(_root.schema.$id)
 
     const gen = new CodeGen(self._scope, {...opts.codegen, forInOwn: opts.ownProperties})
+    let _ValidationError
+    if ($async) {
+      _ValidationError = gen.scopeValue("Error", {
+        ref: ValidationError,
+        code: _`require("ajv/dist/compile/error_classes").ValidationError`,
+      })
+    }
 
     validateFunctionCode({
       gen,
@@ -223,6 +225,7 @@ function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateW
       dataLevel: 0,
       topSchemaRef: _`${N.validate}.schema`,
       async: $async,
+      ValidationError: _ValidationError,
       schema: _schema,
       isRoot,
       root: _root,
@@ -248,30 +251,8 @@ function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateW
     let validate: ValidateFunction
     try {
       // TODO refactor to fewer variables - maybe only self and scope
-      const makeValidate = new Function(
-        "self",
-        "RULES",
-        "formats",
-        "root",
-        "refVal",
-        "scope",
-        "equal",
-        "ucs2length",
-        "ValidationError",
-        sourceCode
-      )
-
-      validate = makeValidate(
-        self,
-        self.RULES,
-        formats,
-        root,
-        refVal,
-        self._scope._scope,
-        equal,
-        ucs2length,
-        ValidationError
-      )
+      const makeValidate = new Function("self", "formats", "root", "refVal", "scope", sourceCode)
+      validate = makeValidate(self, formats, root, refVal, self._scope.get())
 
       refVal[0] = validate
     } catch (e) {
