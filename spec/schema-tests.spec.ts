@@ -1,0 +1,44 @@
+import getAjvInstances from "./ajv_instances"
+import jsonSchemaTest from "json-schema-test"
+import options from "./ajv_options"
+import {afterError, afterEach} from "./after_test"
+
+const addFormats = require("ajv-formats")
+
+const instances = getAjvInstances(options, {strict: false, unknownFormats: ["allowedUnknown"]})
+
+const remoteRefs = {
+  "http://localhost:1234/integer.json": require("./JSON-Schema-Test-Suite/remotes/integer.json"),
+  "http://localhost:1234/folder/folderInteger.json": require("./JSON-Schema-Test-Suite/remotes/folder/folderInteger.json"),
+  "http://localhost:1234/name.json": require("./remotes/name.json"),
+}
+
+const remoteRefsWithIds = [
+  require("./remotes/bar.json"),
+  require("./remotes/foo.json"),
+  require("./remotes/buu.json"),
+  require("./remotes/tree.json"),
+  require("./remotes/node.json"),
+  require("./remotes/second.json"),
+  require("./remotes/first.json"),
+  require("./remotes/scope_change.json"),
+]
+
+instances.forEach(addRemoteRefsAndFormats)
+
+jsonSchemaTest(instances, {
+  description: "Schema tests of " + instances.length + " ajv instances with different options",
+  suites: {"Schema tests": require("./_json/tests")},
+  only: [],
+  assert: require("./chai").assert,
+  afterError,
+  afterEach,
+  cwd: __dirname,
+  timeout: 10000,
+})
+
+function addRemoteRefsAndFormats(ajv) {
+  for (const id in remoteRefs) ajv.addSchema(remoteRefs[id], id)
+  ajv.addSchema(remoteRefsWithIds)
+  addFormats(ajv)
+}

@@ -1,5 +1,5 @@
-import {CodeKeywordDefinition} from "../../types"
-import KeywordContext from "../../compile/context"
+import {CodeKeywordDefinition, SchemaMap} from "../../types"
+import KeywordCtx from "../../compile/context"
 import {alwaysValidSchema, propertyInData} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"
@@ -8,15 +8,14 @@ import {_, str} from "../../compile/codegen"
 interface PropertyDependencies {
   [x: string]: string[]
 }
-interface SchemaDependencies {
-  [x: string]: object | boolean
-}
+
+type SchemaDependencies = SchemaMap
 
 const def: CodeKeywordDefinition = {
   keyword: "dependencies",
   type: "object",
   schemaType: "object",
-  code(cxt: KeywordContext) {
+  code(cxt: KeywordCtx) {
     const {gen, schema, data, it} = cxt
     const [propDeps, schDeps] = splitDependencies()
     const valid = gen.name("valid")
@@ -60,7 +59,7 @@ const def: CodeKeywordDefinition = {
       }
     }
 
-    function validateSchemaDeps(schemaDeps: {[x: string]: object | boolean}): void {
+    function validateSchemaDeps(schemaDeps: SchemaMap): void {
       for (const prop in schemaDeps) {
         if (alwaysValidSchema(it, schemaDeps[prop])) continue
         gen.if(

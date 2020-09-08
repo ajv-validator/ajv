@@ -20,25 +20,21 @@ overrides:
       project: ["./tsconfig.json"]
     plugins: ["@typescript-eslint"]
     rules:
-      no-var: 0
       "@typescript-eslint/restrict-template-expressions": off
-      "@typescript-eslint/ban-types": off
-      "@typescript-eslint/no-empty-interface": off
-      "@typescript-eslint/no-explicit-any": off
-      "@typescript-eslint/no-unsafe-call": off
       "@typescript-eslint/no-unsafe-member-access": off
       "@typescript-eslint/no-unsafe-assignment": off
       "@typescript-eslint/restrict-plus-operands": off
-      "@typescript-eslint/no-unsafe-return": off
       "@typescript-eslint/no-var-requires": off
       "@typescript-eslint/no-empty-function": off
       "@typescript-eslint/no-this-alias": off
       "@typescript-eslint/no-implied-eval": off
+      "@typescript-eslint/no-floating-promises": off
+      "@typescript-eslint/no-explicit-any": off
       no-invalid-this: off
 rules:
   block-scoped-var: error
   callback-return: error
-  complexity: [error, 17]
+  complexity: [error, 18]
   curly: [error, multi-line, consistent]
   dot-location: [error, property]
   dot-notation: error
@@ -69,7 +65,6 @@ rules:
   radix: error
   semi: 0
   valid-jsdoc: [error, requireReturn: false]
-  no-control-regex: 0
   no-useless-escape: error
   no-void: error
-  # no-var: error
+  no-var: error

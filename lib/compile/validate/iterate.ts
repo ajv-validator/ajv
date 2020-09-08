@@ -1,6 +1,6 @@
-import {CompilationContext} from "../../types"
+import {SchemaObjCtx} from "../../types"
 import {shouldUseGroup, shouldUseRule} from "./applicability"
-import {checkDataType, schemaHasRulesExcept} from "../util"
+import {checkDataType, schemaHasRulesButRef} from "../util"
 import {keywordCode} from "./keyword"
 import {assignDefaults} from "./defaults"
 import {reportTypeError} from "./dataType"
@@ -9,16 +9,13 @@ import {_, Name} from "../codegen"
 import N from "../names"
 
 export function schemaKeywords(
-  it: CompilationContext,
+  it: SchemaObjCtx,
   types: string[],
   typeErrors: boolean,
   errsCount?: Name
 ): void {
   const {gen, schema, data, RULES, allErrors, opts} = it
-  if (
-    schema.$ref &&
-    !(opts.extendRefs === true && schemaHasRulesExcept(schema, RULES.all, "$ref"))
-  ) {
+  if (schema.$ref && !(opts.extendRefs === true && schemaHasRulesButRef(it))) {
     gen.block(() => keywordCode(it, "$ref", (<Rule>RULES.all.$ref).definition)) // TODO typecast
     return
   }
@@ -47,7 +44,7 @@ export function schemaKeywords(
   }
 }
 
-function iterateKeywords(it: CompilationContext, group: RuleGroup) {
+function iterateKeywords(it: SchemaObjCtx, group: RuleGroup) {
   const {
     gen,
     schema,

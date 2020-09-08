@@ -1,6 +1,7 @@
 import {_, nil, and, operators, Code, Name, getProperty} from "./codegen"
-import {CompilationContext} from "../types"
+import {SchemaCtx, Schema} from "../types"
 import N from "./names"
+import {Rule, ValidationRules} from "./rules"
 
 export enum DataType {
   Correct,
@@ -65,39 +66,41 @@ export function checkDataTypes(
   return cond
 }
 
+// TODO refactor to use Set
 export function toHash(arr: string[]): {[key: string]: true} {
-  const hash = {}
+  const hash: {[key: string]: true} = {}
   for (const item of arr) hash[item] = true
   return hash
 }
 
-// TODO rules, schema?
-export function schemaHasRules(schema: object | boolean, rules: object): boolean | undefined {
+export function schemaHasRules(schema: Schema, rules: {[key: string]: boolean | Rule}): boolean {
   if (typeof schema == "boolean") return !schema
   for (const key in schema) if (rules[key]) return true
+  return false
 }
 
-// TODO rules, schema?
-export function schemaHasRulesExcept(
-  schema: object,
-  rules: object,
-  exceptKeyword: string
-): boolean | undefined {
-  if (typeof schema == "boolean") return !schema && exceptKeyword !== "not"
-  for (const key in schema) if (key !== exceptKeyword && rules[key]) return true
+export function schemaCtxHasRules({schema, RULES}: SchemaCtx): boolean {
+  if (typeof schema == "boolean") return !schema
+  for (const key in schema) if (RULES.all[key]) return true
+  return false
 }
 
-// TODO rules, schema?
-export function schemaUnknownRules(schema: object, rules: object): string | undefined {
-  if (typeof schema === "boolean") return
-  for (const key in schema) if (!rules[key]) return key
+interface SchemaAndRules {
+  schema: Schema
+  RULES: ValidationRules
+}
+
+export function schemaHasRulesButRef({schema, RULES}: SchemaAndRules): boolean {
+  if (typeof schema == "boolean") return !schema
+  for (const key in schema) if (key !== "$ref" && RULES.all[key]) return true
+  return false
 }
 
 const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/
 const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/
 export function getData(
   $data: string,
-  {dataLevel, dataNames, dataPathArr}: CompilationContext
+  {dataLevel, dataNames, dataPathArr}: SchemaCtx
 ): Code | number {
   let jsonPointer
   let data: Code
@@ -149,4 +152,12 @@ export function escapeJsonPointer(str: string): string {
 
 function unescapeJsonPointer(str: string): string {
   return str.replace(/~1/g, "/").replace(/~0/g, "~")
+}
+
+export function eachItem<T>(xs: T | T[], f: (x: T) => void): void {
+  if (Array.isArray(xs)) {
+    for (const x of xs) f(x)
+  } else {
+    f(xs)
+  }
 }

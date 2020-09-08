@@ -1,15 +1,16 @@
-import {CodeKeywordDefinition} from "../../types"
-import KeywordContext from "../../compile/context"
+import {CodeKeywordDefinition, Schema} from "../../types"
+import KeywordCtx from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 
 const def: CodeKeywordDefinition = {
   keyword: "allOf",
   schemaType: "array",
-  code(cxt: KeywordContext) {
+  code(cxt: KeywordCtx) {
     const {gen, schema, it} = cxt
+    if (!Array.isArray(schema)) throw new Error("ajv implementation error")
     const valid = gen.name("valid")
-    schema.forEach((sch: object | boolean, i: number) => {
+    schema.forEach((sch: Schema, i: number) => {
       if (alwaysValidSchema(it, sch)) return
       applySubschema(it, {keyword: "allOf", schemaProp: i}, valid)
       cxt.ok(valid)
