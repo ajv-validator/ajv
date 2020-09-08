@@ -17,6 +17,7 @@ import {ValidationError, MissingRefError} from "./compile/error_classes"
 import rules, {ValidationRules, Rule, RuleGroup} from "./compile/rules"
 import {checkType} from "./compile/validate/dataType"
 import {StoredSchema, compileSchemaFragment, compileStoredSchema, Compilation} from "./compile"
+import {Scope} from "./compile/codegen"
 import {normalizeId, getSchemaRefs} from "./compile/resolve"
 import coreVocabulary from "./vocabularies/core"
 import validationVocabulary from "./vocabularies/validation"
@@ -30,6 +31,7 @@ const META_SCHEMA_ID = "http://json-schema.org/draft-07/schema"
 
 const META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"]
 const META_SUPPORT_DATA = ["/properties"]
+const EXT_SCOPE_NAMES = new Set(["keyword", "pattern", "validate$data"])
 
 type CompileAsyncCallback = (err: Error | null, validate?: ValidateFunction) => void
 
@@ -40,6 +42,8 @@ interface IndexableOptions extends Options {
 export default class Ajv {
   _opts: IndexableOptions
   _cache: CacheInterface
+  // shared external scope values for compiled functions
+  _scope = new Scope({scope: {}, prefixes: EXT_SCOPE_NAMES})
   _schemas: {[key: string]: StoredSchema} = {}
   _refs: {[ref: string]: StoredSchema | string} = {}
   _fragments: {[key: string]: StoredSchema} = {}
@@ -321,6 +325,7 @@ export default class Ajv {
 
     checkKeyword.call(this, keyword, def)
     if (def) keywordMetaschema.call(this, def)
+
     eachItem(keyword, (kwd) => {
       eachItem(def?.type, (t) => _addRule.call(this, kwd, t, def))
     })

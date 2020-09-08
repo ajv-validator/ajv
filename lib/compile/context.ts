@@ -154,7 +154,7 @@ export default class KeywordCtx implements KeywordErrorCtx {
 
     function invalid$DataSchema(): Code {
       if (def.validateSchema) {
-        const validateSchemaRef = gen.value("validate$data", {ref: def.validateSchema}) // TODO value.code
+        const validateSchemaRef = gen.scopeValue("validate$data", {ref: def.validateSchema}) // TODO value.code for standalone
         return _`!${validateSchemaRef}(${schemaCode})`
       }
       return nil

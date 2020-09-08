@@ -1,4 +1,4 @@
-import {CodeGen, Code, Name, CodeGenOptions, _Scope} from "./compile/codegen"
+import {CodeGen, Code, Name, CodeGenOptions, Scope} from "./compile/codegen"
 import {ValidationRules} from "./compile/rules"
 import {RefVal, ResolvedRef, SchemaRoot, StoredSchema} from "./compile"
 import KeywordCtx from "./compile/context"
@@ -84,7 +84,7 @@ export interface CacheInterface {
 
 interface SourceCode {
   code: string
-  scope: _Scope
+  scope: Scope
 }
 
 export interface ValidateFunction {

@@ -1,6 +1,6 @@
 import type {Schema, SchemaObject, ValidateFunction, ValidateWrapper} from "../types"
 import type Ajv from "../ajv"
-import {CodeGen, _, nil, str, Code, _Scope} from "./codegen"
+import {CodeGen, _, nil, str, Code} from "./codegen"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
 import {toHash, schemaHasRulesButRef, unescapeFragment} from "./util"
@@ -187,7 +187,6 @@ function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateW
   let compilation = getCompilation.call(this, env)
   if (compilation) return validateWrapper(compilation)
 
-  const scope: _Scope = {}
   compilation = env
 
   const formats = this._formats
@@ -211,7 +210,7 @@ function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateW
     const $async = typeof _schema == "object" && _schema.$async === true
     const rootId = getFullPath(_root.schema.$id)
 
-    const gen = new CodeGen({...opts.codegen, forInOwn: opts.ownProperties})
+    const gen = new CodeGen(self._scope, {...opts.codegen, forInOwn: opts.ownProperties})
 
     validateFunctionCode({
       gen,
@@ -241,7 +240,7 @@ function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateW
     })
 
     let sourceCode = `${vars(refVal, refValCode)}
-                      ${gen._scope.scopeRefs(N.scope, scope)} // TODO
+                      ${gen.scopeRefs(N.scope)}
                       ${gen.toString()}`
 
     if (opts.processCode) sourceCode = opts.processCode(sourceCode, _schema)
@@ -268,7 +267,7 @@ function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateW
         formats,
         root,
         refVal,
-        scope,
+        self._scope._scope,
         equal,
         ucs2length,
         ValidationError
@@ -289,7 +288,7 @@ function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateW
     if (opts.sourceCode === true) {
       validate.source = {
         code: sourceCode,
-        scope,
+        scope: self._scope,
       }
     }
 

@@ -132,5 +132,5 @@ function checkAsync(it: SchemaObjCtx, def: FuncKeywordDefinition) {
 
 function useKeyword(gen: CodeGen, keyword: string, result?: KeywordCompilationResult): Name {
   if (result === undefined) throw new Error(`keyword "${keyword}" failed to compile`)
-  return gen.value("keyword", {ref: result}) // TODO value.code
+  return gen.scopeValue("keyword", {ref: result}) // TODO value.code
 }

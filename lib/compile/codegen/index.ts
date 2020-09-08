@@ -1,7 +1,7 @@
 import {_, str, nil, _Code, Code, IDENTIFIER, Name, stringify} from "./code"
-import {Scope, NameValue, _Scope} from "./scope"
+import {Scope, ScopeValueSets, NameValue, ScopeStore} from "./scope"
 
-export {_, str, nil, Name, Code, _Scope, stringify}
+export {_, str, nil, stringify, Name, Code, Scope, ScopeStore}
 
 enum BlockKind {
   If,
@@ -32,17 +32,6 @@ export const varKinds = {
   var: new Name("var"),
 }
 
-interface NameGroup {
-  prefix: string
-  index: number
-  values?: Map<unknown, NameRec> // same key as passed in GlobalValue
-}
-
-interface NameRec {
-  name: Name
-  value: NameValue
-}
-
 export interface CodeGenOptions {
   es5?: boolean
   lines?: boolean
@@ -50,17 +39,19 @@ export interface CodeGenOptions {
 }
 
 export class CodeGen {
-  _scope = new Scope()
-  _names: {[prefix: string]: NameGroup} = {}
-  _valuePrefixes: {[prefix: string]: Name} = {}
+  _scope: Scope
+  _extScope: Scope
+  _values: ScopeValueSets = {}
   _out = ""
   _blocks: BlockKind[] = []
   _blockStarts: number[] = []
   _n = ""
   opts: CodeGenOptions
 
-  constructor(opts: CodeGenOptions = {}) {
+  constructor(extScope: Scope, opts: CodeGenOptions = {}) {
     this.opts = opts
+    this._extScope = extScope
+    this._scope = new Scope({parent: extScope})
     if (opts.lines) this._n = "\n"
   }
 
@@ -76,9 +67,15 @@ export class CodeGen {
     return this._scope.name(prefix)
   }
 
-  // TODO move to global scope
-  value(prefix: string, value: NameValue): Name {
-    return this._scope.value(prefix, value)
+  scopeValue(prefix: string, value: NameValue): Name {
+    const rec = this._extScope.value(prefix, value)
+    if (!this._values[prefix]) this._values[prefix] = new Set()
+    this._values[prefix].add(rec)
+    return rec.name
+  }
+
+  scopeRefs(scopeName: Name): Code {
+    return this._extScope.scopeRefs(scopeName, this._values)
   }
 
   _def(varKind: Name, nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
