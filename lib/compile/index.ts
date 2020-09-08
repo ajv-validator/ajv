@@ -1,6 +1,6 @@
 import type {Schema, SchemaObject, ValidateFunction, ValidateWrapper} from "../types"
 import type Ajv from "../ajv"
-import {CodeGen, _, nil, str, Code, Scope} from "./codegen"
+import {CodeGen, _, nil, str, Code, _Scope} from "./codegen"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
 import {toHash, schemaHasRulesButRef, unescapeFragment} from "./util"
@@ -187,7 +187,7 @@ function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateW
   let compilation = getCompilation.call(this, env)
   if (compilation) return validateWrapper(compilation)
 
-  const scope: Scope = {}
+  const scope: _Scope = {}
   compilation = env
 
   const formats = this._formats
@@ -241,7 +241,7 @@ function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateW
     })
 
     let sourceCode = `${vars(refVal, refValCode)}
-                      ${gen.scopeRefs(N.scope, scope)}
+                      ${gen._scope.scopeRefs(N.scope, scope)} // TODO
                       ${gen.toString()}`
 
     if (opts.processCode) sourceCode = opts.processCode(sourceCode, _schema)

@@ -1,3 +1,8 @@
+import {_, str, nil, _Code, Code, IDENTIFIER, Name, stringify} from "./code"
+import {Scope, NameValue, _Scope} from "./scope"
+
+export {_, str, nil, Name, Code, _Scope, stringify}
+
 enum BlockKind {
   If,
   Else,
@@ -9,31 +14,6 @@ export type SafeExpr = Code | number | boolean | null
 
 export type Block = Code | (() => void)
 
-export type Code = _Code | Name
-
-class _Code {
-  _str: string
-
-  constructor(s: string) {
-    this._str = s
-  }
-
-  toString(): string {
-    return this._str
-  }
-
-  isQuoted(): boolean {
-    const len = this._str.length
-    return len >= 2 && this._str[0] === '"' && this._str[len - 1] === '"'
-  }
-
-  add(c: _Code): void {
-    this._str += c._str
-  }
-}
-
-export const nil = new _Code("")
-
 export const operators = {
   GT: new _Code(">"),
   GTE: new _Code(">="),
@@ -44,23 +24,6 @@ export const operators = {
   NOT: new _Code("!"),
   OR: new _Code("||"),
   AND: new _Code("&&"),
-}
-
-const IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i
-
-export class Name extends _Code {
-  constructor(s: string) {
-    super(s)
-    if (!IDENTIFIER.test(s)) throw new Error("CodeGen: name must be a valid identifier")
-  }
-
-  isQuoted(): boolean {
-    return false
-  }
-
-  add(_c: _Code): void {
-    throw new Error("CodeGen: can't add to Name")
-  }
 }
 
 export const varKinds = {
@@ -80,61 +43,6 @@ interface NameRec {
   value: NameValue
 }
 
-type ValueReference = unknown // possibly make CodeGen parameterized type on this type
-
-export interface NameValue {
-  ref?: ValueReference // this is the reference to any value that can be referred to from generated code via `globals` var in the closure
-  key?: unknown // any key to identify a global to avoid duplicates, if not passed ref is used
-  code?: Code // this is the code creating the value needed for standalone code wit_out closure - can be a primitive value, function or import (`require`)
-}
-
-export interface Scope {
-  [prefix: string]: ValueReference[]
-}
-
-type TemplateArg = SafeExpr | string
-
-export class ValueError extends Error {
-  value: NameValue
-  constructor(fields: string, {name, value}: NameRec) {
-    super(`CodeGen: ${fields} for ${name} not defined`)
-    this.value = value
-  }
-}
-
-export function _(strs: TemplateStringsArray, ...args: TemplateArg[]): _Code {
-  // TODO benchmark if loop is faster than reduce
-  // let res = strs[0]
-  // for (let i = 0; i < args.length; i++) {
-  //   res += interpolate(args[i]) + strs[i + 1]
-  // }
-  // return new _Code(res)
-  return new _Code(strs.reduce((res, s, i) => res + interpolate(args[i - 1]) + s))
-}
-
-export function str(strs: TemplateStringsArray, ...args: (TemplateArg | string[])[]): _Code {
-  return new _Code(
-    strs.map(safeStringify).reduce((res, s, i) => {
-      let aStr = interpolateStr(args[i - 1])
-      if (aStr instanceof _Code && aStr.isQuoted()) aStr = aStr.toString()
-      return typeof aStr === "string"
-        ? res.slice(0, -1) + aStr.slice(1, -1) + s.slice(1)
-        : `${res} + ${aStr} + ${s}`
-    })
-  )
-}
-
-function interpolate(x: TemplateArg): TemplateArg {
-  return x instanceof _Code || typeof x == "number" || typeof x == "boolean" || x === null
-    ? x
-    : safeStringify(x)
-}
-
-function interpolateStr(x: TemplateArg | string[]): TemplateArg {
-  if (Array.isArray(x)) x = x.join(",")
-  return interpolate(x)
-}
-
 export interface CodeGenOptions {
   es5?: boolean
   lines?: boolean
@@ -142,6 +50,7 @@ export interface CodeGenOptions {
 }
 
 export class CodeGen {
+  _scope = new Scope()
   _names: {[prefix: string]: NameGroup} = {}
   _valuePrefixes: {[prefix: string]: Name} = {}
   _out = ""
@@ -159,75 +68,17 @@ export class CodeGen {
     return this._out
   }
 
-  _nameGroup(prefix: string): NameGroup {
-    let ng = this._names[prefix]
-    if (!ng) ng = this._names[prefix] = {prefix, index: 0}
-    return ng
-  }
-
-  _name(ng: NameGroup): Name {
-    return new Name(ng.prefix + ng.index++)
+  _toName(nameOrPrefix: Name | string): Name {
+    return nameOrPrefix instanceof Name ? nameOrPrefix : this.name(nameOrPrefix)
   }
 
   name(prefix: string): Name {
-    const ng = this._nameGroup(prefix)
-    return this._name(ng)
+    return this._scope.name(prefix)
   }
 
+  // TODO move to global scope
   value(prefix: string, value: NameValue): Name {
-    const {ref, key, code} = value
-    const valueKey = key ?? ref ?? code
-    if (!valueKey) throw new Error("CodeGen: ref or code must be passed in value")
-    const ng = this._nameGroup(prefix)
-    this._valuePrefixes[prefix] = new Name(prefix)
-    if (!ng.values) {
-      ng.values = new Map()
-    } else {
-      const rec = ng.values.get(valueKey)
-      if (rec) return rec.name
-    }
-    const name = this._name(ng)
-    ng.values.set(valueKey, {name, value})
-    return name
-  }
-
-  scopeRefs(scopeName: Name, scope: Scope): Code {
-    return this._reduceValues((rec: NameRec, prefix: string, i: number) => {
-      const {value: v} = rec
-      if (v.ref) {
-        if (!scope[prefix]) scope[prefix] = []
-        scope[prefix][i] = v.ref
-        const prefName = this._valuePrefixes[prefix]
-        return _`${scopeName}.${prefName}[${i}]`
-      }
-      if (v.code) return v.code
-      throw new ValueError("ref and code", rec)
-    })
-  }
-
-  scopeCode(): Code {
-    return this._reduceValues((rec: NameRec) => {
-      const c = rec.value.code
-      if (c) return c
-      throw new ValueError("code", rec)
-    })
-  }
-
-  _reduceValues(valueCode: (n: NameRec, pref: string, index: number) => Code): Code {
-    let code: Code = nil
-    for (const prefix in this._valuePrefixes) {
-      let i = 0
-      const values = this._names[prefix].values
-      if (!values) throw new Error("ajv implementation error")
-      values.forEach((rec: NameRec) => {
-        code = _`${code}const ${rec.name} = ${valueCode(rec, prefix, i++)};`
-      })
-    }
-    return code
-  }
-
-  _toName(nameOrPrefix: Name | string): Name {
-    return nameOrPrefix instanceof Name ? nameOrPrefix : this.name(nameOrPrefix)
+    return this._scope.value(prefix, value)
   }
 
   _def(varKind: Name, nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
@@ -447,16 +298,6 @@ export class CodeGen {
     if (len === 0) throw new Error("CodeGen: not in block")
     return len - 1
   }
-}
-
-export function stringify(x: unknown): Code {
-  return new _Code(safeStringify(x))
-}
-
-function safeStringify(x: unknown): string {
-  return JSON.stringify(x)
-    .replace(/\u2028/g, "\\u2028")
-    .replace(/\u2029/g, "\\u2029")
 }
 
 export function getProperty(key: Code | string | number): Code {
