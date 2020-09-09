@@ -20,10 +20,10 @@ export function validateFunctionCode(it: SchemaCtx): void {
   validateFunction(it, () => topBoolOrEmptySchema(it))
 }
 
-function validateFunction({gen, schema, async, opts}: SchemaCtx, body: Block) {
+function validateFunction({gen, validateName, schema, async, opts}: SchemaCtx, body: Block) {
   gen.return(() =>
     gen.func(
-      N.validate,
+      validateName,
       _`${N.data}, ${N.dataPath}, ${N.parentData}, ${N.parentDataProperty}, ${N.rootData}`,
       async,
       () => gen.code(_`"use strict"; ${funcSourceUrl(schema, opts)}`).code(body)
@@ -121,17 +121,17 @@ function checkAsync(it: SchemaObjCtx): void {
   if (it.schema.$async && !it.async) throw new Error("async schema in sync schema")
 }
 
-function commentKeyword({gen, schema, errSchemaPath, opts: {$comment}}: SchemaObjCtx): void {
+function commentKeyword({gen, validateName, schema, errSchemaPath, opts}: SchemaObjCtx): void {
   const msg = schema.$comment
-  if ($comment === true) {
+  if (opts.$comment === true) {
     gen.code(_`${N.self}.logger.log(${msg})`)
-  } else if (typeof $comment == "function") {
+  } else if (typeof opts.$comment == "function") {
     const schemaPath = str`${errSchemaPath}/$comment`
-    gen.code(_`${N.self}._opts.$comment(${msg}, ${schemaPath}, ${N.validate}.root.schema)`)
+    gen.code(_`${N.self}._opts.$comment(${msg}, ${schemaPath}, ${validateName}.root.schema)`)
   }
 }
 
-function returnResults({gen, async, ValidationError}: SchemaCtx) {
+function returnResults({gen, async, validateName, ValidationError}: SchemaCtx) {
   if (async) {
     gen.if(
       _`${N.errors} === 0`,
@@ -139,7 +139,7 @@ function returnResults({gen, async, ValidationError}: SchemaCtx) {
       _`throw new ${ValidationError as Name}(${N.vErrors})`
     )
   } else {
-    gen.assign(_`${N.validate}.errors`, N.vErrors)
+    gen.assign(_`${validateName}.errors`, N.vErrors)
     gen.return(_`${N.errors} === 0`)
   }
 }

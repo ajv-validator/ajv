@@ -1,6 +1,6 @@
 import type {Schema, SchemaObject, ValidateFunction, ValidateWrapper} from "../types"
 import type Ajv from "../ajv"
-import {CodeGen, _, nil, str, Code} from "./codegen"
+import {CodeGen, _, nil, str, Code, Name} from "./codegen"
 import {ValidationError} from "./error_classes"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
@@ -172,6 +172,8 @@ function compileSchema(this: Ajv, sch: StoredSchema): ValidateFunction | Validat
       })
     }
 
+    const validateName = new Name("validate")
+
     validateFunctionCode({
       gen,
       allErrors: !!opts.allErrors,
@@ -181,8 +183,9 @@ function compileSchema(this: Ajv, sch: StoredSchema): ValidateFunction | Validat
       dataNames: [N.data],
       dataPathArr: [nil],
       dataLevel: 0,
-      topSchemaRef: _`${N.validate}.schema`,
+      topSchemaRef: _`${validateName}.schema`,
       async: $async,
+      validateName,
       ValidationError: _ValidationError,
       schema: schema,
       isRoot,

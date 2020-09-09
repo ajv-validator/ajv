@@ -12,7 +12,7 @@ const def: CodeKeywordDefinition = {
   schemaType: "string",
   code(cxt: KeywordCtx) {
     const {gen, schema, it} = cxt
-    const {resolveRef, allErrors, baseId, isRoot, root, opts, self} = it
+    const {resolveRef, allErrors, baseId, isRoot, root, opts, validateName, self} = it
     const ref = getRef()
     const passCxt = opts.passContext ? N.this : nil
     if (ref === undefined) missingRef()
@@ -23,7 +23,7 @@ const def: CodeKeywordDefinition = {
     function getRef(): ResolvedRef | void {
       if (schema === "#" || schema === "#/") {
         return isRoot
-          ? {code: N.validate, $async: it.async}
+          ? {code: validateName, $async: it.async}
           : {code: _`root.refVal[0]`, $async: root.schema.$async === true}
       }
       return resolveRef(baseId, schema, isRoot)

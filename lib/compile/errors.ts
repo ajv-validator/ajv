@@ -75,11 +75,11 @@ function addError(gen: CodeGen, errObj: Code): void {
 }
 
 function returnErrors(it: SchemaCtx, errs: Code): void {
-  const {gen} = it
+  const {gen, validateName} = it
   if (it.async) {
     gen.code(_`throw new ${it.ValidationError as Name}(${errs})`)
   } else {
-    gen.assign(_`${N.validate}.errors`, errs)
+    gen.assign(_`${validateName}.errors`, errs)
     gen.return(false)
   }
 }
