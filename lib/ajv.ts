@@ -16,7 +16,7 @@ import Cache from "./cache"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
 import rules, {ValidationRules, Rule, RuleGroup} from "./compile/rules"
 import {checkType} from "./compile/validate/dataType"
-import {StoredSchema, compileSchemaFragment, compileStoredSchema, Compilation} from "./compile"
+import {StoredSchema, Compilation, compileStoredSchema, resolveSchema} from "./compile"
 import {ValueScope} from "./compile/codegen"
 import {normalizeId, getSchemaRefs} from "./compile/resolve"
 import coreVocabulary from "./vocabularies/core"
@@ -246,18 +246,17 @@ export default class Ajv {
   }
 
   // Get compiled schema by `key` or `ref`.
-  getSchema(
-    keyRef: string // `key` that was passed to `addSchema` or full schema reference (`schema.$id` or resolved id).
-  ): ValidateFunction | undefined {
-    const schemaObj = _getSchemaObj.call(this, keyRef)
-    switch (typeof schemaObj) {
-      case "object":
-        return schemaObj.validate || compileStoredSchema.call(this, schemaObj)
-      case "string":
-        return this.getSchema(schemaObj)
-      case "undefined":
-        return compileSchemaFragment.call(this, keyRef)
+  // (`key` that was passed to `addSchema` or full schema reference - `schema.$id` or resolved id)
+  getSchema(keyRef: string): ValidateFunction | undefined {
+    let schemaObj = _getSchemaObj.call(this, keyRef)
+    if (schemaObj === undefined) {
+      const root = {schema: {}, refVal: [undefined], refs: {}}
+      const env = resolveSchema.call(this, root, keyRef)
+      if (!env) return
+      schemaObj = this._fragments[keyRef] = new StoredSchema({...env, ref: keyRef, fragment: true})
     }
+    if (typeof schemaObj == "string") return this.getSchema(schemaObj)
+    return schemaObj.validate || compileStoredSchema.call(this, schemaObj)
   }
 
   // Remove cached schema(s).

@@ -92,11 +92,10 @@ export interface Compilation extends CompileEnv {
 
 export function compileStoredSchema(
   this: Ajv,
-  schemaObj: StoredSchema,
-  root?: SchemaRoot
+  schemaObj: StoredSchema
 ): ValidateFunction | ValidateWrapper {
   if (schemaObj.compiling) return validateWrapper(schemaObj)
-  const v = _tryCompile.call(this, schemaObj, root)
+  const v = _tryCompile.call(this, schemaObj)
   schemaObj.validate = v
   schemaObj.refs = v.refs
   schemaObj.refVal = v.refVal
@@ -104,27 +103,14 @@ export function compileStoredSchema(
   return v
 }
 
-export function compileSchemaFragment(this: Ajv, ref: string): ValidateFunction | undefined {
-  const root: SchemaRoot = {schema: {}, refVal: [undefined], refs: {}}
-  const env = resolveSchema.call(this, root, ref)
-  if (!env) return
-  const validate = compileSchema.call(this, env)
-  this._fragments[ref] = new StoredSchema({...env, ref, fragment: true, validate})
-  return validate
-}
-
-function _tryCompile(
-  this: Ajv,
-  schemaObj: StoredSchema,
-  root?: SchemaRoot
-): ValidateFunction | ValidateWrapper {
+function _tryCompile(this: Ajv, schemaObj: StoredSchema): ValidateFunction | ValidateWrapper {
   const currentOpts = this._opts
   const {meta, schema, localRefs} = schemaObj
   if (meta) this._opts = this._metaOpts
 
   try {
     schemaObj.compiling = true
-    const v = compileSchema.call(this, {schema, root, localRefs})
+    const v = compileSchema.call(this, {schema, localRefs})
     extendValidateWrapper(v, schemaObj, this._opts.sourceCode)
     return v
   } catch (e) {
@@ -415,7 +401,7 @@ function resolve(
 }
 
 // Resolve schema, its root and baseId
-function resolveSchema(
+export function resolveSchema(
   this: Ajv,
   root: SchemaRoot, // root object with properties schema, refVal, refs TODO below StoredSchema is assigned to it
   ref: string // reference to resolve
