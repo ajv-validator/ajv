@@ -1,4 +1,4 @@
-import {CodeKeywordDefinition, KeywordErrorCtx} from "../../types"
+import {CodeKeywordDefinition, KeywordErrorCxt} from "../../types"
 import {allSchemaProperties, schemaRefOrVal, alwaysValidSchema, usePattern} from "../util"
 import {applySubschema, SubschemaApplication, Type} from "../../compile/subschema"
 import {_, nil, or, Code, Name} from "../../compile/codegen"
@@ -93,7 +93,7 @@ const def: CodeKeywordDefinition = {
   },
   error: {
     message: "should NOT have additional properties",
-    params: ({params}: KeywordErrorCtx): Code =>
+    params: ({params}: KeywordErrorCxt): Code =>
       _`{additionalProperty: ${params.additionalProperty}}`,
   },
 }

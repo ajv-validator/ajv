@@ -1,12 +1,12 @@
 import {CodeKeywordDefinition} from "../../types"
-import KeywordCtx from "../../compile/context"
+import KeywordCxt from "../../compile/context"
 import {_} from "../../compile/codegen"
 import equal from "fast-deep-equal"
 
 const def: CodeKeywordDefinition = {
   keyword: "const",
   $data: true,
-  code(cxt: KeywordCtx) {
+  code(cxt: KeywordCxt) {
     const eql = cxt.gen.scopeValue("func", {
       ref: equal,
       code: _`require("ajv/dist/compile/equal")`,

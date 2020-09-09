@@ -1,4 +1,4 @@
-import {Schema, SchemaObjCtx} from "../types"
+import {Schema, SchemaObjCxt} from "../types"
 import {subschemaCode} from "./validate"
 import {escapeFragment, escapeJsonPointer} from "./util"
 import {_, str, Code, Name, getProperty} from "./codegen"
@@ -45,7 +45,7 @@ interface SubschemaApplicationParams {
   allErrors: boolean
 }
 
-export function applySubschema(it: SchemaObjCtx, appl: SubschemaApplication, valid: Name): void {
+export function applySubschema(it: SchemaObjCxt, appl: SubschemaApplication, valid: Name): void {
   const subschema = getSubschema(it, appl)
   extendSubschemaData(subschema, it, appl)
   extendSubschemaMode(subschema, appl)
@@ -54,7 +54,7 @@ export function applySubschema(it: SchemaObjCtx, appl: SubschemaApplication, val
 }
 
 function getSubschema(
-  it: SchemaObjCtx,
+  it: SchemaObjCxt,
   {keyword, schemaProp, schema, schemaPath, errSchemaPath, topSchemaRef}: SubschemaApplication
 ): SubschemaContext {
   if (keyword !== undefined && schema !== undefined) {
@@ -93,7 +93,7 @@ function getSubschema(
 
 function extendSubschemaData(
   subschema: SubschemaContext,
-  it: SchemaObjCtx,
+  it: SchemaObjCxt,
   {dataProp, dataPropType: dpType, data, propertyName}: SubschemaApplication
 ) {
   if (data !== undefined && dataProp !== undefined) {

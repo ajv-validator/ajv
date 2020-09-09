@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition, Schema} from "../../types"
-import KeywordCtx from "../../compile/context"
+import KeywordCxt from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {_} from "../../compile/codegen"
@@ -8,7 +8,7 @@ const def: CodeKeywordDefinition = {
   keyword: "oneOf",
   schemaType: "array",
   trackErrors: true,
-  code(cxt: KeywordCtx) {
+  code(cxt: KeywordCxt) {
     const {gen, schema, it} = cxt
     if (!Array.isArray(schema)) throw new Error("ajv implementation error")
     const schArr: Schema[] = schema

@@ -1,6 +1,6 @@
 import {CodeGen, Code, Name, CodeGenOptions, Scope} from "./compile/codegen"
 import {RefVal, ResolvedRef, SchemaRoot, StoredSchema} from "./compile"
-import KeywordCtx from "./compile/context"
+import KeywordCxt from "./compile/context"
 import Ajv from "./ajv"
 
 export interface SchemaObject {
@@ -148,7 +148,7 @@ export interface ErrorObject {
 
 export type KeywordCompilationResult = Schema | SchemaValidateFunction | ValidateFunction
 
-export interface SchemaCtx {
+export interface SchemaCxt {
   gen: CodeGen
   allErrors: boolean
   data: Name
@@ -177,7 +177,7 @@ export interface SchemaCtx {
   self: Ajv
 }
 
-export interface SchemaObjCtx extends SchemaCtx {
+export interface SchemaObjCxt extends SchemaCxt {
   schema: SchemaObject
 }
 
@@ -196,16 +196,16 @@ interface _KeywordDef {
 }
 
 export interface CodeKeywordDefinition extends _KeywordDef {
-  code: (cxt: KeywordCtx, ruleType?: string) => void
+  code: (cxt: KeywordCxt, ruleType?: string) => void
   trackErrors?: boolean
 }
 
-export type MacroKeywordFunc = (schema: any, parentSchema: SchemaObject, it: SchemaCtx) => Schema
+export type MacroKeywordFunc = (schema: any, parentSchema: SchemaObject, it: SchemaCxt) => Schema
 
 export type CompileKeywordFunc = (
   schema: any,
   parentSchema: SchemaObject,
-  it: SchemaObjCtx
+  it: SchemaObjCxt
 ) => ValidateFunction
 
 export interface FuncKeywordDefinition extends _KeywordDef {
@@ -229,13 +229,13 @@ export type KeywordDefinition =
   | MacroKeywordDefinition
 
 export interface KeywordErrorDefinition {
-  message: string | ((cxt: KeywordErrorCtx) => Code)
-  params?: (cxt: KeywordErrorCtx) => Code
+  message: string | ((cxt: KeywordErrorCxt) => Code)
+  params?: (cxt: KeywordErrorCxt) => Code
 }
 
 export type Vocabulary = (KeywordDefinition | string)[]
 
-export interface KeywordErrorCtx {
+export interface KeywordErrorCxt {
   gen: CodeGen
   keyword: string
   data: Name
@@ -246,11 +246,11 @@ export interface KeywordErrorCtx {
   schemaValue: Code | number | boolean
   schemaType?: string | string[]
   errsCount?: Name
-  params: KeywordCtxParams
-  it: SchemaCtx
+  params: KeywordCxtParams
+  it: SchemaCxt
 }
 
-export type KeywordCtxParams = {[x: string]: Code | string | number}
+export type KeywordCxtParams = {[x: string]: Code | string | number}
 
 export type FormatMode = "fast" | "full"
 

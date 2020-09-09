@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
-import KeywordCtx from "../../compile/context"
+import KeywordCxt from "../../compile/context"
 import {_, or, Name, Code} from "../../compile/codegen"
 import equal from "fast-deep-equal"
 
@@ -7,7 +7,7 @@ const def: CodeKeywordDefinition = {
   keyword: "enum",
   schemaType: "array",
   $data: true,
-  code(cxt: KeywordCtx) {
+  code(cxt: KeywordCxt) {
     const {gen, data, $data, schema, schemaCode, it} = cxt
     if (!$data && schema.length === 0) throw new Error("enum must have non-empty array")
     const useLoop = schema.length >= it.opts.loopEnum

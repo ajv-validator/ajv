@@ -1,11 +1,11 @@
 import {schemaHasRules} from "../compile/util"
-import {Schema, SchemaMap, SchemaCtx, SchemaObjCtx} from "../types"
-import KeywordCtx from "../compile/context"
+import {Schema, SchemaMap, SchemaCxt, SchemaObjCxt} from "../types"
+import KeywordCxt from "../compile/context"
 import {CodeGen, _, nil, Code, Name, getProperty} from "../compile/codegen"
 import N from "../compile/names"
 
 export function schemaRefOrVal(
-  {topSchemaRef, schemaPath}: SchemaObjCtx,
+  {topSchemaRef, schemaPath}: SchemaObjCxt,
   schema: unknown,
   keyword: string,
   $data?: string | false
@@ -17,14 +17,14 @@ export function schemaRefOrVal(
   return _`${topSchemaRef}${schemaPath}${getProperty(keyword)}`
 }
 
-export function alwaysValidSchema(it: SchemaCtx, schema: Schema): boolean | void {
+export function alwaysValidSchema(it: SchemaCxt, schema: Schema): boolean | void {
   if (typeof schema == "boolean") return schema
   if (Object.keys(schema).length === 0) return true
   checkUnknownRules(it, schema)
   return !schemaHasRules(schema, it.self.RULES.all)
 }
 
-export function checkUnknownRules(it: SchemaCtx, schema: Schema = it.schema): void {
+export function checkUnknownRules(it: SchemaCxt, schema: Schema = it.schema): void {
   const {opts, self} = it
   if (!opts.strict) return
   if (typeof schema === "boolean") return
@@ -38,7 +38,7 @@ export function allSchemaProperties(schemaMap?: SchemaMap): string[] {
   return schemaMap ? Object.keys(schemaMap).filter((p) => p !== "__proto__") : []
 }
 
-export function schemaProperties(it: SchemaCtx, schemaMap: SchemaMap): string[] {
+export function schemaProperties(it: SchemaCxt, schemaMap: SchemaMap): string[] {
   return allSchemaProperties(schemaMap).filter((p) => !alwaysValidSchema(it, schemaMap[p]))
 }
 
@@ -61,7 +61,7 @@ export function noPropertyInData(
 }
 
 export function callValidateCode(
-  {schemaCode, data, it}: KeywordCtx,
+  {schemaCode, data, it}: KeywordCxt,
   func: Code,
   context: Code,
   passSchema?: boolean
@@ -82,7 +82,7 @@ export function usePattern(gen: CodeGen, pattern: string): Name {
   })
 }
 
-export function checkStrictMode(it: SchemaCtx, msg: string): void {
+export function checkStrictMode(it: SchemaCxt, msg: string): void {
   const {opts, self} = it
   if (opts.strict) {
     if (opts.strict === "log") self.logger.warn(msg)

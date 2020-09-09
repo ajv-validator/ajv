@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
-import KeywordCtx from "../../compile/context"
+import KeywordCxt from "../../compile/context"
 import {alwaysValidSchema, checkStrictMode} from "../util"
 import {applySubschema, Type} from "../../compile/subschema"
 import {_, Name, str} from "../../compile/codegen"
@@ -9,7 +9,7 @@ const def: CodeKeywordDefinition = {
   type: "array",
   schemaType: ["boolean", "object"],
   before: "uniqueItems",
-  code(cxt: KeywordCtx) {
+  code(cxt: KeywordCxt) {
     const {gen, schema, parentSchema, data, it} = cxt
     const len = gen.const("len", _`${data}.length`)
     const items = parentSchema.items

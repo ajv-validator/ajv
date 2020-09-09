@@ -1,5 +1,5 @@
 import {_, nil, and, operators, Code, Name, getProperty} from "./codegen"
-import {SchemaCtx, Schema} from "../types"
+import {SchemaCxt, Schema} from "../types"
 import N from "./names"
 import {Rule, ValidationRules} from "./rules"
 
@@ -79,7 +79,7 @@ export function schemaHasRules(schema: Schema, rules: {[key: string]: boolean | 
   return false
 }
 
-export function schemaCtxHasRules({schema, self}: SchemaCtx): boolean {
+export function schemaCxtHasRules({schema, self}: SchemaCxt): boolean {
   if (typeof schema == "boolean") return !schema
   for (const key in schema) if (self.RULES.all[key]) return true
   return false
@@ -95,7 +95,7 @@ const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/
 const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/
 export function getData(
   $data: string,
-  {dataLevel, dataNames, dataPathArr}: SchemaCtx
+  {dataLevel, dataNames, dataPathArr}: SchemaCxt
 ): Code | number {
   let jsonPointer
   let data: Code

@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
-import KeywordCtx from "../../compile/context"
+import KeywordCxt from "../../compile/context"
 import {_, str, operators} from "../../compile/codegen"
 import ucs2length from "../../compile/ucs2length"
 
@@ -8,7 +8,7 @@ const def: CodeKeywordDefinition = {
   type: "string",
   schemaType: "number",
   $data: true,
-  code(cxt: KeywordCtx) {
+  code(cxt: KeywordCxt) {
     const {keyword, data, schemaCode, it} = cxt
     const op = keyword === "maxLength" ? operators.GT : operators.LT
     let len

@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
-import KeywordCtx from "../../compile/context"
+import KeywordCxt from "../../compile/context"
 import {schemaProperties, propertyInData} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import apDef from "./additionalProperties"
@@ -8,10 +8,10 @@ const def: CodeKeywordDefinition = {
   keyword: "properties",
   type: "object",
   schemaType: "object",
-  code(cxt: KeywordCtx) {
+  code(cxt: KeywordCxt) {
     const {gen, schema, parentSchema, data, it} = cxt
     if (it.opts.removeAdditional === "all" && parentSchema.additionalProperties === undefined) {
-      apDef.code(new KeywordCtx(it, apDef, "additionalProperties"))
+      apDef.code(new KeywordCxt(it, apDef, "additionalProperties"))
     }
     const properties = schemaProperties(it, schema)
     if (properties.length === 0) return

@@ -1,8 +1,8 @@
 import {
   KeywordDefinition,
-  KeywordErrorCtx,
-  KeywordCtxParams,
-  SchemaObjCtx,
+  KeywordErrorCxt,
+  KeywordCxtParams,
+  SchemaObjCxt,
   SchemaObject,
 } from "../types"
 import {schemaRefOrVal} from "../vocabularies/util"
@@ -17,7 +17,7 @@ import {
 import {CodeGen, _, nil, or, Code, Name} from "./codegen"
 import N from "./names"
 
-export default class KeywordCtx implements KeywordErrorCtx {
+export default class KeywordCxt implements KeywordErrorCxt {
   gen: CodeGen
   allErrors: boolean
   keyword: string
@@ -29,11 +29,11 @@ export default class KeywordCtx implements KeywordErrorCtx {
   schemaType?: string | string[]
   parentSchema: SchemaObject
   errsCount?: Name
-  params: KeywordCtxParams
-  it: SchemaObjCtx
+  params: KeywordCxtParams
+  it: SchemaObjCxt
   def: KeywordDefinition
 
-  constructor(it: SchemaObjCtx, def: KeywordDefinition, keyword: string) {
+  constructor(it: SchemaObjCxt, def: KeywordDefinition, keyword: string) {
     validateKeywordUsage(it, def, keyword)
     this.gen = it.gen
     this.allErrors = it.allErrors
@@ -114,7 +114,7 @@ export default class KeywordCtx implements KeywordErrorCtx {
     if (!this.allErrors) this.gen.if(cond)
   }
 
-  setParams(obj: KeywordCtxParams, assign?: true): void {
+  setParams(obj: KeywordCxtParams, assign?: true): void {
     if (assign) Object.assign(this.params, obj)
     else this.params = obj
   }
@@ -175,7 +175,7 @@ function validSchemaType(schema: unknown, schemaType: string | string[]): boolea
 }
 
 function validateKeywordUsage(
-  {schema, opts, self}: SchemaObjCtx,
+  {schema, opts, self}: SchemaObjCxt,
   def: KeywordDefinition,
   keyword: string
 ): void {

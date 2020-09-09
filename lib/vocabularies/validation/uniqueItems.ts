@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
-import KeywordCtx from "../../compile/context"
+import KeywordCxt from "../../compile/context"
 import {getSchemaTypes} from "../../compile/validate/dataType"
 import {checkDataTypes, DataType} from "../../compile/util"
 import {_, str, Name} from "../../compile/codegen"
@@ -10,7 +10,7 @@ const def: CodeKeywordDefinition = {
   type: "array",
   schemaType: "boolean",
   $data: true,
-  code(cxt: KeywordCtx) {
+  code(cxt: KeywordCxt) {
     const {gen, data, $data, schema, parentSchema, schemaCode, it} = cxt
     if (!$data && !schema) return
     const valid = gen.let("valid")

@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
-import KeywordCtx from "../../compile/context"
+import KeywordCxt from "../../compile/context"
 import {propertyInData, noPropertyInData} from "../util"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"
 import {_, str, nil, Name} from "../../compile/codegen"
@@ -9,7 +9,7 @@ const def: CodeKeywordDefinition = {
   type: "object",
   schemaType: "array",
   $data: true,
-  code(cxt: KeywordCtx) {
+  code(cxt: KeywordCxt) {
     const {gen, schema, schemaCode, data, $data, it} = cxt
     if (!$data && schema.length === 0) return
     const useLoop = schema.length >= it.opts.loopRequired

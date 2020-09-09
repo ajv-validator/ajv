@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition, AddedFormat, FormatValidate} from "../../types"
-import KeywordCtx from "../../compile/context"
+import KeywordCxt from "../../compile/context"
 import {_, str, nil, or, Code, getProperty} from "../../compile/codegen"
 import N from "../../compile/names"
 
@@ -8,7 +8,7 @@ const def: CodeKeywordDefinition = {
   type: ["number", "string"],
   schemaType: "string",
   $data: true,
-  code(cxt: KeywordCtx, ruleType?: string) {
+  code(cxt: KeywordCxt, ruleType?: string) {
     const {gen, data, $data, schema, schemaCode, it} = cxt
     const {opts, errSchemaPath, self} = it
     if (opts.format === false) return

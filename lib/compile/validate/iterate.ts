@@ -1,4 +1,4 @@
-import {SchemaObjCtx} from "../../types"
+import {SchemaObjCxt} from "../../types"
 import {shouldUseGroup, shouldUseRule} from "./applicability"
 import {checkDataType, schemaHasRulesButRef} from "../util"
 import {keywordCode} from "./keyword"
@@ -9,7 +9,7 @@ import {_, Name} from "../codegen"
 import N from "../names"
 
 export function schemaKeywords(
-  it: SchemaObjCtx,
+  it: SchemaObjCxt,
   types: string[],
   typeErrors: boolean,
   errsCount?: Name
@@ -45,7 +45,7 @@ export function schemaKeywords(
   }
 }
 
-function iterateKeywords(it: SchemaObjCtx, group: RuleGroup) {
+function iterateKeywords(it: SchemaObjCxt, group: RuleGroup) {
   const {
     gen,
     schema,

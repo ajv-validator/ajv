@@ -1,18 +1,18 @@
-import {Schema, SchemaCtx, SchemaObjCtx, Options} from "../../types"
+import {Schema, SchemaCxt, SchemaObjCxt, Options} from "../../types"
 import {boolOrEmptySchema, topBoolOrEmptySchema} from "./boolSchema"
 import {coerceAndCheckDataType, getSchemaTypes} from "./dataType"
 import {schemaKeywords} from "./iterate"
 import {CodeGen, _, nil, str, Block, Code, Name} from "../codegen"
 import N from "../names"
 import {resolveUrl} from "../resolve"
-import {schemaCtxHasRules, schemaHasRulesButRef} from "../util"
+import {schemaCxtHasRules, schemaHasRulesButRef} from "../util"
 import {checkStrictMode, checkUnknownRules} from "../../vocabularies/util"
 
 // schema compilation - generates validation function, subschemaCode (below) is used for subschemas
-export function validateFunctionCode(it: SchemaCtx): void {
+export function validateFunctionCode(it: SchemaCxt): void {
   if (isSchemaObj(it)) {
     checkKeywords(it)
-    if (schemaCtxHasRules(it)) {
+    if (schemaCxtHasRules(it)) {
       topSchemaObjCode(it)
       return
     }
@@ -20,7 +20,7 @@ export function validateFunctionCode(it: SchemaCtx): void {
   validateFunction(it, () => topBoolOrEmptySchema(it))
 }
 
-function validateFunction({gen, validateName, schema, async, opts}: SchemaCtx, body: Block) {
+function validateFunction({gen, validateName, schema, async, opts}: SchemaCxt, body: Block) {
   gen.return(() =>
     gen.func(
       validateName,
@@ -31,7 +31,7 @@ function validateFunction({gen, validateName, schema, async, opts}: SchemaCtx, b
   )
 }
 
-function topSchemaObjCode(it: SchemaObjCtx): void {
+function topSchemaObjCode(it: SchemaObjCxt): void {
   const {schema, opts} = it
   validateFunction(it, () => {
     if (opts.$comment && schema.$comment) commentKeyword(it)
@@ -50,10 +50,10 @@ function funcSourceUrl(schema: Schema, opts: Options): Code {
 }
 
 // schema compilation - this function is used recursively to generate code for sub-schemas
-export function subschemaCode(it: SchemaCtx, valid: Name): void {
+export function subschemaCode(it: SchemaCxt, valid: Name): void {
   if (isSchemaObj(it)) {
     checkKeywords(it)
-    if (schemaCtxHasRules(it)) {
+    if (schemaCxtHasRules(it)) {
       subSchemaObjCode(it, valid)
       return
     }
@@ -61,11 +61,11 @@ export function subschemaCode(it: SchemaCtx, valid: Name): void {
   boolOrEmptySchema(it, valid)
 }
 
-function isSchemaObj(it: SchemaCtx): it is SchemaObjCtx {
+function isSchemaObj(it: SchemaCxt): it is SchemaObjCxt {
   return typeof it.schema != "boolean"
 }
 
-function subSchemaObjCode(it: SchemaObjCtx, valid: Name): void {
+function subSchemaObjCode(it: SchemaObjCxt, valid: Name): void {
   const {schema, gen, opts} = it
   if (opts.$comment && schema.$comment) commentKeyword(it)
   updateContext(it)
@@ -77,18 +77,18 @@ function subSchemaObjCode(it: SchemaObjCtx, valid: Name): void {
   gen.var(valid, _`${errsCount} === ${N.errors}`)
 }
 
-function checkKeywords(it: SchemaObjCtx) {
+function checkKeywords(it: SchemaObjCxt) {
   checkUnknownRules(it)
   checkRefsAndKeywords(it)
 }
 
-function typeAndKeywords(it: SchemaObjCtx, errsCount?: Name): void {
+function typeAndKeywords(it: SchemaObjCxt, errsCount?: Name): void {
   const types = getSchemaTypes(it, it.schema)
   const checkedTypes = coerceAndCheckDataType(it, types)
   schemaKeywords(it, types, !checkedTypes, errsCount)
 }
 
-function checkRefsAndKeywords(it: SchemaObjCtx): void {
+function checkRefsAndKeywords(it: SchemaObjCxt): void {
   const {schema, errSchemaPath, opts, self} = it
   if (schema.$ref && schemaHasRulesButRef(schema, self.RULES)) {
     if (opts.extendRefs === "fail") {
@@ -99,7 +99,7 @@ function checkRefsAndKeywords(it: SchemaObjCtx): void {
   }
 }
 
-function checkNoDefault(it: SchemaObjCtx): void {
+function checkNoDefault(it: SchemaObjCxt): void {
   const {schema, opts} = it
   if (schema.default !== undefined && opts.useDefaults && opts.strict) {
     checkStrictMode(it, "default is ignored in the schema root")
@@ -113,15 +113,15 @@ function initializeTop(gen: CodeGen): void {
   // gen.if(_`${N.dataPath} === undefined`, () => gen.assign(N.dataPath, _`""`)) // TODO maybe add it
 }
 
-function updateContext(it: SchemaObjCtx): void {
+function updateContext(it: SchemaObjCxt): void {
   if (it.schema.$id) it.baseId = resolveUrl(it.baseId, it.schema.$id)
 }
 
-function checkAsync(it: SchemaObjCtx): void {
+function checkAsync(it: SchemaObjCxt): void {
   if (it.schema.$async && !it.async) throw new Error("async schema in sync schema")
 }
 
-function commentKeyword({gen, validateName, schema, errSchemaPath, opts}: SchemaObjCtx): void {
+function commentKeyword({gen, validateName, schema, errSchemaPath, opts}: SchemaObjCxt): void {
   const msg = schema.$comment
   if (opts.$comment === true) {
     gen.code(_`${N.self}.logger.log(${msg})`)
@@ -131,7 +131,7 @@ function commentKeyword({gen, validateName, schema, errSchemaPath, opts}: Schema
   }
 }
 
-function returnResults({gen, async, validateName, ValidationError}: SchemaCtx) {
+function returnResults({gen, async, validateName, ValidationError}: SchemaCxt) {
   if (async) {
     gen.if(
       _`${N.errors} === 0`,
