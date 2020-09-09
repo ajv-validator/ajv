@@ -172,7 +172,6 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
       schemaPath: nil,
       errSchemaPath: "#",
       errorPath: str``,
-      formats: self.formats,
       opts,
       resolveRef, // TODO move to gen.globals
       self,

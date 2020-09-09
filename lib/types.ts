@@ -172,7 +172,6 @@ export interface SchemaCtx {
   propertyName?: Name
   compositeRule?: boolean
   createErrors?: boolean
-  formats: {[index: string]: AddedFormat}
   opts: InstanceOptions
   resolveRef: (baseId: string, ref: string, isRoot: boolean) => ResolvedRef | void
   self: Ajv

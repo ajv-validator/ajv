@@ -10,7 +10,7 @@ const def: CodeKeywordDefinition = {
   $data: true,
   code(cxt: KeywordCtx, ruleType?: string) {
     const {gen, data, $data, schema, schemaCode, it} = cxt
-    const {formats, opts, errSchemaPath, self} = it
+    const {opts, errSchemaPath, self} = it
     if (opts.format === false) return
 
     if ($data) validate$DataFormat()
@@ -51,7 +51,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function validateFormat() {
-      const formatDef: AddedFormat = formats[schema]
+      const formatDef: AddedFormat = self.formats[schema]
       if (!formatDef) {
         unknownFormat()
         return
