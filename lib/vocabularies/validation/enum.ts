@@ -10,7 +10,7 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordCtx) {
     const {gen, data, $data, schema, schemaCode, it} = cxt
     if (!$data && schema.length === 0) throw new Error("enum must have non-empty array")
-    const useLoop = typeof it.opts.loopEnum == "number" && schema.length >= it.opts.loopEnum
+    const useLoop = schema.length >= it.opts.loopEnum
     const eql = cxt.gen.scopeValue("func", {
       ref: equal,
       code: _`require("ajv/dist/compile/equal")`,

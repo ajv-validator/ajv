@@ -48,6 +48,7 @@ export interface CurrentOptions {
   ownProperties?: boolean
   multipleOfPrecision?: boolean | number
   messages?: boolean
+  code?: CodeOptions
   sourceCode?: boolean
   processCode?: (code: string, schema: Schema) => string
   codegen?: CodeGenOptions
@@ -56,6 +57,10 @@ export interface CurrentOptions {
   serialize?: false | ((schema: Schema) => unknown)
   $comment?: true | ((comment: string, schemaPath?: string, rootSchema?: SchemaObject) => unknown)
   allowMatchingProperties?: boolean // disables a strict mode restriction
+}
+
+export interface CodeOptions {
+  formats?: Code // code to require (or construct) map of available formats - for standalone code
 }
 
 export interface Options extends CurrentOptions {
@@ -67,6 +72,14 @@ export interface Options extends CurrentOptions {
   // deprecated:
   jsPropertySyntax?: boolean // added instead of jsonPointers
   unicode?: boolean
+}
+
+export interface InstanceOptions extends Options {
+  [opt: string]: unknown
+  strict: boolean | "log"
+  code: CodeOptions
+  loopRequired: number
+  loopEnum: number
 }
 
 export interface Logger {
@@ -164,7 +177,7 @@ export interface SchemaCtx {
   createErrors?: boolean // TODO maybe remove later
   RULES: ValidationRules
   formats: {[index: string]: AddedFormat}
-  opts: Options
+  opts: InstanceOptions
   resolveRef: (baseId: string, ref: string, isRoot: boolean) => ResolvedRef | void
   logger: Logger
   self: Ajv

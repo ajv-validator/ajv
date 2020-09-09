@@ -12,7 +12,7 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordCtx) {
     const {gen, schema, schemaCode, data, $data, it} = cxt
     if (!$data && schema.length === 0) return
-    const useLoop = typeof it.opts.loopRequired == "number" && schema.length >= it.opts.loopRequired
+    const useLoop = schema.length >= it.opts.loopRequired
     if (it.allErrors) allErrorsMode()
     else exitOnErrorMode()
 

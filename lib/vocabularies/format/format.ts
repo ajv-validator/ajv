@@ -10,14 +10,18 @@ const def: CodeKeywordDefinition = {
   $data: true,
   code(cxt: KeywordCtx, ruleType?: string) {
     const {gen, data, $data, schema, schemaCode, it} = cxt
-    const {formats, opts, logger, errSchemaPath} = it
+    const {formats, opts, logger, errSchemaPath, self} = it
     if (opts.format === false) return
 
     if ($data) validate$DataFormat()
     else validateFormat()
 
     function validate$DataFormat() {
-      const fDef = gen.const("fDef", _`formats[${schemaCode}]`)
+      const fmts = gen.scopeValue("formats", {
+        ref: self.formats,
+        code: opts.code?.formats,
+      })
+      const fDef = gen.const("fDef", _`${fmts}[${schemaCode}]`)
       const fType = gen.let("fType")
       const format = gen.let("format")
       // TODO simplify
@@ -38,8 +42,9 @@ const def: CodeKeywordDefinition = {
       }
 
       function invalidFmt(): Code {
-        const fmt = _`${format}(${data})`
-        const callFormat = it.async ? _`${fDef}.async ? await ${fmt} : ${fmt}` : fmt
+        const callFormat = it.async
+          ? _`${fDef}.async ? await ${format}(${data}) : ${format}(${data})`
+          : _`${format}(${data})`
         const validData = _`typeof ${format} == "function" ? ${callFormat} : ${format}.test(${data})`
         return _`(${format} && ${fType} === ${<string>ruleType} && !(${validData}))`
       }
@@ -68,7 +73,11 @@ const def: CodeKeywordDefinition = {
       }
 
       function getFormat(fmtDef: AddedFormat): [string, FormatValidate, Code] {
-        const fmt = _`formats${getProperty(schema)}` // TODO use scope for formats?
+        const fmt = gen.scopeValue("formats", {
+          key: schema,
+          ref: fmtDef,
+          code: opts.code.formats ? _`${opts.code.formats}${getProperty(schema)}` : undefined,
+        })
         if (typeof fmtDef == "object" && !(fmtDef instanceof RegExp)) {
           return [fmtDef.type || "string", fmtDef.validate as FormatValidate, _`${fmt}.validate`]
         }

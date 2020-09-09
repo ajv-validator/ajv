@@ -138,7 +138,7 @@ function compileSchema(this: Ajv, sch: StoredSchema): ValidateFunction | Validat
   }
   const root = sch.root
 
-  const formats = this._formats
+  const formats = this.formats
 
   try {
     this._compilations.add(sch)
@@ -211,13 +211,12 @@ function compileSchema(this: Ajv, sch: StoredSchema): ValidateFunction | Validat
       // TODO refactor to fewer variables - maybe only self and scope
       const makeValidate = new Function(
         N.self.toString(),
-        "formats",
         "root",
         "refVal",
         N.scope.toString(),
         sourceCode
       )
-      validate = makeValidate(self, formats, root, refVal, self._scope.get())
+      validate = makeValidate(self, root, refVal, self._scope.get())
 
       refVal[0] = validate
     } catch (e) {

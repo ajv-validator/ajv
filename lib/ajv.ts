@@ -4,6 +4,7 @@ import {
   Vocabulary,
   KeywordDefinition,
   Options,
+  InstanceOptions,
   ValidateFunction,
   CacheInterface,
   Logger,
@@ -31,26 +32,29 @@ const META_SCHEMA_ID = "http://json-schema.org/draft-07/schema"
 
 const META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"]
 const META_SUPPORT_DATA = ["/properties"]
-const EXT_SCOPE_NAMES = new Set(["keyword", "pattern", "validate$data", "func", "Error"])
+const EXT_SCOPE_NAMES = new Set(["keyword", "pattern", "formats", "validate$data", "func", "Error"])
 
 type CompileAsyncCallback = (err: Error | null, validate?: ValidateFunction) => void
 
-interface IndexableOptions extends Options {
-  [opt: string]: unknown
+const optsDefaults = {
+  strict: true,
+  code: {},
+  loopRequired: Infinity,
+  loopEnum: Infinity,
 }
 
 export default class Ajv {
-  _opts: IndexableOptions
+  _opts: InstanceOptions
   _cache: CacheInterface
   // shared external scope values for compiled functions
   _scope = new ValueScope({scope: {}, prefixes: EXT_SCOPE_NAMES})
   _schemas: {[key: string]: StoredSchema} = {}
   _refs: {[ref: string]: StoredSchema | string} = {}
   _fragments: {[key: string]: StoredSchema} = {}
-  _formats: {[name: string]: AddedFormat} = {}
+  formats: {[name: string]: AddedFormat} = {}
   _compilations: Set<StoredSchema> = new Set()
   _loadingSchemas: {[ref: string]: Promise<SchemaObject>} = {}
-  _metaOpts: IndexableOptions
+  _metaOpts: InstanceOptions
   RULES: ValidationRules
   logger: Logger
   errors?: ErrorObject[] | null // errors from the last validation
@@ -59,7 +63,7 @@ export default class Ajv {
   static MissingRefError = MissingRefError
 
   constructor(opts: Options = {}) {
-    opts = this._opts = {strict: true, ...opts}
+    opts = this._opts = {...optsDefaults, ...opts}
     this.logger = getLogger(opts.logger)
     const formatOpt = opts.format
     opts.format = false
@@ -352,7 +356,7 @@ export default class Ajv {
   // Add format
   addFormat(name: string, format: Format): Ajv {
     if (typeof format == "string") format = new RegExp(format)
-    this._formats[name] = format
+    this.formats[name] = format
     return this
   }
 
