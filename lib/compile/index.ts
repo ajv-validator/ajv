@@ -1,4 +1,4 @@
-import type {Schema, SchemaObject, ValidateFunction, ValidateWrapper} from "../types"
+import type {Schema, SchemaObject, ValidateFunction} from "../types"
 import type Ajv from "../ajv"
 import {CodeGen, _, nil, str, Code, Name} from "./codegen"
 import {ValidationError} from "./error_classes"
@@ -25,8 +25,6 @@ interface _StoredSchema {
   localRefs?: LocalRefs
   baseId?: string
   validate?: ValidateFunction
-  callValidate?: ValidateWrapper
-  compiling?: boolean
 }
 
 export class StoredSchema implements _StoredSchema {
@@ -42,8 +40,6 @@ export class StoredSchema implements _StoredSchema {
   localRefs?: LocalRefs
   baseId?: string
   validate?: ValidateFunction
-  callValidate?: ValidateWrapper
-  compiling?: boolean
 
   constructor(obj: _StoredSchema) {
     this.schema = obj.schema
@@ -81,87 +77,68 @@ interface SchemaEnv {
   baseId?: string
 }
 
-export function compileStoredSchema(
-  this: Ajv,
-  schObj: StoredSchema
-): ValidateFunction | ValidateWrapper {
-  if (schObj.meta) {
-    const currentOpts = this._opts
-    this._opts = this._metaOpts
-    try {
-      return compileSchema.call(this, schObj)
-    } finally {
-      this._opts = currentOpts
-    }
-  }
-  return compileSchema.call(this, schObj)
+export function compileStoredSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
+  return (schObj.meta ? compileMetaSchema : compileSchema).call(this, schObj)
 }
 
-function validateWrapper(sch: StoredSchema): ValidateWrapper {
-  if (!sch.callValidate) {
-    const wrapper: ValidateWrapper = function (this: Ajv | unknown, ...args) {
+function compileMetaSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
+  const currentOpts = this._opts
+  this._opts = this._metaOpts
+  try {
+    return compileSchema.call(this, schObj)
+  } finally {
+    this._opts = currentOpts
+  }
+}
+
+function validateWrapper(sch: StoredSchema): ValidateFunction {
+  if (!sch.validate) {
+    const wrapper: ValidateFunction = function (this: Ajv | unknown, ...args) {
       if (wrapper.validate === undefined) throw new Error("ajv implementation error")
       const v = wrapper.validate
       const valid = v.apply(this, args)
       wrapper.errors = v.errors
       return valid
     }
-    sch.callValidate = wrapper
+    sch.validate = wrapper
   }
-  return sch.callValidate
+  return sch.validate
 }
 
-function extendValidateWrapper(v: ValidateFunction, sch: StoredSchema): void {
-  const cv = sch.callValidate
-  if (cv) {
-    cv.validate = v
-    Object.assign(cv, v)
-  }
+function extendWrapper(wrapper: ValidateFunction, v: ValidateFunction): void {
+  wrapper.validate = v
+  Object.assign(wrapper, v)
 }
 
 // Compiles schema to validation function
-function compileSchema(this: Ajv, sch: StoredSchema): ValidateFunction | ValidateWrapper {
-  const _schObj = getCompilingSchema.call(this, sch) as StoredSchema
-  if (_schObj) return validateWrapper(_schObj)
-
-  const {localRefs} = sch
+function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
+  const {localRefs} = schObj
   const self = this
   const opts = this._opts
   const refVal: (RefVal | undefined)[] = [undefined]
   const refs: {[ref: string]: number | undefined} = {}
-  if (sch.root === undefined) {
-    sch.root = {
-      schema: typeof sch.schema == "boolean" ? {} : sch.schema,
+  if (schObj.root === undefined) {
+    schObj.root = {
+      schema: typeof schObj.schema == "boolean" ? {} : schObj.schema,
       refVal,
       refs,
     }
   }
-  const root = sch.root
+  const root = schObj.root
+  return localCompile(schObj as SchemaEnv)
 
-  const formats = this.formats
-
-  try {
-    this._compilations.add(sch)
-    const v = localCompile(sch as SchemaEnv)
-    extendValidateWrapper(v, sch)
-    sch.validate = v
-    sch.refs = v.refs
-    sch.refVal = v.refVal
-    sch.root = v.root
-    return v
-  } finally {
-    this._compilations.delete(sch)
-  }
-
-  function localCompile(_sch: StoredSchema): ValidateFunction {
-    const {schema, baseId} = _sch
-    if (_sch.root === undefined || _sch.root !== root) {
-      return compileSchema.call(self, _sch)
+  function localCompile(sch: StoredSchema): ValidateFunction {
+    // TODO refactor - remove compilations
+    const _sch = getCompilingSchema.call(self, sch)
+    if (_sch) return validateWrapper(_sch)
+    // validateWrapper(sch)
+    const {schema, baseId} = sch
+    if (sch.root === undefined || sch.root !== root) {
+      return compileSchema.call(self, sch)
     }
-    const isRoot = isRootEnv(_sch as SchemaEnv)
-
+    const isRoot = isRootEnv(sch as SchemaEnv)
     const $async = typeof schema == "object" && schema.$async === true
-    const rootId = getFullPath(_sch.root.schema.$id)
+    const rootId = getFullPath(sch.root.schema.$id)
 
     const gen = new CodeGen(self._scope, {...opts.codegen, forInOwn: opts.ownProperties})
     let _ValidationError
@@ -174,7 +151,7 @@ function compileSchema(this: Ajv, sch: StoredSchema): ValidateFunction | Validat
 
     const validateName = new Name("validate")
 
-    validateFunctionCode({
+    const schemaCxt = {
       gen,
       allErrors: !!opts.allErrors,
       data: N.data,
@@ -189,26 +166,27 @@ function compileSchema(this: Ajv, sch: StoredSchema): ValidateFunction | Validat
       ValidationError: _ValidationError,
       schema: schema,
       isRoot,
-      root: _sch.root,
+      root: sch.root,
       rootId,
       baseId: baseId || rootId,
       schemaPath: nil,
       errSchemaPath: "#",
       errorPath: str``,
-      formats,
+      formats: self.formats,
       opts,
       resolveRef, // TODO move to gen.globals
       self,
-    })
+    }
 
-    let sourceCode = `${vars(refVal, refValCode)}
-                      ${gen.scopeRefs(N.scope)}
-                      ${gen.toString()}`
-
-    if (opts.processCode) sourceCode = opts.processCode(sourceCode, schema)
-    // console.log("\n\n\n *** \n", sourceCode)
-    let validate: ValidateFunction
+    let sourceCode
     try {
+      self._compilations.add(sch)
+      validateFunctionCode(schemaCxt)
+      sourceCode = `${vars(refVal, refValCode)}
+                    ${gen.scopeRefs(N.scope)}
+                    ${gen.toString()}`
+      if (opts.processCode) sourceCode = opts.processCode(sourceCode, schema)
+      // console.log("\n\n\n *** \n", sourceCode)
       // TODO refactor to fewer variables - maybe only self and scope
       const makeValidate = new Function(
         N.self.toString(),
@@ -217,28 +195,31 @@ function compileSchema(this: Ajv, sch: StoredSchema): ValidateFunction | Validat
         N.scope.toString(),
         sourceCode
       )
-      validate = makeValidate(self, root, refVal, self._scope.get())
+      const validate: ValidateFunction = makeValidate(self, root, refVal, self._scope.get())
 
       refVal[0] = validate
-    } catch (e) {
-      self.logger.error("Error compiling schema, function code:", sourceCode)
-      throw e
-    }
-
-    validate.schema = schema
-    validate.errors = null
-    validate.refs = refs
-    validate.refVal = refVal
-    validate.root = isRoot ? root : _sch.root
-    if ($async) validate.$async = true
-    if (opts.sourceCode === true) {
-      validate.source = {
-        code: sourceCode,
-        scope: self._scope,
+      validate.schema = schema
+      validate.errors = null
+      sch.refs = validate.refs = refs
+      sch.refVal = validate.refVal = refVal
+      sch.root = validate.root = isRoot ? root : sch.root
+      if ($async) validate.$async = true
+      if (opts.sourceCode === true) {
+        validate.source = {
+          code: sourceCode,
+          scope: self._scope,
+        }
       }
+      if (sch.validate) extendWrapper(sch.validate, validate)
+      sch.validate = validate
+      return validate
+    } catch (e) {
+      delete sch.validate
+      if (sourceCode) self.logger.error("Error compiling schema, function code:", sourceCode)
+      throw e
+    } finally {
+      self._compilations.delete(sch)
     }
-
-    return validate
   }
 
   function resolveRef(_baseId: string, ref: string, isRoot: boolean): ResolvedRef | void {

@@ -115,10 +115,7 @@ export interface ValidateFunction {
   root?: SchemaRoot
   $async?: true
   source?: SourceCode
-}
-
-export interface ValidateWrapper extends ValidateFunction {
-  validate?: ValidateFunction
+  validate?: ValidateFunction // it will be only set on wrappers
 }
 
 export interface SchemaValidateFunction {
