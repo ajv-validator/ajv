@@ -174,21 +174,25 @@ function validSchemaType(schema: unknown, schemaType: string | string[]): boolea
     : typeof schema == schemaType
 }
 
-function validateKeywordUsage(it: SchemaObjCtx, def: KeywordDefinition, keyword: string): void {
+function validateKeywordUsage(
+  {schema, opts, self}: SchemaObjCtx,
+  def: KeywordDefinition,
+  keyword: string
+): void {
   if (Array.isArray(def.keyword) ? !def.keyword.includes(keyword) : def.keyword !== keyword) {
     throw new Error("ajv implementation error")
   }
 
   const deps = def.dependencies
-  if (deps?.some((kwd) => !Object.prototype.hasOwnProperty.call(it.schema, kwd))) {
+  if (deps?.some((kwd) => !Object.prototype.hasOwnProperty.call(schema, kwd))) {
     throw new Error(`parent schema must have dependencies of ${keyword}: ${deps.join(",")}`)
   }
 
   if (def.validateSchema) {
-    const valid = def.validateSchema(it.schema[keyword])
+    const valid = def.validateSchema(schema[keyword])
     if (!valid) {
-      const msg = "keyword value is invalid: " + it.self.errorsText(def.validateSchema.errors)
-      if (it.opts.validateSchema === "log") it.logger.error(msg)
+      const msg = "keyword value is invalid: " + self.errorsText(def.validateSchema.errors)
+      if (opts.validateSchema === "log") self.logger.error(msg)
       else throw new Error(msg)
     }
   }

@@ -192,11 +192,9 @@ function compileSchema(this: Ajv, sch: StoredSchema): ValidateFunction | Validat
       schemaPath: nil,
       errSchemaPath: "#",
       errorPath: str``,
-      RULES: self.RULES, // TODO refactor - it is available on the instance
       formats,
       opts,
       resolveRef, // TODO move to gen.globals
-      logger: self.logger,
       self,
     })
 
@@ -452,11 +450,7 @@ function getJsonPointer(
     }
   }
   if (schema === undefined) return
-  if (
-    typeof schema != "boolean" &&
-    schema.$ref &&
-    !schemaHasRulesButRef({schema, RULES: this.RULES})
-  ) {
+  if (typeof schema != "boolean" && schema.$ref && !schemaHasRulesButRef(schema, this.RULES)) {
     const $ref = resolveUrl(baseId, schema.$ref)
     const _env = resolveSchema.call(this, root, $ref)
     if (_env && !isRootEnv(_env)) return _env

@@ -1,5 +1,4 @@
 import {CodeGen, Code, Name, CodeGenOptions, Scope} from "./compile/codegen"
-import {ValidationRules} from "./compile/rules"
 import {RefVal, ResolvedRef, SchemaRoot, StoredSchema} from "./compile"
 import KeywordCtx from "./compile/context"
 import Ajv from "./ajv"
@@ -174,12 +173,10 @@ export interface SchemaCtx {
   errorPath: Code
   propertyName?: Name
   compositeRule?: boolean
-  createErrors?: boolean // TODO maybe remove later
-  RULES: ValidationRules
+  createErrors?: boolean
   formats: {[index: string]: AddedFormat}
   opts: InstanceOptions
   resolveRef: (baseId: string, ref: string, isRoot: boolean) => ResolvedRef | void
-  logger: Logger
   self: Ajv
 }
 

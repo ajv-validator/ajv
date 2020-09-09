@@ -21,13 +21,14 @@ export function alwaysValidSchema(it: SchemaCtx, schema: Schema): boolean | void
   if (typeof schema == "boolean") return schema
   if (Object.keys(schema).length === 0) return true
   checkUnknownRules(it, schema)
-  return !schemaHasRules(schema, it.RULES.all)
+  return !schemaHasRules(schema, it.self.RULES.all)
 }
 
 export function checkUnknownRules(it: SchemaCtx, schema: Schema = it.schema): void {
-  if (!it.opts.strict) return
+  const {opts, self} = it
+  if (!opts.strict) return
   if (typeof schema === "boolean") return
-  const rules = it.RULES.keywords
+  const rules = self.RULES.keywords
   for (const key in schema) {
     if (!rules[key]) checkStrictMode(it, `unknown keyword: "${key}"`)
   }
@@ -82,9 +83,9 @@ export function usePattern(gen: CodeGen, pattern: string): Name {
 }
 
 export function checkStrictMode(it: SchemaCtx, msg: string): void {
-  const {opts, logger} = it
+  const {opts, self} = it
   if (opts.strict) {
-    if (opts.strict === "log") logger.warn(msg)
+    if (opts.strict === "log") self.logger.warn(msg)
     else throw new Error(msg)
   }
 }

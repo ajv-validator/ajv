@@ -14,9 +14,10 @@ export function schemaKeywords(
   typeErrors: boolean,
   errsCount?: Name
 ): void {
-  const {gen, schema, data, RULES, allErrors, opts} = it
-  if (schema.$ref && !(opts.extendRefs === true && schemaHasRulesButRef(it))) {
-    gen.block(() => keywordCode(it, "$ref", (<Rule>RULES.all.$ref).definition)) // TODO typecast
+  const {gen, schema, data, allErrors, opts, self} = it
+  const {RULES} = self
+  if (schema.$ref && !(opts.extendRefs === true && schemaHasRulesButRef(schema, RULES))) {
+    gen.block(() => keywordCode(it, "$ref", (RULES.all.$ref as Rule).definition)) // TODO typecast
     return
   }
   gen.block(() => {

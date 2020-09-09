@@ -6,10 +6,10 @@ import {reportError} from "../errors"
 import {_, str, Name} from "../codegen"
 import {ValidationRules} from "../rules"
 
-export function getSchemaTypes({RULES}: SchemaObjCtx, schema: SchemaObject): string[] {
+export function getSchemaTypes({self}: SchemaObjCtx, schema: SchemaObject): string[] {
   const st: undefined | string | string[] = schema.type
   const types: string[] = Array.isArray(st) ? st : st ? [st] : []
-  types.forEach((t) => checkType(t, RULES))
+  types.forEach((t) => checkType(t, self.RULES))
   const hasNull = types.includes("null")
   if (hasNull && schema.nullable === false) {
     throw new Error('{"type": "null"} contradicts {"nullable": "false"}')

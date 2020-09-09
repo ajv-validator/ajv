@@ -79,18 +79,13 @@ export function schemaHasRules(schema: Schema, rules: {[key: string]: boolean | 
   return false
 }
 
-export function schemaCtxHasRules({schema, RULES}: SchemaCtx): boolean {
+export function schemaCtxHasRules({schema, self}: SchemaCtx): boolean {
   if (typeof schema == "boolean") return !schema
-  for (const key in schema) if (RULES.all[key]) return true
+  for (const key in schema) if (self.RULES.all[key]) return true
   return false
 }
 
-interface SchemaAndRules {
-  schema: Schema
-  RULES: ValidationRules
-}
-
-export function schemaHasRulesButRef({schema, RULES}: SchemaAndRules): boolean {
+export function schemaHasRulesButRef(schema: Schema, RULES: ValidationRules): boolean {
   if (typeof schema == "boolean") return !schema
   for (const key in schema) if (key !== "$ref" && RULES.all[key]) return true
   return false

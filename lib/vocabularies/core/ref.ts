@@ -12,7 +12,7 @@ const def: CodeKeywordDefinition = {
   schemaType: "string",
   code(cxt: KeywordCtx) {
     const {gen, schema, it} = cxt
-    const {resolveRef, allErrors, baseId, isRoot, root, opts, logger} = it
+    const {resolveRef, allErrors, baseId, isRoot, root, opts, self} = it
     const ref = getRef()
     const passCxt = opts.passContext ? N.this : nil
     if (ref === undefined) missingRef()
@@ -33,11 +33,11 @@ const def: CodeKeywordDefinition = {
       const msg = MissingRefError.message(baseId, schema)
       switch (opts.missingRefs) {
         case "fail":
-          logger.error(msg)
+          self.logger.error(msg)
           cxt.fail()
           return
         case "ignore":
-          logger.warn(msg)
+          self.logger.warn(msg)
           return
         default:
           throw new MissingRefError(baseId, schema, msg)

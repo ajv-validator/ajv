@@ -10,7 +10,7 @@ const def: CodeKeywordDefinition = {
   $data: true,
   code(cxt: KeywordCtx, ruleType?: string) {
     const {gen, data, $data, schema, schemaCode, it} = cxt
-    const {formats, opts, logger, errSchemaPath, self} = it
+    const {formats, opts, errSchemaPath, self} = it
     if (opts.format === false) return
 
     if ($data) validate$DataFormat()
@@ -61,7 +61,7 @@ const def: CodeKeywordDefinition = {
 
       function unknownFormat() {
         if (opts.unknownFormats === "ignore") {
-          logger.warn(unknownMsg())
+          self.logger.warn(unknownMsg())
           return
         }
         if (Array.isArray(opts.unknownFormats) && opts.unknownFormats.includes(schema)) return
