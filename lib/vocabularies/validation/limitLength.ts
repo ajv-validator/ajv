@@ -1,6 +1,7 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordCtx from "../../compile/context"
 import {_, str, operators} from "../../compile/codegen"
+import ucs2length from "../../compile/ucs2length"
 
 const def: CodeKeywordDefinition = {
   keyword: ["maxLength", "minLength"],
@@ -10,7 +11,16 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordCtx) {
     const {keyword, data, schemaCode, it} = cxt
     const op = keyword === "maxLength" ? operators.GT : operators.LT
-    const len = it.opts.unicode === false ? _`${data}.length` : _`ucs2length(${data})`
+    let len
+    if (it.opts.unicode === false) {
+      len = _`${data}.length`
+    } else {
+      const u2l = cxt.gen.scopeValue("func", {
+        ref: ucs2length,
+        code: _`require("ajv/dist/compile/ucs2length")`,
+      })
+      len = _`${u2l}(${data})`
+    }
     cxt.fail$data(_`${len} ${op} ${schemaCode}`)
   },
   error: {

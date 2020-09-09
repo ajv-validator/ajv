@@ -1,6 +1,7 @@
 import {CodeKeywordDefinition} from "../../types"
 import KeywordCtx from "../../compile/context"
 import {_, or, Name, Code} from "../../compile/codegen"
+import equal from "fast-deep-equal"
 
 const def: CodeKeywordDefinition = {
   keyword: "enum",
@@ -10,6 +11,10 @@ const def: CodeKeywordDefinition = {
     const {gen, data, $data, schema, schemaCode, it} = cxt
     if (!$data && schema.length === 0) throw new Error("enum must have non-empty array")
     const useLoop = typeof it.opts.loopEnum == "number" && schema.length >= it.opts.loopEnum
+    const eql = cxt.gen.scopeValue("func", {
+      ref: equal,
+      code: _`require("ajv/dist/compile/equal")`,
+    })
     let valid: Code
     if (useLoop || $data) {
       valid = gen.let("valid")
@@ -24,14 +29,14 @@ const def: CodeKeywordDefinition = {
     function loopEnum(): void {
       gen.assign(valid, false)
       gen.forOf("v", schemaCode, (v) =>
-        gen.if(_`equal(${data}, ${v})`, () => gen.assign(valid, true).break())
+        gen.if(_`${eql}(${data}, ${v})`, () => gen.assign(valid, true).break())
       )
     }
 
     function equalCode(vSchema: Name, i: number): Code {
       const sch: string = schema[i]
       if (sch && typeof sch === "object") {
-        return _`equal(${data}, ${vSchema}[${i}])`
+        return _`${eql}(${data}, ${vSchema}[${i}])`
       }
       return _`${data} === ${sch}`
     }

@@ -19,8 +19,7 @@ const def: CodeKeywordDefinition = {
     }
 
     const valid = gen.name("valid")
-    const i = gen.name("i")
-    gen.for(_`let ${i}=0; ${i}<${data}.length; ${i}++`, () => {
+    gen.forRange("i", 0, _`${data}.length`, (i) => {
       applySubschema(
         it,
         {

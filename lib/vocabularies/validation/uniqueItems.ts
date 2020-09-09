@@ -3,6 +3,7 @@ import KeywordCtx from "../../compile/context"
 import {getSchemaTypes} from "../../compile/validate/dataType"
 import {checkDataTypes, DataType} from "../../compile/util"
 import {_, str, Name} from "../../compile/codegen"
+import equal from "fast-deep-equal"
 
 const def: CodeKeywordDefinition = {
   keyword: "uniqueItems",
@@ -48,10 +49,14 @@ const def: CodeKeywordDefinition = {
     }
 
     function loopN2(i: Name, j: Name): void {
+      const eql = cxt.gen.scopeValue("func", {
+        ref: equal,
+        code: _`require("ajv/dist/compile/equal")`,
+      })
       const outer = gen.name("outer")
       gen.label(outer).for(_`;${i}--;`, () =>
         gen.for(_`${j} = ${i}; ${j}--;`, () =>
-          gen.if(_`equal(${data}[${i}], ${data}[${j}])`, () => {
+          gen.if(_`${eql}(${data}[${i}], ${data}[${j}])`, () => {
             cxt.error()
             gen.assign(valid, false).break(outer)
           })

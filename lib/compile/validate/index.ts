@@ -124,19 +124,19 @@ function checkAsync(it: SchemaObjCtx): void {
 function commentKeyword({gen, schema, errSchemaPath, opts: {$comment}}: SchemaObjCtx): void {
   const msg = schema.$comment
   if ($comment === true) {
-    gen.code(_`console.log(${msg})`) // should it use logger?
+    gen.code(_`${N.self}.logger.log(${msg})`)
   } else if (typeof $comment == "function") {
     const schemaPath = str`${errSchemaPath}/$comment`
     gen.code(_`${N.self}._opts.$comment(${msg}, ${schemaPath}, ${N.validate}.root.schema)`)
   }
 }
 
-function returnResults({gen, async}: SchemaCtx) {
+function returnResults({gen, async, ValidationError}: SchemaCtx) {
   if (async) {
     gen.if(
       _`${N.errors} === 0`,
       () => gen.return(N.data),
-      _`throw new ValidationError(${N.vErrors})`
+      _`throw new ${ValidationError as Name}(${N.vErrors})`
     )
   } else {
     gen.assign(_`${N.validate}.errors`, N.vErrors)
