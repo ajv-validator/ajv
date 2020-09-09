@@ -16,7 +16,7 @@ import Cache from "./cache"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
 import rules, {ValidationRules, Rule, RuleGroup} from "./compile/rules"
 import {checkType} from "./compile/validate/dataType"
-import {StoredSchema, Compilation, compileStoredSchema, resolveSchema} from "./compile"
+import {StoredSchema, compileStoredSchema, resolveSchema} from "./compile"
 import {ValueScope} from "./compile/codegen"
 import {normalizeId, getSchemaRefs} from "./compile/resolve"
 import coreVocabulary from "./vocabularies/core"
@@ -48,7 +48,7 @@ export default class Ajv {
   _refs: {[ref: string]: StoredSchema | string} = {}
   _fragments: {[key: string]: StoredSchema} = {}
   _formats: {[name: string]: AddedFormat} = {}
-  _compilations: Set<Compilation> = new Set()
+  _compilations: Set<StoredSchema> = new Set()
   _loadingSchemas: {[ref: string]: Promise<SchemaObject>} = {}
   _metaOpts: IndexableOptions
   RULES: ValidationRules

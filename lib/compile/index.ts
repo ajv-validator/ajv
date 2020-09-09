@@ -12,7 +12,7 @@ import URI = require("uri-js")
  * Functions below are used inside compiled validations function
  */
 
-interface _StoredSchema extends Compilation {
+interface _StoredSchema {
   schema: Schema
   id?: string
   ref?: string
@@ -74,57 +74,31 @@ export interface SchemaRoot {
   refs: {[ref: string]: number | undefined}
 }
 
-export interface CompileEnv {
+interface SchemaEnv {
   schema: Schema
-  root?: SchemaRoot
+  root: SchemaRoot
   localRefs?: LocalRefs
   baseId?: string
 }
 
-export interface SchemaEnv extends CompileEnv {
-  root: SchemaRoot
-}
-
-export interface Compilation extends CompileEnv {
-  validate?: ValidateFunction
-  callValidate?: ValidateWrapper
-}
-
 export function compileStoredSchema(
   this: Ajv,
-  schemaObj: StoredSchema
+  schObj: StoredSchema
 ): ValidateFunction | ValidateWrapper {
-  if (schemaObj.compiling) return validateWrapper(schemaObj)
-  const v = _tryCompile.call(this, schemaObj)
-  schemaObj.validate = v
-  schemaObj.refs = v.refs
-  schemaObj.refVal = v.refVal
-  schemaObj.root = v.root
-  return v
-}
-
-function _tryCompile(this: Ajv, schemaObj: StoredSchema): ValidateFunction | ValidateWrapper {
-  const currentOpts = this._opts
-  const {meta, schema, localRefs} = schemaObj
-  if (meta) this._opts = this._metaOpts
-
-  try {
-    schemaObj.compiling = true
-    const v = compileSchema.call(this, {schema, localRefs})
-    extendValidateWrapper(v, schemaObj, this._opts.sourceCode)
-    return v
-  } catch (e) {
-    delete schemaObj.validate
-    delete schemaObj.callValidate
-    throw e
-  } finally {
-    schemaObj.compiling = false
-    if (meta) this._opts = currentOpts
+  if (schObj.meta) {
+    const currentOpts = this._opts
+    this._opts = this._metaOpts
+    try {
+      return compileSchema.call(this, schObj)
+    } finally {
+      this._opts = currentOpts
+    }
   }
+  return compileSchema.call(this, schObj)
 }
 
-function validateWrapper(c: Compilation): ValidateWrapper {
-  if (!c.callValidate) {
+function validateWrapper(sch: StoredSchema): ValidateWrapper {
+  if (!sch.callValidate) {
     const wrapper: ValidateWrapper = function (this: Ajv | unknown, ...args) {
       if (wrapper.validate === undefined) throw new Error("ajv implementation error")
       const v = wrapper.validate
@@ -132,64 +106,62 @@ function validateWrapper(c: Compilation): ValidateWrapper {
       wrapper.errors = v.errors
       return valid
     }
-    c.callValidate = wrapper
+    sch.callValidate = wrapper
   }
-  c.validate = c.callValidate
-  return c.callValidate
+  return sch.callValidate
 }
 
-function extendValidateWrapper(v: ValidateFunction, c: Compilation, sourceCode?: boolean): void {
-  const cv = c.callValidate
+function extendValidateWrapper(v: ValidateFunction, sch: StoredSchema): void {
+  const cv = sch.callValidate
   if (cv) {
     cv.validate = v
-    cv.schema = v.schema
-    cv.errors = null
-    cv.refs = v.refs
-    cv.refVal = v.refVal
-    cv.root = v.root
-    cv.$async = v.$async
-    if (sourceCode) cv.source = v.source
+    Object.assign(cv, v)
   }
 }
 
 // Compiles schema to validation function
-function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateWrapper {
-  const {schema, root: passedRoot, localRefs} = env
+function compileSchema(this: Ajv, sch: StoredSchema): ValidateFunction | ValidateWrapper {
+  const _schObj = getCompilingSchema.call(this, sch) as StoredSchema
+  if (_schObj) return validateWrapper(_schObj)
+
+  const {localRefs} = sch
   const self = this
   const opts = this._opts
   const refVal: (RefVal | undefined)[] = [undefined]
   const refs: {[ref: string]: number | undefined} = {}
-  const root: SchemaRoot = passedRoot || {
-    schema: typeof schema == "boolean" ? {} : schema,
-    refVal,
-    refs,
+  if (sch.root === undefined) {
+    sch.root = {
+      schema: typeof sch.schema == "boolean" ? {} : sch.schema,
+      refVal,
+      refs,
+    }
   }
-
-  let compilation = getCompilation.call(this, env)
-  if (compilation) return validateWrapper(compilation)
-
-  compilation = env
+  const root = sch.root
 
   const formats = this._formats
 
   try {
-    this._compilations.add(compilation)
-    const v = localCompile({...env, root})
-    extendValidateWrapper(v, compilation)
+    this._compilations.add(sch)
+    const v = localCompile(sch as SchemaEnv)
+    extendValidateWrapper(v, sch)
+    sch.validate = v
+    sch.refs = v.refs
+    sch.refVal = v.refVal
+    sch.root = v.root
     return v
   } finally {
-    this._compilations.delete(compilation)
+    this._compilations.delete(sch)
   }
 
-  function localCompile(_env: SchemaEnv): ValidateFunction {
-    const {schema: _schema, root: _root, baseId} = _env
-    const isRoot = isRootEnv(_env)
-    if (_root !== root) {
-      return compileSchema.call(self, _env)
+  function localCompile(_sch: StoredSchema): ValidateFunction {
+    const {schema, baseId} = _sch
+    if (_sch.root === undefined || _sch.root !== root) {
+      return compileSchema.call(self, _sch)
     }
+    const isRoot = isRootEnv(_sch as SchemaEnv)
 
-    const $async = typeof _schema == "object" && _schema.$async === true
-    const rootId = getFullPath(_root.schema.$id)
+    const $async = typeof schema == "object" && schema.$async === true
+    const rootId = getFullPath(_sch.root.schema.$id)
 
     const gen = new CodeGen(self._scope, {...opts.codegen, forInOwn: opts.ownProperties})
     let _ValidationError
@@ -212,9 +184,9 @@ function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateW
       topSchemaRef: _`${N.validate}.schema`,
       async: $async,
       ValidationError: _ValidationError,
-      schema: _schema,
+      schema: schema,
       isRoot,
-      root: _root,
+      root: _sch.root,
       rootId,
       baseId: baseId || rootId,
       schemaPath: nil,
@@ -232,7 +204,7 @@ function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateW
                       ${gen.scopeRefs(N.scope)}
                       ${gen.toString()}`
 
-    if (opts.processCode) sourceCode = opts.processCode(sourceCode, _schema)
+    if (opts.processCode) sourceCode = opts.processCode(sourceCode, schema)
     // console.log("\n\n\n *** \n", sourceCode)
     let validate: ValidateFunction
     try {
@@ -253,11 +225,11 @@ function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateW
       throw e
     }
 
-    validate.schema = _schema
+    validate.schema = schema
     validate.errors = null
     validate.refs = refs
     validate.refVal = refVal
-    validate.root = isRoot ? root : _root
+    validate.root = isRoot ? root : _sch.root
     if ($async) validate.$async = true
     if (opts.sourceCode === true) {
       validate.source = {
@@ -336,14 +308,14 @@ function compileSchema(this: Ajv, env: CompileEnv): ValidateFunction | ValidateW
 }
 
 // Index of schema compilation in the currently compiled list
-function getCompilation(this: Ajv, env: CompileEnv): Compilation | void {
-  for (const c of this._compilations) {
-    if (equalEnv(c, env)) return c
+function getCompilingSchema(this: Ajv, schObj: StoredSchema): StoredSchema | void {
+  for (const sch of this._compilations) {
+    if (sameSchema(sch, schObj)) return sch
   }
 }
 
-function equalEnv(e1: CompileEnv, e2: CompileEnv): boolean {
-  return e1.schema === e2.schema && e1.root === e2.root && e1.baseId === e2.baseId
+function sameSchema(s1: StoredSchema, s2: StoredSchema): boolean {
+  return s1.schema === s2.schema && s1.root === s2.root && s1.baseId === s2.baseId
 }
 
 function refValCode(i: number, refVal: (RefVal | undefined)[]): Code {
@@ -375,7 +347,7 @@ function resolve(
   if (schOrRef instanceof StoredSchema) {
     return inlineRef(schOrRef.schema, this._opts.inlineRefs)
       ? schOrRef.schema
-      : schOrRef.validate || compileStoredSchema.call(this, schOrRef)
+      : schOrRef.validate || compileSchema.call(this, schOrRef)
   }
 
   const env = resolveSchema.call(this, root, ref)
@@ -388,7 +360,7 @@ function resolve(
 
   if (schema instanceof StoredSchema) {
     if (!schema.validate) {
-      schema.validate = localCompile.call(this, {schema: schema.schema, root, baseId})
+      schema.validate = localCompile.call(this, schema as SchemaEnv)
     }
     return schema.validate
   }
@@ -416,12 +388,12 @@ export function resolveSchema(
       return resolveRecursive.call(this, root, schOrRef, p)
     }
     if (schOrRef instanceof StoredSchema) {
-      if (!schOrRef.validate) compileStoredSchema.call(this, schOrRef)
+      if (!schOrRef.validate) compileSchema.call(this, schOrRef)
       root = <SchemaRoot>schOrRef
     } else {
       schOrRef = this._schemas[id]
       if (schOrRef instanceof StoredSchema) {
-        if (!schOrRef.validate) compileStoredSchema.call(this, schOrRef)
+        if (!schOrRef.validate) compileSchema.call(this, schOrRef)
         if (id === normalizeId(ref)) {
           return {schema: schOrRef, root, baseId}
         }
