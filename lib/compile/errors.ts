@@ -55,8 +55,8 @@ export function extendErrors({
 }: KeywordErrorCtx): void {
   if (errsCount === undefined) throw new Error("ajv implementation error")
   const err = gen.name("err")
-  gen.for(_`let i=${errsCount}; i<${N.errors}; i++`, () => {
-    gen.const(err, _`${N.vErrors}[i]`)
+  gen.forRange("i", errsCount, N.errors, (i) => {
+    gen.const(err, _`${N.vErrors}[${i}]`)
     gen.if(
       _`${err}.dataPath === undefined`,
       _`${err}.dataPath = (${N.dataPath} || '') + ${it.errorPath}`

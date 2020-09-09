@@ -27,8 +27,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function validateItems(valid: Name): void {
-      const i = gen.name("i")
-      gen.for(_`let ${i}=${items.length}; ${i}<${len}; ${i}++`, () => {
+      gen.forRange("i", items.length, len, (i) => {
         applySubschema(it, {keyword: "additionalItems", dataProp: i, dataPropType: Type.Num}, valid)
         if (!it.allErrors) gen.ifNot(valid, _`break`)
       })

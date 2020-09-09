@@ -110,7 +110,7 @@ export class CodeGen {
     } else if (thenBody) {
       this.code(thenBody).endIf()
     } else if (elseBody) {
-      throw new Error('CodeGen: "else" body wit_out "then" body')
+      throw new Error('CodeGen: "else" body without "then" body')
     }
     return this
   }
@@ -121,13 +121,13 @@ export class CodeGen {
   }
 
   elseIf(condition: Code): CodeGen {
-    if (this._lastBlock !== BlockKind.If) throw new Error('CodeGen: "else if" wit_out "if"')
+    if (this._lastBlock !== BlockKind.If) throw new Error('CodeGen: "else if" without "if"')
     this._out += `}else if(${condition}){` + this._n
     return this
   }
 
   else(): CodeGen {
-    if (this._lastBlock !== BlockKind.If) throw new Error('CodeGen: "else" wit_out "if"')
+    if (this._lastBlock !== BlockKind.If) throw new Error('CodeGen: "else" without "if"')
     this._lastBlock = BlockKind.Else
     this._out += "}else{" + this._n
     return this
@@ -136,7 +136,7 @@ export class CodeGen {
   endIf(): CodeGen {
     // TODO possibly remove empty branches here
     const b = this._lastBlock
-    if (b !== BlockKind.If && b !== BlockKind.Else) throw new Error('CodeGen: "endIf" wit_out "if"')
+    if (b !== BlockKind.If && b !== BlockKind.Else) throw new Error('CodeGen: "endIf" without "if"')
     this._blocks.pop()
     this._out += "}" + this._n
     return this
@@ -149,46 +149,51 @@ export class CodeGen {
     return this
   }
 
+  forRange(
+    nameOrPrefix: Name | string,
+    from: SafeExpr,
+    to: SafeExpr,
+    forBody: (index: Name) => void,
+    varKind: Code = varKinds.let
+  ): CodeGen {
+    const i = this.toName(nameOrPrefix)
+    if (this.opts.es5) varKind = varKinds.var
+    return _loop.call(this, _`for(${varKind} ${i}=${from}; ${i}<${to}; ${i}++){`, i, forBody)
+  }
+
   forOf(
     nameOrPrefix: Name | string,
     iterable: SafeExpr,
-    forBody: (n: Name) => void,
+    forBody: (item: Name) => void,
     varKind: Code = varKinds.const
   ): CodeGen {
     const name = this.toName(nameOrPrefix)
     if (this.opts.es5) {
-      const i = this.name("_i")
-      return _loop.call(
-        this,
-        new _Code(`for(${varKinds.let} ${i}=0; ${i}<${iterable}.length; ${i}++){`),
-        i,
-        () => {
-          const item = new _Code(`${iterable}[${i}]`)
-          _def.call(this, varKind, name, item)
-          forBody(name)
-        }
-      )
+      const arr = iterable instanceof Name ? iterable : this.var("arr", iterable)
+      return this.forRange("_i", 0, new _Code(`${arr}.length`), (i) => {
+        this.var(name, new _Code(`${arr}[${i}]`))
+        forBody(name)
+      })
     }
-    return _loop.call(this, new _Code(`for(${varKind} ${name} of ${iterable}){`), name, forBody)
+    return _loop.call(this, _`for(${varKind} ${name} of ${iterable}){`, name, forBody)
   }
 
   forIn(
     nameOrPrefix: Name | string,
     obj: SafeExpr,
-    forBody: (n: Name) => void,
+    forBody: (item: Name) => void,
     varKind: Code = varKinds.const
   ): CodeGen {
-    // TODO define enum for var kinds
     if (this.opts.forInOwn) {
       return this.forOf(nameOrPrefix, new _Code(`Object.keys(${obj})`), forBody)
     }
     const name = this.toName(nameOrPrefix)
-    return _loop.call(this, new _Code(`for(${varKind} ${name} in ${obj}){`), name, forBody)
+    return _loop.call(this, _`for(${varKind} ${name} in ${obj}){`, name, forBody)
   }
 
   endFor(): CodeGen {
     const b = this._lastBlock
-    if (b !== BlockKind.For) throw new Error('CodeGen: "endFor" wit_out "for"')
+    if (b !== BlockKind.For) throw new Error('CodeGen: "endFor" without "for"')
     this._blocks.pop()
     this._out += "}" + this._n
     return this
@@ -212,7 +217,7 @@ export class CodeGen {
   }
 
   try(tryBody: Block, catchCode?: (e: Name) => void, finallyCode?: Block): CodeGen {
-    if (!catchCode && !finallyCode) throw new Error('CodeGen: "try" wit_out "catch" and "finally"')
+    if (!catchCode && !finallyCode) throw new Error('CodeGen: "try" without "catch" and "finally"')
     this._out += "try{" + this._n
     this.code(tryBody)
     if (catchCode) {
@@ -261,7 +266,7 @@ export class CodeGen {
 
   endFunc(): CodeGen {
     const b = this._lastBlock
-    if (b !== BlockKind.Func) throw new Error('CodeGen: "endFunc" wit_out "func"')
+    if (b !== BlockKind.Func) throw new Error('CodeGen: "endFunc" without "func"')
     this._blocks.pop()
     this._out += "}" + this._n
     return this
