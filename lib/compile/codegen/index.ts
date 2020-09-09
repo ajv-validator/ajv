@@ -1,7 +1,7 @@
 import {_, str, nil, _Code, Code, IDENTIFIER, Name, stringify} from "./code"
-import {Scope, ScopeValueSets, NameValue, ScopeStore} from "./scope"
+import {Scope, ScopeValueSets, NameValue, ScopeStore, ValueScope} from "./scope"
 
-export {_, str, nil, stringify, Name, Code, Scope, ScopeStore}
+export {_, str, nil, stringify, Name, Code, Scope, ScopeStore, ValueScope}
 
 enum BlockKind {
   If,
@@ -40,7 +40,7 @@ export interface CodeGenOptions {
 
 export class CodeGen {
   _scope: Scope
-  _extScope: Scope
+  _extScope: ValueScope
   _values: ScopeValueSets = {}
   _out = ""
   _blocks: BlockKind[] = []
@@ -48,7 +48,7 @@ export class CodeGen {
   _n = ""
   opts: CodeGenOptions
 
-  constructor(extScope: Scope, opts: CodeGenOptions = {}) {
+  constructor(extScope: ValueScope, opts: CodeGenOptions = {}) {
     this.opts = opts
     this._extScope = extScope
     this._scope = new Scope({parent: extScope})
@@ -59,7 +59,7 @@ export class CodeGen {
     return this._out
   }
 
-  _toName(nameOrPrefix: Name | string): Name {
+  toName(nameOrPrefix: Name | string): Name {
     return nameOrPrefix instanceof Name ? nameOrPrefix : this.name(nameOrPrefix)
   }
 
@@ -78,24 +78,16 @@ export class CodeGen {
     return this._extScope.scopeRefs(scopeName, this._values)
   }
 
-  _def(varKind: Name, nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
-    const name = this._toName(nameOrPrefix)
-    if (this.opts.es5) varKind = varKinds.var
-    if (rhs === undefined) this._out += `${varKind} ${name};` + this._n
-    else this._out += `${varKind} ${name} = ${rhs};` + this._n
-    return name
-  }
-
   const(nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
-    return this._def(varKinds.const, nameOrPrefix, rhs)
+    return _def.call(this, varKinds.const, nameOrPrefix, rhs)
   }
 
   let(nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
-    return this._def(varKinds.let, nameOrPrefix, rhs)
+    return _def.call(this, varKinds.let, nameOrPrefix, rhs)
   }
 
   var(nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
-    return this._def(varKinds.var, nameOrPrefix, rhs)
+    return _def.call(this, varKinds.var, nameOrPrefix, rhs)
   }
 
   assign(name: Code, rhs: SafeExpr): CodeGen {
@@ -163,20 +155,21 @@ export class CodeGen {
     forBody: (n: Name) => void,
     varKind: Code = varKinds.const
   ): CodeGen {
-    const name = this._toName(nameOrPrefix)
+    const name = this.toName(nameOrPrefix)
     if (this.opts.es5) {
       const i = this.name("_i")
-      return this._loop(
+      return _loop.call(
+        this,
         new _Code(`for(${varKinds.let} ${i}=0; ${i}<${iterable}.length; ${i}++){`),
         i,
         () => {
           const item = new _Code(`${iterable}[${i}]`)
-          this._def(varKind, name, item)
+          _def.call(this, varKind, name, item)
           forBody(name)
         }
       )
     }
-    return this._loop(new _Code(`for(${varKind} ${name} of ${iterable}){`), name, forBody)
+    return _loop.call(this, new _Code(`for(${varKind} ${name} of ${iterable}){`), name, forBody)
   }
 
   forIn(
@@ -189,16 +182,8 @@ export class CodeGen {
     if (this.opts.forInOwn) {
       return this.forOf(nameOrPrefix, new _Code(`Object.keys(${obj})`), forBody)
     }
-    const name = this._toName(nameOrPrefix)
-    return this._loop(new _Code(`for(${varKind} ${name} in ${obj}){`), name, forBody)
-  }
-
-  _loop(forCode: _Code, name: Name, forBody: (n: Name) => void): CodeGen {
-    this._blocks.push(BlockKind.For)
-    this._out += forCode + this._n
-    forBody(name)
-    this.endFor()
-    return this
+    const name = this.toName(nameOrPrefix)
+    return _loop.call(this, new _Code(`for(${varKind} ${name} in ${obj}){`), name, forBody)
   }
 
   endFor(): CodeGen {
@@ -295,6 +280,22 @@ export class CodeGen {
     if (len === 0) throw new Error("CodeGen: not in block")
     return len - 1
   }
+}
+
+function _def(this: CodeGen, varKind: Name, nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
+  const name = this.toName(nameOrPrefix)
+  if (this.opts.es5) varKind = varKinds.var
+  if (rhs === undefined) this._out += `${varKind} ${name};` + this._n
+  else this._out += `${varKind} ${name} = ${rhs};` + this._n
+  return name
+}
+
+function _loop(this: CodeGen, forCode: _Code, name: Name, forBody: (n: Name) => void): CodeGen {
+  this._blocks.push(BlockKind.For)
+  this._out += forCode + this._n
+  forBody(name)
+  this.endFor()
+  return this
 }
 
 export function getProperty(key: Code | string | number): Code {

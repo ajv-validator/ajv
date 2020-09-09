@@ -42,19 +42,12 @@ export type ScopeValueSets = {[prefix: string]: Set<NameRec>}
 
 export class Scope {
   _names: {[prefix: string]: NameGroup} = {}
-  _values: ScopeValues = {}
   _prefixes?: Set<string>
   _parent?: Scope
-  _scope?: ScopeStore
 
-  constructor({prefixes, parent, scope}: ScopeOptions = {}) {
+  constructor({prefixes, parent}: ScopeOptions = {}) {
     this._prefixes = prefixes
     this._parent = parent
-    this._scope = scope
-  }
-
-  get() {
-    return this._scope
   }
 
   name(prefix: string): Name {
@@ -64,6 +57,20 @@ export class Scope {
       ng = this._names[prefix] = {prefix, index: 0}
     }
     return new Name(ng.prefix + ng.index++)
+  }
+}
+
+export class ValueScope extends Scope {
+  _values: ScopeValues = {}
+  _scope?: ScopeStore
+
+  constructor(opts: ScopeOptions = {}) {
+    super(opts)
+    this._scope = opts.scope
+  }
+
+  get() {
+    return this._scope
   }
 
   value(prefix: string, value: NameValue): NameRec {
@@ -95,7 +102,7 @@ export class Scope {
 
   scopeRefs(scopeName: Name, values?: ScopeValues | ScopeValueSets): Code {
     if (!this._scope) {
-      throw new Error("Codegen: scope has to be passed via options to use scopeRefs")
+      throw new Error("CodeGen: scope has to be passed via options to use scopeRefs")
     }
     return _reduceValues.call(this, values, (rec: NameRec) => {
       const {value, prefixName, scopeIndex} = rec
@@ -116,12 +123,12 @@ export class Scope {
 
 function checkPrefix(this: Scope, prefix: string) {
   if (this._parent?._prefixes?.has(prefix) || (this._prefixes && !this._prefixes?.has(prefix))) {
-    throw new Error(`Codegen: prefix "${prefix}" is not allowed in this scope`)
+    throw new Error(`CodeGen: prefix "${prefix}" is not allowed in this scope`)
   }
 }
 
 function _reduceValues(
-  this: Scope,
+  this: ValueScope,
   values: ScopeValues | ScopeValueSets = this._values,
   valueCode: (n: NameRec) => Code
 ): Code {

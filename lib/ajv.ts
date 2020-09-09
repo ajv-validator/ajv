@@ -17,7 +17,7 @@ import {ValidationError, MissingRefError} from "./compile/error_classes"
 import rules, {ValidationRules, Rule, RuleGroup} from "./compile/rules"
 import {checkType} from "./compile/validate/dataType"
 import {StoredSchema, compileSchemaFragment, compileStoredSchema, Compilation} from "./compile"
-import {Scope} from "./compile/codegen"
+import {ValueScope} from "./compile/codegen"
 import {normalizeId, getSchemaRefs} from "./compile/resolve"
 import coreVocabulary from "./vocabularies/core"
 import validationVocabulary from "./vocabularies/validation"
@@ -43,7 +43,7 @@ export default class Ajv {
   _opts: IndexableOptions
   _cache: CacheInterface
   // shared external scope values for compiled functions
-  _scope = new Scope({scope: {}, prefixes: EXT_SCOPE_NAMES})
+  _scope = new ValueScope({scope: {}, prefixes: EXT_SCOPE_NAMES})
   _schemas: {[key: string]: StoredSchema} = {}
   _refs: {[ref: string]: StoredSchema | string} = {}
   _fragments: {[key: string]: StoredSchema} = {}
