@@ -68,10 +68,10 @@ export class CodeGen {
   }
 
   scopeValue(prefix: string, value: NameValue): Name {
-    const rec = this._extScope.value(prefix, value)
+    const name = this._extScope.value(prefix, value)
     if (!this._values[prefix]) this._values[prefix] = new Set()
-    this._values[prefix].add(rec)
-    return rec.name
+    this._values[prefix].add(name)
+    return name
   }
 
   scopeRefs(scopeName: Name): Code {

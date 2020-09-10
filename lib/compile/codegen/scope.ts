@@ -1,12 +1,5 @@
 import {_, nil, Code, Name} from "./code"
 
-export interface NameRec {
-  prefixName: Name
-  scopeIndex?: number
-  name: Name
-  value: NameValue
-}
-
 interface NameGroup {
   prefix: string
   index: number
@@ -21,24 +14,27 @@ export interface NameValue {
 export type ValueReference = unknown // possibly make CodeGen parameterized type on this type
 
 class ValueError extends Error {
-  value: NameValue
-  constructor({name, value}: NameRec) {
+  value?: NameValue
+  constructor(name: ValueScopeName) {
     super(`CodeGen: "code" for ${name} not defined`)
-    this.value = value
+    this.value = name.value
   }
 }
 
 interface ScopeOptions {
-  scope?: ScopeStore
   prefixes?: Set<string>
   parent?: Scope
 }
 
+interface ValueScopeOptions extends ScopeOptions {
+  scope: ScopeStore
+}
+
 export type ScopeStore = Record<string, ValueReference[]>
 
-type ScopeValues = {[prefix: string]: Map<unknown, NameRec>}
+type ScopeValues = {[prefix: string]: Map<unknown, ValueScopeName>}
 
-export type ScopeValueSets = {[prefix: string]: Set<NameRec>}
+export type ScopeValueSets = {[prefix: string]: Set<ValueScopeName>}
 
 export class Scope {
   _names: {[prefix: string]: NameGroup} = {}
@@ -51,20 +47,29 @@ export class Scope {
   }
 
   name(prefix: string): Name {
-    let ng = this._names[prefix]
-    if (!ng) {
-      checkPrefix.call(this, prefix)
-      ng = this._names[prefix] = {prefix, index: 0}
-    }
+    const ng = nameGroup.call(this, prefix)
     return new Name(ng.prefix + ng.index++)
+  }
+}
+
+export class ValueScopeName extends Name {
+  prefixName: Name
+  // index: number
+  scopeIndex?: number
+  value: NameValue
+
+  constructor(prefix: string, index: number, value: NameValue) {
+    super(prefix + index)
+    this.prefixName = new Name(prefix)
+    this.value = value
   }
 }
 
 export class ValueScope extends Scope {
   _values: ScopeValues = {}
-  _scope?: ScopeStore
+  _scope: ScopeStore
 
-  constructor(opts: ScopeOptions = {}) {
+  constructor(opts: ValueScopeOptions) {
     super(opts)
     this._scope = opts.scope
   }
@@ -73,39 +78,34 @@ export class ValueScope extends Scope {
     return this._scope
   }
 
-  value(prefix: string, value: NameValue): NameRec {
+  value(prefix: string, value: NameValue): ValueScopeName {
     const {ref, key, code} = value
     const valueKey = key ?? ref ?? code
     if (!valueKey) throw new Error("CodeGen: ref or code must be passed in value")
     let vs = this._values[prefix]
     if (vs) {
-      const rec = vs.get(valueKey)
-      if (rec) return rec
+      const name = vs.get(valueKey)
+      if (name) return name
     } else {
       vs = this._values[prefix] = new Map()
     }
 
-    const rec: NameRec = {
-      prefixName: new Name(prefix),
-      name: this.name(prefix),
-      value,
-    }
-    vs.set(valueKey, rec)
+    const ng = nameGroup.call(this, prefix)
+    const name = new ValueScopeName(prefix, ng.index++, value)
 
-    if (this._scope && value.ref) {
+    vs.set(valueKey, name)
+
+    if (value.ref) {
       const s = this._scope[prefix] || (this._scope[prefix] = [])
-      rec.scopeIndex = s.length
-      s[rec.scopeIndex] = value.ref
+      name.scopeIndex = s.length
+      s[name.scopeIndex] = value.ref
     }
-    return rec
+    return name
   }
 
   scopeRefs(scopeName: Name, values?: ScopeValues | ScopeValueSets): Code {
-    if (!this._scope) {
-      throw new Error("CodeGen: scope has to be passed via options to use scopeRefs")
-    }
-    return _reduceValues.call(this, values, (rec: NameRec) => {
-      const {value, prefixName, scopeIndex} = rec
+    return reduceValues.call(this, values, (name: ValueScopeName) => {
+      const {value, prefixName, scopeIndex} = name
       if (scopeIndex !== undefined) return _`${scopeName}.${prefixName}[${scopeIndex}]`
       if (value.code) return value.code
       throw new Error("ajv implementation error")
@@ -113,29 +113,34 @@ export class ValueScope extends Scope {
   }
 
   scopeCode(values?: ScopeValues | ScopeValueSets): Code {
-    return _reduceValues.call(this, values, (rec: NameRec) => {
-      const c = rec.value.code
+    return reduceValues.call(this, values, (name: ValueScopeName) => {
+      const c = name.value.code
       if (c) return c
-      throw new ValueError(rec)
+      throw new ValueError(name)
     })
   }
 }
 
-function checkPrefix(this: Scope, prefix: string) {
-  if (this._parent?._prefixes?.has(prefix) || (this._prefixes && !this._prefixes?.has(prefix))) {
-    throw new Error(`CodeGen: prefix "${prefix}" is not allowed in this scope`)
+function nameGroup(this: Scope | ValueScope, prefix: string): NameGroup {
+  let ng = this._names[prefix]
+  if (!ng) {
+    if (this._parent?._prefixes?.has(prefix) || (this._prefixes && !this._prefixes?.has(prefix))) {
+      throw new Error(`CodeGen: prefix "${prefix}" is not allowed in this scope`)
+    }
+    ng = this._names[prefix] = {prefix, index: 0}
   }
+  return ng
 }
 
-function _reduceValues(
+function reduceValues(
   this: ValueScope,
   values: ScopeValues | ScopeValueSets = this._values,
-  valueCode: (n: NameRec) => Code
+  valueCode: (n: ValueScopeName) => Code
 ): Code {
   let code: Code = nil
   for (const prefix in values) {
-    values[prefix].forEach((rec: NameRec) => {
-      code = _`${code}const ${rec.name} = ${valueCode(rec)};`
+    values[prefix].forEach((name: ValueScopeName) => {
+      code = _`${code}const ${name} = ${valueCode(name)};`
     })
   }
   return code
