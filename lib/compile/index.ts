@@ -1,4 +1,4 @@
-import type {Schema, SchemaObject, ValidateFunction} from "../types"
+import type {Schema, SchemaObject, ValidateFunction, SchemaCxt} from "../types"
 import type Ajv from "../ajv"
 import {CodeGen, _, nil, str, Code, Name} from "./codegen"
 import {ValidationError} from "./error_classes"
@@ -20,6 +20,7 @@ interface _StoredSchema {
   fragment?: true
   meta?: boolean
   root?: SchemaRoot
+  localRoot?: {validate?: ValidateFunction}
   refs?: {[ref: string]: number | undefined}
   refVal?: (RefVal | undefined)[]
   localRefs?: LocalRefs
@@ -36,6 +37,7 @@ export class StoredSchema implements _StoredSchema {
   fragment?: true
   meta?: boolean
   root?: SchemaRoot
+  localRoot?: {validate?: ValidateFunction}
   refs?: {[ref: string]: number | undefined}
   refVal?: (RefVal | undefined)[]
   localRefs?: LocalRefs
@@ -68,6 +70,7 @@ export type RefVal = Schema | ValidateFunction
 
 export interface SchemaRoot {
   schema: SchemaObject
+  localRoot: {validate?: ValidateFunction}
   refVal: (RefVal | undefined)[]
   refs: {[ref: string]: number | undefined}
 }
@@ -121,17 +124,19 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
   const {localRefs} = schObj
   const self = this
   const opts = this._opts
-  const refVal: (RefVal | undefined)[] = [undefined]
+  const refVal: (RefVal | undefined)[] = []
   const refs: {[ref: string]: number | undefined} = {}
+  const localRoot: {validate?: ValidateFunction} = {}
   if (schObj.root === undefined) {
     schObj.root = {
       schema: typeof schObj.schema == "boolean" ? {} : schObj.schema,
+      localRoot,
       refVal,
       refs,
     }
   }
   const root = schObj.root
-  return localCompile(schObj)
+  return (localRoot.validate = localCompile(schObj))
 
   function localCompile(sch: StoredSchema): ValidateFunction {
     // TODO refactor - remove compilations
@@ -157,7 +162,7 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
 
     const validateName = schemaScopeCode.call(self, sch)
 
-    const schemaCxt = {
+    const schemaCxt: SchemaCxt = {
       gen,
       allErrors: !!opts.allErrors,
       data: N.data,
@@ -193,20 +198,14 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
       if (opts.processCode) sourceCode = opts.processCode(sourceCode, schema)
       // console.log("\n\n\n *** \n", sourceCode)
       // TODO refactor to fewer variables - maybe only self and scope
-      const makeValidate = new Function(
-        N.self.toString(),
-        "root",
-        "refVal",
-        N.scope.toString(),
-        sourceCode
-      )
-      const validate: ValidateFunction = makeValidate(self, root, refVal, self._scope.get())
+      const makeValidate = new Function(N.self.toString(), "refVal", N.scope.toString(), sourceCode)
+      const validate: ValidateFunction = makeValidate(self, refVal, self._scope.get())
 
-      refVal[0] = validate
       validate.schema = schema
       validate.errors = null
       sch.refs = validate.refs = refs
       sch.refVal = validate.refVal = refVal
+      sch.localRoot = validate.localRoot = localRoot
       sch.root = validate.root = isRoot ? root : sch.root
       if ($async) validate.$async = true
       if (opts.sourceCode === true) {

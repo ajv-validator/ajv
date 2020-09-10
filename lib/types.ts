@@ -113,6 +113,7 @@ export interface ValidateFunction {
   refs?: {[ref: string]: number | undefined}
   refVal?: (RefVal | undefined)[]
   root?: SchemaRoot
+  localRoot?: {validate?: ValidateFunction}
   $async?: true
   source?: SourceCode
   validate?: ValidateFunction // it will be only set on wrappers

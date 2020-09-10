@@ -22,9 +22,9 @@ const def: CodeKeywordDefinition = {
 
     function getRef(): ResolvedRef | void {
       if (schema === "#" || schema === "#/") {
-        return isRoot
-          ? {code: validateName, $async: it.async}
-          : {code: _`root.refVal[0]`, $async: root.schema.$async === true}
+        if (isRoot) return {code: validateName, $async: it.async}
+        const rootName = gen.scopeValue("root", {ref: root.localRoot})
+        return {code: _`${rootName}.validate`, $async: root.schema.$async === true}
       }
       return resolveRef(baseId, schema, isRoot)
     }

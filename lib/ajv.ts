@@ -34,6 +34,7 @@ const META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"]
 const META_SUPPORT_DATA = ["/properties"]
 const EXT_SCOPE_NAMES = new Set([
   "validate",
+  "root",
   "keyword",
   "pattern",
   "formats",
@@ -257,7 +258,7 @@ export default class Ajv {
   getSchema(keyRef: string): ValidateFunction | undefined {
     let schemaObj = _getSchemaObj.call(this, keyRef)
     if (schemaObj === undefined) {
-      const root = {schema: {}, refVal: [undefined], refs: {}}
+      const root = {schema: {}, localRoot: {}, refVal: [], refs: {}}
       const env = resolveSchema.call(this, root, keyRef)
       if (!env) return
       schemaObj = this._fragments[keyRef] = new StoredSchema({...env, ref: keyRef, fragment: true})
