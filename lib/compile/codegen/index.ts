@@ -1,7 +1,7 @@
-import {_, str, nil, _Code, Code, IDENTIFIER, Name, stringify} from "./code"
+import {_, str, nil, _Code, Code, Name, getProperty, stringify} from "./code"
 import {Scope, ScopeValueSets, NameValue, ScopeStore, ValueScope} from "./scope"
 
-export {_, str, nil, stringify, Name, Code, Scope, ScopeStore, ValueScope}
+export {_, str, nil, getProperty, stringify, Name, Code, Scope, ScopeStore, ValueScope}
 
 enum BlockKind {
   If,
@@ -67,10 +67,18 @@ export class CodeGen {
     return this._scope.name(prefix)
   }
 
-  scopeValue(prefix: string, value: NameValue): Name {
-    const name = this._extScope.value(prefix, value)
-    if (!this._values[prefix]) this._values[prefix] = new Set()
-    this._values[prefix].add(name)
+  scopeValue(
+    prefix: string,
+    value: NameValue,
+    scopeProperty?: string,
+    itemProperty?: string,
+    used = true
+  ): Name {
+    const name = this._extScope.value(prefix, value, scopeProperty, itemProperty)
+    if (used) {
+      const vs = this._values[prefix] || (this._values[prefix] = new Set())
+      vs.add(name)
+    }
     return name
   }
 
@@ -301,10 +309,6 @@ function _loop(this: CodeGen, forCode: _Code, name: Name, forBody: (n: Name) => 
   forBody(name)
   this.endFor()
   return this
-}
-
-export function getProperty(key: Code | string | number): Code {
-  return typeof key == "string" && IDENTIFIER.test(key) ? new _Code(`.${key}`) : _`[${key}]`
 }
 
 const andCode = mappend(operators.AND)

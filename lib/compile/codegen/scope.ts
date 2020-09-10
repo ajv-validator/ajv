@@ -6,7 +6,7 @@ interface NameGroup {
 }
 
 export interface NameValue {
-  ref?: ValueReference // this is the reference to any value that can be referred to from generated code via `globals` var in the closure
+  ref: ValueReference // this is the reference to any value that can be referred to from generated code via `globals` var in the closure
   key?: unknown // any key to identify a global to avoid duplicates, if not passed ref is used
   code?: Code // this is the code creating the value needed for standalone code wit_out closure - can be a primitive value, function or import (`require`)
 }
@@ -47,21 +47,25 @@ export class Scope {
   }
 
   name(prefix: string): Name {
-    const ng = nameGroup.call(this, prefix)
-    return new Name(ng.prefix + ng.index++)
+    return new Name(newName.call(this, prefix))
   }
 }
 
-export class ValueScopeName extends Name {
-  prefixName: Name
-  // index: number
-  scopeIndex?: number
-  value: NameValue
+interface ScopePath {
+  property: string
+  itemIndex: number
+  itemProperty?: string
+}
 
-  constructor(prefix: string, index: number, value: NameValue) {
-    super(prefix + index)
-    this.prefixName = new Name(prefix)
+class ValueScopeName extends Name {
+  value: NameValue
+  scopePath: Code
+
+  constructor(nameStr: string, value: NameValue, {property, itemIndex, itemProperty}: ScopePath) {
+    super(nameStr)
     this.value = value
+    this.scopePath = _`.${new Name(property)}[${itemIndex}]`
+    if (itemProperty) this.scopePath.add(_`.${new Name(itemProperty)}`)
   }
 }
 
@@ -78,10 +82,14 @@ export class ValueScope extends Scope {
     return this._scope
   }
 
-  value(prefix: string, value: NameValue): ValueScopeName {
-    const {ref, key, code} = value
-    const valueKey = key ?? ref ?? code
-    if (!valueKey) throw new Error("CodeGen: ref or code must be passed in value")
+  value(
+    prefix: string,
+    value: NameValue,
+    scopeProperty = prefix,
+    itemProperty?: string
+  ): ValueScopeName {
+    if (!value.ref) throw new Error("CodeGen: ref must be passed in value")
+    const valueKey = value.key ?? value.ref
     let vs = this._values[prefix]
     if (vs) {
       const name = vs.get(valueKey)
@@ -90,25 +98,21 @@ export class ValueScope extends Scope {
       vs = this._values[prefix] = new Map()
     }
 
-    const ng = nameGroup.call(this, prefix)
-    const name = new ValueScopeName(prefix, ng.index++, value)
+    const s = this._scope[scopeProperty] || (this._scope[scopeProperty] = [])
+    const itemIndex = s.push(value.ref) - 1
 
+    const name = new ValueScopeName(newName.call(this, prefix), value, {
+      property: scopeProperty,
+      itemIndex,
+      itemProperty,
+    })
     vs.set(valueKey, name)
-
-    if (value.ref) {
-      const s = this._scope[prefix] || (this._scope[prefix] = [])
-      name.scopeIndex = s.length
-      s[name.scopeIndex] = value.ref
-    }
     return name
   }
 
   scopeRefs(scopeName: Name, values?: ScopeValues | ScopeValueSets): Code {
-    return reduceValues.call(this, values, (name: ValueScopeName) => {
-      const {value, prefixName, scopeIndex} = name
-      if (scopeIndex !== undefined) return _`${scopeName}.${prefixName}[${scopeIndex}]`
-      if (value.code) return value.code
-      throw new Error("ajv implementation error")
+    return reduceValues.call(this, values, ({scopePath}: ValueScopeName) => {
+      return _`${scopeName}${scopePath}`
     })
   }
 
@@ -121,7 +125,7 @@ export class ValueScope extends Scope {
   }
 }
 
-function nameGroup(this: Scope | ValueScope, prefix: string): NameGroup {
+function newName(this: Scope | ValueScope, prefix: string): string {
   let ng = this._names[prefix]
   if (!ng) {
     if (this._parent?._prefixes?.has(prefix) || (this._prefixes && !this._prefixes?.has(prefix))) {
@@ -129,7 +133,7 @@ function nameGroup(this: Scope | ValueScope, prefix: string): NameGroup {
     }
     ng = this._names[prefix] = {prefix, index: 0}
   }
-  return ng
+  return prefix + ng.index++
 }
 
 function reduceValues(

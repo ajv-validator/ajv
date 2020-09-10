@@ -25,6 +25,7 @@ interface _StoredSchema {
   localRefs?: LocalRefs
   baseId?: string
   validate?: ValidateFunction
+  validateName?: Name
 }
 
 export class StoredSchema implements _StoredSchema {
@@ -40,6 +41,7 @@ export class StoredSchema implements _StoredSchema {
   localRefs?: LocalRefs
   baseId?: string
   validate?: ValidateFunction
+  validateName?: Name
 
   constructor(obj: _StoredSchema) {
     this.schema = obj.schema
@@ -149,7 +151,8 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
       })
     }
 
-    const validateName = new Name("validate")
+    const validateName = gen.scopeValue("validate", {ref: sch}, "schema", "validate", false)
+    sch.validateName = validateName
 
     const schemaCxt = {
       gen,
@@ -214,6 +217,7 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
       return validate
     } catch (e) {
       delete sch.validate
+      delete sch.validateName
       if (sourceCode) self.logger.error("Error compiling schema, function code:", sourceCode)
       throw e
     } finally {

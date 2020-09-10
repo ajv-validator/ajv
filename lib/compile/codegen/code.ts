@@ -86,3 +86,7 @@ function safeStringify(x: unknown): string {
     .replace(/\u2028/g, "\\u2028")
     .replace(/\u2029/g, "\\u2029")
 }
+
+export function getProperty(key: Code | string | number): Code {
+  return typeof key == "string" && IDENTIFIER.test(key) ? new _Code(`.${key}`) : _`[${key}]`
+}
