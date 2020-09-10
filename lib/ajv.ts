@@ -61,6 +61,7 @@ export default class Ajv {
   _fragments: {[key: string]: StoredSchema} = {}
   formats: {[name: string]: AddedFormat} = {}
   _compilations: Set<StoredSchema> = new Set()
+  _compileQueue: StoredSchema[] = []
   _loadingSchemas: {[ref: string]: Promise<SchemaObject>} = {}
   _metaOpts: InstanceOptions
   RULES: ValidationRules
@@ -176,7 +177,7 @@ export default class Ajv {
       e: MissingRefError
     ): Promise<ValidateFunction> {
       const ref = e.missingSchema
-      if (added(ref)) {
+      if (self._refs[ref]) {
         throw new Error(`Schema ${ref} is loaded but ${e.missingRef} cannot be resolved`)
       }
       let schPromise = self._loadingSchemas[ref]
@@ -186,19 +187,13 @@ export default class Ajv {
       }
 
       const sch = await schPromise
-      if (!added(ref)) {
-        await loadMetaSchemaOf(sch)
-        if (!added(ref)) self.addSchema(sch, ref, undefined, meta)
-      }
+      if (!self._refs[ref]) await loadMetaSchemaOf(sch)
+      if (!self._refs[ref]) self.addSchema(sch, ref, undefined, meta)
       return _compileAsync(schemaObj)
 
       function removePromise(): void {
         delete self._loadingSchemas[ref]
       }
-    }
-
-    function added(ref: string): string | StoredSchema {
-      return self._refs[ref] || self._schemas[ref]
     }
   }
 
@@ -404,7 +399,7 @@ export interface ErrorsTextOptions {
   dataVar?: string
 }
 
-function checkDeprecatedOptions(this: Ajv, opts: Options) {
+function checkDeprecatedOptions(this: Ajv, opts: Options): void {
   if (opts.errorDataPath !== undefined) this.logger.error("NOT SUPPORTED: option errorDataPath")
   if (opts.schemaId !== undefined) this.logger.error("NOT SUPPORTED: option schemaId")
   if (opts.uniqueItems !== undefined) this.logger.error("NOT SUPPORTED: option uniqueItems")
@@ -432,7 +427,7 @@ function _removeAllSchemas(
   this: Ajv,
   schemas: {[ref: string]: StoredSchema | string},
   regex?: RegExp
-) {
+): void {
   for (const keyRef in schemas) {
     const schemaObj = schemas[keyRef]
     if (!regex || regex.test(keyRef)) {
@@ -452,7 +447,7 @@ function _addSchema(
   skipValidation?: boolean,
   meta?: boolean,
   shouldAddSchema?: boolean
-) {
+): StoredSchema {
   if (typeof schema != "object" && typeof schema != "boolean") {
     throw new Error("schema must be object or boolean")
   }
@@ -518,7 +513,7 @@ function addInitialFormats(this: Ajv): void {
   }
 }
 
-function addInitialKeywords(this: Ajv, defs: Vocabulary | {[x: string]: KeywordDefinition}) {
+function addInitialKeywords(this: Ajv, defs: Vocabulary | {[x: string]: KeywordDefinition}): void {
   if (Array.isArray(defs)) {
     this.addVocabulary(defs)
     return
@@ -531,13 +526,13 @@ function addInitialKeywords(this: Ajv, defs: Vocabulary | {[x: string]: KeywordD
   }
 }
 
-function checkUnique(this: Ajv, id: string) {
+function checkUnique(this: Ajv, id: string): void {
   if (this._schemas[id] || this._refs[id]) {
     throw new Error('schema with key or id "' + id + '" already exists')
   }
 }
 
-function getMetaSchemaOptions(this: Ajv) {
+function getMetaSchemaOptions(this: Ajv): InstanceOptions {
   const metaOpts = {...this._opts}
   for (const opt of META_IGNORE_OPTIONS) delete metaOpts[opt]
   return metaOpts
@@ -556,7 +551,7 @@ function getLogger(logger?: Logger | false): Logger {
 
 const KEYWORD_NAME = /^[a-z_$][a-z0-9_$-]*$/i
 
-function checkKeyword(this: Ajv, keyword: string | string[], def?: KeywordDefinition) {
+function checkKeyword(this: Ajv, keyword: string | string[], def?: KeywordDefinition): void {
   /* eslint no-shadow: 0 */
   const RULES: ValidationRules = this.RULES
   eachItem(keyword, (kwd) => {

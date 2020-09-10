@@ -83,6 +83,10 @@ export function compileStoredSchema(this: Ajv, schObj: StoredSchema): ValidateFu
   return (schObj.meta ? compileMetaSchema : compileSchema).call(this, schObj)
 }
 
+function schemaScopeCode(this: Ajv, sch: StoredSchema): Name {
+  return this._scope.value("validate", {ref: sch}, "schema", "validate")
+}
+
 function compileMetaSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
   const currentOpts = this._opts
   this._opts = this._metaOpts
@@ -127,7 +131,7 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
     }
   }
   const root = schObj.root
-  return localCompile(schObj as SchemaEnv)
+  return localCompile(schObj)
 
   function localCompile(sch: StoredSchema): ValidateFunction {
     // TODO refactor - remove compilations
@@ -138,7 +142,7 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
     if (sch.root === undefined || sch.root !== root) {
       return compileSchema.call(self, sch)
     }
-    const isRoot = isRootEnv(sch as SchemaEnv)
+    const isRoot = sch.schema === sch.root.schema
     const $async = typeof schema == "object" && schema.$async === true
     const rootId = getFullPath(sch.root.schema.$id)
 
@@ -151,8 +155,7 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
       })
     }
 
-    const validateName = gen.scopeValue("validate", {ref: sch}, "schema", "validate", false)
-    sch.validateName = validateName
+    const validateName = schemaScopeCode.call(self, sch)
 
     const schemaCxt = {
       gen,
@@ -163,7 +166,7 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
       dataNames: [N.data],
       dataPathArr: [nil],
       dataLevel: 0,
-      topSchemaRef: _`${validateName}.schema`,
+      topSchemaRef: _`${validateName}.schema`, // TODO maybe use validateName instead of topSchemaRef?
       async: $async,
       validateName,
       ValidationError: _ValidationError,
@@ -231,6 +234,7 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
     if (res) return res
 
     const refCode = localRefCode(ref)
+
     let schOrFunc = resolve.call(self, localCompile, root, ref)
     if (schOrFunc === undefined) {
       const localSchema = localRefs && localRefs[ref]
@@ -317,43 +321,25 @@ function vars(
 // TODO returns SchemaObject (if the schema can be inlined) or validation function
 function resolve(
   this: Ajv,
-  localCompile: (env: SchemaEnv) => ValidateFunction, // reference to schema compilation function (localCompile)
+  localCompile: (env: StoredSchema) => ValidateFunction, // reference to schema compilation function (localCompile)
   root: SchemaRoot, // information about the root schema for the current schema
   ref: string // reference to resolve
-): RefVal | undefined {
+): RefVal | undefined | Name | StoredSchema {
   let schOrRef = this._refs[ref]
-  if (typeof schOrRef == "string") {
-    if (this._refs[schOrRef]) schOrRef = this._refs[schOrRef]
-    else return resolve.call(this, localCompile, root, schOrRef)
+  while (typeof schOrRef == "string") {
+    ref = schOrRef
+    schOrRef = this._refs[ref]
   }
-
-  schOrRef = schOrRef || this._schemas[ref]
-  if (schOrRef instanceof StoredSchema) {
-    return inlineRef(schOrRef.schema, this._opts.inlineRefs)
-      ? schOrRef.schema
-      : schOrRef.validate || compileSchema.call(this, schOrRef)
-  }
-
-  const env = resolveSchema.call(this, root, ref)
-  let schema, baseId
-  if (env) {
-    schema = env.schema
-    root = env.root
-    baseId = env.baseId
-  }
-
-  if (schema instanceof StoredSchema) {
-    if (!schema.validate) {
-      schema.validate = localCompile.call(this, schema as SchemaEnv)
-    }
-    return schema.validate
-  }
-  if (schema !== undefined) {
-    return inlineRef(schema, this._opts.inlineRefs)
-      ? schema
-      : localCompile.call(this, {schema, root, baseId})
-  }
+  if (schOrRef instanceof StoredSchema) return inlineOrCompile.call(this, schOrRef)
+  const env = resolveSchema.call(this, root, ref) // TODO why env.schema can be StoredSchema?
+  if (env) return inlineOrCompile.call(this, env.schema instanceof StoredSchema ? env.schema : env)
   return undefined
+
+  function inlineOrCompile(this: Ajv, sch: StoredSchema): RefVal {
+    return inlineRef(sch.schema, this._opts.inlineRefs)
+      ? sch.schema
+      : sch.validate || localCompile.call(this, sch)
+  }
 }
 
 // Resolve schema, its root and baseId
@@ -420,33 +406,24 @@ function getJsonPointer(
   parsedRef: URI.URIComponents,
   {baseId, schema, root}: SchemaEnv
 ): SchemaEnv | undefined {
-  if (typeof schema == "boolean") return
-  parsedRef.fragment = parsedRef.fragment || ""
-  if (parsedRef.fragment.slice(0, 1) !== "/") return
-  const parts = parsedRef.fragment.split("/")
-
-  for (let part of parts) {
-    if (!part) continue
+  if (parsedRef.fragment?.[0] !== "/") return
+  for (const part of parsedRef.fragment.slice(1).split("/")) {
     if (typeof schema == "boolean") return
-    part = unescapeFragment(part)
-    schema = schema[part]
+    schema = schema[unescapeFragment(part)]
     if (schema === undefined) return
-    if (PREVENT_SCOPE_CHANGE[part]) continue
-    if (typeof schema == "object" && schema.$id) {
+    // TODO PREVENT_SCOPE_CHANGE could be defined in keyword def?
+    if (!PREVENT_SCOPE_CHANGE[part] && typeof schema == "object" && schema.$id) {
       baseId = resolveUrl(baseId, schema.$id)
     }
   }
-  if (schema === undefined) return
+  let env: SchemaEnv | undefined
   if (typeof schema != "boolean" && schema.$ref && !schemaHasRulesButRef(schema, this.RULES)) {
     const $ref = resolveUrl(baseId, schema.$ref)
-    const _env = resolveSchema.call(this, root, $ref)
-    if (_env && !isRootEnv(_env)) return _env
+    env = resolveSchema.call(this, root, $ref)
   }
-  const env = {schema, root, baseId}
-  if (!isRootEnv(env)) return env
+  // even though resolution failed we need to return SchemaEnv to throw exception
+  // so that compileAsync loads missing schema.
+  env = env || {schema, root, baseId}
+  if (env.schema !== env.root.schema) return env
   return undefined
-}
-
-function isRootEnv({schema, root}: SchemaEnv): boolean {
-  return schema === root.schema
 }
