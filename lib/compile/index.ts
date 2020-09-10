@@ -172,7 +172,7 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
       ValidationError: _ValidationError,
       schema: schema,
       isRoot,
-      root: sch.root,
+      root,
       rootId,
       baseId: baseId || rootId,
       schemaPath: nil,
@@ -228,26 +228,21 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
     }
   }
 
-  function resolveRef(_baseId: string, ref: string, isRoot: boolean): ResolvedRef | void {
-    ref = resolveUrl(_baseId, ref)
+  function resolveRef(baseId: string, ref: string, isRoot: boolean): ResolvedRef | void {
+    ref = resolveUrl(baseId, ref)
     const res = getExistingRef(ref, isRoot)
     if (res) return res
-
     const refCode = localRefCode(ref)
-
-    let schOrFunc = resolve.call(self, localCompile, root, ref)
-    if (schOrFunc === undefined) {
-      const localSchema = localRefs && localRefs[ref]
-      if (localSchema) {
-        schOrFunc = inlineRef(localSchema, opts.inlineRefs)
-          ? localSchema
-          : compileSchema.call(self, {schema: localSchema, root, localRefs, baseId: _baseId})
-      }
+    let _sch = resolve.call(self, root, ref)
+    if (_sch === undefined) {
+      const schema = localRefs && localRefs[ref]
+      if (schema) _sch = {schema, root, localRefs, baseId}
     }
 
-    if (schOrFunc === undefined) {
+    if (_sch === undefined) {
       removeLocalRef(ref)
     } else {
+      const schOrFunc = inlineOrCompile.call(self, _sch)
       replaceLocalRef(ref, schOrFunc)
       return resolvedRef(schOrFunc, refCode)
     }
@@ -267,6 +262,12 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
         return resolvedRef(schOrFunc, localRefCode(ref, schOrFunc))
       }
     }
+  }
+
+  function inlineOrCompile(this: Ajv, sch: StoredSchema): RefVal {
+    return inlineRef(sch.schema, this._opts.inlineRefs)
+      ? sch.schema
+      : sch.validate || localCompile.call(this, sch)
   }
 
   // TODO gen.globals
@@ -321,25 +322,20 @@ function vars(
 // TODO returns SchemaObject (if the schema can be inlined) or validation function
 function resolve(
   this: Ajv,
-  localCompile: (env: StoredSchema) => ValidateFunction, // reference to schema compilation function (localCompile)
   root: SchemaRoot, // information about the root schema for the current schema
   ref: string // reference to resolve
-): RefVal | undefined | Name | StoredSchema {
+): StoredSchema | undefined {
+  // ): RefVal | undefined | Name | StoredSchema {
   let schOrRef = this._refs[ref]
   while (typeof schOrRef == "string") {
     ref = schOrRef
     schOrRef = this._refs[ref]
   }
-  if (schOrRef instanceof StoredSchema) return inlineOrCompile.call(this, schOrRef)
-  const env = resolveSchema.call(this, root, ref) // TODO why env.schema can be StoredSchema?
-  if (env) return inlineOrCompile.call(this, env.schema instanceof StoredSchema ? env.schema : env)
+  if (schOrRef instanceof StoredSchema) return schOrRef
+  const env = resolveSchema.call(this, root, ref)
+  // TODO why env.schema can be StoredSchema?
+  if (env) return env.schema instanceof StoredSchema ? env.schema : env
   return undefined
-
-  function inlineOrCompile(this: Ajv, sch: StoredSchema): RefVal {
-    return inlineRef(sch.schema, this._opts.inlineRefs)
-      ? sch.schema
-      : sch.validate || localCompile.call(this, sch)
-  }
 }
 
 // Resolve schema, its root and baseId
