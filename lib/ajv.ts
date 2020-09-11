@@ -1,11 +1,15 @@
 import {
   Schema,
   SchemaObject,
+  SyncSchemaObject,
+  AsyncSchemaObject,
   Vocabulary,
   KeywordDefinition,
   Options,
   InstanceOptions,
   ValidateFunction,
+  SyncValidateFunction,
+  AsyncValidateFunction,
   CacheInterface,
   Logger,
   ErrorObject,
@@ -111,6 +115,10 @@ export default class Ajv {
   }
 
   // Create validation function for passed schema
+  compile(s: {$async?: never}, _?: boolean): ValidateFunction
+  compile(s: SyncSchemaObject, _?: boolean): SyncValidateFunction
+  compile(s: AsyncSchemaObject, _?: boolean): AsyncValidateFunction
+  compile(s: Schema, _?: boolean): ValidateFunction
   compile(
     schema: Schema,
     _meta?: boolean // true if schema is a meta-schema. Used internally to compile meta schemas of custom keywords.
@@ -121,6 +129,26 @@ export default class Ajv {
 
   // Creates validating function for passed schema with asynchronous loading of missing schemas.
   // `loadSchema` option should be a function that accepts schema uri and returns promise that resolves with the schema.
+  compileAsync(
+    s: {$async?: never},
+    m?: boolean | CompileAsyncCallback,
+    c?: CompileAsyncCallback
+  ): Promise<ValidateFunction>
+  compileAsync(
+    s: SyncSchemaObject,
+    m?: boolean | CompileAsyncCallback,
+    c?: CompileAsyncCallback
+  ): Promise<SyncValidateFunction>
+  compileAsync(
+    s: AsyncSchemaObject,
+    m?: boolean | CompileAsyncCallback,
+    c?: CompileAsyncCallback
+  ): Promise<AsyncValidateFunction>
+  compileAsync(
+    s: SchemaObject,
+    m?: boolean | CompileAsyncCallback,
+    c?: CompileAsyncCallback
+  ): Promise<ValidateFunction>
   compileAsync(
     schema: SchemaObject,
     metaOrCallback?: boolean | CompileAsyncCallback, // optional true to compile meta-schema; this parameter can be skipped
