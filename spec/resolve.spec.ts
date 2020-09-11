@@ -1,5 +1,6 @@
 import getAjvInstances from "./ajv_instances"
 import Ajv from "./ajv"
+import {ValidateFunction} from "../dist/types"
 
 const should = require("./chai").should()
 
@@ -214,22 +215,22 @@ describe("resolve", () => {
     ]
 
     it("by default should inline schema if it doesn't contain refs", () => {
-      const ajv = new Ajv({schemas: schemas})
+      const ajv = new Ajv({schemas, sourceCode: true})
       testSchemas(ajv, true)
     })
 
     it("should NOT inline schema if option inlineRefs == false", () => {
-      const ajv = new Ajv({schemas: schemas, inlineRefs: false})
+      const ajv = new Ajv({schemas, inlineRefs: false, sourceCode: true})
       testSchemas(ajv, false)
     })
 
     it("should inline schema if option inlineRefs is bigger than number of keys in referenced schema", () => {
-      const ajv = new Ajv({schemas: schemas, inlineRefs: 4})
+      const ajv = new Ajv({schemas, inlineRefs: 4, sourceCode: true})
       testSchemas(ajv, true)
     })
 
     it("should NOT inline schema if option inlineRefs is less than number of keys in referenced schema", () => {
-      const ajv = new Ajv({schemas: schemas, inlineRefs: 2})
+      const ajv = new Ajv({schemas: schemas, inlineRefs: 2, sourceCode: true})
       testSchemas(ajv, false)
     })
 
@@ -319,8 +320,8 @@ describe("resolve", () => {
       validate([{a: 5}]).should.equal(false)
     }
 
-    function testInlined(validate, expectedInlined) {
-      const inlined: any = !/refVal/.test(validate.toString())
+    function testInlined(validate: ValidateFunction, expectedInlined) {
+      const inlined: any = !/scope\.validate/.test(validate.source?.code || "")
       inlined.should.equal(expectedInlined)
     }
   })

@@ -3,6 +3,7 @@ import KeywordCxt from "../../compile/context"
 import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {ResolvedRef, InlineResolvedRef} from "../../compile"
+// import {resolveUrl} from "../../compile/resolve"
 import {callValidateCode} from "../util"
 import {_, str, nil, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
@@ -26,7 +27,15 @@ const def: CodeKeywordDefinition = {
         const rootName = gen.scopeValue("root", {ref: root.localRoot})
         return {code: _`${rootName}.validate`, $async: root.schema.$async === true}
       }
-      return resolveRef(baseId, schema, isRoot)
+
+      const schOrFunc = resolveRef(baseId, schema, isRoot)
+      if (typeof schOrFunc == "function") {
+        const code = gen.scopeValue("validate", {ref: schOrFunc})
+        return {code, $async: !!schOrFunc.$async}
+      } else if (typeof schOrFunc == "boolean" || typeof schOrFunc == "object") {
+        const code = gen.scopeValue("schema", {ref: schOrFunc})
+        return {code, schema: schOrFunc, inline: true}
+      }
     }
 
     function missingRef(): void {

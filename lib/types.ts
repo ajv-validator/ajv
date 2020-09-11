@@ -1,5 +1,5 @@
 import {CodeGen, Code, Name, CodeGenOptions, Scope} from "./compile/codegen"
-import {RefVal, ResolvedRef, SchemaRoot, StoredSchema} from "./compile"
+import {SchemaRoot, SchemaRefs, StoredSchema} from "./compile"
 import KeywordCxt from "./compile/context"
 import Ajv from "./ajv"
 
@@ -110,8 +110,7 @@ export interface ValidateFunction {
   ): boolean | Promise<any>
   schema?: Schema
   errors?: null | ErrorObject[]
-  refs?: {[ref: string]: number | undefined}
-  refVal?: (RefVal | undefined)[]
+  refs?: SchemaRefs
   root?: SchemaRoot
   localRoot?: {validate?: ValidateFunction}
   $async?: true
@@ -174,7 +173,7 @@ export interface SchemaCxt {
   compositeRule?: boolean
   createErrors?: boolean
   opts: InstanceOptions
-  resolveRef: (baseId: string, ref: string, isRoot: boolean) => ResolvedRef | void
+  resolveRef: (baseId: string, ref: string, isRoot: boolean) => Schema | ValidateFunction | void
   self: Ajv
 }
 

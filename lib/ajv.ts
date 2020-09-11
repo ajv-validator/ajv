@@ -35,6 +35,7 @@ const META_SUPPORT_DATA = ["/properties"]
 const EXT_SCOPE_NAMES = new Set([
   "validate",
   "root",
+  "schema",
   "keyword",
   "pattern",
   "formats",

@@ -46,6 +46,10 @@ export class Scope {
     this._parent = parent
   }
 
+  toName(nameOrPrefix: Name | string): Name {
+    return nameOrPrefix instanceof Name ? nameOrPrefix : this.name(nameOrPrefix)
+  }
+
   name(prefix: string): Name {
     return new Name(newName.call(this, prefix))
   }
@@ -54,18 +58,21 @@ export class Scope {
 interface ScopePath {
   property: string
   itemIndex: number
-  itemProperty?: string
 }
 
-class ValueScopeName extends Name {
-  value: NameValue
-  scopePath: Code
+export class ValueScopeName extends Name {
+  prefix: string
+  value?: NameValue
+  scopePath?: Code
 
-  constructor(nameStr: string, value: NameValue, {property, itemIndex, itemProperty}: ScopePath) {
+  constructor(prefix: string, nameStr: string) {
     super(nameStr)
+    this.prefix = prefix
+  }
+
+  setValue(value: NameValue, {property, itemIndex}: ScopePath) {
     this.value = value
     this.scopePath = _`.${new Name(property)}[${itemIndex}]`
-    if (itemProperty) this.scopePath.add(_`.${new Name(itemProperty)}`)
   }
 }
 
@@ -82,43 +89,47 @@ export class ValueScope extends Scope {
     return this._scope
   }
 
-  value(
-    prefix: string,
-    value: NameValue,
-    scopeProperty = prefix,
-    itemProperty?: string
-  ): ValueScopeName {
-    if (!value.ref) throw new Error("CodeGen: ref must be passed in value")
+  name(prefix: string): ValueScopeName {
+    return new ValueScopeName(prefix, newName.call(this, prefix))
+  }
+
+  value(nameOrPrefix: ValueScopeName | string, value: NameValue): ValueScopeName {
+    if (value.ref === undefined) throw new Error("CodeGen: ref must be passed in value")
+    const name = this.toName(nameOrPrefix) as ValueScopeName
+    const prefix = name.prefix
     const valueKey = value.key ?? value.ref
     let vs = this._values[prefix]
     if (vs) {
-      const name = vs.get(valueKey)
-      if (name) return name
+      const _name = vs.get(valueKey)
+      if (_name) return _name
     } else {
       vs = this._values[prefix] = new Map()
     }
-
-    const s = this._scope[scopeProperty] || (this._scope[scopeProperty] = [])
-    const itemIndex = s.push(value.ref) - 1
-
-    const name = new ValueScopeName(newName.call(this, prefix), value, {
-      property: scopeProperty,
-      itemIndex,
-      itemProperty,
-    })
     vs.set(valueKey, name)
+
+    const s = this._scope[prefix] || (this._scope[prefix] = [])
+    const itemIndex = s.length
+    s[itemIndex] = value.ref
+    name.setValue(value, {property: prefix, itemIndex})
     return name
   }
 
+  getValue(prefix: string, keyOrRef: unknown): ValueScopeName | void {
+    const vs = this._values[prefix]
+    if (!vs) return
+    return vs.get(keyOrRef)
+  }
+
   scopeRefs(scopeName: Name, values?: ScopeValues | ScopeValueSets): Code {
-    return reduceValues.call(this, values, ({scopePath}: ValueScopeName) => {
-      return _`${scopeName}${scopePath}`
+    return reduceValues.call(this, values, (name: ValueScopeName) => {
+      if (name.scopePath === undefined) throw new Error(`CodeGen: name "${name}" has no value`)
+      return _`${scopeName}${name.scopePath}`
     })
   }
 
   scopeCode(values?: ScopeValues | ScopeValueSets): Code {
     return reduceValues.call(this, values, (name: ValueScopeName) => {
-      const c = name.value.code
+      const c = name.value?.code
       if (c) return c
       throw new ValueError(name)
     })

@@ -49,7 +49,7 @@ export default class KeywordCxt implements KeywordErrorCxt {
     this.def = def
 
     if (this.$data) {
-      this.schemaCode = it.gen.const("schema", getData(this.$data, it))
+      this.schemaCode = it.gen.const("vSchema", getData(this.$data, it))
     } else {
       this.schemaCode = this.schemaValue
       if (def.schemaType && !validSchemaType(this.schema, def.schemaType)) {

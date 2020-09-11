@@ -1,5 +1,5 @@
 import {_, str, nil, _Code, Code, Name, getProperty, stringify} from "./code"
-import {Scope, ScopeValueSets, NameValue, ScopeStore, ValueScope} from "./scope"
+import {Scope, ScopeValueSets, NameValue, ScopeStore, ValueScope, ValueScopeName} from "./scope"
 
 export {_, str, nil, getProperty, stringify, Name, Code, Scope, ScopeStore, ValueScope}
 
@@ -59,27 +59,23 @@ export class CodeGen {
     return this._out
   }
 
-  toName(nameOrPrefix: Name | string): Name {
-    return nameOrPrefix instanceof Name ? nameOrPrefix : this.name(nameOrPrefix)
-  }
-
   name(prefix: string): Name {
     return this._scope.name(prefix)
   }
 
-  scopeValue(
-    prefix: string,
-    value: NameValue,
-    scopeProperty?: string,
-    itemProperty?: string,
-    used = true
-  ): Name {
-    const name = this._extScope.value(prefix, value, scopeProperty, itemProperty)
-    if (used) {
-      const vs = this._values[prefix] || (this._values[prefix] = new Set())
-      vs.add(name)
-    }
+  scopeName(prefix: string): ValueScopeName {
+    return this._extScope.name(prefix)
+  }
+
+  scopeValue(prefixOrName: ValueScopeName | string, value: NameValue): Name {
+    const name = this._extScope.value(prefixOrName, value)
+    const vs = this._values[name.prefix] || (this._values[name.prefix] = new Set())
+    vs.add(name)
     return name
+  }
+
+  getScopeValue(prefix: string, keyOrRef: unknown): ValueScopeName | void {
+    return this._extScope.getValue(prefix, keyOrRef)
   }
 
   scopeRefs(scopeName: Name): Code {
@@ -164,7 +160,7 @@ export class CodeGen {
     forBody: (index: Name) => void,
     varKind: Code = varKinds.let
   ): CodeGen {
-    const i = this.toName(nameOrPrefix)
+    const i = this._scope.toName(nameOrPrefix)
     if (this.opts.es5) varKind = varKinds.var
     return _loop.call(this, _`for(${varKind} ${i}=${from}; ${i}<${to}; ${i}++){`, i, forBody)
   }
@@ -175,7 +171,7 @@ export class CodeGen {
     forBody: (item: Name) => void,
     varKind: Code = varKinds.const
   ): CodeGen {
-    const name = this.toName(nameOrPrefix)
+    const name = this._scope.toName(nameOrPrefix)
     if (this.opts.es5) {
       const arr = iterable instanceof Name ? iterable : this.var("arr", iterable)
       return this.forRange("_i", 0, new _Code(`${arr}.length`), (i) => {
@@ -195,7 +191,7 @@ export class CodeGen {
     if (this.opts.forInOwn) {
       return this.forOf(nameOrPrefix, new _Code(`Object.keys(${obj})`), forBody)
     }
-    const name = this.toName(nameOrPrefix)
+    const name = this._scope.toName(nameOrPrefix)
     return _loop.call(this, _`for(${varKind} ${name} in ${obj}){`, name, forBody)
   }
 
@@ -296,7 +292,7 @@ export class CodeGen {
 }
 
 function _def(this: CodeGen, varKind: Name, nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
-  const name = this.toName(nameOrPrefix)
+  const name = this._scope.toName(nameOrPrefix)
   if (this.opts.es5) varKind = varKinds.var
   if (rhs === undefined) this._out += `${varKind} ${name};` + this._n
   else this._out += `${varKind} ${name} = ${rhs};` + this._n

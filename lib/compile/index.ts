@@ -8,9 +8,7 @@ import {toHash, schemaHasRulesButRef, unescapeFragment} from "./util"
 import {validateFunctionCode} from "./validate"
 import URI = require("uri-js")
 
-/**
- * Functions below are used inside compiled validations function
- */
+export type SchemaRefs = {[ref: string]: Schema | ValidateFunction | undefined}
 
 interface _StoredSchema {
   schema: Schema
@@ -21,8 +19,7 @@ interface _StoredSchema {
   meta?: boolean
   root?: SchemaRoot
   localRoot?: {validate?: ValidateFunction}
-  refs?: {[ref: string]: number | undefined}
-  refVal?: (RefVal | undefined)[]
+  refs?: SchemaRefs
   localRefs?: LocalRefs
   baseId?: string
   validate?: ValidateFunction
@@ -38,8 +35,7 @@ export class StoredSchema implements _StoredSchema {
   meta?: boolean
   root?: SchemaRoot
   localRoot?: {validate?: ValidateFunction}
-  refs?: {[ref: string]: number | undefined}
-  refVal?: (RefVal | undefined)[]
+  refs?: SchemaRefs
   localRefs?: LocalRefs
   baseId?: string
   validate?: ValidateFunction
@@ -65,14 +61,10 @@ interface FuncResolvedRef {
   inline?: false
 }
 
-// reference to compiled schema or schema to be inlined
-export type RefVal = Schema | ValidateFunction
-
 export interface SchemaRoot {
   schema: SchemaObject
   localRoot: {validate?: ValidateFunction}
-  refVal: (RefVal | undefined)[]
-  refs: {[ref: string]: number | undefined}
+  refs: SchemaRefs
 }
 
 interface SchemaEnv {
@@ -86,10 +78,6 @@ export function compileStoredSchema(this: Ajv, schObj: StoredSchema): ValidateFu
   return (schObj.meta ? compileMetaSchema : compileSchema).call(this, schObj)
 }
 
-function schemaScopeCode(this: Ajv, sch: StoredSchema): Name {
-  return this._scope.value("validate", {ref: sch}, "schema", "validate")
-}
-
 function compileMetaSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
   const currentOpts = this._opts
   this._opts = this._metaOpts
@@ -100,7 +88,7 @@ function compileMetaSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
   }
 }
 
-function validateWrapper(sch: StoredSchema): ValidateFunction {
+function validateWrapper(this: Ajv, sch: StoredSchema): ValidateFunction {
   if (!sch.validate) {
     const wrapper: ValidateFunction = function (this: Ajv | unknown, ...args) {
       if (wrapper.validate === undefined) throw new Error("ajv implementation error")
@@ -110,6 +98,7 @@ function validateWrapper(sch: StoredSchema): ValidateFunction {
       return valid
     }
     sch.validate = wrapper
+    sch.validateName = this._scope.value("validate", {ref: wrapper})
   }
   return sch.validate
 }
@@ -124,14 +113,12 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
   const {localRefs} = schObj
   const self = this
   const opts = this._opts
-  const refVal: (RefVal | undefined)[] = []
-  const refs: {[ref: string]: number | undefined} = {}
+  const refs: SchemaRefs = {}
   const localRoot: {validate?: ValidateFunction} = {}
   if (schObj.root === undefined) {
     schObj.root = {
       schema: typeof schObj.schema == "boolean" ? {} : schObj.schema,
       localRoot,
-      refVal,
       refs,
     }
   }
@@ -141,8 +128,7 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
   function localCompile(sch: StoredSchema): ValidateFunction {
     // TODO refactor - remove compilations
     const _sch = getCompilingSchema.call(self, sch)
-    if (_sch) return validateWrapper(_sch)
-    // validateWrapper(sch)
+    if (_sch) return validateWrapper.call(self, _sch)
     const {schema, baseId} = sch
     if (sch.root === undefined || sch.root !== root) {
       return compileSchema.call(self, sch)
@@ -160,7 +146,7 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
       })
     }
 
-    const validateName = schemaScopeCode.call(self, sch)
+    const validateName = gen.scopeName("validate")
 
     const schemaCxt: SchemaCxt = {
       gen,
@@ -169,13 +155,13 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
       parentData: N.parentData,
       parentDataProperty: N.parentDataProperty,
       dataNames: [N.data],
-      dataPathArr: [nil],
+      dataPathArr: [nil], // TODO can it's lenght be used as dataLevel if nil is removed?
       dataLevel: 0,
-      topSchemaRef: _`${validateName}.schema`, // TODO maybe use validateName instead of topSchemaRef?
+      topSchemaRef: gen.scopeValue("schema", {ref: schema}),
       async: $async,
       validateName,
       ValidationError: _ValidationError,
-      schema: schema,
+      schema,
       isRoot,
       root,
       rootId,
@@ -184,7 +170,7 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
       errSchemaPath: "#",
       errorPath: str``,
       opts,
-      resolveRef, // TODO move to gen.globals
+      resolveRef, // TODO move to gen.scopeValue?
       self,
     }
 
@@ -192,19 +178,18 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
     try {
       self._compilations.add(sch)
       validateFunctionCode(schemaCxt)
-      sourceCode = `${vars(refVal, refValCode)}
-                    ${gen.scopeRefs(N.scope)}
+      sourceCode = `${gen.scopeRefs(N.scope)}
                     ${gen.toString()}`
       if (opts.processCode) sourceCode = opts.processCode(sourceCode, schema)
       // console.log("\n\n\n *** \n", sourceCode)
-      // TODO refactor to fewer variables - maybe only self and scope
-      const makeValidate = new Function(N.self.toString(), "refVal", N.scope.toString(), sourceCode)
-      const validate: ValidateFunction = makeValidate(self, refVal, self._scope.get())
+      const makeValidate = new Function(N.self.toString(), N.scope.toString(), sourceCode)
+      const validate: ValidateFunction = makeValidate(self, self._scope.get())
+
+      gen.scopeValue(validateName, {ref: validate})
 
       validate.schema = schema
       validate.errors = null
       sch.refs = validate.refs = refs
-      sch.refVal = validate.refVal = refVal
       sch.localRoot = validate.localRoot = localRoot
       sch.root = validate.root = isRoot ? root : sch.root
       if ($async) validate.$async = true
@@ -216,6 +201,7 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
       }
       if (sch.validate) extendWrapper(sch.validate, validate)
       sch.validate = validate
+      sch.validateName = validateName
       return validate
     } catch (e) {
       delete sch.validate
@@ -227,71 +213,29 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
     }
   }
 
-  function resolveRef(baseId: string, ref: string, isRoot: boolean): ResolvedRef | void {
+  function resolveRef(
+    baseId: string,
+    ref: string,
+    isRoot: boolean
+  ): Schema | ValidateFunction | void {
     ref = resolveUrl(baseId, ref)
-    const res = getExistingRef(ref, isRoot)
-    if (res) return res
-    const refCode = localRefCode(ref)
+    // TODO root.refs check should be unnecessary, it is only needed because in some cases root is passed without refs (see type casts to SchemaRoot)
+    const schOrFunc = refs[ref] || (!isRoot && root.refs?.[ref])
+    if (schOrFunc) return schOrFunc
+
     let _sch = resolve.call(self, root, ref)
     if (_sch === undefined) {
-      const schema = localRefs && localRefs[ref]
+      const schema = localRefs?.[ref]
       if (schema) _sch = {schema, root, localRefs, baseId}
     }
 
-    if (_sch === undefined) {
-      removeLocalRef(ref)
-    } else {
-      const schOrFunc = inlineOrCompile.call(self, _sch)
-      replaceLocalRef(ref, schOrFunc)
-      return resolvedRef(schOrFunc, refCode)
-    }
+    if (_sch !== undefined) return (refs[ref] = inlineOrCompile.call(self, _sch))
   }
 
-  function getExistingRef(ref: string, isRoot: boolean): ResolvedRef | void {
-    const idx = refs[ref]
-    if (idx !== undefined) {
-      const schOrFunc = refVal[idx]
-      return resolvedRef(schOrFunc, _`refVal[${idx}]`)
-    }
-    if (!isRoot && root.refs) {
-      // TODO root.refs check should be unnecessary, it is only needed because in some cases root is passed without refs (see type casts to SchemaRoot)
-      const rootIdx = root.refs[ref]
-      if (rootIdx !== undefined) {
-        const schOrFunc = root.refVal[rootIdx]
-        return resolvedRef(schOrFunc, localRefCode(ref, schOrFunc))
-      }
-    }
-  }
-
-  function inlineOrCompile(this: Ajv, sch: StoredSchema): RefVal {
+  function inlineOrCompile(this: Ajv, sch: StoredSchema): Schema | ValidateFunction {
     return inlineRef(sch.schema, this._opts.inlineRefs)
       ? sch.schema
       : sch.validate || localCompile.call(this, sch)
-  }
-
-  // TODO gen.globals
-  function localRefCode(ref: string, schOrFunc?: RefVal): Code {
-    const refId = refVal.length
-    refVal[refId] = schOrFunc
-    refs[ref] = refId
-    return _`refVal${refId}`
-  }
-
-  // TODO gen.globals remove?
-  function removeLocalRef(ref: string) {
-    delete refs[ref]
-  }
-
-  // TODO gen.globals remove?
-  function replaceLocalRef(ref: string, schOrFunc: RefVal) {
-    const refId = refs[ref]
-    if (refId !== undefined) refVal[refId] = schOrFunc
-  }
-
-  function resolvedRef(schOrFunc: RefVal | undefined, code: Code): ResolvedRef {
-    return typeof schOrFunc == "object" || typeof schOrFunc == "boolean"
-      ? {code: code, schema: schOrFunc, inline: true}
-      : {code: code, $async: schOrFunc && !!schOrFunc.$async}
   }
 }
 
@@ -306,17 +250,6 @@ function sameSchema(s1: StoredSchema, s2: StoredSchema): boolean {
   return s1.schema === s2.schema && s1.root === s2.root && s1.baseId === s2.baseId
 }
 
-function refValCode(i: number, refVal: (RefVal | undefined)[]): Code {
-  return refVal[i] === undefined ? nil : _`const refVal${i} = refVal[${i}];`
-}
-
-function vars(
-  arr: (RefVal | undefined)[],
-  statement: (i: number, arr: (RefVal | undefined)[]) => Code
-): Code {
-  return arr.map((_el, i) => statement(i, arr)).reduce((res: Code, c: Code) => _`${res}${c}`, nil)
-}
-
 // resolve and compile the references ($ref)
 // TODO returns SchemaObject (if the schema can be inlined) or validation function
 function resolve(
@@ -324,13 +257,12 @@ function resolve(
   root: SchemaRoot, // information about the root schema for the current schema
   ref: string // reference to resolve
 ): StoredSchema | undefined {
-  // ): RefVal | undefined | Name | StoredSchema {
   let schOrRef = this._refs[ref]
   while (typeof schOrRef == "string") {
     ref = schOrRef
     schOrRef = this._refs[ref]
   }
-  if (schOrRef instanceof StoredSchema) return schOrRef
+  if (schOrRef) return schOrRef
   const env = resolveSchema.call(this, root, ref)
   // TODO why env.schema can be StoredSchema?
   if (env) return env.schema instanceof StoredSchema ? env.schema : env

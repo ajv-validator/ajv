@@ -21,7 +21,7 @@ const def: CodeKeywordDefinition = {
       cxt.block$data(valid, loopEnum)
     } else {
       if (!Array.isArray(schema)) throw new Error("ajv implementation error")
-      const vSchema = gen.const("schema", schemaCode)
+      const vSchema = gen.const("vSchema", schemaCode)
       valid = or(...schema.map((_x: unknown, i: number) => equalCode(vSchema, i)))
     }
     cxt.pass(valid)
