@@ -17,7 +17,7 @@ import Cache from "./cache"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
 import rules, {ValidationRules, Rule, RuleGroup} from "./compile/rules"
 import {checkType} from "./compile/validate/dataType"
-import {StoredSchema, compileStoredSchema, resolveSchema} from "./compile"
+import {SchemaEnv, SchemaObjectEnv, compileSchemaEnv, resolveSchema} from "./compile"
 import {ValueScope} from "./compile/codegen"
 import {normalizeId, getSchemaRefs} from "./compile/resolve"
 import coreVocabulary from "./vocabularies/core"
@@ -58,12 +58,10 @@ export default class Ajv {
   _cache: CacheInterface
   // shared external scope values for compiled functions
   _scope = new ValueScope({scope: {}, prefixes: EXT_SCOPE_NAMES})
-  _schemas: {[key: string]: StoredSchema} = {}
-  _refs: {[ref: string]: StoredSchema | string} = {}
-  _fragments: {[key: string]: StoredSchema} = {}
+  _schemas: {[key: string]: SchemaEnv} = {}
+  _refs: {[ref: string]: SchemaEnv | string} = {}
   formats: {[name: string]: AddedFormat} = {}
-  _compilations: Set<StoredSchema> = new Set()
-  _compileQueue: StoredSchema[] = []
+  _compilations: Set<SchemaEnv> = new Set()
   _loadingSchemas: {[ref: string]: Promise<SchemaObject>} = {}
   _metaOpts: InstanceOptions
   RULES: ValidationRules
@@ -112,8 +110,8 @@ export default class Ajv {
       v = this.getSchema(schemaKeyRef)
       if (!v) throw new Error('no schema with key or ref "' + schemaKeyRef + '"')
     } else {
-      const schemaObj = _addSchema.call(this, schemaKeyRef)
-      v = schemaObj.validate || compileStoredSchema.call(this, schemaObj)
+      const sch = _addSchema.call(this, schemaKeyRef)
+      v = sch.validate || compileSchemaEnv.call(this, sch)
     }
 
     const valid = v(data)
@@ -126,8 +124,8 @@ export default class Ajv {
     schema: Schema,
     _meta?: boolean // true if schema is a meta-schema. Used internally to compile meta schemas of custom keywords.
   ): ValidateFunction {
-    const schemaObj = _addSchema.call(this, schema, undefined, _meta)
-    return schemaObj.validate || compileStoredSchema.call(this, schemaObj)
+    const sch = _addSchema.call(this, schema, undefined, _meta)
+    return sch.validate || compileSchemaEnv.call(this, sch)
   }
 
   // Creates validating function for passed schema with asynchronous loading of missing schemas.
@@ -149,10 +147,10 @@ export default class Ajv {
 
     return runCompileAsync(schema, meta, callback)
 
-    function runCompileAsync(sch: SchemaObject, _meta?: boolean, cb?: CompileAsyncCallback) {
-      const p = loadMetaSchemaOf(sch).then(() => {
-        const schemaObj = _addSchema.call(self, sch, undefined, _meta)
-        return schemaObj.validate || _compileAsync(schemaObj)
+    function runCompileAsync(_schema: SchemaObject, _meta?: boolean, cb?: CompileAsyncCallback) {
+      const p = loadMetaSchemaOf(_schema).then(() => {
+        const sch = _addSchema.call(self, _schema, undefined, _meta)
+        return sch.validate || _compileAsync(sch)
       })
       if (cb) p.then((v) => cb(null, v), cb)
       return p
@@ -165,17 +163,17 @@ export default class Ajv {
         : Promise.resolve()
     }
 
-    function _compileAsync(schemaObj: StoredSchema): ValidateFunction | Promise<ValidateFunction> {
+    function _compileAsync(sch: SchemaEnv): ValidateFunction | Promise<ValidateFunction> {
       try {
-        return compileStoredSchema.call(self, schemaObj)
+        return compileSchemaEnv.call(self, sch)
       } catch (e) {
-        if (e instanceof MissingRefError) return loadMissingSchema(schemaObj, e)
+        if (e instanceof MissingRefError) return loadMissingSchema(sch, e)
         throw e
       }
     }
 
     async function loadMissingSchema(
-      schemaObj: StoredSchema,
+      sch: SchemaEnv,
       e: MissingRefError
     ): Promise<ValidateFunction> {
       const ref = e.missingSchema
@@ -188,10 +186,10 @@ export default class Ajv {
         schPromise.then(removePromise, removePromise)
       }
 
-      const sch = await schPromise
-      if (!self._refs[ref]) await loadMetaSchemaOf(sch)
-      if (!self._refs[ref]) self.addSchema(sch, ref, undefined, meta)
-      return _compileAsync(schemaObj)
+      const _schema = await schPromise
+      if (!self._refs[ref]) await loadMetaSchemaOf(_schema)
+      if (!self._refs[ref]) self.addSchema(_schema, ref, undefined, meta)
+      return _compileAsync(sch)
 
       function removePromise(): void {
         delete self._loadingSchemas[ref]
@@ -257,15 +255,15 @@ export default class Ajv {
   // Get compiled schema by `key` or `ref`.
   // (`key` that was passed to `addSchema` or full schema reference - `schema.$id` or resolved id)
   getSchema(keyRef: string): ValidateFunction | undefined {
-    let schemaObj = _getSchemaObj.call(this, keyRef)
-    if (schemaObj === undefined) {
-      const root = {schema: {}, localRoot: {}, refVal: [], refs: {}}
-      const env = resolveSchema.call(this, root, keyRef)
-      if (!env) return
-      schemaObj = this._fragments[keyRef] = new StoredSchema({...env, ref: keyRef, fragment: true})
+    let sch
+    while (typeof (sch = getSchEnv.call(this, keyRef)) == "string") keyRef = sch
+    if (sch === undefined) {
+      const root = new SchemaObjectEnv({schema: {}})
+      sch = resolveSchema.call(this, root, keyRef)
+      if (!sch) return
+      this._refs[keyRef] = sch
     }
-    if (typeof schemaObj == "string") return this.getSchema(schemaObj)
-    return schemaObj.validate || compileStoredSchema.call(this, schemaObj)
+    return sch.validate || compileSchemaEnv.call(this, sch)
   }
 
   // Remove cached schema(s).
@@ -274,19 +272,19 @@ export default class Ajv {
   // Even if schema is referenced by other schemas it still can be removed as other schemas have local references.
   removeSchema(schemaKeyRef: Schema | string | RegExp): Ajv {
     if (schemaKeyRef instanceof RegExp) {
-      _removeAllSchemas.call(this, this._schemas, schemaKeyRef)
-      _removeAllSchemas.call(this, this._refs, schemaKeyRef)
+      removeAllSchemas.call(this, this._schemas, schemaKeyRef)
+      removeAllSchemas.call(this, this._refs, schemaKeyRef)
       return this
     }
     switch (typeof schemaKeyRef) {
       case "undefined":
-        _removeAllSchemas.call(this, this._schemas)
-        _removeAllSchemas.call(this, this._refs)
+        removeAllSchemas.call(this, this._schemas)
+        removeAllSchemas.call(this, this._refs)
         this._cache.clear()
         return this
       case "string": {
-        const schemaObj = _getSchemaObj.call(this, schemaKeyRef)
-        if (schemaObj) this._cache.del(schemaObj.cacheKey)
+        const sch = getSchEnv.call(this, schemaKeyRef)
+        if (sch) this._cache.del(sch.cacheKey)
         delete this._schemas[schemaKeyRef]
         delete this._refs[schemaKeyRef]
         return this
@@ -420,36 +418,37 @@ function defaultMeta(this: Ajv): string | SchemaObject | undefined {
   return this._opts.defaultMeta
 }
 
-function _getSchemaObj(this: Ajv, keyRef: string): StoredSchema | undefined {
-  keyRef = normalizeId(keyRef)
-  return this._schemas[keyRef] || this._refs[keyRef] || this._fragments[keyRef]
+function getSchEnv(this: Ajv, keyRef: string): SchemaEnv | undefined {
+  keyRef = normalizeId(keyRef) // TODO tests fail without this line
+  return this._schemas[keyRef] || this._refs[keyRef]
 }
 
-function _removeAllSchemas(
+function removeAllSchemas(
   this: Ajv,
-  schemas: {[ref: string]: StoredSchema | string},
+  schemas: {[ref: string]: SchemaEnv | string},
   regex?: RegExp
 ): void {
   for (const keyRef in schemas) {
-    const schemaObj = schemas[keyRef]
+    const sch = schemas[keyRef]
     if (!regex || regex.test(keyRef)) {
-      if (typeof schemaObj == "string") {
+      if (typeof sch == "string") {
         delete schemas[keyRef]
-      } else if (!schemaObj.meta) {
-        this._cache.del(schemaObj.cacheKey)
+      } else if (!sch.meta) {
+        this._cache.del(sch.cacheKey)
         delete schemas[keyRef]
       }
     }
   }
 }
 
+// TODO refactor
 function _addSchema(
   this: Ajv,
   schema: Schema,
   skipValidation?: boolean,
   meta?: boolean,
   shouldAddSchema?: boolean
-): StoredSchema {
+): SchemaEnv {
   if (typeof schema != "object" && typeof schema != "boolean") {
     throw new Error("schema must be object or boolean")
   }
@@ -476,14 +475,14 @@ function _addSchema(
 
   const localRefs = getSchemaRefs.call(this, schema)
 
-  const schemaObj = new StoredSchema({id, schema, localRefs, cacheKey, meta})
+  const sch = new SchemaEnv({id, schema, localRefs, cacheKey, meta})
 
-  if (id[0] !== "#" && shouldAddSchema) this._refs[id] = schemaObj
-  this._cache.put(cacheKey, schemaObj)
+  if (id[0] !== "#" && shouldAddSchema) this._refs[id] = sch
+  this._cache.put(cacheKey, sch)
 
   if (willValidate && recursiveMeta) this.validateSchema(schema, true)
 
-  return schemaObj
+  return sch
 }
 
 function addDefaultMetaSchema(this: Ajv): void {

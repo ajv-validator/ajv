@@ -1,5 +1,5 @@
 import {CodeGen, Code, Name, CodeGenOptions, Scope} from "./compile/codegen"
-import {SchemaRoot, SchemaRefs, StoredSchema} from "./compile"
+import {SchemaRoot, SchemaRefs, SchemaEnv} from "./compile"
 import KeywordCxt from "./compile/context"
 import Ajv from "./ajv"
 
@@ -88,8 +88,8 @@ export interface Logger {
 }
 
 export interface CacheInterface {
-  put(key: unknown, value: StoredSchema): void
-  get(key: unknown): StoredSchema
+  put(key: unknown, value: SchemaEnv): void
+  get(key: unknown): SchemaEnv
   del(key: unknown): void
   clear(): void
 }
@@ -173,7 +173,7 @@ export interface SchemaCxt {
   compositeRule?: boolean
   createErrors?: boolean
   opts: InstanceOptions
-  resolveRef: (baseId: string, ref: string, isRoot: boolean) => Schema | ValidateFunction | void
+  resolveRef: (baseId: string, ref: string) => Schema | ValidateFunction | void
   self: Ajv
 }
 

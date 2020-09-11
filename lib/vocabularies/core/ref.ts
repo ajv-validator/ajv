@@ -28,7 +28,7 @@ const def: CodeKeywordDefinition = {
         return {code: _`${rootName}.validate`, $async: root.schema.$async === true}
       }
 
-      const schOrFunc = resolveRef(baseId, schema, isRoot)
+      const schOrFunc = resolveRef(baseId, schema)
       if (typeof schOrFunc == "function") {
         const code = gen.scopeValue("validate", {ref: schOrFunc})
         return {code, $async: !!schOrFunc.$async}
