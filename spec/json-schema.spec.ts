@@ -14,8 +14,6 @@ const remoteRefs = {
 }
 
 const SKIP6 = [
-  "optional/ecmascript-regex", // TODO only format needs to be skipped, too much is skipped here
-  "optional/non-bmp-regex",
   "format",
   "optional/format/date",
   "optional/format/date-time",

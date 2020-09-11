@@ -77,8 +77,8 @@ export function callValidateCode(
 export function usePattern(gen: CodeGen, pattern: string): Name {
   return gen.scopeValue("pattern", {
     key: pattern,
-    ref: new RegExp(pattern),
-    code: _`new RegExp(${pattern})`,
+    ref: new RegExp(pattern, "u"),
+    code: _`new RegExp(${pattern}, "u")`,
   })
 }
 
