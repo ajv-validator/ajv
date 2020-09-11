@@ -19,7 +19,7 @@ import N from "./names"
 
 export default class KeywordCxt implements KeywordErrorCxt {
   gen: CodeGen
-  allErrors: boolean
+  allErrors?: boolean
   keyword: string
   data: Name
   $data?: string | false

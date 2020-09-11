@@ -17,7 +17,7 @@ import Cache from "./cache"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
 import rules, {ValidationRules, Rule, RuleGroup} from "./compile/rules"
 import {checkType} from "./compile/validate/dataType"
-import {SchemaEnv, SchemaObjectEnv, compileSchemaEnv, resolveSchema} from "./compile"
+import {SchemaEnv, compileSchemaEnv, resolveSchema} from "./compile"
 import {ValueScope} from "./compile/codegen"
 import {normalizeId, getSchemaRefs} from "./compile/resolve"
 import coreVocabulary from "./vocabularies/core"
@@ -258,7 +258,7 @@ export default class Ajv {
     let sch
     while (typeof (sch = getSchEnv.call(this, keyRef)) == "string") keyRef = sch
     if (sch === undefined) {
-      const root = new SchemaObjectEnv({schema: {}})
+      const root = new SchemaEnv({schema: {}})
       sch = resolveSchema.call(this, root, keyRef)
       if (!sch) return
       this._refs[keyRef] = sch
@@ -475,7 +475,7 @@ function _addSchema(
 
   const localRefs = getSchemaRefs.call(this, schema)
 
-  const sch = new SchemaEnv({id, schema, localRefs, cacheKey, meta})
+  const sch = new SchemaEnv({schema, baseId: id, localRefs, cacheKey, meta})
 
   if (id[0] !== "#" && shouldAddSchema) this._refs[id] = sch
   this._cache.put(cacheKey, sch)

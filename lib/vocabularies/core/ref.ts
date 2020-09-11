@@ -1,12 +1,25 @@
-import {CodeKeywordDefinition} from "../../types"
+import {CodeKeywordDefinition, Schema} from "../../types"
 import KeywordCxt from "../../compile/context"
 import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
-import {ResolvedRef, InlineResolvedRef} from "../../compile"
-// import {resolveUrl} from "../../compile/resolve"
 import {callValidateCode} from "../util"
 import {_, str, nil, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
+
+// TODO remove these interfaces
+type ResolvedRef = InlineResolvedRef | FuncResolvedRef
+
+interface InlineResolvedRef {
+  code: Code
+  schema: Schema
+  inline: true
+}
+
+interface FuncResolvedRef {
+  code: Code
+  $async?: boolean
+  inline?: false
+}
 
 const def: CodeKeywordDefinition = {
   keyword: "$ref",
@@ -25,13 +38,16 @@ const def: CodeKeywordDefinition = {
       if (schema === "#" || schema === "#/") {
         if (isRoot) return {code: validateName, $async: it.async}
         const rootName = gen.scopeValue("root", {ref: root.localRoot})
-        return {code: _`${rootName}.validate`, $async: root.schema.$async === true}
+        return {
+          code: _`${rootName}.validate`,
+          $async: typeof root.schema == "object" && root.schema.$async === true,
+        }
       }
 
       const schOrFunc = resolveRef(baseId, schema)
       if (typeof schOrFunc == "function") {
         const code = gen.scopeValue("validate", {ref: schOrFunc})
-        return {code, $async: !!schOrFunc.$async}
+        return {code, $async: schOrFunc.$async}
       } else if (typeof schOrFunc == "boolean" || typeof schOrFunc == "object") {
         const code = gen.scopeValue("schema", {ref: schOrFunc})
         return {code, schema: schOrFunc, inline: true}

@@ -1,5 +1,5 @@
 import {CodeGen, Code, Name, CodeGenOptions, Scope} from "./compile/codegen"
-import {SchemaRoot, SchemaRefs, SchemaEnv} from "./compile"
+import {SchemaEnv} from "./compile"
 import KeywordCxt from "./compile/context"
 import Ajv from "./ajv"
 
@@ -110,9 +110,7 @@ export interface ValidateFunction {
   ): boolean | Promise<any>
   schema?: Schema
   errors?: null | ErrorObject[]
-  refs?: SchemaRefs
-  root?: SchemaRoot
-  localRoot?: {validate?: ValidateFunction}
+  root?: SchemaEnv
   $async?: true
   source?: SourceCode
   validate?: ValidateFunction // it will be only set on wrappers
@@ -150,7 +148,7 @@ export type KeywordCompilationResult = Schema | SchemaValidateFunction | Validat
 
 export interface SchemaCxt {
   gen: CodeGen
-  allErrors: boolean
+  allErrors?: boolean
   data: Name
   parentData: Name
   parentDataProperty: Code | number
@@ -163,7 +161,7 @@ export interface SchemaCxt {
   ValidationError?: Name
   schema: Schema
   isRoot: boolean
-  root: SchemaRoot
+  root: SchemaEnv
   rootId: string // TODO ?
   baseId: string
   schemaPath: Code

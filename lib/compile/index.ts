@@ -1,6 +1,6 @@
 import type {Schema, SchemaObject, ValidateFunction, SchemaCxt} from "../types"
 import type Ajv from "../ajv"
-import {CodeGen, _, nil, str, Code, Name} from "./codegen"
+import {CodeGen, _, nil, str, Name} from "./codegen"
 import {ValidationError} from "./error_classes"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
@@ -10,73 +10,41 @@ import URI = require("uri-js")
 
 export type SchemaRefs = {[ref: string]: Schema | ValidateFunction | undefined}
 
-interface _SchemaEnv {
+interface SchemaEnvArgs {
   schema: Schema
-  root?: SchemaRoot
+  root?: SchemaEnv
   baseId?: string
   localRefs?: LocalRefs
-  id?: string
   meta?: boolean
   cacheKey?: unknown
 }
 
-export class SchemaEnv implements _SchemaEnv {
+export class SchemaEnv implements SchemaEnvArgs {
   schema: Schema
-  root?: SchemaRoot
-  baseId?: string
+  root: SchemaEnv
+  baseId: string
   localRefs?: LocalRefs
-  id?: string
   meta?: boolean
   cacheKey?: unknown
+  $async?: boolean
   localRoot: {validate?: ValidateFunction} = {}
   refs: SchemaRefs = {}
   validate?: ValidateFunction
   validateName?: Name
 
-  constructor(obj: _SchemaEnv) {
+  constructor(env: SchemaEnvArgs) {
+    let schema: SchemaObject | undefined
+    if (typeof env.schema == "object") schema = env.schema
+    this.schema = env.schema
+    this.root = env.root || this
+    this.baseId = env.baseId ?? normalizeId(schema?.$id)
+    this.localRefs = env.localRefs
+    this.meta = env.meta
+    this.cacheKey = env.cacheKey
+    this.$async = schema?.$async
     this.localRoot = {}
     this.refs = {}
-    this.schema = obj.schema
-    // this.root = obj.root || {
-    //   schema: typeof obj.schema == "boolean" ? {} : obj.schema,
-    //   localRoot,
-    //   refs,
-    // }
-    Object.assign(this, obj)
   }
-}
-
-interface _SchemaObjectEnv extends _SchemaEnv {
-  schema: SchemaObject
-}
-
-export class SchemaObjectEnv extends SchemaEnv {
-  schema: SchemaObject
-
-  constructor(obj: _SchemaObjectEnv) {
-    super(obj)
-    this.schema = obj.schema
-  }
-}
-
-export type ResolvedRef = InlineResolvedRef | FuncResolvedRef
-
-export interface InlineResolvedRef {
-  code: Code
-  schema: Schema
-  inline: true
-}
-
-interface FuncResolvedRef {
-  code: Code
-  $async?: boolean
-  inline?: false
-}
-
-export interface SchemaRoot {
-  schema: SchemaObject
-  localRoot: {validate?: ValidateFunction}
-  refs: SchemaRefs
 }
 
 export function compileSchemaEnv(this: Ajv, sch: SchemaEnv): ValidateFunction {
@@ -114,33 +82,21 @@ function extendWrapper(wrapper: ValidateFunction, v: ValidateFunction): void {
 }
 
 // Compiles schema to validation function
-function compileSchema(this: Ajv, schEnv: SchemaEnv): ValidateFunction {
-  const {localRefs} = schEnv
+function compileSchema(this: Ajv, env: SchemaEnv): ValidateFunction {
   const self = this
   const opts = this._opts
-  const refs: SchemaRefs = {}
-  const localRoot: {validate?: ValidateFunction} = {}
-  if (schEnv.root === undefined) {
-    schEnv.root = {
-      schema: typeof schEnv.schema == "boolean" ? {} : schEnv.schema,
-      localRoot,
-      refs,
-    }
-  }
-  const root = schEnv.root
-  return (localRoot.validate = localCompile(schEnv))
+  return (env.localRoot.validate = localCompile(env))
 
   function localCompile(sch: SchemaEnv): ValidateFunction {
     // TODO refactor - remove compilations
     const _sch = getCompilingSchema.call(self, sch)
     if (_sch) return validateWrapper.call(self, _sch)
     const {schema, baseId} = sch
-    if (sch.root === undefined || sch.root !== root) {
-      return compileSchema.call(self, sch)
-    }
+    if (sch.root !== env.root) return compileSchema.call(self, sch)
+
     const isRoot = sch.schema === sch.root.schema
     const $async = typeof schema == "object" && schema.$async === true
-    const rootId = getFullPath(sch.root.schema.$id)
+    const rootId = getFullPath(sch.root.baseId)
 
     const gen = new CodeGen(self._scope, {...opts.codegen, forInOwn: opts.ownProperties})
     let _ValidationError
@@ -155,7 +111,7 @@ function compileSchema(this: Ajv, schEnv: SchemaEnv): ValidateFunction {
 
     const schemaCxt: SchemaCxt = {
       gen,
-      allErrors: !!opts.allErrors,
+      allErrors: opts.allErrors,
       data: N.data,
       parentData: N.parentData,
       parentDataProperty: N.parentDataProperty,
@@ -168,7 +124,7 @@ function compileSchema(this: Ajv, schEnv: SchemaEnv): ValidateFunction {
       ValidationError: _ValidationError,
       schema,
       isRoot,
-      root,
+      root: env.root,
       rootId,
       baseId: baseId || rootId,
       schemaPath: nil,
@@ -194,9 +150,7 @@ function compileSchema(this: Ajv, schEnv: SchemaEnv): ValidateFunction {
 
       validate.schema = schema
       validate.errors = null
-      sch.refs = validate.refs = refs
-      sch.localRoot = validate.localRoot = localRoot
-      sch.root = validate.root = isRoot ? root : sch.root
+      validate.root = env.root // TODO remove - only used by $comment keyword
       if ($async) validate.$async = true
       if (opts.sourceCode === true) {
         validate.source = {
@@ -220,17 +174,17 @@ function compileSchema(this: Ajv, schEnv: SchemaEnv): ValidateFunction {
 
   function resolveRef(baseId: string, ref: string): Schema | ValidateFunction | void {
     ref = resolveUrl(baseId, ref)
-    // TODO root.refs check should be unnecessary, it is only needed because in some cases root is passed without refs (see type casts to SchemaRoot)
-    const schOrFunc = refs[ref] || root.refs[ref]
+    // TODO root.refs check should be unnecessary, it is only needed because in some cases root is passed without refs (see type casts to SchemaEnv)
+    const schOrFunc = env.refs[ref] || env.root.refs[ref]
     if (schOrFunc) return schOrFunc
 
-    let _sch = resolve.call(self, root, ref)
+    let _sch = resolve.call(self, env.root, ref)
     if (_sch === undefined) {
-      const schema = localRefs?.[ref]
-      if (schema) _sch = new SchemaEnv({schema, root, localRefs, baseId})
+      const schema = env.localRefs?.[ref] // TODO maybe localRefs should hold SchemaEnv
+      if (schema) _sch = new SchemaEnv({schema, root: env.root, localRefs: env.localRefs, baseId})
     }
 
-    if (_sch !== undefined) return (refs[ref] = inlineOrCompile(_sch))
+    if (_sch !== undefined) return (env.refs[ref] = inlineOrCompile(_sch))
   }
 
   function inlineOrCompile(sch: SchemaEnv): Schema | ValidateFunction {
@@ -255,7 +209,7 @@ function sameSchemaEnv(s1: SchemaEnv, s2: SchemaEnv): boolean {
 // TODO returns SchemaObject (if the schema can be inlined) or validation function
 function resolve(
   this: Ajv,
-  root: SchemaRoot, // information about the root schema for the current schema
+  root: SchemaEnv, // information about the root schema for the current schema
   ref: string // reference to resolve
 ): SchemaEnv | undefined {
   let sch
@@ -266,14 +220,15 @@ function resolve(
 // Resolve schema, its root and baseId
 export function resolveSchema(
   this: Ajv,
-  root: SchemaRoot, // root object with properties schema, refs TODO below SchemaEnv is assigned to it
+  root: SchemaEnv, // root object with properties schema, refs TODO below SchemaEnv is assigned to it
   ref: string // reference to resolve
 ): SchemaEnv | undefined {
   const p = URI.parse(ref)
   const refPath = _getFullPath(p)
-  let baseId = getFullPath(root.schema.$id)
+  const baseId = getFullPath(root.baseId)
+  // TODO `Object.keys(root.schema).length > 0` should not be needed - but removing breaks 2 tests
   if (Object.keys(root.schema).length > 0 && refPath === baseId) {
-    return getJsonPointer.call(this, p, new SchemaEnv({schema: root.schema, root, baseId}))
+    return getJsonPointer.call(this, p, root)
   }
 
   const id = normalizeId(refPath)
@@ -281,6 +236,7 @@ export function resolveSchema(
   if (typeof schOrRef == "string") {
     const sch = resolveSchema.call(this, root, schOrRef)
     if (typeof sch?.schema !== "object") return
+    // TODO review - most of the time sch.baseId == normalizeId(sch.schema.$id)
     if (sch.schema.$id) sch.baseId = resolveUrl(sch.baseId, sch.schema.$id)
     return getJsonPointer.call(this, p, sch)
   }
@@ -288,9 +244,7 @@ export function resolveSchema(
   if (typeof schOrRef?.schema !== "object") return
   if (!schOrRef.validate) compileSchema.call(this, schOrRef)
   if (id === normalizeId(ref)) return new SchemaEnv({schema: schOrRef.schema, root, baseId})
-  root = <SchemaRoot>schOrRef
-  baseId = getFullPath(root.schema.$id)
-  return getJsonPointer.call(this, p, new SchemaEnv({schema: root.schema, root, baseId}))
+  return getJsonPointer.call(this, p, schOrRef)
 }
 
 const PREVENT_SCOPE_CHANGE = toHash([
@@ -319,11 +273,11 @@ function getJsonPointer(
   let env: SchemaEnv | undefined
   if (typeof schema != "boolean" && schema.$ref && !schemaHasRulesButRef(schema, this.RULES)) {
     const $ref = resolveUrl(baseId, schema.$ref)
-    env = resolveSchema.call(this, <SchemaRoot>root, $ref)
+    env = resolveSchema.call(this, root, $ref)
   }
   // even though resolution failed we need to return SchemaEnv to throw exception
   // so that compileAsync loads missing schema.
   env = env || new SchemaEnv({schema, root, baseId})
-  if (env.schema !== env.root?.schema) return env
+  if (env.schema !== env.root.schema) return env
   return undefined
 }
