@@ -28,21 +28,28 @@ interface _StoredSchema {
 
 export class StoredSchema implements _StoredSchema {
   schema: Schema
+  root?: SchemaRoot
+  localRoot: {validate?: ValidateFunction} = {}
+  refs: SchemaRefs = {}
   id?: string
   ref?: string
   cacheKey?: unknown
   fragment?: true
   meta?: boolean
-  root?: SchemaRoot
-  localRoot?: {validate?: ValidateFunction}
-  refs?: SchemaRefs
   localRefs?: LocalRefs
   baseId?: string
   validate?: ValidateFunction
   validateName?: Name
 
   constructor(obj: _StoredSchema) {
+    this.localRoot = {}
+    this.refs = {}
     this.schema = obj.schema
+    // this.root = obj.root || {
+    //   schema: typeof obj.schema == "boolean" ? {} : obj.schema,
+    //   localRoot,
+    //   refs,
+    // }
     Object.assign(this, obj)
   }
 }
@@ -65,13 +72,6 @@ export interface SchemaRoot {
   schema: SchemaObject
   localRoot: {validate?: ValidateFunction}
   refs: SchemaRefs
-}
-
-interface SchemaEnv {
-  schema: Schema
-  root: SchemaRoot
-  localRefs?: LocalRefs
-  baseId?: string
 }
 
 export function compileStoredSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
@@ -226,16 +226,16 @@ function compileSchema(this: Ajv, schObj: StoredSchema): ValidateFunction {
     let _sch = resolve.call(self, root, ref)
     if (_sch === undefined) {
       const schema = localRefs?.[ref]
-      if (schema) _sch = {schema, root, localRefs, baseId}
+      if (schema) _sch = new StoredSchema({schema, root, localRefs, baseId})
     }
 
-    if (_sch !== undefined) return (refs[ref] = inlineOrCompile.call(self, _sch))
+    if (_sch !== undefined) return (refs[ref] = inlineOrCompile(_sch))
   }
 
-  function inlineOrCompile(this: Ajv, sch: StoredSchema): Schema | ValidateFunction {
-    return inlineRef(sch.schema, this._opts.inlineRefs)
+  function inlineOrCompile(sch: StoredSchema): Schema | ValidateFunction {
+    return inlineRef(sch.schema, self._opts.inlineRefs)
       ? sch.schema
-      : sch.validate || localCompile.call(this, sch)
+      : sch.validate || localCompile(sch)
   }
 }
 
@@ -257,16 +257,9 @@ function resolve(
   root: SchemaRoot, // information about the root schema for the current schema
   ref: string // reference to resolve
 ): StoredSchema | undefined {
-  let schOrRef = this._refs[ref]
-  while (typeof schOrRef == "string") {
-    ref = schOrRef
-    schOrRef = this._refs[ref]
-  }
-  if (schOrRef) return schOrRef
-  const env = resolveSchema.call(this, root, ref)
-  // TODO why env.schema can be StoredSchema?
-  if (env) return env.schema instanceof StoredSchema ? env.schema : env
-  return undefined
+  let sch
+  while (typeof (sch = this._refs[ref]) == "string") ref = sch
+  return sch || this._schemas[ref] || resolveSchema.call(this, root, ref)
 }
 
 // Resolve schema, its root and baseId
@@ -274,35 +267,21 @@ export function resolveSchema(
   this: Ajv,
   root: SchemaRoot, // root object with properties schema, refVal, refs TODO below StoredSchema is assigned to it
   ref: string // reference to resolve
-): SchemaEnv | undefined {
+): StoredSchema | undefined {
   const p = URI.parse(ref)
   const refPath = _getFullPath(p)
   let baseId = getFullPath(root.schema.$id)
   if (Object.keys(root.schema).length === 0 || refPath !== baseId) {
     const id = normalizeId(refPath)
-    let schOrRef = this._refs[id]
-    if (typeof schOrRef == "string") {
-      return resolveRecursive.call(this, root, schOrRef, p)
-    }
-    if (schOrRef instanceof StoredSchema) {
-      if (!schOrRef.validate) compileSchema.call(this, schOrRef)
-      root = <SchemaRoot>schOrRef
-    } else {
-      schOrRef = this._schemas[id]
-      if (schOrRef instanceof StoredSchema) {
-        if (!schOrRef.validate) compileSchema.call(this, schOrRef)
-        if (id === normalizeId(ref)) {
-          return {schema: schOrRef, root, baseId}
-        }
-        root = <SchemaRoot>schOrRef
-      } else {
-        return
-      }
-    }
-    if (!root.schema) return
+    const schOrRef = this._refs[id] || this._schemas[id]
+    if (typeof schOrRef == "string") return resolveRecursive.call(this, root, schOrRef, p)
+    if (typeof schOrRef?.schema !== "object") return
+    if (!schOrRef.validate) compileSchema.call(this, schOrRef)
+    if (id === normalizeId(ref)) return new StoredSchema({schema: schOrRef.schema, root, baseId})
+    root = <SchemaRoot>schOrRef
     baseId = getFullPath(root.schema.$id)
   }
-  return getJsonPointer.call(this, p, {schema: root.schema, root, baseId})
+  return getJsonPointer.call(this, p, new StoredSchema({schema: root.schema, root, baseId}))
 }
 
 function resolveRecursive(
@@ -310,7 +289,7 @@ function resolveRecursive(
   root: SchemaRoot,
   ref: string,
   parsedRef: URI.URIComponents
-): SchemaEnv | undefined {
+): StoredSchema | undefined {
   const env = resolveSchema.call(this, root, ref)
   if (!env) return
   const {schema, baseId} = env
@@ -331,8 +310,8 @@ const PREVENT_SCOPE_CHANGE = toHash([
 function getJsonPointer(
   this: Ajv,
   parsedRef: URI.URIComponents,
-  {baseId, schema, root}: SchemaEnv
-): SchemaEnv | undefined {
+  {baseId, schema, root}: StoredSchema
+): StoredSchema | undefined {
   if (parsedRef.fragment?.[0] !== "/") return
   for (const part of parsedRef.fragment.slice(1).split("/")) {
     if (typeof schema == "boolean") return
@@ -343,14 +322,14 @@ function getJsonPointer(
       baseId = resolveUrl(baseId, schema.$id)
     }
   }
-  let env: SchemaEnv | undefined
+  let env: StoredSchema | undefined
   if (typeof schema != "boolean" && schema.$ref && !schemaHasRulesButRef(schema, this.RULES)) {
     const $ref = resolveUrl(baseId, schema.$ref)
-    env = resolveSchema.call(this, root, $ref)
+    env = resolveSchema.call(this, <SchemaRoot>root, $ref)
   }
   // even though resolution failed we need to return SchemaEnv to throw exception
   // so that compileAsync loads missing schema.
-  env = env || {schema, root, baseId}
-  if (env.schema !== env.root.schema) return env
+  env = env || new StoredSchema({schema, root, baseId})
+  if (env.schema !== env.root?.schema) return env
   return undefined
 }
