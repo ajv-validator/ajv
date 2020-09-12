@@ -18,7 +18,7 @@ const def: CodeKeywordDefinition = {
     cxt.block$data(valid, validateUniqueItems, _`${schemaCode} === false`)
     cxt.ok(valid)
 
-    function validateUniqueItems() {
+    function validateUniqueItems(): void {
       const i = gen.let("i", _`${data}.length`)
       const j = gen.let("j")
       cxt.setParams({i, j})

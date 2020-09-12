@@ -1,7 +1,10 @@
 import {SchemaObjCxt, SchemaObject} from "../../types"
 import {RuleGroup, Rule} from "../rules"
 
-export function schemaHasRulesForType({schema, self}: SchemaObjCxt, ty: string): boolean {
+export function schemaHasRulesForType(
+  {schema, self}: SchemaObjCxt,
+  ty: string
+): boolean | undefined {
   const group = self.RULES.types[ty]
   return group && group !== true && shouldUseGroup(schema, group)
 }

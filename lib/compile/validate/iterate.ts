@@ -45,7 +45,7 @@ export function schemaKeywords(
   }
 }
 
-function iterateKeywords(it: SchemaObjCxt, group: RuleGroup) {
+function iterateKeywords(it: SchemaObjCxt, group: RuleGroup): void {
   const {
     gen,
     schema,

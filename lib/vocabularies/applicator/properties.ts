@@ -33,7 +33,7 @@ const def: CodeKeywordDefinition = {
       return it.opts.useDefaults && !it.compositeRule && schema[prop].default !== undefined
     }
 
-    function applyPropertySchema(prop: string) {
+    function applyPropertySchema(prop: string): void {
       applySubschema(
         it,
         {

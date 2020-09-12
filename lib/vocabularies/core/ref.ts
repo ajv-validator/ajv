@@ -34,7 +34,7 @@ const def: CodeKeywordDefinition = {
     else if (ref.$async || it.async) validateAsyncRef(ref.code)
     else validateRef(ref.code)
 
-    function getRef(): ResolvedRef | void {
+    function getRef(): ResolvedRef | undefined {
       if (schema === "#" || schema === "#/") {
         if (isRoot) return {code: validateName, $async: it.async}
         const rootName = gen.scopeValue("root", {ref: root.localRoot})
@@ -52,6 +52,7 @@ const def: CodeKeywordDefinition = {
         const code = gen.scopeValue("schema", {ref: schOrFunc})
         return {code, schema: schOrFunc, inline: true}
       }
+      return undefined
     }
 
     function missingRef(): void {

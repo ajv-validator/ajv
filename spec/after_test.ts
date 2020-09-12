@@ -16,8 +16,8 @@ export function afterEach(res): void {
     should.equal(res.errors, null)
   } else {
     res.errors.should.be.an("array")
-    for (let i = 0; i < res.errors.length; i++) {
-      res.errors[i].should.be.an("object")
+    for (const err of res.errors) {
+      err.should.be.an("object")
     }
   }
 }

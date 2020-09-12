@@ -39,7 +39,9 @@ export function allSchemaProperties(schemaMap?: SchemaMap): string[] {
 }
 
 export function schemaProperties(it: SchemaCxt, schemaMap: SchemaMap): string[] {
-  return allSchemaProperties(schemaMap).filter((p) => !alwaysValidSchema(it, schemaMap[p]))
+  return allSchemaProperties(schemaMap).filter(
+    (p) => !alwaysValidSchema(it, schemaMap[p] as Schema)
+  )
 }
 
 function isOwnProperty(data: Name, property: Name | string): Code {

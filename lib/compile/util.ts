@@ -67,13 +67,16 @@ export function checkDataTypes(
 }
 
 // TODO refactor to use Set
-export function toHash(arr: string[]): {[key: string]: true} {
+export function toHash(arr: string[]): {[key: string]: true | undefined} {
   const hash: {[key: string]: true} = {}
   for (const item of arr) hash[item] = true
   return hash
 }
 
-export function schemaHasRules(schema: Schema, rules: {[key: string]: boolean | Rule}): boolean {
+export function schemaHasRules(
+  schema: Schema,
+  rules: {[key: string]: boolean | Rule | undefined}
+): boolean {
   if (typeof schema == "boolean") return !schema
   for (const key in schema) if (rules[key]) return true
   return false
@@ -137,11 +140,12 @@ export function unescapeFragment(str: string): string {
   return unescapeJsonPointer(decodeURIComponent(str))
 }
 
-export function escapeFragment(str: string): string {
+export function escapeFragment(str: string | number): string {
   return encodeURIComponent(escapeJsonPointer(str))
 }
 
-export function escapeJsonPointer(str: string): string {
+export function escapeJsonPointer(str: string | number): string {
+  if (typeof str == "number") return `${str}`
   return str.replace(/~/g, "~0").replace(/\//g, "~1")
 }
 

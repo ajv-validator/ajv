@@ -12,7 +12,7 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordCxt) {
     const {gen, schema, parentSchema, data, it} = cxt
     const len = gen.const("len", _`${data}.length`)
-    const items = parentSchema.items
+    const {items} = parentSchema
     if (!Array.isArray(items)) {
       checkStrictMode(it, '"additionalItems" without "items" is ignored')
       return

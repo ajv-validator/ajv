@@ -12,14 +12,14 @@
     ".tonic_example.js"
   ],
   "scripts": {
-    "eslint": "eslint lib/{**/,}*.ts spec/{**/,}*.*s scripts --ignore-pattern spec/JSON-Schema-Test-Suite",
+    "eslint": "eslint 'lib/**/*.ts' 'spec/**/*.*s' scripts --ignore-pattern spec/JSON-Schema-Test-Suite",
     "prettier:write": "prettier --write './**/*.{md,json,yaml,js,ts}'",
     "prettier:check": "prettier --list-different './**/*.{md,json,yaml,js,ts}'",
-    "test-spec": "cross-env TS_NODE_PROJECT=spec/tsconfig.json mocha -r ts-node/register spec/{**/,}*.spec.ts -R dot",
+    "test-spec": "cross-env TS_NODE_PROJECT=spec/tsconfig.json mocha -r ts-node/register 'spec/**/*.spec.ts' -R dot",
     "test-debug": "npm run test-spec -- --inspect-brk",
     "test-cov": "nyc npm run test-spec",
     "bundle": "rm -rf bundle && node ./scripts/bundle.js",
-    "build": "rm -rf dist && tsc && cp -r lib/refs dist/refs",
+    "build": "rm -rf dist && tsc && cp -r lib/refs dist",
     "json-tests": "rm -rf spec/_json/*.js && node scripts/jsontests",
     "test-karma": "karma start",
     "test-browser": "rm -rf .browser && npm run bundle && scripts/prepare-tests && karma start",
@@ -67,7 +67,7 @@
     "uri-js": "^4.2.2"
   },
   "devDependencies": {
-    "@ajv-validator/config": "^0.1.1",
+    "@ajv-validator/config": "^0.2.0",
     "@types/chai": "^4.2.12",
     "@types/mocha": "^8.0.3",
     "@types/node": "^14.0.27",
@@ -78,7 +78,7 @@
     "chai": "^4.0.1",
     "coveralls": "^3.0.1",
     "cross-env": "^7.0.2",
-    "eslint": "^7.3.1",
+    "eslint": "^7.8.1",
     "eslint-config-prettier": "^6.11.0",
     "gh-pages-generator": "^0.2.3",
     "glob": "^7.0.0",

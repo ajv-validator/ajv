@@ -17,7 +17,7 @@ const def: CodeKeywordDefinition = {
     const valid = gen.name("valid")
     validatePatternProperties()
 
-    function validatePatternProperties() {
+    function validatePatternProperties(): void {
       for (const pat of patterns) {
         if (checkProperties) checkMatchingProperties(pat)
         if (it.allErrors) {
@@ -41,7 +41,7 @@ const def: CodeKeywordDefinition = {
       }
     }
 
-    function validateProperties(pat: string) {
+    function validateProperties(pat: string): void {
       gen.forIn("key", data, (key) => {
         gen.if(_`${usePattern(gen, pat)}.test(${key})`, () => {
           applySubschema(

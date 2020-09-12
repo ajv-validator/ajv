@@ -26,7 +26,7 @@ const def: CodeKeywordDefinition = {
       () => cxt.error(true)
     )
 
-    function validateOneOf() {
+    function validateOneOf(): void {
       schArr.forEach((sch: Schema, i: number) => {
         if (alwaysValidSchema(it, sch)) {
           gen.var(schValid, true)

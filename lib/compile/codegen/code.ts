@@ -1,5 +1,5 @@
 export class _Code {
-  _str: string
+  private _str: string
 
   constructor(s: string) {
     this._str = s
@@ -42,7 +42,7 @@ export type SafeExpr = Code | number | boolean | null
 
 export const nil = new _Code("")
 
-type TemplateArg = SafeExpr | string
+type TemplateArg = SafeExpr | string | undefined
 
 export function _(strs: TemplateStringsArray, ...args: TemplateArg[]): _Code {
   // TODO benchmark if loop is faster than reduce
@@ -51,7 +51,7 @@ export function _(strs: TemplateStringsArray, ...args: TemplateArg[]): _Code {
   //   res += interpolate(args[i]) + strs[i + 1]
   // }
   // return new _Code(res)
-  return new _Code(strs.reduce((res, s, i) => res + interpolate(args[i - 1]) + s))
+  return new _Code(strs.reduce((res, s, i) => `${res}${interpolate(args[i - 1])}${s}`))
 }
 
 export function str(strs: TemplateStringsArray, ...args: (TemplateArg | string[])[]): _Code {

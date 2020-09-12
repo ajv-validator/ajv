@@ -2,7 +2,7 @@ import {SchemaEnv} from "./compile"
 import {CacheInterface} from "./types"
 
 export default class Cache implements CacheInterface {
-  _cache: {[key: string]: SchemaEnv}
+  private _cache: {[key: string]: SchemaEnv | undefined}
 
   constructor() {
     this._cache = {}
@@ -12,7 +12,7 @@ export default class Cache implements CacheInterface {
     this._cache[key] = value
   }
 
-  get(key: string): SchemaEnv {
+  get(key: string): SchemaEnv | undefined {
     return this._cache[key]
   }
 

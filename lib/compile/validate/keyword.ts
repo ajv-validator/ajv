@@ -61,7 +61,7 @@ function funcKeywordCode(cxt: KeywordCxt, def: FuncKeywordDefinition): void {
   cxt.block$data(valid, validateKeyword)
   cxt.ok(def.valid ?? valid)
 
-  function validateKeyword() {
+  function validateKeyword(): void {
     if (def.errors === false) {
       assignValid()
       if (def.modifying) modifyData(cxt)
@@ -107,7 +107,7 @@ function funcKeywordCode(cxt: KeywordCxt, def: FuncKeywordDefinition): void {
   }
 }
 
-function modifyData(cxt: KeywordCxt) {
+function modifyData(cxt: KeywordCxt): void {
   const {gen, data, it} = cxt
   gen.if(it.parentData, () => gen.assign(data, _`${it.parentData}[${it.parentDataProperty}]`))
 }
@@ -126,7 +126,7 @@ function addErrs(cxt: KeywordCxt, errs: Code): void {
   )
 }
 
-function checkAsync(it: SchemaObjCxt, def: FuncKeywordDefinition) {
+function checkAsync(it: SchemaObjCxt, def: FuncKeywordDefinition): void {
   if (def.async && !it.async) throw new Error("async keyword in sync schema")
 }
 

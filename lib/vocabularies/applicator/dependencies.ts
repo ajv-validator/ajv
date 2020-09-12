@@ -1,4 +1,4 @@
-import {CodeKeywordDefinition, SchemaMap} from "../../types"
+import {CodeKeywordDefinition, SchemaMap, Schema} from "../../types"
 import KeywordCxt from "../../compile/context"
 import {alwaysValidSchema, propertyInData} from "../util"
 import {applySubschema} from "../../compile/subschema"
@@ -61,7 +61,7 @@ const def: CodeKeywordDefinition = {
 
     function validateSchemaDeps(schemaDeps: SchemaMap): void {
       for (const prop in schemaDeps) {
-        if (alwaysValidSchema(it, schemaDeps[prop])) continue
+        if (alwaysValidSchema(it, schemaDeps[prop] as Schema)) continue
         gen.if(
           propertyInData(data, prop, it.opts.ownProperties),
           () => applySubschema(it, {keyword: "dependencies", schemaProp: prop}, valid),

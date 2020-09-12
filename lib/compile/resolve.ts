@@ -7,7 +7,7 @@ import URI = require("uri-js")
 
 // the hash of local references inside the schema (created by getSchemaRefs), used for inline resolution
 export interface LocalRefs {
-  [ref: string]: SchemaObject
+  [ref: string]: SchemaObject | undefined
 }
 
 // TODO refactor to use keyword definitions
@@ -75,7 +75,7 @@ export function normalizeId(id: string | undefined): string {
   return id ? id.replace(TRAILING_SLASH_HASH, "") : ""
 }
 
-export function resolveUrl(baseId = "", id: string): string {
+export function resolveUrl(baseId: string, id: string): string {
   id = normalizeId(id)
   return URI.resolve(baseId, id)
 }
@@ -86,7 +86,6 @@ export function getSchemaRefs(this: Ajv, schema: Schema): LocalRefs {
   const baseIds: {[jsonPtr: string]: string} = {"": schemaId}
   const pathPrefix = getFullPath(schemaId, false)
   const localRefs: LocalRefs = {}
-  const self = this
 
   traverse(schema, {allKeys: true}, (sch, jsonPtr, _, parentJsonPtr) => {
     if (parentJsonPtr === undefined) return
@@ -95,16 +94,16 @@ export function getSchemaRefs(this: Ajv, schema: Schema): LocalRefs {
     let baseId = baseIds[parentJsonPtr]
     if (typeof id == "string") {
       id = baseId = normalizeId(baseId ? URI.resolve(baseId, id) : id)
-      let schOrRef = self._refs[id]
-      if (typeof schOrRef == "string") schOrRef = self._refs[schOrRef]
-      if (typeof schOrRef == "object" && schOrRef.schema) {
+      let schOrRef = this._refs[id]
+      if (typeof schOrRef == "string") schOrRef = this._refs[schOrRef]
+      if (typeof schOrRef == "object") {
         checkAmbiguosId(sch, schOrRef.schema, id)
       } else if (id !== normalizeId(fullPath)) {
         if (id[0] === "#") {
-          if (localRefs[id]) checkAmbiguosId(sch, localRefs[id], id)
+          checkAmbiguosId(sch, localRefs[id], id)
           localRefs[id] = sch
         } else {
-          self._refs[id] = fullPath
+          this._refs[id] = fullPath
         }
       }
     }
@@ -113,7 +112,9 @@ export function getSchemaRefs(this: Ajv, schema: Schema): LocalRefs {
 
   return localRefs
 
-  function checkAmbiguosId(sch1: Schema, sch2: Schema, id: string) {
-    if (!equal(sch1, sch2)) throw new Error(`id "${id}" resolves to more than one schema`)
+  function checkAmbiguosId(sch1: Schema, sch2: Schema | undefined, id: string): void {
+    if (sch2 !== undefined && !equal(sch1, sch2)) {
+      throw new Error(`id "${id}" resolves to more than one schema`)
+    }
   }
 }

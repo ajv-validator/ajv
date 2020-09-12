@@ -161,7 +161,7 @@ describe("async schemas, formats and keywords", function () {
     }
 
     function checkIdExistsWithError(schema, data) {
-      const table = schema.table
+      const {table} = schema
       switch (table) {
         case "users":
           return check(table, [1, 5, 8])
@@ -357,11 +357,7 @@ describe("async schemas, formats and keywords", function () {
       return repeat(() => {
         return Promise.all(
           instances.map((_ajv) => {
-            if (refSchema) {
-              try {
-                _ajv.addSchema(refSchema)
-              } catch (e) {}
-            }
+            if (refSchema) _ajv.addSchema(refSchema)
             const validate = _ajv.compile(schema)
             let data
 

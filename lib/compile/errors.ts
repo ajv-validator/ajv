@@ -92,7 +92,6 @@ function errorObjectCode(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): C
     it: {createErrors, topSchemaRef, schemaPath, errorPath, errSchemaPath, propertyName, opts},
   } = cxt
   if (createErrors === false) return _`{}`
-  if (!error) throw new Error('keyword definition must have "error" property')
   const {params, message} = error
   const msg = typeof message == "string" ? message : message(cxt)
   const par = params ? params(cxt) : _`{}`

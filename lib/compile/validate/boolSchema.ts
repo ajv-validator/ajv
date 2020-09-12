@@ -29,7 +29,7 @@ export function boolOrEmptySchema(it: SchemaCxt, valid: Name): void {
   }
 }
 
-function falseSchemaError(it: SchemaCxt, overrideAllErrors?: boolean) {
+function falseSchemaError(it: SchemaCxt, overrideAllErrors?: boolean): void {
   const {gen, data} = it
   // TODO maybe some other interface should be used for non-keyword validation errors...
   const cxt: KeywordErrorCxt = {

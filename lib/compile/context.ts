@@ -64,7 +64,8 @@ export default class KeywordCxt implements KeywordErrorCxt {
 
   result(condition: Code, successAction?: () => void, failAction?: () => void): void {
     this.gen.ifNot(condition)
-    failAction ? failAction() : this.error()
+    if (failAction) failAction()
+    else this.error()
     if (successAction) {
       this.gen.else()
       successAction()
@@ -119,7 +120,7 @@ export default class KeywordCxt implements KeywordErrorCxt {
     else this.params = obj
   }
 
-  block$data(valid: Name = nil, codeBlock: () => void, $dataValid: Code = nil): void {
+  block$data(valid: Name, codeBlock: () => void, $dataValid: Code = nil): void {
     this.gen.block(() => {
       this.check$data(valid, $dataValid)
       codeBlock()

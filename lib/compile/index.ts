@@ -8,7 +8,9 @@ import {toHash, schemaHasRulesButRef, unescapeFragment} from "./util"
 import {validateFunctionCode} from "./validate"
 import URI = require("uri-js")
 
-export type SchemaRefs = {[ref: string]: Schema | ValidateFunction | undefined}
+export interface SchemaRefs {
+  [ref: string]: Schema | ValidateFunction | undefined
+}
 
 interface SchemaEnvArgs {
   schema: Schema
@@ -47,20 +49,6 @@ export class SchemaEnv implements SchemaEnvArgs {
   }
 }
 
-export function compileSchemaEnv(this: Ajv, sch: SchemaEnv): ValidateFunction {
-  return (sch.meta ? compileMetaSchema : compileSchema).call(this, sch)
-}
-
-function compileMetaSchema(this: Ajv, sch: SchemaEnv): ValidateFunction {
-  const currentOpts = this._opts
-  this._opts = this._metaOpts
-  try {
-    return compileSchema.call(this, sch)
-  } finally {
-    this._opts = currentOpts
-  }
-}
-
 function validateWrapper(this: Ajv, sch: SchemaEnv): ValidateFunction {
   if (!sch.validate) {
     const wrapper: ValidateFunction = function (this: Ajv | unknown, ...args) {
@@ -82,7 +70,7 @@ function extendWrapper(wrapper: ValidateFunction, v: ValidateFunction): void {
 }
 
 // Compiles schema to validation function
-function compileSchema(this: Ajv, env: SchemaEnv): ValidateFunction {
+export function compileSchema(this: Ajv, env: SchemaEnv): ValidateFunction {
   const self = this
   const opts = this._opts
   return (env.localRoot.validate = localCompile(env))

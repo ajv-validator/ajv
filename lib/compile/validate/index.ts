@@ -20,7 +20,7 @@ export function validateFunctionCode(it: SchemaCxt): void {
   validateFunction(it, () => topBoolOrEmptySchema(it))
 }
 
-function validateFunction({gen, validateName, schema, async, opts}: SchemaCxt, body: Block) {
+function validateFunction({gen, validateName, schema, async, opts}: SchemaCxt, body: Block): void {
   gen.return(() =>
     gen.func(
       validateName,
@@ -77,7 +77,7 @@ function subSchemaObjCode(it: SchemaObjCxt, valid: Name): void {
   gen.var(valid, _`${errsCount} === ${N.errors}`)
 }
 
-function checkKeywords(it: SchemaObjCxt) {
+function checkKeywords(it: SchemaObjCxt): void {
   checkUnknownRules(it)
   checkRefsAndKeywords(it)
 }
@@ -131,7 +131,7 @@ function commentKeyword({gen, validateName, schema, errSchemaPath, opts}: Schema
   }
 }
 
-function returnResults({gen, async, validateName, ValidationError}: SchemaCxt) {
+function returnResults({gen, async, validateName, ValidationError}: SchemaCxt): void {
   if (async) {
     gen.if(
       _`${N.errors} === 0`,

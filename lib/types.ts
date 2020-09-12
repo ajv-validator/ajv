@@ -12,7 +12,7 @@ export interface SchemaObject {
 export type Schema = SchemaObject | boolean
 
 export interface SchemaMap {
-  [key: string]: Schema
+  [key: string]: Schema | undefined
 }
 
 export type LoadSchemaFunction = (
@@ -89,7 +89,7 @@ export interface Logger {
 
 export interface CacheInterface {
   put(key: unknown, value: SchemaEnv): void
-  get(key: unknown): SchemaEnv
+  get(key: unknown): SchemaEnv | undefined
   del(key: unknown): void
   clear(): void
 }
@@ -248,7 +248,9 @@ export interface KeywordErrorCxt {
   it: SchemaCxt
 }
 
-export type KeywordCxtParams = {[x: string]: Code | string | number}
+export interface KeywordCxtParams {
+  [x: string]: Code | string | number | undefined
+}
 
 export type FormatMode = "fast" | "full"
 
@@ -261,14 +263,14 @@ export type FormatCompare<T extends SN> = (data1: T, data2: T) => boolean
 export type AsyncFormatValidator<T extends SN> = (data: T) => Promise<boolean>
 
 export interface FormatDefinition<T extends SN> {
-  type: T extends string ? "string" : "number"
+  type?: T extends string ? "string" : "number"
   validate: FormatValidator<T> | (T extends string ? string | RegExp : never)
   async?: false | undefined
   compare?: FormatCompare<T>
 }
 
 export interface AsyncFormatDefinition<T extends SN> {
-  type: T extends string ? "string" : "number"
+  type?: T extends string ? "string" : "number"
   validate: AsyncFormatValidator<T>
   async: true
   compare?: FormatCompare<T>

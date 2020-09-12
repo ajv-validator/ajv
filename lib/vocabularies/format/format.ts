@@ -16,10 +16,10 @@ const def: CodeKeywordDefinition = {
     if ($data) validate$DataFormat()
     else validateFormat()
 
-    function validate$DataFormat() {
+    function validate$DataFormat(): void {
       const fmts = gen.scopeValue("formats", {
         ref: self.formats,
-        code: opts.code?.formats,
+        code: opts.code.formats,
       })
       const fDef = gen.const("fDef", _`${fmts}[${schemaCode}]`)
       const fType = gen.let("fType")
@@ -46,12 +46,12 @@ const def: CodeKeywordDefinition = {
           ? _`${fDef}.async ? await ${format}(${data}) : ${format}(${data})`
           : _`${format}(${data})`
         const validData = _`typeof ${format} == "function" ? ${callFormat} : ${format}.test(${data})`
-        return _`(${format} && ${fType} === ${<string>ruleType} && !(${validData}))`
+        return _`(${format} && ${fType} === ${ruleType as string} && !(${validData}))`
       }
     }
 
-    function validateFormat() {
-      const formatDef: AddedFormat = self.formats[schema]
+    function validateFormat(): void {
+      const formatDef: AddedFormat | undefined = self.formats[schema]
       if (!formatDef) {
         unknownFormat()
         return
@@ -59,7 +59,7 @@ const def: CodeKeywordDefinition = {
       const [fmtType, format, fmtRef] = getFormat(formatDef)
       if (fmtType === ruleType) cxt.pass(validCondition())
 
-      function unknownFormat() {
+      function unknownFormat(): void {
         if (opts.unknownFormats === "ignore") {
           self.logger.warn(unknownMsg())
           return
@@ -68,7 +68,7 @@ const def: CodeKeywordDefinition = {
         throw new Error(unknownMsg())
 
         function unknownMsg(): string {
-          return `unknown format "${<string>schema}" ignored in schema at path "${errSchemaPath}"`
+          return `unknown format "${schema as string}" ignored in schema at path "${errSchemaPath}"`
         }
       }
 
