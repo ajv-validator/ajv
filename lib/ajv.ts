@@ -304,9 +304,11 @@ export default class Ajv {
           delete this._schemas[id]
           delete this._refs[id]
         }
+        return this
       }
+      default:
+        throw new Error("ajv.removeSchema: invalid parameter")
     }
-    return this
   }
 
   // add "vocabulary" - a collection of keywords

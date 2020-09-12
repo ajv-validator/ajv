@@ -171,7 +171,7 @@ export interface SchemaCxt {
   compositeRule?: boolean
   createErrors?: boolean
   opts: InstanceOptions
-  resolveRef: (baseId: string, ref: string) => Schema | ValidateFunction | void
+  resolveRef: (baseId: string, ref: string) => Schema | ValidateFunction | undefined
   self: Ajv
 }
 

@@ -160,7 +160,7 @@ export function compileSchema(this: Ajv, env: SchemaEnv): ValidateFunction {
     }
   }
 
-  function resolveRef(baseId: string, ref: string): Schema | ValidateFunction | void {
+  function resolveRef(baseId: string, ref: string): Schema | ValidateFunction | undefined {
     ref = resolveUrl(baseId, ref)
     // TODO root.refs check should be unnecessary, it is only needed because in some cases root is passed without refs (see type casts to SchemaEnv)
     const schOrFunc = env.refs[ref] || env.root.refs[ref]
@@ -173,6 +173,7 @@ export function compileSchema(this: Ajv, env: SchemaEnv): ValidateFunction {
     }
 
     if (_sch !== undefined) return (env.refs[ref] = inlineOrCompile(_sch))
+    return
   }
 
   function inlineOrCompile(sch: SchemaEnv): Schema | ValidateFunction {

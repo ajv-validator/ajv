@@ -1,4 +1,4 @@
-import {CodeKeywordDefinition, Schema} from "../../types"
+import {CodeKeywordDefinition, Schema, ValidateFunction} from "../../types"
 import KeywordCxt from "../../compile/context"
 import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
@@ -6,53 +6,49 @@ import {callValidateCode} from "../util"
 import {_, str, nil, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 
-// TODO remove these interfaces
-type ResolvedRef = InlineResolvedRef | FuncResolvedRef
-
-interface InlineResolvedRef {
-  code: Code
-  schema: Schema
-  inline: true
-}
-
-interface FuncResolvedRef {
-  code: Code
-  $async?: boolean
-  inline?: false
-}
-
 const def: CodeKeywordDefinition = {
   keyword: "$ref",
   schemaType: "string",
   code(cxt: KeywordCxt) {
     const {gen, schema, it} = cxt
     const {resolveRef, allErrors, baseId, isRoot, root, opts, validateName, self} = it
-    const ref = getRef()
     const passCxt = opts.passContext ? N.this : nil
-    if (ref === undefined) missingRef()
-    else if (ref.inline) applyRefSchema(ref)
-    else if (ref.$async || it.async) validateAsyncRef(ref.code)
-    else validateRef(ref.code)
+    if (schema === "#" || schema === "#/") return callRootRef()
+    const schOrFunc = resolveRef(baseId, schema)
+    if (schOrFunc === undefined) return missingRef()
+    if (typeof schOrFunc == "function") return callCompiledRef(schOrFunc)
+    return inlineRefSchema(schOrFunc)
 
-    function getRef(): ResolvedRef | undefined {
-      if (schema === "#" || schema === "#/") {
-        if (isRoot) return {code: validateName, $async: it.async}
-        const rootName = gen.scopeValue("root", {ref: root.localRoot})
-        return {
-          code: _`${rootName}.validate`,
-          $async: typeof root.schema == "object" && root.schema.$async === true,
-        }
-      }
+    function callRootRef(): void {
+      if (isRoot) return callRef(validateName, it.async)
+      const rootName = gen.scopeValue("root", {ref: root.localRoot})
+      return callRef(_`${rootName}.validate`, root.$async)
+    }
 
-      const schOrFunc = resolveRef(baseId, schema)
-      if (typeof schOrFunc == "function") {
-        const code = gen.scopeValue("validate", {ref: schOrFunc})
-        return {code, $async: schOrFunc.$async}
-      } else if (typeof schOrFunc == "boolean" || typeof schOrFunc == "object") {
-        const code = gen.scopeValue("schema", {ref: schOrFunc})
-        return {code, schema: schOrFunc, inline: true}
-      }
-      return undefined
+    function callCompiledRef(func: ValidateFunction): void {
+      const v = gen.scopeValue("validate", {ref: func})
+      return callRef(v, func.$async)
+    }
+
+    function callRef(v: Code, $async?: boolean): void {
+      if ($async || it.async) validateAsyncRef(v)
+      else validateSyncRef(v)
+    }
+
+    function inlineRefSchema(sch: Schema): void {
+      const schName = gen.scopeValue("schema", {ref: sch})
+      const valid = gen.name("valid")
+      applySubschema(
+        it,
+        {
+          schema: sch,
+          schemaPath: nil,
+          topSchemaRef: schName,
+          errSchemaPath: schema,
+        },
+        valid
+      )
+      cxt.ok(valid)
     }
 
     function missingRef(): void {
@@ -68,21 +64,6 @@ const def: CodeKeywordDefinition = {
         default:
           throw new MissingRefError(baseId, schema, msg)
       }
-    }
-
-    function applyRefSchema(inlineRef: InlineResolvedRef): void {
-      const valid = gen.name("valid")
-      applySubschema(
-        it,
-        {
-          schema: inlineRef.schema,
-          schemaPath: nil,
-          topSchemaRef: inlineRef.code,
-          errSchemaPath: schema,
-        },
-        valid
-      )
-      cxt.ok(valid)
     }
 
     function validateAsyncRef(v: Code): void {
@@ -102,7 +83,7 @@ const def: CodeKeywordDefinition = {
       cxt.ok(valid)
     }
 
-    function validateRef(v: Code): void {
+    function validateSyncRef(v: Code): void {
       cxt.pass(callValidateCode(cxt, v, passCxt), () => addErrorsFrom(v))
     }
 
