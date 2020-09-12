@@ -29,7 +29,7 @@ export class SchemaEnv implements SchemaEnvArgs {
   meta?: boolean
   cacheKey?: unknown
   $async?: boolean
-  localRoot: {validate?: ValidateFunction} = {}
+  localRoot: {validate?: ValidateFunction}
   refs: SchemaRefs = {}
   validate?: ValidateFunction
   validateName?: Name
@@ -49,46 +49,29 @@ export class SchemaEnv implements SchemaEnvArgs {
   }
 }
 
-function validateWrapper(this: Ajv, sch: SchemaEnv): ValidateFunction {
-  if (!sch.validate) {
-    const wrapper: ValidateFunction = function (this: Ajv | unknown, ...args) {
-      if (wrapper.validate === undefined) throw new Error("ajv implementation error")
-      const v = wrapper.validate
-      const valid = v.apply(this, args)
-      wrapper.errors = v.errors
-      return valid
-    }
-    sch.validate = wrapper
-    sch.validateName = this._scope.value("validate", {ref: wrapper})
-  }
-  return sch.validate
-}
-
-function extendWrapper(wrapper: ValidateFunction, v: ValidateFunction): void {
-  wrapper.validate = v
-  Object.assign(wrapper, v)
-}
-
-// Compiles schema to validation function
-export function compileSchema(this: Ajv, env: SchemaEnv): ValidateFunction {
+// Compiles schema in SchemaEnv
+export function compileSchema(this: Ajv, env: SchemaEnv): void {
   const self = this
   const opts = this._opts
-  return (env.localRoot.validate = localCompile(env))
+  localCompile(env)
+  if (env.validate) env.localRoot.validate = env.validate
 
-  function localCompile(sch: SchemaEnv): ValidateFunction {
+  function localCompile(sch: SchemaEnv): SchemaEnv {
     // TODO refactor - remove compilations
     const _sch = getCompilingSchema.call(self, sch)
-    if (_sch) return validateWrapper.call(self, _sch)
+    if (_sch) return _sch
     const {schema, baseId} = sch
-    if (sch.root !== env.root) return compileSchema.call(self, sch)
+    if (sch.root !== env.root) {
+      compileSchema.call(self, sch)
+      return sch
+    }
 
     const isRoot = sch.schema === sch.root.schema
-    const $async = typeof schema == "object" && schema.$async === true
     const rootId = getFullPath(sch.root.baseId)
 
     const gen = new CodeGen(self._scope, {...opts.codegen, forInOwn: opts.ownProperties})
     let _ValidationError
-    if ($async) {
+    if (sch.$async) {
       _ValidationError = gen.scopeValue("Error", {
         ref: ValidationError,
         code: _`require("ajv/dist/compile/error_classes").ValidationError`,
@@ -96,6 +79,7 @@ export function compileSchema(this: Ajv, env: SchemaEnv): ValidateFunction {
     }
 
     const validateName = gen.scopeName("validate")
+    sch.validateName = validateName
 
     const schemaCxt: SchemaCxt = {
       gen,
@@ -107,12 +91,12 @@ export function compileSchema(this: Ajv, env: SchemaEnv): ValidateFunction {
       dataPathArr: [nil], // TODO can it's lenght be used as dataLevel if nil is removed?
       dataLevel: 0,
       topSchemaRef: gen.scopeValue("schema", {ref: schema}),
-      async: $async,
+      async: sch.$async,
       validateName,
       ValidationError: _ValidationError,
       schema,
       isRoot,
-      root: env.root,
+      root: sch.root,
       rootId,
       baseId: baseId || rootId,
       schemaPath: nil,
@@ -138,18 +122,17 @@ export function compileSchema(this: Ajv, env: SchemaEnv): ValidateFunction {
 
       validate.schema = schema
       validate.errors = null
-      validate.root = env.root // TODO remove - only used by $comment keyword
-      if ($async) validate.$async = true
+      validate.root = sch.root // TODO remove - only used by $comment keyword
+      validate.env = sch
+      if (sch.$async) validate.$async = true
       if (opts.sourceCode === true) {
         validate.source = {
           code: sourceCode,
           scope: self._scope,
         }
       }
-      if (sch.validate) extendWrapper(sch.validate, validate)
       sch.validate = validate
-      sch.validateName = validateName
-      return validate
+      return sch
     } catch (e) {
       delete sch.validate
       delete sch.validateName
@@ -160,9 +143,11 @@ export function compileSchema(this: Ajv, env: SchemaEnv): ValidateFunction {
     }
   }
 
-  function resolveRef(baseId: string, ref: string): Schema | ValidateFunction | undefined {
+  function resolveRef(
+    baseId: string,
+    ref: string
+  ): Schema | ValidateFunction | SchemaEnv | undefined {
     ref = resolveUrl(baseId, ref)
-    // TODO root.refs check should be unnecessary, it is only needed because in some cases root is passed without refs (see type casts to SchemaEnv)
     const schOrFunc = env.refs[ref] || env.root.refs[ref]
     if (schOrFunc) return schOrFunc
 
@@ -176,10 +161,9 @@ export function compileSchema(this: Ajv, env: SchemaEnv): ValidateFunction {
     return
   }
 
-  function inlineOrCompile(sch: SchemaEnv): Schema | ValidateFunction {
-    return inlineRef(sch.schema, self._opts.inlineRefs)
-      ? sch.schema
-      : sch.validate || localCompile(sch)
+  function inlineOrCompile(sch: SchemaEnv): Schema | SchemaEnv {
+    if (inlineRef(sch.schema, self._opts.inlineRefs)) return sch.schema
+    return sch.validate ? sch : localCompile(sch)
   }
 }
 

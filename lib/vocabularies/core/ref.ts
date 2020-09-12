@@ -1,10 +1,11 @@
-import {CodeKeywordDefinition, Schema, ValidateFunction} from "../../types"
+import {CodeKeywordDefinition, Schema} from "../../types"
 import KeywordCxt from "../../compile/context"
 import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {callValidateCode} from "../util"
 import {_, str, nil, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
+import {SchemaEnv} from "../../compile"
 
 const def: CodeKeywordDefinition = {
   keyword: "$ref",
@@ -16,23 +17,31 @@ const def: CodeKeywordDefinition = {
     if (schema === "#" || schema === "#/") return callRootRef()
     const schOrFunc = resolveRef(baseId, schema)
     if (schOrFunc === undefined) return missingRef()
-    if (typeof schOrFunc == "function") return callCompiledRef(schOrFunc)
+    if (schOrFunc instanceof SchemaEnv) return callValidate(schOrFunc)
     return inlineRefSchema(schOrFunc)
 
     function callRootRef(): void {
       if (isRoot) return callRef(validateName, it.async)
+      // TODO use the same name as compiled function, so it can be dropped in shared scope
       const rootName = gen.scopeValue("root", {ref: root.localRoot})
-      return callRef(_`${rootName}.validate`, root.$async)
+      return callRef(_`${rootName}.validate`, root.$async || it.async)
     }
 
-    function callCompiledRef(func: ValidateFunction): void {
-      const v = gen.scopeValue("validate", {ref: func})
-      return callRef(v, func.$async)
+    function callValidate(sch: SchemaEnv): void {
+      let v: Code
+      if (sch.validate) {
+        v = gen.scopeValue("validate", {ref: sch.validate})
+      } else {
+        const code = _`{validate: ${sch.validateName}}`
+        const wrapper = gen.scopeValue("wrapper", {ref: sch, code})
+        v = _`${wrapper}.validate`
+      }
+      callRef(v, sch.$async)
     }
 
     function callRef(v: Code, $async?: boolean): void {
-      if ($async || it.async) validateAsyncRef(v)
-      else validateSyncRef(v)
+      if ($async) callAsyncRef(v)
+      else callSyncRef(v)
     }
 
     function inlineRefSchema(sch: Schema): void {
@@ -66,7 +75,7 @@ const def: CodeKeywordDefinition = {
       }
     }
 
-    function validateAsyncRef(v: Code): void {
+    function callAsyncRef(v: Code): void {
       if (!it.async) throw new Error("async schema referenced by sync schema")
       const valid = gen.let("valid")
       gen.try(
@@ -83,7 +92,7 @@ const def: CodeKeywordDefinition = {
       cxt.ok(valid)
     }
 
-    function validateSyncRef(v: Code): void {
+    function callSyncRef(v: Code): void {
       cxt.pass(callValidateCode(cxt, v, passCxt), () => addErrorsFrom(v))
     }
 

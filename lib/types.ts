@@ -110,6 +110,7 @@ export interface ValidateFunction {
   ): boolean | Promise<any>
   schema?: Schema
   errors?: null | ErrorObject[]
+  env?: SchemaEnv
   root?: SchemaEnv
   $async?: true
   source?: SourceCode
@@ -156,7 +157,7 @@ export interface SchemaCxt {
   dataPathArr: (Code | number)[]
   dataLevel: number
   topSchemaRef: Code
-  async: boolean
+  async?: boolean
   validateName: Name
   ValidationError?: Name
   schema: Schema
@@ -171,7 +172,7 @@ export interface SchemaCxt {
   compositeRule?: boolean
   createErrors?: boolean
   opts: InstanceOptions
-  resolveRef: (baseId: string, ref: string) => Schema | ValidateFunction | undefined
+  resolveRef: (baseId: string, ref: string) => Schema | SchemaEnv | undefined
   self: Ajv
 }
 

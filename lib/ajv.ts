@@ -35,6 +35,7 @@ const META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"]
 const META_SUPPORT_DATA = ["/properties"]
 const EXT_SCOPE_NAMES = new Set([
   "validate",
+  "wrapper",
   "root",
   "schema",
   "keyword",
@@ -461,14 +462,17 @@ export default class Ajv {
   }
 
   private _compileSchemaEnv(sch: SchemaEnv): ValidateFunction {
-    return sch.meta ? this._compileMetaSchema(sch) : compileSchema.call(this, sch)
+    if (sch.meta) this._compileMetaSchema(sch)
+    else compileSchema.call(this, sch)
+    if (!sch.validate) throw new Error("ajv implementation error")
+    return sch.validate
   }
 
-  private _compileMetaSchema(sch: SchemaEnv): ValidateFunction {
+  private _compileMetaSchema(sch: SchemaEnv): void {
     const currentOpts = this._opts
     this._opts = this._metaOpts
     try {
-      return compileSchema.call(this, sch)
+      compileSchema.call(this, sch)
     } finally {
       this._opts = currentOpts
     }
