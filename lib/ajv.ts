@@ -46,8 +46,6 @@ const EXT_SCOPE_NAMES = new Set([
   "Error",
 ])
 
-type CompileAsyncCallback = (err: Error | null, validate?: ValidateFunction) => void
-
 const optsDefaults = {
   strict: true,
   code: {},
@@ -135,20 +133,13 @@ export default class Ajv {
   // TODO allow passing schema URI
   compileAsync(
     schema: SchemaObject,
-    metaOrCallback?: boolean | CompileAsyncCallback, // optional true to compile meta-schema; this parameter can be skipped
-    cb?: CompileAsyncCallback // deprecated
+    meta?: boolean // optional true to compile meta-schema
   ): Promise<ValidateFunction> {
     if (typeof this._opts.loadSchema != "function") {
       throw new Error("options.loadSchema should be a function")
     }
     const {loadSchema} = this._opts
-    let meta: boolean | undefined
-    if (typeof metaOrCallback == "function") cb = metaOrCallback
-    else meta = metaOrCallback
-
-    const vp = runCompileAsync.call(this, schema, meta)
-    if (cb) vp.then((v) => cb?.(null, v), cb)
-    return vp
+    return runCompileAsync.call(this, schema, meta)
 
     async function runCompileAsync(
       this: Ajv,
