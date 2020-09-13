@@ -124,14 +124,11 @@ export default class Ajv {
   }
 
   // Create validation function for passed schema
-  compile(s: {$async?: never}, _?: boolean): ValidateFunction
-  compile(s: SyncSchemaObject, _?: boolean): SyncValidateFunction
-  compile(s: AsyncSchemaObject, _?: boolean): AsyncValidateFunction
-  compile(s: Schema, _?: boolean): ValidateFunction
-  compile(
-    schema: Schema,
-    _meta?: boolean // true if schema is a meta-schema. Used internally to compile meta schemas of custom keywords.
-  ): ValidateFunction {
+  // _meta: true if schema is a meta-schema. Used internally to compile meta schemas of custom keywords.
+  compile(schema: SyncSchemaObject | boolean, _meta?: boolean): SyncValidateFunction
+  compile(schema: AsyncSchemaObject, _meta?: boolean): AsyncValidateFunction
+  compile(schema: Schema, _meta?: boolean): ValidateFunction
+  compile(schema: Schema, _meta?: boolean): ValidateFunction {
     const sch = this._addSchema(schema, undefined, _meta)
     return sch.validate || this._compileSchemaEnv(sch)
   }
@@ -139,30 +136,11 @@ export default class Ajv {
   // Creates validating function for passed schema with asynchronous loading of missing schemas.
   // `loadSchema` option should be a function that accepts schema uri and returns promise that resolves with the schema.
   // TODO allow passing schema URI
-  compileAsync(
-    s: {$async?: never},
-    m?: boolean | CompileAsyncCallback,
-    c?: CompileAsyncCallback
-  ): Promise<ValidateFunction>
-  compileAsync(
-    s: SyncSchemaObject,
-    m?: boolean | CompileAsyncCallback,
-    c?: CompileAsyncCallback
-  ): Promise<SyncValidateFunction>
-  compileAsync(
-    s: AsyncSchemaObject,
-    m?: boolean | CompileAsyncCallback,
-    c?: CompileAsyncCallback
-  ): Promise<AsyncValidateFunction>
-  compileAsync(
-    s: SchemaObject,
-    m?: boolean | CompileAsyncCallback,
-    c?: CompileAsyncCallback
-  ): Promise<ValidateFunction>
-  compileAsync(
-    schema: SchemaObject,
-    meta?: boolean // optional true to compile meta-schema
-  ): Promise<ValidateFunction> {
+  // meta - optional true to compile meta-schema
+  compileAsync(schema: SyncSchemaObject, meta?: boolean): Promise<SyncValidateFunction>
+  compileAsync(schema: AsyncSchemaObject, meta?: boolean): Promise<AsyncValidateFunction>
+  compileAsync(schema: SchemaObject, meta?: boolean): Promise<ValidateFunction>
+  compileAsync(schema: SchemaObject, meta?: boolean): Promise<ValidateFunction> {
     if (typeof this.opts.loadSchema != "function") {
       throw new Error("options.loadSchema should be a function")
     }
