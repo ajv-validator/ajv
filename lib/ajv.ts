@@ -66,7 +66,7 @@ export default class Ajv {
   RULES: ValidationRules
   logger: Logger
   errors?: ErrorObject[] | null // errors from the last validation
-  private _loadingSchemas: {[ref: string]: Promise<SchemaObject> | undefined} = {}
+  private _loading: {[ref: string]: Promise<SchemaObject> | undefined} = {}
   private readonly _cache: CacheInterface
   private readonly _metaOpts: InstanceOptions
 
@@ -132,72 +132,70 @@ export default class Ajv {
 
   // Creates validating function for passed schema with asynchronous loading of missing schemas.
   // `loadSchema` option should be a function that accepts schema uri and returns promise that resolves with the schema.
+  // TODO allow passing schema URI
   compileAsync(
     schema: SchemaObject,
     metaOrCallback?: boolean | CompileAsyncCallback, // optional true to compile meta-schema; this parameter can be skipped
-    callback?: CompileAsyncCallback
+    cb?: CompileAsyncCallback // deprecated
   ): Promise<ValidateFunction> {
-    const self = this
     if (typeof this._opts.loadSchema != "function") {
       throw new Error("options.loadSchema should be a function")
     }
     const {loadSchema} = this._opts
     let meta: boolean | undefined
-    if (typeof metaOrCallback == "function") callback = metaOrCallback
+    if (typeof metaOrCallback == "function") cb = metaOrCallback
     else meta = metaOrCallback
 
-    return runCompileAsync(schema, meta, callback)
+    const vp = runCompileAsync.call(this, schema, meta)
+    if (cb) vp.then((v) => cb?.(null, v), cb)
+    return vp
 
-    function runCompileAsync(
+    async function runCompileAsync(
+      this: Ajv,
       _schema: SchemaObject,
-      _meta?: boolean,
-      cb?: CompileAsyncCallback
+      _meta?: boolean
     ): Promise<ValidateFunction> {
-      const p = loadMetaSchemaOf(_schema).then(() => {
-        const sch = self._addSchema(_schema, undefined, _meta)
-        return sch.validate || _compileAsync(sch)
-      })
-      if (cb) p.then((v) => cb(null, v), cb)
-      return p
+      await loadMetaSchema.call(this, _schema.$schema)
+      const sch = this._addSchema(_schema, undefined, _meta)
+      return sch.validate || _compileAsync.call(this, sch)
     }
 
-    function loadMetaSchemaOf(sch: SchemaObject): Promise<ValidateFunction | void> {
-      const {$schema} = sch
-      return $schema && !self.getSchema($schema)
-        ? runCompileAsync({$ref: $schema}, true)
-        : Promise.resolve()
+    async function loadMetaSchema(this: Ajv, $ref?: string): Promise<void> {
+      if ($ref && !this.getSchema($ref)) {
+        await runCompileAsync.call(this, {$ref}, true)
+      }
     }
 
-    function _compileAsync(sch: SchemaEnv): ValidateFunction | Promise<ValidateFunction> {
+    async function _compileAsync(this: Ajv, sch: SchemaEnv): Promise<ValidateFunction> {
       try {
-        return self._compileSchemaEnv(sch)
+        return this._compileSchemaEnv(sch)
       } catch (e) {
-        if (e instanceof MissingRefError) return loadMissingSchema(sch, e)
-        throw e
+        if (!(e instanceof MissingRefError)) throw e
+        checkLoaded.call(this, e)
+        await loadMissingSchema.call(this, e.missingSchema)
+        return _compileAsync.call(this, sch)
       }
     }
 
-    async function loadMissingSchema(
-      sch: SchemaEnv,
-      e: MissingRefError
-    ): Promise<ValidateFunction> {
-      const ref = e.missingSchema
-      if (self._refs[ref]) {
-        throw new Error(`Schema ${ref} is loaded but ${e.missingRef} cannot be resolved`)
+    function checkLoaded(this: Ajv, {missingSchema: ref, missingRef}: MissingRefError): void {
+      if (this._refs[ref]) {
+        throw new Error(`Schema ${ref} is loaded but ${missingRef} cannot be resolved`)
       }
-      let schPromise = self._loadingSchemas[ref]
-      if (schPromise === undefined) {
-        schPromise = self._loadingSchemas[ref] = loadSchema(ref)
-        schPromise.then(removePromise, removePromise)
-      }
+    }
 
-      const _schema = await schPromise
-      if (!self._refs[ref]) await loadMetaSchemaOf(_schema)
-      if (!self._refs[ref]) self.addSchema(_schema, ref, undefined, meta)
-      return _compileAsync(sch)
+    async function loadMissingSchema(this: Ajv, ref: string): Promise<void> {
+      const _schema = await _loadSchema.call(this, ref)
+      if (!this._refs[ref]) await loadMetaSchema.call(this, _schema.$schema)
+      if (!this._refs[ref]) this.addSchema(_schema, ref, undefined, meta)
+    }
 
-      function removePromise(): void {
-        delete self._loadingSchemas[ref]
+    async function _loadSchema(this: Ajv, ref: string): Promise<SchemaObject> {
+      const p = this._loading[ref]
+      if (p) return p
+      try {
+        return await (this._loading[ref] = loadSchema(ref))
+      } finally {
+        delete this._loading[ref]
       }
     }
   }
