@@ -39,9 +39,9 @@ export interface CodeGenOptions {
 }
 
 export class CodeGen {
-  private readonly _scope: Scope
-  private readonly _extScope: ValueScope
-  private readonly _values: ScopeValueSets = {}
+  readonly _scope: Scope
+  readonly _extScope: ValueScope
+  readonly _values: ScopeValueSets = {}
   private readonly _blocks: BlockKind[] = []
   private readonly _blockStarts: number[] = []
   private readonly opts: CodeGenOptions

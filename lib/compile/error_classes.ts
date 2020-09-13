@@ -2,9 +2,9 @@ import {ErrorObject} from "../types"
 import {resolveUrl, normalizeId, getFullPath} from "./resolve"
 
 export class ValidationError extends Error {
-  errors: Partial<ErrorObject>[]
-  ajv: true
-  validation: true
+  readonly errors: Partial<ErrorObject>[]
+  readonly ajv: true
+  readonly validation: true
 
   constructor(errors: Partial<ErrorObject>[]) {
     super("validation failed")
@@ -14,8 +14,8 @@ export class ValidationError extends Error {
 }
 
 export class MissingRefError extends Error {
-  missingRef: string
-  missingSchema: string
+  readonly missingRef: string
+  readonly missingSchema: string
 
   static message(baseId: string, ref: string): string {
     return `can't resolve reference ${ref} from id ${baseId}`

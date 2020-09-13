@@ -422,7 +422,7 @@ describe("User-defined keywords", () => {
         }
 
         const validate = _ajv.compile(schema)
-        const numErrors = _ajv._opts.allErrors ? 4 : 2
+        const numErrors = _ajv.opts.allErrors ? 4 : 2
 
         shouldBeInvalid(validate, 2, 2)
         shouldBeInvalid(validate, 3, numErrors)

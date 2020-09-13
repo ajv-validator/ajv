@@ -18,20 +18,20 @@ import {CodeGen, _, nil, or, Code, Name} from "./codegen"
 import N from "./names"
 
 export default class KeywordCxt implements KeywordErrorCxt {
-  gen: CodeGen
-  allErrors?: boolean
-  keyword: string
-  data: Name
-  $data?: string | false
-  schema: any
-  schemaValue: Code | number | boolean // Code reference to keyword schema value or primitive value
-  schemaCode: Code | number | boolean // Code reference to resolved schema value (different if schema is $data)
-  schemaType?: string | string[]
-  parentSchema: SchemaObject
-  errsCount?: Name
+  readonly gen: CodeGen
+  readonly allErrors?: boolean
+  readonly keyword: string
+  readonly data: Name
+  readonly $data?: string | false
+  readonly schema: any
+  readonly schemaValue: Code | number | boolean // Code reference to keyword schema value or primitive value
+  readonly schemaCode: Code | number | boolean // Code reference to resolved schema value (different if schema is $data)
+  readonly schemaType?: string | string[]
+  readonly parentSchema: SchemaObject
+  readonly errsCount?: Name
   params: KeywordCxtParams
-  it: SchemaObjCxt
-  def: KeywordDefinition
+  readonly it: SchemaObjCxt
+  readonly def: KeywordDefinition
 
   constructor(it: SchemaObjCxt, def: KeywordDefinition, keyword: string) {
     validateKeywordUsage(it, def, keyword)

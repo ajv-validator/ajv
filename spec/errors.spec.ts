@@ -808,7 +808,7 @@ describe("Validation errors", () => {
             err,
             "exclusiveMaximum",
             "#/properties/smaller/exclusiveMaximum",
-            _ajv._opts.jsPropertySyntax ? ".smaller" : "/smaller",
+            _ajv.opts.jsPropertySyntax ? ".smaller" : "/smaller",
             "should be < 4",
             {comparison: "<", limit: 4}
           )
@@ -876,7 +876,7 @@ describe("Validation errors", () => {
 
     function prepareTest(_ajv, schema) {
       validate = _ajv.compile(schema)
-      numErrors = _ajv._opts.allErrors ? 2 : 1
+      numErrors = _ajv.opts.allErrors ? 2 : 1
     }
 
     function testIfError(ifClause, multipleOf) {
@@ -920,10 +920,10 @@ describe("Validation errors", () => {
           {i: 1, j: 2}
         )
 
-        const expectedErrors = _ajv._opts.allErrors ? 2 : 1
+        const expectedErrors = _ajv.opts.allErrors ? 2 : 1
         shouldBeInvalid(validate, [1, "2", "2", 2], expectedErrors)
-        testTypeError(0, _ajv._opts.jsPropertySyntax ? "[1]" : "/1")
-        if (expectedErrors === 2) testTypeError(1, _ajv._opts.jsPropertySyntax ? "[2]" : "/2")
+        testTypeError(0, _ajv.opts.jsPropertySyntax ? "[1]" : "/1")
+        if (expectedErrors === 2) testTypeError(1, _ajv.opts.jsPropertySyntax ? "[2]" : "/2")
 
         function testTypeError(i, dataPath) {
           const err = validate.errors[i]
@@ -960,12 +960,7 @@ describe("Validation errors", () => {
     const validate = _ajv.compile(schema)
     shouldBeValid(validate, data)
     shouldBeInvalid(validate, invalidData)
-    shouldBeError(
-      validate.errors[0],
-      "type",
-      schPath,
-      _ajv._opts.jsPropertySyntax ? ".foo" : "/foo"
-    )
+    shouldBeError(validate.errors[0], "type", schPath, _ajv.opts.jsPropertySyntax ? ".foo" : "/foo")
   }
 
   function shouldBeValid(validate, data) {

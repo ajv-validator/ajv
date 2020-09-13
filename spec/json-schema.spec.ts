@@ -49,7 +49,7 @@ function runTest(instances: Ajv[], draft: number, tests) {
     switch (draft) {
       case 6:
         ajv.addMetaSchema(require("../dist/refs/json-schema-draft-06.json"))
-        ajv._opts.defaultMeta = "http://json-schema.org/draft-06/schema#"
+        ajv.opts.defaultMeta = "http://json-schema.org/draft-06/schema#"
         break
     }
     for (const id in remoteRefs) ajv.addSchema(remoteRefs[id], id)

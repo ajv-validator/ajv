@@ -36,7 +36,7 @@ const def: CodeKeywordDefinition = {
         if (opts.unknownFormats === "ignore") return nil
         let unknown = _`${schemaCode} && !${format}`
         if (Array.isArray(opts.unknownFormats)) {
-          unknown = _`${unknown} && !${N.self}._opts.unknownFormats.includes(${schemaCode})`
+          unknown = _`${unknown} && !${N.self}.opts.unknownFormats.includes(${schemaCode})`
         }
         return _`(${unknown})`
       }

@@ -6,7 +6,7 @@ module.exports = {
 }
 
 export function afterError(res): void {
-  console.log("ajv options:", res.validator._opts)
+  console.log("ajv options:", res.validator.opts)
 }
 
 export function afterEach(res): void {

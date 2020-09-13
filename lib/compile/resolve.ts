@@ -94,8 +94,8 @@ export function getSchemaRefs(this: Ajv, schema: Schema): LocalRefs {
     let baseId = baseIds[parentJsonPtr]
     if (typeof id == "string") {
       id = baseId = normalizeId(baseId ? URI.resolve(baseId, id) : id)
-      let schOrRef = this._refs[id]
-      if (typeof schOrRef == "string") schOrRef = this._refs[schOrRef]
+      let schOrRef = this.refs[id]
+      if (typeof schOrRef == "string") schOrRef = this.refs[schOrRef]
       if (typeof schOrRef == "object") {
         checkAmbiguosId(sch, schOrRef.schema, id)
       } else if (id !== normalizeId(fullPath)) {
@@ -103,7 +103,7 @@ export function getSchemaRefs(this: Ajv, schema: Schema): LocalRefs {
           checkAmbiguosId(sch, localRefs[id], id)
           localRefs[id] = sch
         } else {
-          this._refs[id] = fullPath
+          this.refs[id] = fullPath
         }
       }
     }

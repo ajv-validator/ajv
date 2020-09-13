@@ -131,7 +131,7 @@ function commentKeyword({gen, schemaEnv, schema, errSchemaPath, opts}: SchemaObj
   } else if (typeof opts.$comment == "function") {
     const schemaPath = str`${errSchemaPath}/$comment`
     const rootName = gen.scopeValue("root", {ref: schemaEnv.root})
-    gen.code(_`${N.self}._opts.$comment(${msg}, ${schemaPath}, ${rootName}.schema)`)
+    gen.code(_`${N.self}.opts.$comment(${msg}, ${schemaPath}, ${rootName}.schema)`)
   }
 }
 

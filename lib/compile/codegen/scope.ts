@@ -14,7 +14,7 @@ export interface NameValue {
 export type ValueReference = unknown // possibly make CodeGen parameterized type on this type
 
 class ValueError extends Error {
-  value?: NameValue
+  readonly value?: NameValue
   constructor(name: ValueScopeName) {
     super(`CodeGen: "code" for ${name} not defined`)
     this.value = name.value
@@ -41,9 +41,9 @@ export interface ScopeValueSets {
 }
 
 export class Scope {
-  protected _names: {[prefix: string]: NameGroup | undefined} = {}
-  protected _prefixes?: Set<string>
-  protected _parent?: Scope
+  protected readonly _names: {[prefix: string]: NameGroup | undefined} = {}
+  protected readonly _prefixes?: Set<string>
+  protected readonly _parent?: Scope
 
   constructor({prefixes, parent}: ScopeOptions = {}) {
     this._prefixes = prefixes
@@ -77,7 +77,7 @@ interface ScopePath {
 }
 
 export class ValueScopeName extends Name {
-  prefix: string
+  readonly prefix: string
   value?: NameValue
   scopePath?: Code
 
@@ -93,8 +93,8 @@ export class ValueScopeName extends Name {
 }
 
 export class ValueScope extends Scope {
-  protected _values: ScopeValues = {}
-  protected _scope: ScopeStore
+  protected readonly _values: ScopeValues = {}
+  protected readonly _scope: ScopeStore
 
   constructor(opts: ValueScopeOptions) {
     super(opts)

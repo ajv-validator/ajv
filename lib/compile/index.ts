@@ -22,14 +22,14 @@ interface SchemaEnvArgs {
 }
 
 export class SchemaEnv implements SchemaEnvArgs {
-  schema: Schema
-  root: SchemaEnv
-  baseId: string
-  localRefs?: LocalRefs
-  meta?: boolean
-  cacheKey?: unknown
-  $async?: boolean
-  refs: SchemaRefs = {}
+  readonly schema: Schema
+  readonly root: SchemaEnv
+  baseId: string // TODO possibly, it should be readonly
+  readonly localRefs?: LocalRefs
+  readonly meta?: boolean
+  readonly cacheKey?: unknown
+  readonly $async?: boolean
+  readonly refs: SchemaRefs = {}
   validate?: ValidateFunction
   validateName?: Name
 
@@ -52,9 +52,8 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
   // TODO refactor - remove compilations
   const _sch = getCompilingSchema.call(this, sch)
   if (_sch) return _sch
-  const opts = this._opts
   const rootId = getFullPath(sch.root.baseId) // TODO if getFullPath removed 1 tests fails
-  const gen = new CodeGen(this._scope, {...opts.codegen, forInOwn: opts.ownProperties})
+  const gen = new CodeGen(this.scope, {...this.opts.codegen, forInOwn: this.opts.ownProperties})
   let _ValidationError
   if (sch.$async) {
     _ValidationError = gen.scopeValue("Error", {
@@ -68,7 +67,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
 
   const schemaCxt: SchemaCxt = {
     gen,
-    allErrors: opts.allErrors,
+    allErrors: this.opts.allErrors,
     data: N.data,
     parentData: N.parentData,
     parentDataProperty: N.parentDataProperty,
@@ -85,7 +84,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     schemaPath: nil,
     errSchemaPath: "#",
     errorPath: str``,
-    opts,
+    opts: this.opts,
     self: this,
   }
 
@@ -94,20 +93,20 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     this._compilations.add(sch)
     validateFunctionCode(schemaCxt)
     sourceCode = `${gen.scopeRefs(N.scope)}${gen}`
-    if (opts.processCode) sourceCode = opts.processCode(sourceCode, sch)
+    if (this.opts.processCode) sourceCode = this.opts.processCode(sourceCode, sch)
     // console.log("\n\n\n *** \n", sourceCode)
     const makeValidate = new Function(`${N.self}`, `${N.scope}`, sourceCode)
-    const validate: ValidateFunction = makeValidate(this, this._scope.get())
+    const validate: ValidateFunction = makeValidate(this, this.scope.get())
     gen.scopeValue(validateName, {ref: validate})
 
     validate.errors = null
     validate.schema = sch.schema
     validate.schemaEnv = sch
     if (sch.$async) validate.$async = true
-    if (opts.sourceCode === true) {
+    if (this.opts.sourceCode === true) {
       validate.source = {
         code: sourceCode,
-        scope: this._scope,
+        scope: this.scope,
       }
     }
     sch.validate = validate
@@ -143,7 +142,7 @@ export function resolveRef(
 }
 
 function inlineOrCompile(this: Ajv, sch: SchemaEnv): Schema | SchemaEnv {
-  if (inlineRef(sch.schema, this._opts.inlineRefs)) return sch.schema
+  if (inlineRef(sch.schema, this.opts.inlineRefs)) return sch.schema
   return sch.validate ? sch : compileSchema.call(this, sch)
 }
 
@@ -166,8 +165,8 @@ function resolve(
   ref: string // reference to resolve
 ): SchemaEnv | undefined {
   let sch
-  while (typeof (sch = this._refs[ref]) == "string") ref = sch
-  return sch || this._schemas[ref] || resolveSchema.call(this, root, ref)
+  while (typeof (sch = this.refs[ref]) == "string") ref = sch
+  return sch || this.schemas[ref] || resolveSchema.call(this, root, ref)
 }
 
 // Resolve schema, its root and baseId
@@ -185,7 +184,7 @@ export function resolveSchema(
   }
 
   const id = normalizeId(refPath)
-  const schOrRef = this._refs[id] || this._schemas[id]
+  const schOrRef = this.refs[id] || this.schemas[id]
   if (typeof schOrRef == "string") {
     const sch = resolveSchema.call(this, root, schOrRef)
     if (typeof sch?.schema !== "object") return
