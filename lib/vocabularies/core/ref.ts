@@ -5,17 +5,17 @@ import {applySubschema} from "../../compile/subschema"
 import {callValidateCode} from "../util"
 import {_, str, nil, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
-import {SchemaEnv} from "../../compile"
+import {SchemaEnv, resolveRef} from "../../compile"
 
 const def: CodeKeywordDefinition = {
   keyword: "$ref",
   schemaType: "string",
   code(cxt: KeywordCxt) {
     const {gen, schema, it} = cxt
-    const {resolveRef, allErrors, baseId, isRoot, root, opts, validateName, self} = it
+    const {allErrors, baseId, isRoot, root, opts, validateName, self} = it
     const passCxt = opts.passContext ? N.this : nil
     if (schema === "#" || schema === "#/") return callRootRef()
-    const schOrFunc = resolveRef(baseId, schema)
+    const schOrFunc = resolveRef.call(self, root, baseId, schema)
     if (schOrFunc === undefined) return missingRef()
     if (schOrFunc instanceof SchemaEnv) return callValidate(schOrFunc)
     return inlineRefSchema(schOrFunc)

@@ -172,7 +172,6 @@ export interface SchemaCxt {
   compositeRule?: boolean
   createErrors?: boolean
   opts: InstanceOptions
-  resolveRef: (baseId: string, ref: string) => Schema | SchemaEnv | undefined
   self: Ajv
 }
 

@@ -50,121 +50,113 @@ export class SchemaEnv implements SchemaEnvArgs {
 }
 
 // Compiles schema in SchemaEnv
-export function compileSchema(this: Ajv, env: SchemaEnv): void {
-  const self = this
+export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
+  // TODO refactor - remove compilations
+  const _sch = getCompilingSchema.call(this, sch)
+  if (_sch) return _sch
   const opts = this._opts
-  localCompile(env)
-  if (env.validate) env.localRoot.validate = env.validate
+  const {schema, baseId} = sch
 
-  function localCompile(sch: SchemaEnv): SchemaEnv {
-    // TODO refactor - remove compilations
-    const _sch = getCompilingSchema.call(self, sch)
-    if (_sch) return _sch
-    const {schema, baseId} = sch
-    if (sch.root !== env.root) {
-      compileSchema.call(self, sch)
-      return sch
-    }
+  const isRoot = sch.schema === sch.root.schema
+  const rootId = getFullPath(sch.root.baseId) // TODO remove getFullPath, 1 tests fails
 
-    const isRoot = sch.schema === sch.root.schema
-    const rootId = getFullPath(sch.root.baseId)
+  const gen = new CodeGen(this._scope, {...opts.codegen, forInOwn: opts.ownProperties})
+  let _ValidationError
+  if (sch.$async) {
+    _ValidationError = gen.scopeValue("Error", {
+      ref: ValidationError,
+      code: _`require("ajv/dist/compile/error_classes").ValidationError`,
+    })
+  }
 
-    const gen = new CodeGen(self._scope, {...opts.codegen, forInOwn: opts.ownProperties})
-    let _ValidationError
-    if (sch.$async) {
-      _ValidationError = gen.scopeValue("Error", {
-        ref: ValidationError,
-        code: _`require("ajv/dist/compile/error_classes").ValidationError`,
-      })
-    }
+  const validateName = gen.scopeName("validate")
+  sch.validateName = validateName
 
-    const validateName = gen.scopeName("validate")
-    sch.validateName = validateName
+  const schemaCxt: SchemaCxt = {
+    gen,
+    allErrors: opts.allErrors,
+    data: N.data,
+    parentData: N.parentData,
+    parentDataProperty: N.parentDataProperty,
+    dataNames: [N.data],
+    dataPathArr: [nil], // TODO can it's lenght be used as dataLevel if nil is removed?
+    dataLevel: 0,
+    topSchemaRef: gen.scopeValue("schema", {ref: schema}),
+    async: sch.$async,
+    validateName,
+    ValidationError: _ValidationError,
+    schema,
+    isRoot,
+    root: sch.root,
+    rootId,
+    baseId: baseId || rootId,
+    schemaPath: nil,
+    errSchemaPath: "#",
+    errorPath: str``,
+    opts,
+    self: this,
+  }
 
-    const schemaCxt: SchemaCxt = {
-      gen,
-      allErrors: opts.allErrors,
-      data: N.data,
-      parentData: N.parentData,
-      parentDataProperty: N.parentDataProperty,
-      dataNames: [N.data],
-      dataPathArr: [nil], // TODO can it's lenght be used as dataLevel if nil is removed?
-      dataLevel: 0,
-      topSchemaRef: gen.scopeValue("schema", {ref: schema}),
-      async: sch.$async,
-      validateName,
-      ValidationError: _ValidationError,
-      schema,
-      isRoot,
-      root: sch.root,
-      rootId,
-      baseId: baseId || rootId,
-      schemaPath: nil,
-      errSchemaPath: "#",
-      errorPath: str``,
-      opts,
-      resolveRef, // TODO move to gen.scopeValue?
-      self,
-    }
-
-    let sourceCode
-    try {
-      self._compilations.add(sch)
-      validateFunctionCode(schemaCxt)
-      sourceCode = `${gen.scopeRefs(N.scope)}
+  let sourceCode
+  try {
+    this._compilations.add(sch)
+    validateFunctionCode(schemaCxt)
+    sourceCode = `${gen.scopeRefs(N.scope)}
                     ${gen.toString()}`
-      if (opts.processCode) sourceCode = opts.processCode(sourceCode, schema)
-      // console.log("\n\n\n *** \n", sourceCode)
-      const makeValidate = new Function(N.self.toString(), N.scope.toString(), sourceCode)
-      const validate: ValidateFunction = makeValidate(self, self._scope.get())
+    if (opts.processCode) sourceCode = opts.processCode(sourceCode, schema)
+    // console.log("\n\n\n *** \n", sourceCode)
+    const makeValidate = new Function(N.self.toString(), N.scope.toString(), sourceCode)
+    const validate: ValidateFunction = makeValidate(this, this._scope.get())
 
-      gen.scopeValue(validateName, {ref: validate})
+    gen.scopeValue(validateName, {ref: validate})
 
-      validate.schema = schema
-      validate.errors = null
-      validate.root = sch.root // TODO remove - only used by $comment keyword
-      validate.env = sch
-      if (sch.$async) validate.$async = true
-      if (opts.sourceCode === true) {
-        validate.source = {
-          code: sourceCode,
-          scope: self._scope,
-        }
+    validate.schema = schema
+    validate.errors = null
+    validate.root = sch.root // TODO remove - only used by $comment keyword
+    validate.env = sch
+    if (sch.$async) validate.$async = true
+    if (opts.sourceCode === true) {
+      validate.source = {
+        code: sourceCode,
+        scope: this._scope,
       }
-      sch.validate = validate
-      return sch
-    } catch (e) {
-      delete sch.validate
-      delete sch.validateName
-      if (sourceCode) self.logger.error("Error compiling schema, function code:", sourceCode)
-      throw e
-    } finally {
-      self._compilations.delete(sch)
     }
+    sch.validate = validate
+    if (isRoot) sch.root.localRoot.validate = validate
+    return sch
+  } catch (e) {
+    delete sch.validate
+    delete sch.validateName
+    if (sourceCode) this.logger.error("Error compiling schema, function code:", sourceCode)
+    throw e
+  } finally {
+    this._compilations.delete(sch)
+  }
+}
+
+export function resolveRef(
+  this: Ajv,
+  root: SchemaEnv,
+  baseId: string,
+  ref: string
+): Schema | ValidateFunction | SchemaEnv | undefined {
+  ref = resolveUrl(baseId, ref)
+  const schOrFunc = root.refs[ref]
+  if (schOrFunc) return schOrFunc
+
+  let _sch = resolve.call(this, root, ref)
+  if (_sch === undefined) {
+    const schema = root.localRefs?.[ref] // TODO maybe localRefs should hold SchemaEnv
+    if (schema) _sch = new SchemaEnv({schema, root, baseId})
   }
 
-  function resolveRef(
-    baseId: string,
-    ref: string
-  ): Schema | ValidateFunction | SchemaEnv | undefined {
-    ref = resolveUrl(baseId, ref)
-    const schOrFunc = env.refs[ref] || env.root.refs[ref]
-    if (schOrFunc) return schOrFunc
+  if (_sch === undefined) return
+  return (root.refs[ref] = inlineOrCompile.call(this, _sch))
+}
 
-    let _sch = resolve.call(self, env.root, ref)
-    if (_sch === undefined) {
-      const schema = env.localRefs?.[ref] // TODO maybe localRefs should hold SchemaEnv
-      if (schema) _sch = new SchemaEnv({schema, root: env.root, localRefs: env.localRefs, baseId})
-    }
-
-    if (_sch !== undefined) return (env.refs[ref] = inlineOrCompile(_sch))
-    return
-  }
-
-  function inlineOrCompile(sch: SchemaEnv): Schema | SchemaEnv {
-    if (inlineRef(sch.schema, self._opts.inlineRefs)) return sch.schema
-    return sch.validate ? sch : localCompile(sch)
-  }
+function inlineOrCompile(this: Ajv, sch: SchemaEnv): Schema | SchemaEnv {
+  if (inlineRef(sch.schema, this._opts.inlineRefs)) return sch.schema
+  return sch.validate ? sch : compileSchema.call(this, sch)
 }
 
 // Index of schema compilation in the currently compiled list
