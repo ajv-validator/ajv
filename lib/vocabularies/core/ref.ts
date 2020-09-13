@@ -12,19 +12,19 @@ const def: CodeKeywordDefinition = {
   schemaType: "string",
   code(cxt: KeywordCxt) {
     const {gen, schema, it} = cxt
-    const {allErrors, baseId, isRoot, root, opts, validateName, self} = it
+    const {allErrors, baseId, schemaEnv: env, opts, validateName, self} = it
     const passCxt = opts.passContext ? N.this : nil
     if (schema === "#" || schema === "#/") return callRootRef()
-    const schOrFunc = resolveRef.call(self, root, baseId, schema)
+    const schOrFunc = resolveRef.call(self, env.root, baseId, schema)
     if (schOrFunc === undefined) return missingRef()
     if (schOrFunc instanceof SchemaEnv) return callValidate(schOrFunc)
     return inlineRefSchema(schOrFunc)
 
     function callRootRef(): void {
-      if (isRoot) return callRef(validateName, it.async)
+      if (env === env.root) return callRef(validateName, env.$async)
       // TODO use the same name as compiled function, so it can be dropped in shared scope
-      const rootName = gen.scopeValue("root", {ref: root.localRoot})
-      return callRef(_`${rootName}.validate`, root.$async || it.async)
+      const rootName = gen.scopeValue("root", {ref: env.root})
+      return callRef(_`${rootName}.validate`, env.root.$async)
     }
 
     function callValidate(sch: SchemaEnv): void {
@@ -76,7 +76,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function callAsyncRef(v: Code): void {
-      if (!it.async) throw new Error("async schema referenced by sync schema")
+      if (!env.$async) throw new Error("async schema referenced by sync schema")
       const valid = gen.let("valid")
       gen.try(
         () => {

@@ -10,7 +10,7 @@ const def: CodeKeywordDefinition = {
   $data: true,
   code(cxt: KeywordCxt, ruleType?: string) {
     const {gen, data, $data, schema, schemaCode, it} = cxt
-    const {opts, errSchemaPath, self} = it
+    const {opts, errSchemaPath, schemaEnv, self} = it
     if (opts.format === false) return
 
     if ($data) validate$DataFormat()
@@ -42,7 +42,7 @@ const def: CodeKeywordDefinition = {
       }
 
       function invalidFmt(): Code {
-        const callFormat = it.async
+        const callFormat = schemaEnv.$async
           ? _`${fDef}.async ? await ${format}(${data}) : ${format}(${data})`
           : _`${format}(${data})`
         const validData = _`typeof ${format} == "function" ? ${callFormat} : ${format}.test(${data})`
@@ -87,7 +87,7 @@ const def: CodeKeywordDefinition = {
 
       function validCondition(): Code {
         if (typeof formatDef == "object" && !(formatDef instanceof RegExp) && formatDef.async) {
-          if (!it.async) throw new Error("async format in sync schema")
+          if (!schemaEnv.$async) throw new Error("async format in sync schema")
           return _`await ${fmtRef}(${data})`
         }
         return typeof format == "function" ? _`${fmtRef}(${data})` : _`${fmtRef}.test(${data})`

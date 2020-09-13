@@ -20,12 +20,15 @@ export function validateFunctionCode(it: SchemaCxt): void {
   validateFunction(it, () => topBoolOrEmptySchema(it))
 }
 
-function validateFunction({gen, validateName, schema, async, opts}: SchemaCxt, body: Block): void {
+function validateFunction(
+  {gen, validateName, schema, schemaEnv, opts}: SchemaCxt,
+  body: Block
+): void {
   gen.return(() =>
     gen.func(
       validateName,
       _`${N.data}, ${N.dataPath}, ${N.parentData}, ${N.parentDataProperty}, ${N.rootData}`,
-      async,
+      schemaEnv.$async,
       () => gen.code(_`"use strict"; ${funcSourceUrl(schema, opts)}`).code(body)
     )
   )
@@ -118,21 +121,22 @@ function updateContext(it: SchemaObjCxt): void {
 }
 
 function checkAsync(it: SchemaObjCxt): void {
-  if (it.schema.$async && !it.async) throw new Error("async schema in sync schema")
+  if (it.schema.$async && !it.schemaEnv.$async) throw new Error("async schema in sync schema")
 }
 
-function commentKeyword({gen, validateName, schema, errSchemaPath, opts}: SchemaObjCxt): void {
+function commentKeyword({gen, schemaEnv, schema, errSchemaPath, opts}: SchemaObjCxt): void {
   const msg = schema.$comment
   if (opts.$comment === true) {
     gen.code(_`${N.self}.logger.log(${msg})`)
   } else if (typeof opts.$comment == "function") {
     const schemaPath = str`${errSchemaPath}/$comment`
-    gen.code(_`${N.self}._opts.$comment(${msg}, ${schemaPath}, ${validateName}.root.schema)`)
+    const rootName = gen.scopeValue("root", {ref: schemaEnv.root})
+    gen.code(_`${N.self}._opts.$comment(${msg}, ${schemaPath}, ${rootName}.schema)`)
   }
 }
 
-function returnResults({gen, async, validateName, ValidationError}: SchemaCxt): void {
-  if (async) {
+function returnResults({gen, schemaEnv, validateName, ValidationError}: SchemaCxt): void {
+  if (schemaEnv.$async) {
     gen.if(
       _`${N.errors} === 0`,
       () => gen.return(N.data),

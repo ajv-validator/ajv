@@ -29,7 +29,6 @@ export class SchemaEnv implements SchemaEnvArgs {
   meta?: boolean
   cacheKey?: unknown
   $async?: boolean
-  localRoot: {validate?: ValidateFunction}
   refs: SchemaRefs = {}
   validate?: ValidateFunction
   validateName?: Name
@@ -44,7 +43,6 @@ export class SchemaEnv implements SchemaEnvArgs {
     this.meta = env.meta
     this.cacheKey = env.cacheKey
     this.$async = schema?.$async
-    this.localRoot = {}
     this.refs = {}
   }
 }
@@ -55,11 +53,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
   const _sch = getCompilingSchema.call(this, sch)
   if (_sch) return _sch
   const opts = this._opts
-  const {schema, baseId} = sch
-
-  const isRoot = sch.schema === sch.root.schema
-  const rootId = getFullPath(sch.root.baseId) // TODO remove getFullPath, 1 tests fails
-
+  const rootId = getFullPath(sch.root.baseId) // TODO if getFullPath removed 1 tests fails
   const gen = new CodeGen(this._scope, {...opts.codegen, forInOwn: opts.ownProperties})
   let _ValidationError
   if (sch.$async) {
@@ -79,17 +73,15 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     parentData: N.parentData,
     parentDataProperty: N.parentDataProperty,
     dataNames: [N.data],
-    dataPathArr: [nil], // TODO can it's lenght be used as dataLevel if nil is removed?
+    dataPathArr: [nil], // TODO can its lenght be used as dataLevel if nil is removed?
     dataLevel: 0,
-    topSchemaRef: gen.scopeValue("schema", {ref: schema}),
-    async: sch.$async,
+    topSchemaRef: gen.scopeValue("schema", {ref: sch.schema}),
     validateName,
     ValidationError: _ValidationError,
-    schema,
-    isRoot,
-    root: sch.root,
+    schema: sch.schema,
+    schemaEnv: sch,
     rootId,
-    baseId: baseId || rootId,
+    baseId: sch.baseId || rootId,
     schemaPath: nil,
     errSchemaPath: "#",
     errorPath: str``,
@@ -101,19 +93,16 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
   try {
     this._compilations.add(sch)
     validateFunctionCode(schemaCxt)
-    sourceCode = `${gen.scopeRefs(N.scope)}
-                    ${gen.toString()}`
-    if (opts.processCode) sourceCode = opts.processCode(sourceCode, schema)
+    sourceCode = `${gen.scopeRefs(N.scope)}${gen}`
+    if (opts.processCode) sourceCode = opts.processCode(sourceCode, sch)
     // console.log("\n\n\n *** \n", sourceCode)
-    const makeValidate = new Function(N.self.toString(), N.scope.toString(), sourceCode)
+    const makeValidate = new Function(`${N.self}`, `${N.scope}`, sourceCode)
     const validate: ValidateFunction = makeValidate(this, this._scope.get())
-
     gen.scopeValue(validateName, {ref: validate})
 
-    validate.schema = schema
     validate.errors = null
-    validate.root = sch.root // TODO remove - only used by $comment keyword
-    validate.env = sch
+    validate.schema = sch.schema
+    validate.schemaEnv = sch
     if (sch.$async) validate.$async = true
     if (opts.sourceCode === true) {
       validate.source = {
@@ -122,7 +111,6 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
       }
     }
     sch.validate = validate
-    if (isRoot) sch.root.localRoot.validate = validate
     return sch
   } catch (e) {
     delete sch.validate

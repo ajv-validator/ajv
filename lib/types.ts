@@ -49,7 +49,7 @@ export interface CurrentOptions {
   messages?: boolean
   code?: CodeOptions
   sourceCode?: boolean
-  processCode?: (code: string, schema: Schema) => string
+  processCode?: (code: string, schema?: SchemaEnv) => string
   codegen?: CodeGenOptions
   cache?: CacheInterface
   logger?: Logger | false
@@ -110,11 +110,9 @@ export interface ValidateFunction {
   ): boolean | Promise<any>
   schema?: Schema
   errors?: null | ErrorObject[]
-  env?: SchemaEnv
-  root?: SchemaEnv
+  schemaEnv?: SchemaEnv
   $async?: true
   source?: SourceCode
-  validate?: ValidateFunction // it will be only set on wrappers
 }
 
 export interface SchemaValidateFunction {
@@ -157,12 +155,10 @@ export interface SchemaCxt {
   dataPathArr: (Code | number)[]
   dataLevel: number
   topSchemaRef: Code
-  async?: boolean
   validateName: Name
   ValidationError?: Name
   schema: Schema
-  isRoot: boolean
-  root: SchemaEnv
+  schemaEnv: SchemaEnv
   rootId: string // TODO ?
   baseId: string
   schemaPath: Code

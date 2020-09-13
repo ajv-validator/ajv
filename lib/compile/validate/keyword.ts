@@ -126,8 +126,8 @@ function addErrs(cxt: KeywordCxt, errs: Code): void {
   )
 }
 
-function checkAsync(it: SchemaObjCxt, def: FuncKeywordDefinition): void {
-  if (def.async && !it.async) throw new Error("async keyword in sync schema")
+function checkAsync({schemaEnv}: SchemaObjCxt, def: FuncKeywordDefinition): void {
+  if (def.async && !schemaEnv.$async) throw new Error("async keyword in sync schema")
 }
 
 function useKeyword(gen: CodeGen, keyword: string, result?: KeywordCompilationResult): Name {
