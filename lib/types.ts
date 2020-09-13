@@ -5,6 +5,7 @@ import Ajv from "./ajv"
 
 export interface SchemaObject {
   $id?: string
+  $async?: boolean
   $schema?: string
   [x: string]: any // TODO
 }
@@ -113,6 +114,38 @@ export interface ValidateFunction {
   schemaEnv?: SchemaEnv
   $async?: true
   source?: SourceCode
+}
+
+export interface SyncSchemaObject extends SchemaObject {
+  $async: false
+}
+
+export interface SyncValidateFunction extends ValidateFunction {
+  (
+    this: Ajv | any,
+    data: any,
+    dataPath?: string,
+    parentData?: Record<string, any> | any[],
+    parentDataProperty?: string | number,
+    rootData?: Record<string, any> | any[]
+  ): boolean
+  $async: undefined
+}
+
+export interface AsyncSchemaObject extends SchemaObject {
+  $async: true
+}
+
+export interface AsyncValidateFunction extends ValidateFunction {
+  (
+    this: Ajv | any,
+    data: any,
+    dataPath?: string,
+    parentData?: Record<string, any> | any[],
+    parentDataProperty?: string | number,
+    rootData?: Record<string, any> | any[]
+  ): Promise<any>
+  $async: true
 }
 
 export interface SchemaValidateFunction {
