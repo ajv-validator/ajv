@@ -1,4 +1,4 @@
-export type JSONSchemaType<T> = (T extends number
+export type JSONSchemaType<T, Partial = false> = (T extends number
   ? {
       type: "number" | "integer"
       minimum?: number
@@ -22,6 +22,7 @@ export type JSONSchemaType<T> = (T extends number
     }
   : T extends [any, ...any[]]
   ? {
+      // JSON Schema for tuple
       type: "array"
       items: {
         [K in keyof T]-?: JSONSchemaType<T[K]> & Nullable<T[K]>
@@ -32,6 +33,7 @@ export type JSONSchemaType<T> = (T extends number
   ? {
       type: "array"
       items: JSONSchemaType<T[0]>
+      contains?: PartialSchema<T[0]>
       minItems?: number
       maxItems?: number
       uniqueItems?: true
@@ -39,10 +41,14 @@ export type JSONSchemaType<T> = (T extends number
     }
   : T extends Record<string, any>
   ? {
+      // JSON Schema for records and dicitonaries
+      // "required" and "additionalProperties" are not optional because they are often forgotten
+      // "properties" are optional for more concise dicitonary schemas
+      // "patternProperties" and can be only used with interfaces that have string index
       type: "object"
       // "required" type does not guarantee that all required properties are listed
       // it only asserts that optional cannot be listed
-      required: RequiredMembers<T>[]
+      required: Partial extends true ? (keyof T)[] : RequiredMembers<T>[]
       additionalProperties: boolean | JSONSchemaType<T[string]>
       properties?: {
         [K in keyof T]-?: JSONSchemaType<T[K]> & Nullable<T[K]>
@@ -51,12 +57,32 @@ export type JSONSchemaType<T> = (T extends number
         [pattern: string]: JSONSchemaType<T[string]>
       }
       propertyNames?: JSONSchemaType<string>
+      dependencies?: {
+        [K in keyof T]?: (keyof T)[] | PartialSchema<T> | undefined
+      }
       minProperties?: number
       maxProperties?: number
     }
+  : T extends null
+  ? {
+      nullable: true
+    }
   : never) & {
   [keyword: string]: any
+  $id?: string
+  $ref?: string
+  $defs?: {[key: string]: JSONSchemaType<any>}
+  definitions?: {[key: string]: JSONSchemaType<any>}
+  allOf?: PartialSchema<T>[]
+  anyOf?: PartialSchema<T>[]
+  oneOf?: PartialSchema<T>[]
+  if?: PartialSchema<T>
+  then?: PartialSchema<T>
+  else?: PartialSchema<T>
+  not?: PartialSchema<T>
 }
+
+type PartialSchema<T> = Partial<JSONSchemaType<T, true>>
 
 type RequiredMembers<T> = {
   [K in keyof T]-?: undefined extends T[K] ? never : K

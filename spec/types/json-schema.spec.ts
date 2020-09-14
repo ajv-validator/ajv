@@ -4,19 +4,24 @@ import type {SyncSchemaObject} from "../../dist/types"
 
 interface MyData {
   foo: string
-  bar?: number
+  bar?: number // should be present if "boo" is present
   baz: {
     quux: "quux"
     [x: string]: string
   }
-  boo?: boolean
+  boo?: true
   arr: {id: number}[]
   tuple?: [number, string]
   map: {[x: string]: number}
+  notBoo?: string // should not be present if "boo" is present
 }
 
 const mySchema: JSONSchemaType<MyData> = {
   type: "object",
+  dependencies: {
+    bar: ["boo"],
+    boo: {not: {required: ["notBoo"]}},
+  },
   properties: {
     foo: {type: "string"},
     bar: {type: "number", nullable: true},
@@ -31,7 +36,11 @@ const mySchema: JSONSchemaType<MyData> = {
       additionalProperties: false,
       required: [],
     },
-    boo: {type: "boolean", nullable: true},
+    boo: {
+      type: "boolean",
+      nullable: true,
+      enum: [true, null],
+    },
     arr: {
       type: "array",
       items: {
@@ -58,6 +67,7 @@ const mySchema: JSONSchemaType<MyData> = {
       required: [],
       additionalProperties: {type: "number"},
     },
+    notBoo: {type: "string", nullable: true},
   },
   additionalProperties: false,
   required: ["foo", "baz", "arr", "map"], // any other property added here won't typecheck
