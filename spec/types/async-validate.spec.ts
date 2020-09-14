@@ -1,15 +1,19 @@
-import type {SchemaObject, SyncSchemaObject, AsyncSchemaObject} from "../dist/types"
-import _Ajv from "./ajv"
-const should = require("./chai").should()
+import type {SchemaObject, SyncSchemaObject, AsyncSchemaObject} from "../../dist/types"
+import _Ajv from "../ajv"
+const should = require("../chai").should()
 
 describe("validate function result type depends on $async property type", () => {
   const ajv = new _Ajv()
 
   describe("$async: undefined", () => {
     const validate = ajv.compile({})
-    it("should have result type boolean", () => {
-      const result: boolean = validate({})
-      should.exist(result)
+    it("should have result type boolean | promise", async () => {
+      const result = validate({})
+      if (typeof result === "boolean") {
+        should.exist(result)
+      } else {
+        await result.then((data) => data.should.exist)
+      }
     })
   })
 
@@ -88,8 +92,7 @@ describe("validate function result type depends on $async property type", () => 
       if (typeof result === "boolean") {
         should.exist(result)
       } else {
-        // await result.then((data) => data.should.exist)
-        await Promise.resolve()
+        await result.then((data) => data.should.exist)
       }
     })
   })
@@ -102,8 +105,7 @@ describe("validate function result type depends on $async property type", () => 
       if (typeof result === "boolean") {
         should.exist(result)
       } else {
-        // await result.then((data) => data.should.exist)
-        await Promise.resolve()
+        await result.then((data) => data.should.exist)
       }
     })
   })

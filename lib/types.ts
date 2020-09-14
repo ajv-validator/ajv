@@ -100,7 +100,7 @@ interface SourceCode {
   scope: Scope
 }
 
-export interface _ValidateFunction<T extends boolean | Promise<any>> {
+export interface ValidateGuard<T> extends _ValidateFuncProps {
   (
     this: Ajv | any,
     data: any,
@@ -108,11 +108,18 @@ export interface _ValidateFunction<T extends boolean | Promise<any>> {
     parentData?: Record<string, any> | any[],
     parentDataProperty?: string | number,
     rootData?: Record<string, any> | any[]
-  ): T
+  ): data is T
+}
+
+interface _ValidateFunction<T extends boolean | Promise<any>> extends _ValidateFuncProps {
+  (...args: Parameters<ValidateGuard<any>>): T
+  $async?: true
+}
+
+interface _ValidateFuncProps {
   schema?: Schema
   errors?: null | ErrorObject[]
   schemaEnv?: SchemaEnv
-  $async?: true
   source?: SourceCode
 }
 

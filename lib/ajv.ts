@@ -8,6 +8,7 @@ import {
   Options,
   InstanceOptions,
   ValidateFunction,
+  ValidateGuard,
   SyncValidateFunction,
   AsyncValidateFunction,
   CacheInterface,
@@ -16,6 +17,7 @@ import {
   Format,
   AddedFormat,
 } from "./types"
+import {JSONSchemaType} from "./types/json-schema"
 import Cache from "./cache"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
 import {getRules, ValidationRules, Rule, RuleGroup} from "./compile/rules"
@@ -105,6 +107,12 @@ export default class Ajv {
   // Validate data using schema
   // Schema will be compiled and cached using as a key JSON serialized with
   // [fast-json-stable-stringify](https://github.com/epoberezkin/fast-json-stable-stringify)
+  validate(schema: {$async?: never}, data: unknown): boolean | Promise<unknown>
+  validate(schema: SyncSchemaObject | boolean, data: unknown): boolean
+  validate<T>(schema: SyncSchemaObject | JSONSchemaType<T>, data: unknown): data is T
+  validate(schema: AsyncSchemaObject, data: unknown): Promise<unknown>
+  // eslint-disable-next-line @typescript-eslint/unified-signatures
+  validate(schemaKeyRef: Schema | string, data: unknown): boolean | Promise<unknown>
   validate(
     schemaKeyRef: Schema | string, // key, ref or schema object
     data: unknown // to be validated
@@ -125,8 +133,11 @@ export default class Ajv {
 
   // Create validation function for passed schema
   // _meta: true if schema is a meta-schema. Used internally to compile meta schemas of custom keywords.
+  compile(schema: {$async?: never}, _meta?: boolean): ValidateFunction
   compile(schema: SyncSchemaObject | boolean, _meta?: boolean): SyncValidateFunction
+  compile<T>(schema: SyncSchemaObject | JSONSchemaType<T>, _meta?: boolean): ValidateGuard<T>
   compile(schema: AsyncSchemaObject, _meta?: boolean): AsyncValidateFunction
+  // eslint-disable-next-line @typescript-eslint/unified-signatures
   compile(schema: Schema, _meta?: boolean): ValidateFunction
   compile(schema: Schema, _meta?: boolean): ValidateFunction {
     const sch = this._addSchema(schema, undefined, _meta)
@@ -137,8 +148,14 @@ export default class Ajv {
   // `loadSchema` option should be a function that accepts schema uri and returns promise that resolves with the schema.
   // TODO allow passing schema URI
   // meta - optional true to compile meta-schema
+  compileAsync(schema: {$async?: never}, _meta?: boolean): Promise<ValidateFunction>
   compileAsync(schema: SyncSchemaObject, meta?: boolean): Promise<SyncValidateFunction>
+  compileAsync<T>(
+    schema: SyncSchemaObject | JSONSchemaType<T>,
+    _meta?: boolean
+  ): Promise<ValidateGuard<T>>
   compileAsync(schema: AsyncSchemaObject, meta?: boolean): Promise<AsyncValidateFunction>
+  // eslint-disable-next-line @typescript-eslint/unified-signatures
   compileAsync(schema: SchemaObject, meta?: boolean): Promise<ValidateFunction>
   compileAsync(schema: SchemaObject, meta?: boolean): Promise<ValidateFunction> {
     if (typeof this.opts.loadSchema != "function") {
