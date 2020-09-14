@@ -1,10 +1,12 @@
 import _Ajv from "../ajv"
 import type {JSONSchemaType} from "../../dist/types/json-schema"
 import type {SyncSchemaObject} from "../../dist/types"
+import chai from "../chai"
+const should = chai.should()
 
 interface MyData {
   foo: string
-  bar?: number // should be present if "boo" is present
+  bar?: number // "boo" should be present if "bar" is present
   baz: {
     quux: "quux"
     [x: string]: string
@@ -14,6 +16,7 @@ interface MyData {
   arr: {id: number}[]
   map: {[x: string]: number}
   notBoo?: string // should not be present if "boo" is present
+  negativeIfBoo?: number // should be negative if "boo" is present
 }
 
 const arrSchema: JSONSchemaType<MyData["arr"]> = {
@@ -62,7 +65,14 @@ const mySchema: JSONSchemaType<MyData> & {
   },
   dependencies: {
     bar: ["boo"],
-    boo: {not: {required: ["notBoo"]}}, // optional properties can be cheched in required in PartialSchema
+    boo: {
+      not: {required: ["notBoo"]}, // optional properties can be cheched in "required" in PartialSchema
+      required: ["negativeIfBoo"],
+      properties: {
+        // partial properties can be used in partial schemas
+        negativeIfBoo: {type: "number", nullable: true, exclusiveMaximum: 0},
+      },
+    },
   },
   properties: {
     foo: {type: "string"},
@@ -81,6 +91,7 @@ const mySchema: JSONSchemaType<MyData> & {
       additionalProperties: {type: "number"},
     },
     notBoo: {type: "string", nullable: true},
+    negativeIfBoo: {type: "number", nullable: true},
   },
   additionalProperties: false,
   required: ["foo", "baz", "arr", "map"], // any other property added here won't typecheck
@@ -103,6 +114,7 @@ describe("JSONSchemaType type and validation as a type guard", () => {
       a: 1,
       b: 2,
     },
+    negativeIfBoo: -1,
   }
 
   describe("schema has type JSONSchemaType<MyData>", () => {
@@ -111,9 +123,12 @@ describe("JSONSchemaType type and validation as a type guard", () => {
       if (validate(validData)) {
         validData.foo.should.equal("foo")
       }
+      should.not.exist(validate.errors)
+
       if (ajv.validate<MyData>(mySchema, validData)) {
         validData.foo.should.equal("foo")
       }
+      should.not.exist(ajv.errors)
     })
   })
 
@@ -124,9 +139,12 @@ describe("JSONSchemaType type and validation as a type guard", () => {
       if (validate(validData)) {
         validData.foo.should.equal("foo")
       }
+      should.not.exist(validate.errors)
+
       if (ajv.validate<MyData>(schema, validData)) {
         validData.foo.should.equal("foo")
       }
+      should.not.exist(ajv.errors)
     })
   })
 })

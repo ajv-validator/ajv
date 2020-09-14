@@ -3,7 +3,7 @@ export type SomeJSONSchema = JSONSchemaType<Known, true>
 
 export type PartialSchema<T> = Partial<JSONSchemaType<T, true>>
 
-export type JSONSchemaType<T, _allRequired = false> = (T extends number
+export type JSONSchemaType<T, _partial = false> = (T extends number
   ? {
       type: "number" | "integer"
       minimum?: number
@@ -53,11 +53,9 @@ export type JSONSchemaType<T, _allRequired = false> = (T extends number
       type: "object"
       // "required" type does not guarantee that all required properties are listed
       // it only asserts that optional cannot be listed
-      required: _allRequired extends true ? (keyof T)[] : RequiredMembers<T>[]
+      required: _partial extends true ? (keyof T)[] : RequiredMembers<T>[]
       additionalProperties: boolean | JSONSchemaType<T[string]>
-      properties?: {
-        [K in keyof T]-?: (JSONSchemaType<T[K]> & Nullable<T[K]>) | {$ref: string}
-      }
+      properties?: _partial extends true ? Partial<PropertiesSchema<T>> : PropertiesSchema<T>
       patternProperties?: {
         [pattern: string]: JSONSchemaType<T[string]>
       }
@@ -94,6 +92,10 @@ export type JSONSchemaType<T, _allRequired = false> = (T extends number
 type Known = KnownRecord | [Known, ...Known[]] | Known[] | number | string | boolean | null
 
 interface KnownRecord extends Record<string, Known> {}
+
+type PropertiesSchema<T> = {
+  [K in keyof T]-?: (JSONSchemaType<T[K]> & Nullable<T[K]>) | {$ref: string}
+}
 
 type RequiredMembers<T> = {
   [K in keyof T]-?: undefined extends T[K] ? never : K
