@@ -65,8 +65,8 @@ type RequiredMembers<T> = {
 type Nullable<T> = undefined extends T
   ? {
       nullable: true
-      const?: null // any other value here would make `null` fail
-      enum?: (T | null)[] // `null` must be explicitely included in "enum"
+      const?: never // any non-null value would fail `null`, `null` would fail any other value
+      enum?: (T | null)[] // `null` must be explicitely included in "enum" for `null` to pass
       default?: T | null
     }
   : {
