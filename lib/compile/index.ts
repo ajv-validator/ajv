@@ -25,7 +25,7 @@ export class SchemaEnv implements SchemaEnvArgs {
   readonly schema: Schema
   readonly root: SchemaEnv
   baseId: string // TODO possibly, it should be readonly
-  readonly localRefs?: LocalRefs
+  localRefs?: LocalRefs
   readonly meta?: boolean
   readonly cacheKey?: unknown
   readonly $async?: boolean

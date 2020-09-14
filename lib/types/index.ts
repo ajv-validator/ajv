@@ -1,7 +1,7 @@
-import {CodeGen, Code, Name, CodeGenOptions, Scope} from "./compile/codegen"
-import {SchemaEnv} from "./compile"
-import KeywordCxt from "./compile/context"
-import Ajv from "./ajv"
+import type {CodeGen, Code, Name, CodeGenOptions, Scope} from "../compile/codegen"
+import type {SchemaEnv} from "../compile"
+import type KeywordCxt from "../compile/context"
+import type Ajv from "../ajv"
 
 export interface SchemaObject {
   $id?: string
@@ -80,6 +80,9 @@ export interface InstanceOptions extends Options {
   code: CodeOptions
   loopRequired: number
   loopEnum: number
+  serialize: (schema: Schema) => unknown
+  addUsedSchema: boolean
+  validateSchema: boolean | "log"
 }
 
 export interface Logger {

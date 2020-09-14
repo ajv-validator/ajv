@@ -22,7 +22,6 @@ const def: CodeKeywordDefinition = {
 
     function callRootRef(): void {
       if (env === env.root) return callRef(validateName, env.$async)
-      // TODO use the same name as compiled function, so it can be dropped in shared scope
       const rootName = gen.scopeValue("root", {ref: env.root})
       return callRef(_`${rootName}.validate`, env.root.$async)
     }
