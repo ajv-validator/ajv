@@ -3,7 +3,7 @@ export type SomeJSONSchema = JSONSchemaType<Known, true>
 
 export type PartialSchema<T> = Partial<JSONSchemaType<T, true>>
 
-export type JSONSchemaType<T, Partial = false> = (T extends number
+export type JSONSchemaType<T, _allRequired = false> = (T extends number
   ? {
       type: "number" | "integer"
       minimum?: number
@@ -53,7 +53,7 @@ export type JSONSchemaType<T, Partial = false> = (T extends number
       type: "object"
       // "required" type does not guarantee that all required properties are listed
       // it only asserts that optional cannot be listed
-      required: Partial extends true ? (keyof T)[] : RequiredMembers<T>[]
+      required: _allRequired extends true ? (keyof T)[] : RequiredMembers<T>[]
       additionalProperties: boolean | JSONSchemaType<T[string]>
       properties?: {
         [K in keyof T]-?: (JSONSchemaType<T[K]> & Nullable<T[K]>) | {$ref: string}
