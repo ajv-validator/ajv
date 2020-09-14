@@ -10,22 +10,37 @@ interface MyData {
     [x: string]: string
   }
   boo?: true
-  arr: {id: number}[]
   tuple?: [number, string]
+  arr: {id: number}[]
   map: {[x: string]: number}
   notBoo?: string // should not be present if "boo" is present
 }
 
-const mySchema: JSONSchemaType<MyData> = {
-  type: "object",
-  dependencies: {
-    bar: ["boo"],
-    boo: {not: {required: ["notBoo"]}},
+const arrSchema: JSONSchemaType<MyData["arr"]> = {
+  type: "array",
+  items: {
+    type: "object",
+    properties: {
+      id: {
+        type: "integer",
+      },
+    },
+    additionalProperties: false,
+    required: ["id"],
   },
-  properties: {
-    foo: {type: "string"},
-    bar: {type: "number", nullable: true},
+  uniqueItems: true,
+}
+
+const mySchema: JSONSchemaType<MyData> & {
+  definitions: {
+    baz: JSONSchemaType<MyData["baz"]>
+    tuple: JSONSchemaType<MyData["tuple"]>
+  }
+} = {
+  type: "object",
+  definitions: {
     baz: {
+      // schema type is checked here ...
       type: "object",
       properties: {
         quux: {type: "string", const: "quux"},
@@ -36,32 +51,30 @@ const mySchema: JSONSchemaType<MyData> = {
       additionalProperties: false,
       required: [],
     },
-    boo: {
-      type: "boolean",
-      nullable: true,
-      enum: [true, null],
-    },
-    arr: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          id: {
-            type: "integer",
-          },
-        },
-        additionalProperties: false,
-        required: ["id"],
-      },
-      uniqueItems: true,
-    },
     tuple: {
+      // ... and here ...
       type: "array",
       items: [{type: "number"}, {type: "string"}],
       minItems: 2,
       additionalItems: false,
       nullable: true,
     },
+  },
+  dependencies: {
+    bar: ["boo"],
+    boo: {not: {required: ["notBoo"]}}, // optional properties can be cheched in required in PartialSchema
+  },
+  properties: {
+    foo: {type: "string"},
+    bar: {type: "number", nullable: true},
+    baz: {$ref: "#/definitions/baz"}, // ... but it does not check type here, ...
+    boo: {
+      type: "boolean",
+      nullable: true,
+      enum: [true, null],
+    },
+    tuple: {$ref: "#/definitions/tuple"}, // ... nor here.
+    arr: arrSchema, // ... The alternative is to define it externally - here it checks type
     map: {
       type: "object",
       required: [],

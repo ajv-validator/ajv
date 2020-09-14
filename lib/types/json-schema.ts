@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-empty-interface */
+export type SomeJSONSchema = JSONSchemaType<Known, true>
+
+export type PartialSchema<T> = Partial<JSONSchemaType<T, true>>
+
 export type JSONSchemaType<T, Partial = false> = (T extends number
   ? {
       type: "number" | "integer"
@@ -51,7 +56,7 @@ export type JSONSchemaType<T, Partial = false> = (T extends number
       required: Partial extends true ? (keyof T)[] : RequiredMembers<T>[]
       additionalProperties: boolean | JSONSchemaType<T[string]>
       properties?: {
-        [K in keyof T]-?: JSONSchemaType<T[K]> & Nullable<T[K]>
+        [K in keyof T]-?: (JSONSchemaType<T[K]> & Nullable<T[K]>) | {$ref: string}
       }
       patternProperties?: {
         [pattern: string]: JSONSchemaType<T[string]>
@@ -71,8 +76,12 @@ export type JSONSchemaType<T, Partial = false> = (T extends number
   [keyword: string]: any
   $id?: string
   $ref?: string
-  $defs?: {[key: string]: JSONSchemaType<any>}
-  definitions?: {[key: string]: JSONSchemaType<any>}
+  $defs?: {
+    [key: string]: JSONSchemaType<Known, true>
+  }
+  definitions?: {
+    [key: string]: JSONSchemaType<Known, true>
+  }
   allOf?: PartialSchema<T>[]
   anyOf?: PartialSchema<T>[]
   oneOf?: PartialSchema<T>[]
@@ -82,7 +91,9 @@ export type JSONSchemaType<T, Partial = false> = (T extends number
   not?: PartialSchema<T>
 }
 
-type PartialSchema<T> = Partial<JSONSchemaType<T, true>>
+type Known = KnownRecord | [Known, ...Known[]] | Known[] | number | string | boolean | null
+
+interface KnownRecord extends Record<string, Known> {}
 
 type RequiredMembers<T> = {
   [K in keyof T]-?: undefined extends T[K] ? never : K
