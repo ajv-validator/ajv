@@ -1,4 +1,4 @@
-import {Schema, SchemaObjCtx} from "../types"
+import {Schema, SchemaObjCxt} from "../types"
 import {subschemaCode} from "./validate"
 import {escapeFragment, escapeJsonPointer} from "./util"
 import {_, str, Code, Name, getProperty} from "./codegen"
@@ -45,7 +45,7 @@ interface SubschemaApplicationParams {
   allErrors: boolean
 }
 
-export function applySubschema(it: SchemaObjCtx, appl: SubschemaApplication, valid: Name): void {
+export function applySubschema(it: SchemaObjCxt, appl: SubschemaApplication, valid: Name): void {
   const subschema = getSubschema(it, appl)
   extendSubschemaData(subschema, it, appl)
   extendSubschemaMode(subschema, appl)
@@ -54,7 +54,7 @@ export function applySubschema(it: SchemaObjCtx, appl: SubschemaApplication, val
 }
 
 function getSubschema(
-  it: SchemaObjCtx,
+  it: SchemaObjCxt,
   {keyword, schemaProp, schema, schemaPath, errSchemaPath, topSchemaRef}: SubschemaApplication
 ): SubschemaContext {
   if (keyword !== undefined && schema !== undefined) {
@@ -72,7 +72,7 @@ function getSubschema(
       : {
           schema: sch[schemaProp],
           schemaPath: _`${it.schemaPath}${getProperty(keyword)}${getProperty(schemaProp)}`,
-          errSchemaPath: `${it.errSchemaPath}/${keyword}/${escapeFragment("" + schemaProp)}`,
+          errSchemaPath: `${it.errSchemaPath}/${keyword}/${escapeFragment(schemaProp)}`,
         }
   }
 
@@ -93,9 +93,9 @@ function getSubschema(
 
 function extendSubschemaData(
   subschema: SubschemaContext,
-  it: SchemaObjCtx,
+  it: SchemaObjCxt,
   {dataProp, dataPropType: dpType, data, propertyName}: SubschemaApplication
-) {
+): void {
   if (data !== undefined && dataProp !== undefined) {
     throw new Error('both "data" and "dataProp" passed, only one allowed')
   }
@@ -118,7 +118,7 @@ function extendSubschemaData(
     // TODO something is possibly wrong here with not changing parentDataProperty and not appending dataPathArr
   }
 
-  function dataContextProps(_nextData: Name) {
+  function dataContextProps(_nextData: Name): void {
     subschema.data = _nextData
     subschema.dataLevel = it.dataLevel + 1
     subschema.parentData = it.data
@@ -129,7 +129,7 @@ function extendSubschemaData(
 function extendSubschemaMode(
   subschema: SubschemaContext,
   {compositeRule, createErrors, allErrors}: SubschemaApplication
-) {
+): void {
   if (compositeRule !== undefined) subschema.compositeRule = compositeRule
   if (createErrors !== undefined) subschema.createErrors = createErrors
   if (allErrors !== undefined) subschema.allErrors = allErrors
@@ -151,7 +151,5 @@ function getErrorPath(
       ? _`"/" + ${dataProp}`
       : _`"/" + ${dataProp}.replace(/~/g, "~0").replace(/\\//g, "~1")` // TODO maybe use global escapePointer
   }
-  return jsPropertySyntax
-    ? getProperty(dataProp).toString()
-    : "/" + (typeof dataProp == "number" ? dataProp : escapeJsonPointer(dataProp))
+  return jsPropertySyntax ? getProperty(dataProp).toString() : "/" + escapeJsonPointer(dataProp)
 }

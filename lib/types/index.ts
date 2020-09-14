@@ -1,11 +1,11 @@
-import {CodeGen, Code, Name, CodeGenOptions, Scope} from "./compile/codegen"
-import {ValidationRules} from "./compile/rules"
-import {RefVal, ResolvedRef, SchemaRoot, StoredSchema} from "./compile"
-import KeywordCtx from "./compile/context"
-import Ajv from "./ajv"
+import type {CodeGen, Code, Name, CodeGenOptions, Scope} from "../compile/codegen"
+import type {SchemaEnv} from "../compile"
+import type KeywordCxt from "../compile/context"
+import type Ajv from "../ajv"
 
 export interface SchemaObject {
   $id?: string
+  $async?: boolean
   $schema?: string
   [x: string]: any // TODO
 }
@@ -13,7 +13,7 @@ export interface SchemaObject {
 export type Schema = SchemaObject | boolean
 
 export interface SchemaMap {
-  [key: string]: Schema
+  [key: string]: Schema | undefined
 }
 
 export type LoadSchemaFunction = (
@@ -48,14 +48,19 @@ export interface CurrentOptions {
   ownProperties?: boolean
   multipleOfPrecision?: boolean | number
   messages?: boolean
+  code?: CodeOptions
   sourceCode?: boolean
-  processCode?: (code: string, schema: Schema) => string
+  processCode?: (code: string, schema?: SchemaEnv) => string
   codegen?: CodeGenOptions
   cache?: CacheInterface
   logger?: Logger | false
   serialize?: false | ((schema: Schema) => unknown)
   $comment?: true | ((comment: string, schemaPath?: string, rootSchema?: SchemaObject) => unknown)
   allowMatchingProperties?: boolean // disables a strict mode restriction
+}
+
+export interface CodeOptions {
+  formats?: Code // code to require (or construct) map of available formats - for standalone code
 }
 
 export interface Options extends CurrentOptions {
@@ -69,6 +74,17 @@ export interface Options extends CurrentOptions {
   unicode?: boolean
 }
 
+export interface InstanceOptions extends Options {
+  [opt: string]: unknown
+  strict: boolean | "log"
+  code: CodeOptions
+  loopRequired: number
+  loopEnum: number
+  serialize: (schema: Schema) => unknown
+  addUsedSchema: boolean
+  validateSchema: boolean | "log"
+}
+
 export interface Logger {
   log(...args: unknown[]): unknown
   warn(...args: unknown[]): unknown
@@ -76,8 +92,8 @@ export interface Logger {
 }
 
 export interface CacheInterface {
-  put(key: unknown, value: StoredSchema): void
-  get(key: unknown): StoredSchema
+  put(key: unknown, value: SchemaEnv): void
+  get(key: unknown): SchemaEnv | undefined
   del(key: unknown): void
   clear(): void
 }
@@ -87,7 +103,7 @@ interface SourceCode {
   scope: Scope
 }
 
-export interface ValidateFunction {
+export interface ValidateGuard<T> extends _ValidateFuncProps {
   (
     this: Ajv | any,
     data: any,
@@ -95,18 +111,37 @@ export interface ValidateFunction {
     parentData?: Record<string, any> | any[],
     parentDataProperty?: string | number,
     rootData?: Record<string, any> | any[]
-  ): boolean | Promise<any>
+  ): data is T
+}
+
+interface _ValidateFunction<T extends boolean | Promise<any>> extends _ValidateFuncProps {
+  (...args: Parameters<ValidateGuard<any>>): T
+  $async?: true
+}
+
+interface _ValidateFuncProps {
   schema?: Schema
   errors?: null | ErrorObject[]
-  refs?: {[ref: string]: number | undefined}
-  refVal?: (RefVal | undefined)[]
-  root?: SchemaRoot
-  $async?: true
+  schemaEnv?: SchemaEnv
   source?: SourceCode
 }
 
-export interface ValidateWrapper extends ValidateFunction {
-  validate?: ValidateFunction
+export type ValidateFunction = _ValidateFunction<boolean | Promise<any>>
+
+export interface SyncSchemaObject extends SchemaObject {
+  $async?: false | undefined
+}
+
+export interface SyncValidateFunction extends _ValidateFunction<boolean> {
+  $async: undefined
+}
+
+export interface AsyncSchemaObject extends SchemaObject {
+  $async: true
+}
+
+export interface AsyncValidateFunction extends _ValidateFunction<Promise<any>> {
+  $async: true
 }
 
 export interface SchemaValidateFunction {
@@ -139,9 +174,9 @@ export interface ErrorObject {
 
 export type KeywordCompilationResult = Schema | SchemaValidateFunction | ValidateFunction
 
-export interface SchemaCtx {
+export interface SchemaCxt {
   gen: CodeGen
-  allErrors: boolean
+  allErrors?: boolean
   data: Name
   parentData: Name
   parentDataProperty: Code | number
@@ -149,11 +184,10 @@ export interface SchemaCtx {
   dataPathArr: (Code | number)[]
   dataLevel: number
   topSchemaRef: Code
-  async: boolean
+  validateName: Name
   ValidationError?: Name
   schema: Schema
-  isRoot: boolean
-  root: SchemaRoot
+  schemaEnv: SchemaEnv
   rootId: string // TODO ?
   baseId: string
   schemaPath: Code
@@ -161,16 +195,12 @@ export interface SchemaCtx {
   errorPath: Code
   propertyName?: Name
   compositeRule?: boolean
-  createErrors?: boolean // TODO maybe remove later
-  RULES: ValidationRules
-  formats: {[index: string]: AddedFormat}
-  opts: Options
-  resolveRef: (baseId: string, ref: string, isRoot: boolean) => ResolvedRef | void
-  logger: Logger
+  createErrors?: boolean
+  opts: InstanceOptions
   self: Ajv
 }
 
-export interface SchemaObjCtx extends SchemaCtx {
+export interface SchemaObjCxt extends SchemaCxt {
   schema: SchemaObject
 }
 
@@ -189,16 +219,16 @@ interface _KeywordDef {
 }
 
 export interface CodeKeywordDefinition extends _KeywordDef {
-  code: (cxt: KeywordCtx, ruleType?: string) => void
+  code: (cxt: KeywordCxt, ruleType?: string) => void
   trackErrors?: boolean
 }
 
-export type MacroKeywordFunc = (schema: any, parentSchema: SchemaObject, it: SchemaCtx) => Schema
+export type MacroKeywordFunc = (schema: any, parentSchema: SchemaObject, it: SchemaCxt) => Schema
 
 export type CompileKeywordFunc = (
   schema: any,
   parentSchema: SchemaObject,
-  it: SchemaObjCtx
+  it: SchemaObjCxt
 ) => ValidateFunction
 
 export interface FuncKeywordDefinition extends _KeywordDef {
@@ -222,13 +252,13 @@ export type KeywordDefinition =
   | MacroKeywordDefinition
 
 export interface KeywordErrorDefinition {
-  message: string | ((cxt: KeywordErrorCtx) => Code)
-  params?: (cxt: KeywordErrorCtx) => Code
+  message: string | ((cxt: KeywordErrorCxt) => Code)
+  params?: (cxt: KeywordErrorCxt) => Code
 }
 
 export type Vocabulary = (KeywordDefinition | string)[]
 
-export interface KeywordErrorCtx {
+export interface KeywordErrorCxt {
   gen: CodeGen
   keyword: string
   data: Name
@@ -239,11 +269,13 @@ export interface KeywordErrorCtx {
   schemaValue: Code | number | boolean
   schemaType?: string | string[]
   errsCount?: Name
-  params: KeywordCtxParams
-  it: SchemaCtx
+  params: KeywordCxtParams
+  it: SchemaCxt
 }
 
-export type KeywordCtxParams = {[x: string]: Code | string | number}
+export interface KeywordCxtParams {
+  [x: string]: Code | string | number | undefined
+}
 
 export type FormatMode = "fast" | "full"
 
@@ -256,14 +288,14 @@ export type FormatCompare<T extends SN> = (data1: T, data2: T) => boolean
 export type AsyncFormatValidator<T extends SN> = (data: T) => Promise<boolean>
 
 export interface FormatDefinition<T extends SN> {
-  type: T extends string ? "string" : "number"
+  type?: T extends string ? "string" : "number"
   validate: FormatValidator<T> | (T extends string ? string | RegExp : never)
   async?: false | undefined
   compare?: FormatCompare<T>
 }
 
 export interface AsyncFormatDefinition<T extends SN> {
-  type: T extends string ? "string" : "number"
+  type?: T extends string ? "string" : "number"
   validate: AsyncFormatValidator<T>
   async: true
   compare?: FormatCompare<T>

@@ -1,5 +1,5 @@
 import {_, nil, and, operators, Code, Name, getProperty} from "./codegen"
-import {SchemaCtx, Schema} from "../types"
+import {SchemaCxt, Schema} from "../types"
 import N from "./names"
 import {Rule, ValidationRules} from "./rules"
 
@@ -67,30 +67,28 @@ export function checkDataTypes(
 }
 
 // TODO refactor to use Set
-export function toHash(arr: string[]): {[key: string]: true} {
+export function toHash(arr: string[]): {[key: string]: true | undefined} {
   const hash: {[key: string]: true} = {}
   for (const item of arr) hash[item] = true
   return hash
 }
 
-export function schemaHasRules(schema: Schema, rules: {[key: string]: boolean | Rule}): boolean {
+export function schemaHasRules(
+  schema: Schema,
+  rules: {[key: string]: boolean | Rule | undefined}
+): boolean {
   if (typeof schema == "boolean") return !schema
   for (const key in schema) if (rules[key]) return true
   return false
 }
 
-export function schemaCtxHasRules({schema, RULES}: SchemaCtx): boolean {
+export function schemaCxtHasRules({schema, self}: SchemaCxt): boolean {
   if (typeof schema == "boolean") return !schema
-  for (const key in schema) if (RULES.all[key]) return true
+  for (const key in schema) if (self.RULES.all[key]) return true
   return false
 }
 
-interface SchemaAndRules {
-  schema: Schema
-  RULES: ValidationRules
-}
-
-export function schemaHasRulesButRef({schema, RULES}: SchemaAndRules): boolean {
+export function schemaHasRulesButRef(schema: Schema, RULES: ValidationRules): boolean {
   if (typeof schema == "boolean") return !schema
   for (const key in schema) if (key !== "$ref" && RULES.all[key]) return true
   return false
@@ -100,7 +98,7 @@ const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/
 const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/
 export function getData(
   $data: string,
-  {dataLevel, dataNames, dataPathArr}: SchemaCtx
+  {dataLevel, dataNames, dataPathArr}: SchemaCxt
 ): Code | number {
   let jsonPointer
   let data: Code
@@ -142,11 +140,12 @@ export function unescapeFragment(str: string): string {
   return unescapeJsonPointer(decodeURIComponent(str))
 }
 
-export function escapeFragment(str: string): string {
+export function escapeFragment(str: string | number): string {
   return encodeURIComponent(escapeJsonPointer(str))
 }
 
-export function escapeJsonPointer(str: string): string {
+export function escapeJsonPointer(str: string | number): string {
+  if (typeof str == "number") return `${str}`
   return str.replace(/~/g, "~0").replace(/\//g, "~1")
 }
 

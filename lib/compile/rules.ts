@@ -1,12 +1,14 @@
 import {toHash} from "./util"
 import {KeywordDefinition} from "../types"
 
-type ValidationTypes = {[key: string]: boolean | RuleGroup}
+interface ValidationTypes {
+  [key: string]: boolean | RuleGroup | undefined
+}
 
 export interface ValidationRules {
   rules: RuleGroup[]
-  all: {[key: string]: boolean | Rule} // rules that have to be validated
-  keywords: {[key: string]: boolean} // all known keywords (superset of "all")
+  all: {[key: string]: boolean | Rule | undefined} // rules that have to be validated
+  keywords: {[key: string]: boolean | undefined} // all known keywords (superset of "all")
   types: ValidationTypes
 }
 
@@ -23,7 +25,7 @@ export interface Rule {
 
 const ALL = ["type", "$comment"]
 
-export default function rules(): ValidationRules {
+export function getRules(): ValidationRules {
   const groups = {
     number: {type: "number", rules: []},
     string: {type: "string", rules: []},

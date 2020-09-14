@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
-import KeywordCtx from "../../compile/context"
+import KeywordCxt from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 
@@ -7,7 +7,7 @@ const def: CodeKeywordDefinition = {
   keyword: "not",
   schemaType: ["object", "boolean"],
   trackErrors: true,
-  code(cxt: KeywordCtx) {
+  code(cxt: KeywordCxt) {
     const {gen, schema, it} = cxt
     if (alwaysValidSchema(it, schema)) {
       cxt.fail()

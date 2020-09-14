@@ -1,4 +1,4 @@
-import {KeywordErrorCtx, KeywordErrorDefinition, SchemaCtx} from "../types"
+import {KeywordErrorCxt, KeywordErrorDefinition, SchemaCxt} from "../types"
 import {CodeGen, _, str, Code, Name} from "./codegen"
 import N from "./names"
 
@@ -14,7 +14,7 @@ export const keyword$DataError: KeywordErrorDefinition = {
 }
 
 export function reportError(
-  cxt: KeywordErrorCtx,
+  cxt: KeywordErrorCxt,
   error: KeywordErrorDefinition,
   overrideAllErrors?: boolean
 ): void {
@@ -28,7 +28,7 @@ export function reportError(
   }
 }
 
-export function reportExtraError(cxt: KeywordErrorCtx, error: KeywordErrorDefinition): void {
+export function reportExtraError(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): void {
   const {it} = cxt
   const {gen, compositeRule, allErrors} = it
   const errObj = errorObjectCode(cxt, error)
@@ -52,7 +52,7 @@ export function extendErrors({
   data,
   errsCount,
   it,
-}: KeywordErrorCtx): void {
+}: KeywordErrorCxt): void {
   if (errsCount === undefined) throw new Error("ajv implementation error")
   const err = gen.name("err")
   gen.forRange("i", errsCount, N.errors, (i) => {
@@ -74,17 +74,17 @@ function addError(gen: CodeGen, errObj: Code): void {
   gen.code(_`${N.errors}++`)
 }
 
-function returnErrors(it: SchemaCtx, errs: Code): void {
-  const {gen} = it
-  if (it.async) {
+function returnErrors(it: SchemaCxt, errs: Code): void {
+  const {gen, validateName, schemaEnv} = it
+  if (schemaEnv.$async) {
     gen.code(_`throw new ${it.ValidationError as Name}(${errs})`)
   } else {
-    gen.assign(_`${N.validate}.errors`, errs)
+    gen.assign(_`${validateName}.errors`, errs)
     gen.return(false)
   }
 }
 
-function errorObjectCode(cxt: KeywordErrorCtx, error: KeywordErrorDefinition): Code {
+function errorObjectCode(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): Code {
   const {
     keyword,
     data,
@@ -92,7 +92,6 @@ function errorObjectCode(cxt: KeywordErrorCtx, error: KeywordErrorDefinition): C
     it: {createErrors, topSchemaRef, schemaPath, errorPath, errSchemaPath, propertyName, opts},
   } = cxt
   if (createErrors === false) return _`{}`
-  if (!error) throw new Error('keyword definition must have "error" property')
   const {params, message} = error
   const msg = typeof message == "string" ? message : message(cxt)
   const par = params ? params(cxt) : _`{}`

@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
-import KeywordCtx from "../../compile/context"
+import KeywordCxt from "../../compile/context"
 import {_, or, Name, Code} from "../../compile/codegen"
 import equal from "fast-deep-equal"
 
@@ -7,10 +7,10 @@ const def: CodeKeywordDefinition = {
   keyword: "enum",
   schemaType: "array",
   $data: true,
-  code(cxt: KeywordCtx) {
+  code(cxt: KeywordCxt) {
     const {gen, data, $data, schema, schemaCode, it} = cxt
     if (!$data && schema.length === 0) throw new Error("enum must have non-empty array")
-    const useLoop = typeof it.opts.loopEnum == "number" && schema.length >= it.opts.loopEnum
+    const useLoop = schema.length >= it.opts.loopEnum
     const eql = cxt.gen.scopeValue("func", {
       ref: equal,
       code: _`require("ajv/dist/compile/equal")`,
@@ -21,7 +21,7 @@ const def: CodeKeywordDefinition = {
       cxt.block$data(valid, loopEnum)
     } else {
       if (!Array.isArray(schema)) throw new Error("ajv implementation error")
-      const vSchema = gen.const("schema", schemaCode)
+      const vSchema = gen.const("vSchema", schemaCode)
       valid = or(...schema.map((_x: unknown, i: number) => equalCode(vSchema, i)))
     }
     cxt.pass(valid)

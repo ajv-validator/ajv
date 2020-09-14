@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition} from "../../types"
-import KeywordCtx from "../../compile/context"
+import KeywordCxt from "../../compile/context"
 import {usePattern} from "../util"
 import {_, str} from "../../compile/codegen"
 
@@ -8,10 +8,9 @@ const def: CodeKeywordDefinition = {
   type: "string",
   schemaType: "string",
   $data: true,
-  code(cxt: KeywordCtx) {
+  code(cxt: KeywordCxt) {
     const {gen, data, $data, schema, schemaCode} = cxt
-    // const bdt = bad$DataType(schemaCode, <string>def.schemaType, $data)
-    const regExp = $data ? _`(new RegExp(${schemaCode}))` : usePattern(gen, schema) // TODO regexp should be wrapped in try/catch
+    const regExp = $data ? _`(new RegExp(${schemaCode}, "u"))` : usePattern(gen, schema) // TODO regexp should be wrapped in try/catch
     cxt.fail$data(_`!${regExp}.test(${data})`)
   },
   error: {

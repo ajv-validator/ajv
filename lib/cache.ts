@@ -1,18 +1,18 @@
-import {StoredSchema} from "./compile"
+import {SchemaEnv} from "./compile"
 import {CacheInterface} from "./types"
 
 export default class Cache implements CacheInterface {
-  _cache: {[key: string]: StoredSchema}
+  private _cache: {[key: string]: SchemaEnv | undefined}
 
   constructor() {
     this._cache = {}
   }
 
-  put(key: string, value: StoredSchema): void {
+  put(key: string, value: SchemaEnv): void {
     this._cache[key] = value
   }
 
-  get(key: string): StoredSchema {
+  get(key: string): SchemaEnv | undefined {
     return this._cache[key]
   }
 

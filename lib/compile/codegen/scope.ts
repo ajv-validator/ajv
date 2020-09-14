@@ -1,19 +1,12 @@
 import {_, nil, Code, Name} from "./code"
 
-export interface NameRec {
-  prefixName: Name
-  scopeIndex?: number
-  name: Name
-  value: NameValue
-}
-
 interface NameGroup {
   prefix: string
   index: number
 }
 
 export interface NameValue {
-  ref?: ValueReference // this is the reference to any value that can be referred to from generated code via `globals` var in the closure
+  ref: ValueReference // this is the reference to any value that can be referred to from generated code via `globals` var in the closure
   key?: unknown // any key to identify a global to avoid duplicates, if not passed ref is used
   code?: Code // this is the code creating the value needed for standalone code wit_out closure - can be a primitive value, function or import (`require`)
 }
@@ -21,122 +14,153 @@ export interface NameValue {
 export type ValueReference = unknown // possibly make CodeGen parameterized type on this type
 
 class ValueError extends Error {
-  value: NameValue
-  constructor({name, value}: NameRec) {
+  readonly value?: NameValue
+  constructor(name: ValueScopeName) {
     super(`CodeGen: "code" for ${name} not defined`)
-    this.value = value
+    this.value = name.value
   }
 }
 
 interface ScopeOptions {
-  scope?: ScopeStore
   prefixes?: Set<string>
   parent?: Scope
 }
 
-export type ScopeStore = Record<string, ValueReference[]>
+interface ValueScopeOptions extends ScopeOptions {
+  scope: ScopeStore
+}
 
-type ScopeValues = {[prefix: string]: Map<unknown, NameRec>}
+export type ScopeStore = Record<string, ValueReference[] | undefined>
 
-export type ScopeValueSets = {[prefix: string]: Set<NameRec>}
+interface ScopeValues {
+  [prefix: string]: Map<unknown, ValueScopeName> | undefined
+}
+
+export interface ScopeValueSets {
+  [prefix: string]: Set<ValueScopeName> | undefined
+}
 
 export class Scope {
-  _names: {[prefix: string]: NameGroup} = {}
-  _prefixes?: Set<string>
-  _parent?: Scope
+  protected readonly _names: {[prefix: string]: NameGroup | undefined} = {}
+  protected readonly _prefixes?: Set<string>
+  protected readonly _parent?: Scope
 
   constructor({prefixes, parent}: ScopeOptions = {}) {
     this._prefixes = prefixes
     this._parent = parent
   }
 
+  toName(nameOrPrefix: Name | string): Name {
+    return nameOrPrefix instanceof Name ? nameOrPrefix : this.name(nameOrPrefix)
+  }
+
   name(prefix: string): Name {
-    let ng = this._names[prefix]
-    if (!ng) {
-      checkPrefix.call(this, prefix)
-      ng = this._names[prefix] = {prefix, index: 0}
+    return new Name(this._newName(prefix))
+  }
+
+  protected _newName(prefix: string): string {
+    const ng = this._names[prefix] || this._nameGroup(prefix)
+    return `${prefix}${ng.index++}`
+  }
+
+  private _nameGroup(prefix: string): NameGroup {
+    if (this._parent?._prefixes?.has(prefix) || (this._prefixes && !this._prefixes.has(prefix))) {
+      throw new Error(`CodeGen: prefix "${prefix}" is not allowed in this scope`)
     }
-    return new Name(ng.prefix + ng.index++)
+    return (this._names[prefix] = {prefix, index: 0})
+  }
+}
+
+interface ScopePath {
+  property: string
+  itemIndex: number
+}
+
+export class ValueScopeName extends Name {
+  readonly prefix: string
+  value?: NameValue
+  scopePath?: Code
+
+  constructor(prefix: string, nameStr: string) {
+    super(nameStr)
+    this.prefix = prefix
+  }
+
+  setValue(value: NameValue, {property, itemIndex}: ScopePath): void {
+    this.value = value
+    this.scopePath = _`.${new Name(property)}[${itemIndex}]`
   }
 }
 
 export class ValueScope extends Scope {
-  _values: ScopeValues = {}
-  _scope?: ScopeStore
+  protected readonly _values: ScopeValues = {}
+  protected readonly _scope: ScopeStore
 
-  constructor(opts: ScopeOptions = {}) {
+  constructor(opts: ValueScopeOptions) {
     super(opts)
     this._scope = opts.scope
   }
 
-  get() {
+  get(): ScopeStore {
     return this._scope
   }
 
-  value(prefix: string, value: NameValue): NameRec {
-    const {ref, key, code} = value
-    const valueKey = key ?? ref ?? code
-    if (!valueKey) throw new Error("CodeGen: ref or code must be passed in value")
+  name(prefix: string): ValueScopeName {
+    return new ValueScopeName(prefix, this._newName(prefix))
+  }
+
+  value(nameOrPrefix: ValueScopeName | string, value: NameValue): ValueScopeName {
+    if (value.ref === undefined) throw new Error("CodeGen: ref must be passed in value")
+    const name = this.toName(nameOrPrefix) as ValueScopeName
+    const {prefix} = name
+    const valueKey = value.key ?? value.ref
     let vs = this._values[prefix]
     if (vs) {
-      const rec = vs.get(valueKey)
-      if (rec) return rec
+      const _name = vs.get(valueKey)
+      if (_name) return _name
     } else {
       vs = this._values[prefix] = new Map()
     }
+    vs.set(valueKey, name)
 
-    const rec: NameRec = {
-      prefixName: new Name(prefix),
-      name: this.name(prefix),
-      value,
-    }
-    vs.set(valueKey, rec)
-
-    if (this._scope && value.ref) {
-      const s = this._scope[prefix] || (this._scope[prefix] = [])
-      rec.scopeIndex = s.length
-      s[rec.scopeIndex] = value.ref
-    }
-    return rec
+    const s = this._scope[prefix] || (this._scope[prefix] = [])
+    const itemIndex = s.length
+    s[itemIndex] = value.ref
+    name.setValue(value, {property: prefix, itemIndex})
+    return name
   }
 
-  scopeRefs(scopeName: Name, values?: ScopeValues | ScopeValueSets): Code {
-    if (!this._scope) {
-      throw new Error("CodeGen: scope has to be passed via options to use scopeRefs")
-    }
-    return _reduceValues.call(this, values, (rec: NameRec) => {
-      const {value, prefixName, scopeIndex} = rec
-      if (scopeIndex !== undefined) return _`${scopeName}.${prefixName}[${scopeIndex}]`
-      if (value.code) return value.code
-      throw new Error("ajv implementation error")
+  getValue(prefix: string, keyOrRef: unknown): ValueScopeName | void {
+    const vs = this._values[prefix]
+    if (!vs) return
+    return vs.get(keyOrRef)
+  }
+
+  scopeRefs(scopeName: Name, values: ScopeValues | ScopeValueSets = this._values): Code {
+    return this._reduceValues(values, (name: ValueScopeName) => {
+      if (name.scopePath === undefined) throw new Error(`CodeGen: name "${name}" has no value`)
+      return _`${scopeName}${name.scopePath}`
     })
   }
 
-  scopeCode(values?: ScopeValues | ScopeValueSets): Code {
-    return _reduceValues.call(this, values, (rec: NameRec) => {
-      const c = rec.value.code
+  scopeCode(values: ScopeValues | ScopeValueSets = this._values): Code {
+    return this._reduceValues(values, (name: ValueScopeName) => {
+      const c = name.value?.code
       if (c) return c
-      throw new ValueError(rec)
+      throw new ValueError(name)
     })
   }
-}
 
-function checkPrefix(this: Scope, prefix: string) {
-  if (this._parent?._prefixes?.has(prefix) || (this._prefixes && !this._prefixes?.has(prefix))) {
-    throw new Error(`CodeGen: prefix "${prefix}" is not allowed in this scope`)
+  private _reduceValues(
+    values: ScopeValues | ScopeValueSets,
+    valueCode: (n: ValueScopeName) => Code
+  ): Code {
+    let code: Code = nil
+    for (const prefix in values) {
+      values[prefix]?.forEach((name: ValueScopeName) => {
+        code = _`${code}const ${name} = ${valueCode(name)};`
+      })
+    }
+    return code
   }
-}
-
-function _reduceValues(
-  this: ValueScope,
-  values: ScopeValues | ScopeValueSets = this._values,
-  valueCode: (n: NameRec) => Code
-): Code {
-  let code: Code = nil
-  for (const prefix in values) {
-    values[prefix].forEach((rec: NameRec) => {
-      code = _`${code}const ${rec.name} = ${valueCode(rec)};`
-    })
-  }
-  return code
 }

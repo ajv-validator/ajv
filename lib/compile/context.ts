@@ -1,8 +1,8 @@
 import {
   KeywordDefinition,
-  KeywordErrorCtx,
-  KeywordCtxParams,
-  SchemaObjCtx,
+  KeywordErrorCxt,
+  KeywordCxtParams,
+  SchemaObjCxt,
   SchemaObject,
 } from "../types"
 import {schemaRefOrVal} from "../vocabularies/util"
@@ -17,23 +17,23 @@ import {
 import {CodeGen, _, nil, or, Code, Name} from "./codegen"
 import N from "./names"
 
-export default class KeywordCtx implements KeywordErrorCtx {
-  gen: CodeGen
-  allErrors: boolean
-  keyword: string
-  data: Name
-  $data?: string | false
-  schema: any
-  schemaValue: Code | number | boolean // Code reference to keyword schema value or primitive value
-  schemaCode: Code | number | boolean // Code reference to resolved schema value (different if schema is $data)
-  schemaType?: string | string[]
-  parentSchema: SchemaObject
-  errsCount?: Name
-  params: KeywordCtxParams
-  it: SchemaObjCtx
-  def: KeywordDefinition
+export default class KeywordCxt implements KeywordErrorCxt {
+  readonly gen: CodeGen
+  readonly allErrors?: boolean
+  readonly keyword: string
+  readonly data: Name
+  readonly $data?: string | false
+  readonly schema: any
+  readonly schemaValue: Code | number | boolean // Code reference to keyword schema value or primitive value
+  readonly schemaCode: Code | number | boolean // Code reference to resolved schema value (different if schema is $data)
+  readonly schemaType?: string | string[]
+  readonly parentSchema: SchemaObject
+  readonly errsCount?: Name
+  params: KeywordCxtParams
+  readonly it: SchemaObjCxt
+  readonly def: KeywordDefinition
 
-  constructor(it: SchemaObjCtx, def: KeywordDefinition, keyword: string) {
+  constructor(it: SchemaObjCxt, def: KeywordDefinition, keyword: string) {
     validateKeywordUsage(it, def, keyword)
     this.gen = it.gen
     this.allErrors = it.allErrors
@@ -49,7 +49,7 @@ export default class KeywordCtx implements KeywordErrorCtx {
     this.def = def
 
     if (this.$data) {
-      this.schemaCode = it.gen.const("schema", getData(this.$data, it))
+      this.schemaCode = it.gen.const("vSchema", getData(this.$data, it))
     } else {
       this.schemaCode = this.schemaValue
       if (def.schemaType && !validSchemaType(this.schema, def.schemaType)) {
@@ -64,7 +64,8 @@ export default class KeywordCtx implements KeywordErrorCtx {
 
   result(condition: Code, successAction?: () => void, failAction?: () => void): void {
     this.gen.ifNot(condition)
-    failAction ? failAction() : this.error()
+    if (failAction) failAction()
+    else this.error()
     if (successAction) {
       this.gen.else()
       successAction()
@@ -114,12 +115,12 @@ export default class KeywordCtx implements KeywordErrorCtx {
     if (!this.allErrors) this.gen.if(cond)
   }
 
-  setParams(obj: KeywordCtxParams, assign?: true): void {
+  setParams(obj: KeywordCxtParams, assign?: true): void {
     if (assign) Object.assign(this.params, obj)
     else this.params = obj
   }
 
-  block$data(valid: Name = nil, codeBlock: () => void, $dataValid: Code = nil): void {
+  block$data(valid: Name, codeBlock: () => void, $dataValid: Code = nil): void {
     this.gen.block(() => {
       this.check$data(valid, $dataValid)
       codeBlock()
@@ -174,21 +175,25 @@ function validSchemaType(schema: unknown, schemaType: string | string[]): boolea
     : typeof schema == schemaType
 }
 
-function validateKeywordUsage(it: SchemaObjCtx, def: KeywordDefinition, keyword: string): void {
+function validateKeywordUsage(
+  {schema, opts, self}: SchemaObjCxt,
+  def: KeywordDefinition,
+  keyword: string
+): void {
   if (Array.isArray(def.keyword) ? !def.keyword.includes(keyword) : def.keyword !== keyword) {
     throw new Error("ajv implementation error")
   }
 
   const deps = def.dependencies
-  if (deps?.some((kwd) => !Object.prototype.hasOwnProperty.call(it.schema, kwd))) {
+  if (deps?.some((kwd) => !Object.prototype.hasOwnProperty.call(schema, kwd))) {
     throw new Error(`parent schema must have dependencies of ${keyword}: ${deps.join(",")}`)
   }
 
   if (def.validateSchema) {
-    const valid = def.validateSchema(it.schema[keyword])
+    const valid = def.validateSchema(schema[keyword])
     if (!valid) {
-      const msg = "keyword value is invalid: " + it.self.errorsText(def.validateSchema.errors)
-      if (it.opts.validateSchema === "log") it.logger.error(msg)
+      const msg = "keyword value is invalid: " + self.errorsText(def.validateSchema.errors)
+      if (opts.validateSchema === "log") self.logger.error(msg)
       else throw new Error(msg)
     }
   }

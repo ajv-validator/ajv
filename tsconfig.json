@@ -6,6 +6,7 @@
     "lib": ["ES2018", "DOM"],
     "types": ["node"],
     "allowJs": true,
-    "target": "ES2018"
+    "target": "ES2018",
+    "resolveJsonModule": true
   }
 }

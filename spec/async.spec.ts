@@ -1,5 +1,5 @@
 import _Ajv from "./ajv"
-import type {SchemaObject} from "../dist/types"
+import type {SchemaObject, ValidateFunction} from "../dist/types"
 
 const should = require("./chai").should()
 
@@ -99,20 +99,18 @@ describe("compileAsync method", () => {
     })
   })
 
-  it("should compile schemas loading missing schemas and return function via callback", (done) => {
+  it("should compile schemas loading missing schemas and return promise with function", () => {
     const schema = {
       $id: "http://example.com/parent.json",
       properties: {
         a: {$ref: "object.json"},
       },
     }
-    ajv.compileAsync(schema, (err, validate) => {
+    return ajv.compileAsync(schema).then((validate) => {
       should.equal(loadCallCount, 2)
-      should.not.exist(err)
       validate.should.be.a("function")
       validate({a: {b: 2}}).should.equal(true)
       validate({a: {b: 1}}).should.equal(false)
-      done()
     })
   })
 
@@ -263,7 +261,7 @@ describe("compileAsync method", () => {
     }
   })
 
-  it("should throw exception if loadSchema is not passed", (done) => {
+  it("should throw exception if loadSchema is not passed", () => {
     const schema = {
       $id: "http://example.com/int2plus.json",
       type: "integer",
@@ -271,77 +269,11 @@ describe("compileAsync method", () => {
     }
     ajv = new _Ajv()
     should.throw(() => {
-      ajv.compileAsync(schema, () => {
-        done(new Error("it should have thrown exception"))
-      })
-    })
-    setTimeout(() => {
-      // function is needed for the test to pass in Firefox 4
-      done()
-    })
-  })
-
-  describe("should return error via callback", () => {
-    it("if passed schema is invalid", (done) => {
-      const invalidSchema = {
-        $id: "http://example.com/int2plus.json",
-        type: "integer",
-        minimum: "invalid",
-      }
-      ajv.compileAsync(invalidSchema, shouldFail(done))
+      ajv.compileAsync(schema).then(expextedSyncError, expextedSyncError)
     })
 
-    it("if loaded schema is invalid", (done) => {
-      const schema = {
-        $id: "http://example.com/parent.json",
-        properties: {
-          a: {$ref: "invalid.json"},
-        },
-      }
-      ajv.compileAsync(schema, shouldFail(done))
-    })
-
-    it("if required schema is loaded but the reference cannot be resolved", (done) => {
-      const schema = {
-        $id: "http://example.com/parent.json",
-        properties: {
-          a: {$ref: "object.json#/definitions/not_found"},
-        },
-      }
-      ajv.compileAsync(schema, shouldFail(done))
-    })
-
-    it("if loadSchema returned error", (done) => {
-      const schema = {
-        $id: "http://example.com/parent.json",
-        properties: {
-          a: {$ref: "object.json"},
-        },
-      }
-      ajv = new _Ajv({loadSchema: badLoadSchema})
-      ajv.compileAsync(schema, shouldFail(done))
-
-      function badLoadSchema() {
-        return Promise.reject(new Error("cant load"))
-      }
-    })
-
-    it("if schema compilation throws some other exception", (done) => {
-      ajv.addKeyword({keyword: "badkeyword", compile: badCompile})
-      const schema = {badkeyword: true}
-      ajv.compileAsync(schema, shouldFail(done))
-
-      function badCompile(/* schema */) {
-        throw new Error("cant compile keyword schema")
-      }
-    })
-
-    function shouldFail(done) {
-      return (err, validate) => {
-        should.exist(err)
-        should.not.exist(validate)
-        done()
-      }
+    function expextedSyncError() {
+      throw new Error("it should have thrown exception")
     }
   })
 
@@ -352,7 +284,7 @@ describe("compileAsync method", () => {
         type: "integer",
         minimum: "invalid",
       }
-      return shouldReject(ajv.compileAsync(invalidSchema))
+      return shouldReject(ajv.compileAsync(invalidSchema), /schema is invalid/)
     })
 
     it("if loaded schema is invalid", () => {
@@ -362,7 +294,7 @@ describe("compileAsync method", () => {
           a: {$ref: "invalid.json"},
         },
       }
-      return shouldReject(ajv.compileAsync(schema))
+      return shouldReject(ajv.compileAsync(schema), /schema is invalid/)
     })
 
     it("if required schema is loaded but the reference cannot be resolved", () => {
@@ -372,7 +304,7 @@ describe("compileAsync method", () => {
           a: {$ref: "object.json#/definitions/not_found"},
         },
       }
-      return shouldReject(ajv.compileAsync(schema))
+      return shouldReject(ajv.compileAsync(schema), /is loaded but/)
     })
 
     it("if loadSchema returned error", () => {
@@ -383,7 +315,7 @@ describe("compileAsync method", () => {
         },
       }
       ajv = new _Ajv({loadSchema: badLoadSchema})
-      return shouldReject(ajv.compileAsync(schema))
+      return shouldReject(ajv.compileAsync(schema), /cant load/)
 
       function badLoadSchema() {
         return Promise.reject(new Error("cant load"))
@@ -393,20 +325,23 @@ describe("compileAsync method", () => {
     it("if schema compilation throws some other exception", () => {
       ajv.addKeyword({keyword: "badkeyword", compile: badCompile})
       const schema = {badkeyword: true}
-      return shouldReject(ajv.compileAsync(schema))
+      return shouldReject(ajv.compileAsync(schema), /cant compile keyword schema/)
 
       function badCompile(/* schema */) {
         throw new Error("cant compile keyword schema")
       }
     })
 
-    function shouldReject(p) {
+    function shouldReject(p: Promise<ValidateFunction>, rx: RegExp) {
       return p.then(
         (validate) => {
           should.not.exist(validate)
           throw new Error("Promise has resolved; it should have rejected")
         },
-        (err) => should.exist(err)
+        (err) => {
+          should.exist(err)
+          err.message.should.match(rx)
+        }
       )
     }
   })

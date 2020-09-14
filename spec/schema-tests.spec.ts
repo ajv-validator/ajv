@@ -9,7 +9,7 @@ const instances = getAjvInstances(options, {strict: false, unknownFormats: ["all
 
 const remoteRefs = {
   "http://localhost:1234/integer.json": require("./JSON-Schema-Test-Suite/remotes/integer.json"),
-  "http://localhost:1234/folder/folderInteger.json": require("./JSON-Schema-Test-Suite/remotes/folder/folderInteger.json"),
+  "http://localhost:1234/folder/folderInteger.json": require("./JSON-Schema-Test-Suite/remotes/baseUriChange/folderInteger.json"),
   "http://localhost:1234/name.json": require("./remotes/name.json"),
 }
 

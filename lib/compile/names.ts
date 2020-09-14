@@ -1,7 +1,6 @@
 import {Name} from "./codegen"
 
 const names = {
-  validate: new Name("validate"), // validation function name
   // validation function arguments
   data: new Name("data"), // data passed to validation function
   // args passed from referencing schema

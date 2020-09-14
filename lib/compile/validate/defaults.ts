@@ -1,8 +1,8 @@
-import {SchemaObjCtx} from "../../types"
+import {SchemaObjCxt} from "../../types"
 import {_, getProperty, stringify} from "../codegen"
 import {checkStrictMode} from "../../vocabularies/util"
 
-export function assignDefaults(it: SchemaObjCtx, ty?: string): void {
+export function assignDefaults(it: SchemaObjCxt, ty?: string): void {
   const {properties, items} = it.schema
   if (ty === "object" && properties) {
     for (const key in properties) {
@@ -13,7 +13,7 @@ export function assignDefaults(it: SchemaObjCtx, ty?: string): void {
   }
 }
 
-function assignDefault(it: SchemaObjCtx, prop: string | number, defaultValue: unknown): void {
+function assignDefault(it: SchemaObjCxt, prop: string | number, defaultValue: unknown): void {
   const {gen, compositeRule, data, opts} = it
   if (defaultValue === undefined) return
   const childData = _`${data}${getProperty(prop)}`

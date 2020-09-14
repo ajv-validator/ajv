@@ -1,5 +1,5 @@
 import {CodeKeywordDefinition, AddedFormat, FormatValidate} from "../../types"
-import KeywordCtx from "../../compile/context"
+import KeywordCxt from "../../compile/context"
 import {_, str, nil, or, Code, getProperty} from "../../compile/codegen"
 import N from "../../compile/names"
 
@@ -8,16 +8,20 @@ const def: CodeKeywordDefinition = {
   type: ["number", "string"],
   schemaType: "string",
   $data: true,
-  code(cxt: KeywordCtx, ruleType?: string) {
+  code(cxt: KeywordCxt, ruleType?: string) {
     const {gen, data, $data, schema, schemaCode, it} = cxt
-    const {formats, opts, logger, errSchemaPath} = it
+    const {opts, errSchemaPath, schemaEnv, self} = it
     if (opts.format === false) return
 
     if ($data) validate$DataFormat()
     else validateFormat()
 
-    function validate$DataFormat() {
-      const fDef = gen.const("fDef", _`formats[${schemaCode}]`)
+    function validate$DataFormat(): void {
+      const fmts = gen.scopeValue("formats", {
+        ref: self.formats,
+        code: opts.code.formats,
+      })
+      const fDef = gen.const("fDef", _`${fmts}[${schemaCode}]`)
       const fType = gen.let("fType")
       const format = gen.let("format")
       // TODO simplify
@@ -32,21 +36,22 @@ const def: CodeKeywordDefinition = {
         if (opts.unknownFormats === "ignore") return nil
         let unknown = _`${schemaCode} && !${format}`
         if (Array.isArray(opts.unknownFormats)) {
-          unknown = _`${unknown} && !${N.self}._opts.unknownFormats.includes(${schemaCode})`
+          unknown = _`${unknown} && !${N.self}.opts.unknownFormats.includes(${schemaCode})`
         }
         return _`(${unknown})`
       }
 
       function invalidFmt(): Code {
-        const fmt = _`${format}(${data})`
-        const callFormat = it.async ? _`${fDef}.async ? await ${fmt} : ${fmt}` : fmt
+        const callFormat = schemaEnv.$async
+          ? _`${fDef}.async ? await ${format}(${data}) : ${format}(${data})`
+          : _`${format}(${data})`
         const validData = _`typeof ${format} == "function" ? ${callFormat} : ${format}.test(${data})`
-        return _`(${format} && ${fType} === ${<string>ruleType} && !(${validData}))`
+        return _`(${format} && ${fType} === ${ruleType as string} && !(${validData}))`
       }
     }
 
-    function validateFormat() {
-      const formatDef: AddedFormat = formats[schema]
+    function validateFormat(): void {
+      const formatDef: AddedFormat | undefined = self.formats[schema]
       if (!formatDef) {
         unknownFormat()
         return
@@ -54,21 +59,25 @@ const def: CodeKeywordDefinition = {
       const [fmtType, format, fmtRef] = getFormat(formatDef)
       if (fmtType === ruleType) cxt.pass(validCondition())
 
-      function unknownFormat() {
+      function unknownFormat(): void {
         if (opts.unknownFormats === "ignore") {
-          logger.warn(unknownMsg())
+          self.logger.warn(unknownMsg())
           return
         }
         if (Array.isArray(opts.unknownFormats) && opts.unknownFormats.includes(schema)) return
         throw new Error(unknownMsg())
 
         function unknownMsg(): string {
-          return `unknown format "${<string>schema}" ignored in schema at path "${errSchemaPath}"`
+          return `unknown format "${schema as string}" ignored in schema at path "${errSchemaPath}"`
         }
       }
 
       function getFormat(fmtDef: AddedFormat): [string, FormatValidate, Code] {
-        const fmt = _`formats${getProperty(schema)}` // TODO use scope for formats?
+        const fmt = gen.scopeValue("formats", {
+          key: schema,
+          ref: fmtDef,
+          code: opts.code.formats ? _`${opts.code.formats}${getProperty(schema)}` : undefined,
+        })
         if (typeof fmtDef == "object" && !(fmtDef instanceof RegExp)) {
           return [fmtDef.type || "string", fmtDef.validate as FormatValidate, _`${fmt}.validate`]
         }
@@ -78,7 +87,7 @@ const def: CodeKeywordDefinition = {
 
       function validCondition(): Code {
         if (typeof formatDef == "object" && !(formatDef instanceof RegExp) && formatDef.async) {
-          if (!it.async) throw new Error("async format in sync schema")
+          if (!schemaEnv.$async) throw new Error("async format in sync schema")
           return _`await ${fmtRef}(${data})`
         }
         return typeof format == "function" ? _`${fmtRef}(${data})` : _`${fmtRef}.test(${data})`

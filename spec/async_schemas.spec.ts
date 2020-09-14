@@ -77,7 +77,7 @@ function checkIdExists(schema, data) {
 }
 
 function checkIdExistsWithError(schema, data) {
-  const table = schema.table
+  const {table} = schema
   switch (table) {
     case "users":
       return check(table, [1, 5, 8])
