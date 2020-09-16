@@ -134,6 +134,10 @@ function assignParentData({gen, parentData, parentDataProperty}: SchemaObjCxt, e
   )
 }
 
+export interface TypeErrorParams {
+  type: string
+}
+
 const typeError: KeywordErrorDefinition = {
   message: ({schema}) => str`should be ${schema}`,
   params: ({schema, schemaValue}) =>

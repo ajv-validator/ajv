@@ -11,6 +11,13 @@ interface PropertyDependencies {
 
 type SchemaDependencies = SchemaMap
 
+export interface DependenciesErrorParams {
+  property: string
+  missingProperty: string
+  depsCount: number
+  deps: string // TODO change to string[]
+}
+
 const error: KeywordErrorDefinition = {
   message: ({params: {property, depsCount, deps}}) => {
     const property_ies = depsCount === 1 ? "property" : "properties"
@@ -20,7 +27,7 @@ const error: KeywordErrorDefinition = {
     _`{property: ${property},
     missingProperty: ${missingProperty},
     depsCount: ${depsCount},
-    deps: ${deps}}`, // TODO change to reference?
+    deps: ${deps}}`, // TODO change to reference
 }
 
 const def: CodeKeywordDefinition = {

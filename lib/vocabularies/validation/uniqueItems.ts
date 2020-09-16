@@ -5,6 +5,11 @@ import {checkDataTypes, DataType} from "../../compile/util"
 import {_, str, Name} from "../../compile/codegen"
 import equal from "fast-deep-equal"
 
+export interface UniqueItemsErrorParams {
+  i: number
+  j: number
+}
+
 const error: KeywordErrorDefinition = {
   message: ({params: {i, j}}) =>
     str`should NOT have duplicate items (items ## ${j} and ${i} are identical)`,

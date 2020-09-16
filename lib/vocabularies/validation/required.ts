@@ -4,6 +4,10 @@ import {propertyInData, noPropertyInData} from "../util"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"
 import {_, str, nil, Name} from "../../compile/codegen"
 
+export interface RequiredErrorParams {
+  missingProperty: string
+}
+
 const error: KeywordErrorDefinition = {
   message: ({params: {missingProperty}}) => str`should have required property '${missingProperty}'`,
   params: ({params: {missingProperty}}) => _`{missingProperty: ${missingProperty}}`,

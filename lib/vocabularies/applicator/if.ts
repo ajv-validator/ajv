@@ -4,6 +4,10 @@ import {alwaysValidSchema, checkStrictMode} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {_, str, Name} from "../../compile/codegen"
 
+export interface IfErrorParams {
+  failingKeyword: string
+}
+
 const error: KeywordErrorDefinition = {
   message: ({params}) => str`should match "${params.ifClause}" schema`,
   params: ({params}) => _`{failingKeyword: ${params.ifClause}}`,

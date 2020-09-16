@@ -7,6 +7,10 @@ import {_, str, nil, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 import {SchemaEnv, resolveRef} from "../../compile"
 
+export interface RefErrorParams {
+  ref: string
+}
+
 const error: KeywordErrorDefinition = {
   message: ({schema}) => str`can't resolve reference ${schema}`,
   params: ({schema}) => _`{ref: ${schema}}`,

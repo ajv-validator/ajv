@@ -3,6 +3,8 @@ import type {SchemaEnv} from "../compile"
 import type KeywordCxt from "../compile/context"
 import type Ajv from "../ajv"
 
+export {DefinedError} from "../vocabularies/errors"
+
 interface _SchemaObject {
   $id?: string
   $schema?: string
@@ -141,11 +143,11 @@ export interface AsyncValidateFunction<T = any> extends ValidateFunction<T> {
 
 export type AnyValidateFunction<T = any> = ValidateFunction<T> | AsyncValidateFunction<T>
 
-export interface ErrorObject<T = string> {
-  keyword: T
+export interface ErrorObject<K = string, P = Record<string, any>> {
+  keyword: K
   dataPath: string
   schemaPath: string
-  params: Record<string, unknown> // TODO add interface
+  params: P
   // Added to validation errors of "propertyNames" keyword schema
   propertyName?: string
   // Excluded if option `messages` set to false.

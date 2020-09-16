@@ -3,6 +3,10 @@ import type KeywordCxt from "../../compile/context"
 import {_} from "../../compile/codegen"
 import equal from "fast-deep-equal"
 
+export interface ConstErrorParams {
+  allowedValue: any
+}
+
 const error: KeywordErrorDefinition = {
   message: "should be equal to constant",
   params: ({schemaCode}) => _`{allowedValue: ${schemaCode}}`,

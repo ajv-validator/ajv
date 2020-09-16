@@ -4,6 +4,10 @@ import {applySubschema, SubschemaApplication, Type} from "../../compile/subschem
 import {_, nil, or, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 
+export interface AdditionalPropsErrorParams {
+  additionalProperty: string
+}
+
 const error: KeywordErrorDefinition = {
   message: "should NOT have additional properties",
   params: ({params}) => _`{additionalProperty: ${params.additionalProperty}}`,

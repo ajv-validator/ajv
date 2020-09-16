@@ -4,6 +4,10 @@ import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {_} from "../../compile/codegen"
 
+export interface OneOfErrorParams {
+  passingSchemas: [number, number]
+}
+
 const error: KeywordErrorDefinition = {
   message: "should match exactly one schema in oneOf",
   params: ({params}) => _`{passingSchemas: ${params.passing}}`,

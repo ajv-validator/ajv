@@ -3,6 +3,10 @@ import type KeywordCxt from "../../compile/context"
 import {_, or, Name, Code} from "../../compile/codegen"
 import equal from "fast-deep-equal"
 
+export interface EnumErrorParams {
+  allowedValues: any[]
+}
+
 const error: KeywordErrorDefinition = {
   message: "should be equal to one of the allowed values",
   params: ({schemaCode}) => _`{allowedValues: ${schemaCode}}`,

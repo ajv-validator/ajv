@@ -17,6 +17,10 @@ type FormatValidate =
   | RegExp
   | string
 
+export interface FormatErrorParams {
+  format: string
+}
+
 const error: KeywordErrorDefinition = {
   message: ({schemaCode}) => str`should match format "${schemaCode}"`,
   params: ({schemaCode}) => _`{format: ${schemaCode}}`,

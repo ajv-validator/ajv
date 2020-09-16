@@ -4,6 +4,10 @@ import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {_, str} from "../../compile/codegen"
 
+export interface PropertyNamesErrorParams {
+  propertyName: string
+}
+
 const error: KeywordErrorDefinition = {
   message: ({params}) => str`property name '${params.propertyName}' is invalid`, // TODO double quotes?
   params: ({params}) => _`{propertyName: ${params.propertyName}}`,

@@ -3,6 +3,10 @@ import type KeywordCxt from "../../compile/context"
 import {usePattern} from "../util"
 import {_, str} from "../../compile/codegen"
 
+export interface PatternErrorParams {
+  pattern: string
+}
+
 const error: KeywordErrorDefinition = {
   message: ({schemaCode}) => str`should match pattern "${schemaCode}"`,
   params: ({schemaCode}) => _`{pattern: ${schemaCode}}`,

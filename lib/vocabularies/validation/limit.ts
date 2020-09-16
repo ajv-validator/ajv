@@ -11,6 +11,15 @@ const OPS: {[index: string]: {fail: Code; ok: Code; okStr: string}} = {
   exclusiveMinimum: {okStr: ">", ok: ops.GT, fail: ops.LTE},
 }
 
+export interface LimitErrorParams {
+  limit: number
+}
+
+export interface LimitNumberErrorParams {
+  limit: number
+  comparison: "<=" | ">=" | "<" | ">"
+}
+
 const error: KeywordErrorDefinition = {
   message: ({keyword, schemaCode}) => str`should be ${OPS[keyword].okStr} ${schemaCode}`,
   params: ({keyword, schemaCode}) => _`{comparison: ${OPS[keyword].okStr}, limit: ${schemaCode}}`,

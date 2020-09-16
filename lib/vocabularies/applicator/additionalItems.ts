@@ -4,6 +4,10 @@ import {alwaysValidSchema, checkStrictMode} from "../util"
 import {applySubschema, Type} from "../../compile/subschema"
 import {_, Name, str} from "../../compile/codegen"
 
+export interface AdditionalItemsErrorParams {
+  limit: number
+}
+
 const error: KeywordErrorDefinition = {
   message: ({params: {len}}) => str`should NOT have more than ${len} items`,
   params: ({params: {len}}) => _`{limit: ${len}}`,
