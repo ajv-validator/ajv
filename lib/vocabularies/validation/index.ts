@@ -1,22 +1,32 @@
 import type {Vocabulary} from "../../types"
+import limit from "./limit"
+import multipleOf from "./multipleOf"
+import limitLength from "./limitLength"
+import pattern from "./pattern"
+import limitProperties from "./limitProperties"
+import required from "./required"
+import limitItems from "./limitItems"
+import uniqueItems from "./uniqueItems"
+import constKeyword from "./const"
+import enumKeyword from "./enum"
 
 const validation: Vocabulary = [
   // number
-  require("./limit"),
-  require("./multipleOf"),
+  limit,
+  multipleOf,
   // string
-  require("./limitLength"),
-  require("./pattern"),
+  limitLength,
+  pattern,
   // object
-  require("./limitProperties"),
-  require("./required"),
+  limitProperties,
+  required,
   // array
-  require("./limitItems"),
-  require("./uniqueItems"),
+  limitItems,
+  uniqueItems,
   // any
   {keyword: "nullable", schemaType: "boolean"},
-  require("./const"),
-  require("./enum"),
+  constKeyword,
+  enumKeyword,
 ]
 
 export default validation

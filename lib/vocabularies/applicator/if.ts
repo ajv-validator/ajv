@@ -1,13 +1,19 @@
-import type {CodeKeywordDefinition, SchemaObjCxt} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition, SchemaObjCxt} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {alwaysValidSchema, checkStrictMode} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {_, str, Name} from "../../compile/codegen"
 
+const error: KeywordErrorDefinition = {
+  message: ({params}) => str`should match "${params.ifClause}" schema`,
+  params: ({params}) => _`{failingKeyword: ${params.ifClause}}`,
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "if",
   schemaType: ["object", "boolean"],
   trackErrors: true,
+  error,
   code(cxt: KeywordCxt) {
     const {gen, parentSchema, it} = cxt
     if (parentSchema.then === undefined && parentSchema.else === undefined) {
@@ -56,15 +62,11 @@ const def: CodeKeywordDefinition = {
       }
     }
   },
-  error: {
-    message: ({params}) => str`should match "${params.ifClause}" schema`,
-    params: ({params}) => _`{failingKeyword: ${params.ifClause}}`,
-  },
 }
-
-module.exports = def
 
 function hasSchema(it: SchemaObjCxt, keyword: string): boolean {
   const schema = it.schema[keyword]
   return schema !== undefined && !alwaysValidSchema(it, schema)
 }
+
+export default def

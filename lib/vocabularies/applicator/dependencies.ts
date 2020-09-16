@@ -1,4 +1,4 @@
-import type {CodeKeywordDefinition, SchemaMap, AnySchema} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition, SchemaMap, AnySchema} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {alwaysValidSchema, propertyInData} from "../util"
 import {applySubschema} from "../../compile/subschema"
@@ -11,10 +11,23 @@ interface PropertyDependencies {
 
 type SchemaDependencies = SchemaMap
 
+const error: KeywordErrorDefinition = {
+  message: ({params: {property, depsCount, deps}}) => {
+    const property_ies = depsCount === 1 ? "property" : "properties"
+    return str`should have ${property_ies} ${deps} when property ${property} is present`
+  },
+  params: ({params: {property, depsCount, deps, missingProperty}}) =>
+    _`{property: ${property},
+    missingProperty: ${missingProperty},
+    depsCount: ${depsCount},
+    deps: ${deps}}`, // TODO change to reference?
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "dependencies",
   type: "object",
   schemaType: "object",
+  error,
   code(cxt: KeywordCxt) {
     const {gen, schema, data, it} = cxt
     const [propDeps, schDeps] = splitDependencies()
@@ -71,17 +84,6 @@ const def: CodeKeywordDefinition = {
       }
     }
   },
-  error: {
-    message: ({params: {property, depsCount, deps}}) => {
-      const property_ies = depsCount === 1 ? "property" : "properties"
-      return str`should have ${property_ies} ${deps} when property ${property} is present`
-    },
-    params: ({params: {property, depsCount, deps, missingProperty}}) =>
-      _`{property: ${property},
-      missingProperty: ${missingProperty},
-      depsCount: ${depsCount},
-      deps: ${deps}}`, // TODO change to reference?
-  },
 }
 
-module.exports = def
+export default def

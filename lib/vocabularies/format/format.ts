@@ -3,6 +3,7 @@ import type {
   FormatValidator,
   AsyncFormatValidator,
   CodeKeywordDefinition,
+  KeywordErrorDefinition,
 } from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, str, nil, or, Code, getProperty} from "../../compile/codegen"
@@ -16,11 +17,17 @@ type FormatValidate =
   | RegExp
   | string
 
+const error: KeywordErrorDefinition = {
+  message: ({schemaCode}) => str`should match format "${schemaCode}"`,
+  params: ({schemaCode}) => _`{format: ${schemaCode}}`,
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "format",
   type: ["number", "string"],
   schemaType: "string",
   $data: true,
+  error,
   code(cxt: KeywordCxt, ruleType?: string) {
     const {gen, data, $data, schema, schemaCode, it} = cxt
     const {opts, errSchemaPath, schemaEnv, self} = it
@@ -107,10 +114,6 @@ const def: CodeKeywordDefinition = {
       }
     }
   },
-  error: {
-    message: ({schemaCode}) => str`should match format "${schemaCode}"`,
-    params: ({schemaCode}) => _`{format: ${schemaCode}}`,
-  },
 }
 
-module.exports = def
+export default def

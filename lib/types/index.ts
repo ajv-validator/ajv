@@ -141,14 +141,14 @@ export interface AsyncValidateFunction<T = any> extends ValidateFunction<T> {
 
 export type AnyValidateFunction<T = any> = ValidateFunction<T> | AsyncValidateFunction<T>
 
-export interface ErrorObject {
-  keyword: string
+export interface ErrorObject<T = string> {
+  keyword: T
   dataPath: string
   schemaPath: string
   params: Record<string, unknown> // TODO add interface
-  // Added to validation errors of propertyNames keyword schema
+  // Added to validation errors of "propertyNames" keyword schema
   propertyName?: string
-  // Excluded if messages set to false.
+  // Excluded if option `messages` set to false.
   message?: string
   // These are added with the `verbose` option.
   schema?: unknown

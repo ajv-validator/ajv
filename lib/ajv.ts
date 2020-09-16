@@ -3,6 +3,7 @@ export {
   FormatDefinition,
   AsyncFormatDefinition,
   KeywordDefinition,
+  KeywordErrorDefinition,
   CodeKeywordDefinition,
   MacroKeywordDefinition,
   FuncKeywordDefinition,

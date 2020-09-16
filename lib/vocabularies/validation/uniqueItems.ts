@@ -1,15 +1,22 @@
-import type {CodeKeywordDefinition} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {getSchemaTypes} from "../../compile/validate/dataType"
 import {checkDataTypes, DataType} from "../../compile/util"
 import {_, str, Name} from "../../compile/codegen"
 import equal from "fast-deep-equal"
 
+const error: KeywordErrorDefinition = {
+  message: ({params: {i, j}}) =>
+    str`should NOT have duplicate items (items ## ${j} and ${i} are identical)`,
+  params: ({params: {i, j}}) => _`{i: ${i}, j: ${j}}`,
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "uniqueItems",
   type: "array",
   schemaType: "boolean",
   $data: true,
+  error,
   code(cxt: KeywordCxt) {
     const {gen, data, $data, schema, parentSchema, schemaCode, it} = cxt
     if (!$data && !schema) return
@@ -64,11 +71,6 @@ const def: CodeKeywordDefinition = {
       )
     }
   },
-  error: {
-    message: ({params: {i, j}}) =>
-      str`should NOT have duplicate items (items ## ${j} and ${i} are identical)`,
-    params: ({params: {i, j}}) => _`{i: ${i}, j: ${j}}`,
-  },
 }
 
-module.exports = def
+export default def

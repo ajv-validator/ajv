@@ -1,12 +1,18 @@
-import type {CodeKeywordDefinition} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, str} from "../../compile/codegen"
+
+const error: KeywordErrorDefinition = {
+  message: ({schemaCode}) => str`should be multiple of ${schemaCode}`,
+  params: ({schemaCode}) => _`{multipleOf: ${schemaCode}}`,
+}
 
 const def: CodeKeywordDefinition = {
   keyword: "multipleOf",
   type: "number",
   schemaType: "number",
   $data: true,
+  error,
   code(cxt: KeywordCxt) {
     const {gen, data, schemaCode, it} = cxt
     // const bdt = bad$DataType(schemaCode, <string>def.schemaType, $data)
@@ -17,10 +23,6 @@ const def: CodeKeywordDefinition = {
       : _`${res} !== parseInt(${res})`
     cxt.fail$data(_`(${schemaCode} === 0 || (${res} = ${data}/${schemaCode}, ${invalid}))`)
   },
-  error: {
-    message: ({schemaCode}) => str`should be multiple of ${schemaCode}`,
-    params: ({schemaCode}) => _`{multipleOf: ${schemaCode}}`,
-  },
 }
 
-module.exports = def
+export default def

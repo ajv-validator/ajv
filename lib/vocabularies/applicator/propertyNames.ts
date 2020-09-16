@@ -1,13 +1,19 @@
-import type {CodeKeywordDefinition} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {_, str} from "../../compile/codegen"
 
+const error: KeywordErrorDefinition = {
+  message: ({params}) => str`property name '${params.propertyName}' is invalid`, // TODO double quotes?
+  params: ({params}) => _`{propertyName: ${params.propertyName}}`,
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "propertyNames",
   type: "object",
   schemaType: ["object", "boolean"],
+  error,
   code(cxt: KeywordCxt) {
     const {gen, schema, data, it} = cxt
     if (alwaysValidSchema(it, schema)) return
@@ -28,10 +34,6 @@ const def: CodeKeywordDefinition = {
 
     cxt.ok(valid)
   },
-  error: {
-    message: ({params}) => str`property name '${params.propertyName}' is invalid`, // TODO double quotes?
-    params: ({params}) => _`{propertyName: ${params.propertyName}}`,
-  },
 }
 
-module.exports = def
+export default def

@@ -1,4 +1,4 @@
-import type {CodeKeywordDefinition, AnySchema} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition, AnySchema} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
@@ -7,9 +7,15 @@ import {_, str, nil, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 import {SchemaEnv, resolveRef} from "../../compile"
 
+const error: KeywordErrorDefinition = {
+  message: ({schema}) => str`can't resolve reference ${schema}`,
+  params: ({schema}) => _`{ref: ${schema}}`,
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "$ref",
   schemaType: "string",
+  error,
   code(cxt: KeywordCxt) {
     const {gen, schema, it} = cxt
     const {allErrors, baseId, schemaEnv: env, opts, validateName, self} = it
@@ -101,11 +107,6 @@ const def: CodeKeywordDefinition = {
       gen.assign(N.errors, _`${N.vErrors}.length`)
     }
   },
-  // TODO incorrect error message
-  error: {
-    message: ({schema}) => str`can't resolve reference ${schema}`,
-    params: ({schema}) => _`{ref: ${schema}}`,
-  },
 }
 
-module.exports = def
+export default def

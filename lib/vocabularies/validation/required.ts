@@ -1,14 +1,20 @@
-import type {CodeKeywordDefinition} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {propertyInData, noPropertyInData} from "../util"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"
 import {_, str, nil, Name} from "../../compile/codegen"
+
+const error: KeywordErrorDefinition = {
+  message: ({params: {missingProperty}}) => str`should have required property '${missingProperty}'`,
+  params: ({params: {missingProperty}}) => _`{missingProperty: ${missingProperty}}`,
+}
 
 const def: CodeKeywordDefinition = {
   keyword: "required",
   type: "object",
   schemaType: "array",
   $data: true,
+  error,
   code(cxt: KeywordCxt) {
     const {gen, schema, schemaCode, data, $data, it} = cxt
     if (!$data && schema.length === 0) return
@@ -62,11 +68,6 @@ const def: CodeKeywordDefinition = {
       )
     }
   },
-  error: {
-    message: ({params: {missingProperty}}) =>
-      str`should have required property '${missingProperty}'`,
-    params: ({params: {missingProperty}}) => _`{missingProperty: ${missingProperty}}`,
-  },
 }
 
-module.exports = def
+export default def
