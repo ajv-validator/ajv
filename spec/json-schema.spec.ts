@@ -1,4 +1,3 @@
-import type Ajv from "../dist/ajv"
 import getAjvInstances from "./ajv_instances"
 import jsonSchemaTest from "json-schema-test"
 import options from "./ajv_options"
@@ -35,7 +34,7 @@ runTest(
   require("./_json/draft7")
 )
 
-function runTest(instances: Ajv[], draft: number, tests) {
+function runTest(instances, draft: number, tests) {
   for (const ajv of instances) {
     if (draft === 6) {
       ajv.addMetaSchema(require("../dist/refs/json-schema-draft-06.json"))
