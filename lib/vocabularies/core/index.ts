@@ -1,4 +1,4 @@
-import {Vocabulary} from "../../types"
+import type {Vocabulary} from "../../types"
 
 const core: Vocabulary = ["$schema", "$id", "$defs", "definitions", require("./ref")]
 

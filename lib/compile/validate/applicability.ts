@@ -1,5 +1,5 @@
-import {SchemaObjCxt, SchemaObject} from "../../types"
-import {RuleGroup, Rule} from "../rules"
+import type {SchemaObjCxt, SchemaObject} from "../../types"
+import type {RuleGroup, Rule} from "../rules"
 
 export function schemaHasRulesForType(
   {schema, self}: SchemaObjCxt,

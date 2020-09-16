@@ -1,7 +1,20 @@
-import {CodeKeywordDefinition, AddedFormat, FormatValidate} from "../../types"
-import KeywordCxt from "../../compile/context"
+import type {
+  AddedFormat,
+  FormatValidator,
+  AsyncFormatValidator,
+  CodeKeywordDefinition,
+} from "../../types"
+import type KeywordCxt from "../../compile/context"
 import {_, str, nil, or, Code, getProperty} from "../../compile/codegen"
 import N from "../../compile/names"
+
+type FormatValidate =
+  | FormatValidator<string>
+  | FormatValidator<number>
+  | AsyncFormatValidator<string>
+  | AsyncFormatValidator<number>
+  | RegExp
+  | string
 
 const def: CodeKeywordDefinition = {
   keyword: "format",
@@ -79,7 +92,7 @@ const def: CodeKeywordDefinition = {
           code: opts.code.formats ? _`${opts.code.formats}${getProperty(schema)}` : undefined,
         })
         if (typeof fmtDef == "object" && !(fmtDef instanceof RegExp)) {
-          return [fmtDef.type || "string", fmtDef.validate as FormatValidate, _`${fmt}.validate`]
+          return [fmtDef.type || "string", fmtDef.validate, _`${fmt}.validate`]
         }
 
         return ["string", fmtDef, fmt]

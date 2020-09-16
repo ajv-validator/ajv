@@ -172,8 +172,6 @@ export interface ErrorObject {
   data?: unknown
 }
 
-export type KeywordCompilationResult = Schema | SchemaValidateFunction | ValidateFunction
-
 export interface SchemaCxt {
   gen: CodeGen
   allErrors?: boolean
@@ -277,36 +275,32 @@ export interface KeywordCxtParams {
   [x: string]: Code | string | number | undefined
 }
 
-export type FormatMode = "fast" | "full"
+export type FormatValidator<T extends string | number> = (data: T) => boolean
 
-type SN = string | number
+export type FormatCompare<T extends string | number> = (data1: T, data2: T) => boolean
 
-export type FormatValidator<T extends SN> = (data: T) => boolean
+export type AsyncFormatValidator<T extends string | number> = (data: T) => Promise<boolean>
 
-export type FormatCompare<T extends SN> = (data1: T, data2: T) => boolean
-
-export type AsyncFormatValidator<T extends SN> = (data: T) => Promise<boolean>
-
-export interface FormatDefinition<T extends SN> {
-  type?: T extends string ? "string" : "number"
+export interface FormatDefinition<T extends string | number> {
+  type: T extends string ? "string" | undefined : "number"
   validate: FormatValidator<T> | (T extends string ? string | RegExp : never)
   async?: false | undefined
   compare?: FormatCompare<T>
 }
 
-export interface AsyncFormatDefinition<T extends SN> {
-  type?: T extends string ? "string" : "number"
+export interface AsyncFormatDefinition<T extends string | number> {
+  type: T extends string ? "string" | undefined : "number"
   validate: AsyncFormatValidator<T>
   async: true
   compare?: FormatCompare<T>
 }
 
-export type FormatValidate = FormatValidator<SN> | AsyncFormatValidator<SN> | RegExp
-
 export type AddedFormat =
   | RegExp
-  | FormatValidator<SN> // TODO should be string, not SN
-  | FormatDefinition<SN>
-  | AsyncFormatDefinition<SN>
+  | FormatValidator<string>
+  | FormatDefinition<string>
+  | FormatDefinition<number>
+  | AsyncFormatDefinition<string>
+  | AsyncFormatDefinition<number>
 
 export type Format = AddedFormat | string

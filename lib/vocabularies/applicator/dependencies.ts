@@ -1,5 +1,5 @@
-import {CodeKeywordDefinition, SchemaMap, Schema} from "../../types"
-import KeywordCxt from "../../compile/context"
+import type {CodeKeywordDefinition, SchemaMap, Schema} from "../../types"
+import type KeywordCxt from "../../compile/context"
 import {alwaysValidSchema, propertyInData} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"

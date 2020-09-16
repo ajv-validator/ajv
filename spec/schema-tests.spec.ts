@@ -2,8 +2,7 @@ import getAjvInstances from "./ajv_instances"
 import jsonSchemaTest from "json-schema-test"
 import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
-
-const addFormats = require("ajv-formats")
+import addFormats from "ajv-formats"
 
 const instances = getAjvInstances(options, {strict: false, unknownFormats: ["allowedUnknown"]})
 

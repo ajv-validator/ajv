@@ -1,4 +1,4 @@
-import {ErrorObject} from "../types"
+import type {ErrorObject} from "../types"
 import {resolveUrl, normalizeId, getFullPath} from "./resolve"
 
 export class ValidationError extends Error {

@@ -1,7 +1,9 @@
-import {_, str, nil, _Code, Code, Name, getProperty, stringify} from "./code"
-import {Scope, ScopeValueSets, NameValue, ScopeStore, ValueScope, ValueScopeName} from "./scope"
+import type {ScopeValueSets, NameValue, ValueScope, ValueScopeName} from "./scope"
+import {_, nil, _Code, Code, Name} from "./code"
+import {Scope} from "./scope"
 
-export {_, str, nil, getProperty, stringify, Name, Code, Scope, ScopeStore, ValueScope}
+export {_, str, nil, getProperty, stringify, Name, Code} from "./code"
+export {Scope, ScopeStore, ValueScope} from "./scope"
 
 enum BlockKind {
   If,

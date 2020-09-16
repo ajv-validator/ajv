@@ -1,5 +1,5 @@
-import {CodeKeywordDefinition} from "../../types"
-import KeywordCxt from "../../compile/context"
+import type {CodeKeywordDefinition} from "../../types"
+import type KeywordCxt from "../../compile/context"
 import {getSchemaTypes} from "../../compile/validate/dataType"
 import {checkDataTypes, DataType} from "../../compile/util"
 import {_, str, Name} from "../../compile/codegen"

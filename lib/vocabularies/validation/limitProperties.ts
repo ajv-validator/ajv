@@ -1,5 +1,5 @@
-import {CodeKeywordDefinition} from "../../types"
-import KeywordCxt from "../../compile/context"
+import type {CodeKeywordDefinition} from "../../types"
+import type KeywordCxt from "../../compile/context"
 import {_, str, operators} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {

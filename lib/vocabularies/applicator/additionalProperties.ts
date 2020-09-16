@@ -1,4 +1,4 @@
-import {CodeKeywordDefinition, KeywordErrorCxt} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorCxt} from "../../types"
 import {allSchemaProperties, schemaRefOrVal, alwaysValidSchema, usePattern} from "../util"
 import {applySubschema, SubschemaApplication, Type} from "../../compile/subschema"
 import {_, nil, or, Code, Name} from "../../compile/codegen"

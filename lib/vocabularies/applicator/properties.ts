@@ -1,4 +1,4 @@
-import {CodeKeywordDefinition} from "../../types"
+import type {CodeKeywordDefinition} from "../../types"
 import KeywordCxt from "../../compile/context"
 import {schemaProperties, propertyInData} from "../util"
 import {applySubschema} from "../../compile/subschema"

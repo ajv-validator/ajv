@@ -1,4 +1,4 @@
-import {KeywordErrorCxt, KeywordErrorDefinition, SchemaCxt} from "../types"
+import type {KeywordErrorCxt, KeywordErrorDefinition, SchemaCxt} from "../types"
 import {CodeGen, _, str, Code, Name} from "./codegen"
 import N from "./names"
 

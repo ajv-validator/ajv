@@ -1,10 +1,10 @@
-import {SchemaObjCxt} from "../../types"
+import type {SchemaObjCxt} from "../../types"
+import type {Rule, RuleGroup} from "../rules"
 import {shouldUseGroup, shouldUseRule} from "./applicability"
 import {checkDataType, schemaHasRulesButRef} from "../util"
 import {keywordCode} from "./keyword"
 import {assignDefaults} from "./defaults"
 import {reportTypeError} from "./dataType"
-import {Rule, RuleGroup} from "../rules"
 import {_, Name} from "../codegen"
 import N from "../names"
 

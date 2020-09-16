@@ -1,4 +1,4 @@
-import {Schema, SchemaCxt, SchemaObjCxt, Options} from "../../types"
+import type {Schema, SchemaCxt, SchemaObjCxt, Options} from "../../types"
 import {boolOrEmptySchema, topBoolOrEmptySchema} from "./boolSchema"
 import {coerceAndCheckDataType, getSchemaTypes} from "./dataType"
 import {schemaKeywords} from "./iterate"

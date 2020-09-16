@@ -1,4 +1,19 @@
-import {
+export {
+  Format,
+  FormatDefinition,
+  AsyncFormatDefinition,
+  KeywordDefinition,
+  Vocabulary,
+} from "./types"
+export interface Plugin<Opts> {
+  (ajv: Ajv, options?: Opts): Ajv
+  [prop: string]: any
+}
+
+import KeywordCxt from "./compile/context"
+export {KeywordCxt}
+
+import type {
   Schema,
   SchemaObject,
   SyncSchemaObject,
@@ -17,7 +32,7 @@ import {
   Format,
   AddedFormat,
 } from "./types"
-import {JSONSchemaType} from "./types/json-schema"
+import type {JSONSchemaType} from "./types/json-schema"
 import Cache from "./cache"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
 import {getRules, ValidationRules, Rule, RuleGroup} from "./compile/rules"
@@ -630,3 +645,4 @@ function schemaOrData(schema: Schema): SchemaObject {
 }
 
 module.exports = Ajv
+module.exports.default = Ajv

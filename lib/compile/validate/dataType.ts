@@ -1,10 +1,10 @@
-import {SchemaObjCxt, KeywordErrorDefinition, KeywordErrorCxt, SchemaObject} from "../../types"
+import type {SchemaObjCxt, KeywordErrorDefinition, KeywordErrorCxt, SchemaObject} from "../../types"
+import type {ValidationRules} from "../rules"
+import {schemaHasRulesForType} from "./applicability"
 import {toHash, checkDataTypes, DataType} from "../util"
 import {schemaRefOrVal} from "../../vocabularies/util"
-import {schemaHasRulesForType} from "./applicability"
 import {reportError} from "../errors"
 import {_, str, Name} from "../codegen"
-import {ValidationRules} from "../rules"
 
 export function getSchemaTypes({self}: SchemaObjCxt, schema: SchemaObject): string[] {
   const st: undefined | string | string[] = schema.type

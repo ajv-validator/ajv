@@ -1,4 +1,4 @@
-import {Vocabulary} from "../../types"
+import type {Vocabulary} from "../../types"
 
 const applicator: Vocabulary = [
   // array

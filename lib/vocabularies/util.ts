@@ -1,6 +1,6 @@
+import type {Schema, SchemaMap, SchemaCxt, SchemaObjCxt} from "../types"
+import type KeywordCxt from "../compile/context"
 import {schemaHasRules} from "../compile/util"
-import {Schema, SchemaMap, SchemaCxt, SchemaObjCxt} from "../types"
-import KeywordCxt from "../compile/context"
 import {CodeGen, _, nil, Code, Name, getProperty} from "../compile/codegen"
 import N from "../compile/names"
 

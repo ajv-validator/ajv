@@ -1,4 +1,4 @@
-import {Schema, SchemaObjCxt} from "../types"
+import type {Schema, SchemaObjCxt} from "../types"
 import {subschemaCode} from "./validate"
 import {escapeFragment, escapeJsonPointer} from "./util"
 import {_, str, Code, Name, getProperty} from "./codegen"

@@ -1,7 +1,7 @@
 import {_, nil, and, operators, Code, Name, getProperty} from "./codegen"
-import {SchemaCxt, Schema} from "../types"
+import type {SchemaCxt, Schema} from "../types"
+import type {Rule, ValidationRules} from "./rules"
 import N from "./names"
-import {Rule, ValidationRules} from "./rules"
 
 export enum DataType {
   Correct,

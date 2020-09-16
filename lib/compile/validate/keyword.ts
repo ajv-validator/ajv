@@ -1,9 +1,11 @@
-import {
+import type {
   KeywordDefinition,
   MacroKeywordDefinition,
   FuncKeywordDefinition,
+  Schema,
   SchemaObjCxt,
-  KeywordCompilationResult,
+  SchemaValidateFunction,
+  ValidateFunction,
 } from "../../types"
 import KeywordCxt from "../context"
 import {applySubschema} from "../subschema"
@@ -11,6 +13,8 @@ import {extendErrors} from "../errors"
 import {callValidateCode} from "../../vocabularies/util"
 import {CodeGen, _, nil, Code, Name} from "../codegen"
 import N from "../names"
+
+type KeywordCompilationResult = Schema | SchemaValidateFunction | ValidateFunction
 
 export function keywordCode(
   it: SchemaObjCxt,

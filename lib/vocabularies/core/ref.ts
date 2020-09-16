@@ -1,5 +1,5 @@
-import {CodeKeywordDefinition, Schema} from "../../types"
-import KeywordCxt from "../../compile/context"
+import type {CodeKeywordDefinition, Schema} from "../../types"
+import type KeywordCxt from "../../compile/context"
 import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {callValidateCode} from "../util"
