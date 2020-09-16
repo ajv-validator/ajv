@@ -3,7 +3,17 @@ export {
   FormatDefinition,
   AsyncFormatDefinition,
   KeywordDefinition,
+  CodeKeywordDefinition,
+  MacroKeywordDefinition,
+  FuncKeywordDefinition,
   Vocabulary,
+  Schema,
+  AsyncSchema,
+  Options,
+  ValidateFunction,
+  AsyncValidateFunction,
+  CacheInterface,
+  Logger,
 } from "./types"
 export interface Plugin<Opts> {
   (ajv: Ajv, options?: Opts): Ajv
