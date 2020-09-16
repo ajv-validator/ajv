@@ -1,5 +1,5 @@
 import {_, nil, and, operators, Code, Name, getProperty} from "./codegen"
-import type {SchemaCxt, Schema} from "../types"
+import type {SchemaCxt, AnySchema} from "../types"
 import type {Rule, ValidationRules} from "./rules"
 import N from "./names"
 
@@ -74,7 +74,7 @@ export function toHash(arr: string[]): {[key: string]: true | undefined} {
 }
 
 export function schemaHasRules(
-  schema: Schema,
+  schema: AnySchema,
   rules: {[key: string]: boolean | Rule | undefined}
 ): boolean {
   if (typeof schema == "boolean") return !schema
@@ -88,7 +88,7 @@ export function schemaCxtHasRules({schema, self}: SchemaCxt): boolean {
   return false
 }
 
-export function schemaHasRulesButRef(schema: Schema, RULES: ValidationRules): boolean {
+export function schemaHasRulesButRef(schema: AnySchema, RULES: ValidationRules): boolean {
   if (typeof schema == "boolean") return !schema
   for (const key in schema) if (key !== "$ref" && RULES.all[key]) return true
   return false

@@ -3,7 +3,7 @@ import type {
   KeywordErrorCxt,
   KeywordCxtParams,
   SchemaObjCxt,
-  SchemaObject,
+  AnySchemaObject,
 } from "../types"
 import {schemaRefOrVal} from "../vocabularies/util"
 import {getData, checkDataTypes, DataType} from "./util"
@@ -27,7 +27,7 @@ export default class KeywordCxt implements KeywordErrorCxt {
   readonly schemaValue: Code | number | boolean // Code reference to keyword schema value or primitive value
   readonly schemaCode: Code | number | boolean // Code reference to resolved schema value (different if schema is $data)
   readonly schemaType?: string | string[]
-  readonly parentSchema: SchemaObject
+  readonly parentSchema: AnySchemaObject
   readonly errsCount?: Name
   params: KeywordCxtParams
   readonly it: SchemaObjCxt

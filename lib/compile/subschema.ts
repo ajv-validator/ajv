@@ -1,11 +1,11 @@
-import type {Schema, SchemaObjCxt} from "../types"
+import type {AnySchema, SchemaObjCxt} from "../types"
 import {subschemaCode} from "./validate"
 import {escapeFragment, escapeJsonPointer} from "./util"
 import {_, str, Code, Name, getProperty} from "./codegen"
 
 export interface SubschemaContext {
   // TODO use Optional?
-  schema: Schema
+  schema: AnySchema
   schemaPath: Code
   errSchemaPath: string
   topSchemaRef?: Code
@@ -32,7 +32,7 @@ export type SubschemaApplication = Partial<SubschemaApplicationParams>
 interface SubschemaApplicationParams {
   keyword: string
   schemaProp: string | number
-  schema: Schema
+  schema: AnySchema
   schemaPath: Code
   errSchemaPath: string
   topSchemaRef: Code

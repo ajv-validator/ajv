@@ -3,23 +3,37 @@ import type {SchemaEnv} from "../compile"
 import type KeywordCxt from "../compile/context"
 import type Ajv from "../ajv"
 
-export interface SchemaObject {
+interface _SchemaObject {
   $id?: string
-  $async?: boolean
   $schema?: string
   [x: string]: any // TODO
 }
 
+export interface SchemaObject extends _SchemaObject {
+  $id?: string
+  $schema?: string
+  $async?: false
+  [x: string]: any // TODO
+}
+
+export interface AsyncSchema extends _SchemaObject {
+  $async: true
+}
+
+export type AnySchemaObject = SchemaObject | AsyncSchema
+
 export type Schema = SchemaObject | boolean
 
+export type AnySchema = Schema | AsyncSchema
+
 export interface SchemaMap {
-  [key: string]: Schema | undefined
+  [key: string]: AnySchema | undefined
 }
 
 export type LoadSchemaFunction = (
   uri: string,
-  cb?: (err: Error | null, schema?: SchemaObject) => void
-) => Promise<SchemaObject>
+  cb?: (err: Error | null, schema?: AnySchemaObject) => void
+) => Promise<AnySchemaObject>
 
 export interface CurrentOptions {
   strict?: boolean | "log"
@@ -30,15 +44,15 @@ export interface CurrentOptions {
   formats?: {[name: string]: Format}
   keywords?: Vocabulary | {[x: string]: KeywordDefinition} // map is deprecated
   unknownFormats?: true | string[] | "ignore"
-  schemas?: Schema[] | {[key: string]: Schema}
+  schemas?: AnySchema[] | {[key: string]: AnySchema}
   missingRefs?: true | "ignore" | "fail"
   extendRefs?: true | "ignore" | "fail"
   loadSchema?: LoadSchemaFunction
   removeAdditional?: boolean | "all" | "failing"
   useDefaults?: boolean | "empty"
   coerceTypes?: boolean | "array"
-  meta?: SchemaObject | boolean
-  defaultMeta?: string | SchemaObject
+  meta?: AnySchemaObject | boolean
+  defaultMeta?: string | AnySchemaObject
   validateSchema?: boolean | "log"
   addUsedSchema?: boolean
   inlineRefs?: boolean | number
@@ -54,8 +68,10 @@ export interface CurrentOptions {
   codegen?: CodeGenOptions
   cache?: CacheInterface
   logger?: Logger | false
-  serialize?: false | ((schema: Schema) => unknown)
-  $comment?: true | ((comment: string, schemaPath?: string, rootSchema?: SchemaObject) => unknown)
+  serialize?: false | ((schema: AnySchema) => unknown)
+  $comment?:
+    | true
+    | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
   allowMatchingProperties?: boolean // disables a strict mode restriction
 }
 
@@ -80,7 +96,7 @@ export interface InstanceOptions extends Options {
   code: CodeOptions
   loopRequired: number
   loopEnum: number
-  serialize: (schema: Schema) => unknown
+  serialize: (schema: AnySchema) => unknown
   addUsedSchema: boolean
   validateSchema: boolean | "log"
 }
@@ -103,7 +119,7 @@ interface SourceCode {
   scope: Scope
 }
 
-export interface ValidateGuard<T> extends _ValidateFuncProps {
+export interface ValidateFunction<T = any> {
   (
     this: Ajv | any,
     data: any,
@@ -112,50 +128,18 @@ export interface ValidateGuard<T> extends _ValidateFuncProps {
     parentDataProperty?: string | number,
     rootData?: Record<string, any> | any[]
   ): data is T
-}
-
-interface _ValidateFunction<T extends boolean | Promise<any>> extends _ValidateFuncProps {
-  (...args: Parameters<ValidateGuard<any>>): T
-  $async?: true
-}
-
-interface _ValidateFuncProps {
-  schema?: Schema
   errors?: null | ErrorObject[]
+  schema?: AnySchema
   schemaEnv?: SchemaEnv
   source?: SourceCode
 }
 
-export type ValidateFunction = _ValidateFunction<boolean | Promise<any>>
-
-export interface SyncSchemaObject extends SchemaObject {
-  $async?: false | undefined
-}
-
-export interface SyncValidateFunction extends _ValidateFunction<boolean> {
-  $async: undefined
-}
-
-export interface AsyncSchemaObject extends SchemaObject {
+export interface AsyncValidateFunction<T = any> extends ValidateFunction<T> {
+  (...args: Parameters<ValidateFunction<T>>): Promise<T>
   $async: true
 }
 
-export interface AsyncValidateFunction extends _ValidateFunction<Promise<any>> {
-  $async: true
-}
-
-export interface SchemaValidateFunction {
-  (
-    schema: any,
-    data: any,
-    parentSchema?: SchemaObject,
-    dataPath?: string,
-    parentData?: Record<string, any> | any[],
-    parentDataProperty?: string | number,
-    rootData?: Record<string, any> | any[]
-  ): boolean | Promise<any>
-  errors?: Partial<ErrorObject>[]
-}
+export type AnyValidateFunction<T = any> = ValidateFunction<T> | AsyncValidateFunction<T>
 
 export interface ErrorObject {
   keyword: string
@@ -168,7 +152,7 @@ export interface ErrorObject {
   message?: string
   // These are added with the `verbose` option.
   schema?: unknown
-  parentSchema?: SchemaObject
+  parentSchema?: AnySchemaObject
   data?: unknown
 }
 
@@ -184,7 +168,7 @@ export interface SchemaCxt {
   topSchemaRef: Code
   validateName: Name
   ValidationError?: Name
-  schema: Schema
+  schema: AnySchema
   schemaEnv: SchemaEnv
   rootId: string // TODO ?
   baseId: string
@@ -199,7 +183,7 @@ export interface SchemaCxt {
 }
 
 export interface SchemaObjCxt extends SchemaCxt {
-  schema: SchemaObject
+  schema: AnySchemaObject
 }
 
 interface _KeywordDef {
@@ -209,8 +193,8 @@ interface _KeywordDef {
   $data?: boolean
   implements?: string[]
   before?: string
-  metaSchema?: SchemaObject
-  validateSchema?: ValidateFunction // compiled keyword metaSchema - should not be passed
+  metaSchema?: AnySchemaObject
+  validateSchema?: AnyValidateFunction // compiled keyword metaSchema - should not be passed
   dependencies?: string[] // keywords that must be present in the same schema
   error?: KeywordErrorDefinition
   $dataError?: KeywordErrorDefinition
@@ -221,18 +205,40 @@ export interface CodeKeywordDefinition extends _KeywordDef {
   trackErrors?: boolean
 }
 
-export type MacroKeywordFunc = (schema: any, parentSchema: SchemaObject, it: SchemaCxt) => Schema
+export type MacroKeywordFunc = (
+  schema: any,
+  parentSchema: AnySchemaObject,
+  it: SchemaCxt
+) => AnySchema
 
 export type CompileKeywordFunc = (
   schema: any,
-  parentSchema: SchemaObject,
+  parentSchema: AnySchemaObject,
   it: SchemaObjCxt
-) => ValidateFunction
+) => DataValidateFunction
+
+export interface DataValidateFunction {
+  (...args: Parameters<ValidateFunction>): boolean | Promise<any>
+  errors?: Partial<ErrorObject>[]
+}
+
+export interface SchemaValidateFunction {
+  (
+    schema: any,
+    data: any,
+    parentSchema?: AnySchemaObject,
+    dataPath?: string,
+    parentData?: Record<string, any> | any[],
+    parentDataProperty?: string | number,
+    rootData?: Record<string, any> | any[]
+  ): boolean | Promise<any>
+  errors?: Partial<ErrorObject>[]
+}
 
 export interface FuncKeywordDefinition extends _KeywordDef {
-  validate?: SchemaValidateFunction | ValidateFunction
+  validate?: SchemaValidateFunction | DataValidateFunction
   compile?: CompileKeywordFunc
-  // schema: false makes validate not to expect schema (ValidateFunction)
+  // schema: false makes validate not to expect schema (DataValidateFunction)
   schema?: boolean // requires "validate"
   modifying?: boolean
   async?: boolean
@@ -262,7 +268,7 @@ export interface KeywordErrorCxt {
   data: Name
   $data?: string | false
   schema: any // TODO
-  parentSchema?: SchemaObject
+  parentSchema?: AnySchemaObject
   schemaCode: Code | number | boolean
   schemaValue: Code | number | boolean
   schemaType?: string | string[]

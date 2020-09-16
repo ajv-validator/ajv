@@ -1,5 +1,5 @@
 import _Ajv from "./ajv"
-import type {SchemaObject, ValidateFunction} from "../dist/types"
+import type {SchemaObject, AnyValidateFunction} from "../dist/types"
 
 const should = require("./chai").should()
 
@@ -332,7 +332,7 @@ describe("compileAsync method", () => {
       }
     })
 
-    function shouldReject(p: Promise<ValidateFunction>, rx: RegExp) {
+    function shouldReject(p: Promise<AnyValidateFunction>, rx: RegExp) {
       return p.then(
         (validate) => {
           should.not.exist(validate)

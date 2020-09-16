@@ -1,19 +1,45 @@
-import type {SchemaObject, SyncSchemaObject, AsyncSchemaObject} from "../../dist/types"
+import type {AnySchemaObject, SchemaObject, AsyncSchema} from "../../dist/types"
 import _Ajv from "../ajv"
 const should = require("../chai").should()
 
-describe("validate function result type depends on $async property type", () => {
+interface Foo {
+  foo: number
+}
+
+describe("$async validation and type guards", () => {
   const ajv = new _Ajv()
 
   describe("$async: undefined", () => {
-    const validate = ajv.compile({})
-    it("should have result type boolean | promise", async () => {
-      const result = validate({})
-      if (typeof result === "boolean") {
-        should.exist(result)
-      } else {
-        await result.then((data) => data.should.exist)
+    it("should have result type boolean 1", () => {
+      const validate = ajv.compile<Foo>({properties: {foo: {type: "number"}}})
+      const data: unknown = {foo: 1}
+      let result: boolean
+      if ((result = validate(data))) {
+        data.foo.should.equal(1)
       }
+      result.should.equal(true)
+    })
+
+    it("should have result type boolean 2", () => {
+      const schema: SchemaObject = {properties: {foo: {type: "number"}}}
+      const validate = ajv.compile<Foo>(schema)
+      const data: unknown = {foo: 1}
+      let result: boolean
+      if ((result = validate(data))) {
+        data.foo.should.equal(1)
+      }
+      result.should.equal(true)
+    })
+
+    it("should have result type boolean 3", () => {
+      const schema: AnySchemaObject = {properties: {foo: {type: "number"}}}
+      const validate = ajv.compile<Foo>(schema)
+      const data: unknown = {foo: 1}
+      let result: boolean
+      if ((result = validate(data))) {
+        data.foo.should.equal(1)
+      }
+      result.should.equal(true)
     })
   })
 
@@ -25,7 +51,14 @@ describe("validate function result type depends on $async property type", () => 
     })
 
     it("should have result type boolean 2", () => {
-      const schema: SyncSchemaObject = {$async: false}
+      const schema: SchemaObject = {$async: false}
+      const validate = ajv.compile(schema)
+      const result: boolean = validate({})
+      should.exist(result)
+    })
+
+    it("should have result type boolean 3", () => {
+      const schema: AnySchemaObject = {$async: false}
       const validate = ajv.compile(schema)
       const result: boolean = validate({})
       should.exist(result)
@@ -34,47 +67,39 @@ describe("validate function result type depends on $async property type", () => 
 
   describe("$async: true", () => {
     it("should have result type promise 1", async () => {
-      const validate = ajv.compile({$async: true})
-      const result: Promise<any> = validate({})
+      const validate = ajv.compile<Foo>({$async: true, properties: {foo: {type: "number"}}})
+      const result: Promise<Foo> = validate({foo: 1})
       await result.then((data) => data.should.exist)
     })
 
     it("should have result type promise 2", async () => {
-      const schema: AsyncSchemaObject = {$async: true}
-      const validate = ajv.compile(schema)
-      const result: Promise<any> = validate({})
-      await result.then((data) => data.should.exist)
+      const schema: AsyncSchema = {$async: true, properties: {foo: {type: "number"}}}
+      const validate = ajv.compile<Foo>(schema)
+      const result: Promise<Foo> = validate({foo: 1})
+      await result.then((data) => data.foo.should.equal(1))
     })
   })
 
   describe("$async: boolean", () => {
-    it("should have result type boolean | promise", async () => {
-      const schema = {$async: true}
-      const validate = ajv.compile(schema)
-      const result = validate({})
-      if (typeof result === "boolean") {
-        result.should.equal(true)
+    it("should have result type boolean | promise 1", async () => {
+      const schema = {$async: true, properties: {foo: {type: "number"}}}
+      const validate = ajv.compile<Foo>(schema)
+      const data: unknown = {foo: 1}
+      let result: boolean | Promise<Foo>
+      if ((result = validate(data))) {
+        if (typeof result == "boolean") {
+          data.foo.should.equal(1)
+        } else {
+          await result.then((_data) => _data.foo.should.equal(1))
+        }
       } else {
-        await result.then((data) => data.should.exist)
+        should.fail()
       }
     })
 
-    it("should have result type boolean | promise", async () => {
+    it("should have result type boolean | promise 2", async () => {
       const schema = {$async: false}
       const validate = ajv.compile(schema)
-      const result = validate({})
-      if (typeof result === "boolean") {
-        result.should.equal(true)
-      } else {
-        await result.then((data) => data.should.exist)
-      }
-    })
-  })
-
-  describe("= boolean", () => {
-    const schema: SchemaObject = {}
-    const validate = ajv.compile(schema)
-    it("should have result type boolean | promise", async () => {
       const result = validate({})
       if (typeof result === "boolean") {
         should.exist(result)
@@ -85,28 +110,24 @@ describe("validate function result type depends on $async property type", () => 
   })
 
   describe("$async: unknown", () => {
-    const schema: Record<string, unknown> = {}
-    const validate = ajv.compile(schema)
-    it("should have result type boolean | promise", async () => {
-      const result = validate({})
-      if (typeof result === "boolean") {
-        should.exist(result)
-      } else {
-        await result.then((data) => data.should.exist)
+    const schema: Record<string, unknown> = {properties: {foo: {type: "number"}}}
+    const validate = ajv.compile<Foo>(schema)
+    it("should have result type boolean", () => {
+      const data = {foo: 1}
+      let result: boolean
+      if ((result = validate(data))) {
+        data.foo.should.equal(1)
       }
+      result.should.equal(true)
     })
   })
 
-  describe("$async: any", () => {
+  describe("schema: any", () => {
     const schema: any = {}
     const validate = ajv.compile(schema)
-    it("should have result type boolean | promise", async () => {
-      const result = validate({})
-      if (typeof result === "boolean") {
-        should.exist(result)
-      } else {
-        await result.then((data) => data.should.exist)
-      }
+    it("should have result type boolean | promise", () => {
+      const result: boolean = validate({})
+      result.should.equal(true)
     })
   })
 })

@@ -67,13 +67,13 @@
     "uri-js": "^4.2.2"
   },
   "devDependencies": {
-    "@ajv-validator/config": "^0.2.2",
+    "@ajv-validator/config": "^0.2.3",
     "@types/chai": "^4.2.12",
     "@types/mocha": "^8.0.3",
     "@types/node": "^14.0.27",
     "@typescript-eslint/eslint-plugin": "^3.8.0",
     "@typescript-eslint/parser": "^3.8.0",
-    "ajv-formats": "^0.2.0",
+    "ajv-formats": "^0.3.0",
     "browserify": "^16.2.0",
     "chai": "^4.0.1",
     "coveralls": "^3.0.1",

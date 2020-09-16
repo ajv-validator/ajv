@@ -2,10 +2,10 @@ import type {
   KeywordDefinition,
   MacroKeywordDefinition,
   FuncKeywordDefinition,
-  Schema,
+  AnySchema,
   SchemaObjCxt,
   SchemaValidateFunction,
-  ValidateFunction,
+  AnyValidateFunction,
 } from "../../types"
 import KeywordCxt from "../context"
 import {applySubschema} from "../subschema"
@@ -14,7 +14,7 @@ import {callValidateCode} from "../../vocabularies/util"
 import {CodeGen, _, nil, Code, Name} from "../codegen"
 import N from "../names"
 
-type KeywordCompilationResult = Schema | SchemaValidateFunction | ValidateFunction
+type KeywordCompilationResult = AnySchema | SchemaValidateFunction | AnyValidateFunction
 
 export function keywordCode(
   it: SchemaObjCxt,

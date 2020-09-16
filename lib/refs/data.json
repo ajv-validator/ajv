@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#",
-  "description": "Meta-schema for $data reference (JSON Schema extension proposal)",
+  "description": "Meta-schema for $data reference (JSON AnySchema extension proposal)",
   "type": "object",
   "required": ["$data"],
   "properties": {

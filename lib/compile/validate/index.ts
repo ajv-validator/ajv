@@ -1,4 +1,4 @@
-import type {Schema, SchemaCxt, SchemaObjCxt, Options} from "../../types"
+import type {AnySchema, SchemaCxt, SchemaObjCxt, Options} from "../../types"
 import {boolOrEmptySchema, topBoolOrEmptySchema} from "./boolSchema"
 import {coerceAndCheckDataType, getSchemaTypes} from "./dataType"
 import {schemaKeywords} from "./iterate"
@@ -46,7 +46,7 @@ function topSchemaObjCode(it: SchemaObjCxt): void {
   return
 }
 
-function funcSourceUrl(schema: Schema, opts: Options): Code {
+function funcSourceUrl(schema: AnySchema, opts: Options): Code {
   return typeof schema == "object" && schema.$id && (opts.sourceCode || opts.processCode)
     ? _`/*# sourceURL=${schema.$id} */`
     : nil

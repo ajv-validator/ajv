@@ -27,7 +27,7 @@ export type JSONSchemaType<T, _partial = false> = (T extends number
     }
   : T extends [any, ...any[]]
   ? {
-      // JSON Schema for tuple
+      // JSON AnySchema for tuple
       type: "array"
       items: {
         [K in keyof T]-?: JSONSchemaType<T[K]> & Nullable<T[K]>
@@ -46,7 +46,7 @@ export type JSONSchemaType<T, _partial = false> = (T extends number
     }
   : T extends Record<string, any>
   ? {
-      // JSON Schema for records and dicitonaries
+      // JSON AnySchema for records and dicitonaries
       // "required" and "additionalProperties" are not optional because they are often forgotten
       // "properties" are optional for more concise dicitonary schemas
       // "patternProperties" and can be only used with interfaces that have string index

@@ -1,4 +1,4 @@
-import type {Schema, SchemaMap, SchemaCxt, SchemaObjCxt} from "../types"
+import type {AnySchema, SchemaMap, SchemaCxt, SchemaObjCxt} from "../types"
 import type KeywordCxt from "../compile/context"
 import {schemaHasRules} from "../compile/util"
 import {CodeGen, _, nil, Code, Name, getProperty} from "../compile/codegen"
@@ -17,14 +17,14 @@ export function schemaRefOrVal(
   return _`${topSchemaRef}${schemaPath}${getProperty(keyword)}`
 }
 
-export function alwaysValidSchema(it: SchemaCxt, schema: Schema): boolean | void {
+export function alwaysValidSchema(it: SchemaCxt, schema: AnySchema): boolean | void {
   if (typeof schema == "boolean") return schema
   if (Object.keys(schema).length === 0) return true
   checkUnknownRules(it, schema)
   return !schemaHasRules(schema, it.self.RULES.all)
 }
 
-export function checkUnknownRules(it: SchemaCxt, schema: Schema = it.schema): void {
+export function checkUnknownRules(it: SchemaCxt, schema: AnySchema = it.schema): void {
   const {opts, self} = it
   if (!opts.strict) return
   if (typeof schema === "boolean") return
@@ -40,7 +40,7 @@ export function allSchemaProperties(schemaMap?: SchemaMap): string[] {
 
 export function schemaProperties(it: SchemaCxt, schemaMap: SchemaMap): string[] {
   return allSchemaProperties(schemaMap).filter(
-    (p) => !alwaysValidSchema(it, schemaMap[p] as Schema)
+    (p) => !alwaysValidSchema(it, schemaMap[p] as AnySchema)
   )
 }
 

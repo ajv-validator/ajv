@@ -1,4 +1,4 @@
-import type {Schema, SchemaObject} from "../types"
+import type {AnySchema, AnySchemaObject} from "../types"
 import type Ajv from "../ajv"
 import {eachItem, toHash} from "./util"
 import equal from "fast-deep-equal"
@@ -7,7 +7,7 @@ import URI = require("uri-js")
 
 // the hash of local references inside the schema (created by getSchemaRefs), used for inline resolution
 export interface LocalRefs {
-  [ref: string]: SchemaObject | undefined
+  [ref: string]: AnySchemaObject | undefined
 }
 
 // TODO refactor to use keyword definitions
@@ -29,14 +29,14 @@ const SIMPLE_INLINED = toHash([
   "enum",
   "const",
 ])
-export function inlineRef(schema: Schema, limit: boolean | number = true): boolean {
+export function inlineRef(schema: AnySchema, limit: boolean | number = true): boolean {
   if (typeof schema == "boolean") return true
   if (limit === true) return !hasRef(schema)
   if (!limit) return false
   return countKeys(schema) <= limit
 }
 
-function hasRef(schema: SchemaObject): boolean {
+function hasRef(schema: AnySchemaObject): boolean {
   for (const key in schema) {
     if (key === "$ref") return true
     const sch = schema[key]
@@ -46,7 +46,7 @@ function hasRef(schema: SchemaObject): boolean {
   return false
 }
 
-function countKeys(schema: SchemaObject): number {
+function countKeys(schema: AnySchemaObject): number {
   let count = 0
   for (const key in schema) {
     if (key === "$ref") return Infinity
@@ -80,7 +80,7 @@ export function resolveUrl(baseId: string, id: string): string {
   return URI.resolve(baseId, id)
 }
 
-export function getSchemaRefs(this: Ajv, schema: Schema): LocalRefs {
+export function getSchemaRefs(this: Ajv, schema: AnySchema): LocalRefs {
   if (typeof schema == "boolean") return {}
   const schemaId = normalizeId(schema.$id)
   const baseIds: {[jsonPtr: string]: string} = {"": schemaId}
@@ -112,7 +112,7 @@ export function getSchemaRefs(this: Ajv, schema: Schema): LocalRefs {
 
   return localRefs
 
-  function checkAmbiguosId(sch1: Schema, sch2: Schema | undefined, id: string): void {
+  function checkAmbiguosId(sch1: AnySchema, sch2: AnySchema | undefined, id: string): void {
     if (sch2 !== undefined && !equal(sch1, sch2)) {
       throw new Error(`id "${id}" resolves to more than one schema`)
     }

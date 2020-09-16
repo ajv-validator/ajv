@@ -1,4 +1,4 @@
-import type {CodeKeywordDefinition, Schema} from "../../types"
+import type {CodeKeywordDefinition, AnySchema} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
@@ -43,7 +43,7 @@ const def: CodeKeywordDefinition = {
       else callSyncRef(v)
     }
 
-    function inlineRefSchema(sch: Schema): void {
+    function inlineRefSchema(sch: AnySchema): void {
       const schName = gen.scopeValue("schema", {ref: sch})
       const valid = gen.name("valid")
       applySubschema(
