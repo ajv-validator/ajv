@@ -76,7 +76,6 @@
     "ajv-formats": "^0.3.2",
     "browserify": "^16.2.0",
     "chai": "^4.0.1",
-    "coveralls": "^3.0.1",
     "cross-env": "^7.0.2",
     "eslint": "^7.8.1",
     "eslint-config-prettier": "^6.11.0",
