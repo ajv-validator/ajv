@@ -1,4 +1,9 @@
-import type {CodeKeywordDefinition, KeywordErrorDefinition, AnySchema} from "../../types"
+import type {
+  CodeKeywordDefinition,
+  ErrorObject,
+  KeywordErrorDefinition,
+  AnySchema,
+} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
@@ -7,9 +12,7 @@ import {_, str, nil, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 import {SchemaEnv, resolveRef} from "../../compile"
 
-export interface RefErrorParams {
-  ref: string
-}
+export type RefError = ErrorObject<"ref", {ref: string}>
 
 const error: KeywordErrorDefinition = {
   message: ({schema}) => str`can't resolve reference ${schema}`,

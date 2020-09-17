@@ -1,12 +1,13 @@
-import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import {allSchemaProperties, schemaRefOrVal, alwaysValidSchema, usePattern} from "../util"
 import {applySubschema, SubschemaApplication, Type} from "../../compile/subschema"
 import {_, nil, or, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 
-export interface AdditionalPropsErrorParams {
-  additionalProperty: string
-}
+export type AdditionalPropertiesError = ErrorObject<
+  "additionalProperties",
+  {additionalProperty: string}
+>
 
 const error: KeywordErrorDefinition = {
   message: "should NOT have additional properties",

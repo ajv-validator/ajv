@@ -1,12 +1,10 @@
-import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {alwaysValidSchema, checkStrictMode} from "../util"
 import {applySubschema, Type} from "../../compile/subschema"
 import {_, Name, str} from "../../compile/codegen"
 
-export interface AdditionalItemsErrorParams {
-  limit: number
-}
+export type AdditionalItemsError = ErrorObject<"additionalItems", {limit: number}>
 
 const error: KeywordErrorDefinition = {
   message: ({params: {len}}) => str`should NOT have more than ${len} items`,
@@ -14,7 +12,7 @@ const error: KeywordErrorDefinition = {
 }
 
 const def: CodeKeywordDefinition = {
-  keyword: "additionalItems",
+  keyword: "additionalItems" as const,
   type: "array",
   schemaType: ["boolean", "object"],
   before: "uniqueItems",

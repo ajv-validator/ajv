@@ -1,11 +1,9 @@
-import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, or, Name, Code} from "../../compile/codegen"
 import equal from "fast-deep-equal"
 
-export interface EnumErrorParams {
-  allowedValues: any[]
-}
+export type EnumError = ErrorObject<"enum", {allowedValues: any[]}>
 
 const error: KeywordErrorDefinition = {
   message: "should be equal to one of the allowed values",

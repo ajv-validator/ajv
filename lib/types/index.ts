@@ -3,8 +3,6 @@ import type {SchemaEnv} from "../compile"
 import type KeywordCxt from "../compile/context"
 import type Ajv from "../ajv"
 
-export {DefinedError} from "../vocabularies/errors"
-
 interface _SchemaObject {
   $id?: string
   $schema?: string

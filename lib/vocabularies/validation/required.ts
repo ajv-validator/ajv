@@ -1,12 +1,10 @@
-import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {propertyInData, noPropertyInData} from "../util"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"
 import {_, str, nil, Name} from "../../compile/codegen"
 
-export interface RequiredErrorParams {
-  missingProperty: string
-}
+export type RequiredError = ErrorObject<"required", {missingProperty: string}>
 
 const error: KeywordErrorDefinition = {
   message: ({params: {missingProperty}}) => str`should have required property '${missingProperty}'`,

@@ -1,4 +1,10 @@
-import type {CodeKeywordDefinition, KeywordErrorDefinition, SchemaMap, AnySchema} from "../../types"
+import type {
+  CodeKeywordDefinition,
+  ErrorObject,
+  KeywordErrorDefinition,
+  SchemaMap,
+  AnySchema,
+} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {alwaysValidSchema, propertyInData} from "../util"
 import {applySubschema} from "../../compile/subschema"
@@ -11,12 +17,15 @@ interface PropertyDependencies {
 
 type SchemaDependencies = SchemaMap
 
-export interface DependenciesErrorParams {
-  property: string
-  missingProperty: string
-  depsCount: number
-  deps: string // TODO change to string[]
-}
+export type DependenciesError = ErrorObject<
+  "dependencies",
+  {
+    property: string
+    missingProperty: string
+    depsCount: number
+    deps: string // TODO change to string[]
+  }
+>
 
 const error: KeywordErrorDefinition = {
   message: ({params: {property, depsCount, deps}}) => {

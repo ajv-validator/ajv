@@ -1,11 +1,9 @@
-import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_} from "../../compile/codegen"
 import equal from "fast-deep-equal"
 
-export interface ConstErrorParams {
-  allowedValue: any
-}
+export type ConstError = ErrorObject<"const", {allowedValue: any}>
 
 const error: KeywordErrorDefinition = {
   message: "should be equal to constant",

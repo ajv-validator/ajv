@@ -1,12 +1,15 @@
-import type {CodeKeywordDefinition, KeywordErrorDefinition, AnySchema} from "../../types"
+import type {
+  CodeKeywordDefinition,
+  ErrorObject,
+  KeywordErrorDefinition,
+  AnySchema,
+} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {_} from "../../compile/codegen"
 
-export interface OneOfErrorParams {
-  passingSchemas: [number, number]
-}
+export type OneOfError = ErrorObject<"oneOf", {passingSchemas: [number, number]}>
 
 const error: KeywordErrorDefinition = {
   message: "should match exactly one schema in oneOf",

@@ -4,6 +4,7 @@ import type {
   AsyncFormatValidator,
   CodeKeywordDefinition,
   KeywordErrorDefinition,
+  ErrorObject,
 } from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, str, nil, or, Code, getProperty} from "../../compile/codegen"
@@ -17,9 +18,7 @@ type FormatValidate =
   | RegExp
   | string
 
-export interface FormatErrorParams {
-  format: string
-}
+export type FormatError = ErrorObject<"format", {format: string}>
 
 const error: KeywordErrorDefinition = {
   message: ({schemaCode}) => str`should match format "${schemaCode}"`,

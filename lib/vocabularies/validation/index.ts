@@ -1,18 +1,18 @@
-import type {Vocabulary} from "../../types"
-import limit from "./limit"
-import multipleOf from "./multipleOf"
+import type {ErrorObject, Vocabulary} from "../../types"
+import limitNumber, {LimitNumberError} from "./limitNumber"
+import multipleOf, {MultipleOfError} from "./multipleOf"
 import limitLength from "./limitLength"
-import pattern from "./pattern"
+import pattern, {PatternError} from "./pattern"
 import limitProperties from "./limitProperties"
-import required from "./required"
+import required, {RequiredError} from "./required"
 import limitItems from "./limitItems"
-import uniqueItems from "./uniqueItems"
-import constKeyword from "./const"
-import enumKeyword from "./enum"
+import uniqueItems, {UniqueItemsError} from "./uniqueItems"
+import constKeyword, {ConstError} from "./const"
+import enumKeyword, {EnumError} from "./enum"
 
 const validation: Vocabulary = [
   // number
-  limit,
+  limitNumber,
   multipleOf,
   // string
   limitLength,
@@ -30,3 +30,18 @@ const validation: Vocabulary = [
 ]
 
 export default validation
+
+type LimitError = ErrorObject<
+  "maxItems" | "minItems" | "minProperties" | "maxProperties" | "minLength" | "maxLength",
+  {limit: number}
+>
+
+export type ValidationKeywordError =
+  | LimitError
+  | LimitNumberError
+  | MultipleOfError
+  | PatternError
+  | RequiredError
+  | UniqueItemsError
+  | ConstError
+  | EnumError

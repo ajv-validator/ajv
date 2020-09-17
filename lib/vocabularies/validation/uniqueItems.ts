@@ -1,14 +1,11 @@
-import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {getSchemaTypes} from "../../compile/validate/dataType"
 import {checkDataTypes, DataType} from "../../compile/util"
 import {_, str, Name} from "../../compile/codegen"
 import equal from "fast-deep-equal"
 
-export interface UniqueItemsErrorParams {
-  i: number
-  j: number
-}
+export type UniqueItemsError = ErrorObject<"uniqueItems", {i: number; j: number}>
 
 const error: KeywordErrorDefinition = {
   message: ({params: {i, j}}) =>

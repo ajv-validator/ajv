@@ -13,6 +13,7 @@ export {
   Options,
   ValidateFunction,
   AsyncValidateFunction,
+  ErrorObject,
   CacheInterface,
   Logger,
 } from "./types"
@@ -23,6 +24,7 @@ export interface Plugin<Opts> {
 
 import KeywordCxt from "./compile/context"
 export {KeywordCxt}
+export {DefinedError} from "./vocabularies/errors"
 
 import type {
   Schema,

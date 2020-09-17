@@ -2,6 +2,7 @@ import type {
   SchemaObjCxt,
   KeywordErrorDefinition,
   KeywordErrorCxt,
+  ErrorObject,
   AnySchemaObject,
 } from "../../types"
 import type {ValidationRules} from "../rules"
@@ -134,9 +135,7 @@ function assignParentData({gen, parentData, parentDataProperty}: SchemaObjCxt, e
   )
 }
 
-export interface TypeErrorParams {
-  type: string
-}
+export type TypeError = ErrorObject<"type", {type: string}>
 
 const typeError: KeywordErrorDefinition = {
   message: ({schema}) => str`should be ${schema}`,
