@@ -40,10 +40,9 @@ export interface CurrentOptions {
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
-  format?: false
+  format?: boolean
   formats?: {[name: string]: Format}
   keywords?: Vocabulary | {[x: string]: KeywordDefinition} // map is deprecated
-  unknownFormats?: true | string[] | "ignore"
   schemas?: AnySchema[] | {[key: string]: AnySchema}
   missingRefs?: true | "ignore" | "fail"
   extendRefs?: true | "ignore" | "fail"
@@ -85,13 +84,13 @@ export interface Options extends CurrentOptions {
   nullable?: boolean // "nullable" keyword is supported by default
   schemaId?: string
   uniqueItems?: boolean
+  unknownFormats?: true | string[] | "ignore"
   // deprecated:
   jsPropertySyntax?: boolean // added instead of jsonPointers
   unicode?: boolean
 }
 
 export interface InstanceOptions extends Options {
-  [opt: string]: unknown
   strict: boolean | "log"
   code: CodeOptions
   loopRequired: number
@@ -302,6 +301,7 @@ export interface AsyncFormatDefinition<T extends string | number> {
 }
 
 export type AddedFormat =
+  | true
   | RegExp
   | FormatValidator<string>
   | FormatDefinition<string>

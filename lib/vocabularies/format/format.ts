@@ -8,7 +8,6 @@ import type {
 } from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, str, nil, or, Code, getProperty} from "../../compile/codegen"
-import N from "../../compile/names"
 
 type FormatValidate =
   | FormatValidator<string>
@@ -17,6 +16,7 @@ type FormatValidate =
   | AsyncFormatValidator<number>
   | RegExp
   | string
+  | true
 
 export type FormatError = ErrorObject<"format", {format: string}>
 
@@ -56,12 +56,8 @@ const def: CodeKeywordDefinition = {
       cxt.fail$data(or(unknownFmt(), invalidFmt())) // TODO this is not tested. Possibly require ajv-formats to test formats in ajv as well
 
       function unknownFmt(): Code {
-        if (opts.unknownFormats === "ignore") return nil
-        let unknown = _`${schemaCode} && !${format}`
-        if (Array.isArray(opts.unknownFormats)) {
-          unknown = _`${unknown} && !${N.self}.opts.unknownFormats.includes(${schemaCode})`
-        }
-        return _`(${unknown})`
+        if (opts.strict === false) return nil
+        return _`(${schemaCode} && !${format})`
       }
 
       function invalidFmt(): Code {
@@ -69,7 +65,9 @@ const def: CodeKeywordDefinition = {
           ? _`${fDef}.async ? await ${format}(${data}) : ${format}(${data})`
           : _`${format}(${data})`
         const validData = _`typeof ${format} == "function" ? ${callFormat} : ${format}.test(${data})`
-        return _`(${format} && ${fType} === ${ruleType as string} && !(${validData}))`
+        return _`(${format} && ${format} !== true && ${fType} === ${
+          ruleType as string
+        } && !(${validData}))`
       }
     }
 
@@ -79,15 +77,15 @@ const def: CodeKeywordDefinition = {
         unknownFormat()
         return
       }
+      if (formatDef === true) return
       const [fmtType, format, fmtRef] = getFormat(formatDef)
       if (fmtType === ruleType) cxt.pass(validCondition())
 
       function unknownFormat(): void {
-        if (opts.unknownFormats === "ignore") {
+        if (opts.strict === false) {
           self.logger.warn(unknownMsg())
           return
         }
-        if (Array.isArray(opts.unknownFormats) && opts.unknownFormats.includes(schema)) return
         throw new Error(unknownMsg())
 
         function unknownMsg(): string {

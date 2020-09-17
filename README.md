@@ -296,9 +296,15 @@ To reiterate, neither this nor other strict mode restrictions change the validat
 
 #### Prohibit unknown formats
 
-TODO
+By default unknown formats throw exception during schema compilation (and fail validation in case format keyword value is \$data reference). It is possible to opt out of format validation completely with `format: false` option. You can define all known formats with `addFormat` method or `formats` option - to have some format ignored pass `true` as its definition:
 
-This will supercede unknownFormats option.
+```
+const ajv = new Ajv({formats: {
+  reserved: true
+})
+```
+
+Standard JSON Schema formats are provided in [ajv-formats](https://github.com/ajv-validator/ajv-formats) package - see [Formats](#formats) section.
 
 #### Prohibit ignored defaults
 
@@ -382,8 +388,6 @@ The following formats are defined in [ajv-formats](https://github.com/ajv-valida
 **Please note**: JSON Schema draft-07 also defines formats `iri`, `iri-reference`, `idn-hostname` and `idn-email` for URLs, hostnames and emails with international characters. These formats are available in [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) plugin.
 
 You can add and replace any formats using [addFormat](#api-addformat) method.
-
-The option `unknownFormats` allows changing the default behaviour when an unknown format is encountered. In this case Ajv can either fail schema compilation (default) or ignore it (default in versions before 5.0.0). You also can allow specific format(s) that will be ignored. See [Options](#options) for details.
 
 ## <a name="ref"></a>Combining schemas with \$ref
 
@@ -1062,13 +1066,18 @@ Schema can be removed using:
 
 If no parameter is passed all schemas but meta-schemas will be removed and the cache will be cleared.
 
-##### <a name="api-addformat"></a>.addFormat(String name, String|RegExp|Function|Object format) -&gt; Ajv
+##### <a name="api-addformat"></a>addFormat(name: string, format: Format) =&gt; Ajv
+
+```typescript
+type Format =
+  | true // to ignore this format (and pass validation)
+  | string // will be converted to RegExp
+  | RegExp
+  | (data: string) => boolean
+  | Object // format definition (see below and in types)
+```
 
 Add format to validate strings or numbers.
-
-Strings are converted to RegExp.
-
-Function should return validation result as `true` or `false`.
 
 If object is passed it should have properties `validate`, `compare` and `async`:
 
@@ -1155,7 +1164,6 @@ Defaults:
   $comment:         false,
   format:           true,
   formats:          {},
-  unknownFormats:   true,
   schemas:          {},
   logger:           undefined,
   // referenced schema options:
@@ -1202,15 +1210,11 @@ Defaults:
   - `false` (default): ignore \$comment keyword.
   - `true`: log the keyword value to console.
   - function: pass the keyword value, its schema path and root schema to the specified function
-- _format_: formats validation mode. Option values:
-  - `true` (default) - validate added formats (see [Formats](#formats)).
+- _format_: format validation. Option values:
+  - `true` (default) - validate added formats (see [Formats](#formats)). In strict mode unknown formats will throw exception during schema compilation (and fail validation in case format keyword value is \$data reference).
   - `false` - ignore all format keywords.
-- _formats_: an object with format definitions. Keys and values will be passed to `addFormat` method.
+- _formats_: an object with format definitions. Keys and values will be passed to `addFormat` method. Pass `true` as format definition to ignore some formats.
 - _keywords_: an array of keyword definitions or strings. Values will be passed to `addKeyword` method.
-- _unknownFormats_: handling of unknown formats. Option values:
-  - `true` (default) - if an unknown format is encountered the exception is thrown during schema compilation. If `format` keyword value is [\$data reference](#data-reference) and it is unknown the validation will fail.
-  - `[String]` - an array of unknown format names that will be ignored. This option can be used to allow usage of third party schemas with format(s) for which you don't have definitions, but still fail if another unknown format is used. If `format` keyword value is [\$data reference](#data-reference) and it is not in this array the validation will fail.
-  - `"ignore"` - to log warning during schema compilation and always pass validation (the default behaviour in versions before 5.0.0). This option is not recommended, as it allows to mistype format name and it won't be validated without any error message. This behaviour is required by JSON Schema specification.
 - _schemas_: an array or object of schemas that will be added to the instance. In case you pass the array the schemas must have IDs in them. When the object is passed the method `addSchema(value, key)` will be called for each schema in this object.
 - _logger_: sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. See [Error logging](#error-logging). Option values:
   - logger instance - it should have methods `log`, `warn` and `error`. If any of these methods is missing an exception will be thrown.

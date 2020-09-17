@@ -28,7 +28,12 @@ runTest(getAjvInstances(options, {meta: false, strict: false}), 6, require("./_j
 runTest(
   getAjvInstances(options, {
     strict: false,
-    unknownFormats: ["idn-email", "idn-hostname", "iri", "iri-reference"],
+    formats: {
+      "idn-email": true,
+      "idn-hostname": true,
+      iri: true,
+      "iri-reference": true,
+    },
   }),
   7,
   require("./_json/draft7")

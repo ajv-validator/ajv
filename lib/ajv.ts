@@ -65,7 +65,7 @@ import draft7MetaSchema from "./refs/json-schema-draft-07.json"
 
 const META_SCHEMA_ID = "http://json-schema.org/draft-07/schema"
 
-const META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"]
+const META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"] as const
 const META_SUPPORT_DATA = ["/properties"]
 const EXT_SCOPE_NAMES = new Set([
   "validate",
@@ -514,6 +514,7 @@ function checkDeprecatedOptions(this: Ajv, opts: Options): void {
   if (opts.errorDataPath !== undefined) this.logger.error("NOT SUPPORTED: option errorDataPath")
   if (opts.schemaId !== undefined) this.logger.error("NOT SUPPORTED: option schemaId")
   if (opts.uniqueItems !== undefined) this.logger.error("NOT SUPPORTED: option uniqueItems")
+  if (opts.unknownFormats !== undefined) this.logger.error("NOT SUPPORTED: option unknownFormats")
   if (opts.jsPropertySyntax !== undefined) this.logger.warn("DEPRECATED: option jsPropertySyntax")
   if (opts.unicode !== undefined) this.logger.warn("DEPRECATED: option unicode")
 }

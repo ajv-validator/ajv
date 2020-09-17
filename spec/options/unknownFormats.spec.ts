@@ -2,11 +2,10 @@ import _Ajv from "../ajv"
 const should = require("../chai").should()
 const DATE_FORMAT = /^\d\d\d\d-[0-1]\d-[0-3]\d$/
 
-describe("unknownFormats option", () => {
+describe("specifying allowed unknown formats with `formats` option", () => {
   describe("= true (default)", () => {
     it("should fail schema compilation if unknown format is used", () => {
       test(new _Ajv())
-      test(new _Ajv({unknownFormats: true}))
 
       function test(ajv) {
         should.throw(() => {
@@ -17,7 +16,6 @@ describe("unknownFormats option", () => {
 
     it("should fail validation if unknown format is used via $data", () => {
       test(new _Ajv({$data: true}))
-      test(new _Ajv({$data: true, unknownFormats: true}))
 
       function test(ajv) {
         ajv.addFormat("date", DATE_FORMAT)
@@ -40,7 +38,7 @@ describe("unknownFormats option", () => {
 
   describe('= "ignore (default before 5.0.0)"', () => {
     it("should pass schema compilation and be valid if unknown format is used", () => {
-      test(new _Ajv({unknownFormats: "ignore", logger: false}))
+      test(new _Ajv({strict: false, logger: false}))
 
       function test(ajv) {
         const validate = ajv.compile({format: "unknown"})
@@ -49,7 +47,7 @@ describe("unknownFormats option", () => {
     })
 
     it("should be valid if unknown format is used via $data", () => {
-      test(new _Ajv({$data: true, unknownFormats: "ignore"}))
+      test(new _Ajv({$data: true, strict: false}))
 
       function test(ajv) {
         ajv.addFormat("date", DATE_FORMAT)
@@ -71,7 +69,7 @@ describe("unknownFormats option", () => {
 
   describe("= [String]", () => {
     it("should pass schema compilation and be valid if allowed unknown format is used", () => {
-      test(new _Ajv({unknownFormats: ["allowed"]}))
+      test(new _Ajv({formats: {allowed: true}}))
 
       function test(ajv) {
         const validate = ajv.compile({format: "allowed"})
@@ -84,7 +82,7 @@ describe("unknownFormats option", () => {
     })
 
     it("should be valid if allowed unknown format is used via $data", () => {
-      test(new _Ajv({$data: true, unknownFormats: ["allowed"]}))
+      test(new _Ajv({$data: true, formats: {allowed: true}}))
 
       function test(ajv) {
         ajv.addFormat("date", DATE_FORMAT)
