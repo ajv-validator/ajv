@@ -296,7 +296,7 @@ To reiterate, neither this nor other strict mode restrictions change the validat
 
 #### Prohibit unknown formats
 
-By default unknown formats throw exception during schema compilation (and fail validation in case format keyword value is \$data reference). It is possible to opt out of format validation completely with `format: false` option. You can define all known formats with `addFormat` method or `formats` option - to have some format ignored pass `true` as its definition:
+By default unknown formats throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](#data-reference)). It is possible to opt out of format validation completely with `format: false` option. You can define all known formats with `addFormat` method or `formats` option - to have some format ignored pass `true` as its definition:
 
 ```
 const ajv = new Ajv({formats: {
@@ -972,19 +972,23 @@ See [Coercion rules](https://github.com/ajv-validator/ajv/blob/master/COERCION.m
 
 ## API
 
-##### new Ajv(Object options) -&gt; Object
+#### new Ajv(opts: object)
 
-Create Ajv instance.
+Create Ajv instance:
 
-##### .compile(Object schema) -&gt; Function&lt;Object data&gt;
+```javascript
+const ajv = new Ajv()
+```
+
+#### ajv.compile(schema: object): (data: any) =\> boolean | Promise\<any\>
 
 Generate validating function and cache the compiled schema for future use.
 
-Validating function returns a boolean value. This function has properties `errors` and `schema`. Errors encountered during the last validation are assigned to `errors` property (it is assigned `null` if there was no errors). `schema` property contains the reference to the original schema.
+Validating function returns a boolean value (or promise for async schemas). This function has properties `errors` and `schema`. Errors encountered during the last validation are assigned to `errors` property (it is assigned `null` if there was no errors). `schema` property contains the reference to the original schema.
 
 The schema passed to this method will be validated against meta-schema unless `validateSchema` option is false. If schema is invalid, an error will be thrown. See [options](#options).
 
-##### <a name="api-compileAsync"></a>.compileAsync(Object schema [, Boolean meta][, function callback]) -&gt; Promise
+#### <a name="api-compileAsync"></a>ajv.compileAsync(schema: object, meta?: boolean): Promise\<Function\>
 
 Asynchronous version of `compile` method that loads missing remote schemas using asynchronous function in `options.loadSchema`. This function returns a Promise that resolves to a validation function. An optional callback passed to `compileAsync` will be called with 2 parameters: error (or null) and validating function. The returned promise will reject (and the callback will be called with an error) when:
 
@@ -998,7 +1002,7 @@ You can asynchronously compile meta-schema by passing `true` as the second param
 
 See example in [Asynchronous compilation](#asynchronous-schema-compilation).
 
-##### .validate(Object schema|String key|String ref, data) -&gt; Boolean
+#### ajv.validate(schemaOrRef: object | string, data: any): boolean
 
 Validate data using passed schema (it will be compiled and cached).
 
@@ -1010,7 +1014,7 @@ Validation errors will be available in the `errors` property of Ajv instance (`n
 
 If the schema is asynchronous (has `$async` keyword on the top level) this method returns a Promise. See [Asynchronous validation](#asynchronous-validation).
 
-##### .addSchema(Array&lt;Object&gt;|Object schema [, String key]) -&gt; Ajv
+#### ajv.addSchema(schema: object | object[], key?: string): Ajv
 
 Add schema(s) to validator instance. This method does not compile schemas (but it still validates them). Because of that dependencies can be added in any order and circular dependencies are supported. It also prevents unnecessary compilation of schemas that are containers for other schemas but not used as a whole.
 
@@ -1028,16 +1032,16 @@ By default the schema is validated against meta-schema before it is added, and i
 This allows you to do nice things like the following.
 
 ```javascript
-var validate = new Ajv().addSchema(schema).addFormat(name, regex).getSchema(uri)
+const validate = new Ajv().addSchema(schema).addFormat(name, regex).getSchema(uri)
 ```
 
-##### .addMetaSchema(Array&lt;Object&gt;|Object schema [, String key]) -&gt; Ajv
+#### ajv.addMetaSchema(schema: object | object[], key?: string): Ajv
 
 Adds meta schema(s) that can be used to validate other schemas. That function should be used instead of `addSchema` because there may be instance options that would compile a meta schema incorrectly (at the moment it is `removeAdditional` option).
 
 There is no need to explicitly add draft-07 meta schema (http://json-schema.org/draft-07/schema) - it is added by default, unless option `meta` is set to `false`. You only need to use it if you have a changed meta-schema that you want to use to validate your schemas. See `validateSchema`.
 
-##### <a name="api-validateschema"></a>.validateSchema(Object schema) -&gt; Boolean
+#### <a name="api-validateschema"></a>ajv.validateSchema(schema: object): boolean
 
 Validates schema. This method should be used to validate schemas rather than `validate` due to the inconsistency of `uri` format in JSON Schema standard.
 
@@ -1049,11 +1053,11 @@ If schema has `$schema` property, then the schema with this id (that should be p
 
 Errors will be available at `ajv.errors`.
 
-##### .getSchema(String key) -&gt; Function&lt;Object data&gt;
+#### ajv.getSchema(key: string): undefined | ((data: any) =\> boolean | Promise\<any\>)
 
 Retrieve compiled schema previously added with `addSchema` by the key passed to `addSchema` or by its full reference (id). The returned validating function has `schema` property with the reference to the original schema.
 
-##### .removeSchema([Object schema|String key|String ref|RegExp pattern]) -&gt; Ajv
+#### ajv.removeSchema(schemaOrRef: object | string | RegExp): Ajv
 
 Remove added/cached schema. Even if schema is referenced by other schemas it can be safely removed as dependent schemas have local references.
 
@@ -1066,7 +1070,7 @@ Schema can be removed using:
 
 If no parameter is passed all schemas but meta-schemas will be removed and the cache will be cleared.
 
-##### <a name="api-addformat"></a>addFormat(name: string, format: Format) =&gt; Ajv
+#### <a name="api-addformat"></a>ajv.addFormat(name: string, format: Format): Ajv
 
 ```typescript
 type Format =
@@ -1088,7 +1092,7 @@ If object is passed it should have properties `validate`, `compare` and `async`:
 
 Formats can be also added via `formats` option.
 
-##### <a name="api-addkeyword"></a>.addKeyword(Object definition) -&gt; Ajv
+#### <a name="api-addkeyword"></a>ajv.addKeyword(definition: object):s Ajv
 
 Add validation keyword to Ajv instance.
 
@@ -1130,11 +1134,11 @@ _compile_, _macro_ and _code_ are mutually exclusive, only one should be used at
 
 See [User defined keywords](#user-defined-keywords) for more details.
 
-##### .getKeyword(String keyword) -&gt; Object|Boolean
+#### ajv.getKeyword(keyword: string): object | boolean
 
 Returns keyword definition, `false` if the keyword is unknown.
 
-##### .removeKeyword(String keyword) -&gt; Ajv
+#### ajv.removeKeyword(keyword: string): Ajv
 
 Removes added or pre-defined keyword so you can redefine them.
 
@@ -1142,7 +1146,7 @@ While this method can be used to extend pre-defined keywords, it can also be use
 
 **Please note**: schemas compiled before the keyword is removed will continue to work without changes. To recompile schemas use `removeSchema` method and compile them again.
 
-##### .errorsText([Array&lt;Object&gt; errors [, Object options]]) -&gt; String
+#### ajv.errorsText(errors?: object[], options?: object): string
 
 Returns the text with all errors in a String.
 
@@ -1211,7 +1215,7 @@ Defaults:
   - `true`: log the keyword value to console.
   - function: pass the keyword value, its schema path and root schema to the specified function
 - _format_: format validation. Option values:
-  - `true` (default) - validate added formats (see [Formats](#formats)). In strict mode unknown formats will throw exception during schema compilation (and fail validation in case format keyword value is \$data reference).
+  - `true` (default) - validate added formats (see [Formats](#formats)). In strict mode unknown formats will throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](#data-reference)).
   - `false` - ignore all format keywords.
 - _formats_: an object with format definitions. Keys and values will be passed to `addFormat` method. Pass `true` as format definition to ignore some formats.
 - _keywords_: an array of keyword definitions or strings. Values will be passed to `addKeyword` method.
