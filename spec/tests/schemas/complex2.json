@@ -149,10 +149,7 @@
                   "minProperties": 1,
                   "maxProperties": 3,
                   "additionalProperties": {
-                    "anyOf": [
-                      {"$ref": "#/definitions/base58"},
-                      {"$ref": "#/definitions/hex"}
-                    ]
+                    "anyOf": [{"$ref": "#/definitions/base58"}, {"$ref": "#/definitions/hex"}]
                   }
                 }
               }

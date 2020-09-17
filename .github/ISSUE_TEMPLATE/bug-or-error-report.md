@@ -21,6 +21,7 @@ For other issues please see https://github.com/ajv-validator/ajv/blob/master/CON
 <!-- See https://github.com/ajv-validator/ajv#options -->
 
 ```javascript
+
 ```
 
 **JSON Schema**
@@ -29,7 +30,6 @@ For other issues please see https://github.com/ajv-validator/ajv/blob/master/CON
 
 ```json
 
-
 ```
 
 **Sample data**
@@ -37,7 +37,6 @@ For other issues please see https://github.com/ajv-validator/ajv/blob/master/CON
 <!-- Please make it as small as posssible to reproduce the issue -->
 
 ```json
-
 
 ```
 
@@ -55,12 +54,12 @@ Thank you!
 -->
 
 ```javascript
+
 ```
 
 **Validation result, data AFTER validation, error messages**
 
 ```
-
 
 ```
 

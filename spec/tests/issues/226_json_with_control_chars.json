@@ -41,14 +41,7 @@
   {
     "description": "JSON with control characters - 'required' (#226)",
     "schema": {
-      "required": [
-        "foo\nbar",
-        "foo\"bar",
-        "foo\\bar",
-        "foo\rbar",
-        "foo\tbar",
-        "foo\fbar"
-      ]
+      "required": ["foo\nbar", "foo\"bar", "foo\\bar", "foo\rbar", "foo\tbar", "foo\fbar"]
     },
     "tests": [
       {
