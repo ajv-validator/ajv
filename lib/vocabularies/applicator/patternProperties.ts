@@ -61,4 +61,4 @@ const def: CodeKeywordDefinition = {
   },
 }
 
-module.exports = def
+export default def

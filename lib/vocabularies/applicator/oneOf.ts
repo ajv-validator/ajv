@@ -1,13 +1,26 @@
-import type {CodeKeywordDefinition, AnySchema} from "../../types"
+import type {
+  CodeKeywordDefinition,
+  ErrorObject,
+  KeywordErrorDefinition,
+  AnySchema,
+} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {_} from "../../compile/codegen"
 
+export type OneOfError = ErrorObject<"oneOf", {passingSchemas: [number, number]}>
+
+const error: KeywordErrorDefinition = {
+  message: "should match exactly one schema in oneOf",
+  params: ({params}) => _`{passingSchemas: ${params.passing}}`,
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "oneOf",
   schemaType: "array",
   trackErrors: true,
+  error,
   code(cxt: KeywordCxt) {
     const {gen, schema, it} = cxt
     if (!Array.isArray(schema)) throw new Error("ajv implementation error")
@@ -54,10 +67,6 @@ const def: CodeKeywordDefinition = {
       })
     }
   },
-  error: {
-    message: "should match exactly one schema in oneOf",
-    params: ({params}) => _`{passingSchemas: ${params.passing}}`,
-  },
 }
 
-module.exports = def
+export default def

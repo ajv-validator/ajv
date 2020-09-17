@@ -71,11 +71,7 @@
                 },
                 "server": {
                   "type": "string",
-                  "anyOf": [
-                    {"format": "hostname"},
-                    {"format": "ipv4"},
-                    {"format": "ipv6"}
-                  ]
+                  "anyOf": [{"format": "hostname"}, {"format": "ipv4"}, {"format": "ipv6"}]
                 }
               },
               "required": ["type", "server", "remotePath"],

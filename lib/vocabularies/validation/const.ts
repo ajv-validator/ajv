@@ -1,11 +1,19 @@
-import type {CodeKeywordDefinition} from "../../types"
+import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_} from "../../compile/codegen"
 import equal from "fast-deep-equal"
 
+export type ConstError = ErrorObject<"const", {allowedValue: any}>
+
+const error: KeywordErrorDefinition = {
+  message: "should be equal to constant",
+  params: ({schemaCode}) => _`{allowedValue: ${schemaCode}}`,
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "const",
   $data: true,
+  error,
   code(cxt: KeywordCxt) {
     const eql = cxt.gen.scopeValue("func", {
       ref: equal,
@@ -13,10 +21,6 @@ const def: CodeKeywordDefinition = {
     })
     cxt.fail$data(_`!${eql}(${cxt.data}, ${cxt.schemaCode})`)
   },
-  error: {
-    message: "should be equal to constant",
-    params: ({schemaCode}) => _`{allowedValue: ${schemaCode}}`,
-  },
 }
 
-module.exports = def
+export default def

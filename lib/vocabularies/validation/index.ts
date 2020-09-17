@@ -1,22 +1,47 @@
-import type {Vocabulary} from "../../types"
+import type {ErrorObject, Vocabulary} from "../../types"
+import limitNumber, {LimitNumberError} from "./limitNumber"
+import multipleOf, {MultipleOfError} from "./multipleOf"
+import limitLength from "./limitLength"
+import pattern, {PatternError} from "./pattern"
+import limitProperties from "./limitProperties"
+import required, {RequiredError} from "./required"
+import limitItems from "./limitItems"
+import uniqueItems, {UniqueItemsError} from "./uniqueItems"
+import constKeyword, {ConstError} from "./const"
+import enumKeyword, {EnumError} from "./enum"
 
 const validation: Vocabulary = [
   // number
-  require("./limit"),
-  require("./multipleOf"),
+  limitNumber,
+  multipleOf,
   // string
-  require("./limitLength"),
-  require("./pattern"),
+  limitLength,
+  pattern,
   // object
-  require("./limitProperties"),
-  require("./required"),
+  limitProperties,
+  required,
   // array
-  require("./limitItems"),
-  require("./uniqueItems"),
+  limitItems,
+  uniqueItems,
   // any
   {keyword: "nullable", schemaType: "boolean"},
-  require("./const"),
-  require("./enum"),
+  constKeyword,
+  enumKeyword,
 ]
 
 export default validation
+
+type LimitError = ErrorObject<
+  "maxItems" | "minItems" | "minProperties" | "maxProperties" | "minLength" | "maxLength",
+  {limit: number}
+>
+
+export type ValidationKeywordError =
+  | LimitError
+  | LimitNumberError
+  | MultipleOfError
+  | PatternError
+  | RequiredError
+  | UniqueItemsError
+  | ConstError
+  | EnumError

@@ -1,13 +1,22 @@
-import type {CodeKeywordDefinition} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, str, operators} from "../../compile/codegen"
 import ucs2length from "../../compile/ucs2length"
+
+const error: KeywordErrorDefinition = {
+  message({keyword, schemaCode}) {
+    const comp = keyword === "maxLength" ? "more" : "fewer"
+    return str`should NOT have ${comp} than ${schemaCode} items`
+  },
+  params: ({schemaCode}) => _`{limit: ${schemaCode}}`,
+}
 
 const def: CodeKeywordDefinition = {
   keyword: ["maxLength", "minLength"],
   type: "string",
   schemaType: "number",
   $data: true,
+  error,
   code(cxt: KeywordCxt) {
     const {keyword, data, schemaCode, it} = cxt
     const op = keyword === "maxLength" ? operators.GT : operators.LT
@@ -23,13 +32,6 @@ const def: CodeKeywordDefinition = {
     }
     cxt.fail$data(_`${len} ${op} ${schemaCode}`)
   },
-  error: {
-    message({keyword, schemaCode}) {
-      const comp = keyword === "maxLength" ? "more" : "fewer"
-      return str`should NOT have ${comp} than ${schemaCode} items`
-    },
-    params: ({schemaCode}) => _`{limit: ${schemaCode}}`,
-  },
 }
 
-module.exports = def
+export default def

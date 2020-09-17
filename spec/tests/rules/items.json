@@ -25,10 +25,7 @@
         "child": {
           "type": "array",
           "additionalItems": false,
-          "items": [
-            {"$ref": "#/definitions/sub-child"},
-            {"$ref": "#/definitions/sub-child"}
-          ]
+          "items": [{"$ref": "#/definitions/sub-child"}, {"$ref": "#/definitions/sub-child"}]
         },
         "sub-child": {
           "type": "object",
@@ -76,11 +73,7 @@
       },
       {
         "description": "wrong child",
-        "data": [
-          {"foo": null},
-          [{"foo": null}, {"foo": null}],
-          [{"foo": null}, {"foo": null}]
-        ],
+        "data": [{"foo": null}, [{"foo": null}, {"foo": null}], [{"foo": null}, {"foo": null}]],
         "valid": false
       },
       {

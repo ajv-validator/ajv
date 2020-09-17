@@ -343,13 +343,16 @@ JSON Schema specification defines several annotation keywords that describe sche
 
 ## Formats
 
-From version 7 Ajv does not include formats defined by JSON Schema specification - these and several others formats are provided by [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin.
+From version 7 Ajv does not include formats defined by JSON Schema specification - these and several other formats are provided by [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin.
 
 To add all formats from this plugin:
 
 ```javascript
+import Ajv from "ajv"
+import addFormats from "ajv-formats"
+
 const ajv = new Ajv()
-require("ajv-formats")(ajv)
+addFormats(ajv)
 ```
 
 See ajv-formats documentation for further details.
@@ -362,7 +365,7 @@ The following formats are defined in [ajv-formats](https://github.com/ajv-valida
 
 - _date_: full-date according to [RFC3339](http://tools.ietf.org/html/rfc3339#section-5.6).
 - _time_: time with optional time-zone.
-- _date-time_: date-time from the same source (time-zone is mandatory). `date`, `time` and `date-time` validate ranges in `full` mode and only regexp in `fast` mode (see [options](#options)).
+- _date-time_: date-time from the same source (time-zone is mandatory).
 - _uri_: full URI.
 - _uri-reference_: URI reference, including full and relative URIs.
 - _uri-template_: URI template according to [RFC6570](https://tools.ietf.org/html/rfc6570)
@@ -378,11 +381,9 @@ The following formats are defined in [ajv-formats](https://github.com/ajv-valida
 
 **Please note**: JSON Schema draft-07 also defines formats `iri`, `iri-reference`, `idn-hostname` and `idn-email` for URLs, hostnames and emails with international characters. These formats are available in [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) plugin.
 
-You can add (and replace) any formats using [addFormat](#api-addformat) method.
+You can add and replace any formats using [addFormat](#api-addformat) method.
 
 The option `unknownFormats` allows changing the default behaviour when an unknown format is encountered. In this case Ajv can either fail schema compilation (default) or ignore it (default in versions before 5.0.0). You also can allow specific format(s) that will be ignored. See [Options](#options) for details.
-
-You can find regular expressions used for format validation and the sources that were used in [formats.js](https://github.com/ajv-validator/ajv/blob/master/lib/compile/formats.js).
 
 ## <a name="ref"></a>Combining schemas with \$ref
 
