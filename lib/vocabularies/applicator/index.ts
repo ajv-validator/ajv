@@ -14,23 +14,6 @@ import allOf from "./allOf"
 import ifKeyword, {IfKeywordError} from "./if"
 import thenElse from "./thenElse"
 
-export type ApplicatorKeyword =
-  | "additionalItems"
-  | "items"
-  | "contains"
-  | "dependencies"
-  | "propertyNames"
-  | "additionalProperties"
-  | "properties"
-  | "patternProperties"
-  | "not"
-  | "anyOf"
-  | "oneOf"
-  | "allOf"
-  | "if"
-  | "then"
-  | "else"
-
 const applicator: Vocabulary = [
   // array
   additionalItems,
