@@ -35,15 +35,15 @@ export type LoadSchemaFunction = (
   cb?: (err: Error | null, schema?: AnySchemaObject) => void
 ) => Promise<AnySchemaObject>
 
+export type Options = CurrentOptions & DeprecatedOptions
+
 export interface CurrentOptions {
   strict?: boolean | "log"
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
-  format?: false
   formats?: {[name: string]: Format}
   keywords?: Vocabulary | {[x: string]: KeywordDefinition} // map is deprecated
-  unknownFormats?: true | string[] | "ignore"
   schemas?: AnySchema[] | {[key: string]: AnySchema}
   missingRefs?: true | "ignore" | "fail"
   extendRefs?: true | "ignore" | "fail"
@@ -51,7 +51,7 @@ export interface CurrentOptions {
   removeAdditional?: boolean | "all" | "failing"
   useDefaults?: boolean | "empty"
   coerceTypes?: boolean | "array"
-  meta?: AnySchemaObject | boolean
+  meta?: SchemaObject | boolean
   defaultMeta?: string | AnySchemaObject
   validateSchema?: boolean | "log"
   addUsedSchema?: boolean
@@ -73,32 +73,43 @@ export interface CurrentOptions {
     | true
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
   allowMatchingProperties?: boolean // disables a strict mode restriction
+  validateFormats?: boolean
 }
 
 export interface CodeOptions {
   formats?: Code // code to require (or construct) map of available formats - for standalone code
 }
 
-export interface Options extends CurrentOptions {
-  // removed:
-  errorDataPath?: "object" | "property"
-  nullable?: boolean // "nullable" keyword is supported by default
-  schemaId?: string
-  uniqueItems?: boolean
-  // deprecated:
+export interface DeprecatedOptions {
   jsPropertySyntax?: boolean // added instead of jsonPointers
   unicode?: boolean
 }
 
+export interface RemovedOptions {
+  format?: boolean
+  errorDataPath?: "object" | "property"
+  nullable?: boolean // "nullable" keyword is supported by default
+  jsonPointers?: boolean
+  schemaId?: string
+  strictDefaults?: boolean
+  strictKeywords?: boolean
+  strictNumbers?: boolean
+  uniqueItems?: boolean
+  unknownFormats?: true | string[] | "ignore"
+}
+
 export interface InstanceOptions extends Options {
-  [opt: string]: unknown
   strict: boolean | "log"
   code: CodeOptions
   loopRequired: number
   loopEnum: number
+  meta: SchemaObject | boolean
+  messages: boolean
+  inlineRefs: boolean | number
   serialize: (schema: AnySchema) => unknown
   addUsedSchema: boolean
   validateSchema: boolean | "log"
+  validateFormats: boolean
 }
 
 export interface Logger {
@@ -119,7 +130,7 @@ interface SourceCode {
   scope: Scope
 }
 
-export interface ValidateFunction<T = any> {
+export interface ValidateFunction<T = unknown> {
   (
     this: Ajv | any,
     data: any,
@@ -134,7 +145,7 @@ export interface ValidateFunction<T = any> {
   source?: SourceCode
 }
 
-export interface AsyncValidateFunction<T = any> extends ValidateFunction<T> {
+export interface AsyncValidateFunction<T = unknown> extends ValidateFunction<T> {
   (...args: Parameters<ValidateFunction<T>>): Promise<T>
   $async: true
 }
@@ -302,6 +313,7 @@ export interface AsyncFormatDefinition<T extends string | number> {
 }
 
 export type AddedFormat =
+  | true
   | RegExp
   | FormatValidator<string>
   | FormatDefinition<string>

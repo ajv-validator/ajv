@@ -4,7 +4,6 @@ const should = require("../chai").should()
 describe("removed schemaId option", () => {
   it("should use $id and throw exception when id is used", () => {
     test(new _Ajv({logger: false}))
-    test(new _Ajv({schemaId: "$id", logger: false}))
 
     function test(ajv) {
       ajv.addSchema({$id: "mySchema1", type: "string"})
@@ -18,7 +17,6 @@ describe("removed schemaId option", () => {
 
   it("should use $id and ignore id when strict: false", () => {
     test(new _Ajv({logger: false, strict: false}))
-    test(new _Ajv({schemaId: "$id", logger: false, strict: false}))
 
     function test(ajv) {
       ajv.addSchema({$id: "mySchema1", type: "string"})

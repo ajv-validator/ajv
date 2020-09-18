@@ -100,7 +100,7 @@ describe("$async validation and type guards", () => {
 
     it("should have result type boolean | promise 2", async () => {
       const schema = {$async: false}
-      const validate = ajv.compile(schema)
+      const validate = ajv.compile<any>(schema)
       const result = validate({})
       if (typeof result === "boolean") {
         should.exist(result)

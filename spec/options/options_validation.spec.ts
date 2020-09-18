@@ -6,7 +6,7 @@ describe("validation options", () => {
   describe("format", () => {
     it("should not validate formats if option format == false", () => {
       const ajv = new _Ajv({formats: {date: DATE_FORMAT}}),
-        ajvFF = new _Ajv({formats: {date: DATE_FORMAT}, format: false})
+        ajvFF = new _Ajv({formats: {date: DATE_FORMAT}, validateFormats: false})
 
       const schema = {format: "date"}
       const invalideDateTime = "06/19/1963" // expects hyphens
