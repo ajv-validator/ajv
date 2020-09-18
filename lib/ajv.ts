@@ -83,16 +83,8 @@ const EXT_SCOPE_NAMES = new Set([
   "Error",
 ])
 
-const optsDefaults = {
-  strict: true,
-  code: {},
-  loopRequired: Infinity,
-  loopEnum: Infinity,
-  addUsedSchema: true,
-}
-
 type OptionsInfo<T extends RemovedOptions | DeprecatedOptions> = {
-  [key in keyof T]-?: string | undefined
+  [K in keyof T]-?: string | undefined
 }
 
 const removedOptions: OptionsInfo<RemovedOptions> = {
@@ -111,6 +103,22 @@ const removedOptions: OptionsInfo<RemovedOptions> = {
 const deprecatedOptions: OptionsInfo<DeprecatedOptions> = {
   jsPropertySyntax: "",
   unicode: '"minLength"/"maxLength" account for unicode characters by default.',
+}
+
+function optDefaults(o: Options): InstanceOptions {
+  return {
+    strict: o.strict ?? true,
+    code: o.code ?? {},
+    loopRequired: o.loopRequired ?? Infinity,
+    loopEnum: o.loopEnum ?? Infinity,
+    meta: o.meta ?? true,
+    messages: o.messages ?? true,
+    inlineRefs: o.inlineRefs ?? true,
+    addUsedSchema: o.addUsedSchema ?? true,
+    validateSchema: o.validateSchema ?? true,
+    validateFormats: o.validateFormats ?? true,
+    serialize: o.serialize === false ? (x) => x : o.serialize ?? stableStringify,
+  }
 }
 
 export default class Ajv {
@@ -133,12 +141,8 @@ export default class Ajv {
 
   constructor(opts: Options = {}) {
     opts = this.opts = {
-      ...optsDefaults,
       ...opts,
-      serialize: opts.serialize === false ? (x) => x : opts.serialize ?? stableStringify,
-      addUsedSchema: opts.addUsedSchema ?? true,
-      validateSchema: opts.validateSchema ?? true,
-      validateFormats: opts.validateFormats ?? true,
+      ...optDefaults(opts),
     }
     this.logger = getLogger(opts.logger)
     const formatOpt = opts.validateFormats
@@ -577,7 +581,7 @@ function getSchEnv(this: Ajv, keyRef: string): SchemaEnv | string | undefined {
 function addDefaultMetaSchema(this: Ajv): void {
   const {$data, meta} = this.opts
   if ($data) this.addMetaSchema($dataRefSchema, $dataRefSchema.$id, false)
-  if (meta === false) return
+  if (!meta) return
   const metaSchema = $data
     ? this.$dataMetaSchema(draft7MetaSchema, META_SUPPORT_DATA)
     : draft7MetaSchema

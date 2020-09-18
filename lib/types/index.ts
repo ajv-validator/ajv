@@ -51,7 +51,7 @@ export interface CurrentOptions {
   removeAdditional?: boolean | "all" | "failing"
   useDefaults?: boolean | "empty"
   coerceTypes?: boolean | "array"
-  meta?: AnySchemaObject | boolean
+  meta?: SchemaObject | boolean
   defaultMeta?: string | AnySchemaObject
   validateSchema?: boolean | "log"
   addUsedSchema?: boolean
@@ -103,6 +103,9 @@ export interface InstanceOptions extends Options {
   code: CodeOptions
   loopRequired: number
   loopEnum: number
+  meta: SchemaObject | boolean
+  messages: boolean
+  inlineRefs: boolean | number
   serialize: (schema: AnySchema) => unknown
   addUsedSchema: boolean
   validateSchema: boolean | "log"

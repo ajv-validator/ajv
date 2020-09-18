@@ -1257,6 +1257,10 @@ const defaultOptions = {
   removeAdditional: false,
   useDefaults: false,
   coerceTypes: false,
+  // code generation options:
+  codegen: {es5: false, lines: false}
+  sourceCode: false,
+  processCode: undefined, // (code: string, schemaEnv: object) => string
   // advanced options:
   meta: true,
   validateSchema: true,
@@ -1268,15 +1272,13 @@ const defaultOptions = {
   ownProperties: false,
   multipleOfPrecision: false,
   messages: true,
-  sourceCode: false,
-  processCode: undefined, // (code: string, schemaEnv: object) => string
   cache: new Cache,
   serialize: undefined // (schema: object | boolean) => any
   jsPropertySyntax: false, // deprecated
 }
 ```
 
-##### Strict mode options (NEW in v7)
+#### Strict mode options (NEW in v7)
 
 - _strict_: By default Ajv executes in strict mode, that is designed to prevent any unexpected behaviours or silently ignored mistakes in schemas (see [Strict Mode](#strict-mode) for more details). It does not change any validation results, but it makes some schemas invalid that would be otherwise valid according to JSON Schema specification. Option values:
   - `true` (default) - use strict mode and throw an exception when any strict mode restriction is violated.
@@ -1287,7 +1289,7 @@ const defaultOptions = {
   - `true` (default) - validate formats (see [Formats](#formats)). In [strict mode](#strict-mode) unknown formats will throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](#data-reference)).
   - `false` - do not validate any format keywords (TODO they will still collect annotations once supported).
 
-##### Validation and reporting options
+#### Validation and reporting options
 
 - _\$data_: support [\$data references](#data-reference). Draft 6 meta-schema that is added by default will be extended to allow them. If you want to use another meta-schema you need to use $dataMetaSchema method to add support for $data reference. See [API](#api).
 - _allErrors_: check all rules collecting all errors. Default is to return after the first error.
@@ -1303,7 +1305,7 @@ const defaultOptions = {
   - logger instance - it should have methods `log`, `warn` and `error`. If any of these methods is missing an exception will be thrown.
   - `false` - logging is disabled.
 
-##### Referenced schema options
+#### Referenced schema options
 
 - _missingRefs_: handling of missing referenced schemas. Option values:
   - `true` (default) - if the reference cannot be resolved during compilation the exception is thrown. The thrown error has properties `missingRef` (with hash fragment) and `missingSchema` (without it). Both properties are resolved relative to the current base id (usually schema id, unless it was substituted).
@@ -1315,7 +1317,7 @@ const defaultOptions = {
   - `true` - validate all keywords in the schemas with `$ref` (the default behaviour in versions before 5.0.0).
 - _loadSchema_: asynchronous function that will be used to load remote schemas when `compileAsync` [method](#api-compileAsync) is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept remote schema uri as a parameter and return a Promise that resolves to a schema. See example in [Asynchronous compilation](#asynchronous-schema-compilation).
 
-##### Options to modify validated data
+#### Options to modify validated data
 
 - _removeAdditional_: remove additional properties - see example in [Filtering data](#filtering-data). This option is not used if schema is added with `addMetaSchema` method. Option values:
   - `false` (default) - not to remove additional properties
@@ -1331,7 +1333,29 @@ const defaultOptions = {
   - `true` - coerce scalar data types.
   - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
-##### Advanced options
+#### Code generation options
+
+- _codegen_ (new in v7): code generation options, passed to `CodeGen` constructor (see Code generation TODO). This object contains properties:
+
+```typescript
+type CodeGenOptions = {
+  es5?: boolean // to generate es5 code - by default code is es6, with "for-of" loops, "let" and "const"
+  lines?: boolean // break code to lines - to simplify debugging of generated functions
+}
+```
+
+- _sourceCode_: add `source` property (with properties `code` and `scope`) to validating function.
+
+```typescript
+type Source = {
+  code: string // this code can be different from the result of toString call
+  scope: Scope // see Code generation
+}
+```
+
+- _processCode_: an optional function to process generated code before it is passed to Function constructor. It can be used to either beautify (the validating function is generated without line-breaks) or to transpile code.
+
+#### Advanced options
 
 - _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default). If an object is passed, it will be used as the default meta-schema for schemas that have no `$schema` keyword. This default meta-schema MUST have `$schema` keyword.
 - _validateSchema_: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can be http://json-schema.org/draft-07/schema or absent (draft-07 meta-schema will be used) or can be a reference to the schema previously added with `addMetaSchema` method. Option values:
@@ -1349,8 +1373,6 @@ const defaultOptions = {
 - _ownProperties_: by default Ajv iterates over all enumerable object properties; when this option is `true` only own enumerable object properties (i.e. found directly on the object rather than on its prototype) are iterated. Contributed by @mbroadst.
 - _multipleOfPrecision_: by default `multipleOf` keyword is validated by comparing the result of division with parseInt() of that result. It works for dividers that are bigger than 1. For small dividers such as 0.01 the result of the division is usually not integer (even when it should be integer, see issue [#84](https://github.com/ajv-validator/ajv/issues/84)). If you need to use fractional dividers set this option to some positive integer N to have `multipleOf` validated using this formula: `Math.abs(Math.round(division) - division) < 1e-N` (it is slower but allows for float arithmetics deviations).
 - _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when messages are generated outside of Ajv code (e.g. with [ajv-i18n](https://github.com/ajv-validator/ajv-i18n)).
-- _sourceCode_: add `sourceCode` property to validating function (for debugging; this code can be different from the result of toString call).
-- _processCode_: an optional function to process generated code before it is passed to Function constructor. It can be used to either beautify (the validating function is generated without line-breaks) or to transpile code.
 - _cache_: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache [sacjs](https://github.com/epoberezkin/sacjs) can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods `put(key, value)`, `get(key)`, `del(key)` and `clear()`.
 - _serialize_: an optional function to serialize schema to cache key. Pass `false` to use schema itself as a key (e.g., if WeakMap used as a cache). By default [fast-json-stable-stringify](https://github.com/epoberezkin/fast-json-stable-stringify) is used.
 - _jsPropertySyntax_ (deprecated) - set to `true` to report `dataPath` in errors as in v6, using JavaScript property syntax (e.g., `".prop[1].subProp"`). By default `dataPath` in errors is reported as JSON pointer. This option is added for backward compatibility and is not recommended - this format is difficult to parse even in JS code.
