@@ -1,5 +1,5 @@
-import {CodeKeywordDefinition} from "../../types"
-import KeywordCxt from "../../compile/context"
+import type {CodeKeywordDefinition} from "../../types"
+import type KeywordCxt from "../../compile/context"
 import {schemaProperties, usePattern, checkStrictMode} from "../util"
 import {applySubschema, Type} from "../../compile/subschema"
 import {_} from "../../compile/codegen"
@@ -61,4 +61,4 @@ const def: CodeKeywordDefinition = {
   },
 }
 
-module.exports = def
+export default def

@@ -1,5 +1,10 @@
-import {CodeKeywordDefinition, Schema} from "../../types"
-import KeywordCxt from "../../compile/context"
+import type {
+  CodeKeywordDefinition,
+  ErrorObject,
+  KeywordErrorDefinition,
+  AnySchema,
+} from "../../types"
+import type KeywordCxt from "../../compile/context"
 import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {callValidateCode} from "../util"
@@ -7,9 +12,17 @@ import {_, str, nil, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 import {SchemaEnv, resolveRef} from "../../compile"
 
+export type RefError = ErrorObject<"ref", {ref: string}>
+
+const error: KeywordErrorDefinition = {
+  message: ({schema}) => str`can't resolve reference ${schema}`,
+  params: ({schema}) => _`{ref: ${schema}}`,
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "$ref",
   schemaType: "string",
+  error,
   code(cxt: KeywordCxt) {
     const {gen, schema, it} = cxt
     const {allErrors, baseId, schemaEnv: env, opts, validateName, self} = it
@@ -43,7 +56,7 @@ const def: CodeKeywordDefinition = {
       else callSyncRef(v)
     }
 
-    function inlineRefSchema(sch: Schema): void {
+    function inlineRefSchema(sch: AnySchema): void {
       const schName = gen.scopeValue("schema", {ref: sch})
       const valid = gen.name("valid")
       applySubschema(
@@ -101,11 +114,6 @@ const def: CodeKeywordDefinition = {
       gen.assign(N.errors, _`${N.vErrors}.length`)
     }
   },
-  // TODO incorrect error message
-  error: {
-    message: ({schema}) => str`can't resolve reference ${schema}`,
-    params: ({schema}) => _`{ref: ${schema}}`,
-  },
 }
 
-module.exports = def
+export default def

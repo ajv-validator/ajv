@@ -1,6 +1,6 @@
 import getAjvInstances from "./ajv_instances"
 import Ajv from "./ajv"
-import {ValidateFunction} from "../dist/types"
+import {AnyValidateFunction} from "../dist/types"
 
 const should = require("./chai").should()
 
@@ -320,7 +320,7 @@ describe("resolve", () => {
       validate([{a: 5}]).should.equal(false)
     }
 
-    function testInlined(validate: ValidateFunction, expectedInlined) {
+    function testInlined(validate: AnyValidateFunction, expectedInlined) {
       const inlined: any = !validate.source?.code.includes("scope.validate")
       inlined.should.equal(expectedInlined)
     }

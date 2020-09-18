@@ -1,4 +1,4 @@
-import KeywordCxt from "../compile/context"
+import type KeywordCxt from "../compile/context"
 import {noPropertyInData} from "./util"
 import {_, or, Code, Name} from "../compile/codegen"
 

@@ -1,5 +1,5 @@
-import {CodeKeywordDefinition, Schema} from "../../types"
-import KeywordCxt from "../../compile/context"
+import type {CodeKeywordDefinition, AnySchema} from "../../types"
+import type KeywordCxt from "../../compile/context"
 import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
 
@@ -10,7 +10,7 @@ const def: CodeKeywordDefinition = {
     const {gen, schema, it} = cxt
     if (!Array.isArray(schema)) throw new Error("ajv implementation error")
     const valid = gen.name("valid")
-    schema.forEach((sch: Schema, i: number) => {
+    schema.forEach((sch: AnySchema, i: number) => {
       if (alwaysValidSchema(it, sch)) return
       applySubschema(it, {keyword: "allOf", schemaProp: i}, valid)
       cxt.ok(valid)
@@ -18,4 +18,4 @@ const def: CodeKeywordDefinition = {
   },
 }
 
-module.exports = def
+export default def

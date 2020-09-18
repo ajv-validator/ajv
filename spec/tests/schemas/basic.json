@@ -117,9 +117,7 @@
       },
       {
         "description": "valid product with tag",
-        "data": [
-          {"tags": ["product"], "id": 1, "name": "product", "price": 100}
-        ],
+        "data": [{"tags": ["product"], "id": 1, "name": "product", "price": 100}],
         "valid": true
       },
       {

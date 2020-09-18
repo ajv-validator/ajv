@@ -1,5 +1,5 @@
+import type {KeywordDefinition} from "../types"
 import {toHash} from "./util"
-import {KeywordDefinition} from "../types"
 
 interface ValidationTypes {
   [key: string]: boolean | RuleGroup | undefined

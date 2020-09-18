@@ -5,7 +5,7 @@ import {afterError, afterEach} from "./after_test"
 
 const instances = getAjvInstances(options, {
   $data: true,
-  unknownFormats: ["allowedUnknown"],
+  formats: {allowedUnknown: true},
 })
 
 jsonSchemaTest(instances, {

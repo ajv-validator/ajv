@@ -1,12 +1,18 @@
-import {SchemaObjCxt, KeywordErrorDefinition, KeywordErrorCxt, SchemaObject} from "../../types"
+import type {
+  SchemaObjCxt,
+  KeywordErrorDefinition,
+  KeywordErrorCxt,
+  ErrorObject,
+  AnySchemaObject,
+} from "../../types"
+import type {ValidationRules} from "../rules"
+import {schemaHasRulesForType} from "./applicability"
 import {toHash, checkDataTypes, DataType} from "../util"
 import {schemaRefOrVal} from "../../vocabularies/util"
-import {schemaHasRulesForType} from "./applicability"
 import {reportError} from "../errors"
 import {_, str, Name} from "../codegen"
-import {ValidationRules} from "../rules"
 
-export function getSchemaTypes({self}: SchemaObjCxt, schema: SchemaObject): string[] {
+export function getSchemaTypes({self}: SchemaObjCxt, schema: AnySchemaObject): string[] {
   const st: undefined | string | string[] = schema.type
   const types: string[] = Array.isArray(st) ? st : st ? [st] : []
   types.forEach((t) => checkType(t, self.RULES))
@@ -128,6 +134,8 @@ function assignParentData({gen, parentData, parentDataProperty}: SchemaObjCxt, e
     gen.assign(_`${parentData}[${parentDataProperty}]`, expr)
   )
 }
+
+export type TypeError = ErrorObject<"type", {type: string}>
 
 const typeError: KeywordErrorDefinition = {
   message: ({schema}) => str`should be ${schema}`,

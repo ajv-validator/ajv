@@ -1,12 +1,20 @@
-import {CodeKeywordDefinition} from "../../types"
-import KeywordCxt from "../../compile/context"
+import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
+import type KeywordCxt from "../../compile/context"
 import {_, or, Name, Code} from "../../compile/codegen"
 import equal from "fast-deep-equal"
+
+export type EnumError = ErrorObject<"enum", {allowedValues: any[]}>
+
+const error: KeywordErrorDefinition = {
+  message: "should be equal to one of the allowed values",
+  params: ({schemaCode}) => _`{allowedValues: ${schemaCode}}`,
+}
 
 const def: CodeKeywordDefinition = {
   keyword: "enum",
   schemaType: "array",
   $data: true,
+  error,
   code(cxt: KeywordCxt) {
     const {gen, data, $data, schema, schemaCode, it} = cxt
     if (!$data && schema.length === 0) throw new Error("enum must have non-empty array")
@@ -41,10 +49,6 @@ const def: CodeKeywordDefinition = {
       return _`${data} === ${sch}`
     }
   },
-  error: {
-    message: "should be equal to one of the allowed values",
-    params: ({schemaCode}) => _`{allowedValues: ${schemaCode}}`,
-  },
 }
 
-module.exports = def
+export default def

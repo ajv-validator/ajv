@@ -16,15 +16,7 @@
       "allOf": [{"$ref": "#/definitions/nonNegativeInteger"}, {"default": 0}]
     },
     "simpleTypes": {
-      "enum": [
-        "array",
-        "boolean",
-        "integer",
-        "null",
-        "number",
-        "object",
-        "string"
-      ]
+      "enum": ["array", "boolean", "integer", "null", "number", "object", "string"]
     },
     "stringArray": {
       "type": "array",

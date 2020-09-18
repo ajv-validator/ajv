@@ -1,6 +1,6 @@
 import _Ajv from "../ajv"
 import type {JSONSchemaType} from "../../dist/types/json-schema"
-import type {SyncSchemaObject} from "../../dist/types"
+import type {SchemaObject} from "../../dist/types"
 import chai from "../chai"
 const should = chai.should()
 
@@ -119,22 +119,22 @@ describe("JSONSchemaType type and validation as a type guard", () => {
 
   describe("schema has type JSONSchemaType<MyData>", () => {
     it("should prove the type of validated data", () => {
-      const validate = ajv.compile<MyData>(mySchema)
+      const validate = ajv.compile(mySchema)
       if (validate(validData)) {
         validData.foo.should.equal("foo")
       }
       should.not.exist(validate.errors)
 
-      if (ajv.validate<MyData>(mySchema, validData)) {
+      if (ajv.validate(mySchema, validData)) {
         validData.foo.should.equal("foo")
       }
       should.not.exist(ajv.errors)
     })
   })
 
-  describe("schema has type SyncSchemaObject", () => {
+  describe("schema has type SchemaObject", () => {
     it("should prove the type of validated data", () => {
-      const schema = mySchema as SyncSchemaObject
+      const schema = mySchema as SchemaObject
       const validate = ajv.compile<MyData>(schema)
       if (validate(validData)) {
         validData.foo.should.equal("foo")

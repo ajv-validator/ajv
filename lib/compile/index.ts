@@ -1,4 +1,10 @@
-import type {Schema, SchemaObject, ValidateFunction, SchemaCxt} from "../types"
+import type {
+  AnySchema,
+  AnySchemaObject,
+  AnyValidateFunction,
+  AsyncValidateFunction,
+  SchemaCxt,
+} from "../types"
 import type Ajv from "../ajv"
 import {CodeGen, _, nil, str, Name} from "./codegen"
 import {ValidationError} from "./error_classes"
@@ -9,11 +15,11 @@ import {validateFunctionCode} from "./validate"
 import URI = require("uri-js")
 
 export interface SchemaRefs {
-  [ref: string]: Schema | ValidateFunction | undefined
+  [ref: string]: SchemaEnv | AnySchema | undefined
 }
 
 interface SchemaEnvArgs {
-  schema: Schema
+  schema: AnySchema
   root?: SchemaEnv
   baseId?: string
   localRefs?: LocalRefs
@@ -22,7 +28,7 @@ interface SchemaEnvArgs {
 }
 
 export class SchemaEnv implements SchemaEnvArgs {
-  readonly schema: Schema
+  readonly schema: AnySchema
   readonly root: SchemaEnv
   baseId: string // TODO possibly, it should be readonly
   localRefs?: LocalRefs
@@ -30,11 +36,11 @@ export class SchemaEnv implements SchemaEnvArgs {
   readonly cacheKey?: unknown
   readonly $async?: boolean
   readonly refs: SchemaRefs = {}
-  validate?: ValidateFunction
+  validate?: AnyValidateFunction
   validateName?: Name
 
   constructor(env: SchemaEnvArgs) {
-    let schema: SchemaObject | undefined
+    let schema: AnySchemaObject | undefined
     if (typeof env.schema == "object") schema = env.schema
     this.schema = env.schema
     this.root = env.root || this
@@ -96,13 +102,13 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     if (this.opts.processCode) sourceCode = this.opts.processCode(sourceCode, sch)
     // console.log("\n\n\n *** \n", sourceCode)
     const makeValidate = new Function(`${N.self}`, `${N.scope}`, sourceCode)
-    const validate: ValidateFunction = makeValidate(this, this.scope.get())
+    const validate: AnyValidateFunction = makeValidate(this, this.scope.get())
     gen.scopeValue(validateName, {ref: validate})
 
     validate.errors = null
     validate.schema = sch.schema
     validate.schemaEnv = sch
-    if (sch.$async) validate.$async = true
+    if (sch.$async) (validate as AsyncValidateFunction).$async = true
     if (this.opts.sourceCode === true) {
       validate.source = {
         code: sourceCode,
@@ -126,7 +132,7 @@ export function resolveRef(
   root: SchemaEnv,
   baseId: string,
   ref: string
-): Schema | ValidateFunction | SchemaEnv | undefined {
+): AnySchema | AnyValidateFunction | SchemaEnv | undefined {
   ref = resolveUrl(baseId, ref)
   const schOrFunc = root.refs[ref]
   if (schOrFunc) return schOrFunc
@@ -141,7 +147,7 @@ export function resolveRef(
   return (root.refs[ref] = inlineOrCompile.call(this, _sch))
 }
 
-function inlineOrCompile(this: Ajv, sch: SchemaEnv): Schema | SchemaEnv {
+function inlineOrCompile(this: Ajv, sch: SchemaEnv): AnySchema | SchemaEnv {
   if (inlineRef(sch.schema, this.opts.inlineRefs)) return sch.schema
   return sch.validate ? sch : compileSchema.call(this, sch)
 }
@@ -158,7 +164,7 @@ function sameSchemaEnv(s1: SchemaEnv, s2: SchemaEnv): boolean {
 }
 
 // resolve and compile the references ($ref)
-// TODO returns SchemaObject (if the schema can be inlined) or validation function
+// TODO returns AnySchemaObject (if the schema can be inlined) or validation function
 function resolve(
   this: Ajv,
   root: SchemaEnv, // information about the root schema for the current schema

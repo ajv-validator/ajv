@@ -1,17 +1,40 @@
-import {CodeKeywordDefinition, AddedFormat, FormatValidate} from "../../types"
-import KeywordCxt from "../../compile/context"
+import type {
+  AddedFormat,
+  FormatValidator,
+  AsyncFormatValidator,
+  CodeKeywordDefinition,
+  KeywordErrorDefinition,
+  ErrorObject,
+} from "../../types"
+import type KeywordCxt from "../../compile/context"
 import {_, str, nil, or, Code, getProperty} from "../../compile/codegen"
-import N from "../../compile/names"
+
+type FormatValidate =
+  | FormatValidator<string>
+  | FormatValidator<number>
+  | AsyncFormatValidator<string>
+  | AsyncFormatValidator<number>
+  | RegExp
+  | string
+  | true
+
+export type FormatError = ErrorObject<"format", {format: string}>
+
+const error: KeywordErrorDefinition = {
+  message: ({schemaCode}) => str`should match format "${schemaCode}"`,
+  params: ({schemaCode}) => _`{format: ${schemaCode}}`,
+}
 
 const def: CodeKeywordDefinition = {
   keyword: "format",
   type: ["number", "string"],
   schemaType: "string",
   $data: true,
+  error,
   code(cxt: KeywordCxt, ruleType?: string) {
     const {gen, data, $data, schema, schemaCode, it} = cxt
     const {opts, errSchemaPath, schemaEnv, self} = it
-    if (opts.format === false) return
+    if (!opts.validateFormats) return
 
     if ($data) validate$DataFormat()
     else validateFormat()
@@ -33,12 +56,8 @@ const def: CodeKeywordDefinition = {
       cxt.fail$data(or(unknownFmt(), invalidFmt())) // TODO this is not tested. Possibly require ajv-formats to test formats in ajv as well
 
       function unknownFmt(): Code {
-        if (opts.unknownFormats === "ignore") return nil
-        let unknown = _`${schemaCode} && !${format}`
-        if (Array.isArray(opts.unknownFormats)) {
-          unknown = _`${unknown} && !${N.self}.opts.unknownFormats.includes(${schemaCode})`
-        }
-        return _`(${unknown})`
+        if (opts.strict === false) return nil
+        return _`(${schemaCode} && !${format})`
       }
 
       function invalidFmt(): Code {
@@ -46,7 +65,9 @@ const def: CodeKeywordDefinition = {
           ? _`${fDef}.async ? await ${format}(${data}) : ${format}(${data})`
           : _`${format}(${data})`
         const validData = _`typeof ${format} == "function" ? ${callFormat} : ${format}.test(${data})`
-        return _`(${format} && ${fType} === ${ruleType as string} && !(${validData}))`
+        return _`(${format} && ${format} !== true && ${fType} === ${
+          ruleType as string
+        } && !(${validData}))`
       }
     }
 
@@ -56,15 +77,15 @@ const def: CodeKeywordDefinition = {
         unknownFormat()
         return
       }
+      if (formatDef === true) return
       const [fmtType, format, fmtRef] = getFormat(formatDef)
       if (fmtType === ruleType) cxt.pass(validCondition())
 
       function unknownFormat(): void {
-        if (opts.unknownFormats === "ignore") {
+        if (opts.strict === false) {
           self.logger.warn(unknownMsg())
           return
         }
-        if (Array.isArray(opts.unknownFormats) && opts.unknownFormats.includes(schema)) return
         throw new Error(unknownMsg())
 
         function unknownMsg(): string {
@@ -79,7 +100,7 @@ const def: CodeKeywordDefinition = {
           code: opts.code.formats ? _`${opts.code.formats}${getProperty(schema)}` : undefined,
         })
         if (typeof fmtDef == "object" && !(fmtDef instanceof RegExp)) {
-          return [fmtDef.type || "string", fmtDef.validate as FormatValidate, _`${fmt}.validate`]
+          return [fmtDef.type || "string", fmtDef.validate, _`${fmt}.validate`]
         }
 
         return ["string", fmtDef, fmt]
@@ -94,10 +115,6 @@ const def: CodeKeywordDefinition = {
       }
     }
   },
-  error: {
-    message: ({schemaCode}) => str`should match format "${schemaCode}"`,
-    params: ({schemaCode}) => _`{format: ${schemaCode}}`,
-  },
 }
 
-module.exports = def
+export default def

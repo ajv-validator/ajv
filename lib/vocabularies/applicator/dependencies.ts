@@ -1,5 +1,11 @@
-import {CodeKeywordDefinition, SchemaMap, Schema} from "../../types"
-import KeywordCxt from "../../compile/context"
+import type {
+  CodeKeywordDefinition,
+  ErrorObject,
+  KeywordErrorDefinition,
+  SchemaMap,
+  AnySchema,
+} from "../../types"
+import type KeywordCxt from "../../compile/context"
 import {alwaysValidSchema, propertyInData} from "../util"
 import {applySubschema} from "../../compile/subschema"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"
@@ -11,10 +17,33 @@ interface PropertyDependencies {
 
 type SchemaDependencies = SchemaMap
 
+export type DependenciesError = ErrorObject<
+  "dependencies",
+  {
+    property: string
+    missingProperty: string
+    depsCount: number
+    deps: string // TODO change to string[]
+  }
+>
+
+const error: KeywordErrorDefinition = {
+  message: ({params: {property, depsCount, deps}}) => {
+    const property_ies = depsCount === 1 ? "property" : "properties"
+    return str`should have ${property_ies} ${deps} when property ${property} is present`
+  },
+  params: ({params: {property, depsCount, deps, missingProperty}}) =>
+    _`{property: ${property},
+    missingProperty: ${missingProperty},
+    depsCount: ${depsCount},
+    deps: ${deps}}`, // TODO change to reference
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "dependencies",
   type: "object",
   schemaType: "object",
+  error,
   code(cxt: KeywordCxt) {
     const {gen, schema, data, it} = cxt
     const [propDeps, schDeps] = splitDependencies()
@@ -61,7 +90,7 @@ const def: CodeKeywordDefinition = {
 
     function validateSchemaDeps(schemaDeps: SchemaMap): void {
       for (const prop in schemaDeps) {
-        if (alwaysValidSchema(it, schemaDeps[prop] as Schema)) continue
+        if (alwaysValidSchema(it, schemaDeps[prop] as AnySchema)) continue
         gen.if(
           propertyInData(data, prop, it.opts.ownProperties),
           () => applySubschema(it, {keyword: "dependencies", schemaProp: prop}, valid),
@@ -71,17 +100,6 @@ const def: CodeKeywordDefinition = {
       }
     }
   },
-  error: {
-    message: ({params: {property, depsCount, deps}}) => {
-      const property_ies = depsCount === 1 ? "property" : "properties"
-      return str`should have ${property_ies} ${deps} when property ${property} is present`
-    },
-    params: ({params: {property, depsCount, deps, missingProperty}}) =>
-      _`{property: ${property},
-      missingProperty: ${missingProperty},
-      depsCount: ${depsCount},
-      deps: ${deps}}`, // TODO change to reference?
-  },
 }
 
-module.exports = def
+export default def

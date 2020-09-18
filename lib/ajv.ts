@@ -1,15 +1,46 @@
-import {
+export {
+  Format,
+  FormatDefinition,
+  AsyncFormatDefinition,
+  KeywordDefinition,
+  KeywordErrorDefinition,
+  CodeKeywordDefinition,
+  MacroKeywordDefinition,
+  FuncKeywordDefinition,
+  Vocabulary,
   Schema,
+  AsyncSchema,
+  Options,
+  ValidateFunction,
+  AsyncValidateFunction,
+  ErrorObject,
+  CacheInterface,
+  Logger,
+} from "./types"
+export interface Plugin<Opts> {
+  (ajv: Ajv, options?: Opts): Ajv
+  [prop: string]: any
+}
+
+import KeywordCxt from "./compile/context"
+export {KeywordCxt}
+export {DefinedError} from "./vocabularies/errors"
+export {JSONSchemaType} from "./types/json-schema"
+
+import type {
+  Schema,
+  AnySchema,
+  AnySchemaObject,
   SchemaObject,
-  SyncSchemaObject,
-  AsyncSchemaObject,
+  AsyncSchema,
   Vocabulary,
   KeywordDefinition,
   Options,
   InstanceOptions,
+  RemovedOptions,
+  DeprecatedOptions,
+  AnyValidateFunction,
   ValidateFunction,
-  ValidateGuard,
-  SyncValidateFunction,
   AsyncValidateFunction,
   CacheInterface,
   Logger,
@@ -17,7 +48,7 @@ import {
   Format,
   AddedFormat,
 } from "./types"
-import {JSONSchemaType} from "./types/json-schema"
+import type {JSONSchemaType} from "./types/json-schema"
 import Cache from "./cache"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
 import {getRules, ValidationRules, Rule, RuleGroup} from "./compile/rules"
@@ -37,7 +68,7 @@ import draft7MetaSchema from "./refs/json-schema-draft-07.json"
 
 const META_SCHEMA_ID = "http://json-schema.org/draft-07/schema"
 
-const META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"]
+const META_IGNORE_OPTIONS: (keyof Options)[] = ["removeAdditional", "useDefaults", "coerceTypes"]
 const META_SUPPORT_DATA = ["/properties"]
 const EXT_SCOPE_NAMES = new Set([
   "validate",
@@ -52,12 +83,42 @@ const EXT_SCOPE_NAMES = new Set([
   "Error",
 ])
 
-const optsDefaults = {
-  strict: true,
-  code: {},
-  loopRequired: Infinity,
-  loopEnum: Infinity,
-  addUsedSchema: true,
+type OptionsInfo<T extends RemovedOptions | DeprecatedOptions> = {
+  [K in keyof T]-?: string | undefined
+}
+
+const removedOptions: OptionsInfo<RemovedOptions> = {
+  errorDataPath: "",
+  format: "`validateFormats: false` can be used instead.",
+  nullable: '"nullable" keyword is supported by default.',
+  jsonPointers: "Deprecated jsPropertySyntax can be used instead.",
+  schemaId: "JSON Schema draft-04 is not supported in Ajv v7.",
+  strictDefaults: "It is default now, see option `strict`.",
+  strictKeywords: "It is default now, see option `strict`.",
+  strictNumbers: "It is default now, see option `strict`.",
+  uniqueItems: '"uniqueItems" keyword is always validated.',
+  unknownFormats: "Disable strict mode or pass `true` to `ajv.addFormat` (or `formats` option).",
+}
+
+const deprecatedOptions: OptionsInfo<DeprecatedOptions> = {
+  jsPropertySyntax: "",
+  unicode: '"minLength"/"maxLength" account for unicode characters by default.',
+}
+
+function optDefaults(o: Options): InstanceOptions {
+  return {
+    strict: o.strict ?? true,
+    code: o.code ?? {},
+    loopRequired: o.loopRequired ?? Infinity,
+    loopEnum: o.loopEnum ?? Infinity,
+    meta: o.meta ?? true,
+    messages: o.messages ?? true,
+    inlineRefs: o.inlineRefs ?? true,
+    addUsedSchema: o.addUsedSchema ?? true,
+    validateSchema: o.validateSchema ?? true,
+    validateFormats: o.validateFormats ?? true,
+    serialize: o.serialize === false ? (x) => x : o.serialize ?? stableStringify,
+  }
 }
 
 export default class Ajv {
@@ -71,7 +132,7 @@ export default class Ajv {
   readonly formats: {[name: string]: AddedFormat | undefined} = {}
   readonly RULES: ValidationRules
   readonly _compilations: Set<SchemaEnv> = new Set()
-  private readonly _loading: {[ref: string]: Promise<SchemaObject> | undefined} = {}
+  private readonly _loading: {[ref: string]: Promise<AnySchemaObject> | undefined} = {}
   private readonly _cache: CacheInterface
   private readonly _metaOpts: InstanceOptions
 
@@ -80,19 +141,17 @@ export default class Ajv {
 
   constructor(opts: Options = {}) {
     opts = this.opts = {
-      ...optsDefaults,
       ...opts,
-      serialize: opts.serialize === false ? (x) => x : opts.serialize ?? stableStringify,
-      addUsedSchema: opts.addUsedSchema ?? true,
-      validateSchema: opts.validateSchema ?? true,
+      ...optDefaults(opts),
     }
     this.logger = getLogger(opts.logger)
-    const formatOpt = opts.format
-    opts.format = false
+    const formatOpt = opts.validateFormats
+    opts.validateFormats = false
 
     this._cache = opts.cache || new Cache()
     this.RULES = getRules()
-    checkDeprecatedOptions.call(this, opts)
+    checkOptions.call(this, removedOptions, opts, "NOT SUPPORTED")
+    checkOptions.call(this, deprecatedOptions, opts, "DEPRECATED", "warn")
     this._metaOpts = getMetaSchemaOptions.call(this)
 
     if (opts.formats) addInitialFormats.call(this)
@@ -107,23 +166,22 @@ export default class Ajv {
     addDefaultMetaSchema.call(this)
     if (typeof opts.meta == "object") this.addMetaSchema(opts.meta)
     addInitialSchemas.call(this)
-    opts.format = formatOpt
+    opts.validateFormats = formatOpt
   }
 
   // Validate data using schema
-  // Schema will be compiled and cached using as a key JSON serialized with
+  // AnySchema will be compiled and cached using as a key JSON serialized with
   // [fast-json-stable-stringify](https://github.com/epoberezkin/fast-json-stable-stringify)
-  validate(schema: {$async?: never}, data: unknown): boolean | Promise<unknown>
-  validate(schema: SyncSchemaObject | boolean, data: unknown): boolean
-  validate<T>(schema: SyncSchemaObject | JSONSchemaType<T>, data: unknown): data is T
-  validate(schema: AsyncSchemaObject, data: unknown): Promise<unknown>
-  // eslint-disable-next-line @typescript-eslint/unified-signatures
-  validate(schemaKeyRef: Schema | string, data: unknown): boolean | Promise<unknown>
-  validate(
-    schemaKeyRef: Schema | string, // key, ref or schema object
-    data: unknown // to be validated
-  ): boolean | Promise<unknown> {
-    let v: ValidateFunction | undefined
+  validate(schema: Schema | string, data: unknown): boolean
+  validate(schemaKeyRef: AnySchema | string, data: unknown): boolean | Promise<unknown>
+  validate<T>(schema: Schema | JSONSchemaType<T> | string, data: unknown): data is T
+  validate<T>(schema: AsyncSchema, data: unknown | T): Promise<T>
+  validate<T>(schemaKeyRef: AnySchema | string, data: unknown): data is T | Promise<T>
+  validate<T>(
+    schemaKeyRef: AnySchema | string, // key, ref or schema object
+    data: unknown | T // to be validated
+  ): boolean | Promise<T> {
+    let v: AnyValidateFunction | undefined
     if (typeof schemaKeyRef == "string") {
       v = this.getSchema(schemaKeyRef)
       if (!v) throw new Error('no schema with key or ref "' + schemaKeyRef + '"')
@@ -133,37 +191,38 @@ export default class Ajv {
     }
 
     const valid = v(data)
-    if (v.$async !== true) this.errors = v.errors
+    if (!("$async" in v)) this.errors = v.errors
     return valid
   }
 
   // Create validation function for passed schema
   // _meta: true if schema is a meta-schema. Used internally to compile meta schemas of custom keywords.
-  compile(schema: {$async?: never}, _meta?: boolean): ValidateFunction
-  compile(schema: SyncSchemaObject | boolean, _meta?: boolean): SyncValidateFunction
-  compile<T>(schema: SyncSchemaObject | JSONSchemaType<T>, _meta?: boolean): ValidateGuard<T>
-  compile(schema: AsyncSchemaObject, _meta?: boolean): AsyncValidateFunction
-  // eslint-disable-next-line @typescript-eslint/unified-signatures
-  compile(schema: Schema, _meta?: boolean): ValidateFunction
-  compile(schema: Schema, _meta?: boolean): ValidateFunction {
+  compile<T = unknown>(schema: Schema | JSONSchemaType<T>, _meta?: boolean): ValidateFunction<T>
+  compile<T = unknown>(schema: AsyncSchema, _meta?: boolean): AsyncValidateFunction<T>
+  compile<T = unknown>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T>
+  compile<T = unknown>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T> {
     const sch = this._addSchema(schema, _meta)
-    return sch.validate || this._compileSchemaEnv(sch)
+    return (sch.validate || this._compileSchemaEnv(sch)) as AnyValidateFunction<T>
   }
 
   // Creates validating function for passed schema with asynchronous loading of missing schemas.
   // `loadSchema` option should be a function that accepts schema uri and returns promise that resolves with the schema.
   // TODO allow passing schema URI
   // meta - optional true to compile meta-schema
-  compileAsync(schema: {$async?: never}, _meta?: boolean): Promise<ValidateFunction>
-  compileAsync(schema: SyncSchemaObject, meta?: boolean): Promise<SyncValidateFunction>
-  compileAsync<T>(
-    schema: SyncSchemaObject | JSONSchemaType<T>,
+  compileAsync<T = unknown>(
+    schema: SchemaObject | JSONSchemaType<T>,
     _meta?: boolean
-  ): Promise<ValidateGuard<T>>
-  compileAsync(schema: AsyncSchemaObject, meta?: boolean): Promise<AsyncValidateFunction>
+  ): Promise<ValidateFunction<T>>
+  compileAsync<T = unknown>(schema: AsyncSchema, meta?: boolean): Promise<AsyncValidateFunction<T>>
   // eslint-disable-next-line @typescript-eslint/unified-signatures
-  compileAsync(schema: SchemaObject, meta?: boolean): Promise<ValidateFunction>
-  compileAsync(schema: SchemaObject, meta?: boolean): Promise<ValidateFunction> {
+  compileAsync<T = unknown>(
+    schema: AnySchemaObject,
+    meta?: boolean
+  ): Promise<AnyValidateFunction<T>>
+  compileAsync<T = unknown>(
+    schema: AnySchemaObject,
+    meta?: boolean
+  ): Promise<AnyValidateFunction<T>> {
     if (typeof this.opts.loadSchema != "function") {
       throw new Error("options.loadSchema should be a function")
     }
@@ -172,9 +231,9 @@ export default class Ajv {
 
     async function runCompileAsync(
       this: Ajv,
-      _schema: SchemaObject,
+      _schema: AnySchemaObject,
       _meta?: boolean
-    ): Promise<ValidateFunction> {
+    ): Promise<AnyValidateFunction> {
       await loadMetaSchema.call(this, _schema.$schema)
       const sch = this._addSchema(_schema, _meta)
       return sch.validate || _compileAsync.call(this, sch)
@@ -186,7 +245,7 @@ export default class Ajv {
       }
     }
 
-    async function _compileAsync(this: Ajv, sch: SchemaEnv): Promise<ValidateFunction> {
+    async function _compileAsync(this: Ajv, sch: SchemaEnv): Promise<AnyValidateFunction> {
       try {
         return this._compileSchemaEnv(sch)
       } catch (e) {
@@ -199,7 +258,7 @@ export default class Ajv {
 
     function checkLoaded(this: Ajv, {missingSchema: ref, missingRef}: MissingRefError): void {
       if (this.refs[ref]) {
-        throw new Error(`Schema ${ref} is loaded but ${missingRef} cannot be resolved`)
+        throw new Error(`AnySchema ${ref} is loaded but ${missingRef} cannot be resolved`)
       }
     }
 
@@ -209,7 +268,7 @@ export default class Ajv {
       if (!this.refs[ref]) this.addSchema(_schema, ref, meta)
     }
 
-    async function _loadSchema(this: Ajv, ref: string): Promise<SchemaObject> {
+    async function _loadSchema(this: Ajv, ref: string): Promise<AnySchemaObject> {
       const p = this._loading[ref]
       if (p) return p
       try {
@@ -222,7 +281,7 @@ export default class Ajv {
 
   // Adds schema to the instance
   addSchema(
-    schema: Schema | Schema[], // If array is passed, `key` will be ignored
+    schema: AnySchema | AnySchema[], // If array is passed, `key` will be ignored
     key?: string, // Optional schema key. Can be passed to `validate` method instead of schema object or id/ref. One schema per instance can have empty `id` and `key`.
     _meta?: boolean, // true if schema is a meta-schema. Used internally, addMetaSchema should be used instead.
     _validateSchema = this.opts.validateSchema // false to skip schema validation. Used internally, option validateSchema should be used instead.
@@ -245,7 +304,7 @@ export default class Ajv {
   // Add schema that will be used to validate other schemas
   // options in META_IGNORE_OPTIONS are alway set to false
   addMetaSchema(
-    schema: SchemaObject,
+    schema: AnySchemaObject,
     key?: string, // schema key
     _validateSchema = this.opts.validateSchema // false to skip schema validation, can be used to override validateSchema option for meta-schema
   ): Ajv {
@@ -254,9 +313,9 @@ export default class Ajv {
   }
 
   //  Validate schema against its meta-schema
-  validateSchema(schema: Schema, throwOrLogError?: boolean): boolean | Promise<unknown> {
+  validateSchema(schema: AnySchema, throwOrLogError?: boolean): boolean | Promise<unknown> {
     if (typeof schema == "boolean") return true
-    let $schema: string | SchemaObject | undefined
+    let $schema: string | AnySchemaObject | undefined
     $schema = schema.$schema
     if ($schema !== undefined && typeof $schema != "string") {
       throw new Error("$schema must be a string")
@@ -278,7 +337,7 @@ export default class Ajv {
 
   // Get compiled schema by `key` or `ref`.
   // (`key` that was passed to `addSchema` or full schema reference - `schema.$id` or resolved id)
-  getSchema(keyRef: string): ValidateFunction | undefined {
+  getSchema<T = unknown>(keyRef: string): AnyValidateFunction<T> | undefined {
     let sch
     while (typeof (sch = getSchEnv.call(this, keyRef)) == "string") keyRef = sch
     if (sch === undefined) {
@@ -287,14 +346,14 @@ export default class Ajv {
       if (!sch) return
       this.refs[keyRef] = sch
     }
-    return sch.validate || this._compileSchemaEnv(sch)
+    return (sch.validate || this._compileSchemaEnv(sch)) as AnyValidateFunction<T> | undefined
   }
 
   // Remove cached schema(s).
   // If no parameter is passed all schemas but meta-schemas are removed.
   // If RegExp is passed all schemas with key/id matching pattern but meta-schemas are removed.
   // Even if schema is referenced by other schemas it still can be removed as other schemas have local references.
-  removeSchema(schemaKeyRef: Schema | string | RegExp): Ajv {
+  removeSchema(schemaKeyRef: AnySchema | string | RegExp): Ajv {
     if (schemaKeyRef instanceof RegExp) {
       this._removeAllSchemas(this.schemas, schemaKeyRef)
       this._removeAllSchemas(this.refs, schemaKeyRef)
@@ -398,19 +457,19 @@ export default class Ajv {
       .reduce((text, msg) => text + msg + separator)
   }
 
-  $dataMetaSchema(metaSchema: SchemaObject, keywordsJsonPointers: string[]): SchemaObject {
+  $dataMetaSchema(metaSchema: AnySchemaObject, keywordsJsonPointers: string[]): AnySchemaObject {
     const rules = this.RULES.all
     for (const jsonPointer of keywordsJsonPointers) {
       metaSchema = JSON.parse(JSON.stringify(metaSchema))
       const segments = jsonPointer.split("/").slice(1) // first segment is an empty string
       let keywords = metaSchema
-      for (const seg of segments) keywords = keywords[seg] as SchemaObject
+      for (const seg of segments) keywords = keywords[seg] as AnySchemaObject
 
       for (const key in rules) {
         const rule = rules[key]
         if (typeof rule != "object") continue
         const {$data} = rule.definition
-        const schema = keywords[key] as SchemaObject | undefined
+        const schema = keywords[key] as AnySchemaObject | undefined
         if ($data && schema) keywords[key] = schemaOrData(schema)
       }
     }
@@ -436,7 +495,7 @@ export default class Ajv {
   }
 
   private _addSchema(
-    schema: Schema,
+    schema: AnySchema,
     meta?: boolean,
     validateSchema = this.opts.validateSchema,
     addSchema = this.opts.addUsedSchema
@@ -467,7 +526,7 @@ export default class Ajv {
     }
   }
 
-  private _compileSchemaEnv(sch: SchemaEnv): ValidateFunction {
+  private _compileSchemaEnv(sch: SchemaEnv): AnyValidateFunction {
     if (sch.meta) this._compileMetaSchema(sch)
     else compileSchema.call(this, sch)
     if (!sch.validate) throw new Error("ajv implementation error")
@@ -490,15 +549,20 @@ export interface ErrorsTextOptions {
   dataVar?: string
 }
 
-function checkDeprecatedOptions(this: Ajv, opts: Options): void {
-  if (opts.errorDataPath !== undefined) this.logger.error("NOT SUPPORTED: option errorDataPath")
-  if (opts.schemaId !== undefined) this.logger.error("NOT SUPPORTED: option schemaId")
-  if (opts.uniqueItems !== undefined) this.logger.error("NOT SUPPORTED: option uniqueItems")
-  if (opts.jsPropertySyntax !== undefined) this.logger.warn("DEPRECATED: option jsPropertySyntax")
-  if (opts.unicode !== undefined) this.logger.warn("DEPRECATED: option unicode")
+function checkOptions(
+  this: Ajv,
+  checkOpts: OptionsInfo<RemovedOptions | DeprecatedOptions>,
+  options: Options & RemovedOptions,
+  msg: string,
+  log: "warn" | "error" = "error"
+): void {
+  for (const key in checkOpts) {
+    const opt = key as keyof typeof checkOpts
+    if (opt in options) this.logger[log](`${msg}: option ${key}. ${checkOpts[opt]}`)
+  }
 }
 
-function defaultMeta(this: Ajv): string | SchemaObject | undefined {
+function defaultMeta(this: Ajv): string | AnySchemaObject | undefined {
   const {meta} = this.opts
   this.opts.defaultMeta =
     typeof meta == "object"
@@ -517,7 +581,7 @@ function getSchEnv(this: Ajv, keyRef: string): SchemaEnv | string | undefined {
 function addDefaultMetaSchema(this: Ajv): void {
   const {$data, meta} = this.opts
   if ($data) this.addMetaSchema($dataRefSchema, $dataRefSchema.$id, false)
-  if (meta === false) return
+  if (!meta) return
   const metaSchema = $data
     ? this.$dataMetaSchema(draft7MetaSchema, META_SUPPORT_DATA)
     : draft7MetaSchema
@@ -625,8 +689,9 @@ const $dataRef = {
   $ref: "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#",
 }
 
-function schemaOrData(schema: Schema): SchemaObject {
+function schemaOrData(schema: AnySchema): AnySchemaObject {
   return {anyOf: [schema, $dataRef]}
 }
 
 module.exports = Ajv
+module.exports.default = Ajv

@@ -17,6 +17,7 @@ This template is for bug or error reports. For other issues please use:
 <!-- See https://github.com/ajv-validator/ajv#options -->
 
 ```javascript
+
 ```
 
 **JSON Schema**
@@ -25,7 +26,6 @@ This template is for bug or error reports. For other issues please use:
 
 ```json
 
-
 ```
 
 **Sample data**
@@ -33,7 +33,6 @@ This template is for bug or error reports. For other issues please use:
 <!-- Please make it as small as posssible to reproduce the issue -->
 
 ```json
-
 
 ```
 
@@ -51,6 +50,7 @@ Thank you!
 -->
 
 ```javascript
+
 ```
 
 **Validation result, data AFTER validation, error messages**

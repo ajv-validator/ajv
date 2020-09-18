@@ -1,4 +1,4 @@
-import {SchemaObjCxt} from "../../types"
+import type {SchemaObjCxt} from "../../types"
 import {_, getProperty, stringify} from "../codegen"
 import {checkStrictMode} from "../../vocabularies/util"
 

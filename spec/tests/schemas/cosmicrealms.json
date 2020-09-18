@@ -84,12 +84,7 @@
           "zip": 65794,
           "topThreeFavoriteColors": ["blue", "black", "yellow"],
           "favoriteSingleDigitWholeNumbers": [2, 1, 3, 9],
-          "ipAddresses": [
-            "225.234.40.3",
-            "96.216.243.54",
-            "18.126.145.83",
-            "196.17.191.239"
-          ]
+          "ipAddresses": ["225.234.40.3", "96.216.243.54", "18.126.145.83", "196.17.191.239"]
         },
         "valid": true
       },
