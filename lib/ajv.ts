@@ -37,6 +37,7 @@ import type {
   KeywordDefinition,
   Options,
   InstanceOptions,
+  RemovedOptions,
   AnyValidateFunction,
   ValidateFunction,
   AsyncValidateFunction,
@@ -519,7 +520,7 @@ export interface ErrorsTextOptions {
   dataVar?: string
 }
 
-function checkDeprecatedOptions(this: Ajv, opts: Options): void {
+function checkDeprecatedOptions(this: Ajv, opts: Options & RemovedOptions): void {
   if (opts.errorDataPath !== undefined) this.logger.error("NOT SUPPORTED: option errorDataPath")
   if (opts.schemaId !== undefined) this.logger.error("NOT SUPPORTED: option schemaId")
   if (opts.uniqueItems !== undefined) this.logger.error("NOT SUPPORTED: option uniqueItems")

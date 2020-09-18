@@ -35,7 +35,7 @@ export type LoadSchemaFunction = (
   cb?: (err: Error | null, schema?: AnySchemaObject) => void
 ) => Promise<AnySchemaObject>
 
-export interface CurrentOptions {
+export interface Options {
   strict?: boolean | "log"
   $data?: boolean
   allErrors?: boolean
@@ -72,22 +72,22 @@ export interface CurrentOptions {
     | true
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
   allowMatchingProperties?: boolean // disables a strict mode restriction
+  // deprecated:
+  jsPropertySyntax?: boolean // added instead of jsonPointers
+  unicode?: boolean
 }
 
 export interface CodeOptions {
   formats?: Code // code to require (or construct) map of available formats - for standalone code
 }
 
-export interface Options extends CurrentOptions {
+export interface RemovedOptions {
   // removed:
   errorDataPath?: "object" | "property"
   nullable?: boolean // "nullable" keyword is supported by default
   schemaId?: string
   uniqueItems?: boolean
   unknownFormats?: true | string[] | "ignore"
-  // deprecated:
-  jsPropertySyntax?: boolean // added instead of jsonPointers
-  unicode?: boolean
 }
 
 export interface InstanceOptions extends Options {
