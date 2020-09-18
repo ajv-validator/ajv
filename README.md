@@ -188,7 +188,7 @@ const schema: JSONSchemaType<MyData> = {
   additionalProperties: false
 }
 
-// validate is a type guard for MyData because schema was typed
+// validate is a type guard for MyData - type is inferred from schema type
 const validate = ajv.compile(schema)
 
 // or, if you did not use type annotation for the schema,
@@ -316,7 +316,7 @@ To reiterate, neither this nor other strict mode restrictions change the validat
 
 #### Prohibit unknown formats
 
-By default unknown formats throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](#data-reference)). It is possible to opt out of format validation completely with `format: false` option. You can define all known formats with `addFormat` method or `formats` option - to have some format ignored pass `true` as its definition:
+By default unknown formats throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](#data-reference)). It is possible to opt out of format validation completely with options `validateFormats: false`. You can define all known formats with `addFormat` method or `formats` option - to have some format ignored pass `true` as its definition:
 
 ```javascript
 const ajv = new Ajv({formats: {
@@ -992,13 +992,15 @@ See [Coercion rules](https://github.com/ajv-validator/ajv/blob/master/COERCION.m
 
 ## API
 
-#### new Ajv(opts: object)
+#### new Ajv(options: object)
 
 Create Ajv instance:
 
 ```javascript
 const ajv = new Ajv()
 ```
+
+See [Options](#options)
 
 #### ajv.compile(schema: object): (data: any) =\> boolean | Promise\<any\>
 
@@ -1194,7 +1196,7 @@ interface KeywordDefinition {
   // (the latter can be used in addition to `compile` or `macro`).
   $dataError?: object // error definition object for invalid \$data schema - see types.ts
   async?: true // if the validation function is asynchronous
-  // (whether it is compiled or passed in `validate` property).
+  // (whether it is returned from `compile` or passed in `validate` property).
   // It should return a promise that resolves with a value `true` or `false`.
   // This option is ignored in case of "macro" and "code" keywords.
   errors?: boolean | "full" // whether keyword returns errors.
@@ -1237,15 +1239,15 @@ const defaultOptions = {
   // strict mode options
   strict: true,
   allowMatchingProperties: false,
+  validateFormats: true,
   // validation and reporting options:
+  $data: false,
   allErrors: false,
   verbose: false,
   $comment: false,
-  format: true,
   formats: {},
   keywords: {},
   schemas: {},
-  $data: false // | true,
   logger: undefined,
   // referenced schema options:
   missingRefs: true,
@@ -1274,13 +1276,16 @@ const defaultOptions = {
 }
 ```
 
-##### Strict mode options
+##### Strict mode options (NEW in v7)
 
-- _strict_ (NEW in v7): By default Ajv executes in strict mode, that is designed to prevent any unexpected behaviours or silently ignored mistakes in schemas (see [Strict Mode](#strict-mode) for more details). It does not change any validation results, but it makes some schemas invalid that would be otherwise valid according to JSON Schema specification. Option values:
+- _strict_: By default Ajv executes in strict mode, that is designed to prevent any unexpected behaviours or silently ignored mistakes in schemas (see [Strict Mode](#strict-mode) for more details). It does not change any validation results, but it makes some schemas invalid that would be otherwise valid according to JSON Schema specification. Option values:
   - `true` (default) - use strict mode and throw an exception when any strict mode restriction is violated.
   - `"log"` - log warning when any strict mode restriction is violated.
   - `false` - ignore all strict mode restrictions.
-- _allowMatchingProperties_ (NEW in v7): pass true to allow overlap between "properties" and "patternProperties". Does not affect other strict mode restrictions. See [Strict Mode](#strict-mode).
+- _allowMatchingProperties_: pass true to allow overlap between "properties" and "patternProperties". Does not affect other strict mode restrictions. See [Strict Mode](#strict-mode).
+- _validateFormats_: format validation. Option values:
+  - `true` (default) - validate formats (see [Formats](#formats)). In [strict mode](#strict-mode) unknown formats will throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](#data-reference)).
+  - `false` - do not validate any format keywords (TODO they will still collect annotations once supported).
 
 ##### Validation and reporting options
 
@@ -1291,9 +1296,6 @@ const defaultOptions = {
   - `false` (default): ignore \$comment keyword.
   - `true`: log the keyword value to console.
   - function: pass the keyword value, its schema path and root schema to the specified function
-- _format_: format validation. Option values:
-  - `true` (default) - validate added formats (see [Formats](#formats)). In strict mode unknown formats will throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](#data-reference)).
-  - `false` - ignore all format keywords.
 - _formats_: an object with format definitions. Keys and values will be passed to `addFormat` method. Pass `true` as format definition to ignore some formats.
 - _keywords_: an array of keyword definitions or strings. Values will be passed to `addKeyword` method.
 - _schemas_: an array or object of schemas that will be added to the instance. In case you pass the array the schemas must have IDs in them. When the object is passed the method `addSchema(value, key)` will be called for each schema in this object.
@@ -1338,9 +1340,9 @@ const defaultOptions = {
   - `false` - skip schema validation.
 - _addUsedSchema_: by default methods `compile` and `validate` add schemas to the instance if they have `$id` (or `id`) property that doesn't start with "#". If `$id` is present and it is not unique the exception will be thrown. Set this option to `false` to skip adding schemas to the instance and the `$id` uniqueness check when these methods are used. This option does not affect `addSchema` method.
 - _inlineRefs_: Affects compilation of referenced schemas. Option values:
-  - `true` (default) - the referenced schemas that don't have refs in them are inlined, regardless of their size - that substantially improves performance at the cost of the bigger size of compiled schema functions.
-  - `false` - to not inline referenced schemas (they will be compiled as separate functions).
-  - integer number - to limit the maximum number of keywords of the schema that will be inlined.
+  - `true` (default) - the referenced schemas that don't have refs in them are inlined, regardless of their size - it improves performance.
+  - `false` - to not inline referenced schemas (they will always be compiled as separate functions).
+  - integer number - to limit the maximum number of keywords of the schema that will be inlined (to balance the total size of compiled functions and performance).
 - _passContext_: pass validation context to _compile_ and _validate_ keyword functions. If this option is `true` and you pass some context to the compiled validation function with `validate.call(context, data)`, the `context` will be available as `this` in your keywords. By default `this` is Ajv instance.
 - _loopRequired_: by default `required` keyword is compiled into a single expression (or a sequence of statements in `allErrors` mode). In case of a very large number of properties in this keyword it may result in a very big validation function. Pass integer to set the number of properties above which `required` keyword will be validated in a loop - smaller validation function size but also worse performance.
 - _loopEnum_ (NEW in v7): by default `enum` keyword is compiled into a single expression. In case of a very large number of allowed values it may result in a large validation function. Pass integer to set the number of values above which `enum` keyword will be validated in a loop.

@@ -34,7 +34,7 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordCxt, ruleType?: string) {
     const {gen, data, $data, schema, schemaCode, it} = cxt
     const {opts, errSchemaPath, schemaEnv, self} = it
-    if (opts.format === false) return
+    if (!opts.validateFormats) return
 
     if ($data) validate$DataFormat()
     else validateFormat()

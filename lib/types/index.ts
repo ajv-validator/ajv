@@ -35,12 +35,13 @@ export type LoadSchemaFunction = (
   cb?: (err: Error | null, schema?: AnySchemaObject) => void
 ) => Promise<AnySchemaObject>
 
-export interface Options {
+export type Options = CurrentOptions & DeprecatedOptions
+
+export interface CurrentOptions {
   strict?: boolean | "log"
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
-  format?: boolean
   formats?: {[name: string]: Format}
   keywords?: Vocabulary | {[x: string]: KeywordDefinition} // map is deprecated
   schemas?: AnySchema[] | {[key: string]: AnySchema}
@@ -72,20 +73,27 @@ export interface Options {
     | true
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
   allowMatchingProperties?: boolean // disables a strict mode restriction
-  // deprecated:
-  jsPropertySyntax?: boolean // added instead of jsonPointers
-  unicode?: boolean
+  validateFormats?: boolean
 }
 
 export interface CodeOptions {
   formats?: Code // code to require (or construct) map of available formats - for standalone code
 }
 
+export interface DeprecatedOptions {
+  jsPropertySyntax?: boolean // added instead of jsonPointers
+  unicode?: boolean
+}
+
 export interface RemovedOptions {
-  // removed:
+  format?: boolean
   errorDataPath?: "object" | "property"
   nullable?: boolean // "nullable" keyword is supported by default
+  jsonPointers?: boolean
   schemaId?: string
+  strictDefaults?: boolean
+  strictKeywords?: boolean
+  strictNumbers?: boolean
   uniqueItems?: boolean
   unknownFormats?: true | string[] | "ignore"
 }
@@ -98,6 +106,7 @@ export interface InstanceOptions extends Options {
   serialize: (schema: AnySchema) => unknown
   addUsedSchema: boolean
   validateSchema: boolean | "log"
+  validateFormats: boolean
 }
 
 export interface Logger {

@@ -38,6 +38,7 @@ import type {
   Options,
   InstanceOptions,
   RemovedOptions,
+  DeprecatedOptions,
   AnyValidateFunction,
   ValidateFunction,
   AsyncValidateFunction,
@@ -67,7 +68,7 @@ import draft7MetaSchema from "./refs/json-schema-draft-07.json"
 
 const META_SCHEMA_ID = "http://json-schema.org/draft-07/schema"
 
-const META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"] as const
+const META_IGNORE_OPTIONS: (keyof Options)[] = ["removeAdditional", "useDefaults", "coerceTypes"]
 const META_SUPPORT_DATA = ["/properties"]
 const EXT_SCOPE_NAMES = new Set([
   "validate",
@@ -88,6 +89,28 @@ const optsDefaults = {
   loopRequired: Infinity,
   loopEnum: Infinity,
   addUsedSchema: true,
+}
+
+type OptionsInfo<T extends RemovedOptions | DeprecatedOptions> = {
+  [key in keyof T]-?: string | undefined
+}
+
+const removedOptions: OptionsInfo<RemovedOptions> = {
+  errorDataPath: "",
+  format: "`validateFormats: false` can be used instead.",
+  nullable: '"nullable" keyword is supported by default.',
+  jsonPointers: "Deprecated jsPropertySyntax can be used instead.",
+  schemaId: "JSON Schema draft-04 is not supported in Ajv v7.",
+  strictDefaults: "It is default now, see option `strict`.",
+  strictKeywords: "It is default now, see option `strict`.",
+  strictNumbers: "It is default now, see option `strict`.",
+  uniqueItems: '"uniqueItems" keyword is always validated.',
+  unknownFormats: "Disable strict mode or pass `true` to `ajv.addFormat` (or `formats` option).",
+}
+
+const deprecatedOptions: OptionsInfo<DeprecatedOptions> = {
+  jsPropertySyntax: "",
+  unicode: '"minLength"/"maxLength" account for unicode characters by default.',
 }
 
 export default class Ajv {
@@ -115,14 +138,16 @@ export default class Ajv {
       serialize: opts.serialize === false ? (x) => x : opts.serialize ?? stableStringify,
       addUsedSchema: opts.addUsedSchema ?? true,
       validateSchema: opts.validateSchema ?? true,
+      validateFormats: opts.validateFormats ?? true,
     }
     this.logger = getLogger(opts.logger)
-    const formatOpt = opts.format
-    opts.format = false
+    const formatOpt = opts.validateFormats
+    opts.validateFormats = false
 
     this._cache = opts.cache || new Cache()
     this.RULES = getRules()
-    checkDeprecatedOptions.call(this, opts)
+    checkOptions.call(this, removedOptions, opts, "NOT SUPPORTED")
+    checkOptions.call(this, deprecatedOptions, opts, "DEPRECATED", "warn")
     this._metaOpts = getMetaSchemaOptions.call(this)
 
     if (opts.formats) addInitialFormats.call(this)
@@ -137,7 +162,7 @@ export default class Ajv {
     addDefaultMetaSchema.call(this)
     if (typeof opts.meta == "object") this.addMetaSchema(opts.meta)
     addInitialSchemas.call(this)
-    opts.format = formatOpt
+    opts.validateFormats = formatOpt
   }
 
   // Validate data using schema
@@ -520,13 +545,17 @@ export interface ErrorsTextOptions {
   dataVar?: string
 }
 
-function checkDeprecatedOptions(this: Ajv, opts: Options & RemovedOptions): void {
-  if (opts.errorDataPath !== undefined) this.logger.error("NOT SUPPORTED: option errorDataPath")
-  if (opts.schemaId !== undefined) this.logger.error("NOT SUPPORTED: option schemaId")
-  if (opts.uniqueItems !== undefined) this.logger.error("NOT SUPPORTED: option uniqueItems")
-  if (opts.unknownFormats !== undefined) this.logger.error("NOT SUPPORTED: option unknownFormats")
-  if (opts.jsPropertySyntax !== undefined) this.logger.warn("DEPRECATED: option jsPropertySyntax")
-  if (opts.unicode !== undefined) this.logger.warn("DEPRECATED: option unicode")
+function checkOptions(
+  this: Ajv,
+  checkOpts: OptionsInfo<RemovedOptions | DeprecatedOptions>,
+  options: Options & RemovedOptions,
+  msg: string,
+  log: "warn" | "error" = "error"
+): void {
+  for (const key in checkOpts) {
+    const opt = key as keyof typeof checkOpts
+    if (opt in options) this.logger[log](`${msg}: option ${key}. ${checkOpts[opt]}`)
+  }
 }
 
 function defaultMeta(this: Ajv): string | AnySchemaObject | undefined {
