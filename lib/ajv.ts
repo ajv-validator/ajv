@@ -25,6 +25,7 @@ export interface Plugin<Opts> {
 import KeywordCxt from "./compile/context"
 export {KeywordCxt}
 export {DefinedError} from "./vocabularies/errors"
+export {JSONSchemaType} from "./types/json-schema"
 
 import type {
   Schema,
@@ -141,12 +142,14 @@ export default class Ajv {
   // Validate data using schema
   // AnySchema will be compiled and cached using as a key JSON serialized with
   // [fast-json-stable-stringify](https://github.com/epoberezkin/fast-json-stable-stringify)
-  validate<T = any>(schema: Schema | JSONSchemaType<T> | string, data: unknown): data is T
-  validate<T = any>(schema: AsyncSchema, data: unknown): Promise<T>
-  validate<T = any>(schemaKeyRef: AnySchema | string, data: unknown): data is T | Promise<T>
-  validate<T = any>(
+  validate(schema: Schema | string, data: unknown): boolean
+  validate(schemaKeyRef: AnySchema | string, data: unknown): boolean | Promise<unknown>
+  validate<T>(schema: Schema | JSONSchemaType<T> | string, data: unknown): data is T
+  validate<T>(schema: AsyncSchema, data: unknown | T): Promise<T>
+  validate<T>(schemaKeyRef: AnySchema | string, data: unknown): data is T | Promise<T>
+  validate<T>(
     schemaKeyRef: AnySchema | string, // key, ref or schema object
-    data: unknown // to be validated
+    data: unknown | T // to be validated
   ): boolean | Promise<T> {
     let v: AnyValidateFunction | undefined
     if (typeof schemaKeyRef == "string") {
@@ -164,10 +167,10 @@ export default class Ajv {
 
   // Create validation function for passed schema
   // _meta: true if schema is a meta-schema. Used internally to compile meta schemas of custom keywords.
-  compile<T = any>(schema: Schema | JSONSchemaType<T>, _meta?: boolean): ValidateFunction<T>
-  compile<T = any>(schema: AsyncSchema, _meta?: boolean): AsyncValidateFunction<T>
-  compile<T = any>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T>
-  compile<T = any>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T> {
+  compile<T = unknown>(schema: Schema | JSONSchemaType<T>, _meta?: boolean): ValidateFunction<T>
+  compile<T = unknown>(schema: AsyncSchema, _meta?: boolean): AsyncValidateFunction<T>
+  compile<T = unknown>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T>
+  compile<T = unknown>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T> {
     const sch = this._addSchema(schema, _meta)
     return (sch.validate || this._compileSchemaEnv(sch)) as AnyValidateFunction<T>
   }
@@ -176,14 +179,20 @@ export default class Ajv {
   // `loadSchema` option should be a function that accepts schema uri and returns promise that resolves with the schema.
   // TODO allow passing schema URI
   // meta - optional true to compile meta-schema
-  compileAsync<T = any>(
+  compileAsync<T = unknown>(
     schema: SchemaObject | JSONSchemaType<T>,
     _meta?: boolean
   ): Promise<ValidateFunction<T>>
-  compileAsync<T = any>(schema: AsyncSchema, meta?: boolean): Promise<AsyncValidateFunction<T>>
+  compileAsync<T = unknown>(schema: AsyncSchema, meta?: boolean): Promise<AsyncValidateFunction<T>>
   // eslint-disable-next-line @typescript-eslint/unified-signatures
-  compileAsync<T = any>(schema: AnySchemaObject, meta?: boolean): Promise<AnyValidateFunction<T>>
-  compileAsync<T = any>(schema: AnySchemaObject, meta?: boolean): Promise<AnyValidateFunction<T>> {
+  compileAsync<T = unknown>(
+    schema: AnySchemaObject,
+    meta?: boolean
+  ): Promise<AnyValidateFunction<T>>
+  compileAsync<T = unknown>(
+    schema: AnySchemaObject,
+    meta?: boolean
+  ): Promise<AnyValidateFunction<T>> {
     if (typeof this.opts.loadSchema != "function") {
       throw new Error("options.loadSchema should be a function")
     }
@@ -298,7 +307,7 @@ export default class Ajv {
 
   // Get compiled schema by `key` or `ref`.
   // (`key` that was passed to `addSchema` or full schema reference - `schema.$id` or resolved id)
-  getSchema<T = any>(keyRef: string): AnyValidateFunction<T> | undefined {
+  getSchema<T = unknown>(keyRef: string): AnyValidateFunction<T> | undefined {
     let sch
     while (typeof (sch = getSchEnv.call(this, keyRef)) == "string") keyRef = sch
     if (sch === undefined) {

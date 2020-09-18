@@ -119,13 +119,13 @@ describe("JSONSchemaType type and validation as a type guard", () => {
 
   describe("schema has type JSONSchemaType<MyData>", () => {
     it("should prove the type of validated data", () => {
-      const validate = ajv.compile<MyData>(mySchema)
+      const validate = ajv.compile(mySchema)
       if (validate(validData)) {
         validData.foo.should.equal("foo")
       }
       should.not.exist(validate.errors)
 
-      if (ajv.validate<MyData>(mySchema, validData)) {
+      if (ajv.validate(mySchema, validData)) {
         validData.foo.should.equal("foo")
       }
       should.not.exist(ajv.errors)

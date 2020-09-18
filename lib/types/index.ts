@@ -118,7 +118,7 @@ interface SourceCode {
   scope: Scope
 }
 
-export interface ValidateFunction<T = any> {
+export interface ValidateFunction<T = unknown> {
   (
     this: Ajv | any,
     data: any,
@@ -133,7 +133,7 @@ export interface ValidateFunction<T = any> {
   source?: SourceCode
 }
 
-export interface AsyncValidateFunction<T = any> extends ValidateFunction<T> {
+export interface AsyncValidateFunction<T = unknown> extends ValidateFunction<T> {
   (...args: Parameters<ValidateFunction<T>>): Promise<T>
   $async: true
 }
