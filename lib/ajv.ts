@@ -52,7 +52,6 @@ import validationVocabulary from "./vocabularies/validation"
 import applicatorVocabulary from "./vocabularies/applicator"
 import formatVocabulary from "./vocabularies/format"
 import {metadataVocabulary, contentVocabulary} from "./vocabularies/metadata"
-import stableStringify from "fast-json-stable-stringify"
 import {eachItem} from "./compile/util"
 import $dataRefSchema from "./refs/data.json"
 import draft7MetaSchema from "./refs/json-schema-draft-07.json"
@@ -107,7 +106,7 @@ interface CurrentOptions {
   codegen?: CodeGenOptions
   cache?: CacheInterface
   logger?: Logger | false
-  serialize?: false | ((schema: AnySchema) => unknown)
+  serialize?: (schema: AnySchema) => unknown
   $comment?:
     | true
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
@@ -159,24 +158,22 @@ const deprecatedOptions: OptionsInfo<DeprecatedOptions> = {
   unicode: '"minLength"/"maxLength" account for unicode characters by default.',
 }
 
-type RequiredInstOpt =
-  | "strict"
-  | "code"
-  | "loopRequired"
-  | "loopEnum"
-  | "meta"
-  | "messages"
-  | "inlineRefs"
-  | "addUsedSchema"
-  | "validateSchema"
-  | "validateFormats"
-
 type RequiredInstanceOptions = {
-  [K in RequiredInstOpt]: NonNullable<Options[K]>
+  [K in
+    | "strict"
+    | "code"
+    | "inlineRefs"
+    | "loopRequired"
+    | "loopEnum"
+    | "meta"
+    | "messages"
+    | "serialize"
+    | "addUsedSchema"
+    | "validateSchema"
+    | "validateFormats"]: NonNullable<Options[K]>
 }
 
-export type InstanceOptions = Omit<Options, keyof RequiredInstanceOptions | "serialize"> &
-  RequiredInstanceOptions & {serialize: (schema: AnySchema) => unknown}
+export type InstanceOptions = Options & RequiredInstanceOptions
 
 function requiredOptions(o: Options): RequiredInstanceOptions {
   return {
@@ -187,6 +184,7 @@ function requiredOptions(o: Options): RequiredInstanceOptions {
     meta: o.meta ?? true,
     messages: o.messages ?? true,
     inlineRefs: o.inlineRefs ?? true,
+    serialize: o.serialize || ((x) => x), // "||" is to account for removed "false" option value
     addUsedSchema: o.addUsedSchema ?? true,
     validateSchema: o.validateSchema ?? true,
     validateFormats: o.validateFormats ?? true,
@@ -200,34 +198,10 @@ export interface Logger {
 }
 
 export interface CacheInterface {
-  put(key: unknown, value: SchemaEnv): void
+  set(key: unknown, value: SchemaEnv): void
   get(key: unknown): SchemaEnv | undefined
-  del(key: unknown): void
+  delete(key: unknown): void
   clear(): void
-}
-
-class Cache implements CacheInterface {
-  private _cache: {[key: string]: SchemaEnv | undefined}
-
-  constructor() {
-    this._cache = {}
-  }
-
-  put(key: string, value: SchemaEnv): void {
-    this._cache[key] = value
-  }
-
-  get(key: string): SchemaEnv | undefined {
-    return this._cache[key]
-  }
-
-  del(key: string): void {
-    delete this._cache[key]
-  }
-
-  clear(): void {
-    this._cache = {}
-  }
 }
 
 export default class Ajv {
@@ -252,13 +226,12 @@ export default class Ajv {
     opts = this.opts = {
       ...opts,
       ...requiredOptions(opts),
-      serialize: opts.serialize === false ? (x) => x : opts.serialize ?? stableStringify,
     }
     this.logger = getLogger(opts.logger)
     const formatOpt = opts.validateFormats
     opts.validateFormats = false
 
-    this._cache = opts.cache || new Cache()
+    this._cache = opts.cache || new Map()
     this.RULES = getRules()
     checkOptions.call(this, removedOptions, opts, "NOT SUPPORTED")
     checkOptions.call(this, deprecatedOptions, opts, "DEPRECATED", "warn")
@@ -280,8 +253,7 @@ export default class Ajv {
   }
 
   // Validate data using schema
-  // AnySchema will be compiled and cached using as a key JSON serialized with
-  // [fast-json-stable-stringify](https://github.com/epoberezkin/fast-json-stable-stringify)
+  // AnySchema will be compiled and cached using schema itsekf as a key for Map
   validate(schema: Schema | string, data: unknown): boolean
   validate(schemaKeyRef: AnySchema | string, data: unknown): boolean | Promise<unknown>
   validate<T>(schema: Schema | JSONSchemaType<T> | string, data: unknown): data is T
@@ -477,14 +449,14 @@ export default class Ajv {
         return this
       case "string": {
         const sch = getSchEnv.call(this, schemaKeyRef)
-        if (typeof sch == "object") this._cache.del(sch.cacheKey)
+        if (typeof sch == "object") this._cache.delete(sch.cacheKey)
         delete this.schemas[schemaKeyRef]
         delete this.refs[schemaKeyRef]
         return this
       }
       case "object": {
         const cacheKey = this.opts.serialize(schemaKeyRef)
-        this._cache.del(cacheKey)
+        this._cache.delete(cacheKey)
         let id = schemaKeyRef.$id
         if (id) {
           id = normalizeId(id)
@@ -597,7 +569,7 @@ export default class Ajv {
         if (typeof sch == "string") {
           delete schemas[keyRef]
         } else if (sch && !sch.meta) {
-          this._cache.del(sch.cacheKey)
+          this._cache.delete(sch.cacheKey)
           delete schemas[keyRef]
         }
       }
@@ -619,7 +591,7 @@ export default class Ajv {
 
     const localRefs = getSchemaRefs.call(this, schema)
     sch = new SchemaEnv({schema, cacheKey, meta, localRefs})
-    this._cache.put(sch.cacheKey, sch)
+    this._cache.set(sch.cacheKey, sch)
     const id = sch.baseId
     if (addSchema && !id.startsWith("#")) {
       // TODO atm it is allowed to overwrite schemas without id (instead of not adding them)

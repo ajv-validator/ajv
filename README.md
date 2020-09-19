@@ -217,7 +217,7 @@ if (validate(data)) {
 
 See [this test](./spec/types/json-schema.spec.ts) for an advanced example, [API](#api) and [Options](#options) for more details.
 
-Ajv compiles schemas to functions and caches them in all cases (using schema serialized with [fast-json-stable-stringify](https://github.com/epoberezkin/fast-json-stable-stringify) or another function passed via options), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
+Ajv compiles schemas to functions and caches them in all cases (using schema itself as a key for Map) or another function passed via options), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
 
 The best performance is achieved when using compiled functions returned by `compile` or `getSchema` methods (there is no additional function call).
 
@@ -1118,7 +1118,7 @@ Schema can be removed using:
 - key passed to `addSchema`
 - it's full reference (id)
 - RegExp that should match schema id or key (meta-schemas won't be removed)
-- actual schema object that will be stable-stringified to remove schema from cache
+- actual schema object (that will be optionally serialized) to remove schema from cache
 
 If no parameter is passed all schemas but meta-schemas will be removed and the cache will be cleared.
 
@@ -1272,8 +1272,8 @@ const defaultOptions = {
   ownProperties: false,
   multipleOfPrecision: false,
   messages: true,
-  cache: new Cache,
-  serialize: undefined // (schema: object | boolean) => any
+  cache: new Map(),
+  serialize: (x) => x // (schema: object | boolean) => any
   jsPropertySyntax: false, // deprecated
 }
 ```
@@ -1373,8 +1373,18 @@ type Source = {
 - _ownProperties_: by default Ajv iterates over all enumerable object properties; when this option is `true` only own enumerable object properties (i.e. found directly on the object rather than on its prototype) are iterated. Contributed by @mbroadst.
 - _multipleOfPrecision_: by default `multipleOf` keyword is validated by comparing the result of division with parseInt() of that result. It works for dividers that are bigger than 1. For small dividers such as 0.01 the result of the division is usually not integer (even when it should be integer, see issue [#84](https://github.com/ajv-validator/ajv/issues/84)). If you need to use fractional dividers set this option to some positive integer N to have `multipleOf` validated using this formula: `Math.abs(Math.round(division) - division) < 1e-N` (it is slower but allows for float arithmetics deviations).
 - _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when messages are generated outside of Ajv code (e.g. with [ajv-i18n](https://github.com/ajv-validator/ajv-i18n)).
-- _cache_: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache [sacjs](https://github.com/epoberezkin/sacjs) can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods `put(key, value)`, `get(key)`, `del(key)` and `clear()`.
-- _serialize_: an optional function to serialize schema to cache key. Pass `false` to use schema itself as a key (e.g., if WeakMap used as a cache). By default [fast-json-stable-stringify](https://github.com/epoberezkin/fast-json-stable-stringify) is used.
+- _cache_: an optional instance of cache to store compiled schemas using schema (optionally serialized) as a key. If not passed, then a Map instance is used. Required interface for cache has the same methods as Map:
+
+```typescript
+interface Cache {
+  set(key: unknown, value: object): void
+  get(key: unknown): object | undefined
+  delete(key: unknown): void
+  clear(): void
+}
+```
+
+- _serialize_: an optional function to serialize schema to cache key. By default schema reference itself is used as a key.
 - _jsPropertySyntax_ (deprecated) - set to `true` to report `dataPath` in errors as in v6, using JavaScript property syntax (e.g., `".prop[1].subProp"`). By default `dataPath` in errors is reported as JSON pointer. This option is added for backward compatibility and is not recommended - this format is difficult to parse even in JS code.
 
 ## Validation errors

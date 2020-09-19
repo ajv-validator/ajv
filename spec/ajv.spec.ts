@@ -1,5 +1,4 @@
 import _Ajv from "./ajv"
-import stableStringify from "fast-json-stable-stringify"
 import {_} from "../dist/compile/codegen"
 const should = require("./chai").should()
 
@@ -24,16 +23,13 @@ describe("Ajv", () => {
     })
 
     it("should cache compiled functions for the same schema", () => {
-      const v1 = ajv.compile({
+      const schema = {
         $id: "//e.com/int.json",
         type: "integer",
         minimum: 1,
-      })
-      const v2 = ajv.compile({
-        $id: "//e.com/int.json",
-        minimum: 1,
-        type: "integer",
-      })
+      }
+      const v1 = ajv.compile(schema)
+      const v2 = ajv.compile(schema)
       v1.should.equal(v2)
     })
 
@@ -302,50 +298,46 @@ describe("Ajv", () => {
 
   describe("removeSchema method", () => {
     it("should remove schema by key", () => {
-      const schema = {type: "integer"},
-        str = stableStringify(schema)
+      const schema = {type: "integer"}
       ajv.addSchema(schema, "int")
       const v = ajv.getSchema("int")
 
       v.should.be.a("function")
-      ajv._cache.get(str).validate.should.equal(v)
+      ajv._cache.get(schema).validate.should.equal(v)
 
       ajv.removeSchema("int")
       should.not.exist(ajv.getSchema("int"))
-      should.not.exist(ajv._cache.get(str))
+      should.not.exist(ajv._cache.get(schema))
     })
 
     it("should remove schema by id", () => {
-      const schema = {$id: "//e.com/int.json", type: "integer"},
-        str = stableStringify(schema)
+      const schema = {$id: "//e.com/int.json", type: "integer"}
       ajv.addSchema(schema)
 
       const v = ajv.getSchema("//e.com/int.json")
       v.should.be.a("function")
-      ajv._cache.get(str).validate.should.equal(v)
+      ajv._cache.get(schema).validate.should.equal(v)
 
       ajv.removeSchema("//e.com/int.json")
       should.not.exist(ajv.getSchema("//e.com/int.json"))
-      should.not.exist(ajv._cache.get(str))
+      should.not.exist(ajv._cache.get(schema))
     })
 
     it("should remove schema by schema object", () => {
-      const schema = {type: "integer"},
-        str = stableStringify(schema)
+      const schema = {type: "integer"}
       ajv.addSchema(schema)
-      ajv._cache.get(str).should.be.an("object")
-      ajv.removeSchema({type: "integer"})
-      should.not.exist(ajv._cache.get(str))
+      ajv._cache.get(schema).should.be.an("object")
+      ajv.removeSchema(schema)
+      should.not.exist(ajv._cache.get(schema))
     })
 
     it("should remove schema with id by schema object", () => {
-      const schema = {$id: "//e.com/int.json", type: "integer"},
-        str = stableStringify(schema)
+      const schema = {$id: "//e.com/int.json", type: "integer"}
       ajv.addSchema(schema)
-      ajv._cache.get(str).should.be.an("object")
-      ajv.removeSchema({$id: "//e.com/int.json", type: "integer"})
-      // should.not.exist(ajv.getSchema('//e.com/int.json'));
-      should.not.exist(ajv._cache.get(str))
+      ajv._cache.get(schema).should.be.an("object")
+      ajv.removeSchema(schema)
+      should.not.exist(ajv.getSchema("//e.com/int.json"))
+      should.not.exist(ajv._cache.get(schema))
     })
 
     it("should not throw if there is no schema with passed id", () => {
@@ -356,41 +348,36 @@ describe("Ajv", () => {
     })
 
     it("should remove all schemas but meta-schemas if called without an arguments", () => {
-      const schema1 = {$id: "//e.com/int.json", type: "integer"},
-        str1 = stableStringify(schema1)
+      const schema1 = {$id: "//e.com/int.json", type: "integer"}
       ajv.addSchema(schema1)
-      ajv._cache.get(str1).should.be.an("object")
+      ajv._cache.get(schema1).should.be.an("object")
 
-      const schema2 = {type: "integer"},
-        str2 = stableStringify(schema2)
+      const schema2 = {type: "integer"}
       ajv.addSchema(schema2)
-      ajv._cache.get(str2).should.be.an("object")
+      ajv._cache.get(schema2).should.be.an("object")
 
       ajv.removeSchema()
-      should.not.exist(ajv._cache.get(str1))
-      should.not.exist(ajv._cache.get(str2))
+      should.not.exist(ajv._cache.get(schema1))
+      should.not.exist(ajv._cache.get(schema2))
     })
 
     it("should remove all schemas but meta-schemas with key/id matching pattern", () => {
-      const schema1 = {$id: "//e.com/int.json", type: "integer"},
-        str1 = stableStringify(schema1)
+      const schema1 = {$id: "//e.com/int.json", type: "integer"}
       ajv.addSchema(schema1)
-      ajv._cache.get(str1).should.be.an("object")
+      ajv._cache.get(schema1).should.be.an("object")
 
-      const schema2 = {$id: "str.json", type: "string"},
-        str2 = stableStringify(schema2)
+      const schema2 = {$id: "str.json", type: "string"}
       ajv.addSchema(schema2, "//e.com/str.json")
-      ajv._cache.get(str2).should.be.an("object")
+      ajv._cache.get(schema2).should.be.an("object")
 
-      const schema3 = {type: "integer"},
-        str3 = stableStringify(schema3)
+      const schema3 = {type: "integer"}
       ajv.addSchema(schema3)
-      ajv._cache.get(str3).should.be.an("object")
+      ajv._cache.get(schema3).should.be.an("object")
 
       ajv.removeSchema(/e\.com/)
-      should.not.exist(ajv._cache.get(str1))
-      should.not.exist(ajv._cache.get(str2))
-      ajv._cache.get(str3).should.be.an("object")
+      should.not.exist(ajv._cache.get(schema1))
+      should.not.exist(ajv._cache.get(schema2))
+      ajv._cache.get(schema3).should.be.an("object")
     })
 
     it("should return instance of itself", () => {

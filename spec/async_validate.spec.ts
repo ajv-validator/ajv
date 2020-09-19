@@ -50,9 +50,7 @@ describe("async schemas, formats and keywords", function () {
         ajv.compile(schema)
       })
 
-      schema.$async = true
-
-      ajv.compile(schema)
+      ajv.compile({...schema, $async: true})
     })
   })
 
@@ -61,7 +59,7 @@ describe("async schemas, formats and keywords", function () {
 
     it("should fail compilation if async format is inside sync schema", () => {
       instances.forEach((_ajv) => {
-        const schema: any = {
+        let schema: any = {
           type: "string",
           format: "english_word",
         }
@@ -69,7 +67,7 @@ describe("async schemas, formats and keywords", function () {
         shouldThrowFunc("async format in sync schema", () => {
           _ajv.compile(schema)
         })
-        schema.$async = true
+        schema = {...schema, $async: true}
         _ajv.compile(schema)
       })
     })
@@ -98,7 +96,7 @@ describe("async schemas, formats and keywords", function () {
 
     it("should fail compilation if async keyword is inside sync schema", () => {
       instances.forEach((_ajv) => {
-        const schema: any = {
+        let schema: any = {
           type: "object",
           properties: {
             userId: {
@@ -112,7 +110,7 @@ describe("async schemas, formats and keywords", function () {
           _ajv.compile(schema)
         })
 
-        schema.$async = true
+        schema = {...schema, $async: true}
         _ajv.compile(schema)
       })
     })
@@ -317,7 +315,7 @@ describe("async schemas, formats and keywords", function () {
     })
 
     it("should fail compilation if sync schema references async schema", () => {
-      const schema: any = {
+      let schema: any = {
         $id: "http://e.com/obj.json#",
         type: "object",
         properties: {
@@ -347,8 +345,7 @@ describe("async schemas, formats and keywords", function () {
         ajv.compile(schema)
       })
 
-      schema.$id = "http://e.com/obj2.json#"
-      schema.$async = true
+      schema = {...schema, $id: "http://e.com/obj2.json#", $async: true}
 
       ajv.compile(schema)
     })
