@@ -1,6 +1,6 @@
 import getAjvInstances from "./ajv_instances"
-import type Ajv from "../dist/ajv"
-import type {Options} from "../dist/types"
+import type Ajv from ".."
+import type {Options} from ".."
 
 export default function getAjvSyncInstances(extraOpts?: Options): Ajv[] {
   return getAjvInstances(

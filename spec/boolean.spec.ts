@@ -1,5 +1,5 @@
 import _Ajv from "./ajv"
-import type Ajv from "../dist/ajv"
+import type Ajv from ".."
 
 require("./chai").should()
 

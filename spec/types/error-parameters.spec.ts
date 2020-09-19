@@ -1,4 +1,4 @@
-import {DefinedError} from "../../dist/ajv"
+import {DefinedError} from "../.."
 import _Ajv from "../ajv"
 import chai from "../chai"
 const should = chai.should()

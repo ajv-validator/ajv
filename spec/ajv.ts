@@ -1,7 +1,6 @@
-import type Ajv from "../dist/ajv"
+import type Ajv from ".."
 
-const AjvClass: typeof Ajv =
-  typeof window == "object" ? (window as any).Ajv : require("" + "../dist/ajv")
+const AjvClass: typeof Ajv = typeof window == "object" ? (window as any).Ajv : require("" + "..")
 
 export default AjvClass
 

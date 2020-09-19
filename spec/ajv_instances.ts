@@ -1,6 +1,6 @@
 import _Ajv from "./ajv"
-import type Ajv from "../dist/ajv"
-import type {Options} from "../dist/types"
+import type Ajv from ".."
+import type {Options} from ".."
 
 export default function getAjvInstances(options: Options, extraOpts: Options = {}): Ajv[] {
   return _getAjvInstances(options, {...extraOpts, logger: false, codegen: {lines: true}})

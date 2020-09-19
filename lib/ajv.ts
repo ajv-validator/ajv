@@ -9,13 +9,11 @@ export {
   FuncKeywordDefinition,
   Vocabulary,
   Schema,
+  SchemaObject,
   AsyncSchema,
-  Options,
   ValidateFunction,
   AsyncValidateFunction,
   ErrorObject,
-  CacheInterface,
-  Logger,
 } from "./types"
 export interface Plugin<Opts> {
   (ajv: Ajv, options?: Opts): Ajv
@@ -35,26 +33,19 @@ import type {
   AsyncSchema,
   Vocabulary,
   KeywordDefinition,
-  Options,
-  InstanceOptions,
-  RemovedOptions,
-  DeprecatedOptions,
   AnyValidateFunction,
   ValidateFunction,
   AsyncValidateFunction,
-  CacheInterface,
-  Logger,
   ErrorObject,
   Format,
   AddedFormat,
 } from "./types"
 import type {JSONSchemaType} from "./types/json-schema"
-import Cache from "./cache"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
 import {getRules, ValidationRules, Rule, RuleGroup} from "./compile/rules"
 import {checkType} from "./compile/validate/dataType"
 import {SchemaEnv, compileSchema, resolveSchema} from "./compile"
-import {ValueScope} from "./compile/codegen"
+import {Code, CodeGenOptions, ValueScope} from "./compile/codegen"
 import {normalizeId, getSchemaRefs} from "./compile/resolve"
 import coreVocabulary from "./vocabularies/core"
 import validationVocabulary from "./vocabularies/validation"
@@ -83,6 +74,69 @@ const EXT_SCOPE_NAMES = new Set([
   "Error",
 ])
 
+export type Options = CurrentOptions & DeprecatedOptions
+
+interface CurrentOptions {
+  strict?: boolean | "log"
+  $data?: boolean
+  allErrors?: boolean
+  verbose?: boolean
+  formats?: {[name: string]: Format}
+  keywords?: Vocabulary | {[x: string]: KeywordDefinition} // map is deprecated
+  schemas?: AnySchema[] | {[key: string]: AnySchema}
+  missingRefs?: true | "ignore" | "fail"
+  extendRefs?: true | "ignore" | "fail"
+  loadSchema?: (uri: string) => Promise<AnySchemaObject>
+  removeAdditional?: boolean | "all" | "failing"
+  useDefaults?: boolean | "empty"
+  coerceTypes?: boolean | "array"
+  meta?: SchemaObject | boolean
+  defaultMeta?: string | AnySchemaObject
+  validateSchema?: boolean | "log"
+  addUsedSchema?: boolean
+  inlineRefs?: boolean | number
+  passContext?: boolean
+  loopRequired?: number
+  loopEnum?: number
+  ownProperties?: boolean
+  multipleOfPrecision?: boolean | number
+  messages?: boolean
+  code?: CodeOptions
+  sourceCode?: boolean
+  processCode?: (code: string, schema?: SchemaEnv) => string
+  codegen?: CodeGenOptions
+  cache?: CacheInterface
+  logger?: Logger | false
+  serialize?: false | ((schema: AnySchema) => unknown)
+  $comment?:
+    | true
+    | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
+  allowMatchingProperties?: boolean // disables a strict mode restriction
+  validateFormats?: boolean
+}
+
+interface CodeOptions {
+  formats?: Code // code to require (or construct) map of available formats - for standalone code
+}
+
+interface DeprecatedOptions {
+  jsPropertySyntax?: boolean // added instead of jsonPointers
+  unicode?: boolean
+}
+
+interface RemovedOptions {
+  format?: boolean
+  errorDataPath?: "object" | "property"
+  nullable?: boolean // "nullable" keyword is supported by default
+  jsonPointers?: boolean
+  schemaId?: string
+  strictDefaults?: boolean
+  strictKeywords?: boolean
+  strictNumbers?: boolean
+  uniqueItems?: boolean
+  unknownFormats?: true | string[] | "ignore"
+}
+
 type OptionsInfo<T extends RemovedOptions | DeprecatedOptions> = {
   [K in keyof T]-?: string | undefined
 }
@@ -105,7 +159,26 @@ const deprecatedOptions: OptionsInfo<DeprecatedOptions> = {
   unicode: '"minLength"/"maxLength" account for unicode characters by default.',
 }
 
-function optDefaults(o: Options): InstanceOptions {
+type RequiredInstOpt =
+  | "strict"
+  | "code"
+  | "loopRequired"
+  | "loopEnum"
+  | "meta"
+  | "messages"
+  | "inlineRefs"
+  | "addUsedSchema"
+  | "validateSchema"
+  | "validateFormats"
+
+type RequiredInstanceOptions = {
+  [K in RequiredInstOpt]: NonNullable<Options[K]>
+}
+
+export type InstanceOptions = Omit<Options, keyof RequiredInstanceOptions | "serialize"> &
+  RequiredInstanceOptions & {serialize: (schema: AnySchema) => unknown}
+
+function requiredOptions(o: Options): RequiredInstanceOptions {
   return {
     strict: o.strict ?? true,
     code: o.code ?? {},
@@ -117,7 +190,43 @@ function optDefaults(o: Options): InstanceOptions {
     addUsedSchema: o.addUsedSchema ?? true,
     validateSchema: o.validateSchema ?? true,
     validateFormats: o.validateFormats ?? true,
-    serialize: o.serialize === false ? (x) => x : o.serialize ?? stableStringify,
+  }
+}
+
+export interface Logger {
+  log(...args: unknown[]): unknown
+  warn(...args: unknown[]): unknown
+  error(...args: unknown[]): unknown
+}
+
+export interface CacheInterface {
+  put(key: unknown, value: SchemaEnv): void
+  get(key: unknown): SchemaEnv | undefined
+  del(key: unknown): void
+  clear(): void
+}
+
+class Cache implements CacheInterface {
+  private _cache: {[key: string]: SchemaEnv | undefined}
+
+  constructor() {
+    this._cache = {}
+  }
+
+  put(key: string, value: SchemaEnv): void {
+    this._cache[key] = value
+  }
+
+  get(key: string): SchemaEnv | undefined {
+    return this._cache[key]
+  }
+
+  del(key: string): void {
+    delete this._cache[key]
+  }
+
+  clear(): void {
+    this._cache = {}
   }
 }
 
@@ -142,7 +251,8 @@ export default class Ajv {
   constructor(opts: Options = {}) {
     opts = this.opts = {
       ...opts,
-      ...optDefaults(opts),
+      ...requiredOptions(opts),
+      serialize: opts.serialize === false ? (x) => x : opts.serialize ?? stableStringify,
     }
     this.logger = getLogger(opts.logger)
     const formatOpt = opts.validateFormats

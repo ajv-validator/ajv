@@ -1,7 +1,8 @@
-import type {CodeGen, Code, Name, CodeGenOptions, Scope} from "../compile/codegen"
+import type {CodeGen, Code, Name, Scope} from "../compile/codegen"
 import type {SchemaEnv} from "../compile"
 import type KeywordCxt from "../compile/context"
 import type Ajv from "../ajv"
+import type {InstanceOptions} from "../ajv"
 
 interface _SchemaObject {
   $id?: string
@@ -28,101 +29,6 @@ export type AnySchema = Schema | AsyncSchema
 
 export interface SchemaMap {
   [key: string]: AnySchema | undefined
-}
-
-export type LoadSchemaFunction = (
-  uri: string,
-  cb?: (err: Error | null, schema?: AnySchemaObject) => void
-) => Promise<AnySchemaObject>
-
-export type Options = CurrentOptions & DeprecatedOptions
-
-export interface CurrentOptions {
-  strict?: boolean | "log"
-  $data?: boolean
-  allErrors?: boolean
-  verbose?: boolean
-  formats?: {[name: string]: Format}
-  keywords?: Vocabulary | {[x: string]: KeywordDefinition} // map is deprecated
-  schemas?: AnySchema[] | {[key: string]: AnySchema}
-  missingRefs?: true | "ignore" | "fail"
-  extendRefs?: true | "ignore" | "fail"
-  loadSchema?: LoadSchemaFunction
-  removeAdditional?: boolean | "all" | "failing"
-  useDefaults?: boolean | "empty"
-  coerceTypes?: boolean | "array"
-  meta?: SchemaObject | boolean
-  defaultMeta?: string | AnySchemaObject
-  validateSchema?: boolean | "log"
-  addUsedSchema?: boolean
-  inlineRefs?: boolean | number
-  passContext?: boolean
-  loopRequired?: number
-  loopEnum?: number
-  ownProperties?: boolean
-  multipleOfPrecision?: boolean | number
-  messages?: boolean
-  code?: CodeOptions
-  sourceCode?: boolean
-  processCode?: (code: string, schema?: SchemaEnv) => string
-  codegen?: CodeGenOptions
-  cache?: CacheInterface
-  logger?: Logger | false
-  serialize?: false | ((schema: AnySchema) => unknown)
-  $comment?:
-    | true
-    | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
-  allowMatchingProperties?: boolean // disables a strict mode restriction
-  validateFormats?: boolean
-}
-
-export interface CodeOptions {
-  formats?: Code // code to require (or construct) map of available formats - for standalone code
-}
-
-export interface DeprecatedOptions {
-  jsPropertySyntax?: boolean // added instead of jsonPointers
-  unicode?: boolean
-}
-
-export interface RemovedOptions {
-  format?: boolean
-  errorDataPath?: "object" | "property"
-  nullable?: boolean // "nullable" keyword is supported by default
-  jsonPointers?: boolean
-  schemaId?: string
-  strictDefaults?: boolean
-  strictKeywords?: boolean
-  strictNumbers?: boolean
-  uniqueItems?: boolean
-  unknownFormats?: true | string[] | "ignore"
-}
-
-export interface InstanceOptions extends Options {
-  strict: boolean | "log"
-  code: CodeOptions
-  loopRequired: number
-  loopEnum: number
-  meta: SchemaObject | boolean
-  messages: boolean
-  inlineRefs: boolean | number
-  serialize: (schema: AnySchema) => unknown
-  addUsedSchema: boolean
-  validateSchema: boolean | "log"
-  validateFormats: boolean
-}
-
-export interface Logger {
-  log(...args: unknown[]): unknown
-  warn(...args: unknown[]): unknown
-  error(...args: unknown[]): unknown
-}
-
-export interface CacheInterface {
-  put(key: unknown, value: SchemaEnv): void
-  get(key: unknown): SchemaEnv | undefined
-  del(key: unknown): void
-  clear(): void
 }
 
 interface SourceCode {

@@ -1,6 +1,6 @@
 import _Ajv from "../ajv"
-import type {JSONSchemaType} from "../../dist/types/json-schema"
-import type {SchemaObject} from "../../dist/types"
+import type {JSONSchemaType} from "../.."
+import type {SchemaObject} from "../.."
 import chai from "../chai"
 const should = chai.should()
 
