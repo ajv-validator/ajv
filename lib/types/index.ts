@@ -36,15 +36,15 @@ interface SourceCode {
   scope: Scope
 }
 
+interface DataValidationCxt {
+  dataPath: string
+  parentData: Record<string, any> | any[]
+  parentDataProperty: string | number
+  rootData: Record<string, any> | any[]
+}
+
 export interface ValidateFunction<T = unknown> {
-  (
-    this: Ajv | any,
-    data: any,
-    dataPath?: string,
-    parentData?: Record<string, any> | any[],
-    parentDataProperty?: string | number,
-    rootData?: Record<string, any> | any[]
-  ): data is T
+  (this: Ajv | any, data: any, dataCxt?: DataValidationCxt): data is T
   errors?: null | ErrorObject[]
   schema?: AnySchema
   schemaEnv?: SchemaEnv
@@ -140,15 +140,9 @@ export interface DataValidateFunction {
 }
 
 export interface SchemaValidateFunction {
-  (
-    schema: any,
-    data: any,
-    parentSchema?: AnySchemaObject,
-    dataPath?: string,
-    parentData?: Record<string, any> | any[],
-    parentDataProperty?: string | number,
-    rootData?: Record<string, any> | any[]
-  ): boolean | Promise<any>
+  (schema: any, data: any, parentSchema?: AnySchemaObject, dataCxt?: DataValidationCxt):
+    | boolean
+    | Promise<any>
   errors?: Partial<ErrorObject>[]
 }
 

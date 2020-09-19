@@ -6,7 +6,7 @@ import type {
   SchemaCxt,
 } from "../types"
 import type Ajv from "../ajv"
-import {CodeGen, _, nil, str, Name} from "./codegen"
+import {CodeGen, _, nil, Name} from "./codegen"
 import {ValidationError} from "./error_classes"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
@@ -90,7 +90,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     baseId: sch.baseId || rootId,
     schemaPath: nil,
     errSchemaPath: "#",
-    errorPath: str``,
+    errorPath: _`""`,
     opts: this.opts,
     self: this,
   }

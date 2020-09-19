@@ -1,5 +1,6 @@
 import type {KeywordErrorCxt, KeywordErrorDefinition, SchemaCxt} from "../types"
-import {CodeGen, _, str, Code, Name} from "./codegen"
+import {CodeGen, _, str, strConcat, Code, Name} from "./codegen"
+import {SafeExpr} from "./codegen/code"
 import N from "./names"
 
 export const keywordError: KeywordErrorDefinition = {
@@ -59,7 +60,7 @@ export function extendErrors({
     gen.const(err, _`${N.vErrors}[${i}]`)
     gen.if(
       _`${err}.dataPath === undefined`,
-      _`${err}.dataPath = (${N.dataPath} || '') + ${it.errorPath}`
+      _`${err}.dataPath = ${strConcat(N.dataPath, it.errorPath)}`
     )
     gen.code(_`${err}.schemaPath = ${str`${it.errSchemaPath}/${keyword}`}`)
     if (it.opts.verbose) {
@@ -84,28 +85,42 @@ function returnErrors(it: SchemaCxt, errs: Code): void {
   }
 }
 
+const E = {
+  keyword: new Name("keyword"),
+  schemaPath: new Name("schemaPath"),
+  params: new Name("params"),
+  propertyName: new Name("propertyName"),
+  message: new Name("message"),
+  schema: new Name("schema"),
+  parentSchema: new Name("parentSchema"),
+}
+
 function errorObjectCode(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): Code {
   const {
     keyword,
     data,
     schemaValue,
-    it: {createErrors, topSchemaRef, schemaPath, errorPath, errSchemaPath, propertyName, opts},
+    it: {gen, createErrors, topSchemaRef, schemaPath, errorPath, errSchemaPath, propertyName, opts},
   } = cxt
   if (createErrors === false) return _`{}`
   const {params, message} = error
-  const msg = typeof message == "string" ? message : message(cxt)
-  const par = params ? params(cxt) : _`{}`
-  const out = _`{keyword: ${keyword}, dataPath: (${N.dataPath} || "") + ${errorPath}`
-  out.add(_`, schemaPath: ${str`${errSchemaPath}/${keyword}`}, params: ${par}`)
-  if (propertyName) {
-    out.add(_`, propertyName: ${propertyName}`)
-  }
+  const keyValues: [Name, SafeExpr][] = [
+    [E.keyword, _`${keyword}`],
+    [N.dataPath, strConcat(N.dataPath, errorPath)],
+    [E.schemaPath, str`${errSchemaPath}/${keyword}`],
+    [E.params, params ? params(cxt) : _`{}`],
+  ]
+  if (propertyName) keyValues.push([E.propertyName, propertyName])
   if (opts.messages !== false) {
-    out.add(_`, message: ${msg}`)
+    const msg = typeof message == "string" ? _`${message}` : message(cxt)
+    keyValues.push([E.message, msg])
   }
   if (opts.verbose) {
-    out.add(_`, schema: ${schemaValue}, parentSchema: ${topSchemaRef}${schemaPath}, data: ${data}`)
+    keyValues.push(
+      [E.schema, schemaValue],
+      [E.parentSchema, _`${topSchemaRef}${schemaPath}`],
+      [N.data, data]
+    )
   }
-  out.add(_`}`)
-  return out
+  return gen.object(...keyValues)
 }

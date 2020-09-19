@@ -1,7 +1,7 @@
 import type {AnySchema, SchemaMap, SchemaCxt, SchemaObjCxt} from "../types"
 import type KeywordCxt from "../compile/context"
 import {schemaHasRules} from "../compile/util"
-import {CodeGen, _, nil, Code, Name, getProperty} from "../compile/codegen"
+import {CodeGen, _, strConcat, nil, Code, Name, getProperty} from "../compile/codegen"
 import N from "../compile/names"
 
 export function schemaRefOrVal(
@@ -63,16 +63,19 @@ export function noPropertyInData(
 }
 
 export function callValidateCode(
-  {schemaCode, data, it}: KeywordCxt,
+  {schemaCode, data, it: {gen, topSchemaRef, schemaPath, errorPath}, it}: KeywordCxt,
   func: Code,
   context: Code,
   passSchema?: boolean
 ): Code {
-  const dataAndSchema = passSchema
-    ? _`${schemaCode}, ${data}, ${it.topSchemaRef}${it.schemaPath}`
-    : data
-  const dataPath = _`(${N.dataPath} || '') + ${it.errorPath}` // TODO refactor other places
-  const args = _`${dataAndSchema}, ${dataPath}, ${it.parentData}, ${it.parentDataProperty}, ${N.rootData}`
+  const dataAndSchema = passSchema ? _`${schemaCode}, ${data}, ${topSchemaRef}${schemaPath}` : data
+  const dataCxt = gen.object(
+    [N.dataPath, strConcat(N.dataPath, errorPath)],
+    [N.parentData, it.parentData],
+    [N.parentDataProperty, it.parentDataProperty],
+    [N.rootData, N.rootData]
+  )
+  const args = _`${dataAndSchema}, ${dataCxt}`
   return context !== nil ? _`${func}.call(${context}, ${args})` : _`${func}(${args})`
 }
 

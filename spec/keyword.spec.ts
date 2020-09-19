@@ -1200,7 +1200,7 @@ describe("User-defined keywords", () => {
 
     function testModifying(withOption) {
       const collectionFormat = {
-        csv: function (data, _dataPath, parentData, parentDataProperty) {
+        csv: function (data, {parentData, parentDataProperty}) {
           parentData[parentDataProperty] = data.split(",")
           return true
         },
