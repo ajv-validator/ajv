@@ -1,60 +1,31 @@
 import _Ajv from "../ajv"
+import type {Options} from "../.."
 const should = require("../chai").should()
 
 describe("referenced schema options", () => {
-  describe("extendRefs", () => {
-    describe("= true", () => {
+  describe("ignoreKeywordsWithRef", () => {
+    describe("= undefined", () => {
       it("should allow extending $ref with other keywords", () => {
-        test(new _Ajv({extendRefs: true}), true)
+        test({}, true)
       })
 
-      it("should NOT log warning if extendRefs is true", () => {
-        testWarning(new _Ajv({extendRefs: true}))
+      it("should NOT log warning", () => {
+        testWarning()
       })
     })
 
-    describe('= "ignore" and default', () => {
+    describe("= true", () => {
       it("should ignore other keywords when $ref is used", () => {
-        test(new _Ajv({logger: false}))
-        test(new _Ajv({extendRefs: "ignore", logger: false}), false)
+        test({ignoreKeywordsWithRef: true, logger: false}, false)
       })
 
       it("should log warning when other keywords are used with $ref", () => {
-        testWarning(new _Ajv(), /keywords\signored/)
-        testWarning(new _Ajv({extendRefs: "ignore"}), /keywords\signored/)
+        testWarning({ignoreKeywordsWithRef: true}, /keywords\signored/)
       })
     })
 
-    describe('= "fail"', () => {
-      it("should fail schema compilation if other keywords are used with $ref", () => {
-        testFail(new _Ajv({extendRefs: "fail"}))
-
-        function testFail(ajv) {
-          should.throw(() => {
-            const schema = {
-              definitions: {
-                int: {type: "integer"},
-              },
-              $ref: "#/definitions/int",
-              minimum: 10,
-            }
-            ajv.compile(schema)
-          })
-
-          should.not.throw(() => {
-            const schema = {
-              definitions: {
-                int: {type: "integer"},
-              },
-              allOf: [{$ref: "#/definitions/int"}, {minimum: 10}],
-            }
-            ajv.compile(schema)
-          })
-        }
-      })
-    })
-
-    function test(ajv, shouldExtendRef?: boolean) {
+    function test(opts: Options, shouldExtendRef: boolean) {
+      const ajv = new _Ajv(opts)
       const schema = {
         definitions: {
           int: {type: "integer"},
@@ -89,7 +60,7 @@ describe("referenced schema options", () => {
       validate({foo: 10, bar: 1}).should.equal(false)
     }
 
-    function testWarning(ajv, msgPattern?: RegExp) {
+    function testWarning(opts: Options = {}, msgPattern?: RegExp) {
       let oldConsole
       try {
         oldConsole = console.warn
@@ -97,6 +68,8 @@ describe("referenced schema options", () => {
         console.warn = function (...args: any[]) {
           consoleMsg = Array.prototype.join.call(args, " ")
         }
+
+        const ajv = new _Ajv(opts)
 
         const schema = {
           definitions: {
@@ -121,36 +94,6 @@ describe("referenced schema options", () => {
       should.throw(() => {
         ajv.compile({$ref: "missing_reference"})
       })
-    })
-
-    it('should not throw and pass validation with missingRef == "ignore"', () => {
-      testMissingRefsIgnore(new _Ajv({missingRefs: "ignore", logger: false}))
-      testMissingRefsIgnore(new _Ajv({missingRefs: "ignore", allErrors: true, logger: false}))
-
-      function testMissingRefsIgnore(ajv) {
-        const validate = ajv.compile({$ref: "missing_reference"})
-        validate({}).should.equal(true)
-      }
-    })
-
-    it('should not throw and fail validation with missingRef == "fail" if the ref is used', () => {
-      testMissingRefsFail(new _Ajv({missingRefs: "fail", logger: false}))
-      testMissingRefsFail(new _Ajv({missingRefs: "fail", verbose: true, logger: false}))
-      testMissingRefsFail(new _Ajv({missingRefs: "fail", allErrors: true, logger: false}))
-      testMissingRefsFail(
-        new _Ajv({missingRefs: "fail", allErrors: true, verbose: true, logger: false})
-      )
-
-      function testMissingRefsFail(ajv) {
-        let validate = ajv.compile({
-          anyOf: [{type: "number"}, {$ref: "missing_reference"}],
-        })
-        validate(123).should.equal(true)
-        validate("foo").should.equal(false)
-
-        validate = ajv.compile({$ref: "missing_reference"})
-        validate({}).should.equal(false)
-      }
     })
   })
 })

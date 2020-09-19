@@ -1249,9 +1249,6 @@ const defaultOptions = {
   keywords: {},
   schemas: {},
   logger: undefined,
-  // referenced schema options:
-  missingRefs: true,
-  extendRefs: "ignore", // recommended 'fail'
   loadSchema: undefined, // function(uri: string): Promise {}
   // options to modify validated data:
   removeAdditional: false,
@@ -1274,7 +1271,6 @@ const defaultOptions = {
   messages: true,
   cache: new Map(),
   serialize: (x) => x // (schema: object | boolean) => any
-  jsPropertySyntax: false, // deprecated
 }
 ```
 
@@ -1304,17 +1300,6 @@ const defaultOptions = {
 - _logger_: sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. See [Error logging](#error-logging). Option values:
   - logger instance - it should have methods `log`, `warn` and `error`. If any of these methods is missing an exception will be thrown.
   - `false` - logging is disabled.
-
-#### Referenced schema options
-
-- _missingRefs_: handling of missing referenced schemas. Option values:
-  - `true` (default) - if the reference cannot be resolved during compilation the exception is thrown. The thrown error has properties `missingRef` (with hash fragment) and `missingSchema` (without it). Both properties are resolved relative to the current base id (usually schema id, unless it was substituted).
-  - `"ignore"` - to log error during compilation and always pass validation.
-  - `"fail"` - to log error and successfully compile schema but fail validation if this rule is checked.
-- _extendRefs_: validation of other keywords when `$ref` is present in the schema. Option values:
-  - `"ignore"` (default) - when `$ref` is used other keywords are ignored (as per [JSON Reference](https://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03#section-3) standard). A warning will be logged during the schema compilation.
-  - `"fail"` (recommended) - if other validation keywords are used together with `$ref` the exception will be thrown when the schema is compiled. This option is recommended to make sure schema has no keywords that are ignored, which can be confusing.
-  - `true` - validate all keywords in the schemas with `$ref` (the default behaviour in versions before 5.0.0).
 - _loadSchema_: asynchronous function that will be used to load remote schemas when `compileAsync` [method](#api-compileAsync) is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept remote schema uri as a parameter and return a Promise that resolves to a schema. See example in [Asynchronous compilation](#asynchronous-schema-compilation).
 
 #### Options to modify validated data
@@ -1385,7 +1370,6 @@ interface Cache {
 ```
 
 - _serialize_: an optional function to serialize schema to cache key. By default schema reference itself is used as a key.
-- _jsPropertySyntax_ (deprecated) - set to `true` to report `dataPath` in errors as in v6, using JavaScript property syntax (e.g., `".prop[1].subProp"`). By default `dataPath` in errors is reported as JSON pointer. This option is added for backward compatibility and is not recommended - this format is difficult to parse even in JS code.
 
 ## Validation errors
 

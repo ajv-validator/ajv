@@ -7,7 +7,6 @@ const options: Options = fullTest
   ? {
       allErrors: true,
       verbose: true,
-      extendRefs: "ignore",
       inlineRefs: false,
       codegen: {es5: true, lines: true},
     }

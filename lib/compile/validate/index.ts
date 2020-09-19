@@ -94,12 +94,8 @@ function typeAndKeywords(it: SchemaObjCxt, errsCount?: Name): void {
 
 function checkRefsAndKeywords(it: SchemaObjCxt): void {
   const {schema, errSchemaPath, opts, self} = it
-  if (schema.$ref && schemaHasRulesButRef(schema, self.RULES)) {
-    if (opts.extendRefs === "fail") {
-      throw new Error(`$ref: sibling validation keywords at "${errSchemaPath}" (option extendRefs)`)
-    } else if (opts.extendRefs !== true) {
-      self.logger.warn(`$ref: keywords ignored in schema at path "${errSchemaPath}"`)
-    }
+  if (schema.$ref && opts.ignoreKeywordsWithRef && schemaHasRulesButRef(schema, self.RULES)) {
+    self.logger.warn(`$ref: keywords ignored in schema at path "${errSchemaPath}"`)
   }
 }
 

@@ -1,35 +1,22 @@
-import type {
-  CodeKeywordDefinition,
-  ErrorObject,
-  KeywordErrorDefinition,
-  AnySchema,
-} from "../../types"
+import type {CodeKeywordDefinition, AnySchema} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {MissingRefError} from "../../compile/error_classes"
 import {applySubschema} from "../../compile/subschema"
 import {callValidateCode} from "../util"
-import {_, str, nil, Code, Name} from "../../compile/codegen"
+import {_, nil, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 import {SchemaEnv, resolveRef} from "../../compile"
-
-export type RefError = ErrorObject<"ref", {ref: string}>
-
-const error: KeywordErrorDefinition = {
-  message: ({schema}) => str`can't resolve reference ${schema}`,
-  params: ({schema}) => _`{ref: ${schema}}`,
-}
 
 const def: CodeKeywordDefinition = {
   keyword: "$ref",
   schemaType: "string",
-  error,
   code(cxt: KeywordCxt) {
     const {gen, schema, it} = cxt
     const {allErrors, baseId, schemaEnv: env, opts, validateName, self} = it
     const passCxt = opts.passContext ? N.this : nil
     if (schema === "#" || schema === "#/") return callRootRef()
     const schOrFunc = resolveRef.call(self, env.root, baseId, schema)
-    if (schOrFunc === undefined) return missingRef()
+    if (schOrFunc === undefined) throw new MissingRefError(baseId, schema)
     if (schOrFunc instanceof SchemaEnv) return callValidate(schOrFunc)
     return inlineRefSchema(schOrFunc)
 
@@ -70,21 +57,6 @@ const def: CodeKeywordDefinition = {
         valid
       )
       cxt.ok(valid)
-    }
-
-    function missingRef(): void {
-      const msg = MissingRefError.message(baseId, schema)
-      switch (opts.missingRefs) {
-        case "fail":
-          self.logger.error(msg)
-          cxt.fail()
-          return
-        case "ignore":
-          self.logger.warn(msg)
-          return
-        default:
-          throw new MissingRefError(baseId, schema, msg)
-      }
     }
 
     function callAsyncRef(v: Code): void {

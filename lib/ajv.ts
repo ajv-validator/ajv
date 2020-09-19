@@ -83,8 +83,6 @@ interface CurrentOptions {
   formats?: {[name: string]: Format}
   keywords?: Vocabulary | {[x: string]: KeywordDefinition} // map is deprecated
   schemas?: AnySchema[] | {[key: string]: AnySchema}
-  missingRefs?: true | "ignore" | "fail"
-  extendRefs?: true | "ignore" | "fail"
   loadSchema?: (uri: string) => Promise<AnySchemaObject>
   removeAdditional?: boolean | "all" | "failing"
   useDefaults?: boolean | "empty"
@@ -119,6 +117,7 @@ interface CodeOptions {
 }
 
 interface DeprecatedOptions {
+  ignoreKeywordsWithRef?: boolean
   jsPropertySyntax?: boolean // added instead of jsonPointers
   unicode?: boolean
 }
@@ -128,6 +127,8 @@ interface RemovedOptions {
   errorDataPath?: "object" | "property"
   nullable?: boolean // "nullable" keyword is supported by default
   jsonPointers?: boolean
+  extendRefs?: true | "ignore" | "fail"
+  missingRefs?: true | "ignore" | "fail"
   schemaId?: string
   strictDefaults?: boolean
   strictKeywords?: boolean
@@ -145,6 +146,8 @@ const removedOptions: OptionsInfo<RemovedOptions> = {
   format: "`validateFormats: false` can be used instead.",
   nullable: '"nullable" keyword is supported by default.',
   jsonPointers: "Deprecated jsPropertySyntax can be used instead.",
+  extendRefs: "Deprecated ignoreKeywordsWithRef can be used instead.",
+  missingRefs: "Pass empty schema with $id that should be ignored to ajv.addSchema.",
   schemaId: "JSON Schema draft-04 is not supported in Ajv v7.",
   strictDefaults: "It is default now, see option `strict`.",
   strictKeywords: "It is default now, see option `strict`.",
@@ -154,6 +157,7 @@ const removedOptions: OptionsInfo<RemovedOptions> = {
 }
 
 const deprecatedOptions: OptionsInfo<DeprecatedOptions> = {
+  ignoreKeywordsWithRef: "",
   jsPropertySyntax: "",
   unicode: '"minLength"/"maxLength" account for unicode characters by default.',
 }

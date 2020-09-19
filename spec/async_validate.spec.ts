@@ -182,7 +182,7 @@ describe("async schemas, formats and keywords", function () {
 
   describe("async referenced schemas", () => {
     beforeEach(() => {
-      instances = getAjvAsyncInstances({inlineRefs: false, extendRefs: "ignore"})
+      instances = getAjvAsyncInstances({inlineRefs: false, ignoreKeywordsWithRef: true})
       addFormatEnglishWord()
     })
 

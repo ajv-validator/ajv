@@ -24,10 +24,20 @@ const SKIP = {
   ],
 }
 
-runTest(getAjvInstances(options, {meta: false, strict: false}), 6, require("./_json/draft6"))
+runTest(
+  getAjvInstances(options, {
+    meta: false,
+    strict: false,
+    ignoreKeywordsWithRef: true,
+  }),
+  6,
+  require("./_json/draft6")
+)
+
 runTest(
   getAjvInstances(options, {
     strict: false,
+    ignoreKeywordsWithRef: true,
     formats: {
       "idn-email": true,
       "idn-hostname": true,

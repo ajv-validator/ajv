@@ -17,12 +17,8 @@ export class MissingRefError extends Error {
   readonly missingRef: string
   readonly missingSchema: string
 
-  static message(baseId: string, ref: string): string {
-    return `can't resolve reference ${ref} from id ${baseId}`
-  }
-
-  constructor(baseId: string, ref: string, message?: string) {
-    super(message || MissingRefError.message(baseId, ref))
+  constructor(baseId: string, ref: string) {
+    super(`can't resolve reference ${ref} from id ${baseId}`)
     this.missingRef = resolveUrl(baseId, ref)
     this.missingSchema = normalizeId(getFullPath(this.missingRef))
   }
