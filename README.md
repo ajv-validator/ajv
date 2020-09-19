@@ -182,10 +182,10 @@ type MyData = {foo: number}
 const schema: JSONSchemaType<MyData> = {
   type: "object",
   properties: {
-    foo: {type: "number", minimum: 0}
-  }
+    foo: {type: "number", minimum: 0},
+  },
   required: ["foo"],
-  additionalProperties: false
+  additionalProperties: false,
 }
 
 // validate is a type guard for MyData - type is inferred from schema type
