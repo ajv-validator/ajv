@@ -1254,10 +1254,6 @@ const defaultOptions = {
   removeAdditional: false,
   useDefaults: false,
   coerceTypes: false,
-  // code generation options:
-  codegen: {es5: false, lines: false}
-  sourceCode: false,
-  processCode: undefined, // (code: string, schemaEnv: object) => string
   // advanced options:
   meta: true,
   validateSchema: true,
@@ -1271,6 +1267,7 @@ const defaultOptions = {
   messages: true,
   cache: new Map(),
   serialize: (x) => x // (schema: object | boolean) => any
+  code: {es5: false, lines: false}
 }
 ```
 
@@ -1318,28 +1315,6 @@ const defaultOptions = {
   - `true` - coerce scalar data types.
   - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
-#### Code generation options
-
-- _codegen_ (new in v7): code generation options, passed to `CodeGen` constructor (see Code generation TODO). This object contains properties:
-
-```typescript
-type CodeGenOptions = {
-  es5?: boolean // to generate es5 code - by default code is es6, with "for-of" loops, "let" and "const"
-  lines?: boolean // break code to lines - to simplify debugging of generated functions
-}
-```
-
-- _sourceCode_: add `source` property (with properties `code` and `scope`) to validating function.
-
-```typescript
-type Source = {
-  code: string // this code can be different from the result of toString call
-  scope: Scope // see Code generation
-}
-```
-
-- _processCode_: an optional function to process generated code before it is passed to Function constructor. It can be used to either beautify (the validating function is generated without line-breaks) or to transpile code.
-
 #### Advanced options
 
 - _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default). If an object is passed, it will be used as the default meta-schema for schemas that have no `$schema` keyword. This default meta-schema MUST have `$schema` keyword.
@@ -1370,6 +1345,23 @@ interface Cache {
 ```
 
 - _serialize_: an optional function to serialize schema to cache key. By default schema reference itself is used as a key.
+- _code_ (new in v7): code generation options:
+
+```typescript
+type CodeOptions = {
+  es5?: boolean // to generate es5 code - by default code is es6, with "for-of" loops, "let" and "const"
+  lines?: boolean // add line-breaks to code - to simplify debugging of generated functions
+  source?: boolean // add `source` property (see Source below) to validating function.
+  process?: (code: string, schema?: SchemaEnv) => string // an optional function to process generated code
+  // before it is passed to Function constructor.
+  // It can be used to either beautify or to transpile code.
+}
+
+type Source = {
+  code: string // unlike func.toString() it includes assignments exernal to function scope
+  scope: Scope // see Code generation (TODO)
+}
+```
 
 ## Validation errors
 

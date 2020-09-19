@@ -24,6 +24,7 @@ import KeywordCxt from "./compile/context"
 export {KeywordCxt}
 export {DefinedError} from "./vocabularies/errors"
 export {JSONSchemaType} from "./types/json-schema"
+export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
 import type {
   Schema,
@@ -45,7 +46,7 @@ import {ValidationError, MissingRefError} from "./compile/error_classes"
 import {getRules, ValidationRules, Rule, RuleGroup} from "./compile/rules"
 import {checkType} from "./compile/validate/dataType"
 import {SchemaEnv, compileSchema, resolveSchema} from "./compile"
-import {Code, CodeGenOptions, ValueScope} from "./compile/codegen"
+import {Code, ValueScope} from "./compile/codegen"
 import {normalizeId, getSchemaRefs} from "./compile/resolve"
 import coreVocabulary from "./vocabularies/core"
 import validationVocabulary from "./vocabularies/validation"
@@ -76,17 +77,27 @@ const EXT_SCOPE_NAMES = new Set([
 export type Options = CurrentOptions & DeprecatedOptions
 
 interface CurrentOptions {
+  // strict mode options
   strict?: boolean | "log"
+  allowMatchingProperties?: boolean // disables a strict mode restriction
+  validateFormats?: boolean
+  // validation and reporting options:
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
+  $comment?:
+    | true
+    | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
   formats?: {[name: string]: Format}
   keywords?: Vocabulary | {[x: string]: KeywordDefinition} // map is deprecated
   schemas?: AnySchema[] | {[key: string]: AnySchema}
+  logger?: Logger | false
   loadSchema?: (uri: string) => Promise<AnySchemaObject>
+  // options to modify validated data:
   removeAdditional?: boolean | "all" | "failing"
   useDefaults?: boolean | "empty"
   coerceTypes?: boolean | "array"
+  // advanced options:
   meta?: SchemaObject | boolean
   defaultMeta?: string | AnySchemaObject
   validateSchema?: boolean | "log"
@@ -98,27 +109,23 @@ interface CurrentOptions {
   ownProperties?: boolean
   multipleOfPrecision?: boolean | number
   messages?: boolean
-  code?: CodeOptions
-  sourceCode?: boolean
-  processCode?: (code: string, schema?: SchemaEnv) => string
-  codegen?: CodeGenOptions
   cache?: CacheInterface
-  logger?: Logger | false
   serialize?: (schema: AnySchema) => unknown
-  $comment?:
-    | true
-    | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
-  allowMatchingProperties?: boolean // disables a strict mode restriction
-  validateFormats?: boolean
-}
-
-interface CodeOptions {
-  formats?: Code // code to require (or construct) map of available formats - for standalone code
+  code?: {
+    es5?: boolean
+    lines?: boolean
+    formats?: Code // code to require (or construct) map of available formats - for standalone code
+    source?: boolean
+    process?: (code: string, schema?: SchemaEnv) => string
+  }
 }
 
 interface DeprecatedOptions {
+  /** @deprecated */
   ignoreKeywordsWithRef?: boolean
+  /** @deprecated */
   jsPropertySyntax?: boolean // added instead of jsonPointers
+  /** @deprecated */
   unicode?: boolean
 }
 
@@ -129,6 +136,8 @@ interface RemovedOptions {
   jsonPointers?: boolean
   extendRefs?: true | "ignore" | "fail"
   missingRefs?: true | "ignore" | "fail"
+  processCode?: (code: string, schema?: SchemaEnv) => string
+  sourceCode?: boolean
   schemaId?: string
   strictDefaults?: boolean
   strictKeywords?: boolean
@@ -148,6 +157,8 @@ const removedOptions: OptionsInfo<RemovedOptions> = {
   jsonPointers: "Deprecated jsPropertySyntax can be used instead.",
   extendRefs: "Deprecated ignoreKeywordsWithRef can be used instead.",
   missingRefs: "Pass empty schema with $id that should be ignored to ajv.addSchema.",
+  processCode: "Use option `code: {process: (code, schemaEnv: object) => string}`",
+  sourceCode: "Use option `code: {source: true}`",
   schemaId: "JSON Schema draft-04 is not supported in Ajv v7.",
   strictDefaults: "It is default now, see option `strict`.",
   strictKeywords: "It is default now, see option `strict`.",

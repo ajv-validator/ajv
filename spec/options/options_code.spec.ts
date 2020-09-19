@@ -5,7 +5,7 @@ describe("code generation options", () => {
   describe("sourceCode", () => {
     describe("= true", () => {
       it("should add source.code property", () => {
-        test(new _Ajv({sourceCode: true}))
+        test(new _Ajv({code: {source: true}}))
 
         function test(ajv) {
           const validate = ajv.compile({type: "number"})
@@ -17,7 +17,7 @@ describe("code generation options", () => {
     describe("= false and default", () => {
       it("should not add source and sourceCode properties", () => {
         test(new _Ajv())
-        test(new _Ajv({sourceCode: false}))
+        test(new _Ajv({code: {source: false}}))
 
         function test(ajv) {
           const validate = ajv.compile({type: "number"})
@@ -37,7 +37,7 @@ describe("code generation options", () => {
       const unprocessedLines = validate.toString().split("\n").length
 
       const beautify = require("js-beautify").js_beautify
-      const ajvPC = new _Ajv({processCode: beautify})
+      const ajvPC = new _Ajv({code: {process: beautify}})
       validate = ajvPC.compile({type: "string"})
       validate.toString().split("\n").length.should.be.above(unprocessedLines)
       validate("foo").should.equal(true)

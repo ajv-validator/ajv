@@ -59,7 +59,8 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
   const _sch = getCompilingSchema.call(this, sch)
   if (_sch) return _sch
   const rootId = getFullPath(sch.root.baseId) // TODO if getFullPath removed 1 tests fails
-  const gen = new CodeGen(this.scope, {...this.opts.codegen, forInOwn: this.opts.ownProperties})
+  const {es5, lines} = this.opts.code
+  const gen = new CodeGen(this.scope, {es5, lines, forInOwn: this.opts.ownProperties})
   let _ValidationError
   if (sch.$async) {
     _ValidationError = gen.scopeValue("Error", {
@@ -99,7 +100,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     this._compilations.add(sch)
     validateFunctionCode(schemaCxt)
     sourceCode = `${gen.scopeRefs(N.scope)}${gen}`
-    if (this.opts.processCode) sourceCode = this.opts.processCode(sourceCode, sch)
+    if (this.opts.code.process) sourceCode = this.opts.code.process(sourceCode, sch)
     // console.log("\n\n\n *** \n", sourceCode)
     const makeValidate = new Function(`${N.self}`, `${N.scope}`, sourceCode)
     const validate: AnyValidateFunction = makeValidate(this, this.scope.get())
@@ -109,7 +110,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     validate.schema = sch.schema
     validate.schemaEnv = sch
     if (sch.$async) (validate as AsyncValidateFunction).$async = true
-    if (this.opts.sourceCode === true) {
+    if (this.opts.code.source === true) {
       validate.source = {
         code: sourceCode,
         scope: this.scope,

@@ -215,22 +215,22 @@ describe("resolve", () => {
     ]
 
     it("by default should inline schema if it doesn't contain refs", () => {
-      const ajv = new Ajv({schemas, sourceCode: true})
+      const ajv = new Ajv({schemas, code: {source: true}})
       testSchemas(ajv, true)
     })
 
     it("should NOT inline schema if option inlineRefs == false", () => {
-      const ajv = new Ajv({schemas, inlineRefs: false, sourceCode: true})
+      const ajv = new Ajv({schemas, inlineRefs: false, code: {source: true}})
       testSchemas(ajv, false)
     })
 
     it("should inline schema if option inlineRefs is bigger than number of keys in referenced schema", () => {
-      const ajv = new Ajv({schemas, inlineRefs: 4, sourceCode: true})
+      const ajv = new Ajv({schemas, inlineRefs: 4, code: {source: true}})
       testSchemas(ajv, true)
     })
 
     it("should NOT inline schema if option inlineRefs is less than number of keys in referenced schema", () => {
-      const ajv = new Ajv({schemas: schemas, inlineRefs: 2, sourceCode: true})
+      const ajv = new Ajv({schemas: schemas, inlineRefs: 2, code: {source: true}})
       testSchemas(ajv, false)
     })
 

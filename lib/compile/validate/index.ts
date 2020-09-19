@@ -48,7 +48,7 @@ function topSchemaObjCode(it: SchemaObjCxt): void {
 }
 
 function funcSourceUrl(schema: AnySchema, opts: InstanceOptions): Code {
-  return typeof schema == "object" && schema.$id && (opts.sourceCode || opts.processCode)
+  return typeof schema == "object" && schema.$id && (opts.code.source || opts.code.process)
     ? _`/*# sourceURL=${schema.$id} */`
     : nil
 }
