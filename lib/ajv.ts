@@ -23,6 +23,7 @@ export interface Plugin<Opts> {
 import KeywordCxt from "./compile/context"
 export {KeywordCxt}
 export {DefinedError} from "./vocabularies/errors"
+export {JSONType} from "./compile/rules"
 export {JSONSchemaType} from "./types/json-schema"
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
@@ -178,6 +179,7 @@ const deprecatedOptions: OptionsInfo<DeprecatedOptions> = {
 type RequiredInstanceOptions = {
   [K in
     | "strict"
+    | "strictTypes"
     | "code"
     | "inlineRefs"
     | "loopRequired"
@@ -195,6 +197,7 @@ export type InstanceOptions = Options & RequiredInstanceOptions
 function requiredOptions(o: Options): RequiredInstanceOptions {
   return {
     strict: o.strict ?? true,
+    strictTypes: o.strictTypes ?? (o.strict ?? true ? "log" : false),
     code: o.code ?? {},
     loopRequired: o.loopRequired ?? Infinity,
     loopEnum: o.loopEnum ?? Infinity,

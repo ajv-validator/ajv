@@ -1,4 +1,5 @@
-import type {SchemaObjCxt, AnySchemaObject} from "../../types"
+import type {AnySchemaObject} from "../../types"
+import type {SchemaObjCxt} from ".."
 import type {JSONType, RuleGroup, Rule} from "../rules"
 
 export function schemaHasRulesForType(

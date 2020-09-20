@@ -1,5 +1,5 @@
 import _Ajv from "../ajv"
-import chai from "chai"
+import chai from "../chai"
 const should = chai.should()
 
 describe("strict option with defaults (replaced strictDefaults)", () => {
@@ -92,6 +92,7 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
         const ajv = new _Ajv({
           useDefaults: true,
           strict: "log",
+          strictTypes: false,
           logger: getLogger(output),
         })
         const schema = {
@@ -113,6 +114,7 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
           oneOf: [
             {enum: ["foo", "bar"]},
             {
+              type: "object",
               properties: {
                 foo: {
                   default: true,
@@ -157,6 +159,7 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
           oneOf: [
             {enum: ["foo", "bar"]},
             {
+              type: "object",
               properties: {
                 foo: {
                   default: true,

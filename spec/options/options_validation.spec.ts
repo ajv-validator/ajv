@@ -1,3 +1,4 @@
+import type Ajv from "../.."
 import _Ajv from "../ajv"
 require("../chai").should()
 const DATE_FORMAT = /^\d\d\d\d-[0-1]\d-[0-3]\d$/
@@ -8,7 +9,7 @@ describe("validation options", () => {
       const ajv = new _Ajv({formats: {date: DATE_FORMAT}}),
         ajvFF = new _Ajv({formats: {date: DATE_FORMAT}, validateFormats: false})
 
-      const schema = {format: "date"}
+      const schema = {type: "string", format: "date"}
       const invalideDateTime = "06/19/1963" // expects hyphens
 
       ajv.validate(schema, invalideDateTime).should.equal(false)
@@ -24,7 +25,10 @@ describe("validation options", () => {
         },
       })
 
-      const validate = ajv.compile({format: "identifier"})
+      const validate = ajv.compile({
+        type: ["string", "number"],
+        format: "identifier",
+      })
 
       validate("Abc1").should.equal(true)
       validate("foo bar").should.equal(false)
@@ -47,7 +51,10 @@ describe("validation options", () => {
         ],
       })
 
-      const validate = ajv.compile({identifier: true})
+      const validate = ajv.compile({
+        type: ["string", "number"],
+        identifier: true,
+      })
 
       validate("Abc1").should.equal(true)
       validate("foo bar").should.equal(false)
@@ -62,15 +69,15 @@ describe("validation options", () => {
       testUnicode(new _Ajv({unicode: false, logger: false}))
       testUnicode(new _Ajv({unicode: false, allErrors: true, logger: false}))
 
-      function testUnicode(ajv) {
-        let validateWithUnicode = ajvUnicode.compile({minLength: 2})
-        let validate = ajv.compile({minLength: 2})
+      function testUnicode(ajv: Ajv) {
+        let validateWithUnicode = ajvUnicode.compile({type: "string", minLength: 2})
+        let validate = ajv.compile({type: "string", minLength: 2})
 
         validateWithUnicode("😀").should.equal(false)
         validate("😀").should.equal(true)
 
-        validateWithUnicode = ajvUnicode.compile({maxLength: 1})
-        validate = ajv.compile({maxLength: 1})
+        validateWithUnicode = ajvUnicode.compile({type: "string", maxLength: 1})
+        validate = ajv.compile({type: "string", maxLength: 1})
 
         validateWithUnicode("😀").should.equal(true)
         validate("😀").should.equal(false)
@@ -84,13 +91,13 @@ describe("validation options", () => {
       test(new _Ajv({multipleOfPrecision: 7, allErrors: true}))
 
       function test(ajv) {
-        let schema = {multipleOf: 0.01}
+        let schema = {type: "number", multipleOf: 0.01}
         let validate = ajv.compile(schema)
 
         validate(4.18).should.equal(true)
         validate(4.181).should.equal(false)
 
-        schema = {multipleOf: 0.0000001}
+        schema = {type: "number", multipleOf: 0.0000001}
         validate = ajv.compile(schema)
 
         validate(53.198098).should.equal(true)

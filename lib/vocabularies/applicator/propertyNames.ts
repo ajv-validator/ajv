@@ -28,6 +28,7 @@ const def: CodeKeywordDefinition = {
         {
           keyword: "propertyNames",
           data: key,
+          dataTypes: ["string"],
           propertyName: key,
           compositeRule: true,
           strictSchema: it.strictSchema,

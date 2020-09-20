@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-const should = require("../chai").should()
+import chai from "../chai"
+const should = chai.should()
 
 describe("strict mode", () => {
   describe(
@@ -17,6 +18,7 @@ describe("strict mode", () => {
     '"properties" matching "patternProperties"',
     testStrictMode(
       {
+        type: "object",
         properties: {foo: false},
         patternProperties: {foo: false},
       },
@@ -32,6 +34,7 @@ describe("strict mode", () => {
         logger: getLogger(output),
       })
       const schema = {
+        type: "object",
         properties: {foo: false},
         patternProperties: {foo: false},
       }

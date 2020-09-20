@@ -1,9 +1,5 @@
-import type {
-  CodeKeywordDefinition,
-  ErrorObject,
-  KeywordErrorDefinition,
-  SchemaObjCxt,
-} from "../../types"
+import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
+import type {SchemaObjCxt} from "../../compile"
 import type KeywordCxt from "../../compile/context"
 import {alwaysValidSchema, checkStrictMode} from "../util"
 import {applySubschema} from "../../compile/subschema"

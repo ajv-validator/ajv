@@ -6,14 +6,14 @@
     },
     "tests": [
       {
-        "description": "pattern keyword used without maxLength is unsafe",
+        "description": "pattern keyword used without maxLength is invalid",
         "data": {
           "pattern": ".*"
         },
         "valid": false
       },
       {
-        "description": "pattern keyword used with maxLength is safe",
+        "description": "pattern keyword used with maxLength is valid",
         "data": {
           "pattern": ".*",
           "maxLength": "256"
@@ -29,14 +29,14 @@
     },
     "tests": [
       {
-        "description": "format keyword used without maxLength is unsafe",
+        "description": "format keyword used without maxLength is invalid",
         "data": {
           "format": "email"
         },
         "valid": false
       },
       {
-        "description": "format keyword used with maxLength is safe",
+        "description": "format keyword used with maxLength is valid",
         "data": {
           "format": "email",
           "maxLength": "256"

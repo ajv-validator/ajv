@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-const should = require("../chai").should()
+import chai from "../chai"
+const should = chai.should()
 
 describe('issue #50: references with "definitions"', () => {
   it("should be supported by addSchema", spec("addSchema"))

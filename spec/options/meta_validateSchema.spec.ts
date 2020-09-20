@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-const should = require("../chai").should()
+import chai from "../chai"
+const should = chai.should()
 
 describe("meta and validateSchema options", () => {
   it("should add draft-7 meta schema by default", () => {

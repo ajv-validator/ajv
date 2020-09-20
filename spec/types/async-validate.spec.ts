@@ -12,7 +12,10 @@ describe("$async validation and type guards", () => {
 
   describe("$async: undefined", () => {
     it("should have result type boolean 1", () => {
-      const validate = ajv.compile<Foo>({properties: {foo: {type: "number"}}})
+      const validate = ajv.compile<Foo>({
+        type: "object",
+        properties: {foo: {type: "number"}},
+      })
       const data: unknown = {foo: 1}
       let result: boolean
       if ((result = validate(data))) {
@@ -22,7 +25,10 @@ describe("$async validation and type guards", () => {
     })
 
     it("should have result type boolean 2", () => {
-      const schema: SchemaObject = {properties: {foo: {type: "number"}}}
+      const schema: SchemaObject = {
+        type: "object",
+        properties: {foo: {type: "number"}},
+      }
       const validate = ajv.compile<Foo>(schema)
       const data: unknown = {foo: 1}
       let result: boolean
@@ -33,7 +39,10 @@ describe("$async validation and type guards", () => {
     })
 
     it("should have result type boolean 3", () => {
-      const schema: AnySchemaObject = {properties: {foo: {type: "number"}}}
+      const schema: AnySchemaObject = {
+        type: "object",
+        properties: {foo: {type: "number"}},
+      }
       const validate = ajv.compile<Foo>(schema)
       const data: unknown = {foo: 1}
       let result: boolean
@@ -68,13 +77,21 @@ describe("$async validation and type guards", () => {
 
   describe("$async: true", () => {
     it("should have result type promise 1", async () => {
-      const validate = ajv.compile<Foo>({$async: true, properties: {foo: {type: "number"}}})
+      const validate = ajv.compile<Foo>({
+        $async: true,
+        type: "object",
+        properties: {foo: {type: "number"}},
+      })
       const result: Promise<Foo> = validate({foo: 1})
       await result.then((data) => data.should.exist)
     })
 
     it("should have result type promise 2", async () => {
-      const schema: AsyncSchema = {$async: true, properties: {foo: {type: "number"}}}
+      const schema: AsyncSchema = {
+        $async: true,
+        type: "object",
+        properties: {foo: {type: "number"}},
+      }
       const validate = ajv.compile<Foo>(schema)
       const result: Promise<Foo> = validate({foo: 1})
       await result.then((data) => data.foo.should.equal(1))
@@ -83,7 +100,11 @@ describe("$async validation and type guards", () => {
 
   describe("$async: boolean", () => {
     it("should have result type boolean | promise 1", async () => {
-      const schema = {$async: true, properties: {foo: {type: "number"}}}
+      const schema = {
+        $async: true,
+        type: "object",
+        properties: {foo: {type: "number"}},
+      }
       const validate = ajv.compile<Foo>(schema)
       const data: unknown = {foo: 1}
       let result: boolean | Promise<Foo>
@@ -111,8 +132,12 @@ describe("$async validation and type guards", () => {
   })
 
   describe("$async: unknown", () => {
-    const schema: Record<string, unknown> = {properties: {foo: {type: "number"}}}
+    const schema: Record<string, unknown> = {
+      type: "object",
+      properties: {foo: {type: "number"}},
+    }
     const validate = ajv.compile<Foo>(schema)
+
     it("should have result type boolean", () => {
       const data = {foo: 1}
       let result: boolean

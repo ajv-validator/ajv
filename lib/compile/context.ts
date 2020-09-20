@@ -2,9 +2,9 @@ import type {
   AddedKeywordDefinition,
   KeywordErrorCxt,
   KeywordCxtParams,
-  SchemaObjCxt,
   AnySchemaObject,
 } from "../types"
+import {SchemaObjCxt} from "./index"
 import {JSONType} from "./rules"
 import {schemaRefOrVal} from "../vocabularies/util"
 import {getData, checkDataTypes, DataType} from "./util"

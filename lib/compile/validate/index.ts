@@ -1,4 +1,5 @@
-import type {AnySchema, SchemaCxt, SchemaObjCxt} from "../../types"
+import type {AnySchema} from "../../types"
+import type {SchemaCxt, SchemaObjCxt} from ".."
 import type {InstanceOptions} from "../../ajv"
 import {boolOrEmptySchema, topBoolOrEmptySchema} from "./boolSchema"
 import {coerceAndCheckDataType, getSchemaTypes} from "./dataType"

@@ -1,6 +1,7 @@
 import _Ajv from "../ajv"
 import type {Options} from "../.."
-const should = require("../chai").should()
+import chai from "../chai"
+const should = chai.should()
 
 describe("referenced schema options", () => {
   describe("ignoreKeywordsWithRef", () => {
@@ -30,6 +31,7 @@ describe("referenced schema options", () => {
         definitions: {
           int: {type: "integer"},
         },
+        type: "number",
         $ref: "#/definitions/int",
         minimum: 10,
       }
@@ -46,9 +48,11 @@ describe("referenced schema options", () => {
         properties: {
           foo: {
             $ref: "#/definitions/int",
+            type: "number",
             minimum: 10,
           },
           bar: {
+            type: "number",
             allOf: [{$ref: "#/definitions/int"}, {minimum: 10}],
           },
         },
@@ -75,6 +79,7 @@ describe("referenced schema options", () => {
           definitions: {
             int: {type: "integer"},
           },
+          type: "number",
           $ref: "#/definitions/int",
           minimum: 10,
         }

@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-const should = require("../chai").should()
+import chai from "../chai"
+const should = chai.should()
 
 describe("removed schemaId option", () => {
   it("should use $id and throw exception when id is used", () => {

@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-const should = require("../chai").should()
+import chai from "../chai"
+const should = chai.should()
 
 describe("reporting options", () => {
   describe("verbose", () => {
@@ -8,7 +9,12 @@ describe("reporting options", () => {
       testVerbose(new _Ajv({verbose: true, allErrors: true}))
 
       function testVerbose(ajv) {
-        const schema = {properties: {foo: {minimum: 5}}}
+        const schema = {
+          type: "object",
+          properties: {
+            foo: {type: "number", minimum: 5},
+          },
+        }
         const validate = ajv.compile(schema)
 
         const data = {foo: 3}
@@ -17,7 +23,7 @@ describe("reporting options", () => {
         const err = validate.errors[0]
 
         should.equal(err.schema, 5)
-        err.parentSchema.should.eql({minimum: 5})
+        err.parentSchema.should.eql({type: "number", minimum: 5})
         err.parentSchema.should.equal(schema.properties.foo) // by reference
         should.equal(err.data, 3)
       }
@@ -44,6 +50,7 @@ describe("reporting options", () => {
         })
 
         const schema1 = {
+          type: "string",
           allOf: [{format: "format1"}, {format: "format2"}],
         }
 

@@ -1,6 +1,7 @@
 import _Ajv from "./ajv"
 import {_} from "../dist/compile/codegen"
-const should = require("./chai").should()
+import chai from "./chai"
+const should = chai.should()
 
 describe("Ajv", () => {
   let ajv

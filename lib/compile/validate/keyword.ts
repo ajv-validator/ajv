@@ -3,12 +3,12 @@ import type {
   MacroKeywordDefinition,
   FuncKeywordDefinition,
   AnySchema,
-  SchemaObjCxt,
   SchemaValidateFunction,
   AnyValidateFunction,
 } from "../../types"
+import type {SchemaObjCxt} from ".."
+import type {JSONType} from "../rules"
 import KeywordCxt from "../context"
-import {JSONType} from "../rules"
 import {applySubschema} from "../subschema"
 import {extendErrors} from "../errors"
 import {callValidateCode} from "../../vocabularies/util"

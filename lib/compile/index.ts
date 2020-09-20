@@ -1,23 +1,50 @@
-import type {
-  AnySchema,
-  AnySchemaObject,
-  AnyValidateFunction,
-  AsyncValidateFunction,
-  SchemaCxt,
-} from "../types"
+import type {AnySchema, AnySchemaObject, AnyValidateFunction, AsyncValidateFunction} from "../types"
 import type Ajv from "../ajv"
-import {CodeGen, _, nil, Name} from "./codegen"
+import type {InstanceOptions} from "../ajv"
+import {CodeGen, _, nil, Name, Code} from "./codegen"
 import {ValidationError} from "./error_classes"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
 import {schemaHasRulesButRef, unescapeFragment} from "./util"
 import {validateFunctionCode} from "./validate"
 import URI = require("uri-js")
+import {JSONType} from "./rules"
 
 export interface SchemaRefs {
   [ref: string]: SchemaEnv | AnySchema | undefined
 }
 
+export interface SchemaCxt {
+  gen: CodeGen
+  allErrors?: boolean
+  data: Name
+  parentData: Name
+  parentDataProperty: Code | number
+  dataNames: Name[]
+  dataPathArr: (Code | number)[]
+  dataLevel: number
+  dataTypes: JSONType[]
+  topSchemaRef: Code
+  validateName: Name
+  ValidationError?: Name
+  schema: AnySchema
+  schemaEnv: SchemaEnv
+  strictSchema?: boolean
+  rootId: string // TODO ?
+  baseId: string
+  schemaPath: Code
+  errSchemaPath: string // this is actual string, should not be changed to Code
+  errorPath: Code
+  propertyName?: Name
+  compositeRule?: boolean
+  createErrors?: boolean
+  opts: InstanceOptions
+  self: Ajv
+}
+
+export interface SchemaObjCxt extends SchemaCxt {
+  schema: AnySchemaObject
+}
 interface SchemaEnvArgs {
   schema: AnySchema
   root?: SchemaEnv
@@ -81,6 +108,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     dataNames: [N.data],
     dataPathArr: [nil], // TODO can its lenght be used as dataLevel if nil is removed?
     dataLevel: 0,
+    dataTypes: [],
     topSchemaRef: gen.scopeValue("schema", {ref: sch.schema}),
     validateName,
     ValidationError: _ValidationError,

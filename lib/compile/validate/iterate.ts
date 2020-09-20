@@ -1,4 +1,4 @@
-import type {SchemaObjCxt} from "../../types"
+import type {SchemaObjCxt} from ".."
 import type {JSONType, Rule, RuleGroup} from "../rules"
 import {shouldUseGroup, shouldUseRule} from "./applicability"
 import {checkDataType, schemaHasRulesButRef} from "../util"
@@ -64,45 +64,61 @@ function iterateKeywords(it: SchemaObjCxt, group: RuleGroup): void {
 }
 
 function checkStrictTypes(it: SchemaObjCxt, types: JSONType[]): void {
-  if (!it.strictSchema || it.schemaEnv.meta || !it.opts.strictTypes) return
-  checkMultipleTypes(it, types, it.opts.strictTypes)
-  checkApplicableTypes(it, types, it.opts.strictTypes)
+  if (it.schemaEnv.meta || !it.opts.strictTypes) return
+  checkContextTypes(it, types)
+  checkMultipleTypes(it, types)
+  checkKeywordTypes(it, it.dataTypes)
 }
 
-function checkMultipleTypes(it: SchemaObjCxt, ts: JSONType[], mode: boolean | "log"): void {
+function checkContextTypes(it: SchemaObjCxt, types: JSONType[]): void {
+  if (!types.length) return
+  if (!it.dataTypes.length) {
+    it.dataTypes = types
+    return
+  }
+  types.forEach((t) => {
+    if (!includesType(it.dataTypes, t)) {
+      strictTypesError(it, `type "${t}" not allowed by context "${it.dataTypes.join(",")}"`)
+    }
+  })
+  it.dataTypes = it.dataTypes.filter((t) => includesType(types, t))
+}
+
+function checkMultipleTypes(it: SchemaObjCxt, ts: JSONType[]): void {
   if (
     ts.length > 1 &&
     !(ts.length === 2 && ts.includes("null")) &&
     (ts.includes("object") || ts.includes("array"))
   ) {
-    strictTypesError(it, "multiple non-primitive types", mode)
+    strictTypesError(it, "multiple non-primitive types")
   }
 }
 
-function checkApplicableTypes(it: SchemaObjCxt, ts: JSONType[], mode: boolean | "log"): void {
+function checkKeywordTypes(it: SchemaObjCxt, ts: JSONType[]): void {
   const rules = it.self.RULES.all
   for (const keyword in rules) {
     const rule = rules[keyword]
     if (typeof rule == "object" && shouldUseRule(it.schema, rule)) {
       const {type} = rule.definition
       if (type.length && !type.some((t) => hasApplicableType(ts, t))) {
-        strictTypesError(it, "missing appllicable type", mode)
+        strictTypesError(it, `missing type "${type.join(",")}" for keyword "${keyword}"`)
         return
       }
     }
   }
 }
 
-function hasApplicableType(schemaTypes: JSONType[], keywordType: JSONType): boolean {
-  return (
-    schemaTypes.includes(keywordType) ||
-    (keywordType === "number" && schemaTypes.includes("integer"))
-  )
+function hasApplicableType(schTs: JSONType[], kwdT: JSONType): boolean {
+  return schTs.includes(kwdT) || (kwdT === "number" && schTs.includes("integer"))
 }
 
-function strictTypesError(it: SchemaObjCxt, msg: string, mode: boolean | "log"): void {
+function includesType(ts: JSONType[], t: JSONType): boolean {
+  return ts.includes(t) || (t === "integer" && ts.includes("number"))
+}
+
+function strictTypesError(it: SchemaObjCxt, msg: string): void {
   const schemaPath = it.schemaEnv.baseId + it.errSchemaPath
-  msg += ` at "${schemaPath}/type" (strictTypes)`
-  throw new Error(msg)
-  checkStrictMode(it, msg, mode)
+  msg += ` at "${schemaPath}" (strictTypes)`
+  // throw new Error(msg)
+  checkStrictMode(it, msg, it.opts.strictTypes)
 }

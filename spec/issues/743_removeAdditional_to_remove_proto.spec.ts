@@ -6,8 +6,10 @@ describe("issue #743, property __proto__ should be removed with removeAdditional
     const ajv = new _Ajv({removeAdditional: true})
 
     const schema = {
+      type: "object",
       properties: {
         obj: {
+          type: "object",
           additionalProperties: false,
           properties: {
             a: {type: "string"},

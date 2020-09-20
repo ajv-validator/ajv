@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-const should = require("../chai").should()
+import chai from "../chai"
+const should = chai.should()
 
 describe("options to add schemas", () => {
   describe("schemas", () => {
@@ -22,7 +23,14 @@ describe("options to add schemas", () => {
         schemas: [
           {$id: "int", type: "integer"},
           {$id: "str", type: "string"},
-          {$id: "obj", properties: {int: {$ref: "int"}, str: {$ref: "str"}}},
+          {
+            $id: "obj",
+            type: "object",
+            properties: {
+              int: {$ref: "int"},
+              str: {$ref: "str"},
+            },
+          },
         ],
       })
 
@@ -96,11 +104,11 @@ describe("options to add schemas", () => {
         it("should NOT throw with duplicate ID", () => {
           ajv.compile({$id: "str", type: "string"})
           should.not.throw(() => {
-            ajv.compile({$id: "str", minLength: 2})
+            ajv.compile({$id: "str", type: "string", minLength: 2})
           })
 
           const schema = {$id: "int", type: "integer"}
-          const schema2 = {$id: "int", minimum: 0}
+          const schema2 = {$id: "int", type: "integer", minimum: 0}
           ajv.validate(schema, 1).should.equal(true)
           should.not.throw(() => {
             ajv.validate(schema2, 1).should.equal(true)

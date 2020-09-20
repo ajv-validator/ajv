@@ -1,8 +1,10 @@
 import _Ajv from "../ajv"
-require("../chai").should()
+import type Ajv from "../.."
+import chai from "../chai"
+chai.should()
 
 describe("ownProperties option", () => {
-  let ajv, ajvOP, ajvOP1
+  let ajv: Ajv, ajvOP: Ajv, ajvOP1: Ajv
 
   beforeEach(() => {
     ajv = new _Ajv({allErrors: true})
@@ -12,6 +14,7 @@ describe("ownProperties option", () => {
 
   it("should only validate own properties with additionalProperties", () => {
     const schema = {
+      type: "object",
       properties: {a: {type: "number"}},
       additionalProperties: false,
     }
@@ -23,6 +26,7 @@ describe("ownProperties option", () => {
 
   it("should only validate own properties with properties keyword", () => {
     const schema = {
+      type: "object",
       properties: {
         a: {type: "number"},
         b: {type: "number"},
@@ -36,6 +40,7 @@ describe("ownProperties option", () => {
 
   it("should only validate own properties with required keyword", () => {
     const schema = {
+      type: "object",
       required: ["a", "b"],
     }
 
@@ -50,6 +55,7 @@ describe("ownProperties option", () => {
     ajvOP1 = new _Ajv({ownProperties: true, loopRequired: 1})
 
     const schema = {
+      type: "object",
       required: ["a", "b", "c", "d"],
     }
 
@@ -64,6 +70,7 @@ describe("ownProperties option", () => {
     ajvOP1 = new _Ajv({ownProperties: true, $data: true})
 
     const schema = {
+      type: "object",
       required: {$data: "0/req"},
       properties: {
         req: {
@@ -83,6 +90,7 @@ describe("ownProperties option", () => {
 
   it("should only validate own properties with properties and required keyword", () => {
     const schema = {
+      type: "object",
       properties: {
         a: {type: "number"},
         b: {type: "number"},
@@ -97,6 +105,7 @@ describe("ownProperties option", () => {
 
   it("should only validate own properties with dependencies keyword", () => {
     const schema = {
+      type: "object",
       dependencies: {
         a: ["c"],
         b: ["d"],
@@ -114,6 +123,7 @@ describe("ownProperties option", () => {
 
   it("should only validate own properties with schema dependencies", () => {
     const schema = {
+      type: "object",
       dependencies: {
         a: {not: {required: ["c"]}},
         b: {not: {required: ["d"]}},
@@ -131,6 +141,7 @@ describe("ownProperties option", () => {
 
   it("should only validate own properties with patternProperties", () => {
     const schema = {
+      type: "object",
       patternProperties: {"f.*o": {type: "integer"}},
     }
 
@@ -141,6 +152,7 @@ describe("ownProperties option", () => {
 
   it("should only validate own properties with propertyNames", () => {
     const schema = {
+      type: "object",
       propertyNames: {
         pattern: "foo",
       },
@@ -161,12 +173,12 @@ describe("ownProperties option", () => {
     if (reverse) {
       validate(data).should.equal(true)
       validateOP(data).should.equal(false)
-      validateOP.errors.should.have.length(errors)
+      validateOP.errors?.should.have.length(errors)
       validateOP1(data).should.equal(false)
-      validateOP1.errors.should.have.length(1)
+      validateOP1.errors?.should.have.length(1)
     } else {
       validate(data).should.equal(false)
-      validate.errors.should.have.length(errors)
+      validate.errors?.should.have.length(errors)
       validateOP(data).should.equal(true)
       validateOP1(data).should.equal(true)
     }

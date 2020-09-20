@@ -93,6 +93,7 @@ describe("useDefaults option", () => {
 
     function test(ajv) {
       const schema = {
+        type: "object",
         if: {required: ["foo"]},
         then: {
           properties: {

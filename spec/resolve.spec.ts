@@ -1,8 +1,8 @@
 import getAjvInstances from "./ajv_instances"
 import Ajv from "./ajv"
 import {AnyValidateFunction} from "../dist/types"
-
-const should = require("./chai").should()
+import chai from "./chai"
+const should = chai.should()
 
 describe("resolve", () => {
   let instances
@@ -247,6 +247,7 @@ describe("resolve", () => {
         required: ["header"],
         properties: {
           header: {
+            type: "object",
             allOf: [{$ref: "header.json"}, {properties: {msgType: {enum: [0]}}}],
           },
         },

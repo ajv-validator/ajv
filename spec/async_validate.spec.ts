@@ -1,7 +1,7 @@
 import getAjvAsyncInstances from "./ajv_async_instances"
 import _Ajv from "./ajv"
-
-const should = require("./chai").should()
+import chai from "./chai"
+const should = chai.should()
 
 describe("async schemas, formats and keywords", function () {
   this.timeout(30000)

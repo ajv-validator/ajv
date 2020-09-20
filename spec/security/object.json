@@ -6,7 +6,7 @@
     },
     "tests": [
       {
-        "description": "patternProperties keyword used without propertyNames is unsafe",
+        "description": "patternProperties keyword used without propertyNames is invalid",
         "data": {
           "patternProperties": {
             ".*": {}
@@ -15,7 +15,7 @@
         "valid": false
       },
       {
-        "description": "patternProperties keyword used with propertyNames is safe",
+        "description": "patternProperties keyword used with propertyNames is valid",
         "data": {
           "patternProperties": {
             ".*": {}

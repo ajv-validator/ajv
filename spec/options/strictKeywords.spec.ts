@@ -1,5 +1,5 @@
 import _Ajv from "../ajv"
-import chai from "chai"
+import chai from "../chai"
 const should = chai.should()
 
 describe("strict option with keywords (replaced strictKeywords)", () => {

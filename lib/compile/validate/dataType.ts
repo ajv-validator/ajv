@@ -1,10 +1,10 @@
 import type {
-  SchemaObjCxt,
   KeywordErrorDefinition,
   KeywordErrorCxt,
   ErrorObject,
   AnySchemaObject,
 } from "../../types"
+import type {SchemaObjCxt} from ".."
 import {isJSONType, JSONType} from "../rules"
 import {schemaHasRulesForType} from "./applicability"
 import {checkDataTypes, DataType} from "../util"
@@ -18,6 +18,7 @@ export function getSchemaTypes(schema: AnySchemaObject): JSONType[] {
   if (hasNull && schema.nullable === false) {
     throw new Error('{"type": "null"} contradicts {"nullable": "false"}')
   } else if (!hasNull && schema.nullable === true) {
+    if (!types.length) throw new Error('"nullable" cannot be used without "type"')
     types.push("null")
   }
   return types
