@@ -23,7 +23,7 @@ const def: CodeKeywordDefinition = {
     const {gen, data, $data, schema, parentSchema, schemaCode, it} = cxt
     if (!$data && !schema) return
     const valid = gen.let("valid")
-    const itemTypes = parentSchema.items ? getSchemaTypes(it, parentSchema.items) : []
+    const itemTypes = parentSchema.items ? getSchemaTypes(parentSchema.items) : []
     cxt.block$data(valid, validateUniqueItems, _`${schemaCode} === false`)
     cxt.ok(valid)
 

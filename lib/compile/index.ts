@@ -10,7 +10,7 @@ import {CodeGen, _, nil, Name} from "./codegen"
 import {ValidationError} from "./error_classes"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
-import {toHash, schemaHasRulesButRef, unescapeFragment} from "./util"
+import {schemaHasRulesButRef, unescapeFragment} from "./util"
 import {validateFunctionCode} from "./validate"
 import URI = require("uri-js")
 
@@ -123,6 +123,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     delete sch.validate
     delete sch.validateName
     if (sourceCode) this.logger.error("Error compiling schema, function code:", sourceCode)
+    // console.log("\n\n\n *** \n", sourceCode)
     throw e
   } finally {
     this._compilations.delete(sch)
@@ -207,7 +208,7 @@ export function resolveSchema(
   return getJsonPointer.call(this, p, schOrRef)
 }
 
-const PREVENT_SCOPE_CHANGE = toHash([
+const PREVENT_SCOPE_CHANGE = new Set([
   "properties",
   "patternProperties",
   "enum",
@@ -226,7 +227,7 @@ function getJsonPointer(
     schema = schema[unescapeFragment(part)]
     if (schema === undefined) return
     // TODO PREVENT_SCOPE_CHANGE could be defined in keyword def?
-    if (!PREVENT_SCOPE_CHANGE[part] && typeof schema == "object" && schema.$id) {
+    if (!PREVENT_SCOPE_CHANGE.has(part) && typeof schema == "object" && schema.$id) {
       baseId = resolveUrl(baseId, schema.$id)
     }
   }

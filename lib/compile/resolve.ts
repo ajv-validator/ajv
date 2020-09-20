@@ -1,6 +1,6 @@
 import type {AnySchema, AnySchemaObject} from "../types"
 import type Ajv from "../ajv"
-import {eachItem, toHash} from "./util"
+import {eachItem} from "./util"
 import equal from "fast-deep-equal"
 import traverse from "json-schema-traverse"
 import URI = require("uri-js")
@@ -11,7 +11,7 @@ export interface LocalRefs {
 }
 
 // TODO refactor to use keyword definitions
-const SIMPLE_INLINED = toHash([
+const SIMPLE_INLINED = new Set([
   "type",
   "format",
   "pattern",
@@ -29,6 +29,7 @@ const SIMPLE_INLINED = toHash([
   "enum",
   "const",
 ])
+
 export function inlineRef(schema: AnySchema, limit: boolean | number = true): boolean {
   if (typeof schema == "boolean") return true
   if (limit === true) return !hasRef(schema)
@@ -51,7 +52,7 @@ function countKeys(schema: AnySchemaObject): number {
   for (const key in schema) {
     if (key === "$ref") return Infinity
     count++
-    if (SIMPLE_INLINED[key]) continue
+    if (SIMPLE_INLINED.has(key)) continue
     if (typeof schema[key] == "object") {
       eachItem(schema[key], (sch) => (count += countKeys(sch)))
     }

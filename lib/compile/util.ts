@@ -1,6 +1,6 @@
 import {_, nil, and, operators, Code, Name, getProperty} from "./codegen"
 import type {SchemaCxt, AnySchema} from "../types"
-import type {Rule, ValidationRules} from "./rules"
+import type {JSONType, Rule, ValidationRules} from "./rules"
 import N from "./names"
 
 export enum DataType {
@@ -9,7 +9,7 @@ export enum DataType {
 }
 
 export function checkDataType(
-  dataType: string,
+  dataType: JSONType,
   data: Name,
   strictNums?: boolean | "log",
   correct = DataType.Correct
@@ -42,7 +42,7 @@ export function checkDataType(
 }
 
 export function checkDataTypes(
-  dataTypes: string[],
+  dataTypes: JSONType[],
   data: Name,
   strictNums?: boolean | "log",
   correct?: DataType
@@ -62,13 +62,13 @@ export function checkDataTypes(
     cond = nil
   }
   if (types.number) delete types.integer
-  for (const t in types) cond = and(cond, checkDataType(t, data, strictNums, correct))
+  for (const t in types) cond = and(cond, checkDataType(t as JSONType, data, strictNums, correct))
   return cond
 }
 
 // TODO refactor to use Set
-export function toHash(arr: string[]): {[key: string]: true | undefined} {
-  const hash: {[key: string]: true} = {}
+export function toHash<T extends string = string>(arr: T[]): {[K in T]?: true} {
+  const hash: {[K in T]?: true} = {}
   for (const item of arr) hash[item] = true
   return hash
 }

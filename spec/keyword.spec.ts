@@ -2,13 +2,14 @@ import type {ErrorObject, SchemaObject, SchemaValidateFunction} from "../lib/typ
 // currently most tests include compiled code, if any code re-compiled locally, instanceof would fail
 import {_, nil} from "../dist/compile/codegen"
 import getAjvInstances from "./ajv_instances"
-import Ajv from "./ajv"
+import _Ajv from "./ajv"
+import type Ajv from ".."
 
 const should = require("./chai").should(),
   equal = require("../dist/compile/equal")
 
 describe("User-defined keywords", () => {
-  let ajv, instances
+  let ajv: Ajv, instances: Ajv[]
 
   beforeEach(() => {
     instances = getAjvInstances({
@@ -257,12 +258,12 @@ describe("User-defined keywords", () => {
       instances.forEach((_ajv) => {
         _ajv.addKeyword({
           keyword: "macroRef",
-          macro: function (schema, _parentSchema, it) {
+          macro(schema, _parentSchema, it) {
             it.baseId.should.equal("#")
             const ref = schema.$ref
             const validate = _ajv.getSchema(ref)
-            if (validate) return validate.schema
-            throw new ajv.constructor.MissingRefError(it.baseId, ref)
+            if (!validate) throw new _Ajv.MissingRefError(it.baseId, ref)
+            return validate.schema
           },
           metaSchema: {
             type: "object",
@@ -895,11 +896,11 @@ describe("User-defined keywords", () => {
 
       shouldBeInvalid(validate, 1.99, numErrors)
       if (createsErrors) {
-        shouldBeRangeError(validate.errors[0], "", "#/x-range", ">=", 2)
+        shouldBeRangeError(validate.errors?.[0], "", "#/x-range", ">=", 2)
       }
       shouldBeInvalid(validate, 4.01, numErrors)
       if (createsErrors) {
-        shouldBeRangeError(validate.errors[0], "", "#/x-range", "<=", 4)
+        shouldBeRangeError(validate.errors?.[0], "", "#/x-range", "<=", 4)
       }
 
       schema = {
@@ -918,11 +919,11 @@ describe("User-defined keywords", () => {
 
       shouldBeInvalid(validate, {foo: 2}, numErrors)
       if (createsErrors) {
-        shouldBeRangeError(validate.errors[0], "/foo", "#/properties/foo/x-range", ">", 2, true)
+        shouldBeRangeError(validate.errors?.[0], "/foo", "#/properties/foo/x-range", ">", 2, true)
       }
       shouldBeInvalid(validate, {foo: 4}, numErrors)
       if (createsErrors) {
-        shouldBeRangeError(validate.errors[0], "/foo", "#/properties/foo/x-range", "<", 4, true)
+        shouldBeRangeError(validate.errors?.[0], "/foo", "#/properties/foo/x-range", "<", 4, true)
       }
     })
   }
@@ -1078,7 +1079,7 @@ describe("User-defined keywords", () => {
       ajv.addKeyword({
         keyword,
         type: dataType,
-        validate: () => {},
+        validate: () => true,
       })
     }
   })
@@ -1100,13 +1101,16 @@ describe("User-defined keywords", () => {
       }
 
       ajv.addKeyword(definition)
-      ajv.getKeyword("mykeyword").should.equal(definition)
+      const def = ajv.getKeyword("mykeyword")
+      def.should.be.an("object")
+      // TODO type cast
+      ;(def as {keyword: string[]}).keyword.should.equal("mykeyword")
     })
   })
 
   describe("removeKeyword", () => {
     it("should remove and allow redefining keyword", () => {
-      ajv = new Ajv({strict: false})
+      ajv = new _Ajv({strict: false})
 
       ajv.addKeyword({
         keyword: "positive",
@@ -1151,7 +1155,7 @@ describe("User-defined keywords", () => {
     })
 
     it("should remove and allow redefining standard keyword", () => {
-      ajv = new Ajv({strict: false})
+      ajv = new _Ajv({strict: false})
 
       const schema = {minimum: 1}
       let validate = ajv.compile(schema)

@@ -1,5 +1,5 @@
 import type {SchemaObjCxt} from "../../types"
-import type {Rule, RuleGroup} from "../rules"
+import type {JSONType, Rule, RuleGroup} from "../rules"
 import {shouldUseGroup, shouldUseRule} from "./applicability"
 import {checkDataType, schemaHasRulesButRef} from "../util"
 import {checkStrictMode} from "../../vocabularies/util"
@@ -11,7 +11,7 @@ import N from "../names"
 
 export function schemaKeywords(
   it: SchemaObjCxt,
-  types: string[],
+  types: JSONType[],
   typeErrors: boolean,
   errsCount?: Name
 ): void {
@@ -63,13 +63,13 @@ function iterateKeywords(it: SchemaObjCxt, group: RuleGroup): void {
   })
 }
 
-function checkStrictTypes(it: SchemaObjCxt, types: string[]): void {
+function checkStrictTypes(it: SchemaObjCxt, types: JSONType[]): void {
   if (!it.strictSchema || it.schemaEnv.meta || !it.opts.strictTypes) return
   checkMultipleTypes(it, types, it.opts.strictTypes)
   checkApplicableTypes(it, types, it.opts.strictTypes)
 }
 
-function checkMultipleTypes(it: SchemaObjCxt, ts: string[], mode: boolean | "log"): void {
+function checkMultipleTypes(it: SchemaObjCxt, ts: JSONType[], mode: boolean | "log"): void {
   if (
     ts.length > 1 &&
     !(ts.length === 2 && ts.includes("null")) &&
@@ -79,28 +79,21 @@ function checkMultipleTypes(it: SchemaObjCxt, ts: string[], mode: boolean | "log
   }
 }
 
-function checkApplicableTypes(it: SchemaObjCxt, ts: string[], mode: boolean | "log"): void {
+function checkApplicableTypes(it: SchemaObjCxt, ts: JSONType[], mode: boolean | "log"): void {
   const rules = it.self.RULES.all
   for (const keyword in rules) {
     const rule = rules[keyword]
     if (typeof rule == "object" && shouldUseRule(it.schema, rule)) {
       const {type} = rule.definition
-      if (Array.isArray(type)) {
-        if (!type.some((t) => hasApplicableType(ts, t))) {
-          strictTypesError(it, "missing appllicable type", mode)
-          return
-        }
-      } else if (type) {
-        if (!hasApplicableType(ts, type)) {
-          strictTypesError(it, "missing appllicable type", mode)
-          return
-        }
+      if (type.length && !type.some((t) => hasApplicableType(ts, t))) {
+        strictTypesError(it, "missing appllicable type", mode)
+        return
       }
     }
   }
 }
 
-function hasApplicableType(schemaTypes: string[], keywordType: string): boolean {
+function hasApplicableType(schemaTypes: JSONType[], keywordType: JSONType): boolean {
   return (
     schemaTypes.includes(keywordType) ||
     (keywordType === "number" && schemaTypes.includes("integer"))

@@ -1,4 +1,9 @@
-import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
+import type {
+  CodeKeywordDefinition,
+  AddedKeywordDefinition,
+  ErrorObject,
+  KeywordErrorDefinition,
+} from "../../types"
 import {allSchemaProperties, schemaRefOrVal, alwaysValidSchema, usePattern} from "../util"
 import {applySubschema, SubschemaCxt, Type} from "../../compile/subschema"
 import {_, nil, or, Code, Name} from "../../compile/codegen"
@@ -14,10 +19,11 @@ const error: KeywordErrorDefinition = {
   params: ({params}) => _`{additionalProperty: ${params.additionalProperty}}`,
 }
 
-const def: CodeKeywordDefinition = {
+const def: CodeKeywordDefinition & AddedKeywordDefinition = {
   keyword: "additionalProperties",
-  type: "object",
-  schemaType: ["boolean", "object", "undefined"], // "undefined" is needed to support option removeAdditional: "all"
+  type: ["object"],
+  schemaType: ["boolean", "object"],
+  allowUndefined: true,
   trackErrors: true,
   error,
   code(cxt) {

@@ -1,5 +1,6 @@
 import type {CodeGen, Code, Name, Scope} from "../compile/codegen"
 import type {SchemaEnv} from "../compile"
+import type {JSONType} from "../compile/rules"
 import type KeywordCxt from "../compile/context"
 import type Ajv from "../ajv"
 import type {InstanceOptions} from "../ajv"
@@ -46,8 +47,8 @@ interface DataValidationCxt {
 export interface ValidateFunction<T = unknown> {
   (this: Ajv | any, data: any, dataCxt?: DataValidationCxt): data is T
   errors?: null | ErrorObject[]
-  schema?: AnySchema
-  schemaEnv?: SchemaEnv
+  schema: AnySchema
+  schemaEnv: SchemaEnv
   source?: SourceCode
 }
 
@@ -106,8 +107,9 @@ export interface SchemaObjCxt extends SchemaCxt {
 
 interface _KeywordDef {
   keyword: string | string[]
-  type?: string | string[]
-  schemaType?: string | string[]
+  type?: JSONType | JSONType[]
+  schemaType?: JSONType | JSONType[]
+  allowUndefined?: boolean
   $data?: boolean
   implements?: string[]
   before?: string
@@ -167,6 +169,11 @@ export type KeywordDefinition =
   | FuncKeywordDefinition
   | MacroKeywordDefinition
 
+export type AddedKeywordDefinition = KeywordDefinition & {
+  type: JSONType[]
+  schemaType: JSONType[]
+}
+
 export interface KeywordErrorDefinition {
   message: string | ((cxt: KeywordErrorCxt) => Code)
   params?: (cxt: KeywordErrorCxt) => Code
@@ -183,7 +190,7 @@ export interface KeywordErrorCxt {
   parentSchema?: AnySchemaObject
   schemaCode: Code | number | boolean
   schemaValue: Code | number | boolean
-  schemaType?: string | string[]
+  schemaType?: JSONType | JSONType[]
   errsCount?: Name
   params: KeywordCxtParams
   it: SchemaCxt

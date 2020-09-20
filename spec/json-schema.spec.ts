@@ -3,6 +3,7 @@ import jsonSchemaTest from "json-schema-test"
 import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
 import addFormats from "ajv-formats"
+import draft6MetaSchema from "../dist/refs/json-schema-draft-06.json"
 
 const remoteRefs = {
   "http://localhost:1234/integer.json": require("./JSON-Schema-Test-Suite/remotes/integer.json"),
@@ -54,7 +55,7 @@ runTest(
 function runTest(instances, draft: number, tests) {
   for (const ajv of instances) {
     if (draft === 6) {
-      ajv.addMetaSchema(require("../dist/refs/json-schema-draft-06.json"))
+      ajv.addMetaSchema(draft6MetaSchema)
       ajv.opts.defaultMeta = "http://json-schema.org/draft-06/schema#"
     }
     for (const id in remoteRefs) ajv.addSchema(remoteRefs[id], id)

@@ -1,11 +1,11 @@
 import type {SchemaObjCxt, AnySchemaObject} from "../../types"
-import type {RuleGroup, Rule} from "../rules"
+import type {JSONType, RuleGroup, Rule} from "../rules"
 
 export function schemaHasRulesForType(
   {schema, self}: SchemaObjCxt,
-  ty: string
+  type: JSONType
 ): boolean | undefined {
-  const group = self.RULES.types[ty]
+  const group = self.RULES.types[type]
   return group && group !== true && shouldUseGroup(schema, group)
 }
 

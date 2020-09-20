@@ -1,10 +1,11 @@
 import type {
-  KeywordDefinition,
+  AddedKeywordDefinition,
   KeywordErrorCxt,
   KeywordCxtParams,
   SchemaObjCxt,
   AnySchemaObject,
 } from "../types"
+import {JSONType} from "./rules"
 import {schemaRefOrVal} from "../vocabularies/util"
 import {getData, checkDataTypes, DataType} from "./util"
 import {
@@ -26,14 +27,14 @@ export default class KeywordCxt implements KeywordErrorCxt {
   readonly schema: any
   readonly schemaValue: Code | number | boolean // Code reference to keyword schema value or primitive value
   readonly schemaCode: Code | number | boolean // Code reference to resolved schema value (different if schema is $data)
-  readonly schemaType?: string | string[]
+  readonly schemaType: JSONType[]
   readonly parentSchema: AnySchemaObject
   readonly errsCount?: Name
   params: KeywordCxtParams
   readonly it: SchemaObjCxt
-  readonly def: KeywordDefinition
+  readonly def: AddedKeywordDefinition
 
-  constructor(it: SchemaObjCxt, def: KeywordDefinition, keyword: string) {
+  constructor(it: SchemaObjCxt, def: AddedKeywordDefinition, keyword: string) {
     validateKeywordUsage(it, def, keyword)
     this.gen = it.gen
     this.allErrors = it.allErrors
@@ -52,7 +53,7 @@ export default class KeywordCxt implements KeywordErrorCxt {
       this.schemaCode = it.gen.const("vSchema", getData(this.$data, it))
     } else {
       this.schemaCode = this.schemaValue
-      if (def.schemaType && !validSchemaType(this.schema, def.schemaType)) {
+      if (!validSchemaType(this.schema, def.schemaType, def.allowUndefined)) {
         throw new Error(`${keyword} value must be ${JSON.stringify(def.schemaType)}`)
       }
     }
@@ -132,7 +133,7 @@ export default class KeywordCxt implements KeywordErrorCxt {
     const {gen, schemaCode, schemaType, def} = this
     gen.if(or(_`${schemaCode} === undefined`, $dataValid))
     if (valid !== nil) gen.assign(valid, true)
-    if (schemaType || def.validateSchema) {
+    if (schemaType.length || def.validateSchema) {
       gen.elseIf(this.invalid$data())
       this.$dataError()
       if (valid !== nil) gen.assign(valid, false)
@@ -145,7 +146,7 @@ export default class KeywordCxt implements KeywordErrorCxt {
     return or(wrong$DataType(), invalid$DataSchema())
 
     function wrong$DataType(): Code {
-      if (schemaType) {
+      if (schemaType.length) {
         if (!(schemaCode instanceof Name)) throw new Error("ajv implementation error")
         const st = Array.isArray(schemaType) ? schemaType : [schemaType]
         return _`(${checkDataTypes(st, schemaCode, it.opts.strict, DataType.Wrong)})`
@@ -163,21 +164,23 @@ export default class KeywordCxt implements KeywordErrorCxt {
   }
 }
 
-function validSchemaType(schema: unknown, schemaType: string | string[]): boolean {
+function validSchemaType(schema: unknown, schemaType: JSONType[], allowUndefined = false): boolean {
   // TODO add tests
-  if (Array.isArray(schemaType)) {
-    return schemaType.some((st) => validSchemaType(schema, st))
-  }
-  return schemaType === "array"
-    ? Array.isArray(schema)
-    : schemaType === "object"
-    ? schema && typeof schema == "object" && !Array.isArray(schema)
-    : typeof schema == schemaType
+  return (
+    !schemaType.length ||
+    schemaType.some((st) =>
+      st === "array"
+        ? Array.isArray(schema)
+        : st === "object"
+        ? schema && typeof schema == "object" && !Array.isArray(schema)
+        : typeof schema == st || (allowUndefined && typeof schema == "undefined")
+    )
+  )
 }
 
 function validateKeywordUsage(
   {schema, opts, self}: SchemaObjCxt,
-  def: KeywordDefinition,
+  def: AddedKeywordDefinition,
   keyword: string
 ): void {
   if (Array.isArray(def.keyword) ? !def.keyword.includes(keyword) : def.keyword !== keyword) {

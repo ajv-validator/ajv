@@ -1,5 +1,5 @@
 import type {
-  KeywordDefinition,
+  AddedKeywordDefinition,
   MacroKeywordDefinition,
   FuncKeywordDefinition,
   AnySchema,
@@ -8,6 +8,7 @@ import type {
   AnyValidateFunction,
 } from "../../types"
 import KeywordCxt from "../context"
+import {JSONType} from "../rules"
 import {applySubschema} from "../subschema"
 import {extendErrors} from "../errors"
 import {callValidateCode} from "../../vocabularies/util"
@@ -19,8 +20,8 @@ type KeywordCompilationResult = AnySchema | SchemaValidateFunction | AnyValidate
 export function keywordCode(
   it: SchemaObjCxt,
   keyword: string,
-  def: KeywordDefinition,
-  ruleType?: string
+  def: AddedKeywordDefinition,
+  ruleType?: JSONType
 ): void {
   const cxt = new KeywordCxt(it, def, keyword)
   if ("code" in def) {

@@ -5,17 +5,15 @@ import type {
   ErrorObject,
   AnySchemaObject,
 } from "../../types"
-import type {ValidationRules} from "../rules"
+import {isJSONType, JSONType} from "../rules"
 import {schemaHasRulesForType} from "./applicability"
-import {toHash, checkDataTypes, DataType} from "../util"
+import {checkDataTypes, DataType} from "../util"
 import {schemaRefOrVal} from "../../vocabularies/util"
 import {reportError} from "../errors"
 import {_, str, Name} from "../codegen"
 
-export function getSchemaTypes({self}: SchemaObjCxt, schema: AnySchemaObject): string[] {
-  const st: undefined | string | string[] = schema.type
-  const types: string[] = Array.isArray(st) ? st : st ? [st] : []
-  types.forEach((t) => checkType(t, self.RULES))
+export function getSchemaTypes(schema: AnySchemaObject): JSONType[] {
+  const types = getJSONTypes(schema.type)
   const hasNull = types.includes("null")
   if (hasNull && schema.nullable === false) {
     throw new Error('{"type": "null"} contradicts {"nullable": "false"}')
@@ -25,12 +23,13 @@ export function getSchemaTypes({self}: SchemaObjCxt, schema: AnySchemaObject): s
   return types
 }
 
-export function checkType(t: string, RULES: ValidationRules): void {
-  if (typeof t == "string" && t in RULES.types) return
-  throw new Error('"type" keyword must be allowed string or string[]: ' + t)
+export function getJSONTypes(ts: unknown | unknown[]): JSONType[] {
+  const types: unknown[] = Array.isArray(ts) ? ts : ts ? [ts] : []
+  if (types.every(isJSONType)) return types
+  throw new Error("type must be JSONType or JSONType[]: " + types.join(","))
 }
 
-export function coerceAndCheckDataType(it: SchemaObjCxt, types: string[]): boolean {
+export function coerceAndCheckDataType(it: SchemaObjCxt, types: JSONType[]): boolean {
   const {gen, data, opts} = it
   const coerceTo = coerceToTypes(types, opts.coerceTypes)
   const checkTypes =
@@ -46,14 +45,14 @@ export function coerceAndCheckDataType(it: SchemaObjCxt, types: string[]): boole
   return checkTypes
 }
 
-const COERCIBLE = toHash(["string", "number", "integer", "boolean", "null"])
-function coerceToTypes(types: string[], coerceTypes?: boolean | "array"): string[] {
+const COERCIBLE: Set<JSONType> = new Set(["string", "number", "integer", "boolean", "null"])
+function coerceToTypes(types: JSONType[], coerceTypes?: boolean | "array"): JSONType[] {
   return coerceTypes
-    ? types.filter((t) => COERCIBLE[t] || (coerceTypes === "array" && t === "array"))
+    ? types.filter((t) => COERCIBLE.has(t) || (coerceTypes === "array" && t === "array"))
     : []
 }
 
-function coerceData(it: SchemaObjCxt, types: string[], coerceTo: string[]): void {
+function coerceData(it: SchemaObjCxt, types: JSONType[], coerceTo: JSONType[]): void {
   const {gen, data, opts} = it
   const dataType = gen.let("dataType", _`typeof ${data}`)
   const coerced = gen.let("coerced", _`undefined`)
@@ -67,7 +66,7 @@ function coerceData(it: SchemaObjCxt, types: string[], coerceTo: string[]): void
   }
   gen.if(_`${coerced} !== undefined`)
   for (const t of coerceTo) {
-    if (t in COERCIBLE || (t === "array" && opts.coerceTypes === "array")) {
+    if (COERCIBLE.has(t) || (t === "array" && opts.coerceTypes === "array")) {
       coerceSpecificType(t)
     }
   }

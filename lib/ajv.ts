@@ -34,6 +34,7 @@ import type {
   AsyncSchema,
   Vocabulary,
   KeywordDefinition,
+  AddedKeywordDefinition,
   AnyValidateFunction,
   ValidateFunction,
   AsyncValidateFunction,
@@ -43,11 +44,11 @@ import type {
 } from "./types"
 import type {JSONSchemaType} from "./types/json-schema"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
-import {getRules, ValidationRules, Rule, RuleGroup} from "./compile/rules"
-import {checkType} from "./compile/validate/dataType"
+import {getRules, ValidationRules, Rule, RuleGroup, JSONType} from "./compile/rules"
 import {SchemaEnv, compileSchema, resolveSchema} from "./compile"
 import {Code, ValueScope} from "./compile/codegen"
 import {normalizeId, getSchemaRefs} from "./compile/resolve"
+import {getJSONTypes} from "./compile/validate/dataType"
 import coreVocabulary from "./vocabularies/core"
 import validationVocabulary from "./vocabularies/validation"
 import applicatorVocabulary from "./vocabularies/applicator"
@@ -492,7 +493,6 @@ export default class Ajv {
     return this
   }
 
-  addKeyword(kwdOrDef: string | KeywordDefinition): Ajv
   addKeyword(
     kwdOrDef: string | KeywordDefinition,
     def?: KeywordDefinition // deprecated
@@ -507,20 +507,34 @@ export default class Ajv {
     } else if (typeof kwdOrDef == "object" && def === undefined) {
       def = kwdOrDef
       keyword = def.keyword
+      if (Array.isArray(keyword) && !keyword.length) {
+        throw new Error("addKeywords: keyword must be non-empty array")
+      }
     } else {
       throw new Error("invalid addKeywords parameters")
     }
 
     checkKeyword.call(this, keyword, def)
-    if (def) keywordMetaschema.call(this, def)
-
-    eachItem(keyword, (kwd) => {
-      eachItem(def?.type, (t) => addRule.call(this, kwd, t, def))
-    })
+    if (!def) {
+      eachItem(keyword, (kwd) => addRule.call(this, kwd))
+      return this
+    }
+    keywordMetaschema.call(this, def)
+    const definition: AddedKeywordDefinition = {
+      ...def,
+      type: getJSONTypes(def.type),
+      schemaType: getJSONTypes(def.schemaType),
+    }
+    eachItem(
+      keyword,
+      definition.type.length === 0
+        ? (k) => addRule.call(this, k, definition)
+        : (k) => definition.type.forEach((t) => addRule.call(this, k, definition, t))
+    )
     return this
   }
 
-  getKeyword(keyword: string): KeywordDefinition | boolean {
+  getKeyword(keyword: string): AddedKeywordDefinition | boolean {
     const rule = this.RULES.all[keyword]
     return typeof rule == "object" ? rule.definition : !!rule
   }
@@ -557,8 +571,8 @@ export default class Ajv {
 
   $dataMetaSchema(metaSchema: AnySchemaObject, keywordsJsonPointers: string[]): AnySchemaObject {
     const rules = this.RULES.all
+    metaSchema = JSON.parse(JSON.stringify(metaSchema))
     for (const jsonPointer of keywordsJsonPointers) {
-      metaSchema = JSON.parse(JSON.stringify(metaSchema))
       const segments = jsonPointer.split("/").slice(1) // first segment is an empty string
       let keywords = metaSchema
       for (const seg of segments) keywords = keywords[seg] as AnySchemaObject
@@ -738,7 +752,6 @@ function checkKeyword(this: Ajv, keyword: string | string[], def?: KeywordDefini
     if (!KEYWORD_NAME.test(kwd)) throw new Error(`Keyword ${kwd} has invalid name`)
   })
   if (!def) return
-  if (def.type) eachItem(def.type, (t) => checkType(t, RULES))
   if (def.$data && !("code" in def || "validate" in def)) {
     throw new Error('$data keyword must have "code" or "validate" function')
   }
@@ -747,8 +760,8 @@ function checkKeyword(this: Ajv, keyword: string | string[], def?: KeywordDefini
 function addRule(
   this: Ajv,
   keyword: string,
-  dataType?: string,
-  definition?: KeywordDefinition
+  definition?: AddedKeywordDefinition,
+  dataType?: JSONType
 ): void {
   const {RULES} = this
   let ruleGroup = RULES.rules.find(({type: t}) => t === dataType)
@@ -759,7 +772,14 @@ function addRule(
   RULES.keywords[keyword] = true
   if (!definition) return
 
-  const rule: Rule = {keyword, definition}
+  const rule: Rule = {
+    keyword,
+    definition: {
+      ...definition,
+      type: getJSONTypes(definition.type),
+      schemaType: getJSONTypes(definition.schemaType),
+    },
+  }
   if (definition.before) addBeforeRule.call(this, ruleGroup, rule, definition.before)
   else ruleGroup.rules.push(rule)
   RULES.all[keyword] = rule
