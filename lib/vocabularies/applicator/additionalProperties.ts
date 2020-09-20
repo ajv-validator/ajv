@@ -1,6 +1,6 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import {allSchemaProperties, schemaRefOrVal, alwaysValidSchema, usePattern} from "../util"
-import {applySubschema, SubschemaApplication, Type} from "../../compile/subschema"
+import {applySubschema, SubschemaCxt, Type} from "../../compile/subschema"
 import {_, nil, or, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 
@@ -87,10 +87,11 @@ const def: CodeKeywordDefinition = {
     }
 
     function applyAdditionalSchema(key: Name, valid: Name, errors?: false): void {
-      const subschema: SubschemaApplication = {
+      const subschema: SubschemaCxt = {
         keyword: "additionalProperties",
         dataProp: key,
         dataPropType: Type.Str,
+        strictSchema: it.strictSchema,
       }
       if (errors === false) {
         Object.assign(subschema, {

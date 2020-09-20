@@ -79,6 +79,7 @@ export type Options = CurrentOptions & DeprecatedOptions
 interface CurrentOptions {
   // strict mode options
   strict?: boolean | "log"
+  strictTypes?: boolean | "log"
   allowMatchingProperties?: boolean // disables a strict mode restriction
   validateFormats?: boolean
   // validation and reporting options:

@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-const should = require("../chai").should()
+import chai from "chai"
+const should = chai.should()
 
 describe("strict option with keywords (replaced strictKeywords)", () => {
   describe("strict = false", () => {
@@ -44,11 +45,12 @@ describe("strict option with keywords (replaced strictKeywords)", () => {
         logger: getLogger(output),
       })
       const schema = {
+        type: "object",
         properties: {},
         unknownKeyword: 1,
       }
       ajv.compile(schema)
-      should.equal(output.warning, 'unknown keyword: "unknownKeyword"')
+      output.warning.should.match(/unknown keyword: "unknownKeyword"/)
     })
   })
 

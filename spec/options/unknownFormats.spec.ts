@@ -15,7 +15,7 @@ describe("specifying allowed unknown formats with `formats` option", () => {
     })
 
     it("should fail validation if unknown format is used via $data", () => {
-      test(new _Ajv({$data: true}))
+      test(new _Ajv({$data: true, strictTypes: false}))
 
       function test(ajv) {
         ajv.addFormat("date", DATE_FORMAT)
@@ -69,7 +69,7 @@ describe("specifying allowed unknown formats with `formats` option", () => {
 
   describe("= [String]", () => {
     it("should pass schema compilation and be valid if allowed unknown format is used", () => {
-      test(new _Ajv({formats: {allowed: true}}))
+      test(new _Ajv({formats: {allowed: true}, strictTypes: false}))
 
       function test(ajv) {
         const validate = ajv.compile({format: "allowed"})
@@ -87,8 +87,9 @@ describe("specifying allowed unknown formats with `formats` option", () => {
       function test(ajv) {
         ajv.addFormat("date", DATE_FORMAT)
         const validate = ajv.compile({
+          type: "object",
           properties: {
-            foo: {format: {$data: "1/bar"}},
+            foo: {type: ["string", "number"], format: {$data: "1/bar"}},
             bar: {type: "string"},
           },
         })

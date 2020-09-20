@@ -87,6 +87,7 @@ export interface SchemaCxt {
   ValidationError?: Name
   schema: AnySchema
   schemaEnv: SchemaEnv
+  strictSchema?: boolean
   rootId: string // TODO ?
   baseId: string
   schemaPath: Code

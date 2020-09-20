@@ -28,6 +28,7 @@ runTest(
   getAjvInstances(options, {
     meta: false,
     strict: false,
+    strictTypes: false,
     ignoreKeywordsWithRef: true,
   }),
   6,
@@ -37,6 +38,7 @@ runTest(
 runTest(
   getAjvInstances(options, {
     strict: false,
+    strictTypes: false,
     ignoreKeywordsWithRef: true,
     formats: {
       "idn-email": true,

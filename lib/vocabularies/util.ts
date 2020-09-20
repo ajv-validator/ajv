@@ -87,10 +87,9 @@ export function usePattern(gen: CodeGen, pattern: string): Name {
   })
 }
 
-export function checkStrictMode(it: SchemaCxt, msg: string): void {
-  const {opts, self} = it
-  if (opts.strict) {
-    if (opts.strict === "log") self.logger.warn(msg)
-    else throw new Error(msg)
-  }
+export function checkStrictMode(it: SchemaCxt, msg: string, mode = it.opts.strict): void {
+  if (!mode) return
+  msg = `strict mode: ${msg}`
+  if (mode === true) throw new Error(msg)
+  it.self.logger.warn(msg)
 }

@@ -16,6 +16,7 @@ describe("useDefaults option", () => {
 
     function test(ajv) {
       const schema = {
+        type: "object",
         properties: {
           foo: {type: "string", default: "abc"},
           bar: {type: "number", default: 1},
@@ -60,6 +61,7 @@ describe("useDefaults option", () => {
 
     function test(ajv) {
       const schema = {
+        type: "array",
         items: [
           {type: "string", default: "abc"},
           {type: "number", default: 1},
@@ -124,6 +126,7 @@ describe("useDefaults option", () => {
 
     function test(ajv) {
       const schema = {
+        type: "object",
         properties: {
           items: {
             type: "array",
@@ -153,8 +156,10 @@ describe("useDefaults option", () => {
 
     beforeEach(() => {
       schema = {
+        type: "object",
         properties: {
           obj: {
+            type: "object",
             properties: {
               str: {default: "foo"},
               n1: {default: 1},
@@ -163,6 +168,7 @@ describe("useDefaults option", () => {
             },
           },
           arr: {
+            type: "array",
             items: [{default: "foo"}, {default: 1}, {default: 2}, {default: 3}],
           },
         },

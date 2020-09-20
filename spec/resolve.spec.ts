@@ -48,6 +48,7 @@ describe("resolve", () => {
             type: "null",
           },
         },
+        type: "object",
         properties: {
           foo: {$ref: "#foo"},
           bar: {$ref: "otherschema.json#bar"},
@@ -192,6 +193,7 @@ describe("resolve", () => {
         try {
           ajv.compile({
             $id: opts.baseId,
+            type: "object",
             properties: {a: {$ref: opts.ref}},
           })
         } catch (e) {
@@ -204,14 +206,15 @@ describe("resolve", () => {
 
   describe("inline referenced schemas without refs in them", () => {
     const schemas = [
-      {$id: "http://e.com/obj.json#", properties: {a: {$ref: "int.json#"}}},
+      {$id: "http://e.com/obj.json#", type: "object", properties: {a: {$ref: "int.json#"}}},
       {$id: "http://e.com/int.json#", type: "integer", minimum: 2, maximum: 4},
       {
         $id: "http://e.com/obj1.json#",
+        type: "object",
         definitions: {int: {type: "integer", minimum: 2, maximum: 4}},
         properties: {a: {$ref: "#/definitions/int"}},
       },
-      {$id: "http://e.com/list.json#", items: {$ref: "obj.json#"}},
+      {$id: "http://e.com/list.json#", type: "array", items: {$ref: "obj.json#"}},
     ]
 
     it("by default should inline schema if it doesn't contain refs", () => {
@@ -230,7 +233,7 @@ describe("resolve", () => {
     })
 
     it("should NOT inline schema if option inlineRefs is less than number of keys in referenced schema", () => {
-      const ajv = new Ajv({schemas: schemas, inlineRefs: 2, code: {source: true}})
+      const ajv = new Ajv({schemas, inlineRefs: 2, code: {source: true}})
       testSchemas(ajv, false)
     })
 

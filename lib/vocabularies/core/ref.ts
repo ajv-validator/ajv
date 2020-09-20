@@ -50,6 +50,7 @@ const def: CodeKeywordDefinition = {
         it,
         {
           schema: sch,
+          strictSchema: true,
           schemaPath: nil,
           topSchemaRef: schName,
           errSchemaPath: schema,

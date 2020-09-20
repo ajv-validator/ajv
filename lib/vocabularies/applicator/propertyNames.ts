@@ -25,7 +25,13 @@ const def: CodeKeywordDefinition = {
       cxt.setParams({propertyName: key})
       applySubschema(
         it,
-        {keyword: "propertyNames", data: key, propertyName: key, compositeRule: true},
+        {
+          keyword: "propertyNames",
+          data: key,
+          propertyName: key,
+          compositeRule: true,
+          strictSchema: it.strictSchema,
+        },
         valid
       )
       gen.ifNot(valid, () => {

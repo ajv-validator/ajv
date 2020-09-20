@@ -86,6 +86,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     ValidationError: _ValidationError,
     schema: sch.schema,
     schemaEnv: sch,
+    strictSchema: true,
     rootId,
     baseId: sch.baseId || rootId,
     schemaPath: nil,

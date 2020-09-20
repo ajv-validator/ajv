@@ -29,6 +29,7 @@ const def: CodeKeywordDefinition = {
               keyword: "items",
               schemaProp: i,
               dataProp: i,
+              strictSchema: it.strictSchema,
             },
             valid
           )
@@ -40,7 +41,16 @@ const def: CodeKeywordDefinition = {
     function validateItems(): void {
       const valid = gen.name("valid")
       gen.forRange("i", 0, len, (i) => {
-        applySubschema(it, {keyword: "items", dataProp: i, dataPropType: Type.Num}, valid)
+        applySubschema(
+          it,
+          {
+            keyword: "items",
+            dataProp: i,
+            dataPropType: Type.Num,
+            strictSchema: it.strictSchema,
+          },
+          valid
+        )
         if (!it.allErrors) gen.ifNot(valid, _`break`)
       })
       cxt.ok(valid)
