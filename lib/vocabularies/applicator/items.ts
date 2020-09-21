@@ -21,7 +21,6 @@ const def: CodeKeywordDefinition = {
     function validateTuple(schArr: AnySchema[]): void {
       if (it.opts.strictTuples && !fullTupleSchema(schema.length, parentSchema)) {
         const msg = `"items" is ${schArr.length}-tuple, but minItems or maxItems/additionalItems are not specified or different`
-        throw new Error(msg)
         checkStrictMode(it, msg, it.opts.strictTuples)
       }
       const valid = gen.name("valid")

@@ -98,7 +98,6 @@ function checkKeywordTypes(it: SchemaObjCxt, ts: JSONType[]): void {
       const {type} = rule.definition
       if (type.length && !type.some((t) => hasApplicableType(ts, t))) {
         strictTypesError(it, `missing type "${type.join(",")}" for keyword "${keyword}"`)
-        return
       }
     }
   }
