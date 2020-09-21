@@ -68,6 +68,7 @@ describe("useDefaults option", () => {
           {type: "boolean", default: false},
         ],
         minItems: 3,
+        additionalItems: false,
       }
 
       const validate = ajv.compile(schema)
@@ -171,6 +172,8 @@ describe("useDefaults option", () => {
           arr: {
             type: "array",
             items: [{default: "foo"}, {default: 1}, {default: 2}, {default: 3}],
+            minItems: 4,
+            additionalItems: false,
           },
         },
       }

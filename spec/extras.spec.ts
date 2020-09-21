@@ -7,6 +7,7 @@ const instances = getAjvInstances(options, {
   $data: true,
   formats: {allowedUnknown: true},
   strictTypes: false,
+  strictTuples: false,
 })
 
 jsonSchemaTest(instances, {

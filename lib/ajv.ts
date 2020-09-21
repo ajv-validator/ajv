@@ -82,6 +82,7 @@ interface CurrentOptions {
   // strict mode options
   strict?: boolean | "log"
   strictTypes?: boolean | "log"
+  strictTuples?: boolean | "log"
   allowMatchingProperties?: boolean // disables a strict mode restriction
   allowUnionTypes?: boolean
   validateFormats?: boolean
@@ -181,6 +182,7 @@ type RequiredInstanceOptions = {
   [K in
     | "strict"
     | "strictTypes"
+    | "strictTuples"
     | "code"
     | "inlineRefs"
     | "loopRequired"
@@ -196,9 +198,12 @@ type RequiredInstanceOptions = {
 export type InstanceOptions = Options & RequiredInstanceOptions
 
 function requiredOptions(o: Options): RequiredInstanceOptions {
+  const strict = o.strict ?? true
+  const strictLog = strict ? "log" : false
   return {
-    strict: o.strict ?? true,
-    strictTypes: o.strictTypes ?? (o.strict ?? true ? "log" : false),
+    strict,
+    strictTypes: o.strictTypes ?? strictLog,
+    strictTuples: o.strictTuples ?? strictLog,
     code: o.code ?? {},
     loopRequired: o.loopRequired ?? Infinity,
     loopEnum: o.loopEnum ?? Infinity,

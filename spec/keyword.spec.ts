@@ -77,6 +77,7 @@ describe("User-defined keywords", () => {
           metaSchema: {
             type: "array",
             items: [{type: "number"}, {type: "number"}],
+            minItems: 2,
             additionalItems: false,
           },
         })

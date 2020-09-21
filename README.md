@@ -76,6 +76,10 @@ ajv.addMetaSchema(require("ajv/lib/refs/json-schema-draft-06.json"))
 - [Command line interface](#command-line-interface)
 - Validation
   - [Strict mode](#strict-mode)
+    - [Prohibit ignored keywords](#prohibit-ignored-keywords)
+    - [Prevent unexpected validation](#prevent-unexpected-validation)
+    - [Strict types](#strict-types)
+    - [Number validation](#number-validation)
   - [Keywords](#validation-keywords)
   - [Annotation keywords](#annotation-keywords)
   - [Formats](#formats)
@@ -271,7 +275,9 @@ Strict mode intends to prevent any unexpected behaviours or silently ignored mis
 
 The strict mode restrictions are below. To disable these restrictions use option `strict: false`.
 
-##### Prohibit unknown keywords
+### Prohibit ignored keywords
+
+#### Prohibit unknown keywords
 
 JSON Schema [section 6.5](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-6.5) requires to ignore unknown keywords. The motivation is to increase cross-platform portability of schemas, so that implementations that do not support certain keywords can still do partial validation.
 
@@ -294,25 +300,45 @@ ajv.addVocabulary(["allowed1", "allowed2"])
 
 #### Prohibit ignored "additionalItems" keyword
 
-JSON Schema section [9.3.1.2](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-9.3.1.2) requires to ignore "additionalItems" keyword if "items" keyword is absent. This is inconsistent with the interaction of "additionalProperties" and "properties", and may cause unexpected results.
+JSON Schema section [9.3.1.2](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-9.3.1.2) requires to ignore "additionalItems" keyword if "items" keyword is absent or if it is not an array of items. This is inconsistent with the interaction of "additionalProperties" and "properties", and may cause unexpected results.
 
-By default Ajv fails schema compilation when "additionalItems" is used without "items.
+By default Ajv fails schema compilation when "additionalItems" is used without "items" (or if "items" is not an array).
+
+#### Prohibit unconstrained tuples
+
+Ajv also logs a warning if "items" is an array (for schema that defines a tuple) but neiter "minItems" nor "additionalItems"/"maxItems" keyword is present (or have a wrong value):
+
+```javascript
+{
+  type: "array",
+  items: [{type: "number"}, {type: "boolean"}]
+}
+```
+
+The above schema may have a mistake, as tuples usually are expected to have a fixed size. To "fix" it:
+
+```javascript
+{
+  type: "array",
+  items: [{type: "number"}, {type: "boolean"}],
+  minItems: 2,
+  additionalItems: false
+  // or
+  // maxItems: 2
+}
+```
+
+Sometimes users accidentally create schema for unit (a tuple with one item) that only validates the first item, this restriction prevents this mistake as well.
+
+Use `strictTuples` option to suppress this warning (`false`) or turn it into exception (`true`).
+
+If you use `JSONSchemaType<T>` this mistake will also be prevented on a type level.
 
 #### Prohibit ignored "if", "then", "else" keywords
 
 JSON Schema section [9.2.2](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-9.2.2) requires to ignore "if" (only annotations are collected) if both "then" and "else" are absent, and ignore "then"/"else" if "if" is absent.
 
 By default Ajv fails schema compilation in these cases.
-
-#### Prohibit overlap between "properties" and "patternProperties" keywords
-
-The expectation of users (see #196, #286) is that "patternProperties" only apply to properties not already defined in "properties" keyword, but JSON Schema section [9.3.2](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-9.3.2) defines these two keywords as independent. It means that to some properties two subschemas can be applied - one defined in "properties" keyword and another defined in "patternProperties" for the pattern matching this property.
-
-By default Ajv fails schema compilation if a pattern in "patternProperties" matches a property in "properties" in the same schema.
-
-In addition to allowing such patterns by using option `strict: false`, there is an option `allowMatchingProperties: true` to only allow this case without disabling other strict mode restrictions - there are some rare cases when this is necessary.
-
-To reiterate, neither this nor other strict mode restrictions change the validation results - they only restrict which schemas are valid.
 
 #### Prohibit unknown formats
 
@@ -330,7 +356,186 @@ Standard JSON Schema formats are provided in [ajv-formats](https://github.com/aj
 
 With `useDefaults` option Ajv modifies validated data by assigning defaults from the schema, but there are different limitations when the defaults can be ignored (see [Assigning defaults](#assigning-defaults)). In strict mode Ajv fails schema compilation if such defaults are used in the schema.
 
-#### Number validation
+### Prevent unexpected validation
+
+#### Prohibit overlap between "properties" and "patternProperties" keywords
+
+The expectation of users (see #196, #286) is that "patternProperties" only apply to properties not already defined in "properties" keyword, but JSON Schema section [9.3.2](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-9.3.2) defines these two keywords as independent. It means that to some properties two subschemas can be applied - one defined in "properties" keyword and another defined in "patternProperties" for the pattern matching this property.
+
+By default Ajv fails schema compilation if a pattern in "patternProperties" matches a property in "properties" in the same schema.
+
+In addition to allowing such patterns by using option `strict: false`, there is an option `allowMatchingProperties: true` to only allow this case without disabling other strict mode restrictions - there are some rare cases when this is necessary.
+
+To reiterate, neither this nor other strict mode restrictions change the validation results - they only restrict which schemas are valid.
+
+### Strict types
+
+An additional option `strictTypes` ("log" by default) imposes additional restrictions on how type keyword is used:
+
+#### Union types
+
+With `srictTypes` option "type" keywords with multiple types (other than with "null") are prohibited.
+
+Invalid:
+
+```javascript
+{
+  type: ["string", "number"]
+}
+```
+
+Valid:
+
+```javascript
+{
+  type: ["object", "null"]
+}
+```
+
+and
+
+```javascript
+{
+  type: "object",
+  nullable: true
+}
+```
+
+Unions can still be defined with `anyOf` keyword.
+
+The motivation for this restriction is that "type" is usually not the only keyword in the schema, and mixing other keywords that apply to different types is confusing. It is also consistent with wider range of versions of OpenAPI specification and has better tooling support. E.g., this example violating `strictTypes`:
+
+```javascript
+{
+  type: ["number", "array"],
+  minimum: 0,
+  items: {
+    type: "number",
+    minimum: 0
+  }
+}
+```
+
+is equivalent to this complying example, that is more verbose but also easier to maintain:
+
+```javascript
+{
+  anyOf: [
+    {
+      type: "number",
+      minimum: 0,
+    },
+    {
+      type: "array",
+      items: {
+        type: "number",
+        minimum: 0,
+      },
+    },
+  ]
+}
+```
+
+It also can be refactored:
+
+```javascript
+{
+  $defs: {
+    item: {
+      type: "number",
+      minimum: 0
+    }
+  },
+  anyOf: [
+    {$ref: "#/$defs/item"},
+    {
+      type: "array",
+      items: {$ref: "#/$defs/item"}
+    },
+  ]
+}
+```
+
+This restriction can be lifted separately from other `strictTypes` restrictions with `allowUnionTypes: true` option.
+
+#### Contradictory types
+
+Subschemas can apply to the same data instance, and it is possible to have contradictory type keywords - it usually indicate some mistake. For example:
+
+```javascript
+{
+  type: "object",
+  anyOf: [
+    {type: "array"},
+    {type: "object"}
+  ]
+}
+```
+
+The schema above violates `strictTypes` as "array" type is not compatible with object. If you used `allowUnionTypes: true` option, the above schema can be fixed in this way:
+
+```javascript
+{
+  type: ["array", "object"],
+  anyOf: [
+    {type: "array"},
+    {type: "object"}
+  ]
+}
+```
+
+**Please note**: type "number" can be narrowed to "integer", the opposite would violate `strictTypes`.
+
+#### Applicable types
+
+This simple JSON Schema is valid, but it violates `strictTypes`:
+
+```javascript
+{
+  properties: {
+    foo: {type: "number"},
+    bar: {type: "string"}
+  }
+  required: ["foo", "bar"]
+}
+```
+
+This is a very common mistake that even people experienced with JSON Schema often make - the problem here is that any value that is not an object would be valid against this schema - this is rarely intentional.
+
+To fix it, "type" keyword has to be added:
+
+```javascript
+{
+  type: "object",
+  properties: {
+    foo: {type: "number"},
+    bar: {type: "string"}
+  },
+  required: ["foo", "bar"]
+}
+```
+
+You do not necessarily have to have "type" keyword in the same schema object; as long as there is "type" keyword applying to the same part of data instance in the same schema document, not via "\$ref", it will be ok:
+
+```javascript
+{
+  type: "object",
+  anyOf: [
+    {
+      properties: {foo: {type: "number"}}
+      required: ["foo"]
+    },
+    {
+      properties: {bar: {type: "string"}}
+      required: ["bar"]
+    }
+  ]
+}
+```
+
+Both "properties" and "required" need `type: "object"` to satisfy `strictTypes` - it is sufficient to have it once in the parent schema, without repeating it in each schema.
+
+### Number validation
 
 Strict mode also affects number validation. By default Ajv fails `{"type": "number"}` (or `"integer"`) validation for `Infinity` and `NaN`.
 
@@ -1238,6 +1443,9 @@ Option defaults:
 const defaultOptions = {
   // strict mode options
   strict: true,
+  strictTypes: "log",
+  strictTuples: "log",
+  allowUnionTypes: false,
   allowMatchingProperties: false,
   validateFormats: true,
   // validation and reporting options:
@@ -1276,7 +1484,16 @@ const defaultOptions = {
 - _strict_: By default Ajv executes in strict mode, that is designed to prevent any unexpected behaviours or silently ignored mistakes in schemas (see [Strict Mode](#strict-mode) for more details). It does not change any validation results, but it makes some schemas invalid that would be otherwise valid according to JSON Schema specification. Option values:
   - `true` (default) - use strict mode and throw an exception when any strict mode restriction is violated.
   - `"log"` - log warning when any strict mode restriction is violated.
-  - `false` - ignore all strict mode restrictions.
+  - `false` - ignore all strict mode restrictions. Also ignores `strictTypes` restrictions unless it is explicitely passed.
+- _strictTypes_: By default Ajv logs warning when "type" keyword is used in a way that may be incorrect or confusing to other people - see [Strict types](#strict-types) for more details. This option does not change validation results. Option values:
+  - `true` - throw exception when any strictTypes restriction is violated.
+  - `"log"` (default, unless option strict is `false`) - log warning when any strictTypes restriction is violated.
+  - `false` - ignore all strictTypes restrictions violations.
+- _strictTuples_: By default Ajv logs warning when "items" is array and "minItems" and "maxItems"/"additionalItems" not present or different from the number of items. See [Strict mode](#strict-mode) for more details. This option does not change validation results. Option values:
+  - `true` - throw exception.
+  - `"log"` (default, unless option strict is `false`) - log warning.
+  - `false` - ignore strictTuples restriction violations.
+- _allowUnionTypes_: pass true to allow using multiple non-null types in "type" keyword (one of `strictTypes` restricitons). see [Strict types](#strict-types)
 - _allowMatchingProperties_: pass true to allow overlap between "properties" and "patternProperties". Does not affect other strict mode restrictions. See [Strict Mode](#strict-mode).
 - _validateFormats_: format validation. Option values:
   - `true` (default) - validate formats (see [Formats](#formats)). In [strict mode](#strict-mode) unknown formats will throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](#data-reference)).

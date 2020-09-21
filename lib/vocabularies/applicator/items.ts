@@ -1,6 +1,6 @@
 import type {CodeKeywordDefinition, AnySchema} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {alwaysValidSchema} from "../util"
+import {alwaysValidSchema, checkStrictMode} from "../util"
 import {applySubschema, Type} from "../../compile/subschema"
 import {_} from "../../compile/codegen"
 
@@ -10,15 +10,20 @@ const def: CodeKeywordDefinition = {
   schemaType: ["object", "array", "boolean"],
   before: "uniqueItems",
   code(cxt: KeywordCxt) {
-    const {gen, schema, data, it} = cxt
+    const {gen, schema, parentSchema, data, it} = cxt
     const len = gen.const("len", _`${data}.length`)
     if (Array.isArray(schema)) {
-      validateDefinedItems(schema)
+      validateTuple(schema)
     } else if (!alwaysValidSchema(it, schema)) {
-      validateItems()
+      validateArray()
     }
 
-    function validateDefinedItems(schArr: AnySchema[]): void {
+    function validateTuple(schArr: AnySchema[]): void {
+      if (it.opts.strictTuples && !fullTupleSchema(schema.length, parentSchema)) {
+        const msg = `"items" is ${schArr.length}-tuple, but minItems or maxItems/additionalItems are not specified or different`
+        throw new Error(msg)
+        checkStrictMode(it, msg, it.opts.strictTuples)
+      }
       const valid = gen.name("valid")
       schArr.forEach((sch: AnySchema, i: number) => {
         if (alwaysValidSchema(it, sch)) return
@@ -38,7 +43,7 @@ const def: CodeKeywordDefinition = {
       })
     }
 
-    function validateItems(): void {
+    function validateArray(): void {
       const valid = gen.name("valid")
       gen.forRange("i", 0, len, (i) => {
         applySubschema(
@@ -56,6 +61,10 @@ const def: CodeKeywordDefinition = {
       cxt.ok(valid)
     }
   },
+}
+
+function fullTupleSchema(len: number, sch: any): boolean {
+  return len === sch.minItems && (len === sch.maxItems || sch.additionalItems === false)
 }
 
 export default def

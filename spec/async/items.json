@@ -16,7 +16,9 @@
           "type": "integer",
           "idExists": {"table": "users"}
         }
-      ]
+      ],
+      "minItems": 3,
+      "additionalItems": false
     },
     "tests": [
       {

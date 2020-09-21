@@ -12,18 +12,19 @@ describe("Validation errors", () => {
   })
 
   function createInstances() {
-    ajv = new _Ajv({loopRequired: 21, strictTypes: false})
-    ajvJP = new _Ajv({
+    const opts = {
       loopRequired: 21,
       strictTypes: false,
-    })
+      strictTuples: false,
+    }
+    ajv = new _Ajv(opts)
+    ajvJP = new _Ajv(opts)
     fullAjv = new _Ajv({
+      ...opts,
       allErrors: true,
       verbose: true,
       jsPropertySyntax: true, // deprecated
-      loopRequired: 21,
       logger: false,
-      strictTypes: false,
     })
   }
 
@@ -538,11 +539,12 @@ describe("Validation errors", () => {
     const schema = {
       type: "array",
       items: [{type: "integer"}, {type: "integer"}],
+      minItems: 2,
       additionalItems: false,
     }
 
-    const data = [1, 2],
-      invalidData = [1, 2, 3]
+    const data = [1, 2]
+    const invalidData = [1, 2, 3]
 
     test(ajv)
     test(ajvJP)
