@@ -41,6 +41,7 @@ describe("issue #181, user-defined keyword is not validated in allErrors mode if
     ajv.addKeyword(def)
 
     const schema = {
+      type: "object",
       required: ["foo"],
       alwaysFails: true,
     }

@@ -66,15 +66,15 @@ describe("options to add schemas", () => {
           it("should throw with duplicate ID", () => {
             ajv.compile({$id: "str", type: "string"})
             should.throw(() => {
-              ajv.compile({$id: "str", minLength: 2})
-            })
+              ajv.compile({$id: "str", type: "string", minLength: 2})
+            }, /already exists/)
 
             const schema = {$id: "int", type: "integer"}
-            const schema2 = {$id: "int", minimum: 0}
+            const schema2 = {$id: "int", type: "integer", minimum: 0}
             ajv.validate(schema, 1).should.equal(true)
             should.throw(() => {
               ajv.validate(schema2, 1)
-            })
+            }, /already exists/)
           })
         })
       })

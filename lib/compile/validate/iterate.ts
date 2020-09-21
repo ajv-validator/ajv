@@ -66,7 +66,7 @@ function iterateKeywords(it: SchemaObjCxt, group: RuleGroup): void {
 function checkStrictTypes(it: SchemaObjCxt, types: JSONType[]): void {
   if (it.schemaEnv.meta || !it.opts.strictTypes) return
   checkContextTypes(it, types)
-  checkMultipleTypes(it, types)
+  if (!it.opts.allowUnionTypes) checkMultipleTypes(it, types)
   checkKeywordTypes(it, it.dataTypes)
 }
 
@@ -85,12 +85,8 @@ function checkContextTypes(it: SchemaObjCxt, types: JSONType[]): void {
 }
 
 function checkMultipleTypes(it: SchemaObjCxt, ts: JSONType[]): void {
-  if (
-    ts.length > 1 &&
-    !(ts.length === 2 && ts.includes("null")) &&
-    (ts.includes("object") || ts.includes("array"))
-  ) {
-    strictTypesError(it, "multiple non-primitive types")
+  if (ts.length > 1 && !(ts.length === 2 && ts.includes("null"))) {
+    strictTypesError(it, "use allowUnionTypes to allow union type keyword")
   }
 }
 
@@ -119,6 +115,5 @@ function includesType(ts: JSONType[], t: JSONType): boolean {
 function strictTypesError(it: SchemaObjCxt, msg: string): void {
   const schemaPath = it.schemaEnv.baseId + it.errSchemaPath
   msg += ` at "${schemaPath}" (strictTypes)`
-  // throw new Error(msg)
   checkStrictMode(it, msg, it.opts.strictTypes)
 }

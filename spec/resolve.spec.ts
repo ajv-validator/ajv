@@ -1,17 +1,19 @@
 import getAjvInstances from "./ajv_instances"
-import Ajv from "./ajv"
+import _Ajv from "./ajv"
+import type Ajv from ".."
 import {AnyValidateFunction} from "../dist/types"
 import chai from "./chai"
 const should = chai.should()
 
 describe("resolve", () => {
-  let instances
+  let instances: Ajv[]
 
   beforeEach(() => {
     instances = getAjvInstances({
       allErrors: true,
       verbose: true,
       inlineRefs: false,
+      allowUnionTypes: true,
     })
   })
 
@@ -73,15 +75,17 @@ describe("resolve", () => {
         })
         should.throw(() => {
           ajv.compile({
+            type: "object",
             additionalProperties: {
               $id: "http://example.com/1.json",
               type: "string",
             },
           })
-        })
+        }, /resolves to more than one schema/)
 
         should.throw(() => {
           ajv.compile({
+            type: ["object", "array"],
             items: {
               $id: "#int",
               type: "integer",
@@ -91,7 +95,7 @@ describe("resolve", () => {
               type: "string",
             },
           })
-        })
+        }, /resolves to more than one schema/)
       })
     })
 
@@ -218,27 +222,27 @@ describe("resolve", () => {
     ]
 
     it("by default should inline schema if it doesn't contain refs", () => {
-      const ajv = new Ajv({schemas, code: {source: true}})
+      const ajv = new _Ajv({schemas, code: {source: true}})
       testSchemas(ajv, true)
     })
 
     it("should NOT inline schema if option inlineRefs == false", () => {
-      const ajv = new Ajv({schemas, inlineRefs: false, code: {source: true}})
+      const ajv = new _Ajv({schemas, inlineRefs: false, code: {source: true}})
       testSchemas(ajv, false)
     })
 
     it("should inline schema if option inlineRefs is bigger than number of keys in referenced schema", () => {
-      const ajv = new Ajv({schemas, inlineRefs: 4, code: {source: true}})
+      const ajv = new _Ajv({schemas, inlineRefs: 4, code: {source: true}})
       testSchemas(ajv, true)
     })
 
     it("should NOT inline schema if option inlineRefs is less than number of keys in referenced schema", () => {
-      const ajv = new Ajv({schemas, inlineRefs: 2, code: {source: true}})
+      const ajv = new _Ajv({schemas, inlineRefs: 2, code: {source: true}})
       testSchemas(ajv, false)
     })
 
     it("should avoid schema substitution when refs are inlined (issue #77)", () => {
-      const ajv = new Ajv({verbose: true})
+      const ajv = new _Ajv({verbose: true})
 
       const schemaMessage = {
         $schema: "http://json-schema.org/draft-07/schema#",

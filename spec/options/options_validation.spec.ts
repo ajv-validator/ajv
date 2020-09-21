@@ -20,6 +20,7 @@ describe("validation options", () => {
   describe("formats", () => {
     it("should add formats from options", () => {
       const ajv = new _Ajv({
+        allowUnionTypes: true,
         formats: {
           identifier: /^[a-z_$][a-z0-9_$]*$/i,
         },
@@ -40,6 +41,7 @@ describe("validation options", () => {
   describe("keywords", () => {
     it("should add keywords from options", () => {
       const ajv = new _Ajv({
+        allowUnionTypes: true,
         keywords: [
           {
             keyword: "identifier",

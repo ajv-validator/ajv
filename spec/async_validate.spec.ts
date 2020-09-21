@@ -37,6 +37,7 @@ describe("async schemas, formats and keywords", function () {
 
     it("should fail compilation if async schema is inside sync schema", () => {
       const schema: any = {
+        type: "object",
         properties: {
           foo: {
             $async: true,
@@ -46,9 +47,9 @@ describe("async schemas, formats and keywords", function () {
         },
       }
 
-      shouldThrowFunc("async schema in sync schema", () => {
+      should.throw(() => {
         ajv.compile(schema)
-      })
+      }, "async schema in sync schema")
 
       ajv.compile({...schema, $async: true})
     })
@@ -64,9 +65,9 @@ describe("async schemas, formats and keywords", function () {
           format: "english_word",
         }
 
-        shouldThrowFunc("async format in sync schema", () => {
+        should.throw(() => {
           _ajv.compile(schema)
-        })
+        }, "async format in sync schema")
         schema = {...schema, $async: true}
         _ajv.compile(schema)
       })
@@ -106,9 +107,9 @@ describe("async schemas, formats and keywords", function () {
           },
         }
 
-        shouldThrowFunc("async keyword in sync schema", () => {
+        should.throw(() => {
           _ajv.compile(schema)
-        })
+        }, "async keyword in sync schema")
 
         schema = {...schema, $async: true}
         _ajv.compile(schema)
@@ -196,6 +197,7 @@ describe("async schemas, formats and keywords", function () {
             format: "english_word",
           },
         },
+        type: "object",
         properties: {
           word: {$ref: "#/definitions/english_word"},
         },
@@ -341,9 +343,9 @@ describe("async schemas, formats and keywords", function () {
         validate: checkWordOnServer,
       })
 
-      shouldThrowFunc("async schema referenced by sync schema", () => {
+      should.throw(() => {
         ajv.compile(schema)
-      })
+      }, "async schema referenced by sync schema")
 
       schema = {...schema, $id: "http://e.com/obj2.json#", $async: true}
 
@@ -394,20 +396,6 @@ function checkWordOnServer(str) {
     : str === "manana"
     ? Promise.resolve(false)
     : Promise.reject(new Error("unknown word"))
-}
-
-function shouldThrowFunc(message, func) {
-  let err
-  should.throw(() => {
-    try {
-      func()
-    } catch (e) {
-      err = e
-      throw e
-    }
-  })
-
-  err.message.should.equal(message)
 }
 
 function shouldBeValid(p, data) {

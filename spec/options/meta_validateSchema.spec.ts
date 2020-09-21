@@ -9,14 +9,14 @@ describe("meta and validateSchema options", () => {
 
     function testOptionMeta(ajv) {
       ajv.getSchema("http://json-schema.org/draft-07/schema").should.be.a("function")
-      ajv.validateSchema({type: "integer"}).should.equal(true)
-      ajv.validateSchema({type: 123}).should.equal(false)
+      ajv.validateSchema({$id: "ok", type: "integer"}).should.equal(true)
+      ajv.validateSchema({$id: "wrong", type: 123}).should.equal(false)
       should.not.throw(() => {
-        ajv.addSchema({type: "integer"})
+        ajv.addSchema({$id: "ok", type: "integer"})
       })
       should.throw(() => {
-        ajv.addSchema({type: 123})
-      })
+        ajv.addSchema({$id: "wrong", type: 123})
+      }, /schema is invalid/)
     }
   })
 
@@ -32,7 +32,7 @@ describe("meta and validateSchema options", () => {
     let ajv = new _Ajv()
     should.throw(() => {
       ajv.addSchema({type: 123}, "integer")
-    })
+    }, /schema is invalid/)
 
     ajv = new _Ajv({validateSchema: false})
     should.not.throw(() => {

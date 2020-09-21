@@ -1,13 +1,15 @@
+import type Ajv from ".."
 import _Ajv from "./ajv"
 import {_} from "../dist/compile/codegen"
+import assert from "assert"
 import chai from "./chai"
 const should = chai.should()
 
 describe("Ajv", () => {
-  let ajv
+  let ajv: Ajv
 
   beforeEach(() => {
-    ajv = new _Ajv()
+    ajv = new _Ajv({keywords: ["foo"], allowUnionTypes: true})
   })
 
   it("should create instance", () => {
@@ -38,13 +40,13 @@ describe("Ajv", () => {
       ajv.compile({$id: "//e.com/int.json", type: "integer"})
       should.throw(() => {
         ajv.compile({$id: "//e.com/int.json", type: "integer", minimum: 1})
-      })
+      }, /already exists/)
     })
 
     it("should throw if invalid schema is compiled", () => {
       should.throw(() => {
         ajv.compile({type: null})
-      })
+      }, /should be equal to one of the allowed values/)
     })
 
     it("should throw if compiled schema has an invalid JavaScript code", () => {
@@ -58,7 +60,7 @@ describe("Ajv", () => {
       schema = {even: false}
       should.throw(() => {
         _ajv.compile(schema)
-      })
+      }, /Unexpected token/)
 
       function badEvenCode(cxt) {
         const op = cxt.schema ? _`===` : _`!===` // invalid on purpose
@@ -90,7 +92,7 @@ describe("Ajv", () => {
       ajv.validate("integer", 1).should.equal(true)
       should.throw(() => {
         ajv.validate("string", "foo")
-      })
+      }, /no schema with key or ref/)
     })
 
     it("should validate schema fragment by ref", () => {
@@ -124,7 +126,7 @@ describe("Ajv", () => {
     it("should add and compile schema with key", () => {
       ajv.addSchema({type: "integer"}, "int")
       const validate = ajv.getSchema("int")
-      validate.should.be.a("function")
+      assert(typeof validate == "function")
 
       validate(1).should.equal(true)
       validate(1.1).should.equal(false)
@@ -165,6 +167,8 @@ describe("Ajv", () => {
 
       const validate0 = ajv.getSchema("//e.com/int.json")
       const validate1 = ajv.getSchema("//e.com/str.json")
+      assert(typeof validate0 == "function")
+      assert(typeof validate1 == "function")
 
       validate0(1).should.equal(true)
       validate0("1").should.equal(false)
@@ -181,40 +185,42 @@ describe("Ajv", () => {
       ajv.addSchema({type: "integer"}, "int")
       should.throw(() => {
         ajv.addSchema({type: "integer", minimum: 1}, "int")
-      })
+      }, /already exists/)
     })
 
     it("should throw on duplicate normalized key", () => {
       ajv.addSchema({type: "number"}, "num")
       should.throw(() => {
         ajv.addSchema({type: "integer"}, "num#")
-      })
+      }, /already exists/)
       should.throw(() => {
         ajv.addSchema({type: "integer"}, "num#/")
-      })
+      }, /already exists/)
     })
 
     it("should allow only one schema without key and id", () => {
       ajv.addSchema({type: "number"})
       should.throw(() => {
         ajv.addSchema({type: "integer"})
-      })
+      }, /already exists/)
       should.throw(() => {
         ajv.addSchema({type: "integer"}, "")
-      })
+      }, /already exists/)
       should.throw(() => {
         ajv.addSchema({type: "integer"}, "#")
-      })
+      }, /already exists/)
     })
 
     it("should throw if schema is not an object", () => {
       should.throw(() => {
+        // @ts-expect-error
         ajv.addSchema("foo")
-      })
+      }, /schema must be object or boolean/)
     })
 
     it("should throw if schema id is not a string", () => {
       try {
+        // @ts-expect-error
         ajv.addSchema({$id: 1, type: "integer"})
         throw new Error("should have throw exception")
       } catch (e) {
@@ -232,6 +238,7 @@ describe("Ajv", () => {
     it("should return compiled schema by key", () => {
       ajv.addSchema({type: "integer"}, "int")
       const validate = ajv.getSchema("int")
+      assert(typeof validate == "function")
       validate(1).should.equal(true)
       validate("1").should.equal(false)
     })
@@ -239,6 +246,7 @@ describe("Ajv", () => {
     it("should return compiled schema by id or ref", () => {
       ajv.addSchema({$id: "//e.com/int.json", type: "integer"})
       const validate = ajv.getSchema("//e.com/int.json")
+      assert(typeof validate == "function")
       validate(1).should.equal(true)
       validate("1").should.equal(false)
     })
@@ -246,12 +254,9 @@ describe("Ajv", () => {
     it("should return compiled schema without key or with empty key", () => {
       ajv.addSchema({type: "integer"})
       const validate = ajv.getSchema("")
+      assert(typeof validate == "function")
       validate(1).should.equal(true)
       validate("1").should.equal(false)
-
-      const v = ajv.getSchema()
-      v(1).should.equal(true)
-      v("1").should.equal(false)
     })
 
     it("should return schema fragment by ref", () => {
@@ -264,6 +269,7 @@ describe("Ajv", () => {
       })
 
       const vInt = ajv.getSchema("http://e.com/types.json#/definitions/int")
+      assert(typeof vInt == "function")
       vInt(1).should.equal(true)
       vInt("1").should.equal(false)
     })
@@ -278,6 +284,7 @@ describe("Ajv", () => {
       })
 
       const vInt = ajv.getSchema("//e.com/types.json#/definitions/int")
+      assert(typeof vInt == "function")
       vInt(1).should.equal(true)
       vInt("1").should.equal(false)
     })
@@ -292,6 +299,7 @@ describe("Ajv", () => {
       })
 
       const vInt = ajv.getSchema("http://e.com/types.json#int")
+      assert(typeof vInt == "function")
       vInt(1).should.equal(true)
       vInt("1").should.equal(false)
     })
@@ -302,12 +310,14 @@ describe("Ajv", () => {
       const schema = {type: "integer"}
       ajv.addSchema(schema, "int")
       const v = ajv.getSchema("int")
-
+      assert(typeof v == "function")
       v.should.be.a("function")
+      //@ts-expect-error
       ajv._cache.get(schema).validate.should.equal(v)
 
       ajv.removeSchema("int")
       should.not.exist(ajv.getSchema("int"))
+      //@ts-expect-error
       should.not.exist(ajv._cache.get(schema))
     })
 
@@ -316,28 +326,35 @@ describe("Ajv", () => {
       ajv.addSchema(schema)
 
       const v = ajv.getSchema("//e.com/int.json")
+      assert(typeof v == "function")
       v.should.be.a("function")
+      //@ts-expect-error
       ajv._cache.get(schema).validate.should.equal(v)
 
       ajv.removeSchema("//e.com/int.json")
       should.not.exist(ajv.getSchema("//e.com/int.json"))
+      //@ts-expect-error
       should.not.exist(ajv._cache.get(schema))
     })
 
     it("should remove schema by schema object", () => {
       const schema = {type: "integer"}
       ajv.addSchema(schema)
+      //@ts-expect-error
       ajv._cache.get(schema).should.be.an("object")
       ajv.removeSchema(schema)
+      //@ts-expect-error
       should.not.exist(ajv._cache.get(schema))
     })
 
     it("should remove schema with id by schema object", () => {
       const schema = {$id: "//e.com/int.json", type: "integer"}
       ajv.addSchema(schema)
+      //@ts-expect-error
       ajv._cache.get(schema).should.be.an("object")
       ajv.removeSchema(schema)
       should.not.exist(ajv.getSchema("//e.com/int.json"))
+      //@ts-expect-error
       should.not.exist(ajv._cache.get(schema))
     })
 
@@ -351,33 +368,43 @@ describe("Ajv", () => {
     it("should remove all schemas but meta-schemas if called without an arguments", () => {
       const schema1 = {$id: "//e.com/int.json", type: "integer"}
       ajv.addSchema(schema1)
+      //@ts-expect-error
       ajv._cache.get(schema1).should.be.an("object")
 
       const schema2 = {type: "integer"}
       ajv.addSchema(schema2)
+      //@ts-expect-error
       ajv._cache.get(schema2).should.be.an("object")
 
       ajv.removeSchema()
+      //@ts-expect-error
       should.not.exist(ajv._cache.get(schema1))
+      //@ts-expect-error
       should.not.exist(ajv._cache.get(schema2))
     })
 
     it("should remove all schemas but meta-schemas with key/id matching pattern", () => {
       const schema1 = {$id: "//e.com/int.json", type: "integer"}
       ajv.addSchema(schema1)
+      //@ts-expect-error
       ajv._cache.get(schema1).should.be.an("object")
 
       const schema2 = {$id: "str.json", type: "string"}
       ajv.addSchema(schema2, "//e.com/str.json")
+      //@ts-expect-error
       ajv._cache.get(schema2).should.be.an("object")
 
       const schema3 = {type: "integer"}
       ajv.addSchema(schema3)
+      //@ts-expect-error
       ajv._cache.get(schema3).should.be.an("object")
 
       ajv.removeSchema(/e\.com/)
+      //@ts-expect-error
       should.not.exist(ajv._cache.get(schema1))
+      //@ts-expect-error
       should.not.exist(ajv._cache.get(schema2))
+      //@ts-expect-error
       ajv._cache.get(schema3).should.be.an("object")
     })
 
@@ -405,7 +432,7 @@ describe("Ajv", () => {
 
     it("should add format as object", () => {
       ajv.addFormat("identifier", {
-        validate: (str) => /^[a-z_$][a-z0-9_$]*$/i.test(str),
+        validate: (str: string) => /^[a-z_$][a-z0-9_$]*$/i.test(str),
       })
       testFormat()
     })
@@ -416,7 +443,10 @@ describe("Ajv", () => {
     })
 
     function testFormat() {
-      const validate = ajv.compile({format: "identifier"})
+      const validate = ajv.compile({
+        type: ["number", "string"],
+        format: "identifier",
+      })
       validate("Abc1").should.equal(true)
       validate("123").should.equal(false)
       validate(123).should.equal(true)
@@ -432,6 +462,7 @@ describe("Ajv", () => {
         })
 
         const validate = ajv.compile({
+          type: ["string", "number"],
           format: "positive",
         })
         validate(-2).should.equal(false)
@@ -441,7 +472,7 @@ describe("Ajv", () => {
       })
 
       it("should validate numbers with format via $data", () => {
-        ajv = new _Ajv({$data: true})
+        ajv = new _Ajv({$data: true, allowUnionTypes: true})
         ajv.addFormat("positive", {
           type: "number",
           validate: function (x) {
@@ -450,8 +481,12 @@ describe("Ajv", () => {
         })
 
         const validate = ajv.compile({
+          type: "object",
           properties: {
-            data: {format: {$data: "1/frmt"}},
+            data: {
+              type: ["number", "string"],
+              format: {$data: "1/frmt"},
+            },
             frmt: {type: "string"},
           },
         })
@@ -479,6 +514,7 @@ describe("Ajv", () => {
       })
 
       valid.should.equal(false)
+      assert(Array.isArray(ajv.errors))
       ajv.errors.length.should.equal(3)
       ajv.errors[0].keyword.should.equal("enum")
       ajv.errors[1].keyword.should.equal("type")
@@ -491,58 +527,59 @@ describe("Ajv", () => {
           $schema: "http://example.com/unknown/schema#",
           type: "number",
         })
-      })
+      }, /no schema with key or ref/)
     })
 
     it("should throw exception if $schema is not a string", () => {
       should.throw(() => {
         ajv.validateSchema({
+          //@ts-expect-error
           $schema: {},
           type: "number",
         })
-      })
+      }, /\$schema must be a string/)
     })
 
     describe("sub-schema validation outside of definitions during compilation", () => {
       it("maximum", () => {
         passValidationThrowCompile({
           $ref: "#/foo",
-          foo: {maximum: "bar"},
+          foo: {type: "number", maximum: "bar"},
         })
       })
 
       it("exclusiveMaximum", () => {
         passValidationThrowCompile({
           $ref: "#/foo",
-          foo: {exclusiveMaximum: "bar"},
+          foo: {type: "number", exclusiveMaximum: "bar"},
         })
       })
 
       it("maxItems", () => {
         passValidationThrowCompile({
           $ref: "#/foo",
-          foo: {maxItems: "bar"},
+          foo: {type: "array", maxItems: "bar"},
         })
       })
 
       it("maxLength", () => {
         passValidationThrowCompile({
           $ref: "#/foo",
-          foo: {maxLength: "bar"},
+          foo: {type: "string", maxLength: "bar"},
         })
       })
 
       it("maxProperties", () => {
         passValidationThrowCompile({
           $ref: "#/foo",
-          foo: {maxProperties: "bar"},
+          foo: {type: "object", maxProperties: "bar"},
         })
       })
 
       it("multipleOf", () => {
         passValidationThrowCompile({
           $ref: "#/foo",
-          foo: {maxProperties: "bar"},
+          foo: {type: "number", multipleOf: "bar"},
         })
       })
 
@@ -550,7 +587,7 @@ describe("Ajv", () => {
         ajv.validateSchema(schema).should.equal(true)
         should.throw(() => {
           ajv.compile(schema)
-        })
+        }, /value must be/)
       }
     })
   })

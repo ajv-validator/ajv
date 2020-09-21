@@ -33,6 +33,7 @@
     "description": "async formats when $data ref resolves to async format name",
     "schema": {
       "$async": true,
+      "type": "object",
       "additionalProperties": {
         "type": "string",
         "format": {"$data": "0#"}

@@ -20,7 +20,7 @@ describe("User-defined keywords", () => {
         verbose: true,
         inlineRefs: false,
       },
-      {strictTypes: false}
+      {allowUnionTypes: true}
     )
     ajv = instances[0]
   })
@@ -46,7 +46,7 @@ describe("User-defined keywords", () => {
           metaSchema: {type: "boolean"},
         })
 
-        shouldBeInvalidSchema({"x-even": "not_boolean"})
+        shouldBeInvalidSchema({type: "number", "x-even": "not_boolean"})
 
         function validateEven(schema, data) {
           return data % 2 ? !schema : schema
@@ -80,9 +80,9 @@ describe("User-defined keywords", () => {
             additionalItems: false,
           },
         })
-        shouldBeInvalidSchema({"x-range": ["1", 2]})
-        shouldBeInvalidSchema({"x-range": {}})
-        shouldBeInvalidSchema({"x-range": [1, 2, 3]})
+        shouldBeInvalidSchema({type: "number", "x-range": ["1", 2]})
+        shouldBeInvalidSchema({type: "number", "x-range": {}})
+        shouldBeInvalidSchema({type: "number", "x-range": [1, 2, 3]})
 
         function validateRange(schema, data, parentSchema) {
           return parentSchema.exclusiveRange === true
@@ -145,11 +145,17 @@ describe("User-defined keywords", () => {
           type: "number",
           compile: compileEven,
         })
-        shouldBeInvalidSchema({"x-even": "not_boolean"})
+        shouldBeInvalidSchema(
+          {
+            type: "number",
+            "x-even": "not_boolean",
+          },
+          'The value of "x-even" keyword must be boolean'
+        )
 
         function compileEven(schema) {
           if (typeof schema != "boolean") {
-            throw new Error('The value of "even" keyword must be boolean')
+            throw new Error('The value of "x-even" keyword must be boolean')
           }
           return schema ? isEven : isOdd
         }
@@ -169,7 +175,10 @@ describe("User-defined keywords", () => {
           compile: compileEven,
           metaSchema: {type: "boolean"},
         })
-        shouldBeInvalidSchema({"x-even": "not_boolean"})
+        shouldBeInvalidSchema({
+          type: "number",
+          "x-even": "not_boolean",
+        })
 
         function compileEven(schema) {
           return schema ? isEven : isOdd
@@ -206,7 +215,13 @@ describe("User-defined keywords", () => {
           schemaType: "boolean",
           compile: compileEven,
         })
-        shouldBeInvalidSchema({"x-even": "not_boolean"})
+        shouldBeInvalidSchema(
+          {
+            type: "number",
+            "x-even": "not_boolean",
+          },
+          'x-even value must be ["boolean"]'
+        )
 
         function compileEven(schema) {
           if (schema) return (data) => data % 2 === 0
@@ -516,7 +531,7 @@ describe("User-defined keywords", () => {
 
       should.throw(() => {
         ajv.compile(schema)
-      })
+      }, /type should be equal to one of the allowed values/)
 
       function macroInvalid(/* schema */) {
         return {type: "invalid"}
@@ -610,7 +625,7 @@ describe("User-defined keywords", () => {
           verbose: true,
           inlineRefs: false,
         },
-        {$data: true}
+        {$data: true, allowUnionTypes: true}
       )
       ajv = instances[0]
     })
@@ -672,7 +687,10 @@ describe("User-defined keywords", () => {
         metaSchema: {type: "boolean"},
       })
       compileCalled.should.equal(true)
-      shouldBeInvalidSchema({"x-even-$data": "false"})
+      shouldBeInvalidSchema({
+        type: "number",
+        "x-even-$data": "false",
+      })
 
       function validateEven(schema, data) {
         return data % 2 ? !schema : schema
@@ -732,7 +750,10 @@ describe("User-defined keywords", () => {
         2
       )
       macroCalled.should.equal(true)
-      shouldBeInvalidSchema({"x-even-$data": "false"})
+      shouldBeInvalidSchema({
+        type: "number",
+        "x-even-$data": "false",
+      })
 
       function validateEven(schema, data) {
         return data % 2 ? !schema : schema
@@ -770,7 +791,10 @@ describe("User-defined keywords", () => {
         },
         metaSchema: {type: "boolean"},
       })
-      shouldBeInvalidSchema({"x-even-$data": "false"})
+      shouldBeInvalidSchema({
+        type: "number",
+        "x-even-$data": "false",
+      })
     })
 
     it('should fail if "macro" keyword definition has "$data" but no "code" or "validate"', () => {
@@ -783,7 +807,7 @@ describe("User-defined keywords", () => {
             return {}
           },
         })
-      })
+      }, /\$data keyword must have "code" or "validate" function/)
     })
 
     it("should support schemaType with $data", () => {
@@ -879,6 +903,7 @@ describe("User-defined keywords", () => {
       _ajv.addKeyword(definition)
 
       const schema = {
+        type: ["object", "array"],
         properties: {
           a: {"x-constant": 1},
           b: {"x-constant": 1},
@@ -1023,11 +1048,11 @@ describe("User-defined keywords", () => {
     validate.errors.should.have.length(numErrors)
   }
 
-  function shouldBeInvalidSchema(schema) {
+  function shouldBeInvalidSchema(schema, msg: string | RegExp = /keyword value is invalid/) {
     instances.forEach((_ajv) => {
       should.throw(() => {
         _ajv.compile(schema)
-      })
+      }, msg)
     })
   }
 
@@ -1042,7 +1067,7 @@ describe("User-defined keywords", () => {
         TEST_TYPES.forEach((dataType, index) => {
           should.throw(() => {
             _addKeyword(keywords[index], dataType)
-          })
+          }, /already defined/)
         })
       }
 
@@ -1054,7 +1079,7 @@ describe("User-defined keywords", () => {
             _addKeyword(keyword, dataType1)
             should.throw(() => {
               _addKeyword(keyword, dataType2)
-            })
+            }, /already defined/)
           })
         })
       }
@@ -1071,15 +1096,15 @@ describe("User-defined keywords", () => {
 
       should.throw(() => {
         ajv.addKeyword("3-start-with-number-not-valid")
-      })
+      }, /invalid name/)
 
       should.throw(() => {
         ajv.addKeyword("-start-with-hyphen-not-valid")
-      })
+      }, /invalid name/)
 
       should.throw(() => {
         ajv.addKeyword("spaces not valid")
-      })
+      }, /invalid name/)
     })
 
     it("should return instance of itself", () => {
@@ -1090,15 +1115,15 @@ describe("User-defined keywords", () => {
     it("should throw if unknown type is passed", () => {
       should.throw(() => {
         _addKeyword("user-defined1", "wrongtype")
-      })
+      }, /type must be JSONType/)
 
       should.throw(() => {
         _addKeyword("user-defined2", ["number", "wrongtype"])
-      })
+      }, /type must be JSONType/)
 
       should.throw(() => {
         _addKeyword("user-defined3", ["number", undefined])
-      })
+      }, /type must be JSONType/)
     })
 
     function _addKeyword(keyword, dataType) {
@@ -1143,7 +1168,7 @@ describe("User-defined keywords", () => {
         validate: (_schema, data) => data > 0,
       })
 
-      const schema = {positive: true}
+      const schema = {type: "number", positive: true}
 
       let validate = ajv.compile(schema)
       validate(0).should.equal(false)
@@ -1157,7 +1182,7 @@ describe("User-defined keywords", () => {
             return data >= 0
           },
         })
-      })
+      }, /already defined/)
 
       ajv.removeKeyword("positive")
       ajv.removeSchema(schema)
@@ -1220,7 +1245,7 @@ describe("User-defined keywords", () => {
     it("should NOT update data without option modifying", () => {
       should.throw(() => {
         testModifying(false)
-      })
+      }, /expected false to equal true/)
     })
 
     it("should update data with option modifying", () => {

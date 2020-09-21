@@ -9,6 +9,7 @@ describe("issue #210, mutual recursive $refs that are schema fragments", () => {
       $id: "foo",
       definitions: {
         bar: {
+          type: "object",
           properties: {
             baz: {
               anyOf: [{enum: [42]}, {$ref: "boo"}],
@@ -40,6 +41,7 @@ describe("issue #210, mutual recursive $refs that are schema fragments", () => {
       $id: "foo",
       definitions: {
         bar: {
+          type: "object",
           properties: {
             baz: {
               anyOf: [{enum: [42]}, {$ref: "boo#/definitions/buu"}],

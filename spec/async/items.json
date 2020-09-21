@@ -3,6 +3,7 @@
     "description": "items: async + sync",
     "schema": {
       "$async": true,
+      "type": "array",
       "items": [
         {
           "type": "integer",

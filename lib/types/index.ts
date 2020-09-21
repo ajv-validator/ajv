@@ -175,14 +175,14 @@ export type FormatCompare<T extends string | number> = (data1: T, data2: T) => b
 export type AsyncFormatValidator<T extends string | number> = (data: T) => Promise<boolean>
 
 export interface FormatDefinition<T extends string | number> {
-  type: T extends string ? "string" | undefined : "number"
+  type?: T extends string ? "string" | undefined : "number"
   validate: FormatValidator<T> | (T extends string ? string | RegExp : never)
   async?: false | undefined
   compare?: FormatCompare<T>
 }
 
 export interface AsyncFormatDefinition<T extends string | number> {
-  type: T extends string ? "string" | undefined : "number"
+  type?: T extends string ? "string" | undefined : "number"
   validate: AsyncFormatValidator<T>
   async: true
   compare?: FormatCompare<T>

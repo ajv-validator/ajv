@@ -66,7 +66,7 @@ function testStrictMode(schema, logPattern) {
         function test(ajv) {
           should.throw(() => {
             ajv.compile(schema)
-          })
+          }, logPattern)
         }
       })
     })
@@ -79,7 +79,7 @@ function testStrictMode(schema, logPattern) {
           logger: getLogger(output),
         })
         ajv.compile(schema)
-        logPattern.test(output.warning).should.equal(true)
+        output.warning.should.match(logPattern)
       })
     })
   }

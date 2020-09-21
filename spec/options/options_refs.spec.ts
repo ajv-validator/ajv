@@ -98,7 +98,7 @@ describe("referenced schema options", () => {
       const ajv = new _Ajv()
       should.throw(() => {
         ajv.compile({$ref: "missing_reference"})
-      })
+      }, /can't resolve reference missing_reference/)
     })
   })
 })

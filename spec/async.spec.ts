@@ -52,6 +52,7 @@ describe("compileAsync method", () => {
     "http://example.com/foobar.json": {
       $id: "http://example.com/foobar.json",
       $schema: "http://example.com/foobar_meta.json",
+      type: "string",
       myFooBar: "foo",
     },
     "http://example.com/foobar_meta.json": {
@@ -139,6 +140,7 @@ describe("compileAsync method", () => {
   it("should correctly compile with remote schemas that have mutual references", () => {
     const schema = {
       $id: "http://example.com/root.json",
+      type: "object",
       properties: {
         tree: {$ref: "tree.json"},
       },
@@ -279,12 +281,8 @@ describe("compileAsync method", () => {
     }
     ajv = new _Ajv()
     should.throw(() => {
-      ajv.compileAsync(schema).then(expextedSyncError, expextedSyncError)
-    })
-
-    function expextedSyncError() {
-      throw new Error("it should have thrown exception")
-    }
+      ajv.compileAsync(schema)
+    }, "options.loadSchema should be a function")
   })
 
   describe("should return error via promise", () => {

@@ -3,6 +3,7 @@
     "description": "boolean schema = true in properties",
     "schema": {
       "$async": true,
+      "type": "object",
       "properties": {
         "foo": true
       }
@@ -19,6 +20,7 @@
     "description": "boolean schema = false in properties",
     "schema": {
       "$async": true,
+      "type": "object",
       "properties": {
         "foo": false
       }
@@ -79,6 +81,7 @@
     "description": "boolean schema = true in properties with $ref",
     "schema": {
       "$async": true,
+      "type": "object",
       "properties": {
         "foo": {"$ref": "#/definitions/foo"}
       },
@@ -98,6 +101,7 @@
     "description": "boolean schema = false in properties with $ref",
     "schema": {
       "$async": true,
+      "type": "object",
       "properties": {
         "foo": {"$ref": "#/definitions/foo"}
       },

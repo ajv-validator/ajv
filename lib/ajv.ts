@@ -83,6 +83,7 @@ interface CurrentOptions {
   strict?: boolean | "log"
   strictTypes?: boolean | "log"
   allowMatchingProperties?: boolean // disables a strict mode restriction
+  allowUnionTypes?: boolean
   validateFormats?: boolean
   // validation and reporting options:
   $data?: boolean
@@ -455,7 +456,7 @@ export default class Ajv {
   // If no parameter is passed all schemas but meta-schemas are removed.
   // If RegExp is passed all schemas with key/id matching pattern but meta-schemas are removed.
   // Even if schema is referenced by other schemas it still can be removed as other schemas have local references.
-  removeSchema(schemaKeyRef: AnySchema | string | RegExp): Ajv {
+  removeSchema(schemaKeyRef?: AnySchema | string | RegExp): Ajv {
     if (schemaKeyRef instanceof RegExp) {
       this._removeAllSchemas(this.schemas, schemaKeyRef)
       this._removeAllSchemas(this.refs, schemaKeyRef)
@@ -569,7 +570,7 @@ export default class Ajv {
     if (!errors || errors.length === 0) return "No errors"
     return errors
       .map((e) => `${dataVar}${e.dataPath} ${e.message}`)
-      .reduce((text, msg) => text + msg + separator)
+      .reduce((text, msg) => text + separator + msg)
   }
 
   $dataMetaSchema(metaSchema: AnySchemaObject, keywordsJsonPointers: string[]): AnySchemaObject {

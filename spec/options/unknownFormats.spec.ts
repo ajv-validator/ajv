@@ -11,8 +11,8 @@ describe("specifying allowed unknown formats with `formats` option", () => {
 
       function test(ajv) {
         should.throw(() => {
-          ajv.compile({format: "unknown"})
-        })
+          ajv.compile({type: "string", format: "unknown"})
+        }, /unknown format/)
       }
     })
 
@@ -71,20 +71,20 @@ describe("specifying allowed unknown formats with `formats` option", () => {
 
   describe("= [String]", () => {
     it("should pass schema compilation and be valid if allowed unknown format is used", () => {
-      test(new _Ajv({formats: {allowed: true}, strictTypes: false}))
+      test(new _Ajv({formats: {allowed: true}}))
 
       function test(ajv) {
-        const validate = ajv.compile({format: "allowed"})
+        const validate = ajv.compile({type: "string", format: "allowed"})
         validate("anything").should.equal(true)
 
         should.throw(() => {
-          ajv.compile({format: "unknown"})
-        })
+          ajv.compile({type: "string", format: "unknown"})
+        }, /unknown format/)
       }
     })
 
     it("should be valid if allowed unknown format is used via $data", () => {
-      test(new _Ajv({$data: true, formats: {allowed: true}}))
+      test(new _Ajv({$data: true, formats: {allowed: true}, allowUnionTypes: true}))
 
       function test(ajv) {
         ajv.addFormat("date", DATE_FORMAT)

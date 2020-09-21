@@ -27,12 +27,11 @@ describe("strict option with keywords (replaced strictKeywords)", () => {
 
       function test(ajv) {
         const schema = {
+          type: "object",
           properties: {},
           unknownKeyword: 1,
         }
-        should.throw(() => {
-          ajv.compile(schema)
-        })
+        should.throw(() => ajv.compile(schema), /unknown keyword/)
       }
     })
   })
@@ -61,15 +60,9 @@ describe("strict option with keywords (replaced strictKeywords)", () => {
 
       function test(ajv) {
         const schema = {
-          anyOf: [
-            {
-              unknownKeyword: 1,
-            },
-          ],
+          anyOf: [{unknownKeyword: 1}],
         }
-        should.throw(() => {
-          ajv.compile(schema)
-        })
+        should.throw(() => ajv.compile(schema), /unknown keyword/)
       }
     })
   })

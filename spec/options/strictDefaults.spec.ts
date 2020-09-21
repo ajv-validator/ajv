@@ -54,11 +54,10 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
         function test(ajv) {
           const schema = {
             default: 5,
+            type: "object",
             properties: {},
           }
-          should.throw(() => {
-            ajv.compile(schema)
-          })
+          should.throw(() => ajv.compile(schema), /default is ignored in the schema root/)
         }
       })
 
@@ -71,6 +70,7 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
             oneOf: [
               {enum: ["foo", "bar"]},
               {
+                type: "object",
                 properties: {
                   foo: {
                     default: true,
@@ -81,7 +81,7 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
           }
           should.throw(() => {
             ajv.compile(schema)
-          })
+          }, /default is ignored/)
         }
       })
     })

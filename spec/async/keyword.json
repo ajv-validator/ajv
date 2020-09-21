@@ -3,6 +3,7 @@
     "description": "async keywords (validated)",
     "schema": {
       "$async": true,
+      "type": "object",
       "properties": {
         "userId": {
           "type": "integer",
@@ -51,6 +52,7 @@
     "description": "async user-defined keywords (validated with errors)",
     "schema": {
       "$async": true,
+      "type": "object",
       "properties": {
         "userId": {
           "type": "integer",
@@ -99,6 +101,7 @@
     "description": "async user-defined keywords (compiled)",
     "schema": {
       "$async": true,
+      "type": "object",
       "properties": {
         "userId": {
           "type": "integer",
