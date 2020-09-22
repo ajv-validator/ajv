@@ -1,23 +1,50 @@
-import type {
-  AnySchema,
-  AnySchemaObject,
-  AnyValidateFunction,
-  AsyncValidateFunction,
-  SchemaCxt,
-} from "../types"
+import type {AnySchema, AnySchemaObject, AnyValidateFunction, AsyncValidateFunction} from "../types"
 import type Ajv from "../ajv"
-import {CodeGen, _, nil, str, Name} from "./codegen"
+import type {InstanceOptions} from "../ajv"
+import {CodeGen, _, nil, Name, Code} from "./codegen"
 import {ValidationError} from "./error_classes"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
-import {toHash, schemaHasRulesButRef, unescapeFragment} from "./util"
+import {schemaHasRulesButRef, unescapeFragment} from "./util"
 import {validateFunctionCode} from "./validate"
 import URI = require("uri-js")
+import {JSONType} from "./rules"
 
 export interface SchemaRefs {
   [ref: string]: SchemaEnv | AnySchema | undefined
 }
 
+export interface SchemaCxt {
+  gen: CodeGen
+  allErrors?: boolean
+  data: Name
+  parentData: Name
+  parentDataProperty: Code | number
+  dataNames: Name[]
+  dataPathArr: (Code | number)[]
+  dataLevel: number
+  dataTypes: JSONType[]
+  topSchemaRef: Code
+  validateName: Name
+  ValidationError?: Name
+  schema: AnySchema
+  schemaEnv: SchemaEnv
+  strictSchema?: boolean
+  rootId: string // TODO ?
+  baseId: string
+  schemaPath: Code
+  errSchemaPath: string // this is actual string, should not be changed to Code
+  errorPath: Code
+  propertyName?: Name
+  compositeRule?: boolean
+  createErrors?: boolean
+  opts: InstanceOptions
+  self: Ajv
+}
+
+export interface SchemaObjCxt extends SchemaCxt {
+  schema: AnySchemaObject
+}
 interface SchemaEnvArgs {
   schema: AnySchema
   root?: SchemaEnv
@@ -59,7 +86,8 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
   const _sch = getCompilingSchema.call(this, sch)
   if (_sch) return _sch
   const rootId = getFullPath(sch.root.baseId) // TODO if getFullPath removed 1 tests fails
-  const gen = new CodeGen(this.scope, {...this.opts.codegen, forInOwn: this.opts.ownProperties})
+  const {es5, lines} = this.opts.code
+  const gen = new CodeGen(this.scope, {es5, lines, forInOwn: this.opts.ownProperties})
   let _ValidationError
   if (sch.$async) {
     _ValidationError = gen.scopeValue("Error", {
@@ -80,16 +108,18 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     dataNames: [N.data],
     dataPathArr: [nil], // TODO can its lenght be used as dataLevel if nil is removed?
     dataLevel: 0,
+    dataTypes: [],
     topSchemaRef: gen.scopeValue("schema", {ref: sch.schema}),
     validateName,
     ValidationError: _ValidationError,
     schema: sch.schema,
     schemaEnv: sch,
+    strictSchema: true,
     rootId,
     baseId: sch.baseId || rootId,
     schemaPath: nil,
     errSchemaPath: "#",
-    errorPath: str``,
+    errorPath: _`""`,
     opts: this.opts,
     self: this,
   }
@@ -99,7 +129,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     this._compilations.add(sch)
     validateFunctionCode(schemaCxt)
     sourceCode = `${gen.scopeRefs(N.scope)}${gen}`
-    if (this.opts.processCode) sourceCode = this.opts.processCode(sourceCode, sch)
+    if (this.opts.code.process) sourceCode = this.opts.code.process(sourceCode, sch)
     // console.log("\n\n\n *** \n", sourceCode)
     const makeValidate = new Function(`${N.self}`, `${N.scope}`, sourceCode)
     const validate: AnyValidateFunction = makeValidate(this, this.scope.get())
@@ -109,7 +139,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     validate.schema = sch.schema
     validate.schemaEnv = sch
     if (sch.$async) (validate as AsyncValidateFunction).$async = true
-    if (this.opts.sourceCode === true) {
+    if (this.opts.code.source === true) {
       validate.source = {
         code: sourceCode,
         scope: this.scope,
@@ -121,6 +151,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     delete sch.validate
     delete sch.validateName
     if (sourceCode) this.logger.error("Error compiling schema, function code:", sourceCode)
+    // console.log("\n\n\n *** \n", sourceCode)
     throw e
   } finally {
     this._compilations.delete(sch)
@@ -205,7 +236,7 @@ export function resolveSchema(
   return getJsonPointer.call(this, p, schOrRef)
 }
 
-const PREVENT_SCOPE_CHANGE = toHash([
+const PREVENT_SCOPE_CHANGE = new Set([
   "properties",
   "patternProperties",
   "enum",
@@ -224,7 +255,7 @@ function getJsonPointer(
     schema = schema[unescapeFragment(part)]
     if (schema === undefined) return
     // TODO PREVENT_SCOPE_CHANGE could be defined in keyword def?
-    if (!PREVENT_SCOPE_CHANGE[part] && typeof schema == "object" && schema.$id) {
+    if (!PREVENT_SCOPE_CHANGE.has(part) && typeof schema == "object" && schema.$id) {
       baseId = resolveUrl(baseId, schema.$id)
     }
   }

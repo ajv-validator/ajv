@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-const should = require("../chai").should()
+import chai from "../chai"
+const should = chai.should()
 
 describe("nullable keyword", () => {
   let ajv
@@ -51,7 +52,15 @@ describe("nullable keyword", () => {
         type: ["number", "null"],
         nullable: false,
       })
-    })
+    }, "type: null contradicts nullable: false")
+  })
+
+  it("should throw if nullable is used without type", () => {
+    should.throw(() => {
+      ajv.compile({
+        nullable: true,
+      })
+    }, '"nullable" cannot be used without "type"')
   })
 
   function testNullable(schema) {

@@ -19,8 +19,9 @@ const def: CodeKeywordDefinition = {
   error,
   code(cxt: KeywordCxt) {
     const {gen, schema, schemaCode, data, $data, it} = cxt
+    const {opts} = it
     if (!$data && schema.length === 0) return
-    const useLoop = schema.length >= it.opts.loopRequired
+    const useLoop = schema.length >= opts.loopRequired
     if (it.allErrors) allErrorsMode()
     else exitOnErrorMode()
 
@@ -50,7 +51,7 @@ const def: CodeKeywordDefinition = {
     function loopAllRequired(): void {
       gen.forOf("prop", schemaCode, (prop) => {
         cxt.setParams({missingProperty: prop})
-        gen.if(noPropertyInData(data, prop, it.opts.ownProperties), () => cxt.error())
+        gen.if(noPropertyInData(data, prop, opts.ownProperties), () => cxt.error())
       })
     }
 
@@ -60,7 +61,7 @@ const def: CodeKeywordDefinition = {
         missing,
         schemaCode,
         () => {
-          gen.assign(valid, propertyInData(data, missing, it.opts.ownProperties))
+          gen.assign(valid, propertyInData(data, missing, opts.ownProperties))
           gen.ifNot(valid, () => {
             cxt.error()
             gen.break()

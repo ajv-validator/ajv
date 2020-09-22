@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-const should = require("../chai").should()
+import chai from "../chai"
+const should = chai.should()
 
 describe("strict option with defaults (replaced strictDefaults)", () => {
   describe("useDefaults = true", () => {
@@ -53,11 +54,10 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
         function test(ajv) {
           const schema = {
             default: 5,
+            type: "object",
             properties: {},
           }
-          should.throw(() => {
-            ajv.compile(schema)
-          })
+          should.throw(() => ajv.compile(schema), /default is ignored in the schema root/)
         }
       })
 
@@ -70,6 +70,7 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
             oneOf: [
               {enum: ["foo", "bar"]},
               {
+                type: "object",
                 properties: {
                   foo: {
                     default: true,
@@ -80,7 +81,7 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
           }
           should.throw(() => {
             ajv.compile(schema)
-          })
+          }, /default is ignored/)
         }
       })
     })
@@ -91,6 +92,7 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
         const ajv = new _Ajv({
           useDefaults: true,
           strict: "log",
+          strictTypes: false,
           logger: getLogger(output),
         })
         const schema = {
@@ -98,7 +100,7 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
           properties: {},
         }
         ajv.compile(schema)
-        should.equal(output.warning, "default is ignored in the schema root")
+        output.warning.should.match(/default is ignored in the schema root/)
       })
 
       it('should log a warning given an ignored default in oneOf when strict is "log"', () => {
@@ -112,6 +114,7 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
           oneOf: [
             {enum: ["foo", "bar"]},
             {
+              type: "object",
               properties: {
                 foo: {
                   default: true,
@@ -121,7 +124,7 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
           ],
         }
         ajv.compile(schema)
-        should.equal(output.warning, "default is ignored for: data.foo")
+        output.warning.should.match(/default is ignored for: data.foo/)
       })
     })
   })
@@ -135,6 +138,7 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
 
       function test(ajv) {
         const schema = {
+          type: "object",
           default: 5,
           properties: {},
         }
@@ -155,6 +159,7 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
           oneOf: [
             {enum: ["foo", "bar"]},
             {
+              type: "object",
               properties: {
                 foo: {
                   default: true,

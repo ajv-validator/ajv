@@ -1,16 +1,20 @@
-import type {AnySchema, SchemaObjCxt} from "../types"
+import type {AnySchema} from "../types"
+import type {SchemaObjCxt} from "./index"
 import {subschemaCode} from "./validate"
 import {escapeFragment, escapeJsonPointer} from "./util"
 import {_, str, Code, Name, getProperty} from "./codegen"
+import {JSONType} from "./rules"
 
-export interface SubschemaContext {
-  // TODO use Optional?
+interface SubschemaContext {
+  // TODO use Optional? align with SchemCxt property types
   schema: AnySchema
+  strictSchema?: boolean
   schemaPath: Code
   errSchemaPath: string
   topSchemaRef?: Code
   errorPath?: Code
   dataLevel?: number
+  dataTypes?: JSONType[]
   data?: Name
   parentData?: Name
   parentDataProperty?: Code | number
@@ -27,25 +31,25 @@ export enum Type {
   Str,
 }
 
-export type SubschemaApplication = Partial<SubschemaApplicationParams>
-
-interface SubschemaApplicationParams {
+export type SubschemaArgs = Partial<{
   keyword: string
   schemaProp: string | number
   schema: AnySchema
+  strictSchema: boolean
   schemaPath: Code
   errSchemaPath: string
   topSchemaRef: Code
   data: Name | Code
   dataProp: Code | string | number
+  dataTypes: JSONType[]
   propertyName: Name
   dataPropType: Type
   compositeRule: true
   createErrors: boolean
   allErrors: boolean
-}
+}>
 
-export function applySubschema(it: SchemaObjCxt, appl: SubschemaApplication, valid: Name): void {
+export function applySubschema(it: SchemaObjCxt, appl: SubschemaArgs, valid: Name): void {
   const subschema = getSubschema(it, appl)
   extendSubschemaData(subschema, it, appl)
   extendSubschemaMode(subschema, appl)
@@ -55,7 +59,15 @@ export function applySubschema(it: SchemaObjCxt, appl: SubschemaApplication, val
 
 function getSubschema(
   it: SchemaObjCxt,
-  {keyword, schemaProp, schema, schemaPath, errSchemaPath, topSchemaRef}: SubschemaApplication
+  {
+    keyword,
+    schemaProp,
+    schema,
+    strictSchema,
+    schemaPath,
+    errSchemaPath,
+    topSchemaRef,
+  }: SubschemaArgs
 ): SubschemaContext {
   if (keyword !== undefined && schema !== undefined) {
     throw new Error('both "keyword" and "schema" passed, only one allowed')
@@ -82,6 +94,7 @@ function getSubschema(
     }
     return {
       schema,
+      strictSchema,
       schemaPath,
       topSchemaRef,
       errSchemaPath,
@@ -94,7 +107,7 @@ function getSubschema(
 function extendSubschemaData(
   subschema: SubschemaContext,
   it: SchemaObjCxt,
-  {dataProp, dataPropType: dpType, data, propertyName}: SubschemaApplication
+  {dataProp, dataPropType: dpType, data, dataTypes, propertyName}: SubschemaArgs
 ): void {
   if (data !== undefined && dataProp !== undefined) {
     throw new Error('both "data" and "dataProp" passed, only one allowed')
@@ -118,9 +131,12 @@ function extendSubschemaData(
     // TODO something is possibly wrong here with not changing parentDataProperty and not appending dataPathArr
   }
 
+  if (dataTypes) subschema.dataTypes = dataTypes
+
   function dataContextProps(_nextData: Name): void {
     subschema.data = _nextData
     subschema.dataLevel = it.dataLevel + 1
+    subschema.dataTypes = []
     subschema.parentData = it.data
     subschema.dataNames = [...it.dataNames, _nextData]
   }
@@ -128,11 +144,12 @@ function extendSubschemaData(
 
 function extendSubschemaMode(
   subschema: SubschemaContext,
-  {compositeRule, createErrors, allErrors}: SubschemaApplication
+  {compositeRule, createErrors, allErrors, strictSchema}: SubschemaArgs
 ): void {
   if (compositeRule !== undefined) subschema.compositeRule = compositeRule
   if (createErrors !== undefined) subschema.createErrors = createErrors
   if (allErrors !== undefined) subschema.allErrors = allErrors
+  subschema.strictSchema = strictSchema // not inherited
 }
 
 function getErrorPath(

@@ -7,7 +7,7 @@ describe("error object parameters type", () => {
   const ajv = new _Ajv({allErrors: true})
 
   it("should be determined by the keyword", () => {
-    const validate = ajv.compile({minimum: 0, multipleOf: 2})
+    const validate = ajv.compile({type: "number", minimum: 0, multipleOf: 2})
     const valid = validate(-1)
     valid.should.equal(false)
     const errs = validate.errors

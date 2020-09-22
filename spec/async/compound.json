@@ -3,12 +3,12 @@
     "description": "allOf: async + sync",
     "schema": {
       "$async": true,
+      "type": "integer",
       "allOf": [
         {
           "idExists": {"table": "users"}
         },
         {
-          "type": "integer",
           "minimum": 3
         }
       ]
@@ -40,12 +40,12 @@
     "description": "anyOf: async + sync",
     "schema": {
       "$async": true,
+      "type": "integer",
       "anyOf": [
         {
           "idExists": {"table": "users"}
         },
         {
-          "type": "integer",
           "minimum": 3
         }
       ]
@@ -77,12 +77,12 @@
     "description": "oneOf: async + sync",
     "schema": {
       "$async": true,
+      "type": "integer",
       "oneOf": [
         {
           "idExists": {"table": "users"}
         },
         {
-          "type": "integer",
           "minimum": 3
         }
       ]
@@ -114,6 +114,7 @@
     "description": "not with async",
     "schema": {
       "$async": true,
+      "type": "integer",
       "not": {
         "idExists": {"table": "users"}
       }

@@ -5,6 +5,7 @@ import {afterError, afterEach} from "./after_test"
 
 const instances = getAjvInstances(options, {
   schemas: [require("../dist/refs/json-schema-secure.json")],
+  strictTypes: false,
 })
 
 jsonSchemaTest(instances, {

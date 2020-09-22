@@ -8,12 +8,14 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
     $defs: {
       resource: {
         $id: "#resource",
+        type: "object",
         properties: {
           id: {type: "string"},
         },
       },
       resourceIdentifier: {
         $id: "#resource_identifier",
+        type: "object",
         properties: {
           id: {type: "string"},
           type: {type: "string"},
@@ -25,6 +27,7 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
   const domainSchema = {
     $schema: "http://json-schema.org/draft-07/schema#",
     $id: "schema://domain.schema#",
+    type: "object",
     properties: {
       data: {
         oneOf: [
@@ -41,9 +44,11 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
     const librarySchema = {
       $schema: "http://json-schema.org/draft-07/schema#",
       $id: "schema://library.schema#",
+      type: "object",
       properties: {
         name: {type: "string"},
         links: {
+          type: "object",
           properties: {
             catalogItems: {
               type: "array",
@@ -59,6 +64,7 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
           $id: "#resource_identifier",
           allOf: [
             {
+              type: "object",
               properties: {
                 type: {
                   type: "string",
@@ -75,9 +81,11 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
     const catalogItemSchema = {
       $schema: "http://json-schema.org/draft-07/schema#",
       $id: "schema://catalog_item.schema#",
+      type: "object",
       properties: {
         name: {type: "string"},
         links: {
+          type: "object",
           properties: {
             library: {$ref: "schema://library.schema#resource_identifier"},
           },
@@ -88,6 +96,7 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
           $id: "#resource_identifier",
           allOf: [
             {
+              type: "object",
               properties: {
                 type: {
                   type: "string",
@@ -106,6 +115,7 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
       $id: "schema://catalog_item_resource_identifier.schema#",
       allOf: [
         {
+          type: "object",
           properties: {
             type: {
               type: "string",
@@ -134,9 +144,11 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
     const librarySchema = {
       $schema: "http://json-schema.org/draft-07/schema#",
       $id: "schema://library.schema#",
+      type: "object",
       properties: {
         name: {type: "string"},
         links: {
+          type: "object",
           properties: {
             catalogItems: {
               type: "array",
@@ -150,6 +162,7 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
           $id: "#resource_identifier",
           allOf: [
             {
+              type: "object",
               properties: {
                 type: {
                   type: "string",
@@ -166,9 +179,11 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
     const catalogItemSchema = {
       $schema: "http://json-schema.org/draft-07/schema#",
       $id: "schema://catalog_item.schema#",
+      type: "object",
       properties: {
         name: {type: "string"},
         links: {
+          type: "object",
           properties: {
             library: {$ref: "schema://library.schema#resource_identifier"},
           },
@@ -179,6 +194,7 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
           $id: "#resource_identifier",
           allOf: [
             {
+              type: "object",
               properties: {
                 type: {
                   type: "string",

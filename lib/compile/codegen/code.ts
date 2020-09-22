@@ -14,6 +14,10 @@ export class _Code {
     return len >= 2 && this._str[0] === '"' && this._str[len - 1] === '"'
   }
 
+  emptyStr(): boolean {
+    return this._str === "" || this._str === '""'
+  }
+
   add(c: _Code): void {
     this._str += c._str
   }
@@ -28,6 +32,10 @@ export class Name extends _Code {
   }
 
   isQuoted(): boolean {
+    return false
+  }
+
+  emptyStr(): boolean {
     return false
   }
 
@@ -66,6 +74,10 @@ export function str(strs: TemplateStringsArray, ...args: (TemplateArg | string[]
   )
 }
 
+export function strConcat(c1: Code, c2: Code): Code {
+  return c2.emptyStr() ? c1 : c1.emptyStr() ? c2 : str`${c1}${c2}`
+}
+
 function interpolate(x: TemplateArg): TemplateArg {
   return x instanceof _Code || typeof x == "number" || typeof x == "boolean" || x === null
     ? x
@@ -89,4 +101,8 @@ function safeStringify(x: unknown): string {
 
 export function getProperty(key: Code | string | number): Code {
   return typeof key == "string" && IDENTIFIER.test(key) ? new _Code(`.${key}`) : _`[${key}]`
+}
+
+export function keyValue(key: Name, value: SafeExpr, es5?: boolean): Code {
+  return key === value && !es5 ? key : _`${key}: ${value}`
 }

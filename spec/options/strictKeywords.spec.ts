@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-const should = require("../chai").should()
+import chai from "../chai"
+const should = chai.should()
 
 describe("strict option with keywords (replaced strictKeywords)", () => {
   describe("strict = false", () => {
@@ -26,12 +27,11 @@ describe("strict option with keywords (replaced strictKeywords)", () => {
 
       function test(ajv) {
         const schema = {
+          type: "object",
           properties: {},
           unknownKeyword: 1,
         }
-        should.throw(() => {
-          ajv.compile(schema)
-        })
+        should.throw(() => ajv.compile(schema), /unknown keyword/)
       }
     })
   })
@@ -44,11 +44,12 @@ describe("strict option with keywords (replaced strictKeywords)", () => {
         logger: getLogger(output),
       })
       const schema = {
+        type: "object",
         properties: {},
         unknownKeyword: 1,
       }
       ajv.compile(schema)
-      should.equal(output.warning, 'unknown keyword: "unknownKeyword"')
+      output.warning.should.match(/unknown keyword: "unknownKeyword"/)
     })
   })
 
@@ -59,15 +60,9 @@ describe("strict option with keywords (replaced strictKeywords)", () => {
 
       function test(ajv) {
         const schema = {
-          anyOf: [
-            {
-              unknownKeyword: 1,
-            },
-          ],
+          anyOf: [{unknownKeyword: 1}],
         }
-        should.throw(() => {
-          ajv.compile(schema)
-        })
+        should.throw(() => ajv.compile(schema), /unknown keyword/)
       }
     })
   })

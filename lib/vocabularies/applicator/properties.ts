@@ -40,6 +40,7 @@ const def: CodeKeywordDefinition = {
           keyword: "properties",
           schemaProp: prop,
           dataProp: prop,
+          strictSchema: it.strictSchema,
         },
         valid
       )

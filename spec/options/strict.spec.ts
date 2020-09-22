@@ -1,5 +1,7 @@
+import {JSONSchemaType} from "../../dist/types/json-schema"
 import _Ajv from "../ajv"
-const should = require("../chai").should()
+import chai from "../chai"
+const should = chai.should()
 
 describe("strict mode", () => {
   describe(
@@ -17,6 +19,7 @@ describe("strict mode", () => {
     '"properties" matching "patternProperties"',
     testStrictMode(
       {
+        type: "object",
         properties: {foo: false},
         patternProperties: {foo: false},
       },
@@ -32,11 +35,207 @@ describe("strict mode", () => {
         logger: getLogger(output),
       })
       const schema = {
+        type: "object",
         properties: {foo: false},
         patternProperties: {foo: false},
       }
       ajv.compile(schema)
       should.not.exist(output.warning)
+    })
+  })
+
+  describe("strictTypes option", () => {
+    const ajv = new _Ajv({strictTypes: true})
+    const ajvUT = new _Ajv({strictTypes: true, allowUnionTypes: true})
+
+    describe("multiple/union types", () => {
+      it("should prohibit multiple types", () => {
+        should.throw(() => {
+          ajv.compile({type: ["number", "string"]})
+        }, /use allowUnionTypes to allow union type/)
+      })
+
+      it("should allow multiple types with option allowUnionTypes", () => {
+        should.not.throw(() => {
+          ajvUT.compile({type: ["number", "string"]})
+        })
+      })
+
+      it("should allow nullable", () => {
+        should.not.throw(() => {
+          ajv.compile({type: ["number", "null"]})
+          ajv.compile({type: ["number"], nullable: true})
+        })
+      })
+    })
+
+    describe("contradictory types", () => {
+      it("should prohibit contradictory types", () => {
+        should.throw(() => {
+          ajv.compile({
+            type: "object",
+            anyOf: [{type: "object"}, {type: "array"}],
+          })
+        }, /type "array" not allowed by context "object"/)
+      })
+
+      it("should allow narrowing types", () => {
+        should.not.throw(() => {
+          ajvUT.compile({
+            type: ["object", "array"],
+            anyOf: [{type: "object"}, {type: "array"}],
+          })
+        })
+      })
+
+      it('should allow "integer" in "number" context', () => {
+        should.not.throw(() => {
+          ajv.compile({
+            type: "number",
+            anyOf: [{type: "integer"}],
+          })
+        })
+      })
+
+      it('should prohibit "number" in "integer" context', () => {
+        should.throw(() => {
+          ajv.compile({
+            type: "integer",
+            anyOf: [{type: "number"}],
+          })
+        }, /type "number" not allowed by context "integer"/)
+      })
+    })
+
+    describe("applicable types", () => {
+      it("should prohibit keywords without applicable types", () => {
+        should.throw(() => {
+          ajv.compile({
+            properties: {
+              foo: {type: "number", minimum: 0},
+            },
+          })
+        }, /missing type "object" for keyword "properties"/)
+
+        should.throw(() => {
+          ajv.compile({
+            type: "object",
+            properties: {
+              foo: {minimum: 0},
+            },
+          })
+        }, /missing type "number" for keyword "minimum"/)
+      })
+
+      it("should allow keywords with applicable types", () => {
+        should.not.throw(() => {
+          ajv.compile({
+            type: "object",
+            properties: {
+              foo: {type: "number", minimum: 0},
+            },
+          })
+        })
+      })
+
+      it("should allow keywords with applicable type in parent schema", () => {
+        should.not.throw(() => {
+          ajv.compile({
+            type: "object",
+            anyOf: [
+              {
+                properties: {
+                  foo: {type: "number"},
+                },
+              },
+              {
+                properties: {
+                  bar: {type: "string"},
+                },
+              },
+            ],
+          })
+        })
+      })
+    })
+
+    describe("propertyNames", () => {
+      it('should set default data type "string"', () => {
+        ajv.compile({
+          type: "object",
+          propertyNames: {maxLength: 5},
+        })
+
+        ajv.compile({
+          type: "object",
+          propertyNames: {type: "string", maxLength: 5},
+        })
+
+        should.throw(() => {
+          ajv.compile({
+            type: "object",
+            propertyNames: {type: "number"},
+          })
+        }, /type "number" not allowed by context/)
+      })
+    })
+  })
+
+  describe("option strictTuples", () => {
+    const ajv = new _Ajv({strictTuples: true})
+    type MyTuple = [string, number]
+
+    it("should prohibit unconstrained tuples", () => {
+      const schema1: JSONSchemaType<MyTuple> = {
+        type: "array",
+        items: [{type: "string"}, {type: "number"}],
+        minItems: 2,
+        additionalItems: false,
+      }
+      should.not.throw(() => {
+        ajv.compile(schema1)
+      })
+
+      const schema2: JSONSchemaType<MyTuple> = {
+        type: "array",
+        items: [{type: "string"}, {type: "number"}],
+        minItems: 2,
+        maxItems: 2,
+      }
+      should.not.throw(() => {
+        ajv.compile(schema2)
+      })
+
+      //@ts-expect-error
+      const badSchema1: JSONSchemaType<MyTuple> = {
+        type: "array",
+        items: [{type: "string"}, {type: "number"}],
+        additionalItems: false,
+      }
+      should.throw(() => {
+        ajv.compile(badSchema1)
+      }, / minItems or maxItems\/additionalItems are not specified or different/)
+
+      //@ts-expect-error
+      const badSchema2: JSONSchemaType<MyTuple> = {
+        type: "array",
+        items: [{type: "string"}, {type: "number"}],
+        minItems: 2,
+      }
+      should.throw(() => {
+        ajv.compile(badSchema2)
+      }, / minItems or maxItems\/additionalItems are not specified or different/)
+
+      //@ts-expect-error
+      const badSchema3: JSONSchemaType<MyTuple> = {
+        type: "array",
+        items: [{type: "string"}, {type: "number"}],
+        minItems: 2,
+        maxItems: 3,
+      }
+      should.throw(() => {
+        ajv.compile(badSchema3)
+      }, / minItems or maxItems\/additionalItems are not specified or different/)
     })
   })
 })
@@ -63,7 +262,7 @@ function testStrictMode(schema, logPattern) {
         function test(ajv) {
           should.throw(() => {
             ajv.compile(schema)
-          })
+          }, logPattern)
         }
       })
     })
@@ -76,7 +275,7 @@ function testStrictMode(schema, logPattern) {
           logger: getLogger(output),
         })
         ajv.compile(schema)
-        logPattern.test(output.warning).should.equal(true)
+        output.warning.should.match(logPattern)
       })
     })
   }

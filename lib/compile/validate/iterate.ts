@@ -1,7 +1,8 @@
-import type {SchemaObjCxt} from "../../types"
-import type {Rule, RuleGroup} from "../rules"
+import type {SchemaObjCxt} from ".."
+import type {JSONType, Rule, RuleGroup} from "../rules"
 import {shouldUseGroup, shouldUseRule} from "./applicability"
 import {checkDataType, schemaHasRulesButRef} from "../util"
+import {checkStrictMode} from "../../vocabularies/util"
 import {keywordCode} from "./keyword"
 import {assignDefaults} from "./defaults"
 import {reportTypeError} from "./dataType"
@@ -10,7 +11,7 @@ import N from "../names"
 
 export function schemaKeywords(
   it: SchemaObjCxt,
-  types: string[],
+  types: JSONType[],
   typeErrors: boolean,
   errsCount?: Name
 ): void {
@@ -20,6 +21,7 @@ export function schemaKeywords(
     gen.block(() => keywordCode(it, "$ref", (RULES.all.$ref as Rule).definition)) // TODO typecast
     return
   }
+  checkStrictTypes(it, types)
   gen.block(() => {
     for (const group of RULES.rules) {
       if (shouldUseGroup(schema, group)) {
@@ -59,4 +61,58 @@ function iterateKeywords(it: SchemaObjCxt, group: RuleGroup): void {
       }
     }
   })
+}
+
+function checkStrictTypes(it: SchemaObjCxt, types: JSONType[]): void {
+  if (it.schemaEnv.meta || !it.opts.strictTypes) return
+  checkContextTypes(it, types)
+  if (!it.opts.allowUnionTypes) checkMultipleTypes(it, types)
+  checkKeywordTypes(it, it.dataTypes)
+}
+
+function checkContextTypes(it: SchemaObjCxt, types: JSONType[]): void {
+  if (!types.length) return
+  if (!it.dataTypes.length) {
+    it.dataTypes = types
+    return
+  }
+  types.forEach((t) => {
+    if (!includesType(it.dataTypes, t)) {
+      strictTypesError(it, `type "${t}" not allowed by context "${it.dataTypes.join(",")}"`)
+    }
+  })
+  it.dataTypes = it.dataTypes.filter((t) => includesType(types, t))
+}
+
+function checkMultipleTypes(it: SchemaObjCxt, ts: JSONType[]): void {
+  if (ts.length > 1 && !(ts.length === 2 && ts.includes("null"))) {
+    strictTypesError(it, "use allowUnionTypes to allow union type keyword")
+  }
+}
+
+function checkKeywordTypes(it: SchemaObjCxt, ts: JSONType[]): void {
+  const rules = it.self.RULES.all
+  for (const keyword in rules) {
+    const rule = rules[keyword]
+    if (typeof rule == "object" && shouldUseRule(it.schema, rule)) {
+      const {type} = rule.definition
+      if (type.length && !type.some((t) => hasApplicableType(ts, t))) {
+        strictTypesError(it, `missing type "${type.join(",")}" for keyword "${keyword}"`)
+      }
+    }
+  }
+}
+
+function hasApplicableType(schTs: JSONType[], kwdT: JSONType): boolean {
+  return schTs.includes(kwdT) || (kwdT === "number" && schTs.includes("integer"))
+}
+
+function includesType(ts: JSONType[], t: JSONType): boolean {
+  return ts.includes(t) || (t === "integer" && ts.includes("number"))
+}
+
+function strictTypesError(it: SchemaObjCxt, msg: string): void {
+  const schemaPath = it.schemaEnv.baseId + it.errSchemaPath
+  msg += ` at "${schemaPath}" (strictTypes)`
+  checkStrictMode(it, msg, it.opts.strictTypes)
 }

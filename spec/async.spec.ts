@@ -1,7 +1,7 @@
 import _Ajv from "./ajv"
 import type {SchemaObject, AnyValidateFunction} from "../dist/types"
-
-const should = require("./chai").should()
+import chai from "./chai"
+const should = chai.should()
 
 describe("compileAsync method", () => {
   let ajv, loadCallCount
@@ -9,6 +9,7 @@ describe("compileAsync method", () => {
   const SCHEMAS = {
     "http://example.com/object.json": {
       $id: "http://example.com/object.json",
+      type: "object",
       properties: {
         a: {type: "string"},
         b: {$ref: "int2plus.json"},
@@ -26,6 +27,7 @@ describe("compileAsync method", () => {
     },
     "http://example.com/leaf.json": {
       $id: "http://example.com/leaf.json",
+      type: "object",
       properties: {
         name: {type: "string"},
         subtree: {$ref: "tree.json"},
@@ -33,6 +35,7 @@ describe("compileAsync method", () => {
     },
     "http://example.com/recursive.json": {
       $id: "http://example.com/recursive.json",
+      type: "object",
       properties: {
         b: {$ref: "parent.json"},
       },
@@ -40,6 +43,7 @@ describe("compileAsync method", () => {
     },
     "http://example.com/invalid.json": {
       $id: "http://example.com/recursive.json",
+      type: "object",
       properties: {
         invalid: {type: "number"},
       },
@@ -48,6 +52,7 @@ describe("compileAsync method", () => {
     "http://example.com/foobar.json": {
       $id: "http://example.com/foobar.json",
       $schema: "http://example.com/foobar_meta.json",
+      type: "string",
       myFooBar: "foo",
     },
     "http://example.com/foobar_meta.json": {
@@ -87,6 +92,7 @@ describe("compileAsync method", () => {
   it("should compile schemas loading missing schemas with options.loadSchema function", () => {
     const schema = {
       $id: "http://example.com/parent.json",
+      type: "object",
       properties: {
         a: {$ref: "object.json"},
       },
@@ -102,6 +108,7 @@ describe("compileAsync method", () => {
   it("should compile schemas loading missing schemas and return promise with function", () => {
     const schema = {
       $id: "http://example.com/parent.json",
+      type: "object",
       properties: {
         a: {$ref: "object.json"},
       },
@@ -117,6 +124,7 @@ describe("compileAsync method", () => {
   it("should correctly load schemas when missing reference has JSON path", () => {
     const schema = {
       $id: "http://example.com/parent.json",
+      type: "object",
       properties: {
         a: {$ref: "object.json#/properties/b"},
       },
@@ -132,6 +140,7 @@ describe("compileAsync method", () => {
   it("should correctly compile with remote schemas that have mutual references", () => {
     const schema = {
       $id: "http://example.com/root.json",
+      type: "object",
       properties: {
         tree: {$ref: "tree.json"},
       },
@@ -150,6 +159,7 @@ describe("compileAsync method", () => {
   it("should correctly compile with remote schemas that reference the compiled schema", () => {
     const schema = {
       $id: "http://example.com/parent.json",
+      type: "object",
       properties: {
         a: {$ref: "recursive.json"},
       },
@@ -167,6 +177,7 @@ describe("compileAsync method", () => {
   it('should resolve reference containing "properties" segment with the same property (issue #220)', () => {
     const schema = {
       $id: "http://example.com/parent.json",
+      type: "object",
       properties: {
         a: {
           $ref: "object.json#/properties/a",
@@ -242,6 +253,7 @@ describe("compileAsync method", () => {
   it("should queue calls so only one compileAsync executes at a time (#52)", () => {
     const schema = {
       $id: "http://example.com/parent.json",
+      type: "object",
       properties: {
         a: {$ref: "object.json"},
       },
@@ -269,12 +281,8 @@ describe("compileAsync method", () => {
     }
     ajv = new _Ajv()
     should.throw(() => {
-      ajv.compileAsync(schema).then(expextedSyncError, expextedSyncError)
-    })
-
-    function expextedSyncError() {
-      throw new Error("it should have thrown exception")
-    }
+      ajv.compileAsync(schema)
+    }, "options.loadSchema should be a function")
   })
 
   describe("should return error via promise", () => {
@@ -290,6 +298,7 @@ describe("compileAsync method", () => {
     it("if loaded schema is invalid", () => {
       const schema = {
         $id: "http://example.com/parent.json",
+        type: "object",
         properties: {
           a: {$ref: "invalid.json"},
         },
@@ -300,6 +309,7 @@ describe("compileAsync method", () => {
     it("if required schema is loaded but the reference cannot be resolved", () => {
       const schema = {
         $id: "http://example.com/parent.json",
+        type: "object",
         properties: {
           a: {$ref: "object.json#/definitions/not_found"},
         },
@@ -310,6 +320,7 @@ describe("compileAsync method", () => {
     it("if loadSchema returned error", () => {
       const schema = {
         $id: "http://example.com/parent.json",
+        type: "object",
         properties: {
           a: {$ref: "object.json"},
         },

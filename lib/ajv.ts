@@ -23,7 +23,9 @@ export interface Plugin<Opts> {
 import KeywordCxt from "./compile/context"
 export {KeywordCxt}
 export {DefinedError} from "./vocabularies/errors"
+export {JSONType} from "./compile/rules"
 export {JSONSchemaType} from "./types/json-schema"
+export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
 import type {
   Schema,
@@ -33,6 +35,7 @@ import type {
   AsyncSchema,
   Vocabulary,
   KeywordDefinition,
+  AddedKeywordDefinition,
   AnyValidateFunction,
   ValidateFunction,
   AsyncValidateFunction,
@@ -42,11 +45,11 @@ import type {
 } from "./types"
 import type {JSONSchemaType} from "./types/json-schema"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
-import {getRules, ValidationRules, Rule, RuleGroup} from "./compile/rules"
-import {checkType} from "./compile/validate/dataType"
+import {getRules, ValidationRules, Rule, RuleGroup, JSONType} from "./compile/rules"
 import {SchemaEnv, compileSchema, resolveSchema} from "./compile"
-import {Code, CodeGenOptions, ValueScope} from "./compile/codegen"
+import {Code, ValueScope} from "./compile/codegen"
 import {normalizeId, getSchemaRefs} from "./compile/resolve"
+import {getJSONTypes} from "./compile/validate/dataType"
 import coreVocabulary from "./vocabularies/core"
 import validationVocabulary from "./vocabularies/validation"
 import applicatorVocabulary from "./vocabularies/applicator"
@@ -76,17 +79,30 @@ const EXT_SCOPE_NAMES = new Set([
 export type Options = CurrentOptions & DeprecatedOptions
 
 interface CurrentOptions {
+  // strict mode options
   strict?: boolean | "log"
+  strictTypes?: boolean | "log"
+  strictTuples?: boolean | "log"
+  allowMatchingProperties?: boolean // disables a strict mode restriction
+  allowUnionTypes?: boolean
+  validateFormats?: boolean
+  // validation and reporting options:
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
+  $comment?:
+    | true
+    | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
   formats?: {[name: string]: Format}
   keywords?: Vocabulary | {[x: string]: KeywordDefinition} // map is deprecated
   schemas?: AnySchema[] | {[key: string]: AnySchema}
+  logger?: Logger | false
   loadSchema?: (uri: string) => Promise<AnySchemaObject>
+  // options to modify validated data:
   removeAdditional?: boolean | "all" | "failing"
   useDefaults?: boolean | "empty"
   coerceTypes?: boolean | "array"
+  // advanced options:
   meta?: SchemaObject | boolean
   defaultMeta?: string | AnySchemaObject
   validateSchema?: boolean | "log"
@@ -98,27 +114,23 @@ interface CurrentOptions {
   ownProperties?: boolean
   multipleOfPrecision?: boolean | number
   messages?: boolean
-  code?: CodeOptions
-  sourceCode?: boolean
-  processCode?: (code: string, schema?: SchemaEnv) => string
-  codegen?: CodeGenOptions
   cache?: CacheInterface
-  logger?: Logger | false
   serialize?: (schema: AnySchema) => unknown
-  $comment?:
-    | true
-    | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
-  allowMatchingProperties?: boolean // disables a strict mode restriction
-  validateFormats?: boolean
-}
-
-interface CodeOptions {
-  formats?: Code // code to require (or construct) map of available formats - for standalone code
+  code?: {
+    es5?: boolean
+    lines?: boolean
+    formats?: Code // code to require (or construct) map of available formats - for standalone code
+    source?: boolean
+    process?: (code: string, schema?: SchemaEnv) => string
+  }
 }
 
 interface DeprecatedOptions {
+  /** @deprecated */
   ignoreKeywordsWithRef?: boolean
+  /** @deprecated */
   jsPropertySyntax?: boolean // added instead of jsonPointers
+  /** @deprecated */
   unicode?: boolean
 }
 
@@ -129,6 +141,8 @@ interface RemovedOptions {
   jsonPointers?: boolean
   extendRefs?: true | "ignore" | "fail"
   missingRefs?: true | "ignore" | "fail"
+  processCode?: (code: string, schema?: SchemaEnv) => string
+  sourceCode?: boolean
   schemaId?: string
   strictDefaults?: boolean
   strictKeywords?: boolean
@@ -148,6 +162,8 @@ const removedOptions: OptionsInfo<RemovedOptions> = {
   jsonPointers: "Deprecated jsPropertySyntax can be used instead.",
   extendRefs: "Deprecated ignoreKeywordsWithRef can be used instead.",
   missingRefs: "Pass empty schema with $id that should be ignored to ajv.addSchema.",
+  processCode: "Use option `code: {process: (code, schemaEnv: object) => string}`",
+  sourceCode: "Use option `code: {source: true}`",
   schemaId: "JSON Schema draft-04 is not supported in Ajv v7.",
   strictDefaults: "It is default now, see option `strict`.",
   strictKeywords: "It is default now, see option `strict`.",
@@ -165,6 +181,8 @@ const deprecatedOptions: OptionsInfo<DeprecatedOptions> = {
 type RequiredInstanceOptions = {
   [K in
     | "strict"
+    | "strictTypes"
+    | "strictTuples"
     | "code"
     | "inlineRefs"
     | "loopRequired"
@@ -180,8 +198,12 @@ type RequiredInstanceOptions = {
 export type InstanceOptions = Options & RequiredInstanceOptions
 
 function requiredOptions(o: Options): RequiredInstanceOptions {
+  const strict = o.strict ?? true
+  const strictLog = strict ? "log" : false
   return {
-    strict: o.strict ?? true,
+    strict,
+    strictTypes: o.strictTypes ?? strictLog,
+    strictTuples: o.strictTuples ?? strictLog,
     code: o.code ?? {},
     loopRequired: o.loopRequired ?? Infinity,
     loopEnum: o.loopEnum ?? Infinity,
@@ -439,7 +461,7 @@ export default class Ajv {
   // If no parameter is passed all schemas but meta-schemas are removed.
   // If RegExp is passed all schemas with key/id matching pattern but meta-schemas are removed.
   // Even if schema is referenced by other schemas it still can be removed as other schemas have local references.
-  removeSchema(schemaKeyRef: AnySchema | string | RegExp): Ajv {
+  removeSchema(schemaKeyRef?: AnySchema | string | RegExp): Ajv {
     if (schemaKeyRef instanceof RegExp) {
       this._removeAllSchemas(this.schemas, schemaKeyRef)
       this._removeAllSchemas(this.refs, schemaKeyRef)
@@ -480,7 +502,6 @@ export default class Ajv {
     return this
   }
 
-  addKeyword(kwdOrDef: string | KeywordDefinition): Ajv
   addKeyword(
     kwdOrDef: string | KeywordDefinition,
     def?: KeywordDefinition // deprecated
@@ -495,20 +516,34 @@ export default class Ajv {
     } else if (typeof kwdOrDef == "object" && def === undefined) {
       def = kwdOrDef
       keyword = def.keyword
+      if (Array.isArray(keyword) && !keyword.length) {
+        throw new Error("addKeywords: keyword must be non-empty array")
+      }
     } else {
       throw new Error("invalid addKeywords parameters")
     }
 
     checkKeyword.call(this, keyword, def)
-    if (def) keywordMetaschema.call(this, def)
-
-    eachItem(keyword, (kwd) => {
-      eachItem(def?.type, (t) => addRule.call(this, kwd, t, def))
-    })
+    if (!def) {
+      eachItem(keyword, (kwd) => addRule.call(this, kwd))
+      return this
+    }
+    keywordMetaschema.call(this, def)
+    const definition: AddedKeywordDefinition = {
+      ...def,
+      type: getJSONTypes(def.type),
+      schemaType: getJSONTypes(def.schemaType),
+    }
+    eachItem(
+      keyword,
+      definition.type.length === 0
+        ? (k) => addRule.call(this, k, definition)
+        : (k) => definition.type.forEach((t) => addRule.call(this, k, definition, t))
+    )
     return this
   }
 
-  getKeyword(keyword: string): KeywordDefinition | boolean {
+  getKeyword(keyword: string): AddedKeywordDefinition | boolean {
     const rule = this.RULES.all[keyword]
     return typeof rule == "object" ? rule.definition : !!rule
   }
@@ -540,13 +575,13 @@ export default class Ajv {
     if (!errors || errors.length === 0) return "No errors"
     return errors
       .map((e) => `${dataVar}${e.dataPath} ${e.message}`)
-      .reduce((text, msg) => text + msg + separator)
+      .reduce((text, msg) => text + separator + msg)
   }
 
   $dataMetaSchema(metaSchema: AnySchemaObject, keywordsJsonPointers: string[]): AnySchemaObject {
     const rules = this.RULES.all
+    metaSchema = JSON.parse(JSON.stringify(metaSchema))
     for (const jsonPointer of keywordsJsonPointers) {
-      metaSchema = JSON.parse(JSON.stringify(metaSchema))
       const segments = jsonPointer.split("/").slice(1) // first segment is an empty string
       let keywords = metaSchema
       for (const seg of segments) keywords = keywords[seg] as AnySchemaObject
@@ -726,7 +761,6 @@ function checkKeyword(this: Ajv, keyword: string | string[], def?: KeywordDefini
     if (!KEYWORD_NAME.test(kwd)) throw new Error(`Keyword ${kwd} has invalid name`)
   })
   if (!def) return
-  if (def.type) eachItem(def.type, (t) => checkType(t, RULES))
   if (def.$data && !("code" in def || "validate" in def)) {
     throw new Error('$data keyword must have "code" or "validate" function')
   }
@@ -735,8 +769,8 @@ function checkKeyword(this: Ajv, keyword: string | string[], def?: KeywordDefini
 function addRule(
   this: Ajv,
   keyword: string,
-  dataType?: string,
-  definition?: KeywordDefinition
+  definition?: AddedKeywordDefinition,
+  dataType?: JSONType
 ): void {
   const {RULES} = this
   let ruleGroup = RULES.rules.find(({type: t}) => t === dataType)
@@ -747,7 +781,14 @@ function addRule(
   RULES.keywords[keyword] = true
   if (!definition) return
 
-  const rule: Rule = {keyword, definition}
+  const rule: Rule = {
+    keyword,
+    definition: {
+      ...definition,
+      type: getJSONTypes(definition.type),
+      schemaType: getJSONTypes(definition.schemaType),
+    },
+  }
   if (definition.before) addBeforeRule.call(this, ruleGroup, rule, definition.before)
   else ruleGroup.rules.push(rule)
   RULES.all[keyword] = rule

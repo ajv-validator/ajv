@@ -1,9 +1,10 @@
-import type {AnySchema, SchemaCxt, SchemaObjCxt} from "../../types"
+import type {AnySchema} from "../../types"
+import type {SchemaCxt, SchemaObjCxt} from ".."
 import type {InstanceOptions} from "../../ajv"
 import {boolOrEmptySchema, topBoolOrEmptySchema} from "./boolSchema"
 import {coerceAndCheckDataType, getSchemaTypes} from "./dataType"
 import {schemaKeywords} from "./iterate"
-import {CodeGen, _, nil, str, Block, Code, Name} from "../codegen"
+import {_, nil, str, Block, Code, Name, CodeGen} from "../codegen"
 import N from "../names"
 import {resolveUrl} from "../resolve"
 import {schemaCxtHasRules, schemaHasRulesButRef} from "../util"
@@ -26,21 +27,46 @@ function validateFunction(
   body: Block
 ): void {
   gen.return(() =>
-    gen.func(
-      validateName,
-      _`${N.data}, ${N.dataPath}, ${N.parentData}, ${N.parentDataProperty}, ${N.rootData}`,
-      schemaEnv.$async,
-      () => gen.code(_`"use strict"; ${funcSourceUrl(schema, opts)}`).code(body)
-    )
+    opts.code.es5
+      ? gen.func(validateName, _`${N.data}, ${N.dataCxt}`, schemaEnv.$async, () => {
+          gen.code(_`"use strict"; ${funcSourceUrl(schema, opts)}`)
+          destructureDataCxtES5(gen)
+          gen.code(body)
+        })
+      : gen.func(
+          validateName,
+          _`${N.data}, {${N.dataPath}="", ${N.parentData}, ${N.parentDataProperty}, ${N.rootData}=${N.data}}={}`,
+          schemaEnv.$async,
+          () => gen.code(_`${funcSourceUrl(schema, opts)}`).code(body)
+        )
+  )
+}
+
+function destructureDataCxtES5(gen: CodeGen): void {
+  gen.if(
+    N.dataCxt,
+    () => {
+      gen.var(N.dataPath, _`${N.dataCxt}.${N.dataPath}`)
+      gen.var(N.parentData, _`${N.dataCxt}.${N.parentData}`)
+      gen.var(N.parentDataProperty, _`${N.dataCxt}.${N.parentDataProperty}`)
+      gen.var(N.rootData, _`${N.dataCxt}.${N.rootData}`)
+    },
+    () => {
+      gen.var(N.dataPath, _`""`)
+      gen.var(N.parentData, _`undefined`)
+      gen.var(N.parentDataProperty, _`undefined`)
+      gen.var(N.rootData, N.data)
+    }
   )
 }
 
 function topSchemaObjCode(it: SchemaObjCxt): void {
-  const {schema, opts} = it
+  const {schema, opts, gen} = it
   validateFunction(it, () => {
     if (opts.$comment && schema.$comment) commentKeyword(it)
     checkNoDefault(it)
-    initializeTop(it.gen)
+    gen.let(N.vErrors, null)
+    gen.let(N.errors, 0)
     typeAndKeywords(it)
     returnResults(it)
   })
@@ -48,7 +74,7 @@ function topSchemaObjCode(it: SchemaObjCxt): void {
 }
 
 function funcSourceUrl(schema: AnySchema, opts: InstanceOptions): Code {
-  return typeof schema == "object" && schema.$id && (opts.sourceCode || opts.processCode)
+  return typeof schema == "object" && schema.$id && (opts.code.source || opts.code.process)
     ? _`/*# sourceURL=${schema.$id} */`
     : nil
 }
@@ -87,7 +113,7 @@ function checkKeywords(it: SchemaObjCxt): void {
 }
 
 function typeAndKeywords(it: SchemaObjCxt, errsCount?: Name): void {
-  const types = getSchemaTypes(it, it.schema)
+  const types = getSchemaTypes(it.schema)
   const checkedTypes = coerceAndCheckDataType(it, types)
   schemaKeywords(it, types, !checkedTypes, errsCount)
 }
@@ -104,13 +130,6 @@ function checkNoDefault(it: SchemaObjCxt): void {
   if (schema.default !== undefined && opts.useDefaults && opts.strict) {
     checkStrictMode(it, "default is ignored in the schema root")
   }
-}
-
-function initializeTop(gen: CodeGen): void {
-  gen.let(N.vErrors, null)
-  gen.let(N.errors, 0)
-  gen.if(_`${N.rootData} === undefined`, () => gen.assign(N.rootData, N.data))
-  // gen.if(_`${N.dataPath} === undefined`, () => gen.assign(N.dataPath, _`""`)) // TODO maybe add it
 }
 
 function updateContext(it: SchemaObjCxt): void {

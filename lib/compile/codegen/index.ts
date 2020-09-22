@@ -2,7 +2,7 @@ import type {ScopeValueSets, NameValue, ValueScope, ValueScopeName} from "./scop
 import {_, nil, _Code, Code, Name} from "./code"
 import {Scope} from "./scope"
 
-export {_, str, nil, getProperty, stringify, Name, Code} from "./code"
+export {_, str, strConcat, nil, getProperty, stringify, Name, Code} from "./code"
 export {Scope, ScopeStore, ValueScope} from "./scope"
 
 enum BlockKind {
@@ -114,6 +114,13 @@ export class CodeGen {
     else this._out += `${c};${this._n}`
 
     return this
+  }
+
+  object(...keyValues: [Name, SafeExpr][]): _Code {
+    const values = keyValues
+      .map(([key, value]) => (key === value && !this.opts.es5 ? key : `${key}: ${value}`))
+      .reduce((c1, c2) => `${c1},${c2}`)
+    return new _Code(`{${values}}`)
   }
 
   if(condition: Code | boolean, thenBody?: Block, elseBody?: Block): CodeGen {

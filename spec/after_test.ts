@@ -1,4 +1,5 @@
-const should = require("./chai").should()
+import chai from "./chai"
+const should = chai.should()
 
 module.exports = {
   error: afterError,

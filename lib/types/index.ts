@@ -1,8 +1,8 @@
 import type {CodeGen, Code, Name, Scope} from "../compile/codegen"
-import type {SchemaEnv} from "../compile"
+import type {SchemaEnv, SchemaCxt, SchemaObjCxt} from "../compile"
+import type {JSONType} from "../compile/rules"
 import type KeywordCxt from "../compile/context"
 import type Ajv from "../ajv"
-import type {InstanceOptions} from "../ajv"
 
 interface _SchemaObject {
   $id?: string
@@ -36,18 +36,18 @@ interface SourceCode {
   scope: Scope
 }
 
+interface DataValidationCxt {
+  dataPath: string
+  parentData: Record<string, any> | any[]
+  parentDataProperty: string | number
+  rootData: Record<string, any> | any[]
+}
+
 export interface ValidateFunction<T = unknown> {
-  (
-    this: Ajv | any,
-    data: any,
-    dataPath?: string,
-    parentData?: Record<string, any> | any[],
-    parentDataProperty?: string | number,
-    rootData?: Record<string, any> | any[]
-  ): data is T
+  (this: Ajv | any, data: any, dataCxt?: DataValidationCxt): data is T
   errors?: null | ErrorObject[]
-  schema?: AnySchema
-  schemaEnv?: SchemaEnv
+  schema: AnySchema
+  schemaEnv: SchemaEnv
   source?: SourceCode
 }
 
@@ -73,40 +73,11 @@ export interface ErrorObject<K = string, P = Record<string, any>> {
   data?: unknown
 }
 
-export interface SchemaCxt {
-  gen: CodeGen
-  allErrors?: boolean
-  data: Name
-  parentData: Name
-  parentDataProperty: Code | number
-  dataNames: Name[]
-  dataPathArr: (Code | number)[]
-  dataLevel: number
-  topSchemaRef: Code
-  validateName: Name
-  ValidationError?: Name
-  schema: AnySchema
-  schemaEnv: SchemaEnv
-  rootId: string // TODO ?
-  baseId: string
-  schemaPath: Code
-  errSchemaPath: string // this is actual string, should not be changed to Code
-  errorPath: Code
-  propertyName?: Name
-  compositeRule?: boolean
-  createErrors?: boolean
-  opts: InstanceOptions
-  self: Ajv
-}
-
-export interface SchemaObjCxt extends SchemaCxt {
-  schema: AnySchemaObject
-}
-
 interface _KeywordDef {
   keyword: string | string[]
-  type?: string | string[]
-  schemaType?: string | string[]
+  type?: JSONType | JSONType[]
+  schemaType?: JSONType | JSONType[]
+  allowUndefined?: boolean
   $data?: boolean
   implements?: string[]
   before?: string
@@ -140,15 +111,9 @@ export interface DataValidateFunction {
 }
 
 export interface SchemaValidateFunction {
-  (
-    schema: any,
-    data: any,
-    parentSchema?: AnySchemaObject,
-    dataPath?: string,
-    parentData?: Record<string, any> | any[],
-    parentDataProperty?: string | number,
-    rootData?: Record<string, any> | any[]
-  ): boolean | Promise<any>
+  (schema: any, data: any, parentSchema?: AnySchemaObject, dataCxt?: DataValidationCxt):
+    | boolean
+    | Promise<any>
   errors?: Partial<ErrorObject>[]
 }
 
@@ -172,6 +137,11 @@ export type KeywordDefinition =
   | FuncKeywordDefinition
   | MacroKeywordDefinition
 
+export type AddedKeywordDefinition = KeywordDefinition & {
+  type: JSONType[]
+  schemaType: JSONType[]
+}
+
 export interface KeywordErrorDefinition {
   message: string | ((cxt: KeywordErrorCxt) => Code)
   params?: (cxt: KeywordErrorCxt) => Code
@@ -188,7 +158,7 @@ export interface KeywordErrorCxt {
   parentSchema?: AnySchemaObject
   schemaCode: Code | number | boolean
   schemaValue: Code | number | boolean
-  schemaType?: string | string[]
+  schemaType?: JSONType[]
   errsCount?: Name
   params: KeywordCxtParams
   it: SchemaCxt
@@ -205,14 +175,14 @@ export type FormatCompare<T extends string | number> = (data1: T, data2: T) => b
 export type AsyncFormatValidator<T extends string | number> = (data: T) => Promise<boolean>
 
 export interface FormatDefinition<T extends string | number> {
-  type: T extends string ? "string" | undefined : "number"
+  type?: T extends string ? "string" | undefined : "number"
   validate: FormatValidator<T> | (T extends string ? string | RegExp : never)
   async?: false | undefined
   compare?: FormatCompare<T>
 }
 
 export interface AsyncFormatDefinition<T extends string | number> {
-  type: T extends string ? "string" | undefined : "number"
+  type?: T extends string ? "string" | undefined : "number"
   validate: AsyncFormatValidator<T>
   async: true
   compare?: FormatCompare<T>

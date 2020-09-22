@@ -2,7 +2,7 @@ import _Ajv from "../ajv"
 require("../chai").should()
 
 describe("issue #182, NaN validation", () => {
-  const ajv = new _Ajv()
+  const ajv = new _Ajv({strictTypes: false})
 
   it("should pass minimum/maximum validation without type", () => {
     testNaN(ajv, {minimum: 1}, true)

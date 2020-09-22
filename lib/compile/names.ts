@@ -4,6 +4,7 @@ const names = {
   // validation function arguments
   data: new Name("data"), // data passed to validation function
   // args passed from referencing schema
+  dataCxt: new Name("dataCxt"),
   dataPath: new Name("dataPath"),
   parentData: new Name("parentData"),
   parentDataProperty: new Name("parentDataProperty"),

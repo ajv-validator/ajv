@@ -8,9 +8,9 @@ const options: Options = fullTest
       allErrors: true,
       verbose: true,
       inlineRefs: false,
-      codegen: {es5: true, lines: true},
+      code: {es5: true, lines: true},
     }
-  : {allErrors: true, codegen: {es5: true, lines: true}}
+  : {allErrors: true, code: {es5: true, lines: true}}
 
 export default options
 

@@ -7,6 +7,7 @@ describe("removeAdditional option", () => {
 
     ajv.addSchema({
       $id: "//test/fooBar",
+      type: "object",
       properties: {foo: {type: "string"}, bar: {type: "string"}},
     })
 
@@ -27,6 +28,7 @@ describe("removeAdditional option", () => {
 
     ajv.addSchema({
       $id: "//test/fooBar",
+      type: "object",
       properties: {foo: {type: "string"}, bar: {type: "string"}},
       additionalProperties: false,
     })
@@ -47,8 +49,10 @@ describe("removeAdditional option", () => {
     const ajv = new _Ajv({removeAdditional: true})
 
     const schema = {
+      type: "object",
       properties: {
         obj: {
+          type: "object",
           additionalProperties: false,
           properties: {
             a: {type: "string"},
@@ -87,6 +91,7 @@ describe("removeAdditional option", () => {
 
     ajv.addSchema({
       $id: "//test/fooBar",
+      type: "object",
       properties: {foo: {type: "string"}, bar: {type: "string"}},
       additionalProperties: {type: "string"},
     })
@@ -106,6 +111,7 @@ describe("removeAdditional option", () => {
 
     ajv.addSchema({
       $id: "//test/fooBar2",
+      type: "object",
       properties: {foo: {type: "string"}, bar: {type: "string"}},
       additionalProperties: {type: "string", pattern: "^to-be-", maxLength: 10},
     })

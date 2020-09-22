@@ -8,10 +8,10 @@ describe("boolean schemas", () => {
 
   before(() => {
     ajvs = [
-      new _Ajv(),
-      new _Ajv({allErrors: true}),
-      new _Ajv({inlineRefs: false}),
-      new _Ajv({strict: false}),
+      new _Ajv({strictTuples: false}),
+      new _Ajv({allErrors: true, strictTuples: false}),
+      new _Ajv({inlineRefs: false, strictTuples: false}),
+      new _Ajv({strict: false, strictTuples: false}),
     ]
   })
 

@@ -1,5 +1,7 @@
 import _Ajv from "../ajv"
-const should = require("../chai").should()
+import chai from "../chai"
+const should = chai.should()
+
 const DATE_FORMAT = /^\d\d\d\d-[0-1]\d-[0-3]\d$/
 
 describe("specifying allowed unknown formats with `formats` option", () => {
@@ -9,13 +11,13 @@ describe("specifying allowed unknown formats with `formats` option", () => {
 
       function test(ajv) {
         should.throw(() => {
-          ajv.compile({format: "unknown"})
-        })
+          ajv.compile({type: "string", format: "unknown"})
+        }, /unknown format/)
       }
     })
 
     it("should fail validation if unknown format is used via $data", () => {
-      test(new _Ajv({$data: true}))
+      test(new _Ajv({$data: true, strictTypes: false}))
 
       function test(ajv) {
         ajv.addFormat("date", DATE_FORMAT)
@@ -72,23 +74,24 @@ describe("specifying allowed unknown formats with `formats` option", () => {
       test(new _Ajv({formats: {allowed: true}}))
 
       function test(ajv) {
-        const validate = ajv.compile({format: "allowed"})
+        const validate = ajv.compile({type: "string", format: "allowed"})
         validate("anything").should.equal(true)
 
         should.throw(() => {
-          ajv.compile({format: "unknown"})
-        })
+          ajv.compile({type: "string", format: "unknown"})
+        }, /unknown format/)
       }
     })
 
     it("should be valid if allowed unknown format is used via $data", () => {
-      test(new _Ajv({$data: true, formats: {allowed: true}}))
+      test(new _Ajv({$data: true, formats: {allowed: true}, allowUnionTypes: true}))
 
       function test(ajv) {
         ajv.addFormat("date", DATE_FORMAT)
         const validate = ajv.compile({
+          type: "object",
           properties: {
-            foo: {format: {$data: "1/bar"}},
+            foo: {type: ["string", "number"], format: {$data: "1/bar"}},
             bar: {type: "string"},
           },
         })

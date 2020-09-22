@@ -1,8 +1,17 @@
-import type {KeywordDefinition} from "../types"
-import {toHash} from "./util"
+import type {AddedKeywordDefinition} from "../types"
 
-interface ValidationTypes {
-  [key: string]: boolean | RuleGroup | undefined
+const _jsonTypes = ["string", "number", "integer", "boolean", "null", "object", "array"] as const
+
+export type JSONType = typeof _jsonTypes[number]
+
+const jsonTypes: Set<string> = new Set(_jsonTypes)
+
+export function isJSONType(x: unknown): x is JSONType {
+  return typeof x == "string" && jsonTypes.has(x)
+}
+
+type ValidationTypes = {
+  [K in JSONType]: boolean | RuleGroup | undefined
 }
 
 export interface ValidationRules {
@@ -13,20 +22,18 @@ export interface ValidationRules {
 }
 
 export interface RuleGroup {
-  type?: string
+  type?: JSONType
   rules: Rule[]
 }
 
 // This interface wraps KeywordDefinition because definition can have multiple keywords
 export interface Rule {
   keyword: string
-  definition: KeywordDefinition
+  definition: AddedKeywordDefinition
 }
 
-const ALL = ["type", "$comment"]
-
 export function getRules(): ValidationRules {
-  const groups = {
+  const groups: Record<"number" | "string" | "array" | "object", RuleGroup> = {
     number: {type: "number", rules: []},
     string: {type: "string", rules: []},
     array: {type: "array", rules: []},
@@ -35,7 +42,7 @@ export function getRules(): ValidationRules {
   return {
     types: {...groups, integer: true, boolean: true, null: true},
     rules: [groups.number, groups.string, groups.array, groups.object, {rules: []}],
-    all: toHash(ALL),
-    keywords: toHash(ALL),
+    all: {type: true, $comment: true},
+    keywords: {type: true, $comment: true},
   }
 }

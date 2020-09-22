@@ -3,6 +3,7 @@
     "description": "items: async + sync",
     "schema": {
       "$async": true,
+      "type": "array",
       "items": [
         {
           "type": "integer",
@@ -15,7 +16,9 @@
           "type": "integer",
           "idExists": {"table": "users"}
         }
-      ]
+      ],
+      "minItems": 3,
+      "additionalItems": false
     },
     "tests": [
       {

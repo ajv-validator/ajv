@@ -73,6 +73,7 @@ describe("issue #768, fix passContext in recursive $ref", () => {
       $id: "foo",
       definitions: {
         bar: {
+          type: "object",
           properties: {
             baz: {
               $ref: "boo",

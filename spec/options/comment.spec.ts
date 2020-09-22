@@ -21,6 +21,7 @@ describe("$comment option", () => {
     it("should log the text from $comment keyword", () => {
       const schema = {
         $comment: "object root",
+        type: "object",
         properties: {
           foo: {$comment: "property foo"},
           bar: {$comment: "property bar", type: "integer"},
@@ -59,6 +60,7 @@ describe("$comment option", () => {
     it("should pass the text from $comment keyword to the hook", () => {
       const schema = {
         $comment: "object root",
+        type: "object",
         properties: {
           foo: {$comment: "property foo"},
           bar: {$comment: "property bar", type: "integer"},

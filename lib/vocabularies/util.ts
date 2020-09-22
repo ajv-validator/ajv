@@ -1,7 +1,8 @@
-import type {AnySchema, SchemaMap, SchemaCxt, SchemaObjCxt} from "../types"
+import type {AnySchema, SchemaMap} from "../types"
+import type {SchemaCxt, SchemaObjCxt} from "../compile"
 import type KeywordCxt from "../compile/context"
 import {schemaHasRules} from "../compile/util"
-import {CodeGen, _, nil, Code, Name, getProperty} from "../compile/codegen"
+import {CodeGen, _, strConcat, nil, Code, Name, getProperty} from "../compile/codegen"
 import N from "../compile/names"
 
 export function schemaRefOrVal(
@@ -63,16 +64,19 @@ export function noPropertyInData(
 }
 
 export function callValidateCode(
-  {schemaCode, data, it}: KeywordCxt,
+  {schemaCode, data, it: {gen, topSchemaRef, schemaPath, errorPath}, it}: KeywordCxt,
   func: Code,
   context: Code,
   passSchema?: boolean
 ): Code {
-  const dataAndSchema = passSchema
-    ? _`${schemaCode}, ${data}, ${it.topSchemaRef}${it.schemaPath}`
-    : data
-  const dataPath = _`(${N.dataPath} || '') + ${it.errorPath}` // TODO refactor other places
-  const args = _`${dataAndSchema}, ${dataPath}, ${it.parentData}, ${it.parentDataProperty}, ${N.rootData}`
+  const dataAndSchema = passSchema ? _`${schemaCode}, ${data}, ${topSchemaRef}${schemaPath}` : data
+  const dataCxt = gen.object(
+    [N.dataPath, strConcat(N.dataPath, errorPath)],
+    [N.parentData, it.parentData],
+    [N.parentDataProperty, it.parentDataProperty],
+    [N.rootData, N.rootData]
+  )
+  const args = _`${dataAndSchema}, ${dataCxt}`
   return context !== nil ? _`${func}.call(${context}, ${args})` : _`${func}(${args})`
 }
 
@@ -84,10 +88,9 @@ export function usePattern(gen: CodeGen, pattern: string): Name {
   })
 }
 
-export function checkStrictMode(it: SchemaCxt, msg: string): void {
-  const {opts, self} = it
-  if (opts.strict) {
-    if (opts.strict === "log") self.logger.warn(msg)
-    else throw new Error(msg)
-  }
+export function checkStrictMode(it: SchemaCxt, msg: string, mode = it.opts.strict): void {
+  if (!mode) return
+  msg = `strict mode: ${msg}`
+  if (mode === true) throw new Error(msg)
+  it.self.logger.warn(msg)
 }

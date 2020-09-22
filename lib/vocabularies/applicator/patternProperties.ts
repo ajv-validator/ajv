@@ -10,10 +10,10 @@ const def: CodeKeywordDefinition = {
   schemaType: "object",
   code(cxt: KeywordCxt) {
     const {gen, schema, data, parentSchema, it} = cxt
+    const {opts} = it
     const patterns = schemaProperties(it, schema)
     if (patterns.length === 0) return
-    const checkProperties =
-      it.opts.strict && !it.opts.allowMatchingProperties && parentSchema.properties
+    const checkProperties = opts.strict && !opts.allowMatchingProperties && parentSchema.properties
     const valid = gen.name("valid")
     validatePatternProperties()
 
@@ -51,6 +51,7 @@ const def: CodeKeywordDefinition = {
               schemaProp: pat,
               dataProp: key,
               dataPropType: Type.Str,
+              strictSchema: it.strictSchema,
             },
             valid
           )

@@ -3,7 +3,7 @@ import type Ajv from ".."
 import type {Options} from ".."
 
 export default function getAjvInstances(options: Options, extraOpts: Options = {}): Ajv[] {
-  return _getAjvInstances(options, {...extraOpts, logger: false, codegen: {lines: true}})
+  return _getAjvInstances(options, {...extraOpts, logger: false, code: {lines: true}})
 }
 
 function _getAjvInstances(opts: Options, useOpts: Options): Ajv[] {

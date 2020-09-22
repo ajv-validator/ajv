@@ -3,6 +3,7 @@
     "description": "properties: async + sync",
     "schema": {
       "$async": true,
+      "type": "object",
       "properties": {
         "foo": {
           "type": "integer",

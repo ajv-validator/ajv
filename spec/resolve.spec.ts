@@ -1,17 +1,19 @@
 import getAjvInstances from "./ajv_instances"
-import Ajv from "./ajv"
+import _Ajv from "./ajv"
+import type Ajv from ".."
 import {AnyValidateFunction} from "../dist/types"
-
-const should = require("./chai").should()
+import chai from "./chai"
+const should = chai.should()
 
 describe("resolve", () => {
-  let instances
+  let instances: Ajv[]
 
   beforeEach(() => {
     instances = getAjvInstances({
       allErrors: true,
       verbose: true,
       inlineRefs: false,
+      allowUnionTypes: true,
     })
   })
 
@@ -48,6 +50,7 @@ describe("resolve", () => {
             type: "null",
           },
         },
+        type: "object",
         properties: {
           foo: {$ref: "#foo"},
           bar: {$ref: "otherschema.json#bar"},
@@ -72,15 +75,17 @@ describe("resolve", () => {
         })
         should.throw(() => {
           ajv.compile({
+            type: "object",
             additionalProperties: {
               $id: "http://example.com/1.json",
               type: "string",
             },
           })
-        })
+        }, /resolves to more than one schema/)
 
         should.throw(() => {
           ajv.compile({
+            type: ["object", "array"],
             items: {
               $id: "#int",
               type: "integer",
@@ -90,7 +95,7 @@ describe("resolve", () => {
               type: "string",
             },
           })
-        })
+        }, /resolves to more than one schema/)
       })
     })
 
@@ -192,6 +197,7 @@ describe("resolve", () => {
         try {
           ajv.compile({
             $id: opts.baseId,
+            type: "object",
             properties: {a: {$ref: opts.ref}},
           })
         } catch (e) {
@@ -204,38 +210,39 @@ describe("resolve", () => {
 
   describe("inline referenced schemas without refs in them", () => {
     const schemas = [
-      {$id: "http://e.com/obj.json#", properties: {a: {$ref: "int.json#"}}},
+      {$id: "http://e.com/obj.json#", type: "object", properties: {a: {$ref: "int.json#"}}},
       {$id: "http://e.com/int.json#", type: "integer", minimum: 2, maximum: 4},
       {
         $id: "http://e.com/obj1.json#",
+        type: "object",
         definitions: {int: {type: "integer", minimum: 2, maximum: 4}},
         properties: {a: {$ref: "#/definitions/int"}},
       },
-      {$id: "http://e.com/list.json#", items: {$ref: "obj.json#"}},
+      {$id: "http://e.com/list.json#", type: "array", items: {$ref: "obj.json#"}},
     ]
 
     it("by default should inline schema if it doesn't contain refs", () => {
-      const ajv = new Ajv({schemas, sourceCode: true})
+      const ajv = new _Ajv({schemas, code: {source: true}})
       testSchemas(ajv, true)
     })
 
     it("should NOT inline schema if option inlineRefs == false", () => {
-      const ajv = new Ajv({schemas, inlineRefs: false, sourceCode: true})
+      const ajv = new _Ajv({schemas, inlineRefs: false, code: {source: true}})
       testSchemas(ajv, false)
     })
 
     it("should inline schema if option inlineRefs is bigger than number of keys in referenced schema", () => {
-      const ajv = new Ajv({schemas, inlineRefs: 4, sourceCode: true})
+      const ajv = new _Ajv({schemas, inlineRefs: 4, code: {source: true}})
       testSchemas(ajv, true)
     })
 
     it("should NOT inline schema if option inlineRefs is less than number of keys in referenced schema", () => {
-      const ajv = new Ajv({schemas: schemas, inlineRefs: 2, sourceCode: true})
+      const ajv = new _Ajv({schemas, inlineRefs: 2, code: {source: true}})
       testSchemas(ajv, false)
     })
 
     it("should avoid schema substitution when refs are inlined (issue #77)", () => {
-      const ajv = new Ajv({verbose: true})
+      const ajv = new _Ajv({verbose: true})
 
       const schemaMessage = {
         $schema: "http://json-schema.org/draft-07/schema#",
@@ -244,6 +251,7 @@ describe("resolve", () => {
         required: ["header"],
         properties: {
           header: {
+            type: "object",
             allOf: [{$ref: "header.json"}, {properties: {msgType: {enum: [0]}}}],
           },
         },

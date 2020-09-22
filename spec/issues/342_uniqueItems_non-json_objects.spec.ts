@@ -6,7 +6,7 @@ describe("issue #342, support uniqueItems with some non-JSON objects", () => {
 
   before(() => {
     const ajv = new _Ajv()
-    validate = ajv.compile({uniqueItems: true})
+    validate = ajv.compile({type: "array", uniqueItems: true})
   })
 
   it("should allow different RegExps", () => {
