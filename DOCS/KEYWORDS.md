@@ -38,7 +38,7 @@ This way to define keywords is useful for:
 - testing your keywords before converting them to compiled/inlined keywords
 - defining keywords that do not depend on the schema value (e.g., when the value is always `true`). In this case you can add option `schema: false` to the keyword definition and the schemas won't be passed to the validation function, it will only receive the same 4 parameters as compiled validation function (see the next section).
 - defining keywords where the schema is a value used in some expression.
-- defining keywords that support [\$data reference](https://github.com/ajv-validator/ajv#data-reference) - in this case validation function is required, either as the only option or in addition to compile, macro or inline function (see below).
+- defining keywords that support [\$data reference](./validation.md#data-reference) - in this case validation function is required, either as the only option or in addition to compile, macro or inline function (see below).
 
 **Please note**: In cases when validation flow is different depending on the schema and you have to use `if`s, this way to define keywords will have worse performance than compiled keyword returning different validation functions depending on the schema.
 
@@ -71,7 +71,7 @@ console.log(validate({foo: "baz"})) // false
 
 `const` keyword is already available in Ajv.
 
-**Please note:** If the keyword does not define errors (see [Reporting errors](#reporting-errors)) pass `errors: false` in its definition; it will make generated code more efficient.
+**Please note:** If the keyword does not define errors (see [Reporting errors](./api.md#reporting-errors)) pass `errors: false` in its definition; it will make generated code more efficient.
 
 To add asynchronous keyword pass `async: true` in its definition.
 
@@ -300,8 +300,8 @@ TODO
 
 - `'rootData'` - the root data.
 - `it.dataPathArr[it.dataLevel]` - the name of the property in the parent object that points to the current data if `it.dataLevel > 0`.
-- `'errors'` - the number of encountered errors. See [Reporting errors](#reporting-errors).
-- `'vErrors'` - the array with errors collected so far. See [Reporting errors](#reporting-errors).
+- `'errors'` - the number of encountered errors. See [Reporting errors](./api.md#reporting-errors).
+- `'vErrors'` - the array with errors collected so far. See [Reporting errors](./api.md#reporting-errors).
 
 ## Ajv utilities
 

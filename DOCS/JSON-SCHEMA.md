@@ -28,7 +28,6 @@ The keywords and their values define what rules the data should satisfy to be va
   - [additionalProperties](#additionalproperties)
   - [dependencies](#dependencies)
   - [propertyNames](#propertynames) (added in draft-06)
-  - [patternRequired](#patternrequired-proposed) (proposed)
 - [Keywords for all types](#keywords-for-all-types)
   - [enum](#enum)
   - [const](#const) (added in draft-06)
@@ -69,7 +68,7 @@ All examples above are JSON Schemas that only require data to be of certain type
 
 Most other keywords apply only to a particular type of data. If the data is of different type, the keyword will not apply and the data will be considered valid.
 
-In v7 Ajv introduced [Strict types](../README.md/strict-types) mode that makes these mistakes less likely by requiring that types are constrained with type keyword whenever another keyword that applies to specific type is used.
+In v7 Ajv introduced [Strict types](./strict-mode.md#strict-types) mode that makes these mistakes less likely by requiring that types are constrained with type keyword whenever another keyword that applies to specific type is used.
 
 ## Keywords for numbers
 
@@ -228,7 +227,7 @@ The schema in example 2 will log warning by default (see `strictTuples` option),
 
 The value of the keyword should be a boolean or an object.
 
-If `items` keyword is not present or it is an object, `additionalItems` keyword should be ignored regardless of its value. By default Ajv will throw exception in this case - see [Strict mode](../README.md#strict-mode)
+If `items` keyword is not present or it is an object, `additionalItems` keyword should be ignored regardless of its value. By default Ajv will throw exception in this case - see [Strict mode](./strict-mode.md)
 
 If `items` keyword is an array and data array has not more items than the length of `items` keyword value, `additionalItems` keyword is also ignored.
 
@@ -359,7 +358,7 @@ When the value in data object property matches multiple regular expressions it s
 **Please note**:
 
 1. `patternProperties` keyword does not require that properties matching patterns are present in the object (see examples).
-2. By default, Ajv does not allow schemas where patterns in `patternProperties` match any property name in `properties` keyword - that leads to unexpected validation results. It can be allowed with option `allowMatchingProperties`. See [Strict mode](../README.md#strict-mode)
+2. By default, Ajv does not allow schemas where patterns in `patternProperties` match any property name in `properties` keyword - that leads to unexpected validation results. It can be allowed with option `allowMatchingProperties`. See [Strict mode](./strict-mode.md)
 
 **Example**
 
@@ -550,7 +549,7 @@ _valid_: `"foo"`
 
 _invalid_: any other value
 
-The same can be achieved with `enum` keyword using the array with one item. But `const` keyword is more than just a syntax sugar for `enum`. In combination with the [\$data reference](../README.md#data-reference) it allows to define equality relations between different parts of the data. This cannot be achieved with `enum` keyword even with `$data` reference because `$data` cannot be used in place of one item - it can only be used in place of the whole array in `enum` keyword.
+The same can be achieved with `enum` keyword using the array with one item. But `const` keyword is more than just a syntax sugar for `enum`. In combination with the [\$data reference](./validation.md#data-reference) it allows to define equality relations between different parts of the data. This cannot be achieved with `enum` keyword even with `$data` reference because `$data` cannot be used in place of one item - it can only be used in place of the whole array in `enum` keyword.
 
 **Example**
 

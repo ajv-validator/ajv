@@ -7,7 +7,7 @@ assignees: ""
 ---
 
 <!--
-Frequently Asked Questions: https://github.com/ajv-validator/ajv/blob/master/FAQ.md
+Frequently Asked Questions: https://github.com/ajv-validator/ajv/blob/master/docs/faq.md
 Please provide all info and reduce your schema and data to the smallest possible size.
 
 This template is for bug or error reports.
@@ -18,7 +18,7 @@ For other issues please see https://github.com/ajv-validator/ajv/blob/master/CON
 
 **Ajv options object**
 
-<!-- See https://github.com/ajv-validator/ajv#options -->
+<!-- See https://github.com/ajv-validator/ajv/api.md/api.md#options -->
 
 ```javascript
 

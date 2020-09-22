@@ -22,7 +22,7 @@ Ajv has a lot of features and maintaining documentation takes time. I appreciate
 
 ## Issues
 
-Before submitting the issue please search the existing issues and also review [Frequently Asked Questions](./FAQ.md).
+Before submitting the issue please search the existing issues and also review [Frequently Asked Questions](./docs/faq.md).
 
 It is really important that you spend time to provide all the relevant information and to reduce both your schema and data to the smallest possible size when they still have the issue. Simplifying the issue also makes it more valuable for other users (in cases it turns out to be an incorrect usage rather than a bug).
 
@@ -31,7 +31,7 @@ It is really important that you spend time to provide all the relevant informati
 Please make sure to include the following information in the issue:
 
 1. What version of Ajv are you using? Does the issue happen if you use the latest version?
-2. Ajv options object (see https://github.com/ajv-validator/ajv#options).
+2. Ajv options object (see https://github.com/ajv-validator/ajv/api.md#options).
 3. JSON Schema and the data you are validating (please make it as small as possible to reproduce the issue).
 4. Your code sample (please use `options`, `schema` and `data` as variables).
 5. Validation result, data AFTER validation, error messages.

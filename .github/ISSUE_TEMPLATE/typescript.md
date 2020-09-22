@@ -7,7 +7,7 @@ assignees: ""
 ---
 
 <!--
-Frequently Asked Questions: https://github.com/ajv-validator/ajv/blob/master/FAQ.md
+Frequently Asked Questions: https://github.com/ajv-validator/ajv/blob/master/docs/faq.md
 
 This template is for issues about missing or incorrect type definition and other typescript-related issues.
 For other issues please see https://github.com/ajv-validator/ajv/blob/master/CONTRIBUTING.md
