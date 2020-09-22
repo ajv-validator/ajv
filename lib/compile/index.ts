@@ -51,7 +51,6 @@ interface SchemaEnvArgs {
   baseId?: string
   localRefs?: LocalRefs
   meta?: boolean
-  cacheKey?: unknown
 }
 
 export class SchemaEnv implements SchemaEnvArgs {
@@ -60,7 +59,6 @@ export class SchemaEnv implements SchemaEnvArgs {
   baseId: string // TODO possibly, it should be readonly
   localRefs?: LocalRefs
   readonly meta?: boolean
-  readonly cacheKey?: unknown
   readonly $async?: boolean
   readonly refs: SchemaRefs = {}
   validate?: AnyValidateFunction
@@ -74,7 +72,6 @@ export class SchemaEnv implements SchemaEnvArgs {
     this.baseId = env.baseId ?? normalizeId(schema?.$id)
     this.localRefs = env.localRefs
     this.meta = env.meta
-    this.cacheKey = env.cacheKey
     this.$async = schema?.$async
     this.refs = {}
   }

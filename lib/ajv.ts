@@ -114,8 +114,6 @@ interface CurrentOptions {
   ownProperties?: boolean
   multipleOfPrecision?: boolean | number
   messages?: boolean
-  cache?: CacheInterface
-  serialize?: (schema: AnySchema) => unknown
   code?: {
     es5?: boolean
     lines?: boolean
@@ -149,6 +147,8 @@ interface RemovedOptions {
   strictNumbers?: boolean
   uniqueItems?: boolean
   unknownFormats?: true | string[] | "ignore"
+  cache?: any
+  serialize?: (schema: AnySchema) => unknown
 }
 
 type OptionsInfo<T extends RemovedOptions | DeprecatedOptions> = {
@@ -170,6 +170,8 @@ const removedOptions: OptionsInfo<RemovedOptions> = {
   strictNumbers: "It is default now, see option `strict`.",
   uniqueItems: '"uniqueItems" keyword is always validated.',
   unknownFormats: "Disable strict mode or pass `true` to `ajv.addFormat` (or `formats` option).",
+  cache: "Map is used as cache, schema object as key.",
+  serialize: "Map is used as cache, schema object as key.",
 }
 
 const deprecatedOptions: OptionsInfo<DeprecatedOptions> = {
@@ -189,7 +191,6 @@ type RequiredInstanceOptions = {
     | "loopEnum"
     | "meta"
     | "messages"
-    | "serialize"
     | "addUsedSchema"
     | "validateSchema"
     | "validateFormats"]: NonNullable<Options[K]>
@@ -210,7 +211,6 @@ function requiredOptions(o: Options): RequiredInstanceOptions {
     meta: o.meta ?? true,
     messages: o.messages ?? true,
     inlineRefs: o.inlineRefs ?? true,
-    serialize: o.serialize || ((x) => x), // "||" is to account for removed "false" option value
     addUsedSchema: o.addUsedSchema ?? true,
     validateSchema: o.validateSchema ?? true,
     validateFormats: o.validateFormats ?? true,
@@ -221,13 +221,6 @@ export interface Logger {
   log(...args: unknown[]): unknown
   warn(...args: unknown[]): unknown
   error(...args: unknown[]): unknown
-}
-
-export interface CacheInterface {
-  set(key: unknown, value: SchemaEnv): void
-  get(key: unknown): SchemaEnv | undefined
-  delete(key: unknown): void
-  clear(): void
 }
 
 export default class Ajv {
@@ -242,7 +235,7 @@ export default class Ajv {
   readonly RULES: ValidationRules
   readonly _compilations: Set<SchemaEnv> = new Set()
   private readonly _loading: {[ref: string]: Promise<AnySchemaObject> | undefined} = {}
-  private readonly _cache: CacheInterface
+  private readonly _cache: Map<AnySchema, SchemaEnv> = new Map()
   private readonly _metaOpts: InstanceOptions
 
   static ValidationError = ValidationError
@@ -257,7 +250,6 @@ export default class Ajv {
     const formatOpt = opts.validateFormats
     opts.validateFormats = false
 
-    this._cache = opts.cache || new Map()
     this.RULES = getRules()
     checkOptions.call(this, removedOptions, opts, "NOT SUPPORTED")
     checkOptions.call(this, deprecatedOptions, opts, "DEPRECATED", "warn")
@@ -475,13 +467,13 @@ export default class Ajv {
         return this
       case "string": {
         const sch = getSchEnv.call(this, schemaKeyRef)
-        if (typeof sch == "object") this._cache.delete(sch.cacheKey)
+        if (typeof sch == "object") this._cache.delete(sch.schema)
         delete this.schemas[schemaKeyRef]
         delete this.refs[schemaKeyRef]
         return this
       }
       case "object": {
-        const cacheKey = this.opts.serialize(schemaKeyRef)
+        const cacheKey = schemaKeyRef
         this._cache.delete(cacheKey)
         let id = schemaKeyRef.$id
         if (id) {
@@ -608,7 +600,7 @@ export default class Ajv {
         if (typeof sch == "string") {
           delete schemas[keyRef]
         } else if (sch && !sch.meta) {
-          this._cache.delete(sch.cacheKey)
+          this._cache.delete(sch.schema)
           delete schemas[keyRef]
         }
       }
@@ -624,13 +616,12 @@ export default class Ajv {
     if (typeof schema != "object" && typeof schema != "boolean") {
       throw new Error("schema must be object or boolean")
     }
-    const cacheKey = this.opts.serialize(schema)
-    let sch = this._cache.get(cacheKey)
-    if (sch) return sch
+    let sch = this._cache.get(schema)
+    if (sch !== undefined) return sch
 
     const localRefs = getSchemaRefs.call(this, schema)
-    sch = new SchemaEnv({schema, cacheKey, meta, localRefs})
-    this._cache.set(sch.cacheKey, sch)
+    sch = new SchemaEnv({schema, meta, localRefs})
+    this._cache.set(sch.schema, sch)
     const id = sch.baseId
     if (addSchema && !id.startsWith("#")) {
       // TODO atm it is allowed to overwrite schemas without id (instead of not adding them)

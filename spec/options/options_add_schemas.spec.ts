@@ -117,20 +117,4 @@ describe("options to add schemas", () => {
       })
     })
   })
-
-  describe("serialize", () => {
-    let serializeCalled
-
-    it("should use user-defined function to serialize schema to string", () => {
-      serializeCalled = undefined
-      const ajv = new _Ajv({serialize: serialize})
-      ajv.addSchema({type: "string"})
-      should.equal(serializeCalled, true)
-    })
-
-    function serialize(schema) {
-      serializeCalled = true
-      return JSON.stringify(schema)
-    }
-  })
 })
