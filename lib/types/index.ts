@@ -75,13 +75,13 @@ export interface ErrorObject<K = string, P = Record<string, any>> {
 
 interface _KeywordDef {
   keyword: string | string[]
-  type?: JSONType | JSONType[]
-  schemaType?: JSONType | JSONType[]
-  allowUndefined?: boolean
-  $data?: boolean
-  implements?: string[]
-  before?: string
-  metaSchema?: AnySchemaObject
+  type?: JSONType | JSONType[] // data types that keyword applies to
+  schemaType?: JSONType | JSONType[] // allowed type(s) of keyword value in the schema
+  allowUndefined?: boolean // used for keywords that can be invoked by other keywords, not being present in the schema
+  $data?: boolean // keyword supports [$data reference](../../docs/validation.md#data-reference)
+  implements?: string[] // other schema keywords that this keyword implements
+  before?: string // keyword should be executed before this keyword (should be applicable to the same type)
+  metaSchema?: AnySchemaObject // meta-schema for keyword schema value - it is better to use schemaType where applicable
   validateSchema?: AnyValidateFunction // compiled keyword metaSchema - should not be passed
   dependencies?: string[] // keywords that must be present in the same schema
   error?: KeywordErrorDefinition

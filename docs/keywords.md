@@ -1,0 +1,348 @@
+# User defined keywords
+
+## Contents
+
+- Define keyword with:
+  - [code generation function](#define-keyword-with-code-generation-function) - used by all pre-defined keywords
+  - [validation function](#define-keyword-with-validation-function)
+  - [compilation function](#define-keyword-with-compilation-function)
+  - [macro function](#define-keyword-with-macro-function)
+- [Schema compilation context](#schema-compilation-context)
+- [Validation time variables](#validation-time-variables)
+- [Ajv utilities](#ajv-utilities)
+- [Defining keyword errors](#defining-keyword-errors)
+
+### Common attributes of keyword definitions
+
+The usual interface to define all keywords has these properties:
+
+```typescript
+interface _KeywordDef {
+  keyword: string | string[]
+  type?: JSONType | JSONType[] // data type(s) that keyword applies to,
+  // if defined, it is usually "string", "number", "object" or "array"
+  schemaType?: JSONType | JSONType[] // the allowed type(s) of value that keyword must have in the schema
+  error?: {
+    message: string | ((cxt: KeywordCxt) => Code)
+    params?: (cxt: KeywordCxt) => Code
+  }
+}
+```
+
+Keyword definitions may have additional optional properties - see [types](../lib/types/index.ts) and [KeywordCxt](../lib/compile/context.ts).
+
+### Define keyword with code generation function
+
+Starting from v7 Ajv uses [CodeGen module](../lib/compile/codegen/index.ts) for all pre-defined kwywords - see [codegen.md](./codegen.md) for details.
+
+This is the best approach for user defined keywords:
+
+- safe against code injection
+- best performance
+- the precise control over validation process
+- access to the parent data and the path to the currently validated data
+
+While Ajv can be safely used with plain JavaScript, it is strongly recommended to use Typescript for user-defined keywords that generate code - the prevention against code injection via untrusted schemas is partially based on the type system, not only on runtime checks.
+
+The usual keyword definition for keywords generating code extends common interface with "code" function:
+
+```typescript
+interface CodeKeywordDefinition extends _KeywordDef {
+  code: (cxt: KeywordCxt, ruleType?: string) => void // code generation function
+}
+```
+
+Example `even` keyword:
+
+```typescript
+import {_, KeywordCxt} from Ajv
+
+ajv.addKeyword({
+  keyword: "even",
+  type: "number",
+  schemaType: "boolean",
+  // $data: true // to support [$data reference](./validation.md#data-reference), ...
+  code(cxt: KeywordCxt) {
+    const {data, schema} = cxt
+    const op = schema ? _`!==` : _`===`
+    cxt.fail(_`${data} %2 ${op} 0`) // ... the only code change needed is to use `cxt.fail$data` here
+  },
+})
+
+const schema = {even: true}
+const validate = ajv.compile(schema)
+console.log(validate(2)) // true
+console.log(validate(3)) // false
+```
+
+Example `range` keyword:
+
+```typescript
+import {_, nil, KeywordCxt} from Ajv
+
+ajv.addKeyword({
+  keyword: "range",
+  type: "number",
+  code(cxt: KeywordCxt) {
+    const {schema, parentSchema, data} = cxt
+    const [min, max] = schema
+    const eq: Code = parentSchema.exclusiveRange ? _`=` : nil
+    gen.fail(_`${data} <${eq} ${min} || ${data} >${eq} ${max}`)
+  },
+  metaSchema: {
+    type: "array",
+    items: [{type: "number"}, {type: "number"}],
+    minItems: 2
+    additionalItems: false,
+  },
+})
+```
+
+You can review pre-defined Ajv keywords in [validation](../lib/validation) folder for more advanced examples - it is much easier to define code generation keywords than it was in the previous version of Ajv.
+
+See [KeywordCxt](../lib/compile/context.ts) and [SchemaCxt](../lib/compile/index.ts) type definitions for more information about properties you can use in your keywords.
+
+### Define keyword with "validate" function
+
+Usual keyword definition for validation keywords:
+
+```typescript
+interface FuncKeywordDefinition extends _KeywordDef {
+  validate?: SchemaValidateFunction | DataValidateFunction // DataValidateFunction requires `schema: false` option
+  schema?: boolean // schema: false makes validate not to expect schema (DataValidateFunction)
+  modifying?: boolean
+  async?: boolean
+  valid?: boolean
+  errors?: boolean | "full"
+}
+
+interface SchemaValidateFunction {
+  (schema: any, data: any, parentSchema?: AnySchemaObject, dataCxt?: DataValidationCxt):
+    | boolean
+    | Promise<any>
+  errors?: Partial<ErrorObject>[]
+}
+
+interface DataValidateFunction {
+  (this: Ajv | any, data: any, dataCxt?: DataValidationCxt): boolean | Promise<any>
+  errors?: Partial<ErrorObject>[]
+}
+```
+
+The function should return validation result as boolean. It can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
+
+`validate` keywords are suitable for:
+
+- testing your keywords before converting them to compiled/code keywords
+- defining keywords that do not depend on the schema value (e.g., when the value is always `true`). In this case you can add option `schema: false` to the keyword definition and the schemas won't be passed to the validation function, it will only receive the same parameters as compiled validation function.
+- defining keywords where the schema is a value used in some expression.
+- defining keywords that support [\$data reference](./validation.md#data-reference) - in this case `validate` or `code` function is required, either as the only option or in addition to `compile` or `macro`.
+
+Example: `constant` keyword (a synonym for draft-06 keyword `const`, it is equivalent to `enum` keyword with one item):
+
+```javascript
+ajv.addKeyword({
+  keyword: "constant",
+  validate: (schema, data) =>
+    typeof schema == "object" && schema !== null ? deepEqual(schema, data) : schema === data,
+  errors: false,
+})
+
+const schema = {
+  constant: 2,
+}
+const validate = ajv.compile(schema)
+console.log(validate(2)) // true
+console.log(validate(3)) // false
+
+const schema = {
+  constant: {foo: "bar"},
+}
+const validate = ajv.compile(schema)
+console.log(validate({foo: "bar"})) // true
+console.log(validate({foo: "baz"})) // false
+```
+
+`const` keyword is already available in Ajv.
+
+**Please note:** If the keyword does not define errors (see [Reporting errors](./api.md#reporting-errors)) pass `errors: false` in its definition; it will make generated code more efficient.
+
+To add asynchronous keyword pass `async: true` in its definition.
+
+### Define keyword with "compile" function
+
+The keyword is similar to "validate", with the difference that "compile" property has function that will be called during schema compilation and should return validation function:
+
+```typescript
+interface FuncKeywordDefinition extends _KeywordDef {
+  compile?: (schema: any, parentSchema: AnySchemaObject, it: SchemaObjCxt) => DataValidateFunction
+  schema?: boolean // schema: false makes validate not to expect schema (DataValidateFunction)
+  modifying?: boolean
+  async?: boolean
+  valid?: boolean
+  errors?: boolean | "full"
+}
+```
+
+In some cases it is the best approach to define keywords, but it has the performance cost of an extra function call during validation. If keyword logic can be expressed via some other JSON Schema then `macro` keyword definition is more efficient (see below).
+
+Example. `range` and `exclusiveRange` keywords using compiled schema:
+
+```javascript
+ajv.addKeyword({
+  keyword: "range",
+  type: "number",
+  compile([min, max], parentSchema) {
+    return parentSchema.exclusiveRange === true
+      ? (data) => data > min && data < max
+      : (data) => data >= min && data <= max
+  },
+  errors: false,
+  metaSchema: {
+    // schema to validate keyword value
+    type: "array",
+    items: [{type: "number"}, {type: "number"}],
+    minItems: 2,
+    additionalItems: false,
+  },
+})
+
+const schema = {
+  range: [2, 4],
+  exclusiveRange: true,
+}
+const validate = ajv.compile(schema)
+console.log(validate(2.01)) // true
+console.log(validate(3.99)) // true
+console.log(validate(2)) // false
+console.log(validate(4)) // false
+```
+
+See note on errors and asynchronous keywords in the previous section.
+
+### Define keyword with "macro" function
+
+Keyword definition:
+
+```typescript
+interface MacroKeywordDefinition extends FuncKeywordDefinition {
+  macro: (schema: any, parentSchema: AnySchemaObject, it: SchemaCxt) => AnySchema
+}
+```
+
+"Macro" function is called during schema compilation. It is passed schema, parent schema and [schema compilation context](#schema-compilation-context) and it should return another schema that will be applied to the data in addition to the original schema.
+
+It is an efficient approach (in cases when the keyword logic can be expressed with another JSON Schema), because it is usually easy to implement and there is no extra function call during validation.
+
+In addition to the errors from the expanded schema macro keyword will add its own error in case validation fails.
+
+Example. `range` and `exclusiveRange` keywords from the previous example defined with macro:
+
+```javascript
+ajv.addKeyword({
+  keyword: "range",
+  type: "number",
+  macro: ([minimum, maximum]) => ({minimum, maximum}), // schema with keywords minimum and maximum
+  // metaSchema: the same as in the example above
+})
+```
+
+Macro keywords an be recursive - i.e. return schemas containing the same keyword. See the example of defining a recursive macro keyword `deepProperties` in the [test](../spec/keyword.spec.ts#L316).
+
+## Schema compilation context
+
+Schema compilation context [SchemaCxt](../lib/compile/index.ts) is available in property `it` of [KeywordCxt](../lib/compile/context.ts) (and it is also the 3rd parameter of `compile` and `macro` keyword functions). See types in the source code on the properties you can use in this object.
+
+## Validation time variables
+
+All function scoped variables available during validation are defined in [names](../lib/compile/names.ts).
+
+## Ajv utilities
+
+There are sevral useful functions you can use in your _code_ keywords. These functions can be imported from TODO:
+
+##### .toHash(Array arr) -&gt; Object
+
+Converts the array of strings to the object where each string becomes the key with the value of `true`.
+
+```javascript
+toHash(["a", "b", "c"]) // { a: true, b: true, c: true }
+```
+
+##### .equal(value1, value2) -&gt; Boolean
+
+Performs deep equality comparison. This function is used in keywords `enum`, `constant`, `uniqueItems` and can be used in user-defined keywords.
+
+##### gen.getProperty(String key) -&gt; String
+
+Converts the string that is the key/index to access the property/item to the JavaScript syntax to access the property (either "." notation or "[...]" notation).
+
+```javascript
+getProperty("a") // ".a"
+getProperty("1") // "['1']"
+getProperty("a'b") // "['a\\'b']"
+getProperty(1) // "[1]"
+```
+
+##### .schemaHasRules(Object schema, Object rules) -&gt; String
+
+Determines whether the passed schema has rules that should be validated. This function should be used before calling `it.validate` to compile subschemas.
+
+```javascript
+schemaHasRules(schema, it.RULES.all) // true or false
+```
+
+##### .getData(String jsonPointer, Number dataLevel, Array paths) -&gt; String
+
+Returns the validation-time expression to safely access data based on the passed [relative json pointer](https://tools.ietf.org/html/draft-luff-relative-json-pointer-00) (See [examples](https://gist.github.com/geraintluff/5911303)).
+
+```javascript
+getData("2/test/1", it.dataLevel, it.dataPathArr)
+// The result depends on the current level
+// if it.dataLevel is 3 the result is "data1 && data1.test && data1.test[1]"
+```
+
+##### .escapeJsonPointer(String str) -&gt; String
+
+Converts the property name to the JSON-Pointer fragment.
+
+##### .unescapeJsonPointer (String str) -&gt; String
+
+Converts JSON-Pointer fragment to the property name.
+
+##### .unescapeFragment(String str) -&gt; String
+
+Converts the property name to the JSON-Pointer fragment that can be used in URI.
+
+##### .escapeFragment(String str) -&gt; String
+
+Converts the JSON-Pointer fragment from URI to the property name.
+
+## Reporting errors
+
+All keywords but `macro` can optionally define error messages.
+
+Synchronous validating and compiled keywords should define errors by assigning them to `.errors` property of the validation function. Asynchronous keywords can return promise that rejects with `new Ajv.ValidationError(errors)`, where `errors` is an array of validation errors (if you don't want to create errors in asynchronous keyword, its validation function can return the promise that resolves with `false`).
+
+TODO replace "inline" keywords with "code" keywords
+
+Inline keyword should increase error counter `errors` and add error to `vErrors` array (it can be null). This can be done for both synchronous and asynchronous keywords.
+
+When inline keyword performs validation Ajv checks whether it created errors by comparing errors count before and after validation. To skip this check add option `errors` (can be `"full"`, `true` or `false`) to keyword definition:
+
+```javascript
+ajv.addKeyword("range", {
+  type: "number",
+  inline: inlineRangeTemplate,
+  statements: true,
+  errors: true, // keyword should create errors when validation fails
+  // errors: 'full' // created errors should have dataPath already set
+  // errors: false // keyword never creates errors, Ajv will add a default error
+})
+```
+
+Each error object should at least have properties `keyword`, `message` and `params`, other properties will be added.
+
+Inlined keywords can optionally define `dataPath` and `schemaPath` properties in error objects, that will be assigned by Ajv unless `errors` option of the keyword is `"full"`.
+
+If keyword doesn't create errors, the default error will be created in case the keyword fails validation (see [Validation errors](https://github.com/ajv-validator/ajv#validation-errors)).

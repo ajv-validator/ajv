@@ -8,7 +8,7 @@ const names = {
   dataPath: new Name("dataPath"),
   parentData: new Name("parentData"),
   parentDataProperty: new Name("parentDataProperty"),
-  rootData: new Name("rootData"), // data passed to the first/top validation function
+  rootData: new Name("rootData"), // root data - the data passed to the first/top validation function
   // function scoped variables
   vErrors: new Name("vErrors"), // null or array of validation errors
   errors: new Name("errors"), // counter of validation errors

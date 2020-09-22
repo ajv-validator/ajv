@@ -26,6 +26,7 @@ export {DefinedError} from "./vocabularies/errors"
 export {JSONType} from "./compile/rules"
 export {JSONSchemaType} from "./types/json-schema"
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
+export {applySubschema} from "./compile/subschema"
 
 import type {
   Schema,
@@ -296,7 +297,7 @@ export default class Ajv {
   }
 
   // Create validation function for passed schema
-  // _meta: true if schema is a meta-schema. Used internally to compile meta schemas of custom keywords.
+  // _meta: true if schema is a meta-schema. Used internally to compile meta schemas of user-defined keywords.
   compile<T = unknown>(schema: Schema | JSONSchemaType<T>, _meta?: boolean): ValidateFunction<T>
   compile<T = unknown>(schema: AsyncSchema, _meta?: boolean): AsyncValidateFunction<T>
   compile<T = unknown>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T>

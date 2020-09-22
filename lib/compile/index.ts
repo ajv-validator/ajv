@@ -15,42 +15,46 @@ export interface SchemaRefs {
 }
 
 export interface SchemaCxt {
-  gen: CodeGen
-  allErrors?: boolean
-  data: Name
-  parentData: Name
-  parentDataProperty: Code | number
-  dataNames: Name[]
-  dataPathArr: (Code | number)[]
-  dataLevel: number
-  dataTypes: JSONType[]
-  topSchemaRef: Code
-  validateName: Name
-  ValidationError?: Name
-  schema: AnySchema
-  schemaEnv: SchemaEnv
-  strictSchema?: boolean
-  rootId: string // TODO ?
-  baseId: string
-  schemaPath: Code
-  errSchemaPath: string // this is actual string, should not be changed to Code
-  errorPath: Code
-  propertyName?: Name
-  compositeRule?: boolean
-  createErrors?: boolean
-  opts: InstanceOptions
-  self: Ajv
+  readonly gen: CodeGen
+  readonly allErrors?: boolean // validation mode - whether to collect all errors or break on error
+  readonly data: Name // Name with reference to the current part of data instance
+  readonly parentData: Name // should be used in keywords modifying data
+  readonly parentDataProperty: Code | number // should be used in keywords modifying data
+  readonly dataNames: Name[]
+  readonly dataPathArr: (Code | number)[]
+  readonly dataLevel: number // the level of the currently validated data,
+  // it can be used to access both the property names and the data on all levels from the top.
+  dataTypes: JSONType[] // data types applied to the current part of data instance
+  readonly topSchemaRef: Code
+  readonly validateName: Name
+  readonly ValidationError?: Name
+  readonly schema: AnySchema // current schema object - equal to parentSchema passed via KeywordCxt
+  readonly schemaEnv: SchemaEnv
+  readonly strictSchema?: boolean
+  readonly rootId: string
+  baseId: string // the current schema base URI that should be used as the base for resolving URIs in references (\$ref)
+  readonly schemaPath: Code // the run-time expression that evaluates to the property name of the current schema
+  readonly errSchemaPath: string // this is actual string, should not be changed to Code
+  readonly errorPath: Code
+  readonly propertyName?: Name
+  readonly compositeRule?: boolean // true indicates that the current schema is inside the compound keyword,
+  // where failing some rule doesn't mean validation failure (`anyOf`, `oneOf`, `not`, `if`).
+  // This flag is used to determine whether you can return validation result immediately after any error in case the option `allErrors` is not `true.
+  // You only need to use it if you have many steps in your keywords and potentially can define multiple errors.
+  readonly createErrors?: boolean
+  readonly opts: InstanceOptions // Ajv instance option.
+  readonly self: Ajv // current Ajv instance
 }
 
 export interface SchemaObjCxt extends SchemaCxt {
-  schema: AnySchemaObject
+  readonly schema: AnySchemaObject
 }
 interface SchemaEnvArgs {
-  schema: AnySchema
-  root?: SchemaEnv
-  baseId?: string
-  localRefs?: LocalRefs
-  meta?: boolean
+  readonly schema: AnySchema
+  readonly root?: SchemaEnv
+  readonly baseId?: string
+  readonly localRefs?: LocalRefs
+  readonly meta?: boolean
 }
 
 export class SchemaEnv implements SchemaEnvArgs {
@@ -59,7 +63,7 @@ export class SchemaEnv implements SchemaEnvArgs {
   baseId: string // TODO possibly, it should be readonly
   localRefs?: LocalRefs
   readonly meta?: boolean
-  readonly $async?: boolean
+  readonly $async?: boolean // true if the current schema is asynchronous.
   readonly refs: SchemaRefs = {}
   validate?: AnyValidateFunction
   validateName?: Name
