@@ -6,9 +6,9 @@
   "types": "dist/ajv.d.ts",
   "files": [
     "lib/",
+    "DOCS/",
     "dist/",
     "scripts/",
-    "LICENSE",
     ".tonic_example.js"
   ],
   "scripts": {

@@ -70,7 +70,7 @@ ajv.addMetaSchema(require("ajv/lib/refs/json-schema-draft-06.json"))
 - [Performance](#performance)
 - [Features](#features)
 - [Getting started](#getting-started)
-- [Frequently Asked Questions](https://github.com/ajv-validator/ajv/blob/master/FAQ.md)
+- [Frequently Asked Questions](./DOCS/FAQ.md)
 - [Using in browser](#using-in-browser)
   - [Ajv and Content Security Policies (CSP)](#ajv-and-content-security-policies-csp)
 - [Command line interface](#command-line-interface)
@@ -127,7 +127,7 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 ## Features
 
 - Ajv implements full JSON Schema [draft-06/07](http://json-schema.org/) standards (draft-04 is supported in v6):
-  - all validation keywords (see [JSON Schema validation keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md))
+  - all validation keywords (see [JSON Schema validation keywords](./DOCS/JSON-SCHEMA.md))
   - keyword "nullable" from [Open API 3 specification](https://swagger.io/docs/specification/data-models/data-types/).
   - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
   - support of circular references between schemas
@@ -543,20 +543,20 @@ Strict mode also affects number validation. By default Ajv fails `{"type": "numb
 
 Ajv supports all validation keywords from draft-07 of JSON Schema standard:
 
-- [type](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#type)
-- [for numbers](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#keywords-for-numbers) - maximum, minimum, exclusiveMaximum, exclusiveMinimum, multipleOf
-- [for strings](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#keywords-for-strings) - maxLength, minLength, pattern, format
-- [for arrays](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#keywords-for-arrays) - maxItems, minItems, uniqueItems, items, additionalItems, [contains](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#contains)
-- [for objects](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#keywords-for-objects) - maxProperties, minProperties, required, properties, patternProperties, additionalProperties, dependencies, [propertyNames](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#propertynames)
-- [for all types](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#keywords-for-all-types) - enum, [const](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#const)
-- [compound keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#compound-keywords) - not, oneOf, anyOf, allOf, [if/then/else](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#ifthenelse)
+- [type](./DOCS/JSON-SCHEMA.md#type)
+- [for numbers](./DOCS/JSON-SCHEMA.md#keywords-for-numbers) - maximum, minimum, exclusiveMaximum, exclusiveMinimum, multipleOf
+- [for strings](./DOCS/JSON-SCHEMA.md#keywords-for-strings) - maxLength, minLength, pattern, format
+- [for arrays](./DOCS/JSON-SCHEMA.md#keywords-for-arrays) - maxItems, minItems, uniqueItems, items, additionalItems, [contains](./DOCS/JSON-SCHEMA.md#contains)
+- [for objects](./DOCS/JSON-SCHEMA.md#keywords-for-objects) - maxProperties, minProperties, required, properties, patternProperties, additionalProperties, dependencies, [propertyNames](./DOCS/JSON-SCHEMA.md#propertynames)
+- [for all types](./DOCS/JSON-SCHEMA.md#keywords-for-all-types) - enum, [const](./DOCS/JSON-SCHEMA.md#const)
+- [compound keywords](./DOCS/JSON-SCHEMA.md#compound-keywords) - not, oneOf, anyOf, allOf, [if/then/else](./DOCS/JSON-SCHEMA.md#ifthenelse)
 
 With [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package Ajv also supports validation keywords from [JSON Schema extension proposals](https://github.com/json-schema/json-schema/wiki/v5-Proposals) for JSON Schema standard:
 
-- [patternRequired](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#patternrequired-proposed) - like `required` but with patterns that some property should match.
-- [formatMaximum, formatMinimum, formatExclusiveMaximum, formatExclusiveMinimum](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-proposed) - setting limits for date, time, etc.
+- [patternRequired](./DOCS/JSON-SCHEMA.md#patternrequired-proposed) - like `required` but with patterns that some property should match.
+- [formatMaximum, formatMinimum, formatExclusiveMaximum, formatExclusiveMinimum](./DOCS/JSON-SCHEMA.md#formatmaximum--formatminimum-and-exclusiveformatmaximum--exclusiveformatminimum-proposed) - setting limits for date, time, etc.
 
-See [JSON Schema validation keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md) for more details.
+See [JSON Schema validation keywords](./DOCS/JSON-SCHEMA.md) for more details.
 
 ## Annotation keywords
 
@@ -730,16 +730,16 @@ Examples.
 
 Using `$merge`:
 
-```json
+```javascript
 {
-  "$merge": {
-    "source": {
-      "type": "object",
-      "properties": {"p": {"type": "string"}},
-      "additionalProperties": false
+  $merge: {
+    source: {
+      type: "object",
+      properties: {p: {type: "string"}},
+      additionalProperties: false
     },
-    "with": {
-      "properties": {"q": {"type": "number"}}
+    with: {
+      properties: {q: {type: "number"}}
     }
   }
 }
@@ -747,29 +747,29 @@ Using `$merge`:
 
 Using `$patch`:
 
-```json
+```javascript
 {
-  "$patch": {
-    "source": {
-      "type": "object",
-      "properties": {"p": {"type": "string"}},
-      "additionalProperties": false
+  $patch: {
+    source: {
+      type: "object",
+      properties: {p: {type: "string"}},
+      additionalProperties: false
     },
-    "with": [{"op": "add", "path": "/properties/q", "value": {"type": "number"}}]
+    with: [{op: "add", path: "/properties/q", value: {type: "number"}}]
   }
 }
 ```
 
 The schemas above are equivalent to this schema:
 
-```json
+```javascript
 {
-  "type": "object",
-  "properties": {
-    "p": {"type": "string"},
-    "q": {"type": "number"}
+  type: "object",
+  properties: {
+    p: {type: "string"},
+    q: {type: "number"}
   },
-  "additionalProperties": false
+  additionalProperties: false
 }
 ```
 
@@ -824,7 +824,7 @@ console.log(validate(4)) // false
 
 Several keywords (typeof, instanceof, range and propertyNames) are defined in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package - they can be used for your schemas and as a starting point for your own keywords.
 
-See [User-defined keywords](https://github.com/ajv-validator/ajv/blob/master/CUSTOM.md) for more details.
+See [User-defined keywords](./DOCS/KEYWORDS.md) for more details.
 
 ## Asynchronous schema compilation
 
@@ -966,7 +966,7 @@ Some keywords in JSON Schemas can lead to very slow validation for certain data.
 
 **Please note**: The suggestions above to prevent slow validation would only work if you do NOT use `allErrors: true` in production code (using it would continue validation after validation errors).
 
-You can validate your JSON schemas against [this meta-schema](https://github.com/ajv-validator/ajv/blob/master/lib/refs/json-schema-secure.json) to check that these recommendations are followed:
+You can validate your JSON schemas against [this meta-schema](./lib/refs/json-schema-secure.json) to check that these recommendations are followed:
 
 ```javascript
 const isSchemaSecure = ajv.compile(require("ajv/lib/refs/json-schema-secure.json"))
@@ -990,14 +990,14 @@ Certain regular expressions can lead to the exponential evaluation time even wit
 
 Please assess the regular expressions you use in the schemas on their vulnerability to this attack - see [safe-regex](https://github.com/substack/safe-regex), for example.
 
-**Please note**: some formats that Ajv implements use [regular expressions](https://github.com/ajv-validator/ajv/blob/master/lib/compile/formats.js) that can be vulnerable to ReDoS attack, so if you use Ajv to validate data from untrusted sources **it is strongly recommended** to consider the following:
+**Please note**: some formats that [ajv-formats](https://github.com/ajv-validator/ajv-formats) package implements use [regular expressions](https://github.com/ajv-validator/ajv-formats/blob/master/src/formats.ts) that can be vulnerable to ReDoS attack, so if you use Ajv to validate data from untrusted sources **it is strongly recommended** to consider the following:
 
-- making assessment of "format" implementations in Ajv.
-- using `format: 'fast'` option that simplifies some of the regular expressions (although it does not guarantee that they are safe).
-- replacing format implementations provided by Ajv with your own implementations of "format" keyword that either uses different regular expressions or another approach to format validation. Please see [addFormat](#api-addformat) method.
+- making assessment of "format" implementations in [ajv-formats](https://github.com/ajv-validator/ajv-formats).
+- passing `"fast"` option to ajv-formats plugin (see its docs) that simplifies some of the regular expressions (although it does not guarantee that they are safe).
+- replacing format implementations provided by ajv-formats with your own implementations of "format" keyword that either use different regular expressions or another approach to format validation. Please see [addFormat](#api-addformat) method.
 - disabling format validation by ignoring "format" keyword with option `format: false`
 
-Whatever mitigation you choose, please assume all formats provided by Ajv as potentially unsafe and make your own assessment of their suitability for your validation scenarios.
+Whatever mitigation you choose, please assume all formats provided by ajv-formats as potentially unsafe and make your own assessment of their suitability for your validation scenarios.
 
 ## Filtering data
 
@@ -1043,23 +1043,23 @@ If the option were `"failing"` then property `additional1` would have been remov
 
 **Please note**: If you use `removeAdditional` option with `additionalProperties` keyword inside `anyOf`/`oneOf` keywords your validation can fail with this schema, for example:
 
-```json
+```javascript
 {
-  "type": "object",
-  "oneOf": [
+  type: "object",
+  oneOf: [
     {
-      "properties": {
-        "foo": {"type": "string"}
+      properties: {
+        foo: {type: "string"}
       },
-      "required": ["foo"],
-      "additionalProperties": false
+      required: ["foo"],
+      additionalProperties: false
     },
     {
-      "properties": {
-        "bar": {"type": "integer"}
+      properties: {
+        bar: {type: "integer"}
       },
-      "required": ["bar"],
-      "additionalProperties": false
+      required: ["bar"],
+      additionalProperties: false
     }
   ]
 }
@@ -1071,15 +1071,15 @@ With the option `removeAdditional: true` the validation will pass for the object
 
 While this behaviour is unexpected (issues [#129](https://github.com/ajv-validator/ajv/issues/129), [#134](https://github.com/ajv-validator/ajv/issues/134)), it is correct. To have the expected behaviour (both objects are allowed and additional properties are removed) the schema has to be refactored in this way:
 
-```json
+```javascript
 {
-  "type": "object",
-  "properties": {
-    "foo": {"type": "string"},
-    "bar": {"type": "integer"}
+  type: "object",
+  properties: {
+    foo: {type: "string"},
+    bar: {type: "integer"}
   },
-  "additionalProperties": false,
-  "oneOf": [{"required": ["foo"]}, {"required": ["bar"]}]
+  additionalProperties: false,
+  oneOf: [{required: ["foo"]}, {required: ["bar"]}]
 }
 ```
 
@@ -1193,7 +1193,7 @@ console.log(data) // { "foo": [1], "bar": false }
 
 The coercion rules, as you can see from the example, are different from JavaScript both to validate user input as expected and to have the coercion reversible (to correctly validate cases where different types are defined in subschemas of "anyOf" and other compound keywords).
 
-See [Coercion rules](https://github.com/ajv-validator/ajv/blob/master/COERCION.md) for details.
+See [Coercion rules](./DOCS/COERCION.md) for details.
 
 ## API
 
@@ -1525,7 +1525,7 @@ const defaultOptions = {
   - `false` (default) - do not use defaults
   - `true` - insert defaults by value (object literal is used).
   - `"empty"` - in addition to missing or undefined, use defaults for properties and items that are equal to `null` or `""` (an empty string).
-- _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](#coercing-data-types) and [coercion rules](https://github.com/ajv-validator/ajv/blob/master/COERCION.md). Option values:
+- _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](#coercing-data-types) and [coercion rules](./DOCS/COERCION.md). Option values:
   - `false` (default) - no type coercion.
   - `true` - coerce scalar data types.
   - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
@@ -1781,7 +1781,7 @@ npm test
 
 `npm run watch` - automatically compiles typescript when files in lib folder change
 
-Please see [Contributing guidelines](https://github.com/ajv-validator/ajv/blob/master/CONTRIBUTING.md)
+Please see [Contributing guidelines](./DOCS/CONTRIBUTING.md)
 
 ## Changes history
 
@@ -1799,7 +1799,7 @@ See https://github.com/ajv-validator/ajv/releases
 
 ## Code of conduct
 
-Please review and follow the [Code of conduct](https://github.com/ajv-validator/ajv/blob/master/CODE_OF_CONDUCT.md).
+Please review and follow the [Code of conduct](./CODE_OF_CONDUCT.md).
 
 Please report any unacceptable behaviour to ajv.validator@gmail.com - it will be reviewed by the project team.
 
@@ -1809,4 +1809,4 @@ Ajv is a part of [Tidelift subscription](https://tidelift.com/subscription/pkg/n
 
 ## License
 
-[MIT](https://github.com/ajv-validator/ajv/blob/master/LICENSE)
+[MIT](./LICENSE)

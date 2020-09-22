@@ -22,9 +22,9 @@ Ajv has a lot of features and maintaining documentation takes time. I appreciate
 
 ## Issues
 
-Before submitting the issue please search the existing issues and also review [Frequently Asked Questions](https://github.com/ajv-validator/ajv/blob/master/FAQ.md).
+Before submitting the issue please search the existing issues and also review [Frequently Asked Questions](./FAQ.md).
 
-I would really appreciate the time you spend providing all the information and reducing both your schema and data to the smallest possible size when they still have the issue. Simplifying the issue also makes it more valuable for other users (in cases it turns out to be an incorrect usage rather than a bug).
+It is really important that you spend time to provide all the relevant information and to reduce both your schema and data to the smallest possible size when they still have the issue. Simplifying the issue also makes it more valuable for other users (in cases it turns out to be an incorrect usage rather than a bug).
 
 #### Bug reports
 
@@ -33,7 +33,7 @@ Please make sure to include the following information in the issue:
 1. What version of Ajv are you using? Does the issue happen if you use the latest version?
 2. Ajv options object (see https://github.com/ajv-validator/ajv#options).
 3. JSON Schema and the data you are validating (please make it as small as possible to reproduce the issue).
-4. Your code (please use `options`, `schema` and `data` as variables).
+4. Your code sample (please use `options`, `schema` and `data` as variables).
 5. Validation result, data AFTER validation, error messages.
 6. What results did you expect?
 
@@ -126,13 +126,6 @@ git submodule update --init
 npm test
 ```
 
-The full test suite runs for 3 minutes. If your change is trivial you can run quick test before committing (10 sec) and then disable pre-commit hook:
-
-```bash
-npm run test-fast
-git commit -nm 'type: message'
-```
-
 `npm run build` - compiles typescript to dist folder.
 
 `npm run watch` - automatically compiles typescript when files in lib folder change
@@ -144,10 +137,11 @@ To make accepting your changes faster please follow these steps:
 1. Submit an [issue with the bug](https://github.com/ajv-validator/ajv/issues/new) or with the proposed change (unless the contribution is to fix the documentation typos and mistakes).
 2. Please describe the proposed api and implementation plan (unless the issue is a relatively simple bug and fixing it doesn't change any api).
 3. Once agreed, please write as little code as possible to achieve the desired result.
-4. Please avoid unnecessary changes, refactoring or changing coding styles as part of your change (unless the change was proposed as refactoring).
-5. Please follow the coding conventions even if they are not validated (and/or you use different conventions in your code).
-6. Please run the tests before committing your code.
-7. If tests fail in Travis after you make a PR please investigate and fix the issue.
+4. Please add the tests both for the added feature and, in case the feature is some option, for the existing behaviour when this option is disabled.
+5. Please avoid unnecessary changes, refactoring or changing coding styles as part of your change (unless the change was proposed as refactoring).
+6. Please follow the coding conventions even if they are not validated (and/or you use different conventions in your code).
+7. Please run the tests before committing your code.
+8. If tests fail in Travis after you make a PR please investigate and fix the issue.
 
 #### Contributions license
 

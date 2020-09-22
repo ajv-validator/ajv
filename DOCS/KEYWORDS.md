@@ -195,7 +195,7 @@ console.log(validate([3, 4, 5])) // true, number 5 matches schema inside "contai
 
 `contains` keyword is already available in Ajv with option `v5: true`.
 
-See the example of defining recursive macro keyword `deepProperties` in the [test](https://github.com/ajv-validator/ajv/blob/master/spec/keyword.spec.js#L151).
+See the example of defining recursive macro keyword `deepProperties` in the [test](../spec/keyword.spec.ts#L316).
 
 ### Define keyword with "inline" compilation function
 

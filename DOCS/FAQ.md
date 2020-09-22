@@ -7,16 +7,18 @@ The purpose of this document is to help find answers quicker. I am happy to cont
 Ajv implements JSON schema specification. Before submitting the issue about the behaviour of any validation keywords please review them in:
 
 - [JSON Schema specification](https://tools.ietf.org/html/draft-handrews-json-schema-validation-00) (draft-07)
-- [Validation keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md) in Ajv documentation
+- [Validation keywords](./JSON-SCHEMA.md) in Ajv documentation
 - [JSON Schema tutorial](https://spacetelescope.github.io/understanding-json-schema/) (for draft-04)
 
 ##### Why Ajv validates empty object as valid?
 
-"properties" keyword does not require the presence of any properties, you need to use "required" keyword. It also doesn't require that the data is an object, so any other type of data will also be valid. To require a specific type use "type" keyword.
+"properties" keyword does not require the presence of any properties, you need to use "required" keyword. It also doesn't require that the data is an object, so any other type of data will also be valid. To require a specific type use "type" keyword. [Strict types mode](../README.md#strict-types) introduced in v7 requires presence of "type" when "properties" are used, so the mistakes are less likely.
 
 ##### Why Ajv validates only the first item of the array?
 
-"items" keyword support [two syntaxes](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md#items) - 1) when the schema applies to all items; 2) when there is a different schema for each item in the beginning of the array. This problem means you are using the second syntax.
+"items" keyword support [two syntaxes](./JSON-SCHEMA.md#items) - 1) when the schema applies to all items; 2) when there is a different schema for each item in the beginning of the array. This problem means you are using the second syntax.
+
+In v7 with option `strictTuples` (`"log"` by default) this problem is less likely to happen, as Ajv would log warning about missing "minItems" and other keywords that are required to constrain tuple size.
 
 ## Ajv API for returning validation errors
 
@@ -30,7 +32,7 @@ Ajv also supports asynchronous validation (with asynchronous formats and keyword
 
 ##### Would errors get overwritten in case of "concurrent" validations?
 
-No. There is no concurrency in JavaScript - it is single-threaded. While a validation is run no other JavaScript code (that can access the same memory) can be executed. As long as the errors are used in the same execution block, the errors will not be overwritten.
+No. There is no parallel execution in JavaScript, and the cooperative concurrency model of javascript makes this pattern safe. While a validation is run, no other JavaScript code that can access the same memory can be executed. As long as the errors are used in the same execution block, the errors will not be overwritten.
 
 ##### Can we change / extend API to add a method that would return errors (rather than assign them to `errors` property)?
 
@@ -40,7 +42,7 @@ No. In many cases there is a module responsible for the validation in the applic
 
 Doing this would create a precedent where validated data is used in error messages, creating a vulnerability (e.g., when ajv is used to validate API data/parameters and error messages are logged).
 
-Since the property name is already in the params object, in an application you can modify messages in any way you need. ajv-errors package allows modifying messages as well.
+Since the property name is already in the params object, in an application you can modify the messages in any way you need. ajv-errors package allows modifying messages as well.
 
 ## Additional properties inside compound keywords anyOf, oneOf, etc.
 
@@ -52,18 +54,19 @@ The keyword `additionalProperties` creates the restriction on validated data bas
 
 While you can expect that the schema below would allow the objects either with properties `foo` and `bar` or with properties `foo` and `baz` and all other properties will be prohibited, this schema will only allow objects with one property `foo` (an empty object and any non-objects will also be valid):
 
-```json
+```javascript
 {
-  "properties": {"foo": {"type": "number"}},
-  "additionalProperties": false,
-  "oneOf": [
-    {"properties": {"bar": {"type": "number"}}},
-    {"properties": {"baz": {"type": "number"}}}
+  type: "object",
+  properties: {foo: {type: "number"}},
+  additionalProperties: false,
+  oneOf: [
+    {properties: {bar: {type: "number"}}},
+    {properties: {baz: {type: "number"}}}
   ]
 }
 ```
 
-The reason for that is that `additionalProperties` keyword ignores properties inside `oneOf` keyword subschemas. That's not the limitation of Ajv or any other validator, that's how it must work according to the standard (and if you consider all the problems with the alternatives it is the only sensible way to define this keyword).
+The reason for that is that `additionalProperties` keyword ignores properties inside `oneOf` keyword subschemas. That's not the limitation of Ajv or any other validator, that's how it must work according to the standard.
 
 There are several ways to implement the described logic that would allow two properties, please see the suggestions in the issues mentioned above.
 
@@ -90,4 +93,4 @@ There were many conversations about the meaning of `$ref` in [JSON Schema GitHub
 There are two possible approaches:
 
 1. Traverse schema (e.g. with json-schema-traverse) and replace every `$ref` with the referenced schema.
-2. Use a specially constructed JSON Schema with a [user-defined keyword](https://github.com/ajv-validator/ajv/blob/master/CUSTOM.md) to traverse and modify your schema.
+2. Use a specially constructed JSON Schema with a [user-defined keyword](./KEYWORDS.md) to traverse and modify your schema.
