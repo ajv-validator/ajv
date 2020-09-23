@@ -320,29 +320,19 @@ Converts the JSON-Pointer fragment from URI to the property name.
 
 ## Reporting errors
 
-All keywords but `macro` can optionally define error messages.
+All keywords can define error messages with `KeywordErrorDefinition` object passed as `error` property of keyword definition:
 
-Synchronous validating and compiled keywords should define errors by assigning them to `.errors` property of the validation function. Asynchronous keywords can return promise that rejects with `new Ajv.ValidationError(errors)`, where `errors` is an array of validation errors (if you don't want to create errors in asynchronous keyword, its validation function can return the promise that resolves with `false`).
-
-TODO replace "inline" keywords with "code" keywords
-
-Inline keyword should increase error counter `errors` and add error to `vErrors` array (it can be null). This can be done for both synchronous and asynchronous keywords.
-
-When inline keyword performs validation Ajv checks whether it created errors by comparing errors count before and after validation. To skip this check add option `errors` (can be `"full"`, `true` or `false`) to keyword definition:
-
-```javascript
-ajv.addKeyword("range", {
-  type: "number",
-  inline: inlineRangeTemplate,
-  statements: true,
-  errors: true, // keyword should create errors when validation fails
-  // errors: 'full' // created errors should have dataPath already set
-  // errors: false // keyword never creates errors, Ajv will add a default error
-})
+```typescript
+interface KeywordErrorDefinition {
+  message: string | ((cxt: KeywordErrorCxt) => Code)
+  params?: (cxt: KeywordErrorCxt) => Code
+}
 ```
 
-Each error object should at least have properties `keyword`, `message` and `params`, other properties will be added.
+`code` keywords can pass parameters to these functions via `cxt.setParams` (see implementations of pre-defined keywords), other keywords can only set a string message this way.
 
-Inlined keywords can optionally define `dataPath` and `schemaPath` properties in error objects, that will be assigned by Ajv unless `errors` option of the keyword is `"full"`.
+Another approach for reporting errors can be used for `validate` and `compile` keyword - they can define errors by assigning them to `.errors` property of the validation function. Asynchronous keywords can return promise that rejects with `new Ajv.ValidationError(errors)`, where `errors` is an array of validation errors (if you don't want to create errors in asynchronous keyword, its validation function can return the promise that resolves with `false`).
 
-If keyword doesn't create errors, the default error will be created in case the keyword fails validation (see [Validation errors](https://github.com/ajv-validator/ajv#validation-errors)).
+Each error object in `errors` array should at least have properties `keyword`, `message` and `params`, other properties will be added.
+
+If keyword doesn't define or return errors, the default error will be created in case the keyword fails validation.
