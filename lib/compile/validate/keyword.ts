@@ -11,7 +11,7 @@ import type {JSONType} from "../rules"
 import KeywordCxt from "../context"
 import {applySubschema} from "../subschema"
 import {extendErrors} from "../errors"
-import {callValidateCode} from "../../vocabularies/util"
+import {callValidateCode} from "../../vocabularies/code"
 import {CodeGen, _, nil, Code, Name} from "../codegen"
 import N from "../names"
 

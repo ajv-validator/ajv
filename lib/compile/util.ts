@@ -1,77 +1,31 @@
 import type {AnySchema} from "../types"
-import type {SchemaCxt} from "./index"
-import type {JSONType, Rule, ValidationRules} from "./rules"
-import {_, nil, and, operators, Code, Name, getProperty} from "./codegen"
-import N from "./names"
-
-export enum DataType {
-  Correct,
-  Wrong,
-}
-
-export function checkDataType(
-  dataType: JSONType,
-  data: Name,
-  strictNums?: boolean | "log",
-  correct = DataType.Correct
-): Code {
-  const EQ = correct === DataType.Correct ? operators.EQ : operators.NEQ
-  let cond: Code
-  switch (dataType) {
-    case "null":
-      return _`${data} ${EQ} null`
-    case "array":
-      cond = _`Array.isArray(${data})`
-      break
-    case "object":
-      cond = _`${data} && typeof ${data} == "object" && !Array.isArray(${data})`
-      break
-    case "integer":
-      cond = numCond(_`!(${data} % 1) && !isNaN(${data})`)
-      break
-    case "number":
-      cond = numCond()
-      break
-    default:
-      return _`typeof ${data} ${EQ} ${dataType}`
-  }
-  return correct === DataType.Correct ? cond : _`!(${cond})`
-
-  function numCond(_cond: Code = nil): Code {
-    return and(_`typeof ${data} == "number"`, _cond, strictNums ? _`isFinite(${data})` : nil)
-  }
-}
-
-export function checkDataTypes(
-  dataTypes: JSONType[],
-  data: Name,
-  strictNums?: boolean | "log",
-  correct?: DataType
-): Code {
-  if (dataTypes.length === 1) {
-    return checkDataType(dataTypes[0], data, strictNums, correct)
-  }
-  let cond: Code
-  const types = toHash(dataTypes)
-  if (types.array && types.object) {
-    const notObj = _`typeof ${data} != "object"`
-    cond = types.null ? notObj : _`(!${data} || ${notObj})`
-    delete types.null
-    delete types.array
-    delete types.object
-  } else {
-    cond = nil
-  }
-  if (types.number) delete types.integer
-  for (const t in types) cond = and(cond, checkDataType(t as JSONType, data, strictNums, correct))
-  return cond
-}
+import type {SchemaCxt, SchemaObjCxt} from "."
+import {_, getProperty, Code} from "./codegen"
+import type {Rule, ValidationRules} from "./rules"
+import {checkStrictMode} from "./validate"
 
 // TODO refactor to use Set
 export function toHash<T extends string = string>(arr: T[]): {[K in T]?: true} {
   const hash: {[K in T]?: true} = {}
   for (const item of arr) hash[item] = true
   return hash
+}
+
+export function alwaysValidSchema(it: SchemaCxt, schema: AnySchema): boolean | void {
+  if (typeof schema == "boolean") return schema
+  if (Object.keys(schema).length === 0) return true
+  checkUnknownRules(it, schema)
+  return !schemaHasRules(schema, it.self.RULES.all)
+}
+
+export function checkUnknownRules(it: SchemaCxt, schema: AnySchema = it.schema): void {
+  const {opts, self} = it
+  if (!opts.strict) return
+  if (typeof schema === "boolean") return
+  const rules = self.RULES.keywords
+  for (const key in schema) {
+    if (!rules[key]) checkStrictMode(it, `unknown keyword: "${key}"`)
+  }
 }
 
 export function schemaHasRules(
@@ -83,58 +37,23 @@ export function schemaHasRules(
   return false
 }
 
-export function schemaCxtHasRules({schema, self}: SchemaCxt): boolean {
-  if (typeof schema == "boolean") return !schema
-  for (const key in schema) if (self.RULES.all[key]) return true
-  return false
-}
-
 export function schemaHasRulesButRef(schema: AnySchema, RULES: ValidationRules): boolean {
   if (typeof schema == "boolean") return !schema
   for (const key in schema) if (key !== "$ref" && RULES.all[key]) return true
   return false
 }
 
-const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/
-const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/
-export function getData(
-  $data: string,
-  {dataLevel, dataNames, dataPathArr}: SchemaCxt
-): Code | number {
-  let jsonPointer
-  let data: Code
-  if ($data === "") return N.rootData
-  if ($data[0] === "/") {
-    if (!JSON_POINTER.test($data)) throw new Error(`Invalid JSON-pointer: ${$data}`)
-    jsonPointer = $data
-    data = N.rootData
-  } else {
-    const matches = RELATIVE_JSON_POINTER.exec($data)
-    if (!matches) throw new Error(`Invalid JSON-pointer: ${$data}`)
-    const up: number = +matches[1]
-    jsonPointer = matches[2]
-    if (jsonPointer === "#") {
-      if (up >= dataLevel) throw new Error(errorMsg("property/index", up))
-      return dataPathArr[dataLevel - up]
-    }
-    if (up > dataLevel) throw new Error(errorMsg("data", up))
-    data = dataNames[dataLevel - up]
-    if (!jsonPointer) return data
+export function schemaRefOrVal(
+  {topSchemaRef, schemaPath}: SchemaObjCxt,
+  schema: unknown,
+  keyword: string,
+  $data?: string | false
+): Code | number | boolean {
+  if (!$data) {
+    if (typeof schema == "number" || typeof schema == "boolean") return schema
+    if (typeof schema == "string") return _`${schema}`
   }
-
-  let expr = data
-  const segments = jsonPointer.split("/")
-  for (const segment of segments) {
-    if (segment) {
-      data = _`${data}${getProperty(unescapeJsonPointer(segment))}`
-      expr = _`${expr} && ${data}`
-    }
-  }
-  return expr
-
-  function errorMsg(pointerType: string, up: number): string {
-    return `Cannot access ${pointerType} ${up} levels up, current level is ${dataLevel}`
-  }
+  return _`${topSchemaRef}${schemaPath}${getProperty(keyword)}`
 }
 
 export function unescapeFragment(str: string): string {
@@ -150,7 +69,7 @@ export function escapeJsonPointer(str: string | number): string {
   return str.replace(/~/g, "~0").replace(/\//g, "~1")
 }
 
-function unescapeJsonPointer(str: string): string {
+export function unescapeJsonPointer(str: string): string {
   return str.replace(/~1/g, "/").replace(/~0/g, "~")
 }
 
@@ -160,4 +79,23 @@ export function eachItem<T>(xs: T | T[], f: (x: T) => void): void {
   } else {
     f(xs)
   }
+}
+
+// https://mathiasbynens.be/notes/javascript-encoding
+// https://github.com/bestiejs/punycode.js - punycode.ucs2.decode
+export function ucs2length(str: string): number {
+  const len = str.length
+  let length = 0
+  let pos = 0
+  let value: number
+  while (pos < len) {
+    length++
+    value = str.charCodeAt(pos++)
+    if (value >= 0xd800 && value <= 0xdbff && pos < len) {
+      // high surrogate, and there is a next character
+      value = str.charCodeAt(pos)
+      if ((value & 0xfc00) === 0xdc00) pos++ // low surrogate
+    }
+  }
+  return length
 }

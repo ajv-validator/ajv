@@ -1,6 +1,6 @@
 import type {CodeKeywordDefinition} from "../../types"
 import KeywordCxt from "../../compile/context"
-import {schemaProperties, propertyInData} from "../util"
+import {propertyInData, schemaProperties} from "../code"
 import {applySubschema} from "../../compile/subschema"
 import apDef from "./additionalProperties"
 

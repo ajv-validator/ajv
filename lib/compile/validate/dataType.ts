@@ -7,10 +7,14 @@ import type {
 import type {SchemaObjCxt} from ".."
 import {isJSONType, JSONType} from "../rules"
 import {schemaHasRulesForType} from "./applicability"
-import {checkDataTypes, DataType} from "../util"
-import {schemaRefOrVal} from "../../vocabularies/util"
 import {reportError} from "../errors"
-import {_, str, Name} from "../codegen"
+import {_, str, nil, and, operators, Code, Name} from "../codegen"
+import {toHash, schemaRefOrVal} from "../util"
+
+export enum DataType {
+  Correct,
+  Wrong,
+}
 
 export function getSchemaTypes(schema: AnySchemaObject): JSONType[] {
   const types = getJSONTypes(schema.type)
@@ -135,6 +139,64 @@ function assignParentData({gen, parentData, parentDataProperty}: SchemaObjCxt, e
   gen.if(_`${parentData} !== undefined`, () =>
     gen.assign(_`${parentData}[${parentDataProperty}]`, expr)
   )
+}
+
+export function checkDataType(
+  dataType: JSONType,
+  data: Name,
+  strictNums?: boolean | "log",
+  correct = DataType.Correct
+): Code {
+  const EQ = correct === DataType.Correct ? operators.EQ : operators.NEQ
+  let cond: Code
+  switch (dataType) {
+    case "null":
+      return _`${data} ${EQ} null`
+    case "array":
+      cond = _`Array.isArray(${data})`
+      break
+    case "object":
+      cond = _`${data} && typeof ${data} == "object" && !Array.isArray(${data})`
+      break
+    case "integer":
+      cond = numCond(_`!(${data} % 1) && !isNaN(${data})`)
+      break
+    case "number":
+      cond = numCond()
+      break
+    default:
+      return _`typeof ${data} ${EQ} ${dataType}`
+  }
+  return correct === DataType.Correct ? cond : _`!(${cond})`
+
+  function numCond(_cond: Code = nil): Code {
+    return and(_`typeof ${data} == "number"`, _cond, strictNums ? _`isFinite(${data})` : nil)
+  }
+}
+
+export function checkDataTypes(
+  dataTypes: JSONType[],
+  data: Name,
+  strictNums?: boolean | "log",
+  correct?: DataType
+): Code {
+  if (dataTypes.length === 1) {
+    return checkDataType(dataTypes[0], data, strictNums, correct)
+  }
+  let cond: Code
+  const types = toHash(dataTypes)
+  if (types.array && types.object) {
+    const notObj = _`typeof ${data} != "object"`
+    cond = types.null ? notObj : _`(!${data} || ${notObj})`
+    delete types.null
+    delete types.array
+    delete types.object
+  } else {
+    cond = nil
+  }
+  if (types.number) delete types.integer
+  for (const t in types) cond = and(cond, checkDataType(t as JSONType, data, strictNums, correct))
+  return cond
 }
 
 export type TypeError = ErrorObject<"type", {type: string}>

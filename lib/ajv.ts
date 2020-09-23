@@ -11,10 +11,13 @@ export {
   Schema,
   SchemaObject,
   AsyncSchema,
+  AnySchema,
   ValidateFunction,
   AsyncValidateFunction,
   ErrorObject,
 } from "./types"
+
+export {SchemaCxt, SchemaObjCxt} from "./compile"
 export interface Plugin<Opts> {
   (ajv: Ajv, options?: Opts): Ajv
   [prop: string]: any

@@ -1,9 +1,10 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type {SchemaObjCxt} from "../../compile"
 import type KeywordCxt from "../../compile/context"
-import {alwaysValidSchema, checkStrictMode} from "../util"
-import {applySubschema} from "../../compile/subschema"
 import {_, str, Name} from "../../compile/codegen"
+import {applySubschema} from "../../compile/subschema"
+import {alwaysValidSchema} from "../../compile/util"
+import {checkStrictMode} from "../../compile/validate"
 
 export type IfKeywordError = ErrorObject<"if", {failingKeyword: string}>
 

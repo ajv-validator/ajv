@@ -1,7 +1,12 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {propertyInData, noPropertyInData} from "../util"
-import {checkReportMissingProp, checkMissingProp, reportMissingProp} from "../missing"
+import {
+  checkReportMissingProp,
+  checkMissingProp,
+  reportMissingProp,
+  propertyInData,
+  noPropertyInData,
+} from "../code"
 import {_, str, nil, Name} from "../../compile/codegen"
 
 export type RequiredError = ErrorObject<"required", {missingProperty: string}>

@@ -1,8 +1,8 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {alwaysValidSchema} from "../util"
-import {applySubschema} from "../../compile/subschema"
 import {_, str} from "../../compile/codegen"
+import {applySubschema} from "../../compile/subschema"
+import {alwaysValidSchema} from "../../compile/util"
 
 export type PropertyNamesError = ErrorObject<"propertyNames", {propertyName: string}>
 

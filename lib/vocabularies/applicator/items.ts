@@ -1,8 +1,9 @@
 import type {CodeKeywordDefinition, AnySchema} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {alwaysValidSchema, checkStrictMode} from "../util"
-import {applySubschema, Type} from "../../compile/subschema"
 import {_} from "../../compile/codegen"
+import {applySubschema, Type} from "../../compile/subschema"
+import {alwaysValidSchema} from "../../compile/util"
+import {checkStrictMode} from "../../compile/validate"
 
 const def: CodeKeywordDefinition = {
   keyword: "items",

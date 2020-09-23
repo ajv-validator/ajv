@@ -1,7 +1,7 @@
 import type {CodeKeywordDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {alwaysValidSchema} from "../util"
 import {applySubschema} from "../../compile/subschema"
+import {alwaysValidSchema} from "../../compile/util"
 
 const def: CodeKeywordDefinition = {
   keyword: "not",

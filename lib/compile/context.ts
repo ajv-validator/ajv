@@ -4,10 +4,10 @@ import type {
   KeywordCxtParams,
   AnySchemaObject,
 } from "../types"
-import {SchemaObjCxt} from "./index"
+import {SchemaCxt, SchemaObjCxt} from "./index"
 import {JSONType} from "./rules"
-import {schemaRefOrVal} from "../vocabularies/util"
-import {getData, checkDataTypes, DataType} from "./util"
+import {checkDataTypes, DataType} from "./validate/dataType"
+import {schemaRefOrVal, unescapeJsonPointer} from "./util"
 import {
   reportError,
   reportExtraError,
@@ -15,7 +15,7 @@ import {
   keywordError,
   keyword$DataError,
 } from "./errors"
-import {CodeGen, _, nil, or, Code, Name} from "./codegen"
+import {CodeGen, _, nil, or, getProperty, Code, Name} from "./codegen"
 import N from "./names"
 
 export default class KeywordCxt implements KeywordErrorCxt {
@@ -200,5 +200,44 @@ function validateKeywordUsage(
       if (opts.validateSchema === "log") self.logger.error(msg)
       else throw new Error(msg)
     }
+  }
+}
+
+const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/
+const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/
+function getData($data: string, {dataLevel, dataNames, dataPathArr}: SchemaCxt): Code | number {
+  let jsonPointer
+  let data: Code
+  if ($data === "") return N.rootData
+  if ($data[0] === "/") {
+    if (!JSON_POINTER.test($data)) throw new Error(`Invalid JSON-pointer: ${$data}`)
+    jsonPointer = $data
+    data = N.rootData
+  } else {
+    const matches = RELATIVE_JSON_POINTER.exec($data)
+    if (!matches) throw new Error(`Invalid JSON-pointer: ${$data}`)
+    const up: number = +matches[1]
+    jsonPointer = matches[2]
+    if (jsonPointer === "#") {
+      if (up >= dataLevel) throw new Error(errorMsg("property/index", up))
+      return dataPathArr[dataLevel - up]
+    }
+    if (up > dataLevel) throw new Error(errorMsg("data", up))
+    data = dataNames[dataLevel - up]
+    if (!jsonPointer) return data
+  }
+
+  let expr = data
+  const segments = jsonPointer.split("/")
+  for (const segment of segments) {
+    if (segment) {
+      data = _`${data}${getProperty(unescapeJsonPointer(segment))}`
+      expr = _`${expr} && ${data}`
+    }
+  }
+  return expr
+
+  function errorMsg(pointerType: string, up: number): string {
+    return `Cannot access ${pointerType} ${up} levels up, current level is ${dataLevel}`
   }
 }

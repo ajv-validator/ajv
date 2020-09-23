@@ -1,6 +1,6 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {usePattern} from "../util"
+import {usePattern} from "../code"
 import {_, str} from "../../compile/codegen"
 
 export type PatternError = ErrorObject<"pattern", {pattern: string}>

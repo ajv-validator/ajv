@@ -1,6 +1,6 @@
 import type {SchemaObjCxt} from ".."
 import {_, getProperty, stringify} from "../codegen"
-import {checkStrictMode} from "../../vocabularies/util"
+import {checkStrictMode} from "."
 
 export function assignDefaults(it: SchemaObjCxt, ty?: string): void {
   const {properties, items} = it.schema

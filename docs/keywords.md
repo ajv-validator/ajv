@@ -292,16 +292,6 @@ Determines whether the passed schema has rules that should be validated. This fu
 schemaHasRules(schema, it.RULES.all) // true or false
 ```
 
-##### .getData(String jsonPointer, Number dataLevel, Array paths) -&gt; String
-
-Returns the validation-time expression to safely access data based on the passed [relative json pointer](https://tools.ietf.org/html/draft-luff-relative-json-pointer-00) (See [examples](https://gist.github.com/geraintluff/5911303)).
-
-```javascript
-getData("2/test/1", it.dataLevel, it.dataPathArr)
-// The result depends on the current level
-// if it.dataLevel is 3 the result is "data1 && data1.test && data1.test[1]"
-```
-
 ##### .escapeJsonPointer(String str) -&gt; String
 
 Converts the property name to the JSON-Pointer fragment.

@@ -7,8 +7,7 @@ import {schemaKeywords} from "./iterate"
 import {_, nil, str, Block, Code, Name, CodeGen} from "../codegen"
 import N from "../names"
 import {resolveUrl} from "../resolve"
-import {schemaCxtHasRules, schemaHasRulesButRef} from "../util"
-import {checkStrictMode, checkUnknownRules} from "../../vocabularies/util"
+import {schemaHasRulesButRef, checkUnknownRules} from "../util"
 
 // schema compilation - generates validation function, subschemaCode (below) is used for subschemas
 export function validateFunctionCode(it: SchemaCxt): void {
@@ -91,6 +90,12 @@ export function subschemaCode(it: SchemaCxt, valid: Name): void {
   boolOrEmptySchema(it, valid)
 }
 
+export function schemaCxtHasRules({schema, self}: SchemaCxt): boolean {
+  if (typeof schema == "boolean") return !schema
+  for (const key in schema) if (self.RULES.all[key]) return true
+  return false
+}
+
 function isSchemaObj(it: SchemaCxt): it is SchemaObjCxt {
   return typeof it.schema != "boolean"
 }
@@ -162,4 +167,11 @@ function returnResults({gen, schemaEnv, validateName, ValidationError}: SchemaCx
     gen.assign(_`${validateName}.errors`, N.vErrors)
     gen.return(_`${N.errors} === 0`)
   }
+}
+
+export function checkStrictMode(it: SchemaCxt, msg: string, mode = it.opts.strict): void {
+  if (!mode) return
+  msg = `strict mode: ${msg}`
+  if (mode === true) throw new Error(msg)
+  it.self.logger.warn(msg)
 }

@@ -4,10 +4,11 @@ import type {
   ErrorObject,
   KeywordErrorDefinition,
 } from "../../types"
-import {allSchemaProperties, schemaRefOrVal, alwaysValidSchema, usePattern} from "../util"
-import {applySubschema, SubschemaArgs, Type} from "../../compile/subschema"
+import {allSchemaProperties, usePattern} from "../code"
 import {_, nil, or, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
+import {applySubschema, SubschemaArgs, Type} from "../../compile/subschema"
+import {alwaysValidSchema, schemaRefOrVal} from "../../compile/util"
 
 export type AdditionalPropertiesError = ErrorObject<
   "additionalProperties",

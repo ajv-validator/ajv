@@ -1,8 +1,9 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {alwaysValidSchema, checkStrictMode} from "../util"
-import {applySubschema, Type} from "../../compile/subschema"
 import {_, Name, str} from "../../compile/codegen"
+import {applySubschema, Type} from "../../compile/subschema"
+import {alwaysValidSchema} from "../../compile/util"
+import {checkStrictMode} from "../../compile/validate"
 
 export type AdditionalItemsError = ErrorObject<"additionalItems", {limit: number}>
 

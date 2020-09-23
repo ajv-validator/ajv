@@ -1,7 +1,6 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {getSchemaTypes} from "../../compile/validate/dataType"
-import {checkDataTypes, DataType} from "../../compile/util"
+import {checkDataTypes, getSchemaTypes, DataType} from "../../compile/validate/dataType"
 import {_, str, Name} from "../../compile/codegen"
 import equal from "fast-deep-equal"
 
