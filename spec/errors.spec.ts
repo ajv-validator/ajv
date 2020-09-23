@@ -966,6 +966,70 @@ describe("Validation errors", () => {
         }
       })
     })
+    it("should report all duplicates with uniqueItems: all option when items is obejct", () => {
+      const ajv = new _Ajv({allErrors: true, uniqueItems: "all", strictTuples: false})
+      const schema = {
+        type: "array",
+        items: {type: "number"},
+        uniqueItems: true,
+      }
+      const validate = ajv.compile(schema)
+      shouldBeInvalid(validate, [1, 1, 2, 3,2], 2)
+
+      shouldBeError(
+        validate.errors?.[0],
+        "uniqueItems",
+        "#/uniqueItems",
+        "",
+        "should NOT have duplicate items (items ## 4 and 2 are identical)",
+        {i: 2, j: 4}
+      )
+      shouldBeError(
+        validate.errors?.[1],
+        "uniqueItems",
+        "#/uniqueItems",
+        "",
+        "should NOT have duplicate items (items ## 1 and 0 are identical)",
+        {i: 0, j: 1}
+      )
+    })
+    it("should report all duplicates with uniqueItems: all option when items is array", () => {
+      const ajv = new _Ajv({allErrors: true, uniqueItems: "all", strictTuples: false})
+      const schema = {
+        type: "array",
+        items: [{type: "number"}],
+        uniqueItems: true,
+      }
+      const validate = ajv.compile(schema)
+      shouldBeInvalid(validate, [1, 1, 2, 3,2], 2)
+
+      shouldBeError(
+        validate.errors?.[0],
+        "uniqueItems",
+        "#/uniqueItems",
+        "",
+        "should NOT have duplicate items (items ## 2 and 4 are identical)",
+        {i: 4, j: 2}
+      )
+      shouldBeError(
+        validate.errors?.[1],
+        "uniqueItems",
+        "#/uniqueItems",
+        "",
+        "should NOT have duplicate items (items ## 0 and 1 are identical)",
+        {i: 1, j: 0}
+      )
+    })
+    it("should not report error with uniqueItems: false option", () => {
+      const ajv = new _Ajv({allErrors: true, uniqueItems:false, strictTuples: false})
+      const schema = {
+        type: "array",
+        items: {type: "number"},
+        uniqueItems: true,
+      }
+      const validate = ajv.compile(schema)
+      shouldBeValid(validate, [1, 1, 2, 3,2])
+    })
   })
 
   function testSchema1(schema, schemaPathPrefix = "#/properties/foo") {

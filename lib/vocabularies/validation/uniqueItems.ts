@@ -21,7 +21,7 @@ const def: CodeKeywordDefinition = {
   error,
   code(cxt: KeywordCxt) {
     const {gen, data, $data, schema, parentSchema, schemaCode, it} = cxt
-    if (!$data && !schema) return
+    if (!$data && !schema || it.opts.uniqueItems === false) return
     const valid = gen.let("valid")
     const itemTypes = parentSchema.items ? getSchemaTypes(parentSchema.items) : []
     cxt.block$data(valid, validateUniqueItems, _`${schemaCode} === false`)
@@ -51,7 +51,8 @@ const def: CodeKeywordDefinition = {
           .if(_`typeof ${indices}[${item}] == "number"`, () => {
             gen.assign(j, _`${indices}[${item}]`)
             cxt.error()
-            gen.assign(valid, false).break()
+            gen.assign(valid, false)
+            if (it.opts.uniqueItems !== "all") gen.break()
           })
           .code(_`${indices}[${item}] = ${i}`)
       })
@@ -67,7 +68,8 @@ const def: CodeKeywordDefinition = {
         gen.for(_`${j} = ${i}; ${j}--;`, () =>
           gen.if(_`${eql}(${data}[${i}], ${data}[${j}])`, () => {
             cxt.error()
-            gen.assign(valid, false).break(outer)
+            gen.assign(valid, false)
+            if (it.opts.uniqueItems !== "all") gen.break(outer)
           })
         )
       )

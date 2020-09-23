@@ -91,6 +91,7 @@ interface CurrentOptions {
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
+  uniqueItems?: boolean | string
   $comment?:
     | true
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
@@ -146,7 +147,6 @@ interface RemovedOptions {
   strictDefaults?: boolean
   strictKeywords?: boolean
   strictNumbers?: boolean
-  uniqueItems?: boolean
   unknownFormats?: true | string[] | "ignore"
   cache?: any
   serialize?: (schema: AnySchema) => unknown
@@ -169,7 +169,6 @@ const removedOptions: OptionsInfo<RemovedOptions> = {
   strictDefaults: "It is default now, see option `strict`.",
   strictKeywords: "It is default now, see option `strict`.",
   strictNumbers: "It is default now, see option `strict`.",
-  uniqueItems: '"uniqueItems" keyword is always validated.',
   unknownFormats: "Disable strict mode or pass `true` to `ajv.addFormat` (or `formats` option).",
   cache: "Map is used as cache, schema object as key.",
   serialize: "Map is used as cache, schema object as key.",
