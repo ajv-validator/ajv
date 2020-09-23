@@ -1,5 +1,5 @@
 export class _Code {
-  private _str: string
+  private readonly _str: string
 
   constructor(s: string) {
     this._str = s
@@ -9,17 +9,8 @@ export class _Code {
     return this._str
   }
 
-  isQuoted(): boolean {
-    const len = this._str.length
-    return len >= 2 && this._str[0] === '"' && this._str[len - 1] === '"'
-  }
-
   emptyStr(): boolean {
     return this._str === "" || this._str === '""'
-  }
-
-  add(c: _Code): void {
-    this._str += c._str
   }
 }
 
@@ -31,16 +22,8 @@ export class Name extends _Code {
     if (!IDENTIFIER.test(s)) throw new Error("CodeGen: name must be a valid identifier")
   }
 
-  isQuoted(): boolean {
-    return false
-  }
-
   emptyStr(): boolean {
     return false
-  }
-
-  add(_c: _Code): void {
-    throw new Error("CodeGen: can't add to Name")
   }
 }
 
@@ -53,25 +36,27 @@ export const nil = new _Code("")
 type TemplateArg = SafeExpr | string | undefined
 
 export function _(strs: TemplateStringsArray, ...args: TemplateArg[]): _Code {
-  // TODO benchmark if loop is faster than reduce
-  // let res = strs[0]
-  // for (let i = 0; i < args.length; i++) {
-  //   res += interpolate(args[i]) + strs[i + 1]
-  // }
-  // return new _Code(res)
   return new _Code(strs.reduce((res, s, i) => `${res}${interpolate(args[i - 1])}${s}`))
 }
 
 export function str(strs: TemplateStringsArray, ...args: (TemplateArg | string[])[]): _Code {
   return new _Code(
-    strs.map(safeStringify).reduce((res, s, i) => {
-      let aStr = interpolateStr(args[i - 1])
-      if (aStr instanceof _Code && aStr.isQuoted()) aStr = aStr.toString()
-      return typeof aStr === "string"
-        ? res.slice(0, -1) + aStr.slice(1, -1) + s.slice(1)
-        : `${res} + ${aStr} + ${s}`
-    })
+    strs
+      .map(safeStringify)
+      .reduce((res, s, i) => concat(concat(res, interpolateStr(args[i - 1])), s))
   )
+}
+
+function concat(s: string, a: string | number | boolean | null | undefined): string {
+  return a === '""'
+    ? s
+    : s === '""'
+    ? `${a}`
+    : typeof a != "string"
+    ? `${s.slice(0, -1)}${a}"`
+    : s.endsWith('"') && a[0] === '"'
+    ? s.slice(0, -1) + a.slice(1)
+    : `${s} + ${a}`
 }
 
 export function strConcat(c1: Code, c2: Code): Code {
@@ -84,9 +69,10 @@ function interpolate(x: TemplateArg): TemplateArg {
     : safeStringify(x)
 }
 
-function interpolateStr(x: TemplateArg | string[]): TemplateArg {
+function interpolateStr(x: TemplateArg | string[]): string | number | boolean | null | undefined {
   if (Array.isArray(x)) x = x.join(",")
-  return interpolate(x)
+  x = interpolate(x)
+  return x instanceof _Code ? x.toString() : x
 }
 
 export function stringify(x: unknown): Code {
@@ -101,8 +87,4 @@ function safeStringify(x: unknown): string {
 
 export function getProperty(key: Code | string | number): Code {
   return typeof key == "string" && IDENTIFIER.test(key) ? new _Code(`.${key}`) : _`[${key}]`
-}
-
-export function keyValue(key: Name, value: SafeExpr, es5?: boolean): Code {
-  return key === value && !es5 ? key : _`${key}: ${value}`
 }

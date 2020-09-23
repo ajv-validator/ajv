@@ -16,6 +16,7 @@
     "prettier:write": "prettier --write './**/*.{md,json,yaml,js,ts}'",
     "prettier:check": "prettier --list-different './**/*.{md,json,yaml,js,ts}'",
     "test-spec": "cross-env TS_NODE_PROJECT=spec/tsconfig.json mocha -r ts-node/register 'spec/**/*.spec.ts' -R dot",
+    "test-codegen": "nyc cross-env TS_NODE_PROJECT=spec/tsconfig.json mocha -r ts-node/register 'spec/codegen.spec.ts' -R spec",
     "test-debug": "npm run test-spec -- --inspect-brk",
     "test-cov": "nyc npm run test-spec",
     "bundle": "rm -rf bundle && node ./scripts/bundle.js",

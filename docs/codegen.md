@@ -29,7 +29,7 @@ gen.if(
   // so if `x` contained some code, it would not be executed.
   _`${num} > ${x}`,
   () => log("greater"),
-  () => log("smaller")
+  () => log("smaller or equal")
 )
 
 function log(comparison: string): void {

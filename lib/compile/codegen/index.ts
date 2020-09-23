@@ -12,8 +12,10 @@ enum BlockKind {
   Func,
 }
 
+// type for expressions that can be safely inserted in code without quotes
 export type SafeExpr = Code | number | boolean | null
 
+// type that is either Code of function that adds code to CodeGen instance using its methods
 export type Block = Code | (() => void)
 
 export const operators = {
@@ -61,14 +63,17 @@ export class CodeGen {
     return this._out
   }
 
+  // returns unique name in the internal scope
   name(prefix: string): Name {
     return this._scope.name(prefix)
   }
 
+  // reserves unique name in the external scope
   scopeName(prefix: string): ValueScopeName {
     return this._extScope.name(prefix)
   }
 
+  // reserves unique name in the external scope and assigns value to it
   scopeValue(prefixOrName: ValueScopeName | string, value: NameValue): Name {
     const name = this._extScope.value(prefixOrName, value)
     const vs = this._values[name.prefix] || (this._values[name.prefix] = new Set())
@@ -80,6 +85,8 @@ export class CodeGen {
     return this._extScope.getValue(prefix, keyOrRef)
   }
 
+  // return code that assigns values in the external scope to the names that are used internally
+  // (same names that were returned by gen.scopeName or gen.scopeValue)
   scopeRefs(scopeName: Name): Code {
     return this._extScope.scopeRefs(scopeName, this._values)
   }
@@ -92,23 +99,28 @@ export class CodeGen {
     return name
   }
 
-  const(nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
+  // render `const` declaration (`var` in es5 mode)
+  const(nameOrPrefix: Name | string, rhs: SafeExpr): Name {
     return this._def(varKinds.const, nameOrPrefix, rhs)
   }
 
+  // render `let` declaration with optional assignment (`var` in es5 mode)
   let(nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
     return this._def(varKinds.let, nameOrPrefix, rhs)
   }
 
+  // render `var` declaration with optional assignment
   var(nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
     return this._def(varKinds.var, nameOrPrefix, rhs)
   }
 
+  // render assignment
   assign(name: Code, rhs: SafeExpr): CodeGen {
     this._out += `${name} = ${rhs};` + this._n
     return this
   }
 
+  // appends passed SafeExpr to code or executes Block
   code(c: Block | SafeExpr): CodeGen {
     if (typeof c == "function") c()
     else this._out += `${c};${this._n}`
@@ -116,13 +128,15 @@ export class CodeGen {
     return this
   }
 
+  // returns code for object literal for the passed argument list of key-value pairs
   object(...keyValues: [Name, SafeExpr][]): _Code {
     const values = keyValues
-      .map(([key, value]) => (key === value && !this.opts.es5 ? key : `${key}: ${value}`))
+      .map(([key, value]) => (key === value && !this.opts.es5 ? key : `${key}:${value}`))
       .reduce((c1, c2) => `${c1},${c2}`)
     return new _Code(`{${values}}`)
   }
 
+  // render `if` clause (or statement if `thenBody` and, optionally, `elseBody` are passed)
   if(condition: Code | boolean, thenBody?: Block, elseBody?: Block): CodeGen {
     this._blocks.push(BlockKind.If)
     this._out += `if(${condition}){` + this._n
@@ -136,17 +150,21 @@ export class CodeGen {
     return this
   }
 
+  // render `if` clause or statement with negated condition,
+  // useful to avoid using _ template just to negate the name
   ifNot(condition: Code, thenBody?: Block, elseBody?: Block): CodeGen {
     const cond = new _Code(condition instanceof Name ? `!${condition}` : `!(${condition})`)
     return this.if(cond, thenBody, elseBody)
   }
 
+  // render `else if` clause - invalid without `if` or after `else` clauses
   elseIf(condition: Code): CodeGen {
     if (this._lastBlock !== BlockKind.If) throw new Error('CodeGen: "else if" without "if"')
     this._out += `}else if(${condition}){` + this._n
     return this
   }
 
+  // render `else` clause - only valid after `if` or `else if` clauses
   else(): CodeGen {
     if (this._lastBlock !== BlockKind.If) throw new Error('CodeGen: "else" without "if"')
     this._lastBlock = BlockKind.Else
@@ -154,6 +172,7 @@ export class CodeGen {
     return this
   }
 
+  // render the closing brace for `if` statement - checks and updates the stack of previous clauses
   endIf(): CodeGen {
     // TODO possibly remove empty branches here
     const b = this._lastBlock
@@ -163,6 +182,7 @@ export class CodeGen {
     return this
   }
 
+  // render a generic `for` clause (or statement if `forBody` is passed)
   for(iteration: Code, forBody?: Block): CodeGen {
     this._blocks.push(BlockKind.For)
     this._out += `for(${iteration}){` + this._n
@@ -170,6 +190,7 @@ export class CodeGen {
     return this
   }
 
+  // render `for` statement for a range of values
   forRange(
     nameOrPrefix: Name | string,
     from: SafeExpr,
@@ -182,6 +203,7 @@ export class CodeGen {
     return this._loop(_`for(${varKind} ${i}=${from}; ${i}<${to}; ${i}++){`, i, forBody)
   }
 
+  // render `for-of` statement (in es5 mode a normal for loop)
   forOf(
     nameOrPrefix: Name | string,
     iterable: SafeExpr,
@@ -190,7 +212,7 @@ export class CodeGen {
   ): CodeGen {
     const name = this._scope.toName(nameOrPrefix)
     if (this.opts.es5) {
-      const arr = iterable instanceof Name ? iterable : this.var("arr", iterable)
+      const arr = iterable instanceof Name ? iterable : this.var("_arr", iterable)
       return this.forRange("_i", 0, new _Code(`${arr}.length`), (i) => {
         this.var(name, new _Code(`${arr}[${i}]`))
         forBody(name)
@@ -199,6 +221,8 @@ export class CodeGen {
     return this._loop(_`for(${varKind} ${name} of ${iterable}){`, name, forBody)
   }
 
+  // render `for-in` statement.
+  // With option `forInOwn` (set from Ajv option `ownProperties`) render a `for-of` loop for object keys
   forIn(
     nameOrPrefix: Name | string,
     obj: SafeExpr,
@@ -220,6 +244,7 @@ export class CodeGen {
     return this
   }
 
+  // render closing brace for `for` loop - checks and updates the stack of previous clauses
   endFor(): CodeGen {
     const b = this._lastBlock
     if (b !== BlockKind.For) throw new Error('CodeGen: "endFor" without "for"')
@@ -228,16 +253,19 @@ export class CodeGen {
     return this
   }
 
+  // render `label` clause
   label(label?: Code): CodeGen {
     this._out += `${label}:${this._n}`
     return this
   }
 
+  // render `break` statement
   break(label?: Code): CodeGen {
     this._out += (label ? `break ${label};` : "break;") + this._n
     return this
   }
 
+  // render `return` statement
   return(value: Block | SafeExpr): CodeGen {
     this._out += "return "
     this.code(value)
@@ -245,6 +273,7 @@ export class CodeGen {
     return this
   }
 
+  // render `try` statement
   try(tryBody: Block, catchCode?: (e: Name) => void, finallyCode?: Block): CodeGen {
     if (!catchCode && !finallyCode) throw new Error('CodeGen: "try" without "catch" and "finally"')
     this._out += "try{" + this._n
@@ -262,17 +291,20 @@ export class CodeGen {
     return this
   }
 
+  // render `throw` statement
   throw(err: Code): CodeGen {
     this._out += `throw ${err};` + this._n
     return this
   }
 
+  // start self-balancing block
   block(body?: Block, expectedToClose?: number): CodeGen {
     this._blockStarts.push(this._blocks.length)
     if (body) this.code(body).endBlock(expectedToClose)
     return this
   }
 
+  // render braces to balance them until the previous gen.block call
   endBlock(expectedToClose?: number): CodeGen {
     // TODO maybe close blocks one by one, eliminating empty branches
     const len = this._blockStarts.pop()
@@ -286,6 +318,7 @@ export class CodeGen {
     return this
   }
 
+  // render `function` head (or definition if funcBody is passed)
   func(name: Name, args: Code = nil, async?: boolean, funcBody?: Block): CodeGen {
     this._blocks.push(BlockKind.Func)
     this._out += `${async ? "async " : ""}function ${name}(${args}){` + this._n
@@ -293,6 +326,7 @@ export class CodeGen {
     return this
   }
 
+  // render closing brace for function definition
   endFunc(): CodeGen {
     const b = this._lastBlock
     if (b !== BlockKind.Func) throw new Error('CodeGen: "endFunc" without "func"')
@@ -318,12 +352,14 @@ export class CodeGen {
 
 const andCode = mappend(operators.AND)
 
+// boolean AND (&&) expression with the passed arguments
 export function and(...args: Code[]): Code {
   return args.reduce(andCode)
 }
 
 const orCode = mappend(operators.OR)
 
+// boolean OR (||) expression with the passed arguments
 export function or(...args: Code[]): Code {
   return args.reduce(orCode)
 }
