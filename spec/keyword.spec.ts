@@ -25,9 +25,9 @@ describe("User-defined keywords", () => {
     ajv = instances[0]
   })
 
-  describe("user-defined rules", () => {
-    describe('rule with "interpreted" keyword validation', () => {
-      it("should add and validate rule", () => {
+  describe("user-defined keyword", () => {
+    describe('keyword with "validate" function', () => {
+      it("should add and validate keyword", () => {
         testEvenKeyword({keyword: "x-even", type: "number", validate: validateEven})
 
         function validateEven(schema, data) {
@@ -139,8 +139,8 @@ describe("User-defined keywords", () => {
       })
     })
 
-    describe('rule with "compiled" keyword validation', () => {
-      it("should add and validate rule", () => {
+    describe('keyword with "compile" function', () => {
+      it("should add and validate keyword", () => {
         testEvenKeyword({
           keyword: "x-even",
           type: "number",
@@ -254,8 +254,8 @@ describe("User-defined keywords", () => {
     }
   })
 
-  describe("macro rules", () => {
-    it('should add and validate rule with "macro" keyword', () => {
+  describe("macro keywords", () => {
+    it('should add and validate keywords with "macro" function', () => {
       testEvenKeyword({keyword: "x-even", type: "number", macro: macroEven}, 2)
     })
 
@@ -559,8 +559,8 @@ describe("User-defined keywords", () => {
     }
   })
 
-  describe("code rules", () => {
-    it('should add and validate rule with "code" keyword', () => {
+  describe('"code" keywords', () => {
+    it('should add and validate keyword with "code" function', () => {
       testEvenKeyword({
         keyword: "x-even",
         type: "number",
@@ -1125,6 +1125,22 @@ describe("User-defined keywords", () => {
       should.throw(() => {
         _addKeyword("user-defined3", ["number", undefined])
       }, /type must be JSONType/)
+    })
+
+    it("should support old API addKeyword", () => {
+      ajv = new _Ajv({logger: false})
+      //@ts-expect-error
+      ajv.addKeyword("min", {
+        type: "number",
+        schemaType: "number",
+        validate: (schema, data) => data >= schema,
+      })
+      const validate = ajv.compile({
+        type: "number",
+        min: 0,
+      })
+      validate(1).should.equal(true)
+      validate(-1).should.equal(false)
     })
 
     function _addKeyword(keyword, dataType) {

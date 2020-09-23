@@ -98,7 +98,7 @@ interface CurrentOptions {
     | true
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
   formats?: {[name: string]: Format}
-  keywords?: Vocabulary | {[x: string]: KeywordDefinition} // map is deprecated
+  keywords?: Vocabulary
   schemas?: AnySchema[] | {[key: string]: AnySchema}
   logger?: Logger | false
   loadSchema?: (uri: string) => Promise<AnySchemaObject>

@@ -53,6 +53,29 @@ describe("validation options", () => {
         ],
       })
 
+      testKeyword(ajv)
+    })
+
+    it("should support old keywords option as map", () => {
+      const ajv = new _Ajv({
+        allowUnionTypes: true,
+        keywords: {
+          //@ts-expect-error
+          identifier: {
+            type: "string",
+            schema: false,
+            validate: function (data: string) {
+              return /^[a-z_$][a-z0-9_$]*$/i.test(data)
+            },
+          },
+        },
+        logger: false,
+      })
+
+      testKeyword(ajv)
+    })
+
+    function testKeyword(ajv: Ajv) {
       const validate = ajv.compile({
         type: ["string", "number"],
         identifier: true,
@@ -62,7 +85,7 @@ describe("validation options", () => {
       validate("foo bar").should.equal(false)
       validate("123").should.equal(false)
       validate(123).should.equal(true)
-    })
+    }
   })
 
   describe("unicode", () => {
