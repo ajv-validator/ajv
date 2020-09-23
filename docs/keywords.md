@@ -257,57 +257,6 @@ Schema compilation context [SchemaCxt](../lib/compile/index.ts) is available in 
 
 All function scoped variables available during validation are defined in [names](../lib/compile/names.ts).
 
-## Ajv utilities
-
-There are sevral useful functions you can use in your _code_ keywords. These functions can be imported from TODO:
-
-##### .toHash(Array arr) -&gt; Object
-
-Converts the array of strings to the object where each string becomes the key with the value of `true`.
-
-```javascript
-toHash(["a", "b", "c"]) // { a: true, b: true, c: true }
-```
-
-##### .equal(value1, value2) -&gt; Boolean
-
-Performs deep equality comparison. This function is used in keywords `enum`, `constant`, `uniqueItems` and can be used in user-defined keywords.
-
-##### gen.getProperty(String key) -&gt; String
-
-Converts the string that is the key/index to access the property/item to the JavaScript syntax to access the property (either "." notation or "[...]" notation).
-
-```javascript
-getProperty("a") // ".a"
-getProperty("1") // "['1']"
-getProperty("a'b") // "['a\\'b']"
-getProperty(1) // "[1]"
-```
-
-##### .schemaHasRules(Object schema, Object rules) -&gt; String
-
-Determines whether the passed schema has rules that should be validated. This function should be used before calling `it.validate` to compile subschemas.
-
-```javascript
-schemaHasRules(schema, it.RULES.all) // true or false
-```
-
-##### .escapeJsonPointer(String str) -&gt; String
-
-Converts the property name to the JSON-Pointer fragment.
-
-##### .unescapeJsonPointer (String str) -&gt; String
-
-Converts JSON-Pointer fragment to the property name.
-
-##### .unescapeFragment(String str) -&gt; String
-
-Converts the property name to the JSON-Pointer fragment that can be used in URI.
-
-##### .escapeFragment(String str) -&gt; String
-
-Converts the JSON-Pointer fragment from URI to the property name.
-
 ## Reporting errors
 
 All keywords can define error messages with `KeywordErrorDefinition` object passed as `error` property of keyword definition:
