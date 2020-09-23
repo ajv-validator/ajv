@@ -3,12 +3,12 @@
     "description": "JSON with control characters - 'properties' (#226)",
     "schema": {
       "properties": {
-        "foo\nbar": { "type": "number" },
-        "foo\"bar": { "type": "number" },
-        "foo\\bar": { "type": "number" },
-        "foo\rbar": { "type": "number" },
-        "foo\tbar": { "type": "number" },
-        "foo\fbar": { "type": "number" }
+        "foo\nbar": {"type": "number"},
+        "foo\"bar": {"type": "number"},
+        "foo\\bar": {"type": "number"},
+        "foo\rbar": {"type": "number"},
+        "foo\tbar": {"type": "number"},
+        "foo\fbar": {"type": "number"}
       }
     },
     "tests": [
@@ -41,14 +41,7 @@
   {
     "description": "JSON with control characters - 'required' (#226)",
     "schema": {
-      "required": [
-        "foo\nbar",
-        "foo\"bar",
-        "foo\\bar",
-        "foo\rbar",
-        "foo\tbar",
-        "foo\fbar"
-      ]
+      "required": ["foo\nbar", "foo\"bar", "foo\\bar", "foo\rbar", "foo\tbar", "foo\fbar"]
     },
     "tests": [
       {
@@ -76,7 +69,7 @@
   {
     "description": "JSON with control characters - 'enum'",
     "schema": {
-      "enum": [ "foo\nbar", "foo\rbar" ]
+      "enum": ["foo\nbar", "foo\rbar"]
     },
     "tests": [
       {
@@ -100,7 +93,7 @@
     "description": "JSON with control characters - 'dependencies'",
     "schema": {
       "dependencies": {
-        "foo\nbar": [ "foo\rbar" ],
+        "foo\nbar": ["foo\rbar"],
         "foo\tbar": {
           "minProperties": 4
         }

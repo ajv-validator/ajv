@@ -4,7 +4,7 @@
     "schema": {
       "properties": {
         "divider": {},
-        "multiple": { "multipleOf": { "$data": "1/divider" } }
+        "multiple": {"multipleOf": {"$data": "1/divider"}}
       }
     },
     "tests": [
@@ -62,6 +62,14 @@
           "multiple": 10
         },
         "valid": true
+      },
+      {
+        "description": "invalid if value of multipleOf is 0",
+        "data": {
+          "divider": 0,
+          "multiple": 10
+        },
+        "valid": false
       }
     ]
   },
@@ -69,8 +77,8 @@
     "description": "one property is multiple of another property with escaped characters",
     "schema": {
       "properties": {
-        "/divider~": { "type": "number" },
-        "/multiple~": { "multipleOf": { "$data": "1/~1divider~0" } }
+        "/divider~": {"type": "number"},
+        "/multiple~": {"multipleOf": {"$data": "1/~1divider~0"}}
       }
     },
     "tests": [
@@ -98,12 +106,12 @@
       "properties": {
         "divider": {
           "properties": {
-            "value": { "type": "number" }
+            "value": {"type": "number"}
           }
         },
         "multiple": {
           "properties": {
-            "value": { "multipleOf": { "$data": "2/divider/value" } }
+            "value": {"multipleOf": {"$data": "2/divider/value"}}
           }
         }
       }
@@ -112,16 +120,16 @@
       {
         "description": "int by int valid",
         "data": {
-          "divider": { "value": 3 },
-          "multiple": { "value": 12 }
+          "divider": {"value": 3},
+          "multiple": {"value": 12}
         },
         "valid": true
       },
       {
         "description": "int by int invalid",
         "data": {
-          "divider": { "value": 3 },
-          "multiple": { "value": 10 }
+          "divider": {"value": 3},
+          "multiple": {"value": 10}
         },
         "valid": false
       }
@@ -130,9 +138,9 @@
   {
     "description": "item is a multiple of its index",
     "schema": {
-      "items": [ {} ],
+      "items": [{}],
       "additionalItems": {
-        "multipleOf": { "$data": "0#" }
+        "multipleOf": {"$data": "0#"}
       }
     },
     "tests": [
@@ -151,11 +159,11 @@
   {
     "description": "item property is a multiple of item index",
     "schema": {
-      "items": [ {} ],
+      "items": [{}],
       "additionalItems": {
         "properties": {
           "value": {
-            "multipleOf": { "$data": "1#" }
+            "multipleOf": {"$data": "1#"}
           }
         }
       }

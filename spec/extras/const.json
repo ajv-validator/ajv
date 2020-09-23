@@ -1,7 +1,7 @@
 [
   {
     "description": "const keyword requires the value to be equal to some constant",
-    "schema": { "const": 2 },
+    "schema": {"const": 2},
     "tests": [
       {
         "description": "same value is valid",
@@ -22,33 +22,33 @@
   },
   {
     "description": "const keyword requires the value to be equal to some object",
-    "schema": { "const": { "foo": "bar", "baz": "bax" } },
+    "schema": {"const": {"foo": "bar", "baz": "bax"}},
     "tests": [
       {
         "description": "same object is valid",
-        "data": { "foo": "bar", "baz": "bax" },
+        "data": {"foo": "bar", "baz": "bax"},
         "valid": true
       },
       {
         "description": "same object with different property order is valid",
-        "data": { "baz": "bax", "foo": "bar" },
+        "data": {"baz": "bax", "foo": "bar"},
         "valid": true
       },
       {
         "description": "another object is invalid",
-        "data": { "foo": "bar" },
+        "data": {"foo": "bar"},
         "valid": false
       },
       {
         "description": "another type is invalid",
-        "data": [ 1, 2 ],
+        "data": [1, 2],
         "valid": false
       }
     ]
   },
   {
     "description": "const keyword with null",
-    "schema": { "const": null },
+    "schema": {"const": null},
     "tests": [
       {
         "description": "null is valid",

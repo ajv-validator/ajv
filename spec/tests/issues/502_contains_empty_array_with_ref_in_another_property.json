@@ -4,14 +4,14 @@
     "schema": {
       "type": "object",
       "properties": {
-        "str": { "$ref": "#/definitions/str" },
+        "str": {"$ref": "#/definitions/str"},
         "arr": {
           "type": "array",
-          "contains": { "type": "number" }
+          "contains": {"type": "number"}
         }
       },
       "definitions": {
-        "str": { "type": "string" }
+        "str": {"type": "string"}
       }
     },
     "tests": [

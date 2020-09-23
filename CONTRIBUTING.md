@@ -16,34 +16,30 @@ Thank you for your help making Ajv better! Every contribution is appreciated. If
   - [Pull requests](#pull-requests)
   - [Contributions license](#contributions-license)
 
-
 ## Documentation
 
 Ajv has a lot of features and maintaining documentation takes time. I appreciate the time you spend correcting or clarifying the documentation.
 
-
 ## Issues
 
-Before submitting the issue please search the existing issues and also review [Frequently Asked Questions](https://github.com/ajv-validator/ajv/blob/master/FAQ.md).
+Before submitting the issue please search the existing issues and also review [Frequently Asked Questions](./docs/faq.md).
 
-I would really appreciate the time you spend providing all the information and reducing both your schema and data to the smallest possible size when they still have the issue. Simplifying the issue also makes it more valuable for other users (in cases it turns out to be an incorrect usage rather than a bug).
-
+It is really important that you spend time to provide all the relevant information and to reduce both your schema and data to the smallest possible size when they still have the issue. Simplifying the issue also makes it more valuable for other users (in cases it turns out to be an incorrect usage rather than a bug).
 
 #### Bug reports
 
 Please make sure to include the following information in the issue:
 
 1. What version of Ajv are you using? Does the issue happen if you use the latest version?
-2. Ajv options object (see https://github.com/ajv-validator/ajv#options).
+2. Ajv options object (see https://github.com/ajv-validator/ajv/api.md#options).
 3. JSON Schema and the data you are validating (please make it as small as possible to reproduce the issue).
-4. Your code (please use `options`, `schema` and `data` as variables).
+4. Your code sample (please use `options`, `schema` and `data` as variables).
 5. Validation result, data AFTER validation, error messages.
 6. What results did you expect?
 
 Please include the link to the working code sample at Runkit.com (please clone https://runkit.com/esp/ajv-issue) - it will speed up investigation and fixing.
 
 [Create bug report](https://github.com/ajv-validator/ajv/issues/new?template=bug-or-error-report.md).
-
 
 #### Security vulnerabilities
 
@@ -52,7 +48,6 @@ To report a security vulnerability, please use the
 Tidelift will coordinate the fix and disclosure.
 
 Please do NOT report security vulnerabilities via GitHub issues.
-
 
 #### <a name="changes"></a>Change proposals
 
@@ -73,7 +68,6 @@ If you’re requesting a change, it would be helpful to include this as well:
 
 Please include as much details as possible.
 
-
 #### <a name="compatibility"></a>Browser and compatibility issues
 
 [Create an issue](https://github.com/ajv-validator/ajv/issues/new?template=compatibility.md) to report a compatibility problem that only happens in a particular environment (when your code works correctly in node.js v8+ in linux systems but fails in some other environment).
@@ -87,12 +81,12 @@ Please include this information:
 5. Results in node.js v8+.
 6. Results and error messages in your platform.
 
-
 #### <a name="installation"></a>Installation and dependency issues
 
 [Create an issue](https://github.com/ajv-validator/ajv/issues/new?template=installation.md) to report problems that happen during Ajv installation or when Ajv is missing some dependency.
 
 Before submitting the issue, please try the following:
+
 - use the latest stable Node.js and `npm`
 - use `yarn` instead of `npm` - the issue can be related to https://github.com/npm/npm/issues/19877
 - remove `node_modules` and `package-lock.json` and run install again
@@ -106,13 +100,11 @@ If nothing helps, please submit:
 5. Error messages
 6. The output of `npm ls`
 
-
 #### <a name="json-schema"></a>Using JSON Schema standard
 
 Ajv implements JSON Schema standard draft-04 and draft-06/07.
 
 If it is a general issue related to using the standard keywords included in JSON Schema or implementing some advanced validation logic please ask the question on [Stack Overflow](https://stackoverflow.com/questions/ask?tags=jsonschema,ajv) (my account is [esp](https://stackoverflow.com/users/1816503/esp)) or submitting the question to [JSON-Schema.org](https://github.com/json-schema-org/json-schema-spec/issues/new). Please mention @epoberezkin.
-
 
 #### <a name="usage"></a>Ajv usage questions
 
@@ -120,11 +112,9 @@ The best place to ask a question about using Ajv is [Gitter chat](https://gitter
 
 If the question is advanced, it can be submitted to [Stack Overflow](http://stackoverflow.com/questions/ask?tags=jsonschema,ajv).
 
-
 ## Code
 
 Thanks a lot for considering contributing to Ajv. Many very useful features were created by its users.
-
 
 #### Development
 
@@ -136,19 +126,9 @@ git submodule update --init
 npm test
 ```
 
-The full test suite runs for 3 minutes. If your change is trivial you can run quick test before committing (10 sec) and then disable pre-commit hook:
+`npm run build` - compiles typescript to dist folder.
 
-```bash
-npm run test-fast
-git commit -nm 'type: message'
-```
-
-All validation functions are generated using doT templates in [dot](https://github.com/ajv-validator/ajv/tree/master/lib/dot) folder. Templates are precompiled so doT is not a run-time dependency.
-
-`npm run build` - compiles templates to [dotjs](https://github.com/ajv-validator/ajv/tree/master/lib/dotjs) folder.
-
-`npm run watch` - automatically compiles templates when files in dot folder change
-
+`npm run watch` - automatically compiles typescript when files in lib folder change
 
 #### Pull requests
 
@@ -157,11 +137,11 @@ To make accepting your changes faster please follow these steps:
 1. Submit an [issue with the bug](https://github.com/ajv-validator/ajv/issues/new) or with the proposed change (unless the contribution is to fix the documentation typos and mistakes).
 2. Please describe the proposed api and implementation plan (unless the issue is a relatively simple bug and fixing it doesn't change any api).
 3. Once agreed, please write as little code as possible to achieve the desired result.
-4. Please avoid unnecessary changes, refactoring or changing coding styles as part of your change (unless the change was proposed as refactoring).
-5. Please follow the coding conventions even if they are not validated (and/or you use different conventions in your code).
-6. Please run the tests before committing your code.
-7. If tests fail in Travis after you make a PR please investigate and fix the issue.
-
+4. Please add the tests both for the added feature and, in case the feature is some option, for the existing behaviour when this option is disabled.
+5. Please avoid unnecessary changes, refactoring or changing coding styles as part of your change (unless the change was proposed as refactoring).
+6. Please follow the coding conventions even if they are not validated (and/or you use different conventions in your code).
+7. Please run the tests before committing your code.
+8. If tests fail in Travis after you make a PR please investigate and fix the issue.
 
 #### Contributions license
 

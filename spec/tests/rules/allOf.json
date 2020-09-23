@@ -2,9 +2,7 @@
   {
     "description": "allOf with one empty schema",
     "schema": {
-      "allOf": [
-        {}
-      ]
+      "allOf": [{}]
     },
     "tests": [
       {
@@ -17,10 +15,7 @@
   {
     "description": "allOf with two empty schemas",
     "schema": {
-      "allOf": [
-        {},
-        {}
-      ]
+      "allOf": [{}, {}]
     },
     "tests": [
       {
@@ -33,10 +28,7 @@
   {
     "description": "allOf with two schemas, the first is empty",
     "schema": {
-      "allOf": [
-        {},
-        { "type": "number" }
-      ]
+      "allOf": [{}, {"type": "number"}]
     },
     "tests": [
       {
@@ -54,10 +46,7 @@
   {
     "description": "allOf with two schemas, the second is empty",
     "schema": {
-      "allOf": [
-        { "type": "number" },
-        {}
-      ]
+      "allOf": [{"type": "number"}, {}]
     },
     "tests": [
       {

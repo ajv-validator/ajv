@@ -3,13 +3,13 @@
     "description": "$ in properties (#87)",
     "schema": {
       "properties": {
-        "$": { "type": "string" }
+        "$": {"type": "string"}
       }
     },
     "tests": [
       {
         "description": "valid",
-        "data": { "$": "foo" },
+        "data": {"$": "foo"},
         "valid": true
       }
     ]

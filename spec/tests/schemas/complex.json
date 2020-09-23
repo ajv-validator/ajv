@@ -3,7 +3,7 @@
     "description": "complex schema from jsck benchmark (https://github.com/pandastrike/jsck)",
     "schema": {
       "type": "array",
-      "items": { "$ref": "#transaction" },
+      "items": {"$ref": "#transaction"},
       "minItems": 1,
       "definitions": {
         "base58": {
@@ -19,7 +19,7 @@
         "tx_id": {
           "$id": "#tx_id",
           "allOf": [
-            { "$ref": "#hex" },
+            {"$ref": "#hex"},
             {
               "minLength": 64,
               "maxLength": 64
@@ -29,7 +29,7 @@
         "address": {
           "$id": "#address",
           "allOf": [
-            { "$ref": "#base58" },
+            {"$ref": "#base58"},
             {
               "minLength": 34,
               "maxLength": 34
@@ -39,7 +39,7 @@
         "signature": {
           "$id": "#signature",
           "allOf": [
-            { "$ref": "#hex" },
+            {"$ref": "#hex"},
             {
               "minLength": 128,
               "maxLength": 128
@@ -49,19 +49,11 @@
         "transaction": {
           "$id": "#transaction",
           "additionalProperties": false,
-          "required": [
-            "metadata",
-            "hash",
-            "inputs",
-            "outputs"
-          ],
+          "required": ["metadata", "hash", "inputs", "outputs"],
           "properties": {
             "metadata": {
               "type": "object",
-              "required": [
-                "amount",
-                "fee"
-              ],
+              "required": ["amount", "fee"],
               "properties": {
                 "amount": {
                   "type": "integer"
@@ -72,12 +64,7 @@
                 },
                 "status": {
                   "type": "string",
-                  "enum": [
-                    "unsigned",
-                    "unconfirmed",
-                    "confirmed",
-                    "invalid"
-                  ]
+                  "enum": ["unsigned", "unconfirmed", "confirmed", "invalid"]
                 },
                 "confirmations": {
                   "type": "integer",
@@ -94,15 +81,15 @@
             "lock_time": {
               "type": "integer"
             },
-            "hash": { "$ref": "#tx_id" },
+            "hash": {"$ref": "#tx_id"},
             "inputs": {
               "type": "array",
-              "items": { "$ref": "#input" },
+              "items": {"$ref": "#input"},
               "minItems": 1
             },
             "outputs": {
               "type": "array",
-              "items": { "$ref": "#output" },
+              "items": {"$ref": "#output"},
               "minItems": 1
             }
           }
@@ -111,25 +98,21 @@
           "$id": "#input",
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "index",
-            "output",
-            "script_sig"
-          ],
+          "required": ["index", "output", "script_sig"],
           "properties": {
             "index": {
               "type": "integer",
               "minimum": 0
             },
-            "output": { "$ref": "#output" },
-            "sig_hash": { "$ref": "#hex" },
-            "script_sig": { "$ref": "#hex" },
+            "output": {"$ref": "#output"},
+            "sig_hash": {"$ref": "#hex"},
+            "script_sig": {"$ref": "#hex"},
             "signatures": {
               "type": "object",
               "description": "A dictionary of signatures.  Keys represent keypair names",
               "minProperties": 1,
               "maxProperties": 3,
-              "additionalProperties": { "$ref": "#signature" }
+              "additionalProperties": {"$ref": "#signature"}
             }
           }
         },
@@ -137,14 +120,9 @@
           "$id": "#output",
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "hash",
-            "index",
-            "value",
-            "script"
-          ],
+          "required": ["hash", "index", "value", "script"],
           "properties": {
-            "hash": { "$ref": "#tx_id" },
+            "hash": {"$ref": "#tx_id"},
             "index": {
               "type": "integer",
               "minimum": 0
@@ -157,23 +135,18 @@
               "properties": {
                 "type": {
                   "type": "string",
-                  "enum": [
-                    "standard",
-                    "p2sh"
-                  ]
+                  "enum": ["standard", "p2sh"]
                 },
                 "asm": {
                   "type": "string"
                 }
               }
             },
-            "address": { "$ref": "#address" },
+            "address": {"$ref": "#address"},
             "metadata": {
               "type": "object",
               "dependencies": {
-                "wallet_path": [
-                  "public_seeds"
-                ]
+                "wallet_path": ["public_seeds"]
               },
               "properties": {
                 "wallet_path": {
@@ -184,10 +157,7 @@
                   "minProperties": 1,
                   "maxProperties": 3,
                   "additionalProperties": {
-                    "anyOf": [
-                      { "$ref": "#base58" },
-                      { "$ref": "#hex" }
-                    ]
+                    "anyOf": [{"$ref": "#base58"}, {"$ref": "#hex"}]
                   }
                 }
               }

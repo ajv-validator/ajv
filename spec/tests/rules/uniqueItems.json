@@ -2,7 +2,7 @@
   {
     "description": "uniqueItems with algorithm using hash",
     "schema": {
-      "items": { "type": "string" },
+      "items": {"type": "string"},
       "uniqueItems": true
     },
     "tests": [
@@ -31,7 +31,7 @@
   {
     "description": "uniqueItems with multiple types when the list of types includes array",
     "schema": {
-      "items": { "type": ["array", "string"] },
+      "items": {"type": ["array", "string"]},
       "uniqueItems": true
     },
     "tests": [
@@ -55,7 +55,7 @@
   {
     "description": "uniqueItems with multiple types when the list of types includes object",
     "schema": {
-      "items": { "type": ["object", "string"] },
+      "items": {"type": ["object", "string"]},
       "uniqueItems": true
     },
     "tests": [
@@ -79,7 +79,7 @@
   {
     "description": "uniqueItems with multiple types when all types are scalar",
     "schema": {
-      "items": { "type": ["number", "string", "boolean", "null"] },
+      "items": {"type": ["number", "string", "boolean", "null"]},
       "uniqueItems": true
     },
     "tests": [

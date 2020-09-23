@@ -1,0 +1,72 @@
+import type {
+  CodeKeywordDefinition,
+  ErrorObject,
+  KeywordErrorDefinition,
+  AnySchema,
+} from "../../types"
+import type KeywordCxt from "../../compile/context"
+import {_} from "../../compile/codegen"
+import {applySubschema} from "../../compile/subschema"
+import {alwaysValidSchema} from "../../compile/util"
+
+export type OneOfError = ErrorObject<"oneOf", {passingSchemas: [number, number]}>
+
+const error: KeywordErrorDefinition = {
+  message: "should match exactly one schema in oneOf",
+  params: ({params}) => _`{passingSchemas: ${params.passing}}`,
+}
+
+const def: CodeKeywordDefinition = {
+  keyword: "oneOf",
+  schemaType: "array",
+  trackErrors: true,
+  error,
+  code(cxt: KeywordCxt) {
+    const {gen, schema, it} = cxt
+    if (!Array.isArray(schema)) throw new Error("ajv implementation error")
+    const schArr: AnySchema[] = schema
+    const valid = gen.let("valid", false)
+    const passing = gen.let("passing", null)
+    const schValid = gen.name("_valid")
+    cxt.setParams({passing})
+    // TODO possibly fail straight away (with warning or exception) if there are two empty always valid schemas
+
+    gen.block(validateOneOf)
+
+    cxt.result(
+      valid,
+      () => cxt.reset(),
+      () => cxt.error(true)
+    )
+
+    function validateOneOf(): void {
+      schArr.forEach((sch: AnySchema, i: number) => {
+        if (alwaysValidSchema(it, sch)) {
+          gen.var(schValid, true)
+        } else {
+          applySubschema(
+            it,
+            {
+              keyword: "oneOf",
+              schemaProp: i,
+              compositeRule: true,
+            },
+            schValid
+          )
+        }
+
+        if (i > 0) {
+          gen
+            .if(_`${schValid} && ${valid}`)
+            .assign(valid, false)
+            .assign(passing, _`[${passing}, ${i}]`)
+            .else()
+        }
+
+        gen.if(schValid, () => gen.assign(valid, true).assign(passing, i))
+      })
+    }
+  },
+}
+
+export default def

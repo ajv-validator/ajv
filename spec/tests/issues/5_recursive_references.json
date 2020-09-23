@@ -5,27 +5,21 @@
     "tests": [
       {
         "description": "valid tree",
-        "data": { 
+        "data": {
           "meta": "root",
           "nodes": [
             {
               "value": 1,
               "subtree": {
                 "meta": "child",
-                "nodes": [
-                  { "value": 1.1 },
-                  { "value": 1.2 }
-                ]
+                "nodes": [{"value": 1.1}, {"value": 1.2}]
               }
             },
             {
               "value": 2,
               "subtree": {
                 "meta": "child",
-                "nodes": [
-                  { "value": 2.1 },
-                  { "value": 2.2 }
-                ]
+                "nodes": [{"value": 2.1}, {"value": 2.2}]
               }
             }
           ]
@@ -34,27 +28,21 @@
       },
       {
         "description": "invalid tree",
-        "data": { 
+        "data": {
           "meta": "root",
           "nodes": [
             {
               "value": 1,
               "subtree": {
                 "meta": "child",
-                "nodes": [
-                  { "value": "string is invalid" },
-                  { "value": 1.2 }
-                ]
+                "nodes": [{"value": "string is invalid"}, {"value": 1.2}]
               }
             },
             {
               "value": 2,
               "subtree": {
                 "meta": "child",
-                "nodes": [
-                  { "value": 2.1 },
-                  { "value": 2.2 }
-                ]
+                "nodes": [{"value": 2.1}, {"value": 2.2}]
               }
             }
           ]

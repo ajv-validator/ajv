@@ -4,7 +4,7 @@
     "schema": {
       "properties": {
         "minKeys": {},
-        "object": { "minProperties": { "$data": "1/minKeys" } }
+        "object": {"minProperties": {"$data": "1/minKeys"}}
       }
     },
     "tests": [

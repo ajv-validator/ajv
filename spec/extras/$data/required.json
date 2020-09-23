@@ -7,7 +7,7 @@
         "bar": {},
         "requiredProperties": {}
       },
-      "required": { "$data": "0/requiredProperties" }
+      "required": {"$data": "0/requiredProperties"}
     },
     "tests": [
       {

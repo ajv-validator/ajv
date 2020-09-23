@@ -1,5 +1,5 @@
 <!--
-Frequently Asked Questions: https://github.com/ajv-validator/ajv/blob/master/FAQ.md
+Frequently Asked Questions: https://github.com/ajv-validator/ajv/blob/master/docs/faq.md
 Please provide all info and reduce your schema and data to the smallest possible size.
 
 This template is for bug or error reports. For other issues please use:
@@ -12,17 +12,13 @@ This template is for bug or error reports. For other issues please use:
 
 **What version of Ajv are you using? Does the issue happen if you use the latest version?**
 
-
-
 **Ajv options object**
 
-<!-- See https://github.com/ajv-validator/ajv#options -->
+<!-- See https://github.com/ajv-validator/ajv/api.md#options -->
 
 ```javascript
 
-
 ```
-
 
 **JSON Schema**
 
@@ -30,9 +26,7 @@ This template is for bug or error reports. For other issues please use:
 
 ```json
 
-
 ```
-
 
 **Sample data**
 
@@ -40,9 +34,7 @@ This template is for bug or error reports. For other issues please use:
 
 ```json
 
-
 ```
-
 
 **Your code**
 
@@ -59,9 +51,7 @@ Thank you!
 
 ```javascript
 
-
 ```
-
 
 **Validation result, data AFTER validation, error messages**
 
@@ -71,6 +61,5 @@ Thank you!
 ```
 
 **What results did you expect?**
-
 
 **Are you going to resolve the issue?**

@@ -5,12 +5,12 @@
     "tests": [
       {
         "description": "valid object",
-        "data": { "first": "foo" },
+        "data": {"first": "foo"},
         "valid": true
       },
       {
         "description": "valid object",
-        "data": { "first": 1 },
+        "data": {"first": 1},
         "valid": false
       }
     ]

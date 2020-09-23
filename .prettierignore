@@ -1,0 +1,7 @@
+spec/JSON-Schema-Test-Suite
+.browser
+coverage
+dist
+bundle
+.nyc_output
+spec/_json

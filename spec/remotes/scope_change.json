@@ -12,9 +12,9 @@
     "baz": {
       "$id": "folder/",
       "type": "array",
-      "items": { "$ref": "folderInteger.json" },
+      "items": {"$ref": "folderInteger.json"},
       "bar": {
-        "items": { "$ref": "folderInteger.json" }
+        "items": {"$ref": "folderInteger.json"}
       }
     }
   }
