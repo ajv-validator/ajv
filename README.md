@@ -6,11 +6,16 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07 
 
 [![Build Status](https://travis-ci.org/ajv-validator/ajv.svg?branch=master)](https://travis-ci.org/ajv-validator/ajv)
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
+<<<<<<< HEAD
 [![npm (tag)](https://img.shields.io/npm/v/ajv/beta)](https://www.npmjs.com/package/ajv/v/7.0.0-beta.0)
-[![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
-[![Coverage Status](https://coveralls.io/repos/github/ajv-validator/ajv/badge.svg?branch=master)](https://coveralls.io/github/ajv-validator/ajv?branch=master)
-[![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
-[![GitHub Sponsors](https://img.shields.io/badge/$-sponsors-brightgreen)](https://github.com/sponsors/epoberezkin)
+=======
+[![npm (beta)](https://img.shields.io/npm/v/ajv/beta)](https://www.npmjs.com/package/ajv/v/7.0.0-beta.0)
+
+> > > > > > > master
+> > > > > > > [![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
+> > > > > > > [![Coverage Status](https://coveralls.io/repos/github/ajv-validator/ajv/badge.svg?branch=master)](https://coveralls.io/github/ajv-validator/ajv?branch=master)
+> > > > > > > [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
+> > > > > > > [![GitHub Sponsors](https://img.shields.io/badge/$-sponsors-brightgreen)](https://github.com/sponsors/epoberezkin)
 
 ## Using version 7 (beta)
 
@@ -75,6 +80,31 @@ See [Getting started](#usage) for code example.
 - [Some packages using Ajv](#some-packages-using-ajv)
 - [Tests, Contributing, Changes history](#tests)
 - [Support, Code of conduct, Contacts, License](#open-source-software-support)
+
+## Ajv v7 beta is released
+
+[Ajv version 7.0.0-beta.0](https://github.com/ajv-validator/ajv/tree/v7-beta) is released with these changes:
+
+- to reduce the mistakes in JSON schemas and unexpected validation results, [strict mode](./docs/strict-mode.md) is added - it prohibits ignored or ambiguous JSON Schema elements.
+- to make code injection from untrusted schemas impossible, [code generation](./docs/codegen.md) is fully re-written to be safe.
+- to simplify Ajv extensions, the new keyword API that is used by pre-defined keywords is available to user-defined keywords - it is much easier to define any keywords now, especially with subschemas.
+- schemas are compiled to ES6 code (ES5 code generation is supported with an option).
+- to improve reliability and maintainability the code is migrated to TypeScript.
+
+**Please note**:
+
+- the support for JSON-Schema draft-04 is removed - if you have schemas using "id" attributes you have to replace them with "\$id" (or continue using version 6 that will be supported until 02/28/2021).
+- all formats are separated to ajv-formats package - they have to be explicitely added if you use them.
+
+See [release notes](https://github.com/ajv-validator/ajv/releases/tag/v7.0.0-beta.0) for the details.
+
+To install the new version:
+
+```bash
+npm install ajv@beta
+```
+
+See [Getting started with v7](https://github.com/ajv-validator/ajv/tree/v7-beta#usage) for code example.
 
 ## Mozilla MOSS grant and OpenJS Foundation
 
@@ -344,9 +374,16 @@ Please see [Contributing guidelines](./CONTRIBUTING.md)
 
 See https://github.com/ajv-validator/ajv/releases
 
+<<<<<<< HEAD
 [Changes in version 7.0.0-alpha.2](https://github.com/ajv-validator/ajv/releases/tag/v7.0.0-beta.0).
 
-[Changes in version 6.0.0](https://github.com/ajv-validator/ajv/releases/tag/v6.0.0).
+# [Changes in version 6.0.0](https://github.com/ajv-validator/ajv/releases/tag/v6.0.0).
+
+**Please note**: [Changes in version 7.0.0-beta](https://github.com/ajv-validator/ajv/releases/tag/v7.0.0-beta.0)
+
+[Version 6.0.0](https://github.com/ajv-validator/ajv/releases/tag/v6.0.0).
+
+> > > > > > > master
 
 ## Code of conduct
 
