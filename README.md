@@ -6,16 +6,11 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07 
 
 [![Build Status](https://travis-ci.org/ajv-validator/ajv.svg?branch=master)](https://travis-ci.org/ajv-validator/ajv)
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
-<<<<<<< HEAD
-[![npm (tag)](https://img.shields.io/npm/v/ajv/beta)](https://www.npmjs.com/package/ajv/v/7.0.0-beta.0)
-=======
 [![npm (beta)](https://img.shields.io/npm/v/ajv/beta)](https://www.npmjs.com/package/ajv/v/7.0.0-beta.0)
-
-> > > > > > > master
-> > > > > > > [![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
-> > > > > > > [![Coverage Status](https://coveralls.io/repos/github/ajv-validator/ajv/badge.svg?branch=master)](https://coveralls.io/github/ajv-validator/ajv?branch=master)
-> > > > > > > [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
-> > > > > > > [![GitHub Sponsors](https://img.shields.io/badge/$-sponsors-brightgreen)](https://github.com/sponsors/epoberezkin)
+[![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
+[![Coverage Status](https://coveralls.io/repos/github/ajv-validator/ajv/badge.svg?branch=master)](https://coveralls.io/github/ajv-validator/ajv?branch=master)
+[![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
+[![GitHub Sponsors](https://img.shields.io/badge/$-sponsors-brightgreen)](https://github.com/sponsors/epoberezkin)
 
 ## Using version 7 (beta)
 
@@ -374,16 +369,9 @@ Please see [Contributing guidelines](./CONTRIBUTING.md)
 
 See https://github.com/ajv-validator/ajv/releases
 
-<<<<<<< HEAD
-[Changes in version 7.0.0-alpha.2](https://github.com/ajv-validator/ajv/releases/tag/v7.0.0-beta.0).
-
-# [Changes in version 6.0.0](https://github.com/ajv-validator/ajv/releases/tag/v6.0.0).
-
 **Please note**: [Changes in version 7.0.0-beta](https://github.com/ajv-validator/ajv/releases/tag/v7.0.0-beta.0)
 
 [Version 6.0.0](https://github.com/ajv-validator/ajv/releases/tag/v6.0.0).
-
-> > > > > > > master
 
 ## Code of conduct
 
