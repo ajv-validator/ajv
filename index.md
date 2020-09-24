@@ -20,7 +20,7 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-04/06/
 
 ## Ajv v7 beta is released
 
-[Ajv version 7.0.0-beta.0](https://github.com/ajv-validator/ajv/releases/tag/v7.0.0-beta.0) is released with these changes:
+[Ajv version 7.0.0-beta.0](https://github.com/ajv-validator/ajv/tree/v7-beta) is released with these changes:
 
 - to reduce the mistakes in JSON schemas and unexpected validation results, [strict mode](./docs/strict-mode.md) is added - it prohibits ignored or ambiguous JSON Schema elements.
 - to make code injection from untrusted schemas impossible, [code generation](./docs/codegen.md) is fully re-written to be safe.
