@@ -44,15 +44,15 @@ function log(comparison: string): void {
 generates this javascript code:
 
 ```javascript
-const num1 = 5
-if (num1 > 0) {
-  console.log(num + " is greater than " + x)
+const num0 = 5
+if (num0 > 0) {
+  console.log(num0 + " is greater than 0")
 } else {
-  console.log(num + " is smaller than " + x)
+  console.log(num0 + " is smaller than 0")
 }
 ```
 
-`.const`, `.if` and `.code` above are methods of CodeGen class that generate code inside class instance `gen` - see [source code](../lib/compile/codegen/index.ts) for all available methods.
+`.const`, `.if` and `.code` above are methods of CodeGen class that generate code inside class instance `gen` - see [source code](../lib/compile/codegen/index.ts) for all available methods and [tests](../spec/codegen.spec.ts) for other code generation examples.
 
 These methods only accept instances of private class `_Code`, other values will be rejected by Typescript compiler - the risk to pass unsafe string is mitigated on type level.
 

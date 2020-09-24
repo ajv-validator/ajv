@@ -1,4 +1,14 @@
-import {CodeGen, CodeGenOptions, ValueScope, _, str, nil, Code, Name} from "../dist/compile/codegen"
+import {
+  CodeGen,
+  CodeGenOptions,
+  ScopeStore,
+  ValueScope,
+  _,
+  str,
+  nil,
+  Code,
+  Name,
+} from "../dist/compile/codegen"
 import assert from "assert"
 
 describe("code generation", () => {
@@ -276,6 +286,83 @@ describe("code generation", () => {
           "var _arr0 = Object.keys(xs);for(var _i0=0; _i0<_arr0.length; _i0++){var x0 = _arr0[_i0];console.log(x0);}"
         )
       })
+
+      const nestendFor =
+        "let i0 = arr0.length;let j0;outer0:for(;i0--;){for(j0=i0;j0--;){if(arr0[i0] === arr0[j0]){break outer0;}}}"
+
+      it("renders generic clause `for` with `label` and `break` in self-balancing block", () => {
+        const outer = gen.name("outer")
+        const arr = gen.name("arr")
+        const i = gen.let("i", _`${arr}.length`)
+        const j = gen.let("j")
+        gen
+          .block()
+          .label(outer)
+          .for(_`;${i}--;`)
+          .for(_`${j}=${i};${j}--;`)
+          .if(_`${arr}[${i}] === ${arr}[${j}]`)
+          .break(outer)
+          .endBlock()
+        assertEqual(gen, nestendFor)
+      })
+
+      it("renders generic statement `for` with `label` and `break`", () => {
+        const outer = gen.name("outer")
+        const arr = gen.name("arr")
+        const i = gen.let("i", _`${arr}.length`)
+        const j = gen.let("j")
+        gen
+          .label(outer)
+          .for(_`;${i}--;`, () =>
+            gen.for(_`${j}=${i};${j}--;`, () =>
+              gen.if(_`${arr}[${i}] === ${arr}[${j}]`, () => gen.break(outer))
+            )
+          )
+        assertEqual(gen, nestendFor)
+      })
+    })
+
+    describe("function definition", () => {
+      it("renders function with `return` and `try` statements", () => {
+        const inverse = new Name("inverse")
+        const x = gen.name("x")
+        gen
+          .func(inverse, x)
+          .try(
+            () => gen.return(_`1/${x}`),
+            (e) => gen.code(_`console.error(${str`dividing ${x} by 0`})`).throw(e)
+          )
+          .endFunc()
+        assertEqual(
+          gen,
+          'function inverse(x0){try{return 1/x0;}catch(e0){console.error("dividing " + x0 + " by 0");throw e0;}}'
+        )
+      })
+    })
+  })
+
+  describe("external scope", () => {
+    let gen: CodeGen
+    let scope: ScopeStore
+
+    beforeEach(() => {
+      scope = {}
+      gen = new CodeGen(new ValueScope({scope}))
+    })
+
+    it("defines and renders value references and values code", () => {
+      gen.scopeValue("val", {ref: 1, code: _`1`})
+      assert.deepEqual(gen.getScopeValue("val", 1), {
+        _str: "val0",
+        prefix: "val",
+        scopePath: _`.val[0]`,
+        value: {
+          ref: 1,
+          code: _`1`,
+        },
+      })
+      assertEqual(gen.scopeRefs(new Name("scope")), "const val0 = scope.val[0];")
+      assertEqual(gen.scopeCode(), "const val0 = 1;")
     })
   })
 })

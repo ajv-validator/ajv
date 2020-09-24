@@ -91,6 +91,10 @@ export class CodeGen {
     return this._extScope.scopeRefs(scopeName, this._values)
   }
 
+  scopeCode(): Code {
+    return this._extScope.scopeCode(this._values)
+  }
+
   private _def(varKind: Name, nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
     const name = this._scope.toName(nameOrPrefix)
     if (this.opts.es5) varKind = varKinds.var
@@ -269,7 +273,6 @@ export class CodeGen {
   return(value: Block | SafeExpr): CodeGen {
     this._out += "return "
     this.code(value)
-    this._out += ";" + this._n
     return this
   }
 
