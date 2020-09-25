@@ -82,6 +82,7 @@ export class SchemaEnv implements SchemaEnvArgs {
 }
 
 // let codeSize = 0
+// let nodeCount = 0
 
 // Compiles schema in SchemaEnv
 export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
@@ -132,9 +133,12 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
   try {
     this._compilations.add(sch)
     validateFunctionCode(schemaCxt)
+    if (optimize !== false) gen.optimize()
+    // gen.optimize()
     sourceCode = `${gen.scopeRefs(N.scope)}${gen}`
     // codeSize += sourceCode.length
-    // console.log(codeSize)
+    // nodeCount += gen.nodeCount
+    // console.log(codeSize, nodeCount)
     if (this.opts.code.process) sourceCode = this.opts.code.process(sourceCode, sch)
     // console.log("\n\n\n *** \n", sourceCode)
     const makeValidate = new Function(`${N.self}`, `${N.scope}`, sourceCode)

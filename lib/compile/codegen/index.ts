@@ -91,56 +91,56 @@ interface CodeNode extends _Node {
   code: SafeExpr
 }
 
-interface _ParentNode extends _Node {
-  nodes: (TreeNode | LeafNode)[]
+interface _TreeNode extends _Node {
+  nodes: (BlockNode | LeafNode)[]
   block?: boolean
 }
 
-interface RootNode extends _ParentNode {
+interface RootNode extends _TreeNode {
   kind: Node.Root
   block: false
 }
 
-interface IfNode extends _ParentNode {
+interface IfNode extends _TreeNode {
   kind: Node.If
   condition: Code | boolean
   else?: IfNode | ElseNode
 }
 
-interface ElseNode extends _ParentNode {
+interface ElseNode extends _TreeNode {
   kind: Node.Else
 }
 
-interface ForNode extends _ParentNode {
+interface ForNode extends _TreeNode {
   kind: Node.For
   iteration: Code
 }
 
-interface FuncNode extends _ParentNode {
+interface FuncNode extends _TreeNode {
   kind: Node.Func
   name: Name
   args: Code
   async?: boolean
 }
 
-interface ReturnNode extends _ParentNode {
+interface ReturnNode extends _TreeNode {
   kind: Node.Return
   block: false
 }
 
-interface TryNode extends _ParentNode {
+interface TryNode extends _TreeNode {
   kind: Node.Try
   catch?: CatchNode
   finally?: FinallyNode
 }
 
-interface CatchNode extends _ParentNode {
+interface CatchNode extends _TreeNode {
   kind: Node.Catch
   error: Name
   finally?: FinallyNode
 }
 
-interface FinallyNode extends _ParentNode {
+interface FinallyNode extends _TreeNode {
   kind: Node.Finally
 }
 
@@ -159,6 +159,7 @@ export class CodeGen {
   private readonly opts: CodeGenOptions
   private readonly _n: string
   private _out = ""
+  // nodeCount = 0
 
   constructor(extScope: ValueScope, opts: CodeGenOptions = {}) {
     this.opts = opts
@@ -415,6 +416,10 @@ export class CodeGen {
     return this._endBlockNode(Node.Func)
   }
 
+  optimize(): void {
+    optimizeNodes(this._nodes[0].nodes)
+  }
+
   private _leafNode(node: LeafNode): CodeGen {
     this._currNode.nodes.push(node)
     return this
@@ -444,6 +449,7 @@ export class CodeGen {
   }
 
   private _nodeCode(node: TreeNode): void {
+    // this.nodeCount++
     switch (node.kind) {
       case Node.If:
         this._out += `if(${node.condition})`
@@ -489,6 +495,7 @@ export class CodeGen {
   }
 
   private _leafNodeCode(node: LeafNode): void {
+    // this.nodeCount++
     let code: string
     switch (node.kind) {
       case Node.Def: {
@@ -532,6 +539,56 @@ export class CodeGen {
     const ns = this._nodes
     ns[ns.length - 1] = node
   }
+}
+
+function optimizeNodes(nodes: (BlockNode | LeafNode)[]): void {
+  let i = 0
+  while (i < nodes.length) {
+    const n = nodes[i]
+    if ("nodes" in n) optimizeNodes(n.nodes)
+    switch (n.kind) {
+      case Node.If: {
+        let ns = optimiseIf(n)
+        if (ns === n) break
+        ns = Array.isArray(ns) ? ns : ns ? [ns] : []
+        nodes.splice(i, 1, ...ns)
+        continue
+      }
+      case Node.For:
+        if (n.nodes.length) break
+        nodes.splice(i, 1)
+        continue
+    }
+    i++
+  }
+}
+
+function optimiseIf(node: IfNode): IfNode | (BlockNode | LeafNode)[] | undefined {
+  const cond = node.condition
+  if (cond === true) return node.nodes // else is ignored here
+  optimizeElse(node)
+  if (node.else) {
+    const e = node.else
+    if (cond === false) return e.kind === Node.If ? e : e.nodes
+    if (node.nodes.length) return node
+    return {
+      kind: Node.If,
+      condition: _`!(${node.condition})`,
+      nodes: e.kind === Node.If ? [e] : e.nodes,
+    }
+  }
+  if (cond === false || !node.nodes.length) return undefined
+  return node
+}
+
+function optimizeElse(node: IfNode): void {
+  if (!node.else) return
+  if (node.else.kind === Node.Else) {
+    if (node.else.nodes.length === 0) delete node.else
+    return
+  }
+  const nodes = optimiseIf(node.else)
+  node.else = Array.isArray(nodes) ? {kind: Node.Else, nodes} : nodes
 }
 
 const andCode = mappend(operators.AND)

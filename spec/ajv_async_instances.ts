@@ -7,7 +7,7 @@ export default function getAjvSyncInstances(extraOpts?: Options): Ajv[] {
     {
       strict: false,
       allErrors: true,
-      code: {lines: true, optimize: true},
+      code: {lines: true, optimize: false},
     },
     extraOpts
   )
