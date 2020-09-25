@@ -92,11 +92,13 @@ interface CodeNode extends _Node {
 }
 
 interface _ParentNode extends _Node {
-  nodes: AnyNode[]
+  nodes: (TreeNode | LeafNode)[]
+  block?: boolean
 }
 
 interface RootNode extends _ParentNode {
   kind: Node.Root
+  block: false
 }
 
 interface IfNode extends _ParentNode {
@@ -123,6 +125,7 @@ interface FuncNode extends _ParentNode {
 
 interface ReturnNode extends _ParentNode {
   kind: Node.Return
+  block: false
 }
 
 interface TryNode extends _ParentNode {
@@ -141,34 +144,33 @@ interface FinallyNode extends _ParentNode {
   kind: Node.Finally
 }
 
-type BlockNode = IfNode | ForNode | FuncNode | ReturnNode | TryNode | CatchNode | FinallyNode
+type BlockNode = IfNode | ForNode | FuncNode | ReturnNode | TryNode
 
-type ParentNode = RootNode | BlockNode | ElseNode
+type TreeNode = RootNode | BlockNode | ElseNode | CatchNode | FinallyNode
 
-type AnyNode = ParentNode | DefNode | AssignNode | LabelNode | BreakNode | ThrowNode | CodeNode
+type LeafNode = DefNode | AssignNode | LabelNode | BreakNode | ThrowNode | CodeNode
 
 export class CodeGen {
   readonly _scope: Scope
   readonly _extScope: ValueScope
   readonly _values: ScopeValueSets = {}
-  private readonly _nodes: ParentNode[]
+  private readonly _nodes: TreeNode[]
   private readonly _blockStarts: number[] = []
   private readonly opts: CodeGenOptions
   private readonly _n: string
-  _render: boolean
   private _out = ""
 
   constructor(extScope: ValueScope, opts: CodeGenOptions = {}) {
     this.opts = opts
     this._extScope = extScope
     this._scope = new Scope({parent: extScope})
-    this._nodes = [{kind: Node.Root, nodes: []}]
-    this._render = !(opts.optimize ?? true)
+    this._nodes = [{kind: Node.Root, nodes: [], block: false}]
     this._n = opts.lines ? "\n" : ""
   }
 
   toString(): string {
-    if (!this._render) this._nodeCode(this._nodes[0])
+    this._out = ""
+    this._nodeCode(this._nodes[0])
     return this._out
   }
 
@@ -206,16 +208,8 @@ export class CodeGen {
 
   private _def(varKind: Name, nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
     const name = this._scope.toName(nameOrPrefix)
-    const node: DefNode = {kind: Node.Def, varKind, name, rhs}
-    if (this._render) this._defCode(node)
-    else this._currNode.nodes.push(node)
+    this._leafNode({kind: Node.Def, varKind, name, rhs})
     return name
-  }
-
-  private _defCode({varKind, name, rhs}: DefNode): void {
-    if (this.opts.es5) varKind = varKinds.var
-    if (rhs === undefined) this._out += `${varKind} ${name};` + this._n
-    else this._out += `${varKind} ${name} = ${rhs};` + this._n
   }
 
   // `const` declaration (`var` in es5 mode)
@@ -235,26 +229,14 @@ export class CodeGen {
 
   // assignment code
   assign(lhs: Code, rhs: SafeExpr): CodeGen {
-    const node: AssignNode = {kind: Node.Assign, lhs, rhs}
-    if (this._render) this._assignCode(node)
-    else this._currNode.nodes.push(node)
-    return this
-  }
-
-  private _assignCode({lhs, rhs}: AssignNode): void {
-    this._out += `${lhs} = ${rhs};` + this._n
+    return this._leafNode({kind: Node.Assign, lhs, rhs})
   }
 
   // appends passed SafeExpr to code or executes Block
   code(c: Block | SafeExpr): CodeGen {
     if (typeof c == "function") c()
-    else if (this._render) this._code(c)
-    else this._currNode.nodes.push({kind: Node.AnyCode, code: c})
+    else this._leafNode({kind: Node.AnyCode, code: c})
     return this
-  }
-
-  private _code(c: SafeExpr): void {
-    this._out += `${c};${this._n}`
   }
 
   // returns code for object literal for the passed argument list of key-value pairs
@@ -267,7 +249,6 @@ export class CodeGen {
 
   // `if` clause (or statement if `thenBody` and, optionally, `elseBody` are passed)
   if(condition: Code | boolean, thenBody?: Block, elseBody?: Block): CodeGen {
-    if (this._render) this._ifCode(condition)
     this._blockNode({kind: Node.If, condition, nodes: []})
 
     if (thenBody && elseBody) {
@@ -280,10 +261,6 @@ export class CodeGen {
     return this
   }
 
-  private _ifCode(condition: Code | boolean): void {
-    this._out += `if(${condition})`
-  }
-
   // `if` clause or statement with negated condition,
   // useful to avoid using _ template just to negate the name
   ifNot(condition: Code, thenBody?: Block, elseBody?: Block): CodeGen {
@@ -293,61 +270,24 @@ export class CodeGen {
 
   // `else if` clause - invalid without `if` or after `else` clauses
   elseIf(condition: Code | boolean): CodeGen {
-    return this._startElseNode({kind: Node.If, condition, nodes: []})
+    return this._elseNode({kind: Node.If, condition, nodes: []})
   }
 
   // `else` clause - only valid after `if` or `else if` clauses
   else(): CodeGen {
-    return this._startElseNode({kind: Node.Else, nodes: []})
+    return this._elseNode({kind: Node.Else, nodes: []})
   }
 
-  // the termination of `if` statement - checks and updates the stack of previous clauses
+  // end `if` statement (needed if gen.if was used only with condition)
   endIf(): CodeGen {
     return this._endBlockNode(Node.If, Node.Else)
   }
 
-  private _blockNode(node: BlockNode, block = true): void {
-    this._currNode.nodes.push(node)
-    this._nodes.push(node)
-    if (this._render && block) this._out += "{" + this._n
-  }
-
-  private _endBlockNode(n1: Node, n2?: Node | boolean): CodeGen {
-    // TODO possibly remove empty branches here
-    const {kind} = this._currNode
-    if (kind !== n1 && kind !== n2) {
-      throw new Error(`CodeGen: not in block "${n2 ? `${n1}/${n2}` : n1}"`)
-    }
-    this._nodes.pop()
-    if (this._render && n2 !== false) this._out += "}" + this._n
-    return this
-  }
-
-  private _startElseNode(node: IfNode | ElseNode): CodeGen {
-    const n = this._currNode
-    if (n.kind !== Node.If) {
-      throw new Error('CodeGen: "else" without "if"')
-    }
-    this._currNode = n.else = node
-    if (this._render) {
-      this._out += "}else "
-      if (node.kind === Node.If) this._ifCode(node.condition)
-      this._out += "{" + this._n
-    }
-    return this
-  }
-
   // a generic `for` clause (or statement if `forBody` is passed)
   for(iteration: Code, forBody?: Block): CodeGen {
-    if (this._render) this._forCode(iteration)
     this._blockNode({kind: Node.For, iteration, nodes: []})
-
     if (forBody) this.code(forBody).endFor()
     return this
-  }
-
-  private _forCode(iteration: Code): void {
-    this._out += `for(${iteration})`
   }
 
   // `for` statement for a range of values
@@ -396,78 +336,52 @@ export class CodeGen {
     return this.for(_`${varKind} ${name} in ${obj}`, () => forBody(name))
   }
 
-  // render closing brace for `for` loop - checks and updates the stack of previous clauses
+  // end `for` loop
   endFor(): CodeGen {
     return this._endBlockNode(Node.For)
   }
 
-  // render `label` clause
+  // `label` statement
   label(label: Name): CodeGen {
-    if (this._render) this._labelCode(label)
-    else this._currNode.nodes.push({kind: Node.Label, label})
-    return this
+    return this._leafNode({kind: Node.Label, label})
   }
 
-  private _labelCode(label: Name): void {
-    this._out += `${label}:${this._n}`
-  }
-
-  // render `break` statement
+  // `break` statement
   break(label?: Code): CodeGen {
-    if (this._render) this._breakCode(label)
-    else this._currNode.nodes.push({kind: Node.Break, label})
-    return this
+    return this._leafNode({kind: Node.Break, label})
   }
 
-  private _breakCode(label?: Code): void {
-    this._out += (label ? `break ${label};` : "break;") + this._n
-  }
-
-  // render `return` statement
+  // `return` statement
   return(value: Block | SafeExpr): CodeGen {
-    this._blockNode({kind: Node.Return, nodes: []}, false)
-    if (this._render) this._out += "return "
+    const node: ReturnNode = {kind: Node.Return, nodes: [], block: false}
+    this._blockNode(node)
     this.code(value)
-    return this._endBlockNode(Node.Return, false)
+    if (node.nodes.length !== 1) throw new Error('CodeGen: "return" should have one node')
+    return this._endBlockNode(Node.Return)
   }
 
-  // render `try` statement
+  // `try` statement
   try(tryBody: Block, catchCode?: (e: Name) => void, finallyCode?: Block): CodeGen {
     if (!catchCode && !finallyCode) throw new Error('CodeGen: "try" without "catch" and "finally"')
-    let node: TryNode | CatchNode = {kind: Node.Try, nodes: []}
-    if (this._render) this._out += "try"
-    this._blockNode(node)
+    const tryNode: TryNode = {kind: Node.Try, nodes: []}
+    this._blockNode(tryNode)
     this.code(tryBody)
+    let node: TryNode | CatchNode = tryNode
     if (catchCode) {
       const error = this.name("e")
       node = this._currNode = node.catch = {kind: Node.Catch, error, nodes: []}
-      if (this._render) {
-        this._out += `}catch(${error}){` + this._n
-      }
       catchCode(error)
     }
     if (finallyCode) {
       this._currNode = node.finally = {kind: Node.Finally, nodes: []}
-      if (this._render) this._out += "}finally{" + this._n
       this.code(finallyCode)
     }
-    this._endBlockNode(Node.Catch, Node.Finally)
-    return this
+    return this._endBlockNode(Node.Catch, Node.Finally)
   }
 
-  private _catchCode({error}: CatchNode): void {
-    this._out += `catch(${error})`
-  }
-
-  // render `throw` statement
+  // `throw` statement
   throw(error: Code): CodeGen {
-    if (this._render) this._throwCode(error)
-    else this._currNode.nodes.push({kind: Node.Throw, error})
-    return this
-  }
-
-  private _throwCode(error: Code): void {
-    this._out += `throw ${error};` + this._n
+    return this._leafNode({kind: Node.Throw, error})
   }
 
   // start self-balancing block
@@ -477,9 +391,8 @@ export class CodeGen {
     return this
   }
 
-  // render braces to balance them until the previous gen.block call
+  // end the current self-balancing block
   endBlock(nodeCount?: number): CodeGen {
-    // TODO maybe close blocks one by one, eliminating empty branches
     const len = this._blockStarts.pop()
     if (len === undefined) throw new Error("CodeGen: not in self-balancing block")
     const toClose = this._nodes.length - len
@@ -487,109 +400,135 @@ export class CodeGen {
       throw new Error(`CodeGen: wrong number of block nodes: ${toClose} vs ${nodeCount} expected`)
     }
     this._nodes.length = len
-
-    if (this._render && toClose > 0) this._out += "}".repeat(toClose) + this._n
-
     return this
   }
 
-  // render `function` head (or definition if funcBody is passed)
+  // `function` heading (or definition if funcBody is passed)
   func(name: Name, args: Code = nil, async?: boolean, funcBody?: Block): CodeGen {
-    const node: FuncNode = {kind: Node.Func, name, args, async, nodes: []}
-    if (this._render) this._funcCode(node)
-    this._blockNode(node)
-
+    this._blockNode({kind: Node.Func, name, args, async, nodes: []})
     if (funcBody) this.code(funcBody).endFunc()
     return this
   }
 
-  private _funcCode({name, args = nil, async}: FuncNode): void {
-    this._out += `${async ? "async " : ""}function ${name}(${args})`
-  }
-
-  // render closing brace for function definition
+  // end function definition
   endFunc(): CodeGen {
     return this._endBlockNode(Node.Func)
   }
 
-  private _nodeCode(node: AnyNode): void {
+  private _leafNode(node: LeafNode): CodeGen {
+    this._currNode.nodes.push(node)
+    return this
+  }
+
+  private _blockNode(node: BlockNode): void {
+    this._currNode.nodes.push(node)
+    this._nodes.push(node)
+  }
+
+  private _endBlockNode(n1: Node, n2?: Node): CodeGen {
+    const {kind} = this._currNode
+    if (kind !== n1 && kind !== n2) {
+      throw new Error(`CodeGen: not in block "${n2 ? `${n1}/${n2}` : n1}"`)
+    }
+    this._nodes.pop()
+    return this
+  }
+
+  private _elseNode(node: IfNode | ElseNode): CodeGen {
+    const n = this._currNode
+    if (n.kind !== Node.If) {
+      throw new Error('CodeGen: "else" without "if"')
+    }
+    this._currNode = n.else = node
+    return this
+  }
+
+  private _nodeCode(node: TreeNode): void {
     switch (node.kind) {
-      case Node.Root:
-        this._childrenCode(node, false)
-        break
       case Node.If:
-        this._ifCode(node.condition)
-        this._childrenCode(node)
+        this._out += `if(${node.condition})`
+        this._blockCode(node)
         if (node.else) {
           this._out += "else "
           this._nodeCode(node.else)
         }
-        break
-      case Node.Else:
-        this._childrenCode(node)
-        break
-      case Node.For:
-        this._forCode(node.iteration)
-        this._childrenCode(node)
-        break
-      case Node.Func:
-        this._funcCode(node)
-        this._childrenCode(node)
-        break
-      case Node.Return:
-        this._out += "return "
-        this._childrenCode(node, false)
-        break
+        return
       case Node.Try:
         this._out += "try"
-        this._childrenCode(node)
+        this._blockCode(node)
         if (node.catch) this._nodeCode(node.catch)
         if (node.finally) this._nodeCode(node.finally)
-        break
+        return
       case Node.Catch:
-        this._catchCode(node)
-        this._childrenCode(node)
+        this._out += `catch(${node.error})`
+        this._blockCode(node)
         if (node.finally) this._nodeCode(node.finally)
+        return
+
+      case Node.For:
+        this._out += `for(${node.iteration})`
         break
-      case Node.Finally:
+      case Node.Func: {
+        this._out += (node.async ? "async " : "") + `function ${node.name}(${node.args})`
+        break
+      }
+      case Node.Return:
+        this._out += "return "
+        break
+      case Node.Finally: {
         this._out += "finally"
-        this._childrenCode(node)
         break
-      case Node.Def:
-        this._defCode(node)
-        break
-      case Node.Assign:
-        this._assignCode(node)
-        break
-      case Node.Label:
-        this._labelCode(node.label)
-        break
-      case Node.Break:
-        this._breakCode(node.label)
-        break
-      case Node.Throw:
-        this._throwCode(node.error)
-        break
-      case Node.AnyCode:
-        this._code(node.code)
+      }
+      case Node.Root:
+      case Node.Else:
         break
       default:
         throw new Error("ajv implementation error")
     }
+    this._blockCode(node)
   }
 
-  private _childrenCode(node: ParentNode, block = true): void {
+  private _leafNodeCode(node: LeafNode): void {
+    let code: string
+    switch (node.kind) {
+      case Node.Def: {
+        const varKind = this.opts.es5 ? varKinds.var : node.varKind
+        code = `${varKind} ${node.name}` + (node.rhs === undefined ? ";" : ` = ${node.rhs};`)
+        break
+      }
+      case Node.Assign:
+        code = `${node.lhs} = ${node.rhs};`
+        break
+      case Node.Label:
+        code = `${node.label}:`
+        break
+      case Node.Break:
+        code = node.label ? `break ${node.label};` : "break;"
+        break
+      case Node.Throw:
+        code = `throw ${node.error};`
+        break
+      case Node.AnyCode:
+        code = `${node.code};`
+        break
+      default:
+        throw new Error("ajv implementation error")
+    }
+    this._out += code + this._n
+  }
+
+  private _blockCode({nodes, block = true}: TreeNode): void {
     if (block) this._out += "{" + this._n
-    node.nodes.forEach((n) => this._nodeCode(n))
+    nodes.forEach((n) => ("nodes" in n ? this._nodeCode(n) : this._leafNodeCode(n)))
     if (block) this._out += "}" + this._n
   }
 
-  private get _currNode(): ParentNode {
+  private get _currNode(): TreeNode {
     const ns = this._nodes
     return ns[ns.length - 1]
   }
 
-  private set _currNode(node: ParentNode) {
+  private set _currNode(node: TreeNode) {
     const ns = this._nodes
     ns[ns.length - 1] = node
   }
