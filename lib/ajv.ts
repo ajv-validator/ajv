@@ -121,6 +121,7 @@ interface CurrentOptions {
   code?: {
     es5?: boolean
     lines?: boolean
+    optimize?: boolean
     formats?: Code // code to require (or construct) map of available formats - for standalone code
     source?: boolean
     process?: (code: string, schema?: SchemaEnv) => string

@@ -139,7 +139,7 @@ describe("code generation", () => {
         gen.endIf()
         assertEqual(
           gen,
-          'if(x > 0){console.log("greater");}else if(x < 0){console.log("smaller");}else{console.log("equal");}'
+          'if(x > 0){console.log("greater");}else if(x < 0){console.log("smaller");}else {console.log("equal");}'
         )
       })
 
@@ -149,7 +149,10 @@ describe("code generation", () => {
           () => log("greater"),
           () => log("smaller or equal")
         )
-        assertEqual(gen, 'if(x > 0){console.log("greater");}else{console.log("smaller or equal");}')
+        assertEqual(
+          gen,
+          'if(x > 0){console.log("greater");}else {console.log("smaller or equal");}'
+        )
       })
 
       it("renders `if` statement with `then` block", () => {
@@ -203,7 +206,7 @@ describe("code generation", () => {
       })
 
       const nestedIfCode =
-        'if(x > 0){console.log("greater");}else{if(x < 0){console.log("smaller");}else{console.log("equal");}}'
+        'if(x > 0){console.log("greater");}else {if(x < 0){console.log("smaller");}else {console.log("equal");}}'
 
       it("renders nested if statements", () => {
         gen.if(
@@ -272,14 +275,14 @@ describe("code generation", () => {
         assertEqual(gen, "for(const x0 in xs){console.log(x0);}")
       })
 
-      it("renders `for-in` statement as `for-of` with `forInOwn` option", () => {
-        const _gen = getGen({forInOwn: true})
+      it("renders `for-in` statement as `for-of` with `ownProperties` option", () => {
+        const _gen = getGen({ownProperties: true})
         _gen.forIn("x", xs, (x: Name) => _gen.code(_`console.log(${x})`))
         assertEqual(_gen, "for(const x0 of Object.keys(xs)){console.log(x0);}")
       })
 
-      it("renders `for-in` statement as `for` with `forInOwn` and `es5` options", () => {
-        const _gen = getGen({forInOwn: true, es5: true})
+      it("renders `for-in` statement as `for` with `ownProperties` and `es5` options", () => {
+        const _gen = getGen({ownProperties: true, es5: true})
         _gen.forIn("x", xs, (x: Name) => _gen.code(_`console.log(${x})`))
         assertEqual(
           _gen,

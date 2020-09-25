@@ -13,7 +13,7 @@ module.exports = {
       files: ["*.ts"],
       rules: {
         ...tsConfig.rules,
-        complexity: ["error", 17],
+        complexity: ["error", 20],
         "@typescript-eslint/no-empty-function": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-floating-promises": "off",

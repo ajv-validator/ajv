@@ -81,14 +81,17 @@ export class SchemaEnv implements SchemaEnvArgs {
   }
 }
 
+// let codeSize = 0
+
 // Compiles schema in SchemaEnv
 export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
   // TODO refactor - remove compilations
   const _sch = getCompilingSchema.call(this, sch)
   if (_sch) return _sch
   const rootId = getFullPath(sch.root.baseId) // TODO if getFullPath removed 1 tests fails
-  const {es5, lines} = this.opts.code
-  const gen = new CodeGen(this.scope, {es5, lines, forInOwn: this.opts.ownProperties})
+  const {es5, lines, optimize} = this.opts.code
+  const {ownProperties} = this.opts
+  const gen = new CodeGen(this.scope, {es5, lines, optimize, ownProperties})
   let _ValidationError
   if (sch.$async) {
     _ValidationError = gen.scopeValue("Error", {
@@ -130,6 +133,8 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     this._compilations.add(sch)
     validateFunctionCode(schemaCxt)
     sourceCode = `${gen.scopeRefs(N.scope)}${gen}`
+    // codeSize += sourceCode.length
+    // console.log(codeSize)
     if (this.opts.code.process) sourceCode = this.opts.code.process(sourceCode, sch)
     // console.log("\n\n\n *** \n", sourceCode)
     const makeValidate = new Function(`${N.self}`, `${N.scope}`, sourceCode)
@@ -152,7 +157,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     delete sch.validate
     delete sch.validateName
     if (sourceCode) this.logger.error("Error compiling schema, function code:", sourceCode)
-    // console.log("\n\n\n *** \n", sourceCode)
+    // console.log("\n\n\n *** \n", sourceCode, this.opts)
     throw e
   } finally {
     this._compilations.delete(sch)
