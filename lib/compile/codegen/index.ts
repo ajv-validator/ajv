@@ -1,5 +1,5 @@
 import type {ScopeValueSets, NameValue, ValueScope, ValueScopeName} from "./scope"
-import {_, nil, _Code, Code, Name} from "./code"
+import {_, nil, _Code, Code, Name, UsedNames, usedNames, updateUsedNames} from "./code"
 import {Scope} from "./scope"
 
 export {_, str, strConcat, nil, getProperty, stringify, Name, Code} from "./code"
@@ -33,7 +33,6 @@ export interface CodeGenOptions {
   es5?: boolean
   lines?: boolean
   ownProperties?: boolean
-  optimize?: boolean
 }
 
 enum Node {
@@ -56,6 +55,7 @@ enum Node {
 
 interface _Node {
   kind: Node
+  names?: UsedNames
 }
 
 interface DefNode extends _Node {
@@ -74,11 +74,13 @@ interface AssignNode extends _Node {
 interface LabelNode extends _Node {
   kind: Node.Label
   label: Name
+  names?: never
 }
 
 interface BreakNode extends _Node {
   kind: Node.Break
   label?: Code
+  names?: never
 }
 
 interface ThrowNode extends _Node {
@@ -91,70 +93,79 @@ interface CodeNode extends _Node {
   code: SafeExpr
 }
 
-interface _TreeNode extends _Node {
-  nodes: (BlockNode | LeafNode)[]
+interface _ParentNode extends _Node {
+  nodes: ChildNode[]
   block?: boolean
 }
 
-interface RootNode extends _TreeNode {
+interface RootNode extends _ParentNode {
   kind: Node.Root
   block: false
+  names?: never
 }
 
-interface IfNode extends _TreeNode {
+interface IfNode extends _ParentNode {
   kind: Node.If
   condition: Code | boolean
   else?: IfNode | ElseNode
 }
 
-interface ElseNode extends _TreeNode {
+interface ElseNode extends _ParentNode {
   kind: Node.Else
+  names?: never
 }
 
-interface ForNode extends _TreeNode {
+interface ForNode extends _ParentNode {
   kind: Node.For
   iteration: Code
 }
 
-interface FuncNode extends _TreeNode {
+interface FuncNode extends _ParentNode {
   kind: Node.Func
   name: Name
   args: Code
   async?: boolean
+  names?: never
 }
 
-interface ReturnNode extends _TreeNode {
+interface ReturnNode extends _ParentNode {
   kind: Node.Return
   block: false
+  names?: never
 }
 
-interface TryNode extends _TreeNode {
+interface TryNode extends _ParentNode {
   kind: Node.Try
   catch?: CatchNode
   finally?: FinallyNode
+  names?: never
 }
 
-interface CatchNode extends _TreeNode {
+interface CatchNode extends _ParentNode {
   kind: Node.Catch
   error: Name
   finally?: FinallyNode
+  names?: never
 }
 
-interface FinallyNode extends _TreeNode {
+interface FinallyNode extends _ParentNode {
   kind: Node.Finally
+  names?: never
 }
 
 type BlockNode = IfNode | ForNode | FuncNode | ReturnNode | TryNode
 
-type TreeNode = RootNode | BlockNode | ElseNode | CatchNode | FinallyNode
-
 type LeafNode = DefNode | AssignNode | LabelNode | BreakNode | ThrowNode | CodeNode
+
+type ParentNode = RootNode | BlockNode | ElseNode | CatchNode | FinallyNode
+
+type ChildNode = BlockNode | LeafNode
 
 export class CodeGen {
   readonly _scope: Scope
   readonly _extScope: ValueScope
   readonly _values: ScopeValueSets = {}
-  private readonly _nodes: TreeNode[]
+  private readonly _nodes: ParentNode[]
   private readonly _blockStarts: number[] = []
   private readonly opts: CodeGenOptions
   private readonly _n: string
@@ -193,7 +204,7 @@ export class CodeGen {
     return name
   }
 
-  getScopeValue(prefix: string, keyOrRef: unknown): ValueScopeName | void {
+  getScopeValue(prefix: string, keyOrRef: unknown): ValueScopeName | undefined {
     return this._extScope.getValue(prefix, keyOrRef)
   }
 
@@ -209,7 +220,7 @@ export class CodeGen {
 
   private _def(varKind: Name, nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
     const name = this._scope.toName(nameOrPrefix)
-    this._leafNode({kind: Node.Def, varKind, name, rhs})
+    this._leafNode({kind: Node.Def, varKind, name, rhs, names: usedNames(rhs)})
     return name
   }
 
@@ -230,27 +241,34 @@ export class CodeGen {
 
   // assignment code
   assign(lhs: Code, rhs: SafeExpr): CodeGen {
-    return this._leafNode({kind: Node.Assign, lhs, rhs})
+    const names = usedNames(rhs) || {}
+    if (!(lhs instanceof Name)) updateUsedNames(lhs, names)
+    return this._leafNode({kind: Node.Assign, lhs, rhs, names})
   }
 
   // appends passed SafeExpr to code or executes Block
   code(c: Block | SafeExpr): CodeGen {
     if (typeof c == "function") c()
-    else this._leafNode({kind: Node.AnyCode, code: c})
+    else this._leafNode({kind: Node.AnyCode, code: c, names: usedNames(c)})
     return this
   }
 
   // returns code for object literal for the passed argument list of key-value pairs
   object(...keyValues: [Name, SafeExpr][]): _Code {
+    const names: UsedNames = {}
     const values = keyValues
-      .map(([key, value]) => (key === value && !this.opts.es5 ? key : `${key}:${value}`))
+      .map(([key, value]) => {
+        updateUsedNames(key, names)
+        if (key !== value && value instanceof _Code) updateUsedNames(value, names)
+        return key === value && !this.opts.es5 ? key : `${key}:${value}`
+      })
       .reduce((c1, c2) => `${c1},${c2}`)
-    return new _Code(`{${values}}`)
+    return new _Code(`{${values}}`, names)
   }
 
   // `if` clause (or statement if `thenBody` and, optionally, `elseBody` are passed)
   if(condition: Code | boolean, thenBody?: Block, elseBody?: Block): CodeGen {
-    this._blockNode({kind: Node.If, condition, nodes: []})
+    this._blockNode({kind: Node.If, condition, nodes: [], names: usedNames(condition)})
 
     if (thenBody && elseBody) {
       this.code(thenBody).else().code(elseBody).endIf()
@@ -265,13 +283,13 @@ export class CodeGen {
   // `if` clause or statement with negated condition,
   // useful to avoid using _ template just to negate the name
   ifNot(condition: Code, thenBody?: Block, elseBody?: Block): CodeGen {
-    const cond = new _Code(condition instanceof Name ? `!${condition}` : `!(${condition})`)
+    const cond = condition instanceof Name ? _`!${condition}` : _`!(${condition})`
     return this.if(cond, thenBody, elseBody)
   }
 
   // `else if` clause - invalid without `if` or after `else` clauses
   elseIf(condition: Code | boolean): CodeGen {
-    return this._elseNode({kind: Node.If, condition, nodes: []})
+    return this._elseNode({kind: Node.If, condition, nodes: [], names: usedNames(condition)})
   }
 
   // `else` clause - only valid after `if` or `else if` clauses
@@ -286,7 +304,7 @@ export class CodeGen {
 
   // a generic `for` clause (or statement if `forBody` is passed)
   for(iteration: Code, forBody?: Block): CodeGen {
-    this._blockNode({kind: Node.For, iteration, nodes: []})
+    this._blockNode({kind: Node.For, iteration, nodes: [], names: usedNames(iteration)})
     if (forBody) this.code(forBody).endFor()
     return this
   }
@@ -314,8 +332,8 @@ export class CodeGen {
     const name = this._scope.toName(nameOrPrefix)
     if (this.opts.es5) {
       const arr = iterable instanceof Name ? iterable : this.var("_arr", iterable)
-      return this.forRange("_i", 0, new _Code(`${arr}.length`), (i) => {
-        this.var(name, new _Code(`${arr}[${i}]`))
+      return this.forRange("_i", 0, _`${arr}.length`, (i) => {
+        this.var(name, _`${arr}[${i}]`)
         forBody(name)
       })
     }
@@ -331,7 +349,7 @@ export class CodeGen {
     varKind: Code = varKinds.const
   ): CodeGen {
     if (this.opts.ownProperties) {
-      return this.forOf(nameOrPrefix, new _Code(`Object.keys(${obj})`), forBody)
+      return this.forOf(nameOrPrefix, _`Object.keys(${obj})`, forBody)
     }
     const name = this._scope.toName(nameOrPrefix)
     return this.for(_`${varKind} ${name} in ${obj}`, () => forBody(name))
@@ -382,7 +400,7 @@ export class CodeGen {
 
   // `throw` statement
   throw(error: Code): CodeGen {
-    return this._leafNode({kind: Node.Throw, error})
+    return this._leafNode({kind: Node.Throw, error, names: usedNames(error)})
   }
 
   // start self-balancing block
@@ -398,7 +416,7 @@ export class CodeGen {
     if (len === undefined) throw new Error("CodeGen: not in self-balancing block")
     const toClose = this._nodes.length - len
     if (toClose < 0 || (nodeCount !== undefined && toClose !== nodeCount)) {
-      throw new Error(`CodeGen: wrong number of block nodes: ${toClose} vs ${nodeCount} expected`)
+      throw new Error(`CodeGen: wrong number of nodes: ${toClose} vs ${nodeCount} expected`)
     }
     this._nodes.length = len
     return this
@@ -416,8 +434,13 @@ export class CodeGen {
     return this._endBlockNode(Node.Func)
   }
 
-  optimize(): void {
-    optimizeNodes(this._nodes[0].nodes)
+  optimize(n = 1): void {
+    const {nodes} = this._nodes[0]
+    while (n--) {
+      optimizeNodes(nodes)
+      const names = getUsedNames(nodes)
+      removeUnusedNames(nodes, names)
+    }
   }
 
   private _leafNode(node: LeafNode): CodeGen {
@@ -448,7 +471,7 @@ export class CodeGen {
     return this
   }
 
-  private _nodeCode(node: TreeNode): void {
+  private _nodeCode(node: ParentNode): void {
     // this.nodeCount++
     switch (node.kind) {
       case Node.If:
@@ -524,34 +547,35 @@ export class CodeGen {
     this._out += code + this._n
   }
 
-  private _blockCode({nodes, block = true}: TreeNode): void {
+  private _blockCode({nodes, block = true}: ParentNode): void {
     if (block) this._out += "{" + this._n
     nodes.forEach((n) => ("nodes" in n ? this._nodeCode(n) : this._leafNodeCode(n)))
     if (block) this._out += "}" + this._n
   }
 
-  private get _currNode(): TreeNode {
+  private get _currNode(): ParentNode {
     const ns = this._nodes
     return ns[ns.length - 1]
   }
 
-  private set _currNode(node: TreeNode) {
+  private set _currNode(node: ParentNode) {
     const ns = this._nodes
     ns[ns.length - 1] = node
   }
 }
 
-function optimizeNodes(nodes: (BlockNode | LeafNode)[]): void {
+function optimizeNodes(nodes: ChildNode[]): void {
   let i = 0
   while (i < nodes.length) {
     const n = nodes[i]
     if ("nodes" in n) optimizeNodes(n.nodes)
     switch (n.kind) {
       case Node.If: {
-        let ns = optimiseIf(n)
+        const ns = optimiseIf(n)
         if (ns === n) break
-        ns = Array.isArray(ns) ? ns : ns ? [ns] : []
-        nodes.splice(i, 1, ...ns)
+        if (Array.isArray(ns)) nodes.splice(i, 1, ...ns)
+        else if (ns) nodes.splice(i, 1, ns)
+        else nodes.splice(i, 1)
         continue
       }
       case Node.For:
@@ -563,7 +587,7 @@ function optimizeNodes(nodes: (BlockNode | LeafNode)[]): void {
   }
 }
 
-function optimiseIf(node: IfNode): IfNode | (BlockNode | LeafNode)[] | undefined {
+function optimiseIf(node: IfNode): IfNode | ChildNode[] | undefined {
   const cond = node.condition
   if (cond === true) return node.nodes // else is ignored here
   optimizeElse(node)
@@ -575,6 +599,7 @@ function optimiseIf(node: IfNode): IfNode | (BlockNode | LeafNode)[] | undefined
       kind: Node.If,
       condition: _`!(${node.condition})`,
       nodes: e.kind === Node.If ? [e] : e.nodes,
+      names: node.names,
     }
   }
   if (cond === false || !node.nodes.length) return undefined
@@ -589,6 +614,54 @@ function optimizeElse(node: IfNode): void {
   }
   const nodes = optimiseIf(node.else)
   node.else = Array.isArray(nodes) ? {kind: Node.Else, nodes} : nodes
+}
+
+function getUsedNames(nodes: ChildNode[], names: UsedNames = {}): UsedNames {
+  nodes.forEach((n) => {
+    countNodeNames(n, names)
+  })
+  return names
+}
+
+function countNodeNames(node: ParentNode | ChildNode, names: UsedNames): void {
+  if ("nodes" in node) getUsedNames(node.nodes, names)
+  if (node.names) updateUsedNames(node, names)
+  switch (node.kind) {
+    case Node.If:
+      if (node.else) countNodeNames(node.else, names)
+      break
+    case Node.Try:
+      if (node.catch) countNodeNames(node.catch, names)
+      if (node.finally) countNodeNames(node.finally, names)
+      break
+    case Node.Catch:
+      if (node.finally) countNodeNames(node.finally, names)
+  }
+}
+
+function removeUnusedNames(nodes: ChildNode[], names: UsedNames): void {
+  let i = 0
+  while (i < nodes.length) {
+    const n = nodes[i]
+    if ("nodes" in n) removeUnusedNames(n.nodes, names)
+    switch (n.kind) {
+      case Node.Def:
+        if (!names[n.name._str]) {
+          updateUsedNames(n, names, -1)
+          nodes.splice(i, 1)
+          continue
+        }
+        break
+      case Node.Assign:
+        if (n.lhs instanceof Name && !names[n.lhs._str]) {
+          updateUsedNames(n, names, -1)
+          nodes.splice(i, 1)
+          continue
+        }
+        break
+    }
+    i++
+  }
 }
 
 const andCode = mappend(operators.AND)
@@ -608,5 +681,5 @@ export function or(...args: Code[]): Code {
 type MAppend = (x: Code, y: Code) => Code
 
 function mappend(op: Code): MAppend {
-  return (x, y) => (x === nil ? y : y === nil ? x : new _Code(`${x} ${op} ${y}`))
+  return (x, y) => (x === nil ? y : y === nil ? x : _`${x} ${op} ${y}`)
 }

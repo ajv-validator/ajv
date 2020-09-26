@@ -118,14 +118,20 @@ interface CurrentOptions {
   ownProperties?: boolean
   multipleOfPrecision?: boolean | number
   messages?: boolean
-  code?: {
-    es5?: boolean
-    lines?: boolean
-    optimize?: boolean
-    formats?: Code // code to require (or construct) map of available formats - for standalone code
-    source?: boolean
-    process?: (code: string, schema?: SchemaEnv) => string
-  }
+  code?: CodeOptions
+}
+
+export interface CodeOptions {
+  es5?: boolean
+  lines?: boolean
+  optimize?: boolean | number
+  formats?: Code // code to require (or construct) map of available formats - for standalone code
+  source?: boolean
+  process?: (code: string, schema?: SchemaEnv) => string
+}
+
+interface InstanceCodeOptions extends CodeOptions {
+  optimize: number
 }
 
 interface DeprecatedOptions {
@@ -190,7 +196,6 @@ type RequiredInstanceOptions = {
     | "strict"
     | "strictTypes"
     | "strictTuples"
-    | "code"
     | "inlineRefs"
     | "loopRequired"
     | "loopEnum"
@@ -199,18 +204,20 @@ type RequiredInstanceOptions = {
     | "addUsedSchema"
     | "validateSchema"
     | "validateFormats"]: NonNullable<Options[K]>
-}
+} & {code: InstanceCodeOptions}
 
 export type InstanceOptions = Options & RequiredInstanceOptions
 
 function requiredOptions(o: Options): RequiredInstanceOptions {
   const strict = o.strict ?? true
   const strictLog = strict ? "log" : false
+  const _optz = o.code?.optimize
+  const optimize = _optz === true || _optz === undefined ? 2 : _optz || 0
   return {
     strict,
     strictTypes: o.strictTypes ?? strictLog,
     strictTuples: o.strictTuples ?? strictLog,
-    code: o.code ?? {},
+    code: o.code ? {...o.code, optimize} : {optimize},
     loopRequired: o.loopRequired ?? Infinity,
     loopEnum: o.loopEnum ?? Infinity,
     meta: o.meta ?? true,

@@ -3,20 +3,13 @@ require("../chai").should()
 
 describe("$comment option", () => {
   describe("= true", () => {
-    let logCalls, consoleLog
-
-    beforeEach(() => {
-      consoleLog = console.log
-      console.log = log
-    })
-
-    afterEach(() => {
-      console.log = consoleLog
-    })
+    let logCalls: any[][]
 
     function log(...args: any[]) {
-      logCalls.push(Array.prototype.slice.call(args))
+      logCalls.push(args)
     }
+
+    const logger = {log, warn: log, error: log}
 
     it("should log the text from $comment keyword", () => {
       const schema = {
@@ -28,8 +21,8 @@ describe("$comment option", () => {
         },
       }
 
-      const ajv = new _Ajv({$comment: true})
-      const fullAjv = new _Ajv({allErrors: true, $comment: true})
+      const ajv = new _Ajv({$comment: true, logger})
+      const fullAjv = new _Ajv({allErrors: true, $comment: true, logger})
 
       ;[ajv, fullAjv].forEach((_ajv) => {
         const validate = _ajv.compile(schema)
@@ -45,8 +38,6 @@ describe("$comment option", () => {
           logCalls.should.eql(expectedLogCalls)
         }
       })
-
-      console.log = consoleLog
     })
   })
 

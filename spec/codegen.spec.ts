@@ -355,14 +355,9 @@ describe("code generation", () => {
 
     it("defines and renders value references and values code", () => {
       gen.scopeValue("val", {ref: 1, code: _`1`})
-      assert.deepEqual(gen.getScopeValue("val", 1), {
-        _str: "val0",
-        prefix: "val",
-        scopePath: _`.val[0]`,
-        value: {
-          ref: 1,
-          code: _`1`,
-        },
+      assert.deepEqual(gen.getScopeValue("val", 1)?.value, {
+        ref: 1,
+        code: _`1`,
       })
       assertEqual(gen.scopeRefs(new Name("scope")), "const val0 = scope.val[0];")
       assertEqual(gen.scopeCode(), "const val0 = 1;")

@@ -43,7 +43,11 @@ export function reportExtraError(cxt: KeywordErrorCxt, error: KeywordErrorDefini
 export function resetErrorsCount(gen: CodeGen, errsCount: Name): void {
   gen.assign(N.errors, errsCount)
   gen.if(_`${N.vErrors} !== null`, () =>
-    gen.if(errsCount, _`${N.vErrors}.length = ${errsCount}`, _`${N.vErrors} = null`)
+    gen.if(
+      errsCount,
+      () => gen.assign(_`${N.vErrors}.length`, errsCount),
+      () => gen.assign(N.vErrors, null)
+    )
   )
 }
 
@@ -59,13 +63,13 @@ export function extendErrors({
   const err = gen.name("err")
   gen.forRange("i", errsCount, N.errors, (i) => {
     gen.const(err, _`${N.vErrors}[${i}]`)
-    gen.if(
-      _`${err}.dataPath === undefined`,
-      _`${err}.dataPath = ${strConcat(N.dataPath, it.errorPath)}`
+    gen.if(_`${err}.dataPath === undefined`, () =>
+      gen.assign(_`${err}.dataPath`, _`${strConcat(N.dataPath, it.errorPath)}`)
     )
-    gen.code(_`${err}.schemaPath = ${str`${it.errSchemaPath}/${keyword}`}`)
+    gen.assign(_`${err}.schemaPath`, _`${str`${it.errSchemaPath}/${keyword}`}`)
     if (it.opts.verbose) {
-      gen.code(_`${err}.schema = ${schemaValue}; ${err}.data = ${data}`)
+      gen.assign(_`${err}.schema`, schemaValue)
+      gen.assign(_`${err}.data`, data)
     }
   })
 }

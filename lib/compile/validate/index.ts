@@ -105,8 +105,7 @@ function subSchemaObjCode(it: SchemaObjCxt, valid: Name): void {
   if (opts.$comment && schema.$comment) commentKeyword(it)
   updateContext(it)
   checkAsync(it)
-  // TODO var - async validation fails if var replaced, possibly because of nodent
-  const errsCount = gen.var("_errs", N.errors)
+  const errsCount = gen.const("_errs", N.errors)
   typeAndKeywords(it, errsCount)
   // TODO var
   gen.var(valid, _`${errsCount} === ${N.errors}`)

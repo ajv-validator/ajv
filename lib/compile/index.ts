@@ -90,9 +90,9 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
   const _sch = getCompilingSchema.call(this, sch)
   if (_sch) return _sch
   const rootId = getFullPath(sch.root.baseId) // TODO if getFullPath removed 1 tests fails
-  const {es5, lines, optimize} = this.opts.code
+  const {es5, lines} = this.opts.code
   const {ownProperties} = this.opts
-  const gen = new CodeGen(this.scope, {es5, lines, optimize, ownProperties})
+  const gen = new CodeGen(this.scope, {es5, lines, ownProperties})
   let _ValidationError
   if (sch.$async) {
     _ValidationError = gen.scopeValue("Error", {
@@ -129,12 +129,12 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     self: this,
   }
 
-  let sourceCode
+  let sourceCode: string | undefined
   try {
     this._compilations.add(sch)
     validateFunctionCode(schemaCxt)
-    if (optimize !== false) gen.optimize()
-    // gen.optimize()
+    gen.optimize(this.opts.code.optimize)
+    // gen.optimize(2)
     sourceCode = `${gen.scopeRefs(N.scope)}${gen}`
     // codeSize += sourceCode.length
     // nodeCount += gen.nodeCount

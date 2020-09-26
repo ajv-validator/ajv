@@ -130,7 +130,7 @@ export class ValueScope extends Scope {
     return name
   }
 
-  getValue(prefix: string, keyOrRef: unknown): ValueScopeName | void {
+  getValue(prefix: string, keyOrRef: unknown): ValueScopeName | undefined {
     const vs = this._values[prefix]
     if (!vs) return
     return vs.get(keyOrRef)
