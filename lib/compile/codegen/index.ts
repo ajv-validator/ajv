@@ -597,7 +597,7 @@ function optimiseIf(node: IfNode): IfNode | ChildNode[] | undefined {
     if (node.nodes.length) return node
     return {
       kind: Node.If,
-      condition: _`!(${node.condition})`,
+      condition: cond instanceof Name ? _`!${cond}` : _`!(${cond})`,
       nodes: e.kind === Node.If ? [e] : e.nodes,
       names: node.names,
     }
