@@ -249,7 +249,7 @@ export class CodeGen {
   // appends passed SafeExpr to code or executes Block
   code(c: Block | SafeExpr): CodeGen {
     if (typeof c == "function") c()
-    else this._leafNode({kind: Node.AnyCode, code: c, names: usedNames(c)})
+    else if (c !== nil) this._leafNode({kind: Node.AnyCode, code: c, names: usedNames(c)})
     return this
   }
 
@@ -259,8 +259,9 @@ export class CodeGen {
     const values = keyValues
       .map(([key, value]) => {
         updateUsedNames(key, names)
-        if (key !== value && value instanceof _Code) updateUsedNames(value, names)
-        return key === value && !this.opts.es5 ? key : `${key}:${value}`
+        if (key === value) return this.opts.es5 ? `${key}:${value}` : key
+        if (value instanceof _Code) updateUsedNames(value, names)
+        return `${key}:${value}`
       })
       .reduce((c1, c2) => `${c1},${c2}`)
     return new _Code(`{${values}}`, names)

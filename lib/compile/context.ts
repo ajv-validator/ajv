@@ -85,7 +85,7 @@ export default class KeywordCxt implements KeywordErrorCxt {
   fail(condition?: Code): void {
     if (condition === undefined) {
       this.error()
-      if (!this.allErrors) this.gen.if(false) // TODO some other way to disable branch?
+      if (!this.allErrors) this.gen.if(false) // this branch will be removed by gen.optimize
       return
     }
     this.gen.if(condition)

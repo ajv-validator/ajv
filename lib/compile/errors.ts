@@ -76,14 +76,18 @@ export function extendErrors({
 
 function addError(gen: CodeGen, errObj: Code): void {
   const err = gen.const("err", errObj)
-  gen.if(_`${N.vErrors} === null`, _`${N.vErrors} = [${err}]`, _`${N.vErrors}.push(${err})`)
+  gen.if(
+    _`${N.vErrors} === null`,
+    () => gen.assign(N.vErrors, _`[${err}]`),
+    _`${N.vErrors}.push(${err})`
+  )
   gen.code(_`${N.errors}++`)
 }
 
 function returnErrors(it: SchemaCxt, errs: Code): void {
   const {gen, validateName, schemaEnv} = it
   if (schemaEnv.$async) {
-    gen.code(_`throw new ${it.ValidationError as Name}(${errs})`)
+    gen.throw(_`new ${it.ValidationError as Name}(${errs})`)
   } else {
     gen.assign(_`${validateName}.errors`, errs)
     gen.return(false)

@@ -36,7 +36,7 @@ function validateFunction(
           validateName,
           _`${N.data}, {${N.dataPath}="", ${N.parentData}, ${N.parentDataProperty}, ${N.rootData}=${N.data}}={}`,
           schemaEnv.$async,
-          () => gen.code(_`${funcSourceUrl(schema, opts)}`).code(body)
+          () => gen.code(funcSourceUrl(schema, opts)).code(body)
         )
   )
 }
