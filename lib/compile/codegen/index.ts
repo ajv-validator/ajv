@@ -644,24 +644,20 @@ function removeUnusedNames(nodes: ChildNode[], names: UsedNames): void {
   while (i < nodes.length) {
     const n = nodes[i]
     if ("nodes" in n) removeUnusedNames(n.nodes, names)
-    switch (n.kind) {
-      case Node.Def:
-        if (!names[n.name._str]) {
-          updateUsedNames(n, names, -1)
-          nodes.splice(i, 1)
-          continue
-        }
-        break
-      case Node.Assign:
-        if (n.lhs instanceof Name && !names[n.lhs._str]) {
-          updateUsedNames(n, names, -1)
-          nodes.splice(i, 1)
-          continue
-        }
-        break
+    if (unusedName(n, names)) {
+      updateUsedNames(n, names, -1)
+      nodes.splice(i, 1)
+      continue
     }
     i++
   }
+}
+
+function unusedName(n: ChildNode, names: UsedNames): boolean {
+  return (
+    (n.kind === Node.Def && !names[n.name._str]) ||
+    (n.kind === Node.Assign && n.lhs instanceof Name && !names[n.lhs._str])
+  )
 }
 
 const andCode = mappend(operators.AND)
