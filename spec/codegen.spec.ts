@@ -62,18 +62,24 @@ describe("code generation", () => {
 
     it("creates string expressions with Code", () => {
       const x = new Name("x")
-      assertEqual(str`${x}foo${x}bar${x}`, 'x + "foo" + x + "bar" + x')
-      assertEqual(str`foo${x}${x}bar${x}`, '"foo" + x + x + "bar" + x')
+      assertEqual(str`${x}foo${x}bar${x}`, 'x+"foo"+x+"bar"+x')
+      assertEqual(str`foo${x}${x}bar${x}`, '"foo"+x+x+"bar"+x')
     })
 
     it("connects string expressions removing unnecessary additions", () => {
       const x = _`"foo" + ${new Name("x")} + "bar"`
-      const code: Code = str`start ${x} end`
-      assertEqual(code, '"start foo" + x + "bar end"')
+      assertEqual(str`start ${x} end`, '"start foo" + x + "bar end"')
     })
 
     it("connects strings with numbers, booleans and nulls removing unnecessary additions", () => {
       assertEqual(str`foo ${1} ${true} ${null} bar`, '"foo 1 true null bar"')
+    })
+
+    it("preserves code", () => {
+      const data = new Name("data")
+      const code = _`${data}.replace(/~/g, "~0")`
+      assertEqual(str`/${code}`, '"/"+data.replace(/~/g, "~0")')
+      assertEqual(str`/${code}/`, '"/"+data.replace(/~/g, "~0")+"/"')
     })
   })
 
@@ -352,7 +358,7 @@ describe("code generation", () => {
         gen.optimize()
         assertEqual(
           gen,
-          'function inverse(x0){try{return 1/x0;}catch(e0){console.error("dividing " + x0 + " by 0");throw e0;}}'
+          'function inverse(x0){try{return 1/x0;}catch(e0){console.error("dividing "+x0+" by 0");throw e0;}}'
         )
       })
     })

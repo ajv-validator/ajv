@@ -113,15 +113,15 @@ function errorObjectCode(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): C
   } = cxt
   if (createErrors === false) return _`{}`
   const {params, message} = error
-  const keyValues: [Name, SafeExpr][] = [
-    [E.keyword, _`${keyword}`],
+  const keyValues: [Name, SafeExpr | string][] = [
+    [E.keyword, keyword],
     [N.dataPath, strConcat(N.dataPath, errorPath)],
     [E.schemaPath, str`${errSchemaPath}/${keyword}`],
     [E.params, params ? params(cxt) : _`{}`],
   ]
   if (propertyName) keyValues.push([E.propertyName, propertyName])
   if (opts.messages !== false) {
-    const msg = typeof message == "string" ? _`${message}` : message(cxt)
+    const msg = typeof message == "string" ? message : message(cxt)
     keyValues.push([E.message, msg])
   }
   if (opts.verbose) {
