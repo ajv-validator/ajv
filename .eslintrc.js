@@ -19,6 +19,7 @@ module.exports = {
         "@typescript-eslint/no-floating-promises": "off",
         "@typescript-eslint/no-implied-eval": "off",
         "@typescript-eslint/no-invalid-this": "off",
+        "@typescript-eslint/no-parameter-properties": "off",
         "@typescript-eslint/no-unnecessary-condition": "warn",
         "@typescript-eslint/no-unsafe-assignment": "off",
         "@typescript-eslint/no-unsafe-member-access": "off",

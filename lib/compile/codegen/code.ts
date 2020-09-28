@@ -103,12 +103,9 @@ export function str(strs: TemplateStringsArray, ...args: (CodeArg | string[])[])
 }
 
 export function addCodeArg(code: CodeItem[], arg: CodeArg | string[]): void {
-  if (arg instanceof _CodeOrName) {
-    if (arg instanceof Name) code.push(arg)
-    else code.push(...arg._items)
-  } else {
-    code.push(interpolate(arg))
-  }
+  if (arg instanceof _Code) code.push(...arg._items)
+  else if (arg instanceof Name) code.push(arg)
+  else code.push(interpolate(arg))
 }
 
 function optimize(expr: CodeItem[]): void {
@@ -137,26 +134,6 @@ function mergeExprItems(a: CodeItem, b: CodeItem): CodeItem | undefined {
   }
   if (typeof b == "string" && b[0] === '"' && !(a instanceof Name)) return `"${a}${b.slice(1)}`
   return
-}
-
-export function updateUsedNames(
-  src: Code | {names?: UsedNames},
-  names: UsedNames,
-  inc: 1 | -1 = 1
-): void {
-  if (src instanceof Name) {
-    const n = src.str
-    names[n] = (names[n] || 0) + inc
-  } else if (src.names) {
-    for (const n in src.names) {
-      names[n] = (names[n] || 0) + inc * (src.names[n] || 0)
-    }
-  }
-}
-
-export function usedNames(e?: SafeExpr): UsedNames | undefined {
-  if (e instanceof _CodeOrName) return e.names
-  return undefined
 }
 
 export function strConcat(c1: Code, c2: Code): Code {

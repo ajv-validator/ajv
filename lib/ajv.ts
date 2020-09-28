@@ -212,7 +212,7 @@ function requiredOptions(o: Options): RequiredInstanceOptions {
   const strict = o.strict ?? true
   const strictLog = strict ? "log" : false
   const _optz = o.code?.optimize
-  const optimize = _optz === true || _optz === undefined ? 2 : _optz || 0
+  const optimize = _optz === true || _optz === undefined ? 1 : _optz || 0
   return {
     strict,
     strictTypes: o.strictTypes ?? strictLog,
