@@ -1,7 +1,7 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type {SchemaObjCxt} from "../../compile"
 import type KeywordCxt from "../../compile/context"
-import {_, str, Name} from "../../compile/codegen"
+import {_, str, not, Name} from "../../compile/codegen"
 import {applySubschema} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
 import {checkStrictMode} from "../../compile/validate"
@@ -39,7 +39,7 @@ const def: CodeKeywordDefinition = {
     } else if (hasThen) {
       gen.if(schValid, validateClause("then"))
     } else {
-      gen.ifNot(schValid, validateClause("else"))
+      gen.if(not(schValid), validateClause("else"))
     }
 
     cxt.pass(valid, () => cxt.error(true))

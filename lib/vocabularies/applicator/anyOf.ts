@@ -1,6 +1,6 @@
 import type {CodeKeywordDefinition, AnySchema} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {_} from "../../compile/codegen"
+import {_, not} from "../../compile/codegen"
 import {applySubschema} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
 
@@ -29,7 +29,7 @@ const def: CodeKeywordDefinition = {
           schValid
         )
         gen.assign(valid, _`${valid} || ${schValid}`)
-        gen.ifNot(valid)
+        gen.if(not(valid))
       })
     }, schema.length)
 

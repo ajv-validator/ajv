@@ -51,18 +51,14 @@ export class _Code extends _CodeOrName {
   }
 
   get str(): string {
-    this._str ??= this._items.reduce((s: string, c: CodeItem) => `${s}${c}`, "")
-    return this._str
+    return (this._str ??= this._items.reduce((s: string, c: CodeItem) => `${s}${c}`, ""))
   }
 
   get names(): UsedNames {
-    if (!this._names) {
-      this._names = {}
-      for (const c of this._items) {
-        if (c instanceof Name) this._names[c.str] = (this._names[c.str] || 0) + 1
-      }
-    }
-    return this._names
+    return (this._names ??= this._items.reduce((names: UsedNames, c) => {
+      if (c instanceof Name) names[c.str] = (names[c.str] || 0) + 1
+      return names
+    }, {}))
   }
 }
 

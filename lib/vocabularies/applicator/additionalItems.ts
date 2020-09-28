@@ -1,6 +1,6 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {_, Name, str} from "../../compile/codegen"
+import {_, str, not, Name} from "../../compile/codegen"
 import {applySubschema, Type} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
 import {checkStrictMode} from "../../compile/validate"
@@ -31,14 +31,14 @@ const def: CodeKeywordDefinition = {
       cxt.pass(_`${len} <= ${items.length}`)
     } else if (typeof schema == "object" && !alwaysValidSchema(it, schema)) {
       const valid = gen.var("valid", _`${len} <= ${items.length}`) // TODO var
-      gen.ifNot(valid, () => validateItems(valid))
+      gen.if(not(valid), () => validateItems(valid))
       cxt.ok(valid)
     }
 
     function validateItems(valid: Name): void {
       gen.forRange("i", items.length, len, (i) => {
         applySubschema(it, {keyword: "additionalItems", dataProp: i, dataPropType: Type.Num}, valid)
-        if (!it.allErrors) gen.ifNot(valid, _`break`)
+        if (!it.allErrors) gen.if(not(valid), () => gen.break())
       })
     }
   },

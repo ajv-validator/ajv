@@ -35,18 +35,6 @@ export interface CodeGenOptions {
   ownProperties?: boolean
 }
 
-enum Node {
-  Root,
-  If = "if",
-  Else = "else",
-  For = "for",
-  Func = "func",
-  Return = "return",
-  Try = "try",
-  Catch = "catch",
-  Finally = "finally",
-}
-
 abstract class _Node {
   abstract readonly names: UsedNames
 
@@ -58,12 +46,12 @@ abstract class _Node {
     return this
   }
 
-  get count(): number {
-    return 1
-  }
+  // get count(): number {
+  //   return 1
+  // }
 }
 
-class DefNode extends _Node {
+class Def extends _Node {
   constructor(public varKind: Name, public name: Name, public rhs?: SafeExpr) {
     super()
   }
@@ -84,7 +72,7 @@ class DefNode extends _Node {
   }
 }
 
-class AssignNode extends _Node {
+class Assign extends _Node {
   constructor(public lhs: Code, public rhs: SafeExpr) {
     super()
   }
@@ -104,7 +92,7 @@ class AssignNode extends _Node {
   }
 }
 
-class LabelNode extends _Node {
+class Label extends _Node {
   readonly names: UsedNames = {}
   constructor(public label: Name) {
     super()
@@ -115,7 +103,7 @@ class LabelNode extends _Node {
   }
 }
 
-class BreakNode extends _Node {
+class Break extends _Node {
   readonly names: UsedNames = {}
   constructor(public label?: Code) {
     super()
@@ -128,7 +116,7 @@ class BreakNode extends _Node {
   }
 }
 
-class ThrowNode extends _Node {
+class Throw extends _Node {
   constructor(public error: Code) {
     super()
   }
@@ -142,7 +130,7 @@ class ThrowNode extends _Node {
   }
 }
 
-class CodeNode extends _Node {
+class AnyCode extends _Node {
   constructor(public code: SafeExpr) {
     super()
   }
@@ -161,7 +149,6 @@ class CodeNode extends _Node {
 }
 
 abstract class _ParentNode extends _Node {
-  abstract readonly kind: Node
   readonly nodes: ChildNode[]
   readonly block: boolean = true
 
@@ -171,7 +158,7 @@ abstract class _ParentNode extends _Node {
   }
 
   get names(): UsedNames {
-    return this.nodes.reduce((names, n) => addNames(names, n.names), {})
+    return this.nodes.reduce((names: UsedNames, n) => addNames(names, n.names), {})
   }
 
   render(opts: CodeGenOptions): string {
@@ -184,48 +171,37 @@ abstract class _ParentNode extends _Node {
   }
 
   optimizeNodes(): this | ChildNode | ChildNode[] | undefined {
+    const {nodes} = this
     let i = 0
-    while (i < this.nodes.length) {
-      const n = this.nodes[i]
-      const ns = n.optimizeNodes()
-      if (ns === n) {
-        i++
-      } else {
-        if (Array.isArray(ns)) this.nodes.splice(i, 1, ...ns)
-        else if (ns) this.nodes.splice(i, 1, ns)
-        else this.nodes.splice(i, 1)
-      }
+    while (i < nodes.length) {
+      const n = nodes[i].optimizeNodes()
+      if (Array.isArray(n)) nodes.splice(i, 1, ...n)
+      else if (n) nodes[i++] = n
+      else nodes.splice(i, 1)
     }
-    return this
+    return this.nodes.length > 0 ? this : undefined
   }
 
   optimizeNames(names: UsedNames): this | undefined {
     let i = 0
     while (i < this.nodes.length) {
       const n = this.nodes[i]
-      const n1 = n.optimizeNames(names)
-      if (n1 === n) {
+      if (n.optimizeNames(names)) {
         i++
       } else {
         subtractNames(names, n.names)
-        if (n1) {
-          addNames(names, n1.names)
-          this.nodes.splice(i, 1, n1)
-        } else {
-          this.nodes.splice(i, 1)
-        }
+        this.nodes.splice(i, 1)
       }
     }
-    return this
+    return this.nodes.length > 0 ? this : undefined
   }
 
-  get count(): number {
-    return 1 + this.nodes.reduce((c, n) => c + n.count, 0)
-  }
+  // get count(): number {
+  //   return 1 + this.nodes.reduce((c, n) => c + n.count, 0)
+  // }
 }
 
-class RootNode extends _ParentNode {
-  readonly kind = Node.Root
+class Root extends _ParentNode {
   readonly block = false
 
   optimizeNames(): this {
@@ -234,26 +210,13 @@ class RootNode extends _ParentNode {
   }
 }
 
-class ElseNode extends _ParentNode {
-  readonly kind = Node.Else
-  constructor(nodes?: ChildNode[]) {
-    super(nodes)
-  }
-
-  optimizeNodes(): this | undefined {
-    super.optimizeNodes()
-    return this.nodes.length > 0 ? this : undefined
-  }
-
-  optimizeNames(names: UsedNames): this | undefined {
-    super.optimizeNames(names)
-    return this.nodes.length > 0 ? this : undefined
-  }
+class Else extends _ParentNode {
+  static readonly kind = "else"
 }
 
-class IfNode extends _ParentNode {
-  readonly kind = Node.If
-  else?: IfNode | ElseNode
+class If extends _ParentNode {
+  static readonly kind = "if"
+  else?: If | Else
   constructor(public condition: Code | boolean, nodes?: ChildNode[]) {
     super(nodes)
   }
@@ -264,31 +227,27 @@ class IfNode extends _ParentNode {
     return code
   }
 
-  optimizeNodes(): IfNode | ChildNode[] | undefined {
+  optimizeNodes(): If | ChildNode[] | undefined {
     super.optimizeNodes()
     const cond = this.condition
     if (cond === true) return this.nodes // else is ignored here
     let e = this.else
     if (e) {
       const ns = e.optimizeNodes()
-      e = this.else = Array.isArray(ns) ? new ElseNode(ns) : ns
+      e = this.else = Array.isArray(ns) ? new Else(ns) : (ns as Else | undefined)
     }
     if (e) {
-      if (cond === false) return e instanceof IfNode ? e : e.nodes
+      if (cond === false) return e instanceof If ? e : e.nodes
       if (this.nodes.length) return this
-      return new IfNode(
-        cond instanceof Name ? _`!${cond}` : _`!(${cond})`,
-        e instanceof IfNode ? [e] : e.nodes
-      )
+      return new If(not(cond), e instanceof If ? [e] : e.nodes)
     }
     if (cond === false || !this.nodes.length) return undefined
     return this
   }
 
   optimizeNames(names: UsedNames): this | undefined {
-    super.optimizeNames(names)
-    const e = this.else?.optimizeNames(names)
-    return this.nodes.length > 0 || e ? this : undefined
+    this.else = this.else?.optimizeNames(names)
+    return super.optimizeNames(names) || this.else ? this : undefined
   }
 
   get names(): UsedNames {
@@ -298,13 +257,13 @@ class IfNode extends _ParentNode {
     return names
   }
 
-  get count(): number {
-    return super.count + (this.else?.count || 0)
-  }
+  // get count(): number {
+  //   return super.count + (this.else?.count || 0)
+  // }
 }
 
-class ForNode extends _ParentNode {
-  readonly kind = Node.For
+class For extends _ParentNode {
+  static readonly kind = "for"
   constructor(public iteration: Code) {
     super()
   }
@@ -316,15 +275,10 @@ class ForNode extends _ParentNode {
   render(opts: CodeGenOptions): string {
     return `for(${this.iteration})` + super.render(opts)
   }
-
-  optimizeNodes(): this | undefined {
-    super.optimizeNodes()
-    return this.nodes.length > 0 ? this : undefined
-  }
 }
 
-class FuncNode extends _ParentNode {
-  readonly kind = Node.Func
+class Func extends _ParentNode {
+  static readonly kind = "func"
   constructor(public name: Name, public args: Code, public async?: boolean) {
     super()
   }
@@ -334,8 +288,8 @@ class FuncNode extends _ParentNode {
   }
 }
 
-class ReturnNode extends _ParentNode {
-  readonly kind = Node.Return
+class Return extends _ParentNode {
+  static readonly kind = "return"
   readonly block = false
 
   render(opts: CodeGenOptions): string {
@@ -343,10 +297,9 @@ class ReturnNode extends _ParentNode {
   }
 }
 
-class TryNode extends _ParentNode {
-  readonly kind = Node.Try
-  catch?: CatchNode
-  finally?: FinallyNode
+class Try extends _ParentNode {
+  catch?: Catch
+  finally?: Finally
 
   render(opts: CodeGenOptions): string {
     let code = "try" + super.render(opts)
@@ -357,8 +310,8 @@ class TryNode extends _ParentNode {
 
   optimizeNodes(): this {
     super.optimizeNodes()
-    this.catch?.optimizeNodes()
-    this.finally?.optimizeNodes()
+    this.catch?.optimizeNodes() as Catch | undefined
+    this.finally?.optimizeNodes() as Finally | undefined
     return this
   }
 
@@ -376,62 +329,45 @@ class TryNode extends _ParentNode {
     return names
   }
 
-  get count(): number {
-    return super.count + (this.catch?.count || 0) + (this.finally?.count || 0)
-  }
+  // get count(): number {
+  //   return super.count + (this.catch?.count || 0) + (this.finally?.count || 0)
+  // }
 }
 
-class CatchNode extends _ParentNode {
-  readonly kind = Node.Catch
-  finally?: FinallyNode
-  constructor(public error: Name) {
+class Catch extends _ParentNode {
+  static readonly kind = "catch"
+  constructor(readonly error: Name) {
     super()
   }
 
   render(opts: CodeGenOptions): string {
-    let code = `catch(${this.error})` + super.render(opts)
-    if (this.finally) code += this.finally.render(opts)
-    return code
-  }
-
-  optimizeNodes(): this {
-    super.optimizeNodes()
-    this.finally?.optimizeNodes()
-    return this
-  }
-
-  optimizeNames(names: UsedNames): this | undefined {
-    super.optimizeNames(names)
-    this.finally?.optimizeNames(names)
-    return this
-  }
-
-  get names(): UsedNames {
-    const names = super.names
-    if (this.finally) addNames(names, this.finally.names)
-    return names
-  }
-
-  get count(): number {
-    return super.count + (this.finally?.count || 0)
+    return `catch(${this.error})` + super.render(opts)
   }
 }
 
-class FinallyNode extends _ParentNode {
-  readonly kind = Node.Finally
-
+class Finally extends _ParentNode {
+  static readonly kind = "finally"
   render(opts: CodeGenOptions): string {
     return "finally" + super.render(opts)
   }
 }
 
-type BlockNode = IfNode | ForNode | FuncNode | ReturnNode | TryNode
+type BlockNode = If | For | Func | Return | Try
 
-type LeafNode = DefNode | AssignNode | LabelNode | BreakNode | ThrowNode | CodeNode
+type LeafNode = Def | Assign | Label | Break | Throw | AnyCode
 
-type ParentNode = RootNode | BlockNode | ElseNode | CatchNode | FinallyNode
+type ParentNode = Root | BlockNode | Else | Catch | Finally
 
 type ChildNode = BlockNode | LeafNode
+
+type BlockNodeType =
+  | typeof If
+  | typeof Else
+  | typeof For
+  | typeof Func
+  | typeof Return
+  | typeof Catch
+  | typeof Finally
 
 export class CodeGen {
   readonly _scope: Scope
@@ -441,19 +377,19 @@ export class CodeGen {
   private readonly _blockStarts: number[] = []
   private readonly opts: CodeGenOptions
 
-  get nodeCount(): number {
-    return this._root.count
-  }
+  // get nodeCount(): number {
+  //   return this._root.count
+  // }
 
   constructor(extScope: ValueScope, opts: CodeGenOptions = {}) {
     this.opts = opts
     this._extScope = extScope
     this._scope = new Scope({parent: extScope})
-    this._nodes = [new RootNode()]
+    this._nodes = [new Root()]
   }
 
-  private get _root(): RootNode {
-    return this._nodes[0] as RootNode
+  private get _root(): Root {
+    return this._nodes[0] as Root
   }
 
   toString(): string {
@@ -494,7 +430,7 @@ export class CodeGen {
 
   private _def(varKind: Name, nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
     const name = this._scope.toName(nameOrPrefix)
-    this._leafNode(new DefNode(varKind, name, rhs))
+    this._leafNode(new Def(varKind, name, rhs))
     return name
   }
 
@@ -515,13 +451,13 @@ export class CodeGen {
 
   // assignment code
   assign(lhs: Code, rhs: SafeExpr): CodeGen {
-    return this._leafNode(new AssignNode(lhs, rhs))
+    return this._leafNode(new Assign(lhs, rhs))
   }
 
   // appends passed SafeExpr to code or executes Block
   code(c: Block | SafeExpr): CodeGen {
     if (typeof c == "function") c()
-    else if (c !== nil) this._leafNode(new CodeNode(c))
+    else if (c !== nil) this._leafNode(new AnyCode(c))
     return this
   }
 
@@ -542,7 +478,7 @@ export class CodeGen {
 
   // `if` clause (or statement if `thenBody` and, optionally, `elseBody` are passed)
   if(condition: Code | boolean, thenBody?: Block, elseBody?: Block): CodeGen {
-    this._blockNode(new IfNode(condition))
+    this._blockNode(new If(condition))
 
     if (thenBody && elseBody) {
       this.code(thenBody).else().code(elseBody).endIf()
@@ -554,31 +490,24 @@ export class CodeGen {
     return this
   }
 
-  // `if` clause or statement with negated condition,
-  // useful to avoid using _ template just to negate the name
-  ifNot(condition: Code, thenBody?: Block, elseBody?: Block): CodeGen {
-    const cond = condition instanceof Name ? _`!${condition}` : _`!(${condition})`
-    return this.if(cond, thenBody, elseBody)
-  }
-
   // `else if` clause - invalid without `if` or after `else` clauses
   elseIf(condition: Code | boolean): CodeGen {
-    return this._elseNode(new IfNode(condition))
+    return this._elseNode(new If(condition))
   }
 
   // `else` clause - only valid after `if` or `else if` clauses
   else(): CodeGen {
-    return this._elseNode(new ElseNode())
+    return this._elseNode(new Else())
   }
 
   // end `if` statement (needed if gen.if was used only with condition)
   endIf(): CodeGen {
-    return this._endBlockNode(Node.If, Node.Else)
+    return this._endBlockNode(If, Else)
   }
 
   // a generic `for` clause (or statement if `forBody` is passed)
   for(iteration: Code, forBody?: Block): CodeGen {
-    this._blockNode(new ForNode(iteration))
+    this._blockNode(new For(iteration))
     if (forBody) this.code(forBody).endFor()
     return this
   }
@@ -631,50 +560,49 @@ export class CodeGen {
 
   // end `for` loop
   endFor(): CodeGen {
-    return this._endBlockNode(Node.For)
+    return this._endBlockNode(For)
   }
 
   // `label` statement
   label(label: Name): CodeGen {
-    return this._leafNode(new LabelNode(label))
+    return this._leafNode(new Label(label))
   }
 
   // `break` statement
   break(label?: Code): CodeGen {
-    return this._leafNode(new BreakNode(label))
+    return this._leafNode(new Break(label))
   }
 
   // `return` statement
   return(value: Block | SafeExpr): CodeGen {
-    const node = new ReturnNode()
+    const node = new Return()
     this._blockNode(node)
     this.code(value)
     if (node.nodes.length !== 1) throw new Error('CodeGen: "return" should have one node')
-    return this._endBlockNode(Node.Return)
+    return this._endBlockNode(Return)
   }
 
   // `try` statement
   try(tryBody: Block, catchCode?: (e: Name) => void, finallyCode?: Block): CodeGen {
     if (!catchCode && !finallyCode) throw new Error('CodeGen: "try" without "catch" and "finally"')
-    const tryNode = new TryNode()
-    this._blockNode(tryNode)
+    const node = new Try()
+    this._blockNode(node)
     this.code(tryBody)
-    let node: TryNode | CatchNode = tryNode
     if (catchCode) {
       const error = this.name("e")
-      node = this._currNode = node.catch = new CatchNode(error)
+      this._currNode = node.catch = new Catch(error)
       catchCode(error)
     }
     if (finallyCode) {
-      this._currNode = node.finally = new FinallyNode()
+      this._currNode = node.finally = new Finally()
       this.code(finallyCode)
     }
-    return this._endBlockNode(Node.Catch, Node.Finally)
+    return this._endBlockNode(Catch, Finally)
   }
 
   // `throw` statement
   throw(error: Code): CodeGen {
-    return this._leafNode(new ThrowNode(error))
+    return this._leafNode(new Throw(error))
   }
 
   // start self-balancing block
@@ -698,14 +626,14 @@ export class CodeGen {
 
   // `function` heading (or definition if funcBody is passed)
   func(name: Name, args: Code = nil, async?: boolean, funcBody?: Block): CodeGen {
-    this._blockNode(new FuncNode(name, args, async))
+    this._blockNode(new Func(name, args, async))
     if (funcBody) this.code(funcBody).endFunc()
     return this
   }
 
   // end function definition
   endFunc(): CodeGen {
-    return this._endBlockNode(Node.Func)
+    return this._endBlockNode(Func)
   }
 
   optimize(n = 1): void {
@@ -725,18 +653,18 @@ export class CodeGen {
     this._nodes.push(node)
   }
 
-  private _endBlockNode(n1: Node, n2?: Node): CodeGen {
-    const {kind} = this._currNode
-    if (kind !== n1 && kind !== n2) {
-      throw new Error(`CodeGen: not in block "${n2 ? `${n1}/${n2}` : n1}"`)
+  private _endBlockNode(N1: BlockNodeType, N2?: BlockNodeType): CodeGen {
+    const n = this._currNode
+    if (!(n instanceof N1 || (N2 && n instanceof N2))) {
+      throw new Error(`CodeGen: not in block "${N2 ? `${N1.kind}/${N2.kind}` : N1.kind}"`)
     }
     this._nodes.pop()
     return this
   }
 
-  private _elseNode(node: IfNode | ElseNode): CodeGen {
+  private _elseNode(node: If | Else): CodeGen {
     const n = this._currNode
-    if (!(n instanceof IfNode)) {
+    if (!(n instanceof If)) {
       throw new Error('CodeGen: "else" without "if"')
     }
     this._currNode = n.else = node
@@ -763,6 +691,11 @@ function subtractNames(names: UsedNames, from: UsedNames): void {
   for (const n in from) names[n] = (names[n] || 0) - (from[n] || 0)
 }
 
+export function not<T extends Code | boolean>(x: T): T
+export function not(x: Code | boolean): Code | boolean {
+  return typeof x == "boolean" ? !x : _`!${par(x)}`
+}
+
 const andCode = mappend(operators.AND)
 
 // boolean AND (&&) expression with the passed arguments
@@ -780,5 +713,9 @@ export function or(...args: Code[]): Code {
 type MAppend = (x: Code, y: Code) => Code
 
 function mappend(op: Code): MAppend {
-  return (x, y) => (x === nil ? y : y === nil ? x : _`${x} ${op} ${y}`)
+  return (x, y) => (x === nil ? y : y === nil ? x : _`${par(x)} ${op} ${par(y)}`)
+}
+
+function par(x: Code): Code {
+  return x instanceof Name ? x : _`(${x})`
 }

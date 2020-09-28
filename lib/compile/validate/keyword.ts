@@ -12,7 +12,7 @@ import KeywordCxt from "../context"
 import {applySubschema} from "../subschema"
 import {extendErrors} from "../errors"
 import {callValidateCode} from "../../vocabularies/code"
-import {CodeGen, _, nil, Code, Name} from "../codegen"
+import {CodeGen, _, nil, not, Code, Name} from "../codegen"
 import N from "../names"
 
 type KeywordCompilationResult = AnySchema | SchemaValidateFunction | AnyValidateFunction
@@ -105,10 +105,8 @@ function funcKeywordCode(cxt: KeywordCxt, def: FuncKeywordDefinition): void {
     gen.assign(valid, _`${_await}${callValidateCode(cxt, validateRef, passCxt, passSchema)}`)
   }
 
-  // TODO maybe refactor to gen.ifNot(def.valid ?? valid, repErrs) once dead branches are removed
   function reportErrs(errors: () => void): void {
-    if (def.valid === false) errors()
-    else if (def.valid !== true) gen.ifNot(valid, errors)
+    gen.if(not(def.valid ?? valid), errors)
   }
 }
 

@@ -15,7 +15,7 @@ import {
   keywordError,
   keyword$DataError,
 } from "./errors"
-import {CodeGen, _, nil, or, getProperty, Code, Name} from "./codegen"
+import {CodeGen, _, nil, or, not, getProperty, Code, Name} from "./codegen"
 import N from "./names"
 
 export default class KeywordCxt implements KeywordErrorCxt {
@@ -65,7 +65,7 @@ export default class KeywordCxt implements KeywordErrorCxt {
   }
 
   result(condition: Code, successAction?: () => void, failAction?: () => void): void {
-    this.gen.ifNot(condition)
+    this.gen.if(not(condition))
     if (failAction) failAction()
     else this.error()
     if (successAction) {
@@ -150,7 +150,7 @@ export default class KeywordCxt implements KeywordErrorCxt {
       if (schemaType.length) {
         if (!(schemaCode instanceof Name)) throw new Error("ajv implementation error")
         const st = Array.isArray(schemaType) ? schemaType : [schemaType]
-        return _`(${checkDataTypes(st, schemaCode, it.opts.strict, DataType.Wrong)})`
+        return _`${checkDataTypes(st, schemaCode, it.opts.strict, DataType.Wrong)}`
       }
       return nil
     }

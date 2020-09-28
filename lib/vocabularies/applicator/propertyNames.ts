@@ -1,6 +1,6 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {_, str} from "../../compile/codegen"
+import {_, str, not} from "../../compile/codegen"
 import {applySubschema} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
 
@@ -35,7 +35,7 @@ const def: CodeKeywordDefinition = {
         },
         valid
       )
-      gen.ifNot(valid, () => {
+      gen.if(not(valid), () => {
         cxt.error(true)
         if (!it.allErrors) gen.break()
       })

@@ -6,6 +6,7 @@ import {
   _,
   str,
   nil,
+  not,
   Code,
   Name,
 } from "../dist/compile/codegen"
@@ -13,9 +14,9 @@ import assert from "assert"
 
 describe("code generation", () => {
   describe("Name", () => {
-    it("throws if non-identifies is passed", () => {
-      assert.throws(() => new Name("1x"))
-      assert.throws(() => new Name("-x"))
+    it("throws if non-identifier is passed", () => {
+      assert.throws(() => new Name("1x"), /name must be a valid identifier/)
+      assert.throws(() => new Name("-x"), /name must be a valid identifier/)
       new Name("x")
     })
 
@@ -169,39 +170,42 @@ describe("code generation", () => {
       })
 
       it("throws exception if `else` block is used without `then` block", () => {
-        assert.throws(() => gen.if(_`${x} > ${num}`, undefined, () => log("smaller or equal")))
+        assert.throws(
+          () => gen.if(_`${x} > ${num}`, undefined, () => log("smaller or equal")),
+          /"else" body without "then" body/
+        )
       })
 
       it("throws exception if `else` clause is used without `if`", () => {
-        assert.throws(() => gen.else())
+        assert.throws(() => gen.else(), /"else" without "if"/)
       })
 
       it("throws exception if `else` clause is used in another block", () => {
         gen.func(new Name("f"))
-        assert.throws(() => gen.else())
+        assert.throws(() => gen.else(), /"else" without "if"/)
       })
 
       it("throws exception if `elseIf` clause is used without `if`", () => {
-        assert.throws(() => gen.elseIf(_`${x} > ${num}`))
+        assert.throws(() => gen.elseIf(_`${x} > ${num}`), /"else" without "if"/)
       })
 
       it("throws exception if `elseIf` clause is used in another block", () => {
         gen.func(new Name("f"))
-        assert.throws(() => gen.elseIf(_`${x} > ${num}`))
+        assert.throws(() => gen.elseIf(_`${x} > ${num}`), /"else" without "if"/)
       })
 
       it("throws exception if `endIf` clause is used without `if`", () => {
-        assert.throws(() => gen.endIf())
+        assert.throws(() => gen.endIf(), /not in block "if\/else"/)
       })
 
       it("throws exception if `endIf` clause is used in another block", () => {
         gen.func(new Name("f"))
-        assert.throws(() => gen.endIf())
+        assert.throws(() => gen.endIf(), /not in block "if\/else"/)
       })
 
       it("renders `if` with negated condition", () => {
         const gt = gen.const("gt", _`${x} > ${num}`)
-        gen.ifNot(gt, () => log("smaller or equal"))
+        gen.if(not(gt), () => log("smaller or equal"))
         assertEqual(gen, 'const gt0 = x > 0;if(!gt0){console.log("smaller or equal");}')
       })
 
@@ -210,7 +214,7 @@ describe("code generation", () => {
         log("greater")
         gen.else()
         log("smaller or equal")
-        assert.throws(() => gen.elseIf(_`${x} < ${num}`))
+        assert.throws(() => gen.elseIf(_`${x} < ${num}`), /"else" without "if"/)
       })
 
       const nestedIfCode =

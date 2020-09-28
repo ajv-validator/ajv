@@ -160,7 +160,7 @@ function returnResults({gen, schemaEnv, validateName, ValidationError}: SchemaCx
     gen.if(
       _`${N.errors} === 0`,
       () => gen.return(N.data),
-      _`throw new ${ValidationError as Name}(${N.vErrors})`
+      () => gen.throw(_`new ${ValidationError as Name}(${N.vErrors})`)
     )
   } else {
     gen.assign(_`${validateName}.errors`, N.vErrors)

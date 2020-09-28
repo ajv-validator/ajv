@@ -5,7 +5,7 @@ import type {
   KeywordErrorDefinition,
 } from "../../types"
 import {allSchemaProperties, usePattern} from "../code"
-import {_, nil, or, Code, Name} from "../../compile/codegen"
+import {_, nil, or, not, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 import {applySubschema, SubschemaArgs, Type} from "../../compile/subschema"
 import {alwaysValidSchema, schemaRefOrVal} from "../../compile/util"
@@ -82,13 +82,13 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
         const valid = gen.name("valid")
         if (opts.removeAdditional === "failing") {
           applyAdditionalSchema(key, valid, false)
-          gen.ifNot(valid, () => {
+          gen.if(not(valid), () => {
             cxt.reset()
             deleteAdditional(key)
           })
         } else {
           applyAdditionalSchema(key, valid)
-          if (!allErrors) gen.ifNot(valid, _`break`)
+          if (!allErrors) gen.if(not(valid), () => gen.break())
         }
       }
     }

@@ -7,7 +7,7 @@ import {
   propertyInData,
   noPropertyInData,
 } from "../code"
-import {_, str, nil, Name} from "../../compile/codegen"
+import {_, str, nil, not, Name} from "../../compile/codegen"
 
 export type RequiredError = ErrorObject<"required", {missingProperty: string}>
 
@@ -67,7 +67,7 @@ const def: CodeKeywordDefinition = {
         schemaCode,
         () => {
           gen.assign(valid, propertyInData(data, missing, opts.ownProperties))
-          gen.ifNot(valid, () => {
+          gen.if(not(valid), () => {
             cxt.error()
             gen.break()
           })
