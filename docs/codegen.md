@@ -58,7 +58,24 @@ These methods only accept instances of private class `_Code`, other values will 
 
 If a string is used in template literals, it will be wrapped in quotes - the generated code could be invalid, but it prevents the risk of code execution that atacker could pass via untrusted schema as a string value that will be interpolated. Also see the comment in the example.
 
-Currently CodeGen class does safe append-only string concatenation (without any code substitutions that would present risks of malicious code execution). In the next Ajv versions CodeGen class API will allow implementing code optimizations (e.g., removing empty branches and unused variable declarations) without changing the main Ajv code, purely by switching to lightweight syntax trees in the internal class code.
+## Code optimization
+
+CodeGen class generates code trees and performs several optimizations before the code is rendered:
+
+1. removes empty and unreachable branches (e.g. `else` branch after `if(true)`, etc.).
+2. removes unused variable declarations.
+3. replaces variables that are used only once and assigned expressions that are explicitely marked as "constant" (i.e. having referential transparency) with the expressions themselves.
+
+These optimizations assume that the expressions in `if` coditions, `for` loop headers and assignemnts are free of any side effects - this is the case for all pre-defined validation keywords. You can either use the same approach in user-defined keywords, or you may need to disable optimization.
+
+See [these tests](../spec/codegen.spec.ts) for examples.
+
+By default Ajv does 1-pass optimization - based on the test suite it achives 10.5% code size reduction and 16.7% tree nodes reduction (TODO benchmark the validation time). The second optimization pass would only change it marginally, by less than 0.1%, so you won't need it unless you have really complex schemas or if you generate standalone code and want it to pass relevant eslint rules.
+
+Optimization mode can be changed with options:
+
+- `{code: {optimize: false}}` - to disable,
+- `{code: {optimize: 2}}` - 2-pass optimization.
 
 ## User-defined keywords
 

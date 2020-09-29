@@ -281,7 +281,13 @@ const defaultOptions = {
   ownProperties: false,
   multipleOfPrecision: false,
   messages: true,
-  code: {es5: false, lines: false},
+  code: {
+    es5: false,
+    lines: false,
+    source: false,
+    process: undefined, // (code: string) => string
+    optimize: true,
+  },
 }
 ```
 
@@ -366,6 +372,12 @@ type CodeOptions = {
   process?: (code: string, schema?: SchemaEnv) => string // an optional function to process generated code
   // before it is passed to Function constructor.
   // It can be used to either beautify or to transpile code.
+  optimize?: boolean | number // code optimization flag or number of passes, 1 pass by default,
+  // code optimizations reduce the size of the generated code (bytes, based on the tests) by over 10%,
+  // the number of code tree nodes by nearly 17%.
+  // You would almost never need more than one optimization pass, unless you have some really complex schemas -
+  // the second pass in the tests (it has quite complex schemas) only improves optimization by less than 0.1%.
+  // See [Code optimization](./codegen.md#code-optimization) for details.
 }
 
 type Source = {
