@@ -30,7 +30,7 @@ const def: CodeKeywordDefinition = {
         },
         valid
       )
-      gen.if(valid, _`break`)
+      gen.if(valid, () => gen.break())
     })
 
     cxt.result(valid, () => cxt.reset())

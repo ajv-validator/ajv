@@ -1,7 +1,7 @@
 import type {CodeKeywordDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {schemaProperties, usePattern} from "../code"
-import {_} from "../../compile/codegen"
+import {_, not} from "../../compile/codegen"
 import {applySubschema, Type} from "../../compile/subschema"
 import {checkStrictMode} from "../../compile/validate"
 
@@ -56,7 +56,7 @@ const def: CodeKeywordDefinition = {
             },
             valid
           )
-          if (!it.allErrors) gen.ifNot(valid, _`break`)
+          if (!it.allErrors) gen.if(not(valid), () => gen.break())
         })
       })
     }

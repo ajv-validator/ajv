@@ -36,7 +36,7 @@ function validateFunction(
           validateName,
           _`${N.data}, {${N.dataPath}="", ${N.parentData}, ${N.parentDataProperty}, ${N.rootData}=${N.data}}={}`,
           schemaEnv.$async,
-          () => gen.code(_`${funcSourceUrl(schema, opts)}`).code(body)
+          () => gen.code(funcSourceUrl(schema, opts)).code(body)
         )
   )
 }
@@ -105,8 +105,7 @@ function subSchemaObjCode(it: SchemaObjCxt, valid: Name): void {
   if (opts.$comment && schema.$comment) commentKeyword(it)
   updateContext(it)
   checkAsync(it)
-  // TODO var - async validation fails if var replaced, possibly because of nodent
-  const errsCount = gen.var("_errs", N.errors)
+  const errsCount = gen.const("_errs", N.errors)
   typeAndKeywords(it, errsCount)
   // TODO var
   gen.var(valid, _`${errsCount} === ${N.errors}`)
@@ -161,7 +160,7 @@ function returnResults({gen, schemaEnv, validateName, ValidationError}: SchemaCx
     gen.if(
       _`${N.errors} === 0`,
       () => gen.return(N.data),
-      _`throw new ${ValidationError as Name}(${N.vErrors})`
+      () => gen.throw(_`new ${ValidationError as Name}(${N.vErrors})`)
     )
   } else {
     gen.assign(_`${validateName}.errors`, N.vErrors)

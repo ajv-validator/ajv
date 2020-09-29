@@ -8,7 +8,7 @@ import type {SchemaObjCxt} from ".."
 import {isJSONType, JSONType} from "../rules"
 import {schemaHasRulesForType} from "./applicability"
 import {reportError} from "../errors"
-import {_, str, nil, and, operators, Code, Name} from "../codegen"
+import {_, str, nil, and, not, operators, Code, Name} from "../codegen"
 import {toHash, schemaRefOrVal} from "../util"
 
 export enum DataType {
@@ -167,7 +167,7 @@ export function checkDataType(
     default:
       return _`typeof ${data} ${EQ} ${dataType}`
   }
-  return correct === DataType.Correct ? cond : _`!(${cond})`
+  return correct === DataType.Correct ? cond : not(cond)
 
   function numCond(_cond: Code = nil): Code {
     return and(_`typeof ${data} == "number"`, _cond, strictNums ? _`isFinite(${data})` : nil)
@@ -187,7 +187,7 @@ export function checkDataTypes(
   const types = toHash(dataTypes)
   if (types.array && types.object) {
     const notObj = _`typeof ${data} != "object"`
-    cond = types.null ? notObj : _`(!${data} || ${notObj})`
+    cond = types.null ? notObj : _`!${data} || ${notObj}`
     delete types.null
     delete types.array
     delete types.object

@@ -36,17 +36,16 @@ const def: CodeKeywordDefinition = {
 
     function loopEnum(): void {
       gen.assign(valid, false)
-      gen.forOf("v", schemaCode, (v) =>
+      gen.forOf("v", schemaCode as Code, (v) =>
         gen.if(_`${eql}(${data}, ${v})`, () => gen.assign(valid, true).break())
       )
     }
 
     function equalCode(vSchema: Name, i: number): Code {
-      const sch: string = schema[i]
-      if (sch && typeof sch === "object") {
-        return _`${eql}(${data}, ${vSchema}[${i}])`
-      }
-      return _`${data} === ${sch}`
+      const sch = schema[i]
+      return sch && typeof sch === "object"
+        ? _`${eql}(${data}, ${vSchema}[${i}])`
+        : _`${data} === ${sch}`
     }
   },
 }

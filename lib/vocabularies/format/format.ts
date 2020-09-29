@@ -57,17 +57,15 @@ const def: CodeKeywordDefinition = {
 
       function unknownFmt(): Code {
         if (opts.strict === false) return nil
-        return _`(${schemaCode} && !${format})`
+        return _`${schemaCode} && !${format}`
       }
 
       function invalidFmt(): Code {
         const callFormat = schemaEnv.$async
-          ? _`${fDef}.async ? await ${format}(${data}) : ${format}(${data})`
+          ? _`(${fDef}.async ? await ${format}(${data}) : ${format}(${data}))`
           : _`${format}(${data})`
-        const validData = _`typeof ${format} == "function" ? ${callFormat} : ${format}.test(${data})`
-        return _`(${format} && ${format} !== true && ${fType} === ${
-          ruleType as string
-        } && !(${validData}))`
+        const validData = _`(typeof ${format} == "function" ? ${callFormat} : ${format}.test(${data}))`
+        return _`${format} && ${format} !== true && ${fType} === ${ruleType} && !${validData}`
       }
     }
 

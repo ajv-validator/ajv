@@ -20,7 +20,7 @@ export function checkMissingProp(
 ): Code {
   return or(
     ...properties.map(
-      (prop) => _`(${noPropertyInData(data, prop, opts.ownProperties)} && (${missing} = ${prop}))`
+      (prop) => _`${noPropertyInData(data, prop, opts.ownProperties)} && (${missing} = ${prop})`
     )
   )
 }
