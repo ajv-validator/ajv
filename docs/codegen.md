@@ -48,7 +48,7 @@ const num0 = 5
 if (num0 > 0) {
   console.log(num0 + " is greater than 0")
 } else {
-  console.log(num0 + " is smaller than 0")
+  console.log(num0 + " is smaller or equal than 0")
 }
 ```
 
@@ -56,7 +56,7 @@ if (num0 > 0) {
 
 These methods only accept instances of private class `_Code`, other values will be rejected by Typescript compiler - the risk to pass unsafe string is mitigated on type level.
 
-If a string is used in template literals, it will be wrapped in quotes - the generated code could be invalid, but it prevents the risk of code execution that atacker could pass via untrusted schema as a string value that will be interpolated. Also see the comment in the example.
+If a string variable were used in `_` template literal, its value would be safely wrapped in quotes - in many cases it is quite useful, as it allows to inject values that can be either string or number via the same template. In the worst case, the generated code could be invalid, but it will prevent the risk of code execution that atacker could pass via untrusted schema as a string value that should be inserted in code (e.g., instead of a number). Also see the comment in the example.
 
 ## Code optimization
 
@@ -66,19 +66,21 @@ CodeGen class generates code trees and performs several optimizations before the
 2. removes unused variable declarations.
 3. replaces variables that are used only once and assigned expressions that are explicitely marked as "constant" (i.e. having referential transparency) with the expressions themselves.
 
-These optimizations assume that the expressions in `if` coditions, `for` loop headers and assignemnts are free of any side effects - this is the case for all pre-defined validation keywords. You can either use the same approach in user-defined keywords, or you may need to disable optimization.
+**Please note**: These optimizations assume that the expressions in `if` coditions, `for` statement headers and assigned expresions are free of any side effects - this is the case for all pre-defined validation keywords.
 
 See [these tests](../spec/codegen.spec.ts) for examples.
 
-By default Ajv does 1-pass optimization - based on the test suite it achives 10.5% code size reduction and 16.7% tree nodes reduction (TODO benchmark the validation time). The second optimization pass would only change it marginally, by less than 0.1%, so you won't need it unless you have really complex schemas or if you generate standalone code and want it to pass relevant eslint rules.
+By default Ajv does 1-pass optimization - based on the test suite it reduces the code size by 10.5% and the number of tree nodes by 16.7% (TODO benchmark the validation time). The second optimization pass changes it by less than 0.1%, so you won't need it unless you have really complex schemas or if you generate standalone code and want it to pass relevant eslint rules.
 
-Optimization mode can be changed with options:
+Optimization mode can be changed with [options](./api.md#options):
 
-- `{code: {optimize: false}}` - to disable,
+- `{code: {optimize: false}}` - to disable (e.g., when schema compilation time is more important),
 - `{code: {optimize: 2}}` - 2-pass optimization.
 
 ## User-defined keywords
 
 While tagged template literals wrap passed strings based on their run-time values, CodeGen class methods rely on types to ensure safety of passed parameters - there is no run-time checks that the passed value is an instance of \_Code class.
 
-It is strongly recommended to define addiitonal keywords only with Typescript - using plain typescript would still allow passing unsafe strings to code generation methods.
+It is strongly recommended to define addiitonal keywords only with Typescript - using plain JavaScript would still allow passing unsafe strings to code generation methods.
+
+**Please note**: If your user-defined keywords need to have side-effects that are removed by optimization (see above), you may need to disable it.
