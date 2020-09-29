@@ -7,7 +7,7 @@ import {
   propertyInData,
   noPropertyInData,
 } from "../code"
-import {_, str, nil, not, Name} from "../../compile/codegen"
+import {_, str, nil, not, Name, Code} from "../../compile/codegen"
 
 export type RequiredError = ErrorObject<"required", {missingProperty: string}>
 
@@ -54,7 +54,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function loopAllRequired(): void {
-      gen.forOf("prop", schemaCode, (prop) => {
+      gen.forOf("prop", schemaCode as Code, (prop) => {
         cxt.setParams({missingProperty: prop})
         gen.if(noPropertyInData(data, prop, opts.ownProperties), () => cxt.error())
       })
@@ -64,7 +64,7 @@ const def: CodeKeywordDefinition = {
       cxt.setParams({missingProperty: missing})
       gen.forOf(
         missing,
-        schemaCode,
+        schemaCode as Code,
         () => {
           gen.assign(valid, propertyInData(data, missing, opts.ownProperties))
           gen.if(not(valid), () => {

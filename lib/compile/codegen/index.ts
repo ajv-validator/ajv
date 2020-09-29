@@ -29,13 +29,7 @@ export const varKinds = {
   var: new Name("var"),
 }
 
-export interface CodeGenOptions {
-  es5?: boolean
-  lines?: boolean
-  ownProperties?: boolean
-}
-
-abstract class _Node {
+abstract class Node {
   abstract readonly names: UsedNames
 
   optimizeNodes(): this | ChildNode | ChildNode[] | undefined {
@@ -51,123 +45,108 @@ abstract class _Node {
   // }
 }
 
-class Def extends _Node {
-  constructor(public varKind: Name, public name: Name, public rhs?: SafeExpr) {
+class Def extends Node {
+  constructor(readonly varKind: Name, readonly name: Name, readonly rhs?: SafeExpr) {
     super()
   }
 
-  get names(): UsedNames {
-    return this.rhs instanceof _CodeOrName ? this.rhs.names : {}
-  }
-
-  render({es5, lines}: CodeGenOptions): string {
+  render({es5, _n}: CGOptions): string {
     const varKind = es5 ? varKinds.var : this.varKind
-    let code = `${varKind} ${this.name}`
-    if (this.rhs !== undefined) code += ` = ${this.rhs}`
-    return code + (lines ? ";\n" : ";")
+    const rhs = this.rhs === undefined ? "" : ` = ${this.rhs}`
+    return `${varKind} ${this.name}${rhs};` + _n
   }
 
   optimizeNames(names: UsedNames): this | undefined {
     return names[this.name.str] ? this : undefined
   }
+
+  get names(): UsedNames {
+    return this.rhs instanceof _CodeOrName ? this.rhs.names : {}
+  }
 }
 
-class Assign extends _Node {
-  constructor(public lhs: Code, public rhs: SafeExpr) {
+class Assign extends Node {
+  constructor(readonly lhs: Code, readonly rhs: SafeExpr) {
     super()
   }
 
-  get names(): UsedNames {
-    const names = this.lhs instanceof Name ? {} : {...this.lhs.names}
-    return this.rhs instanceof _CodeOrName ? addNames(names, this.rhs.names) : names
-  }
-
-  render({lines}: CodeGenOptions): string {
-    return `${this.lhs} = ${this.rhs};` + (lines ? "\n" : "")
+  render({_n}: CGOptions): string {
+    return `${this.lhs} = ${this.rhs};` + _n
   }
 
   optimizeNames(names: UsedNames): this | undefined {
     if (this.lhs instanceof Name && !names[this.lhs.str]) return
     return this
   }
+
+  get names(): UsedNames {
+    const names = this.lhs instanceof Name ? {} : {...this.lhs.names}
+    return addExprNames(names, this.rhs)
+  }
 }
 
-class Label extends _Node {
+class Label extends Node {
   readonly names: UsedNames = {}
-  constructor(public label: Name) {
+  constructor(readonly label: Name) {
     super()
   }
 
-  render({lines}: CodeGenOptions): string {
-    return `${this.label}:` + (lines ? "\n" : "")
+  render({_n}: CGOptions): string {
+    return `${this.label}:` + _n
   }
 }
 
-class Break extends _Node {
+class Break extends Node {
   readonly names: UsedNames = {}
-  constructor(public label?: Code) {
+  constructor(readonly label?: Code) {
     super()
   }
 
-  render({lines}: CodeGenOptions): string {
-    let code = "break"
-    if (this.label) code += ` ${this.label}`
-    return code + (lines ? ";\n" : ";")
+  render({_n}: CGOptions): string {
+    const label = this.label ? ` ${this.label}` : ""
+    return `break${label};` + _n
   }
 }
 
-class Throw extends _Node {
-  constructor(public error: Code) {
+class Throw extends Node {
+  constructor(readonly error: Code) {
     super()
+  }
+
+  render({_n}: CGOptions): string {
+    return `throw ${this.error};` + _n
   }
 
   get names(): UsedNames {
     return this.error.names
   }
-
-  render({lines}: CodeGenOptions): string {
-    return `throw ${this.error};` + (lines ? "\n" : "")
-  }
 }
 
-class AnyCode extends _Node {
-  constructor(public code: SafeExpr) {
+class AnyCode extends Node {
+  constructor(readonly code: SafeExpr) {
     super()
   }
 
-  get names(): UsedNames {
-    return this.code instanceof _CodeOrName ? this.code.names : {}
-  }
-
-  render({lines}: CodeGenOptions): string {
-    return `${this.code};` + (lines ? "\n" : "")
+  render({_n}: CGOptions): string {
+    return `${this.code};` + _n
   }
 
   optimizeNodes(): this | undefined {
     return `${this.code}` ? this : undefined
   }
-}
-
-abstract class _ParentNode extends _Node {
-  readonly nodes: ChildNode[]
-  readonly block: boolean = true
-
-  constructor(nodes?: ChildNode[]) {
-    super()
-    this.nodes = nodes || []
-  }
 
   get names(): UsedNames {
-    return this.nodes.reduce((names: UsedNames, n) => addNames(names, n.names), {})
+    return this.code instanceof _CodeOrName ? this.code.names : {}
+  }
+}
+
+abstract class ParentNode extends Node {
+  constructor(readonly nodes: ChildNode[] = []) {
+    super()
   }
 
-  render(opts: CodeGenOptions): string {
-    const eol = opts.lines ? "\n" : ""
-    let code = ""
-    if (this.block) code += "{" + eol
-    this.nodes.forEach((n) => (code += n.render(opts)))
-    if (this.block) code += "}" + eol
-    return code
+  render(opts: CGOptions): string {
+    return this.nodes.reduce((code, n) => code + n.render(opts), "")
   }
 
   optimizeNodes(): this | ChildNode | ChildNode[] | undefined {
@@ -196,32 +175,35 @@ abstract class _ParentNode extends _Node {
     return this.nodes.length > 0 ? this : undefined
   }
 
+  get names(): UsedNames {
+    return this.nodes.reduce((names: UsedNames, n) => addNames(names, n.names), {})
+  }
+
   // get count(): number {
-  //   return 1 + this.nodes.reduce((c, n) => c + n.count, 0)
+  //   return this.nodes.reduce((c, n) => c + n.count, 1)
   // }
 }
 
-class Root extends _ParentNode {
-  readonly block = false
-
-  optimizeNames(): this {
-    super.optimizeNames(this.names)
-    return this
+abstract class BlockNode extends ParentNode {
+  render(opts: CGOptions): string {
+    return "{" + opts._n + super.render(opts) + "}" + opts._n
   }
 }
 
-class Else extends _ParentNode {
+class Root extends ParentNode {}
+
+class Else extends BlockNode {
   static readonly kind = "else"
 }
 
-class If extends _ParentNode {
+class If extends BlockNode {
   static readonly kind = "if"
   else?: If | Else
-  constructor(public condition: Code | boolean, nodes?: ChildNode[]) {
+  constructor(readonly condition: Code | boolean, nodes?: ChildNode[]) {
     super(nodes)
   }
 
-  render(opts: CodeGenOptions): string {
+  render(opts: CGOptions): string {
     let code = `if(${this.condition})` + super.render(opts)
     if (this.else) code += "else " + this.else.render(opts)
     return code
@@ -252,7 +234,7 @@ class If extends _ParentNode {
 
   get names(): UsedNames {
     const names = super.names
-    if (this.condition instanceof _CodeOrName) addNames(names, this.condition.names)
+    addExprNames(names, this.condition)
     if (this.else) addNames(names, this.else.names)
     return names
   }
@@ -262,46 +244,90 @@ class If extends _ParentNode {
   // }
 }
 
-class For extends _ParentNode {
+abstract class For extends BlockNode {
   static readonly kind = "for"
-  constructor(public iteration: Code) {
+}
+
+class ForLoop extends For {
+  constructor(readonly iteration: Code) {
     super()
+  }
+
+  render(opts: CGOptions): string {
+    return `for(${this.iteration})` + super.render(opts)
   }
 
   get names(): UsedNames {
     return addNames(super.names, this.iteration.names)
   }
+}
 
-  render(opts: CodeGenOptions): string {
-    return `for(${this.iteration})` + super.render(opts)
+class ForRange extends For {
+  constructor(
+    readonly varKind: Name,
+    readonly name: Name,
+    readonly from: SafeExpr,
+    readonly to: SafeExpr
+  ) {
+    super()
+  }
+
+  render(opts: CGOptions): string {
+    const varKind = opts.es5 ? varKinds.var : this.varKind
+    const {name, from, to} = this
+    return `for(${varKind} ${name}=${from}; ${name}<${to}; ${name}++)` + super.render(opts)
+  }
+
+  get names(): UsedNames {
+    const names = addExprNames(super.names, this.from)
+    return addExprNames(names, this.to)
   }
 }
 
-class Func extends _ParentNode {
+class ForIter extends For {
+  constructor(
+    readonly loop: "of" | "in",
+    readonly varKind: Name,
+    readonly name: Name,
+    readonly iterable: Code
+  ) {
+    super()
+  }
+
+  render(opts: CGOptions): string {
+    return `for(${this.varKind} ${this.name} ${this.loop} ${this.iterable})` + super.render(opts)
+  }
+
+  get names(): UsedNames {
+    return addNames(super.names, this.iterable.names)
+  }
+}
+
+class Func extends BlockNode {
   static readonly kind = "func"
   constructor(public name: Name, public args: Code, public async?: boolean) {
     super()
   }
 
-  render(opts: CodeGenOptions): string {
-    return (this.async ? "async " : "") + `function ${this.name}(${this.args})` + super.render(opts)
+  render(opts: CGOptions): string {
+    const _async = this.async ? "async " : ""
+    return `${_async}function ${this.name}(${this.args})` + super.render(opts)
   }
 }
 
-class Return extends _ParentNode {
+class Return extends ParentNode {
   static readonly kind = "return"
-  readonly block = false
 
-  render(opts: CodeGenOptions): string {
+  render(opts: CGOptions): string {
     return "return " + super.render(opts)
   }
 }
 
-class Try extends _ParentNode {
+class Try extends BlockNode {
   catch?: Catch
   finally?: Finally
 
-  render(opts: CodeGenOptions): string {
+  render(opts: CGOptions): string {
     let code = "try" + super.render(opts)
     if (this.catch) code += this.catch.render(opts)
     if (this.finally) code += this.finally.render(opts)
@@ -334,33 +360,31 @@ class Try extends _ParentNode {
   // }
 }
 
-class Catch extends _ParentNode {
+class Catch extends BlockNode {
   static readonly kind = "catch"
   constructor(readonly error: Name) {
     super()
   }
 
-  render(opts: CodeGenOptions): string {
+  render(opts: CGOptions): string {
     return `catch(${this.error})` + super.render(opts)
   }
 }
 
-class Finally extends _ParentNode {
+class Finally extends BlockNode {
   static readonly kind = "finally"
-  render(opts: CodeGenOptions): string {
+  render(opts: CGOptions): string {
     return "finally" + super.render(opts)
   }
 }
 
-type BlockNode = If | For | Func | Return | Try
+type StartBlockNode = If | For | Func | Return | Try
 
 type LeafNode = Def | Assign | Label | Break | Throw | AnyCode
 
-type ParentNode = Root | BlockNode | Else | Catch | Finally
+type ChildNode = StartBlockNode | LeafNode
 
-type ChildNode = BlockNode | LeafNode
-
-type BlockNodeType =
+type EndBlockNodeType =
   | typeof If
   | typeof Else
   | typeof For
@@ -369,27 +393,29 @@ type BlockNodeType =
   | typeof Catch
   | typeof Finally
 
+export interface CodeGenOptions {
+  es5?: boolean
+  lines?: boolean
+  ownProperties?: boolean
+}
+
+interface CGOptions extends CodeGenOptions {
+  _n: "\n" | ""
+}
+
 export class CodeGen {
   readonly _scope: Scope
   readonly _extScope: ValueScope
   readonly _values: ScopeValueSets = {}
   private readonly _nodes: ParentNode[]
   private readonly _blockStarts: number[] = []
-  private readonly opts: CodeGenOptions
-
-  // get nodeCount(): number {
-  //   return this._root.count
-  // }
+  private readonly opts: CGOptions
 
   constructor(extScope: ValueScope, opts: CodeGenOptions = {}) {
-    this.opts = opts
+    this.opts = {...opts, _n: opts.lines ? "\n" : ""}
     this._extScope = extScope
     this._scope = new Scope({parent: extScope})
     this._nodes = [new Root()]
-  }
-
-  private get _root(): Root {
-    return this._nodes[0] as Root
   }
 
   toString(): string {
@@ -505,11 +531,15 @@ export class CodeGen {
     return this._endBlockNode(If, Else)
   }
 
-  // a generic `for` clause (or statement if `forBody` is passed)
-  for(iteration: Code, forBody?: Block): CodeGen {
-    this._blockNode(new For(iteration))
+  private _for(node: For, forBody?: Block): CodeGen {
+    this._blockNode(node)
     if (forBody) this.code(forBody).endFor()
     return this
+  }
+
+  // a generic `for` clause (or statement if `forBody` is passed)
+  for(iteration: Code, forBody?: Block): CodeGen {
+    return this._for(new ForLoop(iteration), forBody)
   }
 
   // `for` statement for a range of values
@@ -520,15 +550,14 @@ export class CodeGen {
     forBody: (index: Name) => void,
     varKind: Code = varKinds.let
   ): CodeGen {
-    const i = this._scope.toName(nameOrPrefix)
-    if (this.opts.es5) varKind = varKinds.var
-    return this.for(_`${varKind} ${i}=${from}; ${i}<${to}; ${i}++`, () => forBody(i))
+    const name = this._scope.toName(nameOrPrefix)
+    return this._for(new ForRange(varKind, name, from, to), () => forBody(name))
   }
 
   // `for-of` statement (in es5 mode replace with a normal for loop)
   forOf(
     nameOrPrefix: Name | string,
-    iterable: SafeExpr,
+    iterable: Code,
     forBody: (item: Name) => void,
     varKind: Code = varKinds.const
   ): CodeGen {
@@ -540,14 +569,14 @@ export class CodeGen {
         forBody(name)
       })
     }
-    return this.for(_`${varKind} ${name} of ${iterable}`, () => forBody(name))
+    return this._for(new ForIter("of", varKind, name, iterable), () => forBody(name))
   }
 
   // `for-in` statement.
   // With option `ownProperties` replaced with a `for-of` loop for object keys
   forIn(
     nameOrPrefix: Name | string,
-    obj: SafeExpr,
+    obj: Code,
     forBody: (item: Name) => void,
     varKind: Code = varKinds.const
   ): CodeGen {
@@ -555,7 +584,7 @@ export class CodeGen {
       return this.forOf(nameOrPrefix, _`Object.keys(${obj})`, forBody)
     }
     const name = this._scope.toName(nameOrPrefix)
-    return this.for(_`${varKind} ${name} in ${obj}`, () => forBody(name))
+    return this._for(new ForIter("in", varKind, name, obj), () => forBody(name))
   }
 
   // end `for` loop
@@ -639,7 +668,7 @@ export class CodeGen {
   optimize(n = 1): void {
     while (n--) {
       this._root.optimizeNodes()
-      this._root.optimizeNames()
+      this._root.optimizeNames(this._root.names)
     }
   }
 
@@ -648,18 +677,18 @@ export class CodeGen {
     return this
   }
 
-  private _blockNode(node: BlockNode): void {
+  private _blockNode(node: StartBlockNode): void {
     this._currNode.nodes.push(node)
     this._nodes.push(node)
   }
 
-  private _endBlockNode(N1: BlockNodeType, N2?: BlockNodeType): CodeGen {
+  private _endBlockNode(N1: EndBlockNodeType, N2?: EndBlockNodeType): CodeGen {
     const n = this._currNode
-    if (!(n instanceof N1 || (N2 && n instanceof N2))) {
-      throw new Error(`CodeGen: not in block "${N2 ? `${N1.kind}/${N2.kind}` : N1.kind}"`)
+    if (n instanceof N1 || (N2 && n instanceof N2)) {
+      this._nodes.pop()
+      return this
     }
-    this._nodes.pop()
-    return this
+    throw new Error(`CodeGen: not in block "${N2 ? `${N1.kind}/${N2.kind}` : N1.kind}"`)
   }
 
   private _elseNode(node: If | Else): CodeGen {
@@ -671,6 +700,10 @@ export class CodeGen {
     return this
   }
 
+  private get _root(): Root {
+    return this._nodes[0] as Root
+  }
+
   private get _currNode(): ParentNode {
     const ns = this._nodes
     return ns[ns.length - 1]
@@ -680,11 +713,19 @@ export class CodeGen {
     const ns = this._nodes
     ns[ns.length - 1] = node
   }
+
+  // get nodeCount(): number {
+  //   return this._root.count
+  // }
 }
 
-function addNames(to: UsedNames, from: UsedNames): UsedNames {
-  for (const n in from) to[n] = (to[n] || 0) + (from[n] || 0)
-  return to
+function addNames(names: UsedNames, from: UsedNames): UsedNames {
+  for (const n in from) names[n] = (names[n] || 0) + (from[n] || 0)
+  return names
+}
+
+function addExprNames(names: UsedNames, from: SafeExpr): UsedNames {
+  return from instanceof _CodeOrName ? addNames(names, from.names) : names
 }
 
 function subtractNames(names: UsedNames, from: UsedNames): void {
