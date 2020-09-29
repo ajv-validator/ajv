@@ -778,10 +778,10 @@ function optimizeExpr(expr: SafeExpr, names: UsedNames, constants: Constants): S
     return c
   }
 
-  function canOptimize(expr: SafeExpr): expr is _Code {
+  function canOptimize(e: SafeExpr): e is _Code {
     return (
-      expr instanceof _Code &&
-      expr._items.some(
+      e instanceof _Code &&
+      e._items.some(
         (c) => c instanceof Name && names[c.str] === 1 && constants[c.str] !== undefined
       )
     )
