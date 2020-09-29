@@ -1,5 +1,4 @@
 export abstract class _CodeOrName {
-  expr = false
   abstract readonly str: string
   abstract readonly names: UsedNames
   abstract toString(): string
