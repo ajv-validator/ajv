@@ -9,12 +9,9 @@ export abstract class _CodeOrName {
 export const IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i
 
 export class Name extends _CodeOrName {
-  readonly str: string
-
-  constructor(s: string) {
+  constructor(readonly str: string) {
     super()
-    if (!IDENTIFIER.test(s)) throw new Error("CodeGen: name must be a valid identifier")
-    this.str = s
+    if (!IDENTIFIER.test(str)) throw new Error("CodeGen: name must be a valid identifier")
   }
 
   toString(): string {

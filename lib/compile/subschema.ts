@@ -117,7 +117,7 @@ function extendSubschemaData(
 
   if (dataProp !== undefined) {
     const {errorPath, dataPathArr, opts} = it
-    const nextData = gen.var("data", _`${it.data}${getProperty(dataProp)}`) // TODO var
+    const nextData = gen.let("data", _`${it.data}${getProperty(dataProp)}`, true)
     dataContextProps(nextData)
     subschema.errorPath = str`${errorPath}${getErrorPath(dataProp, dpType, opts.jsPropertySyntax)}`
     subschema.parentDataProperty = _`${dataProp}`
@@ -125,7 +125,7 @@ function extendSubschemaData(
   }
 
   if (data !== undefined) {
-    const nextData = data instanceof Name ? data : gen.var("data", data) // TODO var, replaceable if used once?
+    const nextData = data instanceof Name ? data : gen.let("data", data, true) // replaceable if used once?
     dataContextProps(nextData)
     if (propertyName !== undefined) subschema.propertyName = propertyName
     // TODO something is possibly wrong here with not changing parentDataProperty and not appending dataPathArr

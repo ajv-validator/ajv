@@ -36,6 +36,8 @@ abstract class Node {
     return this
   }
 
+  optimizeConstants(_names: UsedNames, _constants: Constants): void {}
+
   optimizeNames(_names: UsedNames): this | undefined {
     return this
   }
@@ -46,7 +48,7 @@ abstract class Node {
 }
 
 class Def extends Node {
-  constructor(readonly varKind: Name, readonly name: Name, readonly rhs?: SafeExpr) {
+  constructor(private readonly varKind: Name, private readonly name: Name, private rhs?: SafeExpr) {
     super()
   }
 
@@ -56,8 +58,13 @@ class Def extends Node {
     return `${varKind} ${this.name}${rhs};` + _n
   }
 
+  optimizeConstants(names: UsedNames, constants: Constants): void {
+    if (this.rhs) this.rhs = optimizeExpr(this.rhs, names, constants)
+  }
+
   optimizeNames(names: UsedNames): this | undefined {
-    return names[this.name.str] ? this : undefined
+    if (!names[this.name.str]) return
+    return this
   }
 
   get names(): UsedNames {
@@ -66,12 +73,16 @@ class Def extends Node {
 }
 
 class Assign extends Node {
-  constructor(readonly lhs: Code, readonly rhs: SafeExpr) {
+  constructor(private readonly lhs: Code, private rhs: SafeExpr) {
     super()
   }
 
   render({_n}: CGOptions): string {
     return `${this.lhs} = ${this.rhs};` + _n
+  }
+
+  optimizeConstants(names: UsedNames, constants: Constants): void {
+    this.rhs = optimizeExpr(this.rhs, names, constants)
   }
 
   optimizeNames(names: UsedNames): this | undefined {
@@ -123,7 +134,7 @@ class Throw extends Node {
 }
 
 class AnyCode extends Node {
-  constructor(readonly code: SafeExpr) {
+  constructor(private code: SafeExpr) {
     super()
   }
 
@@ -133,6 +144,10 @@ class AnyCode extends Node {
 
   optimizeNodes(): this | undefined {
     return `${this.code}` ? this : undefined
+  }
+
+  optimizeConstants(names: UsedNames, constants: Constants): void {
+    this.code = optimizeExpr(this.code, names, constants)
   }
 
   get names(): UsedNames {
@@ -158,7 +173,11 @@ abstract class ParentNode extends Node {
       else if (n) nodes[i++] = n
       else nodes.splice(i, 1)
     }
-    return this.nodes.length > 0 ? this : undefined
+    return nodes.length > 0 ? this : undefined
+  }
+
+  optimizeConstants(names: UsedNames, constants: Constants): void {
+    for (const n of this.nodes) n.optimizeConstants(names, constants)
   }
 
   optimizeNames(names: UsedNames): this | undefined {
@@ -199,7 +218,7 @@ class Else extends BlockNode {
 class If extends BlockNode {
   static readonly kind = "if"
   else?: If | Else
-  constructor(readonly condition: Code | boolean, nodes?: ChildNode[]) {
+  constructor(private condition: Code | boolean, nodes?: ChildNode[]) {
     super(nodes)
   }
 
@@ -227,9 +246,16 @@ class If extends BlockNode {
     return this
   }
 
+  optimizeConstants(names: UsedNames, constants: Constants): void {
+    super.optimizeConstants(names, constants)
+    this.else?.optimizeConstants(names, constants)
+    this.condition = optimizeExpr(this.condition, names, constants)
+  }
+
   optimizeNames(names: UsedNames): this | undefined {
     this.else = this.else?.optimizeNames(names)
-    return super.optimizeNames(names) || this.else ? this : undefined
+    if (!(super.optimizeNames(names) || this.else)) return
+    return this
   }
 
   get names(): UsedNames {
@@ -249,12 +275,22 @@ abstract class For extends BlockNode {
 }
 
 class ForLoop extends For {
-  constructor(readonly iteration: Code) {
+  constructor(private iteration: Code) {
     super()
   }
 
   render(opts: CGOptions): string {
     return `for(${this.iteration})` + super.render(opts)
+  }
+
+  optimizeConstants(names: UsedNames, constants: Constants): void {
+    super.optimizeConstants(names, constants)
+    this.iteration = optimizeExpr(this.iteration, names, constants)
+  }
+
+  optimizeNames(names: UsedNames): this | undefined {
+    if (!super.optimizeNames(names)) return
+    return this
   }
 
   get names(): UsedNames {
@@ -341,6 +377,12 @@ class Try extends BlockNode {
     return this
   }
 
+  optimizeConstants(names: UsedNames, constants: Constants): void {
+    super.optimizeConstants(names, constants)
+    this.catch?.optimizeConstants(names, constants)
+    this.finally?.optimizeConstants(names, constants)
+  }
+
   optimizeNames(names: UsedNames): this {
     super.optimizeNames(names)
     this.catch?.optimizeNames(names)
@@ -393,6 +435,8 @@ type EndBlockNodeType =
   | typeof Catch
   | typeof Finally
 
+type Constants = Record<string, SafeExpr | undefined>
+
 export interface CodeGenOptions {
   es5?: boolean
   lines?: boolean
@@ -409,6 +453,7 @@ export class CodeGen {
   readonly _values: ScopeValueSets = {}
   private readonly _nodes: ParentNode[]
   private readonly _blockStarts: number[] = []
+  private readonly _constants: Constants = {}
   private readonly opts: CGOptions
 
   constructor(extScope: ValueScope, opts: CodeGenOptions = {}) {
@@ -454,25 +499,31 @@ export class CodeGen {
     return this._extScope.scopeCode(this._values)
   }
 
-  private _def(varKind: Name, nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
+  private _def(
+    varKind: Name,
+    nameOrPrefix: Name | string,
+    rhs?: SafeExpr,
+    constant?: boolean
+  ): Name {
     const name = this._scope.toName(nameOrPrefix)
+    if (rhs !== undefined && constant) this._constants[name.str] = rhs
     this._leafNode(new Def(varKind, name, rhs))
     return name
   }
 
   // `const` declaration (`var` in es5 mode)
-  const(nameOrPrefix: Name | string, rhs: SafeExpr): Name {
-    return this._def(varKinds.const, nameOrPrefix, rhs)
+  const(nameOrPrefix: Name | string, rhs: SafeExpr, _constant?: boolean): Name {
+    return this._def(varKinds.const, nameOrPrefix, rhs, _constant)
   }
 
   // `let` declaration with optional assignment (`var` in es5 mode)
-  let(nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
-    return this._def(varKinds.let, nameOrPrefix, rhs)
+  let(nameOrPrefix: Name | string, rhs?: SafeExpr, _constant?: boolean): Name {
+    return this._def(varKinds.let, nameOrPrefix, rhs, _constant)
   }
 
   // `var` declaration with optional assignment
-  var(nameOrPrefix: Name | string, rhs?: SafeExpr): Name {
-    return this._def(varKinds.var, nameOrPrefix, rhs)
+  var(nameOrPrefix: Name | string, rhs?: SafeExpr, _constant?: boolean): Name {
+    return this._def(varKinds.var, nameOrPrefix, rhs, _constant)
   }
 
   // assignment code
@@ -668,7 +719,9 @@ export class CodeGen {
   optimize(n = 1): void {
     while (n--) {
       this._root.optimizeNodes()
-      this._root.optimizeNames(this._root.names)
+      const names = this._root.names
+      this._root.optimizeConstants(names, this._constants)
+      this._root.optimizeNames(names)
     }
   }
 
@@ -728,13 +781,43 @@ function addExprNames(names: UsedNames, from: SafeExpr): UsedNames {
   return from instanceof _CodeOrName ? addNames(names, from.names) : names
 }
 
+function optimizeExpr<T extends SafeExpr | Code>(expr: T, names: UsedNames, constants: Constants): T
+function optimizeExpr(expr: SafeExpr, names: UsedNames, constants: Constants): SafeExpr {
+  if (expr instanceof Name) return replaceName(expr)
+  if (!canOptimize(expr)) return expr
+  return new _Code(
+    expr._items.reduce((items: CodeItem[], c: SafeExpr | string) => {
+      if (c instanceof Name) c = replaceName(c)
+      if (c instanceof _Code) items.push(...c._items)
+      else items.push(c)
+      return items
+    }, [])
+  )
+
+  function replaceName(n: Name): SafeExpr {
+    const c = constants[n.str]
+    if (c === undefined || names[n.str] !== 1) return n
+    delete names[n.str]
+    return c
+  }
+
+  function canOptimize(expr: SafeExpr): expr is _Code {
+    return (
+      expr instanceof _Code &&
+      expr._items.some(
+        (c) => c instanceof Name && names[c.str] === 1 && constants[c.str] !== undefined
+      )
+    )
+  }
+}
+
 function subtractNames(names: UsedNames, from: UsedNames): void {
   for (const n in from) names[n] = (names[n] || 0) - (from[n] || 0)
 }
 
-export function not<T extends Code | boolean>(x: T): T
-export function not(x: Code | boolean): Code | boolean {
-  return typeof x == "boolean" ? !x : _`!${par(x)}`
+export function not<T extends Code | SafeExpr>(x: T): T
+export function not(x: Code | SafeExpr): Code | SafeExpr {
+  return typeof x == "boolean" || typeof x == "number" || x === null ? !x : _`!${par(x)}`
 }
 
 const andCode = mappend(operators.AND)

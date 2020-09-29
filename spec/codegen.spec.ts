@@ -458,6 +458,18 @@ describe("code generation", () => {
         gen.optimize()
         assertEqual(gen, "")
       })
+
+      it('should replace names with "constant" expressions if used only once', () => {
+        const data = new Name("data")
+        const x = gen.const("x", _`${data}.prop`, true) // true means that the expression `data.prop` is "constant"
+        gen
+          .if(_`${x} === 0`)
+          .code(_`log()`)
+          .endIf()
+        assertEqual(gen, "const x0 = data.prop;if(x0 === 0){log();}")
+        gen.optimize()
+        assertEqual(gen, "if(data.prop === 0){log();}")
+      })
     })
   })
 
