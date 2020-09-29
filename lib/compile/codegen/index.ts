@@ -36,9 +36,7 @@ abstract class Node {
     return this
   }
 
-  optimizeConstants(_names: UsedNames, _constants: Constants): void {}
-
-  optimizeNames(_names: UsedNames): this | undefined {
+  optimizeNames(_names: UsedNames, _constants: Constants): this | undefined {
     return this
   }
 
@@ -58,12 +56,9 @@ class Def extends Node {
     return `${varKind} ${this.name}${rhs};` + _n
   }
 
-  optimizeConstants(names: UsedNames, constants: Constants): void {
-    if (this.rhs) this.rhs = optimizeExpr(this.rhs, names, constants)
-  }
-
-  optimizeNames(names: UsedNames): this | undefined {
+  optimizeNames(names: UsedNames, constants: Constants): this | undefined {
     if (!names[this.name.str]) return
+    if (this.rhs) this.rhs = optimizeExpr(this.rhs, names, constants)
     return this
   }
 
@@ -81,12 +76,9 @@ class Assign extends Node {
     return `${this.lhs} = ${this.rhs};` + _n
   }
 
-  optimizeConstants(names: UsedNames, constants: Constants): void {
-    this.rhs = optimizeExpr(this.rhs, names, constants)
-  }
-
-  optimizeNames(names: UsedNames): this | undefined {
+  optimizeNames(names: UsedNames, constants: Constants): this | undefined {
     if (this.lhs instanceof Name && !names[this.lhs.str]) return
+    this.rhs = optimizeExpr(this.rhs, names, constants)
     return this
   }
 
@@ -146,8 +138,9 @@ class AnyCode extends Node {
     return `${this.code}` ? this : undefined
   }
 
-  optimizeConstants(names: UsedNames, constants: Constants): void {
+  optimizeNames(names: UsedNames, constants: Constants): this {
     this.code = optimizeExpr(this.code, names, constants)
+    return this
   }
 
   get names(): UsedNames {
@@ -166,32 +159,27 @@ abstract class ParentNode extends Node {
 
   optimizeNodes(): this | ChildNode | ChildNode[] | undefined {
     const {nodes} = this
-    let i = 0
-    while (i < nodes.length) {
+    let i = nodes.length
+    while (i--) {
       const n = nodes[i].optimizeNodes()
       if (Array.isArray(n)) nodes.splice(i, 1, ...n)
-      else if (n) nodes[i++] = n
+      else if (n) nodes[i] = n
       else nodes.splice(i, 1)
     }
     return nodes.length > 0 ? this : undefined
   }
 
-  optimizeConstants(names: UsedNames, constants: Constants): void {
-    for (const n of this.nodes) n.optimizeConstants(names, constants)
-  }
-
-  optimizeNames(names: UsedNames): this | undefined {
-    let i = 0
-    while (i < this.nodes.length) {
-      const n = this.nodes[i]
-      if (n.optimizeNames(names)) {
-        i++
-      } else {
-        subtractNames(names, n.names)
-        this.nodes.splice(i, 1)
-      }
+  optimizeNames(names: UsedNames, constants: Constants): this | undefined {
+    const {nodes} = this
+    let i = nodes.length
+    while (i--) {
+      // iterating backwards improves 1-pass optimization
+      const n = nodes[i]
+      if (n.optimizeNames(names, constants)) continue
+      subtractNames(names, n.names)
+      nodes.splice(i, 1)
     }
-    return this.nodes.length > 0 ? this : undefined
+    return nodes.length > 0 ? this : undefined
   }
 
   get names(): UsedNames {
@@ -246,15 +234,10 @@ class If extends BlockNode {
     return this
   }
 
-  optimizeConstants(names: UsedNames, constants: Constants): void {
-    super.optimizeConstants(names, constants)
-    this.else?.optimizeConstants(names, constants)
+  optimizeNames(names: UsedNames, constants: Constants): this | undefined {
+    this.else = this.else?.optimizeNames(names, constants)
+    if (!(super.optimizeNames(names, constants) || this.else)) return
     this.condition = optimizeExpr(this.condition, names, constants)
-  }
-
-  optimizeNames(names: UsedNames): this | undefined {
-    this.else = this.else?.optimizeNames(names)
-    if (!(super.optimizeNames(names) || this.else)) return
     return this
   }
 
@@ -283,13 +266,9 @@ class ForLoop extends For {
     return `for(${this.iteration})` + super.render(opts)
   }
 
-  optimizeConstants(names: UsedNames, constants: Constants): void {
-    super.optimizeConstants(names, constants)
+  optimizeNames(names: UsedNames, constants: Constants): this | undefined {
+    if (!super.optimizeNames(names, constants)) return
     this.iteration = optimizeExpr(this.iteration, names, constants)
-  }
-
-  optimizeNames(names: UsedNames): this | undefined {
-    if (!super.optimizeNames(names)) return
     return this
   }
 
@@ -300,10 +279,10 @@ class ForLoop extends For {
 
 class ForRange extends For {
   constructor(
-    readonly varKind: Name,
-    readonly name: Name,
-    readonly from: SafeExpr,
-    readonly to: SafeExpr
+    private readonly varKind: Name,
+    private readonly name: Name,
+    private readonly from: SafeExpr,
+    private readonly to: SafeExpr
   ) {
     super()
   }
@@ -322,16 +301,22 @@ class ForRange extends For {
 
 class ForIter extends For {
   constructor(
-    readonly loop: "of" | "in",
-    readonly varKind: Name,
-    readonly name: Name,
-    readonly iterable: Code
+    private readonly loop: "of" | "in",
+    private readonly varKind: Name,
+    private readonly name: Name,
+    private iterable: Code
   ) {
     super()
   }
 
   render(opts: CGOptions): string {
     return `for(${this.varKind} ${this.name} ${this.loop} ${this.iterable})` + super.render(opts)
+  }
+
+  optimizeNames(names: UsedNames, constants: Constants): this | undefined {
+    if (!super.optimizeNames(names, constants)) return
+    this.iterable = optimizeExpr(this.iterable, names, constants)
+    return this
   }
 
   get names(): UsedNames {
@@ -377,16 +362,10 @@ class Try extends BlockNode {
     return this
   }
 
-  optimizeConstants(names: UsedNames, constants: Constants): void {
-    super.optimizeConstants(names, constants)
-    this.catch?.optimizeConstants(names, constants)
-    this.finally?.optimizeConstants(names, constants)
-  }
-
-  optimizeNames(names: UsedNames): this {
-    super.optimizeNames(names)
-    this.catch?.optimizeNames(names)
-    this.finally?.optimizeNames(names)
+  optimizeNames(names: UsedNames, constants: Constants): this {
+    super.optimizeNames(names, constants)
+    this.catch?.optimizeNames(names, constants)
+    this.finally?.optimizeNames(names, constants)
     return this
   }
 
@@ -717,11 +696,9 @@ export class CodeGen {
   }
 
   optimize(n = 1): void {
-    while (n--) {
+    while (n-- > 0) {
       this._root.optimizeNodes()
-      const names = this._root.names
-      this._root.optimizeConstants(names, this._constants)
-      this._root.optimizeNames(names)
+      this._root.optimizeNames(this._root.names, this._constants)
     }
   }
 

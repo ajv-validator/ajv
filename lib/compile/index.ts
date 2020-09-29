@@ -134,9 +134,9 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     this._compilations.add(sch)
     validateFunctionCode(schemaCxt)
     gen.optimize(this.opts.code.optimize)
-    // gen.optimize(2)
+    // gen.optimize(1)
     sourceCode = `${gen.scopeRefs(N.scope)}${gen}`
-    // if (true) console.log((codeSize += sourceCode.length), (nodeCount += gen.nodeCount))
+    // console.log((codeSize += sourceCode.length), (nodeCount += gen.nodeCount))
     if (this.opts.code.process) sourceCode = this.opts.code.process(sourceCode, sch)
     // console.log("\n\n\n *** \n", sourceCode)
     const makeValidate = new Function(`${N.self}`, `${N.scope}`, sourceCode)
