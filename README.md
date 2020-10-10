@@ -6,7 +6,7 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-04/06/
 
 [![Build Status](https://travis-ci.org/ajv-validator/ajv.svg?branch=master)](https://travis-ci.org/ajv-validator/ajv)
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
-[![npm (beta)](https://img.shields.io/npm/v/ajv/beta)](https://www.npmjs.com/package/ajv/v/7.0.0-beta.0)
+[![npm (beta)](https://img.shields.io/npm/v/ajv/beta)](https://www.npmjs.com/package/ajv/v/7.0.0-beta.1)
 [![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![Coverage Status](https://coveralls.io/repos/github/ajv-validator/ajv/badge.svg?branch=master)](https://coveralls.io/github/ajv-validator/ajv?branch=master)
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
@@ -15,10 +15,10 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-04/06/
 
 ## Ajv v7 beta is released
 
-[Ajv version 7.0.0-beta.0](https://github.com/ajv-validator/ajv/tree/v7-beta) is released with these changes:
+[Ajv version 7.0.0-beta.1](https://github.com/ajv-validator/ajv/tree/v7-beta) is released with these changes:
 
 - to reduce the mistakes in JSON schemas and unexpected validation results, [strict mode](./docs/strict-mode.md) is added - it prohibits ignored or ambiguous JSON Schema elements.
-- to make code injection from untrusted schemas impossible, [code generation](./docs/codegen.md) is fully re-written to be safe.
+- to make code injection from untrusted schemas impossible, [code generation](./docs/codegen.md) is fully re-written to be safe and to allow code optimization (compiled schema code size is reduced by more than 10%).
 - to simplify Ajv extensions, the new keyword API that is used by pre-defined keywords is available to user-defined keywords - it is much easier to define any keywords now, especially with subschemas.
 - schemas are compiled to ES6 code (ES5 code generation is supported with an option).
 - to improve reliability and maintainability the code is migrated to TypeScript.
