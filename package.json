@@ -64,7 +64,7 @@
   "dependencies": {
     "fast-deep-equal": "^3.1.1",
     "fast-json-stable-stringify": "^2.0.0",
-    "json-schema-traverse": "^0.4.1",
+    "json-schema-traverse": "^0.5.0",
     "uri-js": "^4.2.2"
   },
   "devDependencies": {
