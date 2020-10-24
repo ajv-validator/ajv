@@ -653,6 +653,8 @@ export default class Ajv {
   private _compileSchemaEnv(sch: SchemaEnv): AnyValidateFunction {
     if (sch.meta) this._compileMetaSchema(sch)
     else compileSchema.call(this, sch)
+
+    /* istanbul ignore if */
     if (!sch.validate) throw new Error("ajv implementation error")
     return sch.validate
   }

@@ -149,6 +149,7 @@ export default class KeywordCxt implements KeywordErrorCxt {
 
     function wrong$DataType(): Code {
       if (schemaType.length) {
+        /* istanbul ignore if */
         if (!(schemaCode instanceof Name)) throw new Error("ajv implementation error")
         const st = Array.isArray(schemaType) ? schemaType : [schemaType]
         return _`${checkDataTypes(st, schemaCode, it.opts.strict, DataType.Wrong)}`
@@ -189,6 +190,7 @@ function validateKeywordUsage(
   def: AddedKeywordDefinition,
   keyword: string
 ): void {
+  /* istanbul ignore if */
   if (Array.isArray(def.keyword) ? !def.keyword.includes(keyword) : def.keyword !== keyword) {
     throw new Error("ajv implementation error")
   }

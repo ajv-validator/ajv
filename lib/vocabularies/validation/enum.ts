@@ -28,6 +28,7 @@ const def: CodeKeywordDefinition = {
       valid = gen.let("valid")
       cxt.block$data(valid, loopEnum)
     } else {
+      /* istanbul ignore if */
       if (!Array.isArray(schema)) throw new Error("ajv implementation error")
       const vSchema = gen.const("vSchema", schemaCode)
       valid = or(...schema.map((_x: unknown, i: number) => equalCode(vSchema, i)))

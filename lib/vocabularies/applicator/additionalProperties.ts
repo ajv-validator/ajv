@@ -29,6 +29,7 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
   error,
   code(cxt) {
     const {gen, schema, parentSchema, data, errsCount, it} = cxt
+    /* istanbul ignore if */
     if (!errsCount) throw new Error("ajv implementation error")
     const {allErrors, opts} = it
     if (opts.removeAdditional !== "all" && alwaysValidSchema(it, schema)) return

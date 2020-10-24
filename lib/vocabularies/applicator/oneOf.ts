@@ -22,6 +22,7 @@ const def: CodeKeywordDefinition = {
   error,
   code(cxt: KeywordCxt) {
     const {gen, schema, it} = cxt
+    /* istanbul ignore if */
     if (!Array.isArray(schema)) throw new Error("ajv implementation error")
     const schArr: AnySchema[] = schema
     const valid = gen.let("valid", false)

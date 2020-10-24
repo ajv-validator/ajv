@@ -9,6 +9,7 @@ const def: CodeKeywordDefinition = {
   trackErrors: true,
   code(cxt: KeywordCxt) {
     const {gen, schema, it} = cxt
+    /* istanbul ignore if */
     if (!Array.isArray(schema)) throw new Error("ajv implementation error")
     const alwaysValid = schema.some((sch: AnySchema) => alwaysValidSchema(it, sch))
     if (alwaysValid) return

@@ -7,6 +7,7 @@ const def: CodeKeywordDefinition = {
   schemaType: "array",
   code(cxt: KeywordCxt) {
     const {gen, schema, it} = cxt
+    /* istanbul ignore if */
     if (!Array.isArray(schema)) throw new Error("ajv implementation error")
     const valid = gen.name("valid")
     schema.forEach((sch: AnySchema, i: number) => {

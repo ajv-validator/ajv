@@ -59,6 +59,7 @@ export function extendErrors({
   errsCount,
   it,
 }: KeywordErrorCxt): void {
+  /* istanbul ignore if */
   if (errsCount === undefined) throw new Error("ajv implementation error")
   const err = gen.name("err")
   gen.forRange("i", errsCount, N.errors, (i) => {
