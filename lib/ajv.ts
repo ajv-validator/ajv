@@ -10,6 +10,7 @@ export {
   Vocabulary,
   Schema,
   SchemaObject,
+  AnySchemaObject,
   AsyncSchema,
   AnySchema,
   ValidateFunction,
@@ -29,7 +30,6 @@ export {DefinedError} from "./vocabularies/errors"
 export {JSONType} from "./compile/rules"
 export {JSONSchemaType} from "./types/json-schema"
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
-export {applySubschema} from "./compile/subschema"
 
 import type {
   Schema,
@@ -275,8 +275,8 @@ export default class Ajv {
     this.addVocabulary(formatVocabulary)
     this.addVocabulary(metadataVocabulary)
     this.addVocabulary(contentVocabulary)
-    if (opts.keywords) addInitialKeywords.call(this, opts.keywords)
     addDefaultMetaSchema.call(this)
+    if (opts.keywords) addInitialKeywords.call(this, opts.keywords)
     if (typeof opts.meta == "object") this.addMetaSchema(opts.meta)
     addInitialSchemas.call(this)
     opts.validateFormats = formatOpt

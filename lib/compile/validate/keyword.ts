@@ -9,7 +9,6 @@ import type {
 import type {SchemaObjCxt} from ".."
 import type {JSONType} from "../rules"
 import KeywordCxt from "../context"
-import {applySubschema} from "../subschema"
 import {extendErrors} from "../errors"
 import {callValidateCode} from "../../vocabularies/code"
 import {CodeGen, _, nil, not, Code, Name} from "../codegen"
@@ -42,8 +41,7 @@ function macroKeywordCode(cxt: KeywordCxt, def: MacroKeywordDefinition): void {
   if (it.opts.validateSchema !== false) it.self.validateSchema(macroSchema, true)
 
   const valid = gen.name("valid")
-  applySubschema(
-    it,
+  cxt.subschema(
     {
       schema: macroSchema,
       schemaPath: nil,

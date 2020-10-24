@@ -6,7 +6,6 @@ import type {
 } from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_} from "../../compile/codegen"
-import {applySubschema} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
 
 export type OneOfError = ErrorObject<"oneOf", {passingSchemas: [number, number]}>
@@ -44,8 +43,7 @@ const def: CodeKeywordDefinition = {
         if (alwaysValidSchema(it, sch)) {
           gen.var(schValid, true)
         } else {
-          applySubschema(
-            it,
+          cxt.subschema(
             {
               keyword: "oneOf",
               schemaProp: i,

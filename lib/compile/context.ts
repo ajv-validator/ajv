@@ -17,6 +17,7 @@ import {
 } from "./errors"
 import {CodeGen, _, nil, or, not, getProperty, Code, Name} from "./codegen"
 import N from "./names"
+import {applySubschema, SubschemaArgs} from "./subschema"
 
 export default class KeywordCxt implements KeywordErrorCxt {
   readonly gen: CodeGen
@@ -162,6 +163,10 @@ export default class KeywordCxt implements KeywordErrorCxt {
       }
       return nil
     }
+  }
+
+  subschema(appl: SubschemaArgs, valid: Name): void {
+    applySubschema(this.it, appl, valid)
   }
 }
 

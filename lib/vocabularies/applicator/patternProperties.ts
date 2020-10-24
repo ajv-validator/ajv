@@ -2,7 +2,7 @@ import type {CodeKeywordDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {schemaProperties, usePattern} from "../code"
 import {_, not} from "../../compile/codegen"
-import {applySubschema, Type} from "../../compile/subschema"
+import {Type} from "../../compile/subschema"
 import {checkStrictMode} from "../../compile/validate"
 
 const def: CodeKeywordDefinition = {
@@ -45,8 +45,7 @@ const def: CodeKeywordDefinition = {
     function validateProperties(pat: string): void {
       gen.forIn("key", data, (key) => {
         gen.if(_`${usePattern(gen, pat)}.test(${key})`, () => {
-          applySubschema(
-            it,
+          cxt.subschema(
             {
               keyword: "patternProperties",
               schemaProp: pat,

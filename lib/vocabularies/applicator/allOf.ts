@@ -1,6 +1,5 @@
 import type {CodeKeywordDefinition, AnySchema} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {applySubschema} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
 
 const def: CodeKeywordDefinition = {
@@ -12,7 +11,7 @@ const def: CodeKeywordDefinition = {
     const valid = gen.name("valid")
     schema.forEach((sch: AnySchema, i: number) => {
       if (alwaysValidSchema(it, sch)) return
-      applySubschema(it, {keyword: "allOf", schemaProp: i}, valid)
+      cxt.subschema({keyword: "allOf", schemaProp: i}, valid)
       cxt.ok(valid)
     })
   },

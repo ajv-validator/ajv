@@ -7,7 +7,7 @@ import type {
 import {allSchemaProperties, usePattern} from "../code"
 import {_, nil, or, not, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
-import {applySubschema, SubschemaArgs, Type} from "../../compile/subschema"
+import {SubschemaArgs, Type} from "../../compile/subschema"
 import {alwaysValidSchema, schemaRefOrVal} from "../../compile/util"
 
 export type AdditionalPropertiesError = ErrorObject<
@@ -107,7 +107,7 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
           allErrors: false,
         })
       }
-      applySubschema(it, subschema, valid)
+      cxt.subschema(subschema, valid)
     }
   },
 }

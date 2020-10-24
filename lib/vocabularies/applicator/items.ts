@@ -1,7 +1,7 @@
 import type {CodeKeywordDefinition, AnySchema} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, not} from "../../compile/codegen"
-import {applySubschema, Type} from "../../compile/subschema"
+import {Type} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
 import {checkStrictMode} from "../../compile/validate"
 
@@ -28,8 +28,7 @@ const def: CodeKeywordDefinition = {
       schArr.forEach((sch: AnySchema, i: number) => {
         if (alwaysValidSchema(it, sch)) return
         gen.if(_`${len} > ${i}`, () =>
-          applySubschema(
-            it,
+          cxt.subschema(
             {
               keyword: "items",
               schemaProp: i,
@@ -46,8 +45,7 @@ const def: CodeKeywordDefinition = {
     function validateArray(): void {
       const valid = gen.name("valid")
       gen.forRange("i", 0, len, (i) => {
-        applySubschema(
-          it,
+        cxt.subschema(
           {
             keyword: "items",
             dataProp: i,

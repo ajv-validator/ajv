@@ -7,7 +7,6 @@ import type {
 } from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, str} from "../../compile/codegen"
-import {applySubschema} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp, propertyInData} from "../code"
 
@@ -93,7 +92,7 @@ const def: CodeKeywordDefinition = {
         if (alwaysValidSchema(it, schemaDeps[prop] as AnySchema)) continue
         gen.if(
           propertyInData(data, prop, it.opts.ownProperties),
-          () => applySubschema(it, {keyword: "dependencies", schemaProp: prop}, valid),
+          () => cxt.subschema({keyword: "dependencies", schemaProp: prop}, valid),
           () => gen.var(valid, true) // TODO var
         )
         cxt.ok(valid)

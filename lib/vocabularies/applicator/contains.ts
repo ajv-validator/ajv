@@ -1,7 +1,7 @@
 import type {CodeKeywordDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_} from "../../compile/codegen"
-import {applySubschema, Type} from "../../compile/subschema"
+import {Type} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
 
 const def: CodeKeywordDefinition = {
@@ -20,8 +20,7 @@ const def: CodeKeywordDefinition = {
 
     const valid = gen.name("valid")
     gen.forRange("i", 0, _`${data}.length`, (i) => {
-      applySubschema(
-        it,
+      cxt.subschema(
         {
           keyword: "contains",
           dataProp: i,

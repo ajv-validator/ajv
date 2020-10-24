@@ -1,7 +1,6 @@
 import type {CodeKeywordDefinition, AnySchema} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {MissingRefError} from "../../compile/error_classes"
-import {applySubschema} from "../../compile/subschema"
 import {callValidateCode} from "../code"
 import {_, nil, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
@@ -46,8 +45,7 @@ const def: CodeKeywordDefinition = {
     function inlineRefSchema(sch: AnySchema): void {
       const schName = gen.scopeValue("schema", {ref: sch})
       const valid = gen.name("valid")
-      applySubschema(
-        it,
+      cxt.subschema(
         {
           schema: sch,
           strictSchema: true,

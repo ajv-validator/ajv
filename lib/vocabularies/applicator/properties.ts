@@ -1,7 +1,6 @@
 import type {CodeKeywordDefinition} from "../../types"
 import KeywordCxt from "../../compile/context"
 import {propertyInData, schemaProperties} from "../code"
-import {applySubschema} from "../../compile/subschema"
 import apDef from "./additionalProperties"
 
 const def: CodeKeywordDefinition = {
@@ -34,8 +33,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function applyPropertySchema(prop: string): void {
-      applySubschema(
-        it,
+      cxt.subschema(
         {
           keyword: "properties",
           schemaProp: prop,

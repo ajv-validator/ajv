@@ -1,7 +1,7 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, str, not, Name} from "../../compile/codegen"
-import {applySubschema, Type} from "../../compile/subschema"
+import {Type} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
 import {checkStrictMode} from "../../compile/validate"
 
@@ -37,7 +37,7 @@ const def: CodeKeywordDefinition = {
 
     function validateItems(valid: Name): void {
       gen.forRange("i", items.length, len, (i) => {
-        applySubschema(it, {keyword: "additionalItems", dataProp: i, dataPropType: Type.Num}, valid)
+        cxt.subschema({keyword: "additionalItems", dataProp: i, dataPropType: Type.Num}, valid)
         if (!it.allErrors) gen.if(not(valid), () => gen.break())
       })
     }

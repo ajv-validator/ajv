@@ -1,6 +1,5 @@
 import type {CodeKeywordDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {applySubschema} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
 
 const def: CodeKeywordDefinition = {
@@ -15,8 +14,7 @@ const def: CodeKeywordDefinition = {
     }
 
     const valid = gen.name("valid")
-    applySubschema(
-      it,
+    cxt.subschema(
       {
         keyword: "not",
         compositeRule: true,

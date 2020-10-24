@@ -2,7 +2,6 @@ import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from ".
 import type {SchemaObjCxt} from "../../compile"
 import type KeywordCxt from "../../compile/context"
 import {_, str, not, Name} from "../../compile/codegen"
-import {applySubschema} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
 import {checkStrictMode} from "../../compile/validate"
 
@@ -45,8 +44,7 @@ const def: CodeKeywordDefinition = {
     cxt.pass(valid, () => cxt.error(true))
 
     function validateIf(): void {
-      applySubschema(
-        it,
+      cxt.subschema(
         {
           keyword: "if",
           compositeRule: true,
@@ -59,7 +57,7 @@ const def: CodeKeywordDefinition = {
 
     function validateClause(keyword: string, ifClause?: Name): () => void {
       return () => {
-        applySubschema(it, {keyword}, schValid)
+        cxt.subschema({keyword}, schValid)
         gen.assign(valid, schValid)
         if (ifClause) gen.assign(ifClause, _`${keyword}`)
         else cxt.setParams({ifClause: keyword})
