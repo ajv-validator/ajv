@@ -31,8 +31,7 @@ const def: CodeKeywordDefinition = {
   error,
   code(cxt: KeywordCxt) {
     const {keyword, data, schemaCode} = cxt
-    // const bdt = bad$DataType(schemaCode, <string>def.schemaType, $data)
-    cxt.fail$data(_`(${data} ${KWDs[keyword as Kwd].fail} ${schemaCode} || isNaN(${data}))`)
+    cxt.fail$data(_`${data} ${KWDs[keyword as Kwd].fail} ${schemaCode} || isNaN(${data})`)
   },
 }
 
