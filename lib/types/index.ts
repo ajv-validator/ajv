@@ -170,7 +170,7 @@ export interface KeywordCxtParams {
 
 export type FormatValidator<T extends string | number> = (data: T) => boolean
 
-export type FormatCompare<T extends string | number> = (data1: T, data2: T) => boolean
+export type FormatCompare<T extends string | number> = (data1: T, data2: T) => number | undefined
 
 export type AsyncFormatValidator<T extends string | number> = (data: T) => Promise<boolean>
 
