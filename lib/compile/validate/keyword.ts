@@ -100,7 +100,11 @@ function funcKeywordCode(cxt: KeywordCxt, def: FuncKeywordDefinition): void {
   function assignValid(_await: Code = def.async ? _`await ` : nil): void {
     const passCxt = it.opts.passContext ? N.this : N.self
     const passSchema = !(("compile" in def && !$data) || def.schema === false)
-    gen.assign(valid, _`${_await}${callValidateCode(cxt, validateRef, passCxt, passSchema)}`)
+    gen.assign(
+      valid,
+      _`${_await}${callValidateCode(cxt, validateRef, passCxt, passSchema)}`,
+      def.modifying
+    )
   }
 
   function reportErrs(errors: () => void): void {

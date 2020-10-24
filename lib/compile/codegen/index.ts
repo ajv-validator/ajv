@@ -68,7 +68,11 @@ class Def extends Node {
 }
 
 class Assign extends Node {
-  constructor(private readonly lhs: Code, private rhs: SafeExpr) {
+  constructor(
+    private readonly lhs: Code,
+    private rhs: SafeExpr,
+    private readonly sideEffects?: boolean
+  ) {
     super()
   }
 
@@ -77,7 +81,7 @@ class Assign extends Node {
   }
 
   optimizeNames(names: UsedNames, constants: Constants): this | undefined {
-    if (this.lhs instanceof Name && !names[this.lhs.str]) return
+    if (this.lhs instanceof Name && !names[this.lhs.str] && !this.sideEffects) return
     this.rhs = optimizeExpr(this.rhs, names, constants)
     return this
   }
@@ -506,8 +510,8 @@ export class CodeGen {
   }
 
   // assignment code
-  assign(lhs: Code, rhs: SafeExpr): CodeGen {
-    return this._leafNode(new Assign(lhs, rhs))
+  assign(lhs: Code, rhs: SafeExpr, sideEffects?: boolean): CodeGen {
+    return this._leafNode(new Assign(lhs, rhs, sideEffects))
   }
 
   // appends passed SafeExpr to code or executes Block
