@@ -24,7 +24,6 @@ const def: CodeKeywordDefinition = {
             keyword: "anyOf",
             schemaProp: i,
             compositeRule: true,
-            resetEvaluated: true,
           },
           schValid
         )

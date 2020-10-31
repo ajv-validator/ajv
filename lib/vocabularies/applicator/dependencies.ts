@@ -99,14 +99,7 @@ export function validateSchemaDeps(cxt: KeywordCxt, schemaDeps: SchemaMap = cxt.
     gen.if(
       propertyInData(data, prop, it.opts.ownProperties),
       () => {
-        const schCxt = cxt.subschema(
-          {
-            keyword,
-            schemaProp: prop,
-            resetEvaluated: true,
-          },
-          valid
-        )
+        const schCxt = cxt.subschema({keyword, schemaProp: prop}, valid)
         if (it.opts.unevaluated && schCxt.props !== undefined && it.props !== true) {
           gen.if(valid)
           it.props = mergeEvaluatedPropsToName(gen, schCxt.props, it.props)

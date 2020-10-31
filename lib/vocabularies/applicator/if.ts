@@ -58,7 +58,7 @@ const def: CodeKeywordDefinition = {
 
     function validateClause(keyword: string, ifClause?: Name): () => void {
       return () => {
-        const nextCxt = cxt.subschema({keyword, resetEvaluated: true}, schValid)
+        const nextCxt = cxt.subschema({keyword}, schValid)
         gen.assign(valid, schValid)
         if (it.opts.unevaluated && nextCxt.props !== undefined && it.props !== true) {
           gen.if(valid)

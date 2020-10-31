@@ -24,8 +24,6 @@ interface SubschemaContext {
   compositeRule?: true
   createErrors?: boolean
   allErrors?: boolean
-  props?: undefined
-  items?: undefined
 }
 
 export enum Type {
@@ -49,14 +47,13 @@ export type SubschemaArgs = Partial<{
   compositeRule: true
   createErrors: boolean
   allErrors: boolean
-  resetEvaluated: boolean
 }>
 
 export function applySubschema(it: SchemaObjCxt, appl: SubschemaArgs, valid: Name): SchemaCxt {
   const subschema = getSubschema(it, appl)
   extendSubschemaData(subschema, it, appl)
   extendSubschemaMode(subschema, appl)
-  const nextContext = {...it, ...subschema}
+  const nextContext = {...it, ...subschema, items: undefined, props: undefined}
   subschemaCode(nextContext, valid)
   return nextContext
 }
@@ -143,22 +140,16 @@ function extendSubschemaData(
     subschema.dataTypes = []
     subschema.parentData = it.data
     subschema.dataNames = [...it.dataNames, _nextData]
-    subschema.props = undefined // reset evaluated properties
-    subschema.items = undefined // reset evaluated items
   }
 }
 
 function extendSubschemaMode(
   subschema: SubschemaContext,
-  {compositeRule, createErrors, allErrors, strictSchema, resetEvaluated}: SubschemaArgs
+  {compositeRule, createErrors, allErrors, strictSchema}: SubschemaArgs
 ): void {
   if (compositeRule !== undefined) subschema.compositeRule = compositeRule
   if (createErrors !== undefined) subschema.createErrors = createErrors
   if (allErrors !== undefined) subschema.allErrors = allErrors
-  if (resetEvaluated) {
-    subschema.props = undefined
-    subschema.items = undefined
-  }
   subschema.strictSchema = strictSchema // not inherited
 }
 

@@ -31,7 +31,7 @@ const SKIP = {
     "optional/format/iri",
     "optional/format/iri-reference",
     "optional/format/duration", // TODO
-    "unevaluatedProperties",
+    // "unevaluatedProperties",
     "unevaluatedItems",
     "id",
     "defs",
@@ -40,8 +40,6 @@ const SKIP = {
     "refRemote",
     "minContains",
     "maxContains",
-    // "dependentSchemas",
-    // "dependentRequired",
   ],
 }
 

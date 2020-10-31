@@ -46,8 +46,7 @@ const def: CodeKeywordDefinition = {
     function inlineRefSchema(sch: AnySchema): void {
       const schName = gen.scopeValue("schema", {ref: sch})
       const valid = gen.name("valid")
-      // TODO merge evaluated
-      cxt.subschema(
+      const schCxt = cxt.subschema(
         {
           schema: sch,
           strictSchema: true,
@@ -58,6 +57,7 @@ const def: CodeKeywordDefinition = {
         },
         valid
       )
+      cxt.mergeEvaluated(schCxt)
       cxt.ok(valid)
     }
 

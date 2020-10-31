@@ -51,7 +51,6 @@ const def: CodeKeywordDefinition = {
               keyword: "oneOf",
               schemaProp: i,
               compositeRule: true,
-              resetEvaluated: true,
             },
             schValid
           )
