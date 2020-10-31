@@ -66,7 +66,7 @@ function topSchemaObjCode(it: SchemaObjCxt): void {
     checkNoDefault(it)
     gen.let(N.vErrors, null)
     gen.let(N.errors, 0)
-    if (opts.next) resetEvaluated(it)
+    if (opts.unevaluated) resetEvaluated(it)
     typeAndKeywords(it)
     returnResults(it)
   })
@@ -174,7 +174,7 @@ function returnResults(it: SchemaCxt): void {
     )
   } else {
     gen.assign(_`${validateName}.errors`, N.vErrors)
-    if (opts.next) assignEvaluated(it)
+    if (opts.unevaluated) assignEvaluated(it)
     gen.return(_`${N.errors} === 0`)
   }
 }

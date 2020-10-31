@@ -68,7 +68,7 @@ const def: CodeKeywordDefinition = {
         gen.if(schValid, () => {
           gen.assign(valid, true)
           gen.assign(passing, i)
-          if (it.opts.next && nextCxt?.props !== undefined && it.props !== true) {
+          if (it.opts.unevaluated && nextCxt?.props !== undefined && it.props !== true) {
             it.props = mergeEvaluatedPropsToName(gen, nextCxt.props, it.props)
           }
         })

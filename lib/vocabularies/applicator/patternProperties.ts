@@ -58,7 +58,7 @@ const def: CodeKeywordDefinition = {
             },
             valid
           )
-          if (it.opts.next && props !== true) {
+          if (it.opts.unevaluated && props !== true) {
             gen.assign(_`${props}[${key}]`, true)
           } else if (!it.allErrors) {
             // can short-circuit if `unevaluatedProperties` is not supported (opts.next === false)

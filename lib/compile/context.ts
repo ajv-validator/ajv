@@ -172,7 +172,7 @@ export default class KeywordCxt implements KeywordErrorCxt {
 
   mergeEvaluated(schemaCxt: SchemaCxt): void {
     const {it} = this
-    if (it.opts.next && it.props !== true && schemaCxt.props !== undefined) {
+    if (it.opts.unevaluated && it.props !== true && schemaCxt.props !== undefined) {
       it.props = mergeEvaluatedProps(this.gen, schemaCxt.props, it.props)
     }
   }

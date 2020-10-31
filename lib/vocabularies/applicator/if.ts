@@ -60,7 +60,7 @@ const def: CodeKeywordDefinition = {
       return () => {
         const nextCxt = cxt.subschema({keyword, resetEvaluated: true}, schValid)
         gen.assign(valid, schValid)
-        if (it.opts.next && nextCxt.props !== undefined && it.props !== true) {
+        if (it.opts.unevaluated && nextCxt.props !== undefined && it.props !== true) {
           gen.if(valid)
           it.props = mergeEvaluatedPropsToName(gen, nextCxt.props, it.props)
           gen.endIf()

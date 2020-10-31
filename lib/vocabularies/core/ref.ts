@@ -94,7 +94,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function addEvaluatedFrom(source: Code, sch: SchemaEnv): void {
-      if (!it.opts.next || it.props === true) return
+      if (!it.opts.unevaluated || it.props === true) return
       const schEvaluated = sch.validate?.evaluated
       if (schEvaluated && !schEvaluated.dynamicProps) {
         if (schEvaluated.props !== undefined) {

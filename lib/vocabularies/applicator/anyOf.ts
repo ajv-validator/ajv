@@ -12,7 +12,7 @@ const def: CodeKeywordDefinition = {
     /* istanbul ignore if */
     if (!Array.isArray(schema)) throw new Error("ajv implementation error")
     const alwaysValid = schema.some((sch: AnySchema) => alwaysValidSchema(it, sch))
-    if (alwaysValid && !it.opts.next) return
+    if (alwaysValid && !it.opts.unevaluated) return
 
     const valid = gen.let("valid", false)
     const schValid = gen.name("_valid")
@@ -29,7 +29,7 @@ const def: CodeKeywordDefinition = {
           schValid
         )
         gen.assign(valid, _`${valid} || ${schValid}`)
-        if (it.opts.next && it.props !== true) {
+        if (it.opts.unevaluated && it.props !== true) {
           if (nextCxt.props !== undefined) {
             gen.if(schValid)
             it.props = mergeEvaluatedPropsToName(gen, nextCxt.props, it.props)

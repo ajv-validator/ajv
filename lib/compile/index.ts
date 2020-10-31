@@ -163,7 +163,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
         scope: this.scope,
       }
     }
-    if (this.opts.next) {
+    if (this.opts.unevaluated) {
       const {props, items} = schemaCxt
       validate.evaluated = {
         props: props instanceof Name ? undefined : props,

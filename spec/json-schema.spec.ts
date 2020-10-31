@@ -40,8 +40,8 @@ const SKIP = {
     "refRemote",
     "minContains",
     "maxContains",
-    "dependentSchemas",
-    "dependentRequired",
+    // "dependentSchemas",
+    // "dependentRequired",
   ],
 }
 
@@ -77,6 +77,7 @@ runTest(
     strict: false,
     strictTypes: false,
     next: true,
+    unevaluated: true,
     formats: {
       "idn-email": true,
       "idn-hostname": true,
@@ -101,7 +102,7 @@ function runTest(instances, draft: number, tests) {
   jsonSchemaTest(instances, {
     description: `JSON-Schema Test Suite draft-${draft}: ${instances.length} ajv instances with different options`,
     suites: {tests},
-    // only: ["unevaluatedProperties"],
+    only: [],
     skip: SKIP[draft],
     assert: chai.assert,
     afterError,

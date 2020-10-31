@@ -1,6 +1,7 @@
 import type {Vocabulary} from "../types"
-import unevaluatedProperties from "./applicator/unevaluatedProperties"
+import dependentRequired from "./applicator/dependentRequired"
+import dependentSchemas from "./applicator/dependentSchemas"
 
-const next: Vocabulary = [unevaluatedProperties]
+const next: Vocabulary = [dependentRequired, dependentSchemas]
 
 export default next
