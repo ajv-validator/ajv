@@ -1,7 +1,7 @@
 import type {CodeKeywordDefinition} from "../../types"
 import KeywordCxt from "../../compile/context"
 import {propertyInData, allSchemaProperties} from "../code"
-import {alwaysValidSchema, toHash, mergeEvaluatedProps} from "../../compile/util"
+import {alwaysValidSchema, toHash, mergeEvaluated} from "../../compile/util"
 import apDef from "./additionalProperties"
 
 const def: CodeKeywordDefinition = {
@@ -15,7 +15,7 @@ const def: CodeKeywordDefinition = {
     }
     const allProps = allSchemaProperties(schema)
     if (it.opts.unevaluated && allProps.length && it.props !== true) {
-      it.props = mergeEvaluatedProps(gen, toHash(allProps), it.props)
+      it.props = mergeEvaluated.props(gen, toHash(allProps), it.props)
     }
     const properties = allProps.filter((p) => !alwaysValidSchema(it, schema[p]))
     if (properties.length === 0) return

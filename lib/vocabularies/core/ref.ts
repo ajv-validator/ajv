@@ -5,12 +5,7 @@ import {callValidateCode} from "../code"
 import {_, nil, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 import {SchemaEnv, resolveRef} from "../../compile"
-import {
-  mergeEvaluatedProps,
-  mergeEvaluatedPropsToName,
-  mergeEvaluatedItems,
-  mergeEvaluatedItemsToName,
-} from "../../compile/util"
+import {mergeEvaluated} from "../../compile/util"
 
 const def: CodeKeywordDefinition = {
   keyword: "$ref",
@@ -101,24 +96,25 @@ const def: CodeKeywordDefinition = {
     function addEvaluatedFrom(source: Code, sch: SchemaEnv): void {
       if (!it.opts.unevaluated) return
       const schEvaluated = sch.validate?.evaluated
+      // TODO refactor
       if (it.props !== true) {
         if (schEvaluated && !schEvaluated.dynamicProps) {
           if (schEvaluated.props !== undefined) {
-            it.props = mergeEvaluatedProps(gen, schEvaluated.props, it.props)
+            it.props = mergeEvaluated.props(gen, schEvaluated.props, it.props)
           }
         } else {
           const props = gen.var("props", _`${source}.evaluated.props`)
-          it.props = mergeEvaluatedPropsToName(gen, props, it.props)
+          it.props = mergeEvaluated.props(gen, props, it.props, Name)
         }
       }
       if (it.items !== true) {
         if (schEvaluated && !schEvaluated.dynamicItems) {
           if (schEvaluated.items !== undefined) {
-            it.items = mergeEvaluatedItems(gen, schEvaluated.items, it.items)
+            it.items = mergeEvaluated.items(gen, schEvaluated.items, it.items)
           }
         } else {
-          const props = gen.var("items", _`${source}.evaluated.items`)
-          it.items = mergeEvaluatedItemsToName(gen, props, it.items)
+          const items = gen.var("items", _`${source}.evaluated.items`)
+          it.items = mergeEvaluated.items(gen, items, it.items, Name)
         }
       }
     }

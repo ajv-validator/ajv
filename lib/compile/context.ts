@@ -7,7 +7,7 @@ import type {
 import {SchemaCxt, SchemaObjCxt} from "./index"
 import {JSONType} from "./rules"
 import {checkDataTypes, DataType} from "./validate/dataType"
-import {schemaRefOrVal, unescapeJsonPointer, mergeEvaluatedProps, mergeEvaluatedItems} from "./util"
+import {schemaRefOrVal, unescapeJsonPointer, mergeEvaluated} from "./util"
 import {
   reportError,
   reportExtraError,
@@ -170,14 +170,22 @@ export default class KeywordCxt implements KeywordErrorCxt {
     return applySubschema(this.it, appl, valid)
   }
 
-  mergeEvaluated(schemaCxt: SchemaCxt): void {
+  mergeEvaluated(schemaCxt: SchemaCxt, toName?: typeof Name): void {
     const {it} = this
     if (!it.opts.unevaluated) return
     if (it.props !== true && schemaCxt.props !== undefined) {
-      it.props = mergeEvaluatedProps(this.gen, schemaCxt.props, it.props)
+      it.props = mergeEvaluated.props(this.gen, schemaCxt.props, it.props, toName)
     }
     if (it.items !== true && schemaCxt.items !== undefined) {
-      it.items = mergeEvaluatedItems(this.gen, schemaCxt.items, it.items)
+      it.items = mergeEvaluated.items(this.gen, schemaCxt.items, it.items, toName)
+    }
+  }
+
+  mergeValidEvaluated(schemaCxt: SchemaCxt, valid: Name): boolean | void {
+    const {it, gen} = this
+    if (it.opts.unevaluated && (it.props !== true || it.items !== true)) {
+      gen.if(valid, () => this.mergeEvaluated(schemaCxt, Name))
+      return true
     }
   }
 }

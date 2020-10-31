@@ -167,6 +167,7 @@ function commentKeyword({gen, schemaEnv, schema, errSchemaPath, opts}: SchemaObj
 function returnResults(it: SchemaCxt): void {
   const {gen, schemaEnv, validateName, ValidationError, opts} = it
   if (schemaEnv.$async) {
+    // TODO assign unevaluated
     gen.if(
       _`${N.errors} === 0`,
       () => gen.return(N.data),

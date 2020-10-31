@@ -1,7 +1,7 @@
 import type {CodeKeywordDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {schemaProperties, usePattern} from "../code"
-import {_, not} from "../../compile/codegen"
+import {_, not, Name} from "../../compile/codegen"
 import {Type} from "../../compile/subschema"
 import {checkStrictMode} from "../../compile/validate"
 import {evaluatedPropsToName} from "../../compile/util"
@@ -18,7 +18,10 @@ const def: CodeKeywordDefinition = {
     if (patterns.length === 0) return
     const checkProperties = opts.strict && !opts.allowMatchingProperties && parentSchema.properties
     const valid = gen.name("valid")
-    const props = (it.props = it.props === true ? it.props : evaluatedPropsToName(gen, it.props))
+    if (it.props !== true && !(it.props instanceof Name)) {
+      it.props = evaluatedPropsToName(gen, it.props)
+    }
+    const {props} = it
     validatePatternProperties()
 
     function validatePatternProperties(): void {

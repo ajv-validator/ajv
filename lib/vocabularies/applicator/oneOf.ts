@@ -5,12 +5,8 @@ import type {
   AnySchema,
 } from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {_} from "../../compile/codegen"
-import {
-  alwaysValidSchema,
-  mergeEvaluatedPropsToName,
-  mergeEvaluatedItemsToName,
-} from "../../compile/util"
+import {_, Name} from "../../compile/codegen"
+import {alwaysValidSchema} from "../../compile/util"
 import {SchemaCxt} from "../../compile"
 
 export type OneOfError = ErrorObject<"oneOf", {passingSchemas: [number, number]}>
@@ -71,14 +67,7 @@ const def: CodeKeywordDefinition = {
         gen.if(schValid, () => {
           gen.assign(valid, true)
           gen.assign(passing, i)
-          if (it.opts.unevaluated) {
-            if (schCxt?.props !== undefined && it.props !== true) {
-              it.props = mergeEvaluatedPropsToName(gen, schCxt.props, it.props)
-            }
-            if (schCxt?.items !== undefined && it.items !== true) {
-              it.items = mergeEvaluatedItemsToName(gen, schCxt.items, it.items)
-            }
-          }
+          if (schCxt) cxt.mergeEvaluated(schCxt, Name)
         })
       })
     }

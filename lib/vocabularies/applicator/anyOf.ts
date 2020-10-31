@@ -1,11 +1,7 @@
 import type {CodeKeywordDefinition, AnySchema} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, not} from "../../compile/codegen"
-import {
-  alwaysValidSchema,
-  mergeEvaluatedPropsToName,
-  mergeEvaluatedItemsToName,
-} from "../../compile/util"
+import {alwaysValidSchema} from "../../compile/util"
 
 const def: CodeKeywordDefinition = {
   keyword: "anyOf",
@@ -32,20 +28,10 @@ const def: CodeKeywordDefinition = {
           schValid
         )
         gen.assign(valid, _`${valid} || ${schValid}`)
-        if (it.opts.unevaluated && (it.props !== true || it.items !== true)) {
-          gen.if(schValid, () => {
-            if (schCxt.props !== undefined && it.props !== true) {
-              it.props = mergeEvaluatedPropsToName(gen, schCxt.props, it.props)
-            }
-            if (schCxt.items !== undefined && it.items !== true) {
-              it.items = mergeEvaluatedItemsToName(gen, schCxt.items, it.items)
-            }
-          })
-        } else {
-          // can short-circuit if `unevaluatedProperties` is not supported (opts.next === false)
-          // or if all properties were evaluated (it.props === true)
-          gen.if(not(valid))
-        }
+        const merged = cxt.mergeValidEvaluated(schCxt, schValid)
+        // can short-circuit if `unevaluatedProperties/Items` not supported (opts.unevaluated !== true)
+        // or if all properties and items were evaluated (it.props === true && it.items === true)
+        if (!merged) gen.if(not(valid))
       })
     )
 

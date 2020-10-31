@@ -100,59 +100,85 @@ export function ucs2length(str: string): number {
   return length
 }
 
-export function mergeEvaluatedProps(
+type SomeEvaluated = EvaluatedProperties | EvaluatedItems
+
+type MergeEvaluatedFunc<T extends SomeEvaluated> = (
   gen: CodeGen,
-  from: Name | EvaluatedProperties,
-  to?: Name | {[K in string]?: true}
-): Name | EvaluatedProperties {
-  if (to === undefined) return from
-  if (to instanceof Name) {
-    return from instanceof Name ? mergeNames(from, to) : mergeToName(from, to)
-  }
-  if (from instanceof Name) return mergeToName(to, from)
-  return mergeValues(from, to)
+  from: Name | T,
+  to: Name | Exclude<T, true> | undefined,
+  toName?: typeof Name
+) => Name | T
 
-  function mergeNames(_from: Name, _to: Name): Name {
-    gen.if(_`${_to} !== true && ${_from} !== undefined`, () => {
-      gen.if(
-        _`${_from} === true`,
-        () => gen.assign(_to, true),
-        () => gen.code(_`Object.assign(${_to}, ${_from})`)
-      )
-    })
-    return _to
-  }
+interface MakeMergeFuncArgs<T extends SomeEvaluated> {
+  mergeNames: (gen: CodeGen, from: Name, to: Name) => void
+  mergeToName: (gen: CodeGen, from: T, to: Name) => void
+  mergeValues: (from: T, to: Exclude<T, true>) => T
+  resultToName: (gen: CodeGen, res?: T) => Name
+}
 
-  function mergeToName(_from: EvaluatedProperties, _to: Name): Name {
-    gen.if(_`${_to} !== true`, () => {
-      if (_from === true) {
-        gen.assign(_to, true)
-      } else {
-        gen.assign(_to, _`${_to} || {}`)
-        setEvaluated(gen, _to, _from)
-      }
-    })
-    return _to
-  }
-
-  function mergeValues(
-    _from: EvaluatedProperties,
-    _to: {[K in string]?: true}
-  ): EvaluatedProperties {
-    return _from === true ? true : {..._from, ..._to}
+function makeMergeEvaluated<T extends SomeEvaluated>({
+  mergeNames,
+  mergeToName,
+  mergeValues,
+  resultToName,
+}: MakeMergeFuncArgs<T>): MergeEvaluatedFunc<T> {
+  return (gen, from, to, toName) => {
+    const res =
+      to === undefined
+        ? from
+        : to instanceof Name
+        ? (from instanceof Name ? mergeNames(gen, from, to) : mergeToName(gen, from, to), to)
+        : from instanceof Name
+        ? (mergeToName(gen, to, from), from)
+        : mergeValues(from, to)
+    return toName === Name && !(res instanceof Name) ? resultToName(gen, res) : res
   }
 }
 
-export function mergeEvaluatedPropsToName(
-  gen: CodeGen,
-  from: Name | EvaluatedProperties,
-  to?: Name | {[K in string]?: true}
-): Name {
-  return evaluatedPropsToName(gen, mergeEvaluatedProps(gen, from, to))
+interface MergeEvaluated {
+  props: MergeEvaluatedFunc<EvaluatedProperties>
+  items: MergeEvaluatedFunc<EvaluatedItems>
 }
 
-export function evaluatedPropsToName(gen: CodeGen, ps?: Name | EvaluatedProperties): Name {
-  if (ps instanceof Name) return ps
+export const mergeEvaluated: MergeEvaluated = {
+  props: makeMergeEvaluated({
+    mergeNames: (gen, from, to) =>
+      gen.if(_`${to} !== true && ${from} !== undefined`, () => {
+        gen.if(
+          _`${from} === true`,
+          () => gen.assign(to, true),
+          () => gen.code(_`Object.assign(${to}, ${from})`)
+        )
+      }),
+    mergeToName: (gen, from, to) =>
+      gen.if(_`${to} !== true`, () => {
+        if (from === true) {
+          gen.assign(to, true)
+        } else {
+          gen.assign(to, _`${to} || {}`)
+          setEvaluated(gen, to, from)
+        }
+      }),
+    mergeValues: (from, to) => (from === true ? true : {...from, ...to}),
+    resultToName: evaluatedPropsToName,
+  }),
+  items: makeMergeEvaluated({
+    mergeNames: (gen, from, to) =>
+      gen.if(_`${to} !== true && ${from} !== undefined`, () =>
+        gen.assign(to, _`${from} === true ? true : ${to} > ${from} ? ${to} : ${from}`)
+      ),
+    mergeToName: (gen, from, to) =>
+      gen.if(_`${to} !== true`, () =>
+        gen.assign(to, from === true ? true : _`${to} > ${from} ? ${to} : ${from}`)
+      ),
+    mergeValues: (from, to) => (from === true ? true : Math.max(from, to)),
+    resultToName: (gen, items) => gen.var("items", items),
+  }),
+}
+
+// export const mergeEvaluatedProps: MergeEvaluatedFunc<EvaluatedProperties> =
+
+export function evaluatedPropsToName(gen: CodeGen, ps?: EvaluatedProperties): Name {
   if (ps === true) return gen.var("props", true)
   const props = gen.var("props", _`{}`)
   if (ps !== undefined) setEvaluated(gen, props, ps)
@@ -163,42 +189,4 @@ export function setEvaluated(gen: CodeGen, props: Name, ps: {[K in string]?: tru
   Object.keys(ps).forEach((p) => gen.assign(_`${props}${getProperty(p)}`, true))
 }
 
-export function mergeEvaluatedItems(
-  gen: CodeGen,
-  from: Name | EvaluatedItems,
-  to?: Name | number
-): Name | EvaluatedItems {
-  if (to === undefined) return from
-  if (to instanceof Name) {
-    return from instanceof Name ? mergeNames(from, to) : mergeToName(from, to)
-  }
-  if (from instanceof Name) return mergeToName(to, from)
-  return mergeValues(from, to)
-
-  function mergeNames(_from: Name, _to: Name): Name {
-    gen.if(_`${_to} !== true && ${_from} !== undefined`, () =>
-      gen.assign(_to, _`${_from} === true ? true : ${_to} > ${from} ? ${_to} : ${from}`)
-    )
-    return _to
-  }
-
-  function mergeToName(_from: EvaluatedItems, _to: Name): Name {
-    gen.if(_`${_to} !== true`, () =>
-      gen.assign(_to, _from === true ? true : _`${_to} > ${from} ? ${_to} : ${from}`)
-    )
-    return _to
-  }
-
-  function mergeValues(_from: EvaluatedItems, _to: number): EvaluatedItems {
-    return _from === true ? true : Math.max(_from, _to)
-  }
-}
-
-export function mergeEvaluatedItemsToName(
-  gen: CodeGen,
-  from: Name | EvaluatedItems,
-  to?: Name | number
-): Name {
-  const items = mergeEvaluatedItems(gen, from, to)
-  return items instanceof Name ? items : gen.var("items", items)
-}
+// export const mergeEvaluatedItems: MergeEvaluatedFunc<EvaluatedItems> =
