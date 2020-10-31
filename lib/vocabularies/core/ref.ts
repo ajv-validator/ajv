@@ -5,6 +5,7 @@ import {callValidateCode} from "../code"
 import {_, nil, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 import {SchemaEnv, resolveRef} from "../../compile"
+import {mergeEvaluatedProps, mergeEvaluatedPropsToName} from "../../compile/util"
 
 const def: CodeKeywordDefinition = {
   keyword: "$ref",
@@ -20,9 +21,9 @@ const def: CodeKeywordDefinition = {
     return inlineRefSchema(schOrFunc)
 
     function callRootRef(): void {
-      if (env === env.root) return callRef(validateName, env.$async)
+      if (env === env.root) return callRef(validateName, env, env.$async)
       const rootName = gen.scopeValue("root", {ref: env.root})
-      return callRef(_`${rootName}.validate`, env.root.$async)
+      return callRef(_`${rootName}.validate`, env.root, env.root.$async)
     }
 
     function callValidate(sch: SchemaEnv): void {
@@ -34,17 +35,18 @@ const def: CodeKeywordDefinition = {
         const wrapper = gen.scopeValue("wrapper", {ref: sch, code})
         v = _`${wrapper}.validate`
       }
-      callRef(v, sch.$async)
+      callRef(v, sch, sch.$async)
     }
 
-    function callRef(v: Code, $async?: boolean): void {
-      if ($async) callAsyncRef(v)
-      else callSyncRef(v)
+    function callRef(v: Code, sch: SchemaEnv, $async?: boolean): void {
+      if ($async) callAsyncRef(v, sch)
+      else callSyncRef(v, sch)
     }
 
     function inlineRefSchema(sch: AnySchema): void {
       const schName = gen.scopeValue("schema", {ref: sch})
       const valid = gen.name("valid")
+      // TODO merge evaluated
       cxt.subschema(
         {
           schema: sch,
@@ -59,12 +61,13 @@ const def: CodeKeywordDefinition = {
       cxt.ok(valid)
     }
 
-    function callAsyncRef(v: Code): void {
+    function callAsyncRef(v: Code, sch: SchemaEnv): void {
       if (!env.$async) throw new Error("async schema referenced by sync schema")
       const valid = gen.let("valid")
       gen.try(
         () => {
           gen.code(_`await ${callValidateCode(cxt, v, passCxt)}`)
+          addEvaluatedFrom(v, sch)
           if (!allErrors) gen.assign(valid, true)
         },
         (e) => {
@@ -76,14 +79,31 @@ const def: CodeKeywordDefinition = {
       cxt.ok(valid)
     }
 
-    function callSyncRef(v: Code): void {
-      cxt.pass(callValidateCode(cxt, v, passCxt), () => addErrorsFrom(v))
+    function callSyncRef(v: Code, sch: SchemaEnv): void {
+      cxt.result(
+        callValidateCode(cxt, v, passCxt),
+        () => addEvaluatedFrom(v, sch),
+        () => addErrorsFrom(v)
+      )
     }
 
     function addErrorsFrom(source: Code): void {
       const errs = _`${source}.errors`
       gen.assign(N.vErrors, _`${N.vErrors} === null ? ${errs} : ${N.vErrors}.concat(${errs})`) // TODO tagged
       gen.assign(N.errors, _`${N.vErrors}.length`)
+    }
+
+    function addEvaluatedFrom(source: Code, sch: SchemaEnv): void {
+      if (!it.opts.next || it.props === true) return
+      const schEvaluated = sch.validate?.evaluated
+      if (schEvaluated && !schEvaluated.dynamicProps) {
+        if (schEvaluated.props !== undefined) {
+          it.props = mergeEvaluatedProps(gen, schEvaluated.props, it.props)
+        }
+      } else {
+        const props = gen.var("props", _`${source}.evaluated.props`)
+        it.props = mergeEvaluatedPropsToName(gen, props, it.props)
+      }
     }
   },
 }

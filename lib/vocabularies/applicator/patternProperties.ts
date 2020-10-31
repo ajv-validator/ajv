@@ -4,6 +4,7 @@ import {schemaProperties, usePattern} from "../code"
 import {_, not} from "../../compile/codegen"
 import {Type} from "../../compile/subschema"
 import {checkStrictMode} from "../../compile/validate"
+import {evaluatedPropsToName} from "../../compile/util"
 
 const def: CodeKeywordDefinition = {
   keyword: "patternProperties",
@@ -16,6 +17,7 @@ const def: CodeKeywordDefinition = {
     if (patterns.length === 0) return
     const checkProperties = opts.strict && !opts.allowMatchingProperties && parentSchema.properties
     const valid = gen.name("valid")
+    const props = it.props === true ? it.props : evaluatedPropsToName(gen, it.props)
     validatePatternProperties()
 
     function validatePatternProperties(): void {
@@ -55,7 +57,13 @@ const def: CodeKeywordDefinition = {
             },
             valid
           )
-          if (!it.allErrors) gen.if(not(valid), () => gen.break())
+          if (it.opts.next && props !== true) {
+            gen.assign(_`${props}[${key}]`, true)
+          } else if (!it.allErrors) {
+            // can short-circuit if `unevaluatedProperties` is not supported (opts.next === false)
+            // or if all properties were evaluated (props === true)
+            gen.if(not(valid), () => gen.break())
+          }
         })
       })
     }

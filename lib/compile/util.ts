@@ -1,6 +1,6 @@
-import type {AnySchema} from "../types"
+import type {AnySchema, EvaluatedProperties} from "../types"
 import type {SchemaCxt, SchemaObjCxt} from "."
-import {_, getProperty, Code} from "./codegen"
+import {_, getProperty, Code, Name, CodeGen} from "./codegen"
 import type {Rule, ValidationRules} from "./rules"
 import {checkStrictMode} from "./validate"
 
@@ -98,4 +98,60 @@ export function ucs2length(str: string): number {
     }
   }
   return length
+}
+
+export function mergeEvaluatedProps(
+  gen: CodeGen,
+  from: Name | EvaluatedProperties,
+  to?: Name | {[K in string]?: true}
+): Name | EvaluatedProperties {
+  if (to === undefined) return from
+  if (to instanceof Name) {
+    return from instanceof Name ? mergeNames(from, to) : mergeToName(from, to)
+  }
+  if (from instanceof Name) return mergeToName(to, from)
+  return mergeValues(from, to)
+
+  function mergeNames(_from: Name, _to: Name): Name {
+    gen.if(_`${_to} !== true && ${_from} !== undefined`, () => {
+      gen.if(
+        _`${_from} === true`,
+        () => gen.assign(_to, true),
+        () => gen.code(_`Object.assign(${_to}, ${_from})`)
+      )
+    })
+    return _to
+  }
+
+  function mergeToName(_from: EvaluatedProperties, _to: Name): Name {
+    gen.if(_`${_to} !== true`, () =>
+      _from === true ? gen.assign(_to, true) : setEvaluated(gen, _to, _from)
+    )
+    return _to
+  }
+
+  function mergeValues(p1: EvaluatedProperties, p2: EvaluatedProperties): EvaluatedProperties {
+    if (p1 === true || p2 === true) return true
+    return {...p1, ...p2}
+  }
+}
+
+export function mergeEvaluatedPropsToName(
+  gen: CodeGen,
+  from: Name | EvaluatedProperties,
+  to?: Name | {[K in string]?: true}
+): Name {
+  return evaluatedPropsToName(gen, mergeEvaluatedProps(gen, from, to))
+}
+
+export function evaluatedPropsToName(gen: CodeGen, ps?: Name | EvaluatedProperties): Name {
+  if (ps instanceof Name) return ps
+  if (ps === true) return gen.var("props", true)
+  const props = gen.var("props", _`{}`)
+  if (ps !== undefined) setEvaluated(gen, props, ps)
+  return props
+}
+
+export function setEvaluated(gen: CodeGen, props: Name, ps: {[K in string]?: true}): void {
+  Object.keys(ps).forEach((p) => gen.assign(_`${props}${getProperty(p)}`, true))
 }

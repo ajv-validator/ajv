@@ -13,6 +13,7 @@ jsonSchemaTest(instances, {
     "Secure schemas tests of " + instances.length + " ajv instances with different options",
   suites: {security: require("./_json/security")},
   assert: require("./chai").assert,
+  only: true,
   afterError,
   afterEach,
   cwd: __dirname,

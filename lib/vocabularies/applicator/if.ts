@@ -2,7 +2,7 @@ import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from ".
 import type {SchemaObjCxt} from "../../compile"
 import type KeywordCxt from "../../compile/context"
 import {_, str, not, Name} from "../../compile/codegen"
-import {alwaysValidSchema} from "../../compile/util"
+import {alwaysValidSchema, mergeEvaluatedPropsToName} from "../../compile/util"
 import {checkStrictMode} from "../../compile/validate"
 
 export type IfKeywordError = ErrorObject<"if", {failingKeyword: string}>
@@ -44,7 +44,7 @@ const def: CodeKeywordDefinition = {
     cxt.pass(valid, () => cxt.error(true))
 
     function validateIf(): void {
-      cxt.subschema(
+      const schCxt = cxt.subschema(
         {
           keyword: "if",
           compositeRule: true,
@@ -53,12 +53,18 @@ const def: CodeKeywordDefinition = {
         },
         schValid
       )
+      cxt.mergeEvaluated(schCxt)
     }
 
     function validateClause(keyword: string, ifClause?: Name): () => void {
       return () => {
-        cxt.subschema({keyword}, schValid)
+        const nextCxt = cxt.subschema({keyword}, schValid)
         gen.assign(valid, schValid)
+        if (it.opts.next && nextCxt.props !== undefined && it.props !== true) {
+          gen.if(valid)
+          it.props = mergeEvaluatedPropsToName(gen, nextCxt.props, it.props)
+          gen.endIf()
+        }
         if (ifClause) gen.assign(ifClause, _`${keyword}`)
         else cxt.setParams({ifClause: keyword})
       }

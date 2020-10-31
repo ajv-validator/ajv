@@ -1,5 +1,5 @@
 import type {AnySchema} from "../types"
-import type {SchemaObjCxt} from "./index"
+import type {SchemaObjCxt, SchemaCxt} from "./index"
 import {subschemaCode} from "./validate"
 import {escapeFragment, escapeJsonPointer} from "./util"
 import {_, str, Code, Name, getProperty} from "./codegen"
@@ -24,6 +24,8 @@ interface SubschemaContext {
   compositeRule?: true
   createErrors?: boolean
   allErrors?: boolean
+  props?: undefined
+  items?: undefined
 }
 
 export enum Type {
@@ -49,12 +51,13 @@ export type SubschemaArgs = Partial<{
   allErrors: boolean
 }>
 
-export function applySubschema(it: SchemaObjCxt, appl: SubschemaArgs, valid: Name): void {
+export function applySubschema(it: SchemaObjCxt, appl: SubschemaArgs, valid: Name): SchemaCxt {
   const subschema = getSubschema(it, appl)
   extendSubschemaData(subschema, it, appl)
   extendSubschemaMode(subschema, appl)
   const nextContext = {...it, ...subschema}
   subschemaCode(nextContext, valid)
+  return nextContext
 }
 
 function getSubschema(
@@ -139,6 +142,8 @@ function extendSubschemaData(
     subschema.dataTypes = []
     subschema.parentData = it.data
     subschema.dataNames = [...it.dataNames, _nextData]
+    subschema.props = undefined // reset evaluated properties
+    subschema.items = undefined // reset evaluated items
   }
 }
 

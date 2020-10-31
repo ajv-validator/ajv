@@ -1,6 +1,7 @@
 import type {CodeKeywordDefinition} from "../../types"
 import KeywordCxt from "../../compile/context"
-import {propertyInData, schemaProperties} from "../code"
+import {propertyInData, allSchemaProperties} from "../code"
+import {alwaysValidSchema, toHash, mergeEvaluatedProps} from "../../compile/util"
 import apDef from "./additionalProperties"
 
 const def: CodeKeywordDefinition = {
@@ -12,7 +13,11 @@ const def: CodeKeywordDefinition = {
     if (it.opts.removeAdditional === "all" && parentSchema.additionalProperties === undefined) {
       apDef.code(new KeywordCxt(it, apDef, "additionalProperties"))
     }
-    const properties = schemaProperties(it, schema)
+    const allProps = allSchemaProperties(schema)
+    if (it.opts.next && allProps.length && it.props !== true) {
+      it.props = mergeEvaluatedProps(gen, toHash(allProps), it.props)
+    }
+    const properties = allProps.filter((p) => !alwaysValidSchema(it, schema[p]))
     if (properties.length === 0) return
     const valid = gen.name("valid")
 

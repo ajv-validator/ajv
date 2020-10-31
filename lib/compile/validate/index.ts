@@ -66,10 +66,19 @@ function topSchemaObjCode(it: SchemaObjCxt): void {
     checkNoDefault(it)
     gen.let(N.vErrors, null)
     gen.let(N.errors, 0)
+    if (opts.next) resetEvaluated(it)
     typeAndKeywords(it)
     returnResults(it)
   })
   return
+}
+
+function resetEvaluated(it: SchemaObjCxt): void {
+  // TODO maybe some hook to execute it in the end to check whether props/items are Name, as in assignEvaluated
+  const {gen, validateName} = it
+  it.evaluated = gen.const("evaluated", _`${validateName}.evaluated`)
+  gen.if(_`${it.evaluated}.dynamicProps`, () => gen.assign(_`${it.evaluated}.props`, _`undefined`))
+  gen.if(_`${it.evaluated}.dynamicItems`, () => gen.assign(_`${it.evaluated}.items`, _`undefined`))
 }
 
 function funcSourceUrl(schema: AnySchema, opts: InstanceOptions): Code {
@@ -155,7 +164,8 @@ function commentKeyword({gen, schemaEnv, schema, errSchemaPath, opts}: SchemaObj
   }
 }
 
-function returnResults({gen, schemaEnv, validateName, ValidationError}: SchemaCxt): void {
+function returnResults(it: SchemaCxt): void {
+  const {gen, schemaEnv, validateName, ValidationError, opts} = it
   if (schemaEnv.$async) {
     gen.if(
       _`${N.errors} === 0`,
@@ -164,8 +174,14 @@ function returnResults({gen, schemaEnv, validateName, ValidationError}: SchemaCx
     )
   } else {
     gen.assign(_`${validateName}.errors`, N.vErrors)
+    if (opts.next) assignEvaluated(it)
     gen.return(_`${N.errors} === 0`)
   }
+}
+
+function assignEvaluated({gen, evaluated, props, items}: SchemaCxt): void {
+  if (props instanceof Name) gen.assign(_`${evaluated}.props`, props)
+  if (items instanceof Name) gen.assign(_`${evaluated}.items`, items)
 }
 
 export function checkStrictMode(it: SchemaCxt, msg: string, mode = it.opts.strict): void {

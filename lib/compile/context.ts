@@ -7,7 +7,7 @@ import type {
 import {SchemaCxt, SchemaObjCxt} from "./index"
 import {JSONType} from "./rules"
 import {checkDataTypes, DataType} from "./validate/dataType"
-import {schemaRefOrVal, unescapeJsonPointer} from "./util"
+import {schemaRefOrVal, unescapeJsonPointer, mergeEvaluatedProps} from "./util"
 import {
   reportError,
   reportExtraError,
@@ -166,8 +166,15 @@ export default class KeywordCxt implements KeywordErrorCxt {
     }
   }
 
-  subschema(appl: SubschemaArgs, valid: Name): void {
-    applySubschema(this.it, appl, valid)
+  subschema(appl: SubschemaArgs, valid: Name): SchemaCxt {
+    return applySubschema(this.it, appl, valid)
+  }
+
+  mergeEvaluated(schemaCxt: SchemaCxt): void {
+    const {it} = this
+    if (it.opts.next && it.props !== true && schemaCxt.props !== undefined) {
+      it.props = mergeEvaluatedProps(this.gen, schemaCxt.props, it.props)
+    }
   }
 }
 

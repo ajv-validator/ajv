@@ -7,7 +7,7 @@ import type {
 } from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, str} from "../../compile/codegen"
-import {alwaysValidSchema} from "../../compile/util"
+import {alwaysValidSchema, mergeEvaluatedPropsToName} from "../../compile/util"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp, propertyInData} from "../code"
 
 interface PropertyDependencies {
@@ -92,7 +92,14 @@ const def: CodeKeywordDefinition = {
         if (alwaysValidSchema(it, schemaDeps[prop] as AnySchema)) continue
         gen.if(
           propertyInData(data, prop, it.opts.ownProperties),
-          () => cxt.subschema({keyword: "dependencies", schemaProp: prop}, valid),
+          () => {
+            const schCxt = cxt.subschema({keyword: "dependencies", schemaProp: prop}, valid)
+            if (it.opts.next && schCxt.props !== undefined && it.props !== true) {
+              gen.if(valid)
+              it.props = mergeEvaluatedPropsToName(gen, schCxt.props, it.props)
+              gen.endIf()
+            }
+          },
           () => gen.var(valid, true) // TODO var
         )
         cxt.ok(valid)

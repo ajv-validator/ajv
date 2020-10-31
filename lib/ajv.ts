@@ -91,6 +91,7 @@ interface CurrentOptions {
   allowUnionTypes?: boolean
   validateFormats?: boolean
   // validation and reporting options:
+  next?: boolean
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean

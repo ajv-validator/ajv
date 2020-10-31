@@ -1,4 +1,11 @@
-import type {AnySchema, AnySchemaObject, AnyValidateFunction, AsyncValidateFunction} from "../types"
+import type {
+  AnySchema,
+  AnySchemaObject,
+  AnyValidateFunction,
+  AsyncValidateFunction,
+  EvaluatedProperties,
+  EvaluatedItems,
+} from "../types"
 import type Ajv from "../ajv"
 import type {InstanceOptions} from "../ajv"
 import {CodeGen, _, nil, Name, Code} from "./codegen"
@@ -27,6 +34,7 @@ export interface SchemaCxt {
   dataTypes: JSONType[] // data types applied to the current part of data instance
   readonly topSchemaRef: Code
   readonly validateName: Name
+  evaluated?: Name
   readonly ValidationError?: Name
   readonly schema: AnySchema // current schema object - equal to parentSchema passed via KeywordCxt
   readonly schemaEnv: SchemaEnv
@@ -41,6 +49,8 @@ export interface SchemaCxt {
   // where failing some rule doesn't mean validation failure (`anyOf`, `oneOf`, `not`, `if`).
   // This flag is used to determine whether you can return validation result immediately after any error in case the option `allErrors` is not `true.
   // You only need to use it if you have many steps in your keywords and potentially can define multiple errors.
+  props?: EvaluatedProperties | Name // properties evaluated by this schema - used by parent schema or assigned to validation function
+  items?: EvaluatedItems | Name // last item evaluated by this schema - used by parent schema or assigned to validation function
   readonly createErrors?: boolean
   readonly opts: InstanceOptions // Ajv instance option.
   readonly self: Ajv // current Ajv instance
@@ -151,6 +161,15 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
       validate.source = {
         code: sourceCode,
         scope: this.scope,
+      }
+    }
+    if (this.opts.next) {
+      const {props, items} = schemaCxt
+      validate.evaluated = {
+        props: props instanceof Name ? undefined : props,
+        items: items instanceof Name ? undefined : items,
+        dynamicProps: props instanceof Name,
+        dynamicItems: items instanceof Name,
       }
     }
     sch.validate = validate
