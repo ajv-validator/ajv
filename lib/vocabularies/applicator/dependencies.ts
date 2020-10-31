@@ -7,7 +7,11 @@ import type {
 } from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, str} from "../../compile/codegen"
-import {alwaysValidSchema, mergeEvaluatedPropsToName} from "../../compile/util"
+import {
+  alwaysValidSchema,
+  mergeEvaluatedPropsToName,
+  mergeEvaluatedItemsToName,
+} from "../../compile/util"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp, propertyInData} from "../code"
 
 interface PropertyDependencies {
@@ -100,10 +104,15 @@ export function validateSchemaDeps(cxt: KeywordCxt, schemaDeps: SchemaMap = cxt.
       propertyInData(data, prop, it.opts.ownProperties),
       () => {
         const schCxt = cxt.subschema({keyword, schemaProp: prop}, valid)
-        if (it.opts.unevaluated && schCxt.props !== undefined && it.props !== true) {
-          gen.if(valid)
-          it.props = mergeEvaluatedPropsToName(gen, schCxt.props, it.props)
-          gen.endIf()
+        if (it.opts.unevaluated && (it.props !== true || it.items !== true)) {
+          gen.if(valid, () => {
+            if (schCxt.props !== undefined && it.props !== true) {
+              it.props = mergeEvaluatedPropsToName(gen, schCxt.props, it.props)
+            }
+            if (schCxt.items !== undefined && it.items !== true) {
+              it.items = mergeEvaluatedItemsToName(gen, schCxt.items, it.items)
+            }
+          })
         }
       },
       () => gen.var(valid, true) // TODO var

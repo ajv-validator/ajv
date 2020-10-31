@@ -6,7 +6,11 @@ import type {
 } from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_} from "../../compile/codegen"
-import {alwaysValidSchema, mergeEvaluatedPropsToName} from "../../compile/util"
+import {
+  alwaysValidSchema,
+  mergeEvaluatedPropsToName,
+  mergeEvaluatedItemsToName,
+} from "../../compile/util"
 import {SchemaCxt} from "../../compile"
 
 export type OneOfError = ErrorObject<"oneOf", {passingSchemas: [number, number]}>
@@ -42,11 +46,11 @@ const def: CodeKeywordDefinition = {
 
     function validateOneOf(): void {
       schArr.forEach((sch: AnySchema, i: number) => {
-        let nextCxt: SchemaCxt | undefined
+        let schCxt: SchemaCxt | undefined
         if (alwaysValidSchema(it, sch)) {
           gen.var(schValid, true)
         } else {
-          nextCxt = cxt.subschema(
+          schCxt = cxt.subschema(
             {
               keyword: "oneOf",
               schemaProp: i,
@@ -67,8 +71,13 @@ const def: CodeKeywordDefinition = {
         gen.if(schValid, () => {
           gen.assign(valid, true)
           gen.assign(passing, i)
-          if (it.opts.unevaluated && nextCxt?.props !== undefined && it.props !== true) {
-            it.props = mergeEvaluatedPropsToName(gen, nextCxt.props, it.props)
+          if (it.opts.unevaluated) {
+            if (schCxt?.props !== undefined && it.props !== true) {
+              it.props = mergeEvaluatedPropsToName(gen, schCxt.props, it.props)
+            }
+            if (schCxt?.items !== undefined && it.items !== true) {
+              it.items = mergeEvaluatedItemsToName(gen, schCxt.items, it.items)
+            }
           }
         })
       })

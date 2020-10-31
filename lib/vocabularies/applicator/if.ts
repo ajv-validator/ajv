@@ -2,7 +2,11 @@ import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from ".
 import type {SchemaObjCxt} from "../../compile"
 import type KeywordCxt from "../../compile/context"
 import {_, str, not, Name} from "../../compile/codegen"
-import {alwaysValidSchema, mergeEvaluatedPropsToName} from "../../compile/util"
+import {
+  alwaysValidSchema,
+  mergeEvaluatedPropsToName,
+  mergeEvaluatedItemsToName,
+} from "../../compile/util"
 import {checkStrictMode} from "../../compile/validate"
 
 export type IfKeywordError = ErrorObject<"if", {failingKeyword: string}>
@@ -58,12 +62,17 @@ const def: CodeKeywordDefinition = {
 
     function validateClause(keyword: string, ifClause?: Name): () => void {
       return () => {
-        const nextCxt = cxt.subschema({keyword}, schValid)
+        const schCxt = cxt.subschema({keyword}, schValid)
         gen.assign(valid, schValid)
-        if (it.opts.unevaluated && nextCxt.props !== undefined && it.props !== true) {
-          gen.if(valid)
-          it.props = mergeEvaluatedPropsToName(gen, nextCxt.props, it.props)
-          gen.endIf()
+        if (it.opts.unevaluated && (it.props !== true || it.items !== true)) {
+          gen.if(valid, () => {
+            if (schCxt.props !== undefined && it.props !== true) {
+              it.props = mergeEvaluatedPropsToName(gen, schCxt.props, it.props)
+            }
+            if (schCxt.items !== undefined && it.items !== true) {
+              it.items = mergeEvaluatedItemsToName(gen, schCxt.items, it.items)
+            }
+          })
         }
         if (ifClause) gen.assign(ifClause, _`${keyword}`)
         else cxt.setParams({ifClause: keyword})

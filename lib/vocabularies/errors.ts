@@ -3,6 +3,7 @@ import type {ApplicatorKeywordError} from "./applicator"
 import type {ValidationKeywordError} from "./validation"
 import type {FormatError} from "./format/format"
 import type {UnevaluatedPropertiesError} from "./applicator/unevaluatedProperties"
+import type {UnevaluatedItemsError} from "./applicator/unevaluatedItems"
 import type {DependentRequiredError} from "./applicator/dependentRequired"
 
 export type DefinedError =
@@ -11,4 +12,5 @@ export type DefinedError =
   | ValidationKeywordError
   | FormatError
   | UnevaluatedPropertiesError
+  | UnevaluatedItemsError
   | DependentRequiredError

@@ -7,7 +7,7 @@ import type {
 import {SchemaCxt, SchemaObjCxt} from "./index"
 import {JSONType} from "./rules"
 import {checkDataTypes, DataType} from "./validate/dataType"
-import {schemaRefOrVal, unescapeJsonPointer, mergeEvaluatedProps} from "./util"
+import {schemaRefOrVal, unescapeJsonPointer, mergeEvaluatedProps, mergeEvaluatedItems} from "./util"
 import {
   reportError,
   reportExtraError,
@@ -172,8 +172,12 @@ export default class KeywordCxt implements KeywordErrorCxt {
 
   mergeEvaluated(schemaCxt: SchemaCxt): void {
     const {it} = this
-    if (it.opts.unevaluated && it.props !== true && schemaCxt.props !== undefined) {
+    if (!it.opts.unevaluated) return
+    if (it.props !== true && schemaCxt.props !== undefined) {
       it.props = mergeEvaluatedProps(this.gen, schemaCxt.props, it.props)
+    }
+    if (it.items !== true && schemaCxt.items !== undefined) {
+      it.items = mergeEvaluatedItems(this.gen, schemaCxt.items, it.items)
     }
   }
 }

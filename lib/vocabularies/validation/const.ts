@@ -19,6 +19,7 @@ const def: CodeKeywordDefinition = {
       ref: equal,
       code: _`require("ajv/dist/compile/equal")`,
     })
+    // TODO optimize for scalar values in schema
     cxt.fail$data(_`!${eql}(${cxt.data}, ${cxt.schemaCode})`)
   },
 }

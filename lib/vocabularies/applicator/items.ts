@@ -2,7 +2,7 @@ import type {CodeKeywordDefinition, AnySchema} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, not} from "../../compile/codegen"
 import {Type} from "../../compile/subschema"
-import {alwaysValidSchema} from "../../compile/util"
+import {alwaysValidSchema, mergeEvaluatedItems} from "../../compile/util"
 import {checkStrictMode} from "../../compile/validate"
 
 const def: CodeKeywordDefinition = {
@@ -14,9 +14,13 @@ const def: CodeKeywordDefinition = {
     const {gen, schema, parentSchema, data, it} = cxt
     const len = gen.const("len", _`${data}.length`)
     if (Array.isArray(schema)) {
+      if (it.opts.unevaluated && schema.length && it.items !== true) {
+        it.items = mergeEvaluatedItems(gen, schema.length, it.items)
+      }
       validateTuple(schema)
-    } else if (!alwaysValidSchema(it, schema)) {
-      validateArray()
+    } else {
+      it.items = true
+      if (!alwaysValidSchema(it, schema)) validateArray()
     }
 
     function validateTuple(schArr: AnySchema[]): void {

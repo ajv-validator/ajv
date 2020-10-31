@@ -1,4 +1,4 @@
-import type {AnySchema, EvaluatedProperties} from "../types"
+import type {AnySchema, EvaluatedProperties, EvaluatedItems} from "../types"
 import type {SchemaCxt, SchemaObjCxt} from "."
 import {_, getProperty, Code, Name, CodeGen} from "./codegen"
 import type {Rule, ValidationRules} from "./rules"
@@ -135,9 +135,11 @@ export function mergeEvaluatedProps(
     return _to
   }
 
-  function mergeValues(p1: EvaluatedProperties, p2: EvaluatedProperties): EvaluatedProperties {
-    if (p1 === true || p2 === true) return true
-    return {...p1, ...p2}
+  function mergeValues(
+    _from: EvaluatedProperties,
+    _to: {[K in string]?: true}
+  ): EvaluatedProperties {
+    return _from === true ? true : {..._from, ..._to}
   }
 }
 
@@ -159,4 +161,44 @@ export function evaluatedPropsToName(gen: CodeGen, ps?: Name | EvaluatedProperti
 
 export function setEvaluated(gen: CodeGen, props: Name, ps: {[K in string]?: true}): void {
   Object.keys(ps).forEach((p) => gen.assign(_`${props}${getProperty(p)}`, true))
+}
+
+export function mergeEvaluatedItems(
+  gen: CodeGen,
+  from: Name | EvaluatedItems,
+  to?: Name | number
+): Name | EvaluatedItems {
+  if (to === undefined) return from
+  if (to instanceof Name) {
+    return from instanceof Name ? mergeNames(from, to) : mergeToName(from, to)
+  }
+  if (from instanceof Name) return mergeToName(to, from)
+  return mergeValues(from, to)
+
+  function mergeNames(_from: Name, _to: Name): Name {
+    gen.if(_`${_to} !== true && ${_from} !== undefined`, () =>
+      gen.assign(_to, _`${_from} === true ? true : ${_to} > ${from} ? ${_to} : ${from}`)
+    )
+    return _to
+  }
+
+  function mergeToName(_from: EvaluatedItems, _to: Name): Name {
+    gen.if(_`${_to} !== true`, () =>
+      gen.assign(_to, _from === true ? true : _`${_to} > ${from} ? ${_to} : ${from}`)
+    )
+    return _to
+  }
+
+  function mergeValues(_from: EvaluatedItems, _to: number): EvaluatedItems {
+    return _from === true ? true : Math.max(_from, _to)
+  }
+}
+
+export function mergeEvaluatedItemsToName(
+  gen: CodeGen,
+  from: Name | EvaluatedItems,
+  to?: Name | number
+): Name {
+  const items = mergeEvaluatedItems(gen, from, to)
+  return items instanceof Name ? items : gen.var("items", items)
 }
