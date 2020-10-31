@@ -49,6 +49,7 @@ export type SubschemaArgs = Partial<{
   compositeRule: true
   createErrors: boolean
   allErrors: boolean
+  resetEvaluated: boolean
 }>
 
 export function applySubschema(it: SchemaObjCxt, appl: SubschemaArgs, valid: Name): SchemaCxt {
@@ -149,11 +150,15 @@ function extendSubschemaData(
 
 function extendSubschemaMode(
   subschema: SubschemaContext,
-  {compositeRule, createErrors, allErrors, strictSchema}: SubschemaArgs
+  {compositeRule, createErrors, allErrors, strictSchema, resetEvaluated}: SubschemaArgs
 ): void {
   if (compositeRule !== undefined) subschema.compositeRule = compositeRule
   if (createErrors !== undefined) subschema.createErrors = createErrors
   if (allErrors !== undefined) subschema.allErrors = allErrors
+  if (resetEvaluated) {
+    subschema.props = undefined
+    subschema.items = undefined
+  }
   subschema.strictSchema = strictSchema // not inherited
 }
 

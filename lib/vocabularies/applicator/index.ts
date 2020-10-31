@@ -15,16 +15,6 @@ import ifKeyword, {IfKeywordError} from "./if"
 import thenElse from "./thenElse"
 
 const applicator: Vocabulary = [
-  // array
-  additionalItems,
-  items,
-  contains,
-  // object
-  dependencies,
-  propertyNames,
-  additionalProperties,
-  properties,
-  patternProperties,
   // any
   notKeyword,
   anyOf,
@@ -32,6 +22,16 @@ const applicator: Vocabulary = [
   allOf,
   ifKeyword,
   thenElse,
+  // array
+  additionalItems,
+  items,
+  contains,
+  // object
+  propertyNames,
+  additionalProperties,
+  dependencies,
+  properties,
+  patternProperties,
 ]
 
 export default applicator

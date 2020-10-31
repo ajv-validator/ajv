@@ -36,7 +36,6 @@
         "valid": false
       },
       {
-        "only": true,
         "description": "format keyword used with maxLength is valid",
         "data": {
           "format": "email",

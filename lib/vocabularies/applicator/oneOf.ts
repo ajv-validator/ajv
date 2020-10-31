@@ -42,7 +42,7 @@ const def: CodeKeywordDefinition = {
 
     function validateOneOf(): void {
       schArr.forEach((sch: AnySchema, i: number) => {
-        let nextCxt: SchemaCxt
+        let nextCxt: SchemaCxt | undefined
         if (alwaysValidSchema(it, sch)) {
           gen.var(schValid, true)
         } else {
@@ -51,6 +51,7 @@ const def: CodeKeywordDefinition = {
               keyword: "oneOf",
               schemaProp: i,
               compositeRule: true,
+              resetEvaluated: true,
             },
             schValid
           )
@@ -67,7 +68,7 @@ const def: CodeKeywordDefinition = {
         gen.if(schValid, () => {
           gen.assign(valid, true)
           gen.assign(passing, i)
-          if (it.opts.next && nextCxt.props !== undefined && it.props !== true) {
+          if (it.opts.next && nextCxt?.props !== undefined && it.props !== true) {
             it.props = mergeEvaluatedPropsToName(gen, nextCxt.props, it.props)
           }
         })

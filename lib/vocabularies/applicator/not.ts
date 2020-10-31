@@ -20,6 +20,7 @@ const def: CodeKeywordDefinition = {
         compositeRule: true,
         createErrors: false,
         allErrors: false,
+        resetEvaluated: true,
       },
       valid
     )

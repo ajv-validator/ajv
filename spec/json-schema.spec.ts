@@ -4,6 +4,7 @@ import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
 import addFormats from "ajv-formats"
 import draft6MetaSchema from "../dist/refs/json-schema-draft-06.json"
+import chai from "./chai"
 
 const remoteRefs = {
   "http://localhost:1234/integer.json": require("./JSON-Schema-Test-Suite/remotes/integer.json"),
@@ -22,6 +23,25 @@ const SKIP = {
     "optional/format/idn-hostname",
     "optional/format/iri",
     "optional/format/iri-reference",
+  ],
+  2019: [
+    "optional/content",
+    "optional/format/idn-email",
+    "optional/format/idn-hostname",
+    "optional/format/iri",
+    "optional/format/iri-reference",
+    "optional/format/duration", // TODO
+    "unevaluatedProperties",
+    "unevaluatedItems",
+    "id",
+    "defs",
+    "anchor",
+    "ref",
+    "refRemote",
+    "minContains",
+    "maxContains",
+    "dependentSchemas",
+    "dependentRequired",
   ],
 }
 
@@ -52,6 +72,22 @@ runTest(
   require("./_json/draft7")
 )
 
+runTest(
+  getAjvInstances(options, {
+    strict: false,
+    strictTypes: false,
+    next: true,
+    formats: {
+      "idn-email": true,
+      "idn-hostname": true,
+      iri: true,
+      "iri-reference": true,
+    },
+  }),
+  2019,
+  require("./_json/draft2019")
+)
+
 function runTest(instances, draft: number, tests) {
   for (const ajv of instances) {
     if (draft === 6) {
@@ -63,11 +99,11 @@ function runTest(instances, draft: number, tests) {
   }
 
   jsonSchemaTest(instances, {
-    description: `JSON-Schema Test Suite draft-0${draft}: ${instances.length} ajv instances with different options`,
+    description: `JSON-Schema Test Suite draft-${draft}: ${instances.length} ajv instances with different options`,
     suites: {tests},
-    only: [],
+    // only: ["unevaluatedProperties"],
     skip: SKIP[draft],
-    assert: require("./chai").assert,
+    assert: chai.assert,
     afterError,
     afterEach,
     cwd: __dirname,

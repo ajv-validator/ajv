@@ -124,9 +124,14 @@ export function mergeEvaluatedProps(
   }
 
   function mergeToName(_from: EvaluatedProperties, _to: Name): Name {
-    gen.if(_`${_to} !== true`, () =>
-      _from === true ? gen.assign(_to, true) : setEvaluated(gen, _to, _from)
-    )
+    gen.if(_`${_to} !== true`, () => {
+      if (_from === true) {
+        gen.assign(_to, true)
+      } else {
+        gen.assign(_to, _`${_to} || {}`)
+        setEvaluated(gen, _to, _from)
+      }
+    })
     return _to
   }
 

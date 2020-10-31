@@ -93,7 +93,14 @@ const def: CodeKeywordDefinition = {
         gen.if(
           propertyInData(data, prop, it.opts.ownProperties),
           () => {
-            const schCxt = cxt.subschema({keyword: "dependencies", schemaProp: prop}, valid)
+            const schCxt = cxt.subschema(
+              {
+                keyword: "dependencies",
+                schemaProp: prop,
+                resetEvaluated: true,
+              },
+              valid
+            )
             if (it.opts.next && schCxt.props !== undefined && it.props !== true) {
               gen.if(valid)
               it.props = mergeEvaluatedPropsToName(gen, schCxt.props, it.props)

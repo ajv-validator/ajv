@@ -1,14 +1,25 @@
-import type {CodeKeywordDefinition} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition, ErrorObject} from "../../types"
 import {_, not, and, Name, Code} from "../../compile/codegen"
 import {alwaysValidSchema} from "../../compile/util"
 import N from "../../compile/names"
 import {Type} from "../../compile/subschema"
+
+export type UnevaluatedPropertiesError = ErrorObject<
+  "unevaluatedProperties",
+  {unevaluatedProperty: string}
+>
+
+const error: KeywordErrorDefinition = {
+  message: "should NOT have unevaluated properties",
+  params: ({params}) => _`{unevaluatedProperty: ${params.unevaluatedProperty}}`,
+}
 
 const def: CodeKeywordDefinition = {
   keyword: "unevaluatedProperties",
   type: "object",
   schemaType: ["boolean", "object"],
   trackErrors: true,
+  error,
   code(cxt) {
     const {gen, schema, data, errsCount, it} = cxt
     /* istanbul ignore if */
@@ -27,7 +38,7 @@ const def: CodeKeywordDefinition = {
           : gen.if(unevaluatedStatic(props, key), () => unevaluatedPropCode(key))
       )
     }
-
+    it.props = true
     cxt.ok(_`${errsCount} === ${N.errors}`)
 
     function unevaluatedPropCode(key: Name): void {
@@ -54,7 +65,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function unevaluatedDynamic(evaluatedProps: Name, key: Name): Code {
-      return _`${evaluatedProps} === undefined || ${evaluatedProps}[${key}] !== true`
+      return _`!${evaluatedProps} || !${evaluatedProps}[${key}]`
     }
 
     function unevaluatedStatic(evaluatedProps: {[K in string]?: true}, key: Name): Code {
