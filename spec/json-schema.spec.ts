@@ -36,8 +36,8 @@ const SKIP = {
     "anchor",
     "ref",
     "refRemote",
-    "minContains",
-    "maxContains",
+    // "minContains",
+    // "maxContains",
   ],
 }
 
@@ -98,7 +98,7 @@ function runTest(instances, draft: number, tests) {
   jsonSchemaTest(instances, {
     description: `JSON-Schema Test Suite draft-${draft}: ${instances.length} ajv instances with different options`,
     suites: {tests},
-    only: [],
+    // only: ["minContains"],
     skip: SKIP[draft],
     assert: chai.assert,
     afterError,

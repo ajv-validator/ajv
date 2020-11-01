@@ -1,7 +1,7 @@
 import type {ErrorObject, Vocabulary} from "../../types"
 import additionalItems, {AdditionalItemsError} from "./additionalItems"
 import items from "./items"
-import contains from "./contains"
+import contains, {ContainsError} from "./contains"
 import dependencies, {DependenciesError} from "./dependencies"
 import propertyNames, {PropertyNamesError} from "./propertyNames"
 import additionalProperties, {AdditionalPropertiesError} from "./additionalProperties"
@@ -39,6 +39,7 @@ export default applicator
 export type ApplicatorKeywordError =
   | ErrorWithoutParams
   | AdditionalItemsError
+  | ContainsError
   | AdditionalPropertiesError
   | DependenciesError
   | IfKeywordError
@@ -46,6 +47,6 @@ export type ApplicatorKeywordError =
   | PropertyNamesError
 
 export type ErrorWithoutParams = ErrorObject<
-  "anyOf" | "contains" | "not" | "false schema",
+  "anyOf" | "not" | "false schema",
   Record<string, never>
 >
