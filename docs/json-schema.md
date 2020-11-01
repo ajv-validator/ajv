@@ -20,6 +20,7 @@ The keywords and their values define what rules the data should satisfy to be va
   - [items](#items)
   - [additionalItems](#additionalitems)
   - [contains](#contains)
+  - [maxContains/minContains](#maxcontains--mincontains)
   - [unevaluatedItems](#unevaluateditems) (NEW: added in draft 2019-09)
 - [Keywords for objects](#keywords-for-objects)
   - [maxProperties/minProperties](#maxproperties--minproperties)
@@ -299,6 +300,31 @@ _schema_: `{type: "array", contains: {type: "integer"}}`
 _valid_: `[1]`, `[1, "foo"]`, any array with at least one integer
 
 _invalid_: `[]`, `["foo", "bar"]`, any array without integers
+
+### `maxContains` / `minContains`
+
+The value of these keywords should be an integer.
+
+Without `contains` keyword they are ignored (logs error or throws exception in ajv [strict mode](./strict-mode.md)).
+
+The array is valid if it contains at least `minContains` items and no more than `maxContains` items that are valid against the schema in `contains` keyword.
+
+**Example**
+
+_schema_:
+
+```javascript
+{
+  type: "array",
+  contains: {type: "integer"},
+  minContains: 2,
+  maxContains: 3
+}
+```
+
+_valid_: `[1, 2]`, `[1, 2, 3, "foo"]`, any array with 2 or 3 integers
+
+_invalid_: `[]`, `[1, "foo"]`, `[1, 2, 3, 4]`, any array with fewer than 2 or more than 3 integers
 
 ### `unevaluatedItems`
 
