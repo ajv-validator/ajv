@@ -44,7 +44,7 @@ const def: CodeKeywordDefinition = {
     cxt.pass(valid, () => cxt.error(true))
 
     function validateIf(): void {
-      cxt.subschema(
+      const schCxt = cxt.subschema(
         {
           keyword: "if",
           compositeRule: true,
@@ -53,12 +53,14 @@ const def: CodeKeywordDefinition = {
         },
         schValid
       )
+      cxt.mergeEvaluated(schCxt)
     }
 
     function validateClause(keyword: string, ifClause?: Name): () => void {
       return () => {
-        cxt.subschema({keyword}, schValid)
+        const schCxt = cxt.subschema({keyword}, schValid)
         gen.assign(valid, schValid)
+        cxt.mergeValidEvaluated(schCxt, valid)
         if (ifClause) gen.assign(ifClause, _`${keyword}`)
         else cxt.setParams({ifClause: keyword})
       }

@@ -1,6 +1,6 @@
-import type {AnySchema} from "../types"
+import type {AnySchema, EvaluatedProperties, EvaluatedItems} from "../types"
 import type {SchemaCxt, SchemaObjCxt} from "."
-import {_, getProperty, Code} from "./codegen"
+import {_, getProperty, Code, Name, CodeGen} from "./codegen"
 import type {Rule, ValidationRules} from "./rules"
 import {checkStrictMode} from "./validate"
 
@@ -98,4 +98,91 @@ export function ucs2length(str: string): number {
     }
   }
   return length
+}
+
+type SomeEvaluated = EvaluatedProperties | EvaluatedItems
+
+type MergeEvaluatedFunc<T extends SomeEvaluated> = (
+  gen: CodeGen,
+  from: Name | T,
+  to: Name | Exclude<T, true> | undefined,
+  toName?: typeof Name
+) => Name | T
+
+interface MakeMergeFuncArgs<T extends SomeEvaluated> {
+  mergeNames: (gen: CodeGen, from: Name, to: Name) => void
+  mergeToName: (gen: CodeGen, from: T, to: Name) => void
+  mergeValues: (from: T, to: Exclude<T, true>) => T
+  resultToName: (gen: CodeGen, res?: T) => Name
+}
+
+function makeMergeEvaluated<T extends SomeEvaluated>({
+  mergeNames,
+  mergeToName,
+  mergeValues,
+  resultToName,
+}: MakeMergeFuncArgs<T>): MergeEvaluatedFunc<T> {
+  return (gen, from, to, toName) => {
+    const res =
+      to === undefined
+        ? from
+        : to instanceof Name
+        ? (from instanceof Name ? mergeNames(gen, from, to) : mergeToName(gen, from, to), to)
+        : from instanceof Name
+        ? (mergeToName(gen, to, from), from)
+        : mergeValues(from, to)
+    return toName === Name && !(res instanceof Name) ? resultToName(gen, res) : res
+  }
+}
+
+interface MergeEvaluated {
+  props: MergeEvaluatedFunc<EvaluatedProperties>
+  items: MergeEvaluatedFunc<EvaluatedItems>
+}
+
+export const mergeEvaluated: MergeEvaluated = {
+  props: makeMergeEvaluated({
+    mergeNames: (gen, from, to) =>
+      gen.if(_`${to} !== true && ${from} !== undefined`, () => {
+        gen.if(
+          _`${from} === true`,
+          () => gen.assign(to, true),
+          () => gen.code(_`Object.assign(${to}, ${from})`)
+        )
+      }),
+    mergeToName: (gen, from, to) =>
+      gen.if(_`${to} !== true`, () => {
+        if (from === true) {
+          gen.assign(to, true)
+        } else {
+          gen.assign(to, _`${to} || {}`)
+          setEvaluated(gen, to, from)
+        }
+      }),
+    mergeValues: (from, to) => (from === true ? true : {...from, ...to}),
+    resultToName: evaluatedPropsToName,
+  }),
+  items: makeMergeEvaluated({
+    mergeNames: (gen, from, to) =>
+      gen.if(_`${to} !== true && ${from} !== undefined`, () =>
+        gen.assign(to, _`${from} === true ? true : ${to} > ${from} ? ${to} : ${from}`)
+      ),
+    mergeToName: (gen, from, to) =>
+      gen.if(_`${to} !== true`, () =>
+        gen.assign(to, from === true ? true : _`${to} > ${from} ? ${to} : ${from}`)
+      ),
+    mergeValues: (from, to) => (from === true ? true : Math.max(from, to)),
+    resultToName: (gen, items) => gen.var("items", items),
+  }),
+}
+
+export function evaluatedPropsToName(gen: CodeGen, ps?: EvaluatedProperties): Name {
+  if (ps === true) return gen.var("props", true)
+  const props = gen.var("props", _`{}`)
+  if (ps !== undefined) setEvaluated(gen, props, ps)
+  return props
+}
+
+export function setEvaluated(gen: CodeGen, props: Name, ps: {[K in string]?: true}): void {
+  Object.keys(ps).forEach((p) => gen.assign(_`${props}${getProperty(p)}`, true))
 }

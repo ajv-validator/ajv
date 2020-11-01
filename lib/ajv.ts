@@ -59,6 +59,8 @@ import validationVocabulary from "./vocabularies/validation"
 import applicatorVocabulary from "./vocabularies/applicator"
 import formatVocabulary from "./vocabularies/format"
 import {metadataVocabulary, contentVocabulary} from "./vocabularies/metadata"
+import nextVocabulary from "./vocabularies/next"
+import unevaluatedVocabulary from "./vocabularies/unevaluated"
 import {eachItem} from "./compile/util"
 import $dataRefSchema from "./refs/data.json"
 import draft7MetaSchema from "./refs/json-schema-draft-07.json"
@@ -91,6 +93,8 @@ interface CurrentOptions {
   allowUnionTypes?: boolean
   validateFormats?: boolean
   // validation and reporting options:
+  next?: boolean
+  unevaluated?: boolean
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
@@ -275,6 +279,8 @@ export default class Ajv {
     this.addVocabulary(formatVocabulary)
     this.addVocabulary(metadataVocabulary)
     this.addVocabulary(contentVocabulary)
+    if (opts.next) this.addVocabulary(nextVocabulary)
+    if (opts.unevaluated) this.addVocabulary(unevaluatedVocabulary)
     addDefaultMetaSchema.call(this)
     if (opts.keywords) addInitialKeywords.call(this, opts.keywords)
     if (typeof opts.meta == "object") this.addMetaSchema(opts.meta)

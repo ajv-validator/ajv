@@ -257,6 +257,8 @@ const defaultOptions = {
   allowMatchingProperties: false,
   validateFormats: true,
   // validation and reporting options:
+  next: false,
+  evaluated: false,
   $data: false,
   allErrors: false,
   verbose: false,
@@ -313,6 +315,8 @@ const defaultOptions = {
 
 #### Validation and reporting options
 
+- _next_: add support for the keywords from the next JSON-Schema draft (currently it is draft 2019-09): `dependentRequired`, `dependentSchemas`, `maxContains`, `minContain`. This option will be removed once the next draft is fully supported.
+- _evaluated_: to track evaluated properties/items and support keywords `unevaluatedProperties` and `unevaluatedItems`. Supporting these keywords may add additional validation-time logic even to validation functions where these keywords are not used.
 - _\$data_: support [\$data references](./validation.md#data-reference). Draft 6 meta-schema that is added by default will be extended to allow them. If you want to use another meta-schema you need to use $dataMetaSchema method to add support for $data reference. See [API](#ajv-constructor-and-methods).
 - _allErrors_: check all rules collecting all errors. Default is to return after the first error.
 - _verbose_: include the reference to the part of the schema (`schema` and `parentSchema`) and validated data in errors (false by default).

@@ -18,6 +18,7 @@ const def: CodeKeywordDefinition = {
       return
     }
 
+    it.items = true
     const valid = gen.name("valid")
     gen.forRange("i", 0, _`${data}.length`, (i) => {
       cxt.subschema(

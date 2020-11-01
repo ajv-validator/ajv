@@ -32,11 +32,12 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
     /* istanbul ignore if */
     if (!errsCount) throw new Error("ajv implementation error")
     const {allErrors, opts} = it
+    it.props = true
     if (opts.removeAdditional !== "all" && alwaysValidSchema(it, schema)) return
     const props = allSchemaProperties(parentSchema.properties)
     const patProps = allSchemaProperties(parentSchema.patternProperties)
     checkAdditionalProperties()
-    if (!allErrors) gen.if(_`${errsCount} === ${N.errors}`)
+    cxt.ok(_`${errsCount} === ${N.errors}`)
 
     function checkAdditionalProperties(): void {
       gen.forIn("key", data, (key: Name) => {
