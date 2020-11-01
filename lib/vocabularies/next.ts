@@ -1,5 +1,5 @@
 import type {Vocabulary} from "../types"
-import dependentRequired from "./applicator/dependentRequired"
+import dependentRequired from "./validation/dependentRequired"
 import dependentSchemas from "./applicator/dependentSchemas"
 
 const next: Vocabulary = [dependentRequired, dependentSchemas]

@@ -19,15 +19,19 @@ The keywords and their values define what rules the data should satisfy to be va
   - [uniqueItems](#uniqueitems)
   - [items](#items)
   - [additionalItems](#additionalitems)
-  - [contains](#contains) (added in draft-06)
+  - [contains](#contains)
+  - [unevaluatedItems](#unevaluateditems) (NEW: added in draft 2019-09)
 - [Keywords for objects](#keywords-for-objects)
   - [maxProperties/minProperties](#maxproperties--minproperties)
   - [required](#required)
   - [properties](#properties)
   - [patternProperties](#patternproperties)
   - [additionalProperties](#additionalproperties)
-  - [dependencies](#dependencies)
-  - [propertyNames](#propertynames) (added in draft-06)
+  - [dependencies](#dependencies) (deprecated from draft 2019-09)
+  - [dependentRequired](#dependentrequired) (NEW: added in draft 2019-09)
+  - [dependentSchemas](#dependentschemas) (NEW: added in draft 2019-09)
+  - [propertyNames](#propertynames)
+  - [unevaluatedProperties](#unevaluatedproperties) (NEW: added in draft 2019-09)
 - [Keywords for all types](#keywords-for-all-types)
   - [enum](#enum)
   - [const](#const) (added in draft-06)
@@ -36,7 +40,7 @@ The keywords and their values define what rules the data should satisfy to be va
   - [oneOf](#oneof)
   - [anyOf](#anyof)
   - [allOf](#allof)
-  - [if/then/else](#ifthenelse) (NEW in draft-07)
+  - [if/then/else](#ifthenelse)
 
 ## `type`
 
@@ -296,6 +300,49 @@ _valid_: `[1]`, `[1, "foo"]`, any array with at least one integer
 
 _invalid_: `[]`, `["foo", "bar"]`, any array without integers
 
+### `unevaluatedItems`
+
+The value of this keyword is a JSON Schema (can be a boolean).
+
+This schema will be applied to all array items that were not evaluated by other keywords for items (`items`, `additionalItems` and `contains`) in the current schema and all sub-schemas that were valid for this data instance. It includes:
+
+- all subschemas schemas in `allOf` and `$ref` keywords
+- valid sub-schemas in `oneOf` and `anyOf` keywords
+- sub-schema in `if` keyword
+- sub-schemas in `then` or `else` keywords that were applied based on the validation result by `if` keyword.
+
+The only scenario when this keyword would be applied to some items is when `items` keyword value is an array of schemas and `additionalItems` was not present (or did not apply, in case it was present in some invalid subschema).
+
+Some user-defined keywords can also make items "evaluated".
+
+**Example**
+
+_schema_:
+
+```javascript
+{
+  type: "array",
+  items: [
+    {type: "number"},
+    {type: "number"}
+  ],
+  unevaluatedItems: false,
+  anyOf: [
+    {items: [true, true, {type: "number"}]},
+    {items: [true, true, {type: "boolean"}]}
+  ]
+}
+```
+
+_valid_: `[1, 2, 3]`, `[1, 2, true]`
+
+_invalid_:
+
+- `[1, 2]` - the third item is not present
+- `[1, 2, "3"]` - the third item is "unevaluated"
+
+See [tests](https://github.com/json-schema-org/JSON-Schema-Test-Suite/blob/master/tests/draft2019-09/unevaluatedItems.json) for `unevaluatedItems` keyword for other examples.
+
 ## Keywords for objects
 
 ### `maxProperties` / `minProperties`
@@ -458,7 +505,9 @@ If the value is a schema for the data object to be valid the values in all "addi
 
 ### `dependencies`
 
-The value of the keyword is a map with keys equal to data object properties. Each value in the map should be either an array of unique property names ("property dependency") or a JSON Schema ("schema dependency").
+This keyword is deprecated. The same functionality is available with keywords `dependentRequired` and `dependentSchemas`.
+
+The value of the keyword is a map with keys equal to data object properties. Each value in the map should be either an array of unique property names ("property dependency" - see [`dependentRequired`](#`dependentrequired`) keyword) or a JSON Schema ("schema dependency" - see [`dependentSchemas`](#`dependentschemas`) keyword).
 
 For property dependency, if the data object contains a property that is a key in the keyword value, then to be valid the data object should also contain all properties from the array of properties.
 
@@ -481,7 +530,7 @@ For schema dependency, if the data object contains a property that is a key in t
 
     _invalid_: `{foo: 1}`, `{foo: 1, bar: 2}`, `{foo: 1, baz: 3}`
 
-2)  _schema (schema dependency)_:
+2.  _schema (schema dependency)_:
 
     ```javascript
     {
@@ -499,6 +548,56 @@ For schema dependency, if the data object contains a property that is a key in t
     _valid_: `{}`, `{foo: 1}`, `{foo: 1, bar: 2}`, `{a: 1}`
 
     _invalid_: `{foo: 1, bar: "a"}`
+
+### `dependentRequired`
+
+The value of this keyword should be a map with keys equal to data object properties. Each value in the map should be an array of unique property names.
+
+If the data object contains a property that is a key in the keyword value, then to be valid the data object should also contain all properties from the corresponding array of properties in this keyword.
+
+**Example**
+
+_schema_:
+
+```javascript
+{
+  type: "object",
+  dependentRequired: {
+    foo: ["bar", "baz"]
+  }
+}
+```
+
+_valid_: `{foo: 1, bar: 2, baz: 3}`, `{}`, `{a: 1}`
+
+_invalid_: `{foo: 1}`, `{foo: 1, bar: 2}`, `{foo: 1, baz: 3}`
+
+### `dependentSchemas`
+
+The value of the keyword should be a map with keys equal to data object properties. Each value in the map should be a JSON Schema.
+
+If the data object contains a property that is a key in the keyword value, then to be valid the data object itself (NOT the property value) should be valid according to the corresponding schema in this keyword.
+
+**Example**
+
+_schema_:
+
+```javascript
+{
+  type: "object",
+  dependentSchemas: {
+    foo: {
+      properties: {
+        bar: {type: "number"}
+      }
+    }
+  }
+}
+```
+
+_valid_: `{}`, `{foo: 1}`, `{foo: 1, bar: 2}`, `{a: 1}`
+
+_invalid_: `{foo: 1, bar: "a"}`
 
 ### `propertyNames`
 
@@ -522,6 +621,52 @@ _schema_ (requires `email` format from [ajv-formats](https://github.com/ajv-vali
 _valid_: `{"foo@bar.com": "any", "bar@bar.com": "any"}`
 
 _invalid_: `{foo: "any value"}`
+
+### `unevaluatedProperties`
+
+The value of this keyword is a JSON Schema (can be a boolean).
+
+This schema will be applied to all properties that were not evaluated by other keywords for properties (`properties`, `patternProperties` and `additionalProperties`) in the current schema and all sub-schemas that were valid for this data instance. It includes:
+
+- all subschemas schemas in `allOf` and `$ref` keywords
+- valid sub-schemas in `oneOf` and `anyOf` keywords
+- sub-schema in `if` keyword
+- sub-schemas in `then` or `else` keywords that were applied based on the validation result by `if` keyword.
+
+Some user-defined keywords can also make properties "evaluated".
+
+**Example**
+
+_schema_:
+
+```javascript
+{
+  type: "object",
+  required: ["foo"],
+  properties: {foo: {type: "number"}},
+  unevaluatedProperties: false,
+  anyOf: [
+    {
+      required: ["bar"],
+      properties: {bar: {type: "number"}}
+    }
+    {
+      required: ["baz"],
+      properties: {baz: {type: "number"}}
+    }
+  ]
+}
+```
+
+_valid_: `{foo: 1, bar: 2}`, `{foo: 1, baz: 2}`, `{foo: 1, bar: 2, baz: 3}`
+
+_invalid_:
+
+- `{foo: 1}` - neither `bar` nor `baz` are present
+- `{foo: 1, bar: 2, boo: 3}` - `boo` is unevaluated
+- `{foo: 1, bar: 2, baz: "3"}` - not valid against the 2nd subschema, so `baz` is "unevaluated".
+
+See [tests](https://github.com/json-schema-org/JSON-Schema-Test-Suite/blob/master/tests/draft2019-09/unevaluatedProperties.json) for `unevaluatedProperties` keyword for other examples.
 
 ## Keywords for all types
 

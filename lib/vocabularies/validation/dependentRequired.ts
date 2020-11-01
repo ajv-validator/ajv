@@ -1,5 +1,5 @@
 import type {CodeKeywordDefinition, ErrorObject} from "../../types"
-import {validatePropertyDeps, error} from "./dependencies"
+import {validatePropertyDeps, error} from "../applicator/dependencies"
 
 export type DependentRequiredError = ErrorObject<
   "dependentRequired",
