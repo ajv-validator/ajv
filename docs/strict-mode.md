@@ -8,6 +8,7 @@ To disable all strict mode restrictions use option `strict: false`. Someof the r
   - unknown keywords
   - ignored "additionalItems" keyword
   - ignored "if", "then", "else" keywords
+  - ignored "contains", "maxContains" and "minContains" keywords
   - unknown formats
   - ignored defaults
 - [Prevent unexpected validation](#prevent-unexpected-validation)
@@ -51,6 +52,14 @@ By default Ajv fails schema compilation when "additionalItems" is used without "
 #### Prohibit ignored "if", "then", "else" keywords
 
 JSON Schema section [9.2.2](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-9.2.2) requires to ignore "if" (only annotations are collected) if both "then" and "else" are absent, and ignore "then"/"else" if "if" is absent.
+
+By default Ajv fails schema compilation in these cases.
+
+#### Prohibit ignored "contains", "maxContains" and "minContains" keywords
+
+JSON Schema sections [6.4.4, 6.4.5](https://json-schema.org/draft/2019-09/json-schema-validation.html#rfc.section.6.4.4) require to ignore keywords "maxContains" and "minContains" if "contains" keyword is absent.
+
+It is also implied that when "minContains" is 0 and "maxContains" is absent, "contains" keyword is always valid.
 
 By default Ajv fails schema compilation in these cases.
 

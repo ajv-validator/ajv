@@ -36,8 +36,6 @@ const SKIP = {
     "anchor",
     "ref",
     "refRemote",
-    "minContains",
-    "maxContains",
   ],
 }
 
