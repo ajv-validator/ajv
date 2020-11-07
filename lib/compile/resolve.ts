@@ -5,8 +5,8 @@ import equal from "fast-deep-equal"
 import traverse from "json-schema-traverse"
 import URI = require("uri-js")
 
-// the hash of local references inside the schema (created by getSchemaRefs), used for inline resolution
-export interface LocalRefs {
+// the hash of local references inside the schema (created by getSchemaRefs)
+export interface SchemaAnchors {
   [ref: string]: AnySchemaObject | undefined
 }
 
@@ -81,12 +81,12 @@ export function resolveUrl(baseId: string, id: string): string {
   return URI.resolve(baseId, id)
 }
 
-export function getSchemaRefs(this: Ajv, schema: AnySchema): LocalRefs {
+export function getSchemaRefs(this: Ajv, schema: AnySchema): SchemaAnchors {
   if (typeof schema == "boolean") return {}
   const schemaId = normalizeId(schema.$id)
   const baseIds: {[jsonPtr: string]: string} = {"": schemaId}
   const pathPrefix = getFullPath(schemaId, false)
-  const localRefs: LocalRefs = {}
+  const anchors: SchemaAnchors = {}
 
   traverse(schema, {allKeys: true}, (sch, jsonPtr, _, parentJsonPtr) => {
     if (parentJsonPtr === undefined) return
@@ -101,8 +101,8 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema): LocalRefs {
         checkAmbiguosId(sch, schOrRef.schema, id)
       } else if (id !== normalizeId(fullPath)) {
         if (id[0] === "#") {
-          checkAmbiguosId(sch, localRefs[id], id)
-          localRefs[id] = sch
+          checkAmbiguosId(sch, anchors[id], id)
+          anchors[id] = sch
         } else {
           this.refs[id] = fullPath
         }
@@ -111,7 +111,7 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema): LocalRefs {
     baseIds[jsonPtr] = baseId
   })
 
-  return localRefs
+  return anchors
 
   function checkAmbiguosId(sch1: AnySchema, sch2: AnySchema | undefined, id: string): void {
     if (sch2 !== undefined && !equal(sch1, sch2)) {
