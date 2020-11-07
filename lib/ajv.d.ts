@@ -295,21 +295,48 @@ declare namespace ajv {
     dataVar?: string;
   }
 
-  interface ErrorObject {
-    keyword: string;
+  type ErrorObject = {
     dataPath: string;
     schemaPath: string;
-    params: ErrorParameters;
-    // Added to validation errors of propertyNames keyword schema
-    propertyName?: string;
     // Excluded if messages set to false.
     message?: string;
     // These are added with the `verbose` option.
     schema?: any;
     parentSchema?: object;
     data?: any;
-  }
+  } & (
+    | { keyword: "false schema"; params: NoParams }
+    | { keyword: "$ref"; params: RefParams }
+    | { keyword: "additionalItems"; params: LimitParams }
+    | { keyword: "additionalProperties"; params: AdditionalPropertiesParams }
+    | { keyword: "anyOf"; params:  NoParams }
+    | { keyword: "const"; params: EnumParams }
+    | { keyword: "contains"; params: NoParams  }
+    | { keyword: "dependencies"; params: DependenciesParams }
+    | { keyword: "enum"; params: EnumParams }
+    | { keyword: "format"; params: FormatParams }
+    | { keyword: "if"; params: IfParams }
+    | { keyword: "_limit"; params: ComparisonParams }
+    | { keyword: "_exclusiveLimit"; params: NoParams }
+    | { keyword: "_limitItems"; params: LimitParams }
+    | { keyword: "_limitLength"; params: LimitParams }
+    | { keyword: "_limitProperties"; params: LimitParams }
+    | { keyword: "multipleOf"; params: MultipleOfParams }
+    | { keyword: "not"; params: NoParams }
+    | { keyword: "oneOf"; params: OneOfParams }
+    | { keyword: "pattern"; params: PatternParams }
+    | { keyword: "propertyNames"; params: PropertyNamesParams; propertyName: string }
+    | { keyword: "required"; params: RequiredParams }
+    | { keyword: "type"; params: TypeParams }
+    | { keyword: "uniqueItems"; params: UniqueItemsParams }
+    | { keyword: "custom"; params: CustomParams }
+    | { keyword: "patternRequired"; params: PatternRequiredParams }
+    | { keyword: "switch"; params: SwitchParams }
+    | { keyword: "_formatLimit"; params: ComparisonParams }
+    | { keyword: "_formatExclusiveLimit"; params: NoParams }
+  )
 
+  // TODO: Remove if okay with breaking changes; it's no longer needed
   type ErrorParameters = RefParams | LimitParams | AdditionalPropertiesParams |
     DependenciesParams | FormatParams | ComparisonParams |
     MultipleOfParams | PatternParams | RequiredParams |
@@ -391,6 +418,10 @@ declare namespace ajv {
 
   interface EnumParams {
     allowedValues: Array<any>;
+  }
+
+  interface OneOfParams {
+    passingSchemas: Array<number> | null;
   }
 }
 
