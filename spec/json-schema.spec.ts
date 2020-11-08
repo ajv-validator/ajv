@@ -9,10 +9,12 @@ import chai from "./chai"
 const remoteRefs = {
   "http://localhost:1234/integer.json": require("./JSON-Schema-Test-Suite/remotes/integer.json"),
   "http://localhost:1234/subSchemas.json": require("./JSON-Schema-Test-Suite/remotes/subSchemas.json"),
+  "http://localhost:1234/subSchemas-defs.json": require("./JSON-Schema-Test-Suite/remotes/subSchemas-defs.json"),
   "http://localhost:1234/baseUriChange/folderInteger.json": require("./JSON-Schema-Test-Suite/remotes/baseUriChange/folderInteger.json"),
   "http://localhost:1234/baseUriChangeFolder/folderInteger.json": require("./JSON-Schema-Test-Suite/remotes/baseUriChangeFolder/folderInteger.json"),
   "http://localhost:1234/baseUriChangeFolderInSubschema/folderInteger.json": require("./JSON-Schema-Test-Suite/remotes/baseUriChangeFolderInSubschema/folderInteger.json"),
   "http://localhost:1234/name.json": require("./JSON-Schema-Test-Suite/remotes/name.json"),
+  "http://localhost:1234/name-defs.json": require("./JSON-Schema-Test-Suite/remotes/name-defs.json"),
 }
 
 const SKIP = {
@@ -33,9 +35,8 @@ const SKIP = {
     "optional/format/duration", // TODO
     "id",
     "defs",
-    "anchor",
     "ref",
-    "refRemote",
+    "refRemote", // TODO test "base URI change - change folder in subschema"
   ],
 }
 

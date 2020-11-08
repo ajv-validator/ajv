@@ -81,6 +81,8 @@ export function resolveUrl(baseId: string, id: string): string {
   return URI.resolve(baseId, id)
 }
 
+const ANCHOR = /^[a-z_][-a-z0-9._]*$/i
+
 export function getSchemaRefs(this: Ajv, schema: AnySchema): LocalRefs {
   if (typeof schema == "boolean") return {}
   const schemaId = normalizeId(schema.$id)
@@ -91,24 +93,35 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema): LocalRefs {
   traverse(schema, {allKeys: true}, (sch, jsonPtr, _, parentJsonPtr) => {
     if (parentJsonPtr === undefined) return
     const fullPath = pathPrefix + jsonPtr
-    let id = sch.$id
     let baseId = baseIds[parentJsonPtr]
-    if (typeof id == "string") {
-      id = baseId = normalizeId(baseId ? URI.resolve(baseId, id) : id)
-      let schOrRef = this.refs[id]
+    if (typeof sch.$id == "string") baseId = addRef.call(this, sch.$id)
+    addAnchor.call(this, sch.$anchor)
+    addAnchor.call(this, sch.$dynamicAnchor)
+    baseIds[jsonPtr] = baseId
+
+    function addRef(this: Ajv, ref: string): string {
+      ref = normalizeId(baseId ? URI.resolve(baseId, ref) : ref)
+      let schOrRef = this.refs[ref]
       if (typeof schOrRef == "string") schOrRef = this.refs[schOrRef]
       if (typeof schOrRef == "object") {
-        checkAmbiguosId(sch, schOrRef.schema, id)
-      } else if (id !== normalizeId(fullPath)) {
-        if (id[0] === "#") {
-          checkAmbiguosId(sch, localRefs[id], id)
-          localRefs[id] = sch
+        checkAmbiguosId(sch, schOrRef.schema, ref)
+      } else if (ref !== normalizeId(fullPath)) {
+        if (ref[0] === "#") {
+          checkAmbiguosId(sch, localRefs[ref], ref)
+          localRefs[ref] = sch
         } else {
-          this.refs[id] = fullPath
+          this.refs[ref] = fullPath
         }
       }
+      return ref
     }
-    baseIds[jsonPtr] = baseId
+
+    function addAnchor(this: Ajv, anchor: unknown): void {
+      if (typeof anchor == "string") {
+        if (!ANCHOR.test(anchor)) throw new Error(`invalid anchor "${anchor}"`)
+        addRef.call(this, `#${anchor}`)
+      }
+    }
   })
 
   return localRefs
