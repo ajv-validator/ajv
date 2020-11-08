@@ -7,41 +7,6 @@ import assert from "assert"
 describe("recursiveRef and dynamicRef", () => {
   let ajvs: Ajv[]
 
-  const validTree = {
-    data: 1,
-    children: [
-      {
-        data: 2,
-        children: [{data: 3}],
-      },
-    ],
-  }
-
-  const invalidTree = {
-    data: 1,
-    children: [
-      {
-        data: 2,
-        children: {},
-      },
-    ],
-  }
-
-  const treeWithExtra = {
-    data: 1,
-    children: [{data: 2, extra: 2}],
-  }
-
-  const treeWithDeepExtra = {
-    data: 1,
-    children: [
-      {
-        data: 2,
-        children: [{data: 3, extra: 3}],
-      },
-    ],
-  }
-
   beforeEach(() => {
     ajvs = getAjvInstances(options, {dynamicRef: true, unevaluated: true})
   })
@@ -105,6 +70,41 @@ describe("recursiveRef and dynamicRef", () => {
   })
 
   function testTree(treeSchema: SchemaObject, strictTreeSchema: SchemaObject): void {
+    const validTree = {
+      data: 1,
+      children: [
+        {
+          data: 2,
+          children: [{data: 3}],
+        },
+      ],
+    }
+
+    const invalidTree = {
+      data: 1,
+      children: [
+        {
+          data: 2,
+          children: {},
+        },
+      ],
+    }
+
+    const treeWithExtra = {
+      data: 1,
+      children: [{data: 2, extra: 2}],
+    }
+
+    const treeWithDeepExtra = {
+      data: 1,
+      children: [
+        {
+          data: 2,
+          children: [{data: 3, extra: 3}],
+        },
+      ],
+    }
+
     ajvs.forEach((ajv) => {
       const validate = ajv.compile(treeSchema)
       assert.strictEqual(validate(validTree), true)
