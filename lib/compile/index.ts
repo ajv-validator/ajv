@@ -11,14 +11,7 @@ import type {InstanceOptions} from "../ajv"
 import {CodeGen, _, nil, Name, Code} from "./codegen"
 import {ValidationError} from "./error_classes"
 import N from "./names"
-import {
-  SchemaAnchors,
-  getFullPath,
-  _getFullPath,
-  inlineRef,
-  normalizeId,
-  resolveUrl,
-} from "./resolve"
+import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
 import {schemaHasRulesButRef, unescapeFragment} from "./util"
 import {validateFunctionCode} from "./validate"
 import URI = require("uri-js")
@@ -70,7 +63,7 @@ interface SchemaEnvArgs {
   readonly schema: AnySchema
   readonly root?: SchemaEnv
   readonly baseId?: string
-  readonly anchors?: SchemaAnchors
+  readonly localRefs?: LocalRefs
   readonly meta?: boolean
 }
 
@@ -78,7 +71,7 @@ export class SchemaEnv implements SchemaEnvArgs {
   readonly schema: AnySchema
   readonly root: SchemaEnv
   baseId: string // TODO possibly, it should be readonly
-  anchors?: SchemaAnchors
+  localRefs?: LocalRefs
   readonly meta?: boolean
   readonly $async?: boolean // true if the current schema is asynchronous.
   readonly refs: SchemaRefs = {}
@@ -91,7 +84,7 @@ export class SchemaEnv implements SchemaEnvArgs {
     this.schema = env.schema
     this.root = env.root || this
     this.baseId = env.baseId ?? normalizeId(schema?.$id)
-    this.anchors = env.anchors
+    this.localRefs = env.localRefs
     this.meta = env.meta
     this.$async = schema?.$async
     this.refs = {}
@@ -204,7 +197,7 @@ export function resolveRef(
 
   let _sch = resolve.call(this, root, ref)
   if (_sch === undefined) {
-    const schema = root.anchors?.[ref] // TODO maybe anchors should hold SchemaEnv
+    const schema = root.localRefs?.[ref] // TODO maybe localRefs should hold SchemaEnv
     if (schema) _sch = new SchemaEnv({schema, root, baseId})
   }
 
