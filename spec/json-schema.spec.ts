@@ -28,7 +28,6 @@ const SKIP = {
   2019: [
     "optional/content",
     ...SKIP_FORMAT_TESTS,
-    "optional/format/duration", // TODO update to ajv-formats v0.5.0
     "refRemote", // TODO test "base URI change - change folder in subschema"
   ],
 }
