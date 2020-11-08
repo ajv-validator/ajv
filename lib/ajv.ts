@@ -61,6 +61,7 @@ import formatVocabulary from "./vocabularies/format"
 import {metadataVocabulary, contentVocabulary} from "./vocabularies/metadata"
 import nextVocabulary from "./vocabularies/next"
 import unevaluatedVocabulary from "./vocabularies/unevaluated"
+import dynamicVocabulary from "./vocabularies/dynamic"
 import {eachItem} from "./compile/util"
 import $dataRefSchema from "./refs/data.json"
 import draft7MetaSchema from "./refs/json-schema-draft-07.json"
@@ -95,6 +96,7 @@ interface CurrentOptions {
   // validation and reporting options:
   next?: boolean
   unevaluated?: boolean
+  dynamicRef?: boolean
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
@@ -273,6 +275,7 @@ export default class Ajv {
 
     if (opts.formats) addInitialFormats.call(this)
     this.addVocabulary(["$async"])
+    if (opts.dynamicRef) this.addVocabulary(dynamicVocabulary)
     this.addVocabulary(coreVocabulary)
     this.addVocabulary(validationVocabulary)
     this.addVocabulary(applicatorVocabulary)

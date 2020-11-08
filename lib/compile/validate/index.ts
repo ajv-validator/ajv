@@ -27,34 +27,39 @@ function validateFunction(
 ): void {
   gen.return(() =>
     opts.code.es5
-      ? gen.func(validateName, _`${N.data}, ${N.dataCxt}`, schemaEnv.$async, () => {
+      ? gen.func(validateName, _`${N.data}, ${N.valCxt}`, schemaEnv.$async, () => {
           gen.code(_`"use strict"; ${funcSourceUrl(schema, opts)}`)
-          destructureDataCxtES5(gen)
+          destructureValCxtES5(gen, opts)
           gen.code(body)
         })
-      : gen.func(
-          validateName,
-          _`${N.data}, {${N.dataPath}="", ${N.parentData}, ${N.parentDataProperty}, ${N.rootData}=${N.data}}={}`,
-          schemaEnv.$async,
-          () => gen.code(funcSourceUrl(schema, opts)).code(body)
+      : gen.func(validateName, _`${N.data}, ${destructureValCxt(opts)}`, schemaEnv.$async, () =>
+          gen.code(funcSourceUrl(schema, opts)).code(body)
         )
   )
 }
 
-function destructureDataCxtES5(gen: CodeGen): void {
+function destructureValCxt(opts: InstanceOptions): Code {
+  return _`{${N.dataPath}="", ${N.parentData}, ${N.parentDataProperty}, ${N.rootData}=${N.data}${
+    opts.dynamicRef ? _`, ${N.dynamicAnchors}={}` : nil
+  }}={}`
+}
+
+function destructureValCxtES5(gen: CodeGen, opts: InstanceOptions): void {
   gen.if(
-    N.dataCxt,
+    N.valCxt,
     () => {
-      gen.var(N.dataPath, _`${N.dataCxt}.${N.dataPath}`)
-      gen.var(N.parentData, _`${N.dataCxt}.${N.parentData}`)
-      gen.var(N.parentDataProperty, _`${N.dataCxt}.${N.parentDataProperty}`)
-      gen.var(N.rootData, _`${N.dataCxt}.${N.rootData}`)
+      gen.var(N.dataPath, _`${N.valCxt}.${N.dataPath}`)
+      gen.var(N.parentData, _`${N.valCxt}.${N.parentData}`)
+      gen.var(N.parentDataProperty, _`${N.valCxt}.${N.parentDataProperty}`)
+      gen.var(N.rootData, _`${N.valCxt}.${N.rootData}`)
+      if (opts.dynamicRef) gen.var(N.dynamicAnchors, _`${N.valCxt}.${N.dynamicAnchors}`)
     },
     () => {
       gen.var(N.dataPath, _`""`)
       gen.var(N.parentData, _`undefined`)
       gen.var(N.parentDataProperty, _`undefined`)
       gen.var(N.rootData, N.data)
+      if (opts.dynamicRef) gen.var(N.dynamicAnchors, _`{}`)
     }
   )
 }

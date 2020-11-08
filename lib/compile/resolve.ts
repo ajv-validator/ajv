@@ -37,9 +37,17 @@ export function inlineRef(schema: AnySchema, limit: boolean | number = true): bo
   return countKeys(schema) <= limit
 }
 
+const REF_KEYWORDS = new Set([
+  "$ref",
+  "$recursiveRef",
+  "$recursiveAnchor",
+  "$dynamicRef",
+  "$dynamicAnchor",
+])
+
 function hasRef(schema: AnySchemaObject): boolean {
   for (const key in schema) {
-    if (key === "$ref") return true
+    if (REF_KEYWORDS.has(key)) return true
     const sch = schema[key]
     if (Array.isArray(sch) && sch.some(hasRef)) return true
     if (typeof sch == "object" && hasRef(sch)) return true

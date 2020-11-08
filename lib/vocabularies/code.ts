@@ -65,13 +65,14 @@ export function callValidateCode(
   passSchema?: boolean
 ): Code {
   const dataAndSchema = passSchema ? _`${schemaCode}, ${data}, ${topSchemaRef}${schemaPath}` : data
-  const dataCxt = gen.object(
+  const valCxt: [Name, Code | number][] = [
     [N.dataPath, strConcat(N.dataPath, errorPath)],
     [N.parentData, it.parentData],
     [N.parentDataProperty, it.parentDataProperty],
-    [N.rootData, N.rootData]
-  )
-  const args = _`${dataAndSchema}, ${dataCxt}`
+    [N.rootData, N.rootData],
+  ]
+  if (it.opts.dynamicRef) valCxt.push([N.dynamicAnchors, N.dynamicAnchors])
+  const args = _`${dataAndSchema}, ${gen.object(...valCxt)}`
   return context !== nil ? _`${func}.call(${context}, ${args})` : _`${func}(${args})`
 }
 

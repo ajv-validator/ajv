@@ -41,6 +41,7 @@ interface DataValidationCxt {
   parentData: Record<string, any> | any[]
   parentDataProperty: string | number
   rootData: Record<string, any> | any[]
+  dynamicAnchors: {[Ref in string]?: ValidateFunction}
 }
 
 export interface ValidateFunction<T = unknown> {
