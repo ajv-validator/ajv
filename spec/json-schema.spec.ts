@@ -4,6 +4,7 @@ import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
 import addFormats from "ajv-formats"
 import draft6MetaSchema from "../dist/refs/json-schema-draft-06.json"
+import addMetaSchema2019 from "../dist/refs/json-schema-2019-09"
 import chai from "./chai"
 
 const remoteRefs = {
@@ -35,7 +36,6 @@ const SKIP = {
     "optional/format/duration", // TODO
     "id",
     "defs",
-    "ref",
     "refRemote", // TODO test "base URI change - change folder in subschema"
   ],
 }
@@ -86,9 +86,14 @@ runTest(
 
 function runTest(instances, draft: number, tests) {
   for (const ajv of instances) {
-    if (draft === 6) {
-      ajv.addMetaSchema(draft6MetaSchema)
-      ajv.opts.defaultMeta = "http://json-schema.org/draft-06/schema#"
+    switch (draft) {
+      case 6:
+        ajv.addMetaSchema(draft6MetaSchema)
+        ajv.opts.defaultMeta = "http://json-schema.org/draft-06/schema#"
+        break
+      case 2019:
+        addMetaSchema2019(ajv, true)
+        break
     }
     for (const id in remoteRefs) ajv.addSchema(remoteRefs[id], id)
     addFormats(ajv)
