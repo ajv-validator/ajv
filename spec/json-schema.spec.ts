@@ -5,6 +5,7 @@ import {afterError, afterEach} from "./after_test"
 import addFormats from "ajv-formats"
 import draft6MetaSchema from "../dist/refs/json-schema-draft-06.json"
 import addMetaSchema2019 from "../dist/refs/json-schema-2019-09"
+import {toHash} from "../dist/compile/util"
 import chai from "./chai"
 
 const remoteRefs = {
@@ -18,24 +19,16 @@ const remoteRefs = {
   "http://localhost:1234/name-defs.json": require("./JSON-Schema-Test-Suite/remotes/name-defs.json"),
 }
 
+const SKIP_FORMATS = ["idn-email", "idn-hostname", "iri", "iri-reference"]
+const SKIP_FORMAT_TESTS = SKIP_FORMATS.map((f) => `optional/format/${f}`)
+
 const SKIP = {
   6: [],
-  7: [
-    "optional/content",
-    "optional/format/idn-email",
-    "optional/format/idn-hostname",
-    "optional/format/iri",
-    "optional/format/iri-reference",
-  ],
+  7: ["optional/content", ...SKIP_FORMAT_TESTS],
   2019: [
     "optional/content",
-    "optional/format/idn-email",
-    "optional/format/idn-hostname",
-    "optional/format/iri",
-    "optional/format/iri-reference",
-    "optional/format/duration", // TODO
-    "id",
-    "defs",
+    ...SKIP_FORMAT_TESTS,
+    "optional/format/duration", // TODO update to ajv-formats v0.5.0
     "refRemote", // TODO test "base URI change - change folder in subschema"
   ],
 }
@@ -56,12 +49,7 @@ runTest(
     strict: false,
     strictTypes: false,
     ignoreKeywordsWithRef: true,
-    formats: {
-      "idn-email": true,
-      "idn-hostname": true,
-      iri: true,
-      "iri-reference": true,
-    },
+    formats: toHash(SKIP_FORMATS),
   }),
   7,
   require("./_json/draft7")
@@ -72,13 +60,9 @@ runTest(
     strict: false,
     strictTypes: false,
     next: true,
+    dynamicRef: true,
     unevaluated: true,
-    formats: {
-      "idn-email": true,
-      "idn-hostname": true,
-      iri: true,
-      "iri-reference": true,
-    },
+    formats: toHash(SKIP_FORMATS),
   }),
   2019,
   require("./_json/draft2019")

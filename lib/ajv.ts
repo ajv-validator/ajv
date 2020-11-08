@@ -103,7 +103,7 @@ interface CurrentOptions {
   $comment?:
     | true
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
-  formats?: {[name: string]: Format}
+  formats?: {[Name in string]?: Format}
   keywords?: Vocabulary
   schemas?: AnySchema[] | {[key: string]: AnySchema}
   logger?: Logger | false
@@ -734,7 +734,7 @@ function addInitialSchemas(this: Ajv): void {
 function addInitialFormats(this: Ajv): void {
   for (const name in this.opts.formats) {
     const format = this.opts.formats[name]
-    this.addFormat(name, format)
+    if (format) this.addFormat(name, format)
   }
 }
 

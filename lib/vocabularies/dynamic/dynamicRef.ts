@@ -14,9 +14,6 @@ export function dynamicRef(cxt: KeywordCxt, ref: string): void {
   const {gen, keyword, it} = cxt
   if (ref[0] !== "#") throw new Error(`"${keyword}" only supports hash fragment reference`)
   const anchor = ref.slice(1)
-  if (!it.dynamicAnchors[anchor]) {
-    throw new Error(`"${keyword}" without corresponfing dynamic/recursive anchor`)
-  }
   const v = gen.let("_v", _`${N.dynamicAnchors}${getProperty(anchor)}`)
   if (it.allErrors) {
     gen.if(v, _callRef(v), _callRef(it.validateName))
