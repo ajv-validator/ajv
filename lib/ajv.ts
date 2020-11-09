@@ -61,6 +61,7 @@ import formatVocabulary from "./vocabularies/format"
 import {metadataVocabulary, contentVocabulary} from "./vocabularies/metadata"
 import nextVocabulary from "./vocabularies/next"
 import unevaluatedVocabulary from "./vocabularies/unevaluated"
+import dynamicVocabulary from "./vocabularies/dynamic"
 import {eachItem} from "./compile/util"
 import $dataRefSchema from "./refs/data.json"
 import draft7MetaSchema from "./refs/json-schema-draft-07.json"
@@ -95,13 +96,14 @@ interface CurrentOptions {
   // validation and reporting options:
   next?: boolean
   unevaluated?: boolean
+  dynamicRef?: boolean
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
   $comment?:
     | true
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
-  formats?: {[name: string]: Format}
+  formats?: {[Name in string]?: Format}
   keywords?: Vocabulary
   schemas?: AnySchema[] | {[key: string]: AnySchema}
   logger?: Logger | false
@@ -273,6 +275,7 @@ export default class Ajv {
 
     if (opts.formats) addInitialFormats.call(this)
     this.addVocabulary(["$async"])
+    if (opts.dynamicRef) this.addVocabulary(dynamicVocabulary)
     this.addVocabulary(coreVocabulary)
     this.addVocabulary(validationVocabulary)
     this.addVocabulary(applicatorVocabulary)
@@ -731,7 +734,7 @@ function addInitialSchemas(this: Ajv): void {
 function addInitialFormats(this: Ajv): void {
   for (const name in this.opts.formats) {
     const format = this.opts.formats[name]
-    this.addFormat(name, format)
+    if (format) this.addFormat(name, format)
   }
 }
 

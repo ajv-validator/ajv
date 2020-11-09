@@ -7,6 +7,7 @@
     - [Formats](#formats)
   - [Modular schemas](#modular-schemas)
     - [<a name="ref"></a>Combining schemas with \$ref](#combining-schemas-with-ref)
+    - [Extending recursive schemas](#extending-recursive-schemas)
     - [\$data reference](#data-reference)
     - [$merge and $patch keywords](#merge-and-patch-keywords)
   - [User-defined keywords](#user-defined-keywords)
@@ -134,6 +135,74 @@ See [Options](./api.md#options) and [addSchema](./api.md#add-schema) method.
 - You can pass the identifier of the schema as the second parameter of `addSchema` method or as a property name in `schemas` option. This identifier can be used instead of (or in addition to) schema \$id.
 - You cannot have the same \$id (or the schema identifier) used for more than one schema - the exception will be thrown.
 - You can implement dynamic resolution of the referenced schemas using `compileAsync` method. In this way you can store schemas in any system (files, web, database, etc.) and reference them without explicitly adding to Ajv instance. See [Asynchronous schema compilation](./validation.md#asynchronous-schema-compilation).
+
+### Extending recursive schemas
+
+While statically defined `$ref` keyword allows to split schemas to multiple files, it is difficult to extend recursive schemas - the recursive reference(s) in the original schema points to the original schema, and not to the extended one. So in JSON Schema draft-07 the only available solution to extend the recursive schema was to redifine all sections of the original schema that have recursion.
+
+It was particularly repetitive when extending meta-schema, as it has many recursive references, but even in a schema with a single recursive reference extending it was very verbose.
+
+JSON Schema draft-2019-09 and the upcoming draft defined the mechanism for dynamic recursion using keywords `recursiveRef`/`recursiveAnchor` (draft-2019-09) or `dynamicRef`/`dynamicAnchor` (the next JSON Schema draft) that is somewhat similar to "open recursion" in functional programming.
+
+Consider this recursive schema with static recursion:
+
+```javascript
+const treeSchema = {
+  $id: "https://example.com/tree",
+  type: "object",
+  required: ["data"],
+  properties: {
+    data: true,
+    children: {
+      type: "array",
+      items: {$ref: "#"},
+    },
+  },
+}
+```
+
+The only way to extend this schema to prohibit additional properties is by adding `additionalProperties` keyword right in the schema - this approach can be impossible if you do not control the source of the original schema. Ajv also provided the additional keywords in [ajv-merge-patch](https://github.com/ajv-validator/ajv-merge-patch) package to extend schemas by treating them as plain JSON data. While this approach works, it is non-standard.
+
+The new keywords for dynamic recursive references allow extending this schema without modifying it:
+
+```javascript
+const treeSchema = {
+  $id: "https://example.com/tree",
+  $recursiveAnchor: true,
+  type: "object",
+  required: ["data"],
+  properties: {
+    data: true,
+    children: {
+      type: "array",
+      items: {$recursiveRef: "#"},
+    },
+  },
+}
+
+const strictTreeSchema = {
+  $id: "https://example.com/strict-tree",
+  $recursiveAnchor: true,
+  $ref: "tree",
+  unevaluatedProperties: false,
+}
+
+const ajv = new Ajv({
+  dynamicRef: true, // to support dynamic recursive references
+  unevaluated: true, // to support unevaluatedProperties
+  schemas: [treeSchema, strictTreeSchema],
+})
+const validate = ajv.getSchema("https://example.com/strict-tree")
+```
+
+See [dynamic-refs](../spec/dynamic-ref.spec.ts) test for the example using `$dynamicAnchor`/`$dynamicRef`.
+
+At the moment Ajv implements the spec for dynamic recursive references with these limitations:
+
+- `$recursiveAnchor`/`$dynamicAnchor` can only be used in the schema root.
+- `$recursiveRef`/`$dynamicRef` can only be hash fragments, without URI.
+
+Ajv also does not support dynamic references in [asynchronous schemas](#asynchronous-validation) (Ajv spec extension), it is assumed that the referenced schema is synchronous - there is no validation-time check.
 
 ### \$data reference
 

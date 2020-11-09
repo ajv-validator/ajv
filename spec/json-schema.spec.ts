@@ -4,38 +4,31 @@ import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
 import addFormats from "ajv-formats"
 import draft6MetaSchema from "../dist/refs/json-schema-draft-06.json"
+import addMetaSchema2019 from "../dist/refs/json-schema-2019-09"
+import {toHash} from "../dist/compile/util"
 import chai from "./chai"
 
 const remoteRefs = {
   "http://localhost:1234/integer.json": require("./JSON-Schema-Test-Suite/remotes/integer.json"),
   "http://localhost:1234/subSchemas.json": require("./JSON-Schema-Test-Suite/remotes/subSchemas.json"),
+  "http://localhost:1234/subSchemas-defs.json": require("./JSON-Schema-Test-Suite/remotes/subSchemas-defs.json"),
   "http://localhost:1234/baseUriChange/folderInteger.json": require("./JSON-Schema-Test-Suite/remotes/baseUriChange/folderInteger.json"),
   "http://localhost:1234/baseUriChangeFolder/folderInteger.json": require("./JSON-Schema-Test-Suite/remotes/baseUriChangeFolder/folderInteger.json"),
   "http://localhost:1234/baseUriChangeFolderInSubschema/folderInteger.json": require("./JSON-Schema-Test-Suite/remotes/baseUriChangeFolderInSubschema/folderInteger.json"),
   "http://localhost:1234/name.json": require("./JSON-Schema-Test-Suite/remotes/name.json"),
+  "http://localhost:1234/name-defs.json": require("./JSON-Schema-Test-Suite/remotes/name-defs.json"),
 }
+
+const SKIP_FORMATS = ["idn-email", "idn-hostname", "iri", "iri-reference"]
+const SKIP_FORMAT_TESTS = SKIP_FORMATS.map((f) => `optional/format/${f}`)
 
 const SKIP = {
   6: [],
-  7: [
-    "optional/content",
-    "optional/format/idn-email",
-    "optional/format/idn-hostname",
-    "optional/format/iri",
-    "optional/format/iri-reference",
-  ],
+  7: ["optional/content", ...SKIP_FORMAT_TESTS],
   2019: [
     "optional/content",
-    "optional/format/idn-email",
-    "optional/format/idn-hostname",
-    "optional/format/iri",
-    "optional/format/iri-reference",
-    "optional/format/duration", // TODO
-    "id",
-    "defs",
-    "anchor",
-    "ref",
-    "refRemote",
+    ...SKIP_FORMAT_TESTS,
+    "refRemote", // TODO test "base URI change - change folder in subschema"
   ],
 }
 
@@ -55,12 +48,7 @@ runTest(
     strict: false,
     strictTypes: false,
     ignoreKeywordsWithRef: true,
-    formats: {
-      "idn-email": true,
-      "idn-hostname": true,
-      iri: true,
-      "iri-reference": true,
-    },
+    formats: toHash(SKIP_FORMATS),
   }),
   7,
   require("./_json/draft7")
@@ -71,13 +59,9 @@ runTest(
     strict: false,
     strictTypes: false,
     next: true,
+    dynamicRef: true,
     unevaluated: true,
-    formats: {
-      "idn-email": true,
-      "idn-hostname": true,
-      iri: true,
-      "iri-reference": true,
-    },
+    formats: toHash(SKIP_FORMATS),
   }),
   2019,
   require("./_json/draft2019")
@@ -85,9 +69,14 @@ runTest(
 
 function runTest(instances, draft: number, tests) {
   for (const ajv of instances) {
-    if (draft === 6) {
-      ajv.addMetaSchema(draft6MetaSchema)
-      ajv.opts.defaultMeta = "http://json-schema.org/draft-06/schema#"
+    switch (draft) {
+      case 6:
+        ajv.addMetaSchema(draft6MetaSchema)
+        ajv.opts.defaultMeta = "http://json-schema.org/draft-06/schema#"
+        break
+      case 2019:
+        addMetaSchema2019(ajv, true)
+        break
     }
     for (const id in remoteRefs) ajv.addSchema(remoteRefs[id], id)
     addFormats(ajv)

@@ -333,4 +333,52 @@ describe("resolve", () => {
       inlined.should.equal(expectedInlined)
     }
   })
+
+  describe("duplicate internal $id", () => {
+    it("should throw error with duplicate IDs in definitions", () => {
+      const schema = {
+        $id: "http://example.com/example.json",
+        $defs: {
+          foo: {
+            $id: "#nope",
+            type: "integer",
+          },
+          bar: {
+            $id: "#nope",
+            type: "string",
+          },
+        },
+        type: "object",
+        properties: {
+          foo: {$ref: "#/$defs/foo"},
+          bar: {$ref: "#/$defs/bar"},
+        },
+      }
+
+      instances.forEach((ajv) =>
+        should.throw(() => ajv.compile(schema), /nope.*resolves to more than one schema/)
+      )
+    })
+
+    it("should throw error with duplicate IDs in properties", () => {
+      const schema = {
+        $id: "http://example.com/example.json",
+        type: "object",
+        properties: {
+          foo: {
+            $id: "#nope",
+            type: "integer",
+          },
+          bar: {
+            $id: "#nope",
+            type: "string",
+          },
+        },
+      }
+
+      instances.forEach((ajv) =>
+        should.throw(() => ajv.compile(schema), /nope.*resolves to more than one schema/)
+      )
+    })
+  })
 })
