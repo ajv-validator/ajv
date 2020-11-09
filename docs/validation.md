@@ -1,6 +1,7 @@
 # Data validation
 
 - [Data validation](#data-validation)
+  - [JSON Schema draft-2019-09](#json-schema-draft-2019-09)
   - [Validation basics](#validation-basics)
     - [JSON Schema validation keywords](#json-schema-validation-keywords)
     - [Annotation keywords](#annotation-keywords)
@@ -18,6 +19,8 @@
     - [Removing additional properties](#removing-additional-properties)
     - [Assigning defaults](#assigning-defaults)
     - [Coercing data types](#coercing-data-types)
+
+## JSON Schema draft-2019-09
 
 ## Validation basics
 

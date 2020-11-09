@@ -86,7 +86,7 @@ const EXT_SCOPE_NAMES = new Set([
 export type Options = CurrentOptions & DeprecatedOptions
 
 interface CurrentOptions {
-  // strict mode options
+  // strict mode options (NEW)
   strict?: boolean | "log"
   strictTypes?: boolean | "log"
   strictTuples?: boolean | "log"
@@ -94,9 +94,7 @@ interface CurrentOptions {
   allowUnionTypes?: boolean
   validateFormats?: boolean
   // validation and reporting options:
-  next?: boolean
-  unevaluated?: boolean
-  dynamicRef?: boolean
+  draft2019?: boolean // NEW
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
@@ -113,6 +111,9 @@ interface CurrentOptions {
   useDefaults?: boolean | "empty"
   coerceTypes?: boolean | "array"
   // advanced options:
+  next?: boolean // NEW
+  unevaluated?: boolean // NEW
+  dynamicRef?: boolean // NEW
   meta?: SchemaObject | boolean
   defaultMeta?: string | AnySchemaObject
   validateSchema?: boolean | "log"
@@ -120,11 +121,11 @@ interface CurrentOptions {
   inlineRefs?: boolean | number
   passContext?: boolean
   loopRequired?: number
-  loopEnum?: number
+  loopEnum?: number // NEW
   ownProperties?: boolean
   multipleOfPrecision?: boolean | number
   messages?: boolean
-  code?: CodeOptions
+  code?: CodeOptions // NEW
 }
 
 export interface CodeOptions {
@@ -263,6 +264,11 @@ export default class Ajv {
     opts = this.opts = {
       ...opts,
       ...requiredOptions(opts),
+    }
+    if (opts.draft2019) {
+      opts.next ??= true
+      opts.unevaluated ??= true
+      opts.dynamicRef ??= true
     }
     this.logger = getLogger(opts.logger)
     const formatOpt = opts.validateFormats
