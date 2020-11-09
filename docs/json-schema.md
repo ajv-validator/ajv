@@ -13,9 +13,9 @@ v7 added support for all new keywords in draft-2019-09:
 - [dependentRequired](#dependentrequired)
 - [dependentSchemas](#dependentschemas)
 - [maxContains/minContains](#maxcontains--mincontains)
-- [recursiveAnchor/recursiveRef](./validation.md#extending-recursive-schemas)
+- [$recursiveAnchor/$recursiveRef](./validation.md#extending-recursive-schemas)
 
-There is also support for [dynamicAnchor/dynamicRef](./validation.md#extending-recursive-schemas) from the next version of JSON Schema draft that will replace `recursiveAnchor`/`recursiveRef`.
+There is also support for [$dynamicAnchor/$dynamicRef](./validation.md#extending-recursive-schemas) from the next version of JSON Schema draft that will replace `$recursiveAnchor`/`$recursiveRef`.
 
 ## Included keywords
 

@@ -162,7 +162,7 @@ While statically defined `$ref` keyword allows to split schemas to multiple file
 
 It was particularly repetitive when extending meta-schema, as it has many recursive references, but even in a schema with a single recursive reference extending it was very verbose.
 
-JSON Schema draft-2019-09 and the upcoming draft defined the mechanism for dynamic recursion using keywords `recursiveRef`/`recursiveAnchor` (draft-2019-09) or `dynamicRef`/`dynamicAnchor` (the next JSON Schema draft) that is somewhat similar to "open recursion" in functional programming.
+JSON Schema draft-2019-09 and the upcoming draft defined the mechanism for dynamic recursion using keywords `$recursiveRef`/`$recursiveAnchor` (draft-2019-09) or `$dynamicRef`/`$dynamicAnchor` (the next JSON Schema draft) that is somewhat similar to "open recursion" in functional programming.
 
 Consider this recursive schema with static recursion:
 
