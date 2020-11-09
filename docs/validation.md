@@ -22,6 +22,23 @@
 
 ## JSON Schema draft-2019-09
 
+To enable JSON Schema draft-2019-09 support:
+
+```javascript
+const ajv = new Ajv({draft2019: true})
+const addMetaSchema2019 = require("ajv/dist/refs/json-schema-2019-09")
+addMetaSchema2019(ajv) // to add draft-2019-09 meta-schema without making it default
+// addMetaSchema2019(ajv, true) // to add it and make default
+```
+
+Option `draft2019: true` enables the following features:
+
+- keywords [`unevaluatedProperties`](./json-schema.md#unevaluatedproperties) and [`unevaluatedItems`](./json-schema.md#unevaluateditems)
+- keywords [`dependentRequired`](./json-schema.md#dependentrequired), [`dependentSchemas`](./json-schema.md#dependentschemas), [`maxContains`/`minContain`](./json-schema.md#maxcontains--mincontains)
+- dynamic recursive references with [`recursiveAnchor`/`recursiveReference`] - see [Extending recursive schemas](#extending-recursive-schemas)
+
+**Please note**: option `draft2019` is off by default because both `unevaluated*` keywords and dynamic recursive references may add additional code to compiled validation functions, depending on the schema, even if they are not used - so unless these features are used it is better to have them disabled. They can also be enabled separately - see [Advanced options](./api.md#advanced-options).
+
 ## Validation basics
 
 ### JSON Schema validation keywords

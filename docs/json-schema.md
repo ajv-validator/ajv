@@ -4,7 +4,20 @@ In a simple way, JSON Schema is an object with validation keywords.
 
 The keywords and their values define what rules the data should satisfy to be valid.
 
-## Keywords
+## JSON Schema draft-2019-09
+
+v7 added support for all new keywords in draft-2019-09:
+
+- [unevaluatedProperties](#unevaluatedproperties)
+- [unevaluatedItems](#unevaluateditems)
+- [dependentRequired](#dependentrequired)
+- [dependentSchemas](#dependentschemas)
+- [maxContains/minContains](#maxcontains--mincontains)
+- [recursiveAnchor/recursiveRef](./validation.md#extending-recursive-schemas)
+
+There is also support for [dynamicAnchor/dynamicRef](./validation.md#extending-recursive-schemas) from the next version of JSON Schema draft that will replace `recursiveAnchor`/`recursiveRef`.
+
+## Included keywords
 
 - [type](#type)
 - [Keywords for numbers](#keywords-for-numbers)
