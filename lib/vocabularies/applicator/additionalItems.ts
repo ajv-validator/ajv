@@ -22,7 +22,7 @@ const def: CodeKeywordDefinition = {
     const {gen, schema, parentSchema, data, it} = cxt
     const {items} = parentSchema
     if (!Array.isArray(items)) {
-      checkStrictMode(it, '"additionalItems" is ignored when "items" is not an array')
+      checkStrictMode(it, '"additionalItems" is ignored when "items" is not an array of schemas')
       return
     }
     it.items = true
