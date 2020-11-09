@@ -340,41 +340,45 @@ describe("resolve", () => {
         $id: "http://example.com/example.json",
         $defs: {
           foo: {
-            $id: "#/nope",
+            $id: "#nope",
             type: "integer",
           },
           bar: {
-            $id: "#/nope",
+            $id: "#nope",
             type: "string",
           },
         },
         type: "object",
         properties: {
-          foo: {$ref: "#/foo"},
-          bar: {$ref: "#/bar"},
+          foo: {$ref: "#/$defs/foo"},
+          bar: {$ref: "#/$defs/bar"},
         },
       }
 
-      instances.forEach((ajv) => should.throw(() => ajv.compile(schema)))
+      instances.forEach((ajv) =>
+        should.throw(() => ajv.compile(schema), /nope.*resolves to more than one schema/)
+      )
     })
 
-    it.skip("should throw error with duplicate IDs in properties", () => {
+    it("should throw error with duplicate IDs in properties", () => {
       const schema = {
         $id: "http://example.com/example.json",
         type: "object",
         properties: {
           foo: {
-            $id: "#/nope",
+            $id: "#nope",
             type: "integer",
           },
           bar: {
-            $id: "#/nope",
+            $id: "#nope",
             type: "string",
           },
         },
       }
 
-      instances.forEach((ajv) => should.throw(() => ajv.compile(schema)))
+      instances.forEach((ajv) =>
+        should.throw(() => ajv.compile(schema), /nope.*resolves to more than one schema/)
+      )
     })
   })
 })

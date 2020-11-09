@@ -97,6 +97,7 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema): LocalRefs {
   const baseIds: {[jsonPtr: string]: string} = {"": schemaId}
   const pathPrefix = getFullPath(schemaId, false)
   const localRefs: LocalRefs = {}
+  const schemaRefs: Set<string> = new Set()
 
   traverse(schema, {allKeys: true}, (sch, jsonPtr, _, parentJsonPtr) => {
     if (parentJsonPtr === undefined) return
@@ -109,13 +110,15 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema): LocalRefs {
 
     function addRef(this: Ajv, ref: string): string {
       ref = normalizeId(baseId ? URI.resolve(baseId, ref) : ref)
+      if (schemaRefs.has(ref)) throw ambiguos(ref)
+      schemaRefs.add(ref)
       let schOrRef = this.refs[ref]
       if (typeof schOrRef == "string") schOrRef = this.refs[schOrRef]
       if (typeof schOrRef == "object") {
-        checkAmbiguosId(sch, schOrRef.schema, ref)
+        checkAmbiguosRef(sch, schOrRef.schema, ref)
       } else if (ref !== normalizeId(fullPath)) {
         if (ref[0] === "#") {
-          checkAmbiguosId(sch, localRefs[ref], ref)
+          checkAmbiguosRef(sch, localRefs[ref], ref)
           localRefs[ref] = sch
         } else {
           this.refs[ref] = fullPath
@@ -134,9 +137,11 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema): LocalRefs {
 
   return localRefs
 
-  function checkAmbiguosId(sch1: AnySchema, sch2: AnySchema | undefined, id: string): void {
-    if (sch2 !== undefined && !equal(sch1, sch2)) {
-      throw new Error(`id "${id}" resolves to more than one schema`)
-    }
+  function checkAmbiguosRef(sch1: AnySchema, sch2: AnySchema | undefined, ref: string): void {
+    if (sch2 !== undefined && !equal(sch1, sch2)) throw ambiguos(ref)
+  }
+
+  function ambiguos(ref: string): Error {
+    return new Error(`reference "${ref}" resolves to more than one schema`)
   }
 }
