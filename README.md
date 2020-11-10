@@ -2,7 +2,7 @@
 
 # Ajv: Another JSON Schema Validator
 
-The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07 (draft-04 is supported in v6).
+The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07/2019-09 (draft-04 is supported in [version 6](https://github.com/ajv-validator/ajv/tree/v6)).
 
 [![Build Status](https://travis-ci.org/ajv-validator/ajv.svg?branch=master)](https://travis-ci.org/ajv-validator/ajv)
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
@@ -14,7 +14,7 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07 
 
 ## Using version 7 (beta)
 
-[Ajv version 7 (beta)](https://github.com/ajv-validator/ajv/tree/v7-beta) is released with these changes:
+Ajv version 7 (beta) is released with these changes:
 
 - support of JSON Schema draft-2019-09 features: [`unevaluatedProperties`](./json-schema.md#unevaluatedproperties) and [`unevaluatedItems`](./json-schema.md#unevaluateditems), [dynamic recursive references](./validation.md#extending-recursive-schemas) and other [additional keywords](./json-schema.md#json-schema-draft-2019-09).
 - to reduce the mistakes in JSON schemas and unexpected validation results, [strict mode](./docs/strict-mode.md) is added - it prohibits ignored or ambiguous JSON Schema elements.
@@ -25,7 +25,7 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07 
 
 **Please note**:
 
-- the support for JSON-Schema draft-04 is removed - if you have schemas using "id" attributes you have to replace them with "\$id" (or continue using [Ajv v6](https://github.com/ajv-validator/ajv) that will be supported until 02/28/2021).
+- the support for JSON-Schema draft-04 is removed - if you have schemas using "id" attributes you have to replace them with "\$id" (or continue using [Ajv v6](https://github.com/ajv-validator/ajv/tree/v6) that will be supported until 02/28/2021).
 - all formats are separated to ajv-formats package - they have to be explicitely added if you use them.
 
 See [release notes](https://github.com/ajv-validator/ajv/releases/tag/v7.0.0-beta.0) for the details.
@@ -160,14 +160,16 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 
 ## Install
 
-```
-npm install ajv
-```
-
-To install version 7 beta:
+To install version 7:
 
 ```
 npm install ajv@beta
+```
+
+To install the previous [version 6](https://github.com/ajv-validator/ajv/tree/v6):
+
+```
+npm install ajv
 ```
 
 ## <a name="usage"></a>Getting started
