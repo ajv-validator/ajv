@@ -325,6 +325,7 @@ If you have published a useful plugin please submit a PR to add it to the next s
 - [addons-linter](https://github.com/mozilla/addons-linter) - Mozilla Add-ons Linter
 - [gh-pages-generator](https://github.com/epoberezkin/gh-pages-generator) - multi-page site generator converting markdown files to GitHub pages
 - [ESLint](https://github.com/eslint/eslint) - the pluggable linting utility for JavaScript and JSX
+- [Spectral](https://github.com/stoplightio/spectral) - the customizable linting utility for JSON/YAML, OpenAPI, AsyncAPI, and JSON Schema
 
 ## Tests
 
