@@ -56,11 +56,9 @@ runTest(
 
 runTest(
   getAjvInstances(options, {
+    draft2019: true,
     strict: false,
     strictTypes: false,
-    next: true,
-    dynamicRef: true,
-    unevaluated: true,
     formats: toHash(SKIP_FORMATS),
   }),
   2019,

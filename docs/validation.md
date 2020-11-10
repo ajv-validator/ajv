@@ -1,6 +1,7 @@
 # Data validation
 
 - [Data validation](#data-validation)
+  - [JSON Schema draft-2019-09](#json-schema-draft-2019-09)
   - [Validation basics](#validation-basics)
     - [JSON Schema validation keywords](#json-schema-validation-keywords)
     - [Annotation keywords](#annotation-keywords)
@@ -18,6 +19,25 @@
     - [Removing additional properties](#removing-additional-properties)
     - [Assigning defaults](#assigning-defaults)
     - [Coercing data types](#coercing-data-types)
+
+## JSON Schema draft-2019-09
+
+To enable JSON Schema draft-2019-09 support:
+
+```javascript
+const ajv = new Ajv({draft2019: true})
+const addMetaSchema2019 = require("ajv/dist/refs/json-schema-2019-09")
+addMetaSchema2019(ajv) // to add draft-2019-09 meta-schema without making it default
+// addMetaSchema2019(ajv, true) // to add it and make default
+```
+
+Option `draft2019: true` enables the following features:
+
+- keywords [`unevaluatedProperties`](./json-schema.md#unevaluatedproperties) and [`unevaluatedItems`](./json-schema.md#unevaluateditems)
+- keywords [`dependentRequired`](./json-schema.md#dependentrequired), [`dependentSchemas`](./json-schema.md#dependentschemas), [`maxContains`/`minContain`](./json-schema.md#maxcontains--mincontains)
+- dynamic recursive references with [`recursiveAnchor`/`recursiveReference`] - see [Extending recursive schemas](#extending-recursive-schemas)
+
+**Please note**: option `draft2019` is off by default because both `unevaluated*` keywords and dynamic recursive references may add additional code to compiled validation functions, depending on the schema, even if they are not used - so unless these features are used it is better to have them disabled. They can also be enabled separately - see [Advanced options](./api.md#advanced-options).
 
 ## Validation basics
 
@@ -142,7 +162,7 @@ While statically defined `$ref` keyword allows to split schemas to multiple file
 
 It was particularly repetitive when extending meta-schema, as it has many recursive references, but even in a schema with a single recursive reference extending it was very verbose.
 
-JSON Schema draft-2019-09 and the upcoming draft defined the mechanism for dynamic recursion using keywords `recursiveRef`/`recursiveAnchor` (draft-2019-09) or `dynamicRef`/`dynamicAnchor` (the next JSON Schema draft) that is somewhat similar to "open recursion" in functional programming.
+JSON Schema draft-2019-09 and the upcoming draft defined the mechanism for dynamic recursion using keywords `$recursiveRef`/`$recursiveAnchor` (draft-2019-09) or `$dynamicRef`/`$dynamicAnchor` (the next JSON Schema draft) that is somewhat similar to "open recursion" in functional programming.
 
 Consider this recursive schema with static recursion:
 

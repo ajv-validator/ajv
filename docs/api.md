@@ -249,7 +249,7 @@ Option defaults:
 ```javascript
 // see types/index.ts for actual types
 const defaultOptions = {
-  // strict mode options
+  // strict mode options (NEW)
   strict: true,
   strictTypes: "log",
   strictTuples: "log",
@@ -257,9 +257,7 @@ const defaultOptions = {
   allowMatchingProperties: false,
   validateFormats: true,
   // validation and reporting options:
-  next: false,
-  unevaluated: false,
-  dynamicRef: false,
+  draft2019: false // NEW
   $data: false,
   allErrors: false,
   verbose: false,
@@ -274,17 +272,20 @@ const defaultOptions = {
   useDefaults: false,
   coerceTypes: false,
   // advanced options:
+  next: false, // NEW
+  unevaluated: false, // NEW
+  dynamicRef: false, // NEW
   meta: true,
   validateSchema: true,
   addUsedSchema: true,
   inlineRefs: true,
   passContext: false,
   loopRequired: Infinity,
-  loopEnum: Infinity,
+  loopEnum: Infinity, // NEW
   ownProperties: false,
   multipleOfPrecision: false,
   messages: true,
-  code: {
+  code: { // NEW
     es5: false,
     lines: false,
     source: false,
@@ -316,9 +317,7 @@ const defaultOptions = {
 
 #### Validation and reporting options
 
-- _next_: add support for the keywords from the next JSON-Schema draft (currently it is draft 2019-09): [`dependentRequired`](./json-schema.md#dependentrequired), [`dependentSchemas`](./json-schema.md#dependentschemas), [`maxContains`/`minContain`](./json-schema.md#maxcontains--mincontains). This option will be removed once the next draft is fully supported.
-- _unevaluated_: to track evaluated properties/items and support keywords [`unevaluatedProperties`](./json-schema.md#unevaluatedproperties) and [`unevaluatedItems`](./json-schema.md#unevaluateditems). Supporting these keywords may add additional validation-time logic even to validation functions where these keywords are not used. When possible, Ajv determines which properties/items are "unevaluated" at compilation time.
-- _dynamicRef_: to support `recursiveRef`/`recursiveAnchor` keywords (JSON Schema draft-2019-09) and `dynamicRef`/`dynamicAnchor` keywords (the upcoming JSON Schema draft). See [Extending recursive schemas](./validation.md#extending-recursive-schemas)
+- _draft2019_ (NEW in v7): add JSON Schema draft-2019-09 support. This option is equivalent to the combination of options `next`, `unevaluated` and `dynamicRef` (see [Advanced options](#advanced-options)). This option enables support for additional keywords (including `unevaluatedProperties` and `unevaluatedItems`) and for dynamic recursive references (see [Extending recursive schemas](./validation.md#extending-recursive-schemas)), but it does not add draft-2019-09 meta-schema - the default JSON Schema draft remains drat-07. See code example how to add it in [JSON Schema draft-2019-09](./validation.md#json-schema-draft-2019-09)
 - _\$data_: support [\$data references](./validation.md#data-reference). Draft 6 meta-schema that is added by default will be extended to allow them. If you want to use another meta-schema you need to use $dataMetaSchema method to add support for $data reference. See [API](#ajv-constructor-and-methods).
 - _allErrors_: check all rules collecting all errors. Default is to return after the first error.
 - _verbose_: include the reference to the part of the schema (`schema` and `parentSchema`) and validated data in errors (false by default).
@@ -352,6 +351,9 @@ const defaultOptions = {
 
 #### Advanced options
 
+- _next_ (NEW in v7): add support for the keywords from the next JSON-Schema draft (currently it is draft 2019-09): [`dependentRequired`](./json-schema.md#dependentrequired), [`dependentSchemas`](./json-schema.md#dependentschemas), [`maxContains`/`minContain`](./json-schema.md#maxcontains--mincontains). This option will be removed once the next draft is fully supported.
+- _unevaluated_ (NEW in v7): to track evaluated properties/items and support keywords [`unevaluatedProperties`](./json-schema.md#unevaluatedproperties) and [`unevaluatedItems`](./json-schema.md#unevaluateditems). Supporting these keywords may add additional validation-time logic even to validation functions where these keywords are not used. When possible, Ajv determines which properties/items are "unevaluated" at compilation time.
+- _dynamicRef_ (NEW in v7): to support `recursiveRef`/`recursiveAnchor` keywords (JSON Schema draft-2019-09) and `dynamicRef`/`dynamicAnchor` keywords (the upcoming JSON Schema draft). See [Extending recursive schemas](./validation.md#extending-recursive-schemas)
 - _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default). If an object is passed, it will be used as the default meta-schema for schemas that have no `$schema` keyword. This default meta-schema MUST have `$schema` keyword.
 - _validateSchema_: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can be http://json-schema.org/draft-07/schema or absent (draft-07 meta-schema will be used) or can be a reference to the schema previously added with `addMetaSchema` method. Option values:
   - `true` (default) - if the validation fails, throw the exception.
