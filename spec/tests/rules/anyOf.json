@@ -2,10 +2,7 @@
   {
     "description": "anyOf with one of schemas empty",
     "schema": {
-      "anyOf": [
-        { "type": "number" },
-        {}
-      ]
+      "anyOf": [{"type": "number"}, {}]
     },
     "tests": [
       {

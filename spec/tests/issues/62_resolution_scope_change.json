@@ -2,20 +2,22 @@
   {
     "description": "change resolution scope - change filename (#62)",
     "schema": {
-      "type" : "object",
+      "type": "object",
       "properties": {
-        "title": { "$ref": "http://localhost:1234/scope_foo.json#/definitions/bar" }
+        "title": {
+          "$ref": "http://localhost:1234/scope_foo.json#/definitions/bar"
+        }
       }
     },
     "tests": [
       {
         "description": "string is valid",
-        "data": { "title": "baz" },
+        "data": {"title": "baz"},
         "valid": true
       },
       {
         "description": "number is invalid",
-        "data": { "title": 1 },
+        "data": {"title": 1},
         "valid": false
       }
     ]
@@ -23,20 +25,22 @@
   {
     "description": "resolution scope change - change folder (#62)",
     "schema": {
-      "type" : "object",
+      "type": "object",
       "properties": {
-        "list": { "$ref": "http://localhost:1234/scope_change.json#/definitions/baz" }
+        "list": {
+          "$ref": "http://localhost:1234/scope_change.json#/definitions/baz"
+        }
       }
     },
     "tests": [
       {
         "description": "number is valid",
-        "data": { "list": [1] },
+        "data": {"list": [1]},
         "valid": true
       },
       {
         "description": "string is invalid",
-        "data": { "list": ["a"] },
+        "data": {"list": ["a"]},
         "valid": false
       }
     ]
@@ -44,20 +48,22 @@
   {
     "description": "resolution scope change - change folder in subschema (#62)",
     "schema": {
-      "type" : "object",
+      "type": "object",
       "properties": {
-        "list": { "$ref": "http://localhost:1234/scope_change.json#/definitions/baz/bar" }
+        "list": {
+          "$ref": "http://localhost:1234/scope_change.json#/definitions/baz/bar"
+        }
       }
     },
     "tests": [
       {
         "description": "number is valid",
-        "data": { "list": [1] },
+        "data": {"list": [1]},
         "valid": true
       },
       {
         "description": "string is invalid",
-        "data": { "list": ["a"] },
+        "data": {"list": ["a"]},
         "valid": false
       }
     ]

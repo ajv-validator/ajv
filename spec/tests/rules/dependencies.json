@@ -9,7 +9,7 @@
     "tests": [
       {
         "description": "object with property is valid",
-        "data": { "foo": 1 },
+        "data": {"foo": 1},
         "valid": true
       },
       {

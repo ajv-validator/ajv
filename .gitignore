@@ -29,13 +29,15 @@ node_modules
 
 .DS_Store
 
-# Compiled templates
-lib/dotjs/*.js
-
 # Browserified tests
 .browser
 
-# bundles
+# compiled typescript
 dist/
 
+# browser bundles
+bundle/
+
 package-lock.json
+
+spec/_json/*.js

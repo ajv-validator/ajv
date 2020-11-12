@@ -1,8 +1,0 @@
-{{
-  var $data = 'data' + (it.dataLevel || '')
-    , $min = it.schema['x-range'][0]
-    , $max = it.schema['x-range'][1]
-    , $gt = it.schema.exclusiveRange ? '>' : '>='
-    , $lt = it.schema.exclusiveRange ? '<' : '<=';
-}}
-var valid{{=it.level}} = {{=$data}} {{=$gt}} {{=$min}} && {{=$data}} {{=$lt}} {{=$max}};

@@ -1,17 +1,19 @@
 [
   {
     "description": "pattern keyword should be used together with maxLength",
-    "schema": { "$ref": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#" },
+    "schema": {
+      "$ref": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#"
+    },
     "tests": [
       {
-        "description": "pattern keyword used without maxLength is unsafe",
+        "description": "pattern keyword used without maxLength is invalid",
         "data": {
           "pattern": ".*"
         },
         "valid": false
       },
       {
-        "description": "pattern keyword used with maxLength is safe",
+        "description": "pattern keyword used with maxLength is valid",
         "data": {
           "pattern": ".*",
           "maxLength": "256"
@@ -22,17 +24,19 @@
   },
   {
     "description": "format keyword should be used together with maxLength",
-    "schema": { "$ref": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#" },
+    "schema": {
+      "$ref": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#"
+    },
     "tests": [
       {
-        "description": "format keyword used without maxLength is unsafe",
+        "description": "format keyword used without maxLength is invalid",
         "data": {
           "format": "email"
         },
         "valid": false
       },
       {
-        "description": "format keyword used with maxLength is safe",
+        "description": "format keyword used with maxLength is valid",
         "data": {
           "format": "email",
           "maxLength": "256"

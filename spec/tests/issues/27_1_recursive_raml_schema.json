@@ -5,9 +5,7 @@
       "title": "A JSON Schema for a standard RAML object",
       "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
-      "required": [
-        "title"
-      ],
+      "required": ["title"],
       "properties": {
         "title": {
           "type": "string",
@@ -82,14 +80,7 @@
             },
             "type": {
               "type": "string",
-              "enum": [
-                "string",
-                "number",
-                "integer",
-                "date",
-                "boolean",
-                "file"
-              ],
+              "enum": ["string", "number", "integer", "date", "boolean", "file"],
               "default": "string",
               "description": "The type attribute specifies the primitive type of the parameter's resolved value. If the type is not specified, it defaults to string. API clients MUST return/throw an error if the parameter's resolved value does not match the specified type."
             },
@@ -184,20 +175,14 @@
           "oneOf": [
             {
               "type": "object",
-              "required": [
-                "type"
-              ],
+              "required": ["type"],
               "properties": {
                 "type": {
                   "enum": ["OAuth 1.0"]
                 },
                 "settings": {
                   "type": "object",
-                  "required": [
-                    "requestTokenUri",
-                    "authorizationUri",
-                    "tokenCredentialsUri"
-                  ],
+                  "required": ["requestTokenUri", "authorizationUri", "tokenCredentialsUri"],
                   "properties": {
                     "requestTokenUri": {
                       "type": "string",
@@ -217,20 +202,14 @@
             },
             {
               "type": "object",
-              "required": [
-                "type"
-              ],
+              "required": ["type"],
               "properties": {
                 "type": {
                   "enum": ["OAuth 2.0"]
                 },
                 "settings": {
                   "type": "object",
-                  "required": [
-                    "authorizationUri",
-                    "accessTokenUri",
-                    "authorizationGrants"
-                  ],
+                  "required": ["authorizationUri", "accessTokenUri", "authorizationGrants"],
                   "properties": {
                     "authorizationUri": {
                       "type": "string",
@@ -258,17 +237,12 @@
             },
             {
               "type": "object",
-              "required": [
-                "type"
-              ],
+              "required": ["type"],
               "properties": {
                 "type": {
                   "oneOf": [
                     {
-                      "enum": [
-                        "Basic Authentication",
-                        "Digest Authentication"
-                      ]
+                      "enum": ["Basic Authentication", "Digest Authentication"]
                     },
                     {
                       "type": "string",

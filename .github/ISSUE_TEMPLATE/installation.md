@@ -1,14 +1,13 @@
 ---
 name: Installation and dependency issue
 about: For issues that happen during installation
-title: ''
-labels: 'installation'
-assignees: ''
-
+title: ""
+labels: "installation"
+assignees: ""
 ---
 
 <!--
-Frequently Asked Questions: https://github.com/ajv-validator/ajv/blob/master/FAQ.md
+Frequently Asked Questions: https://github.com/ajv-validator/ajv/blob/master/docs/faq.md
 Please provide all info and reduce your schema and data to the smallest possible size.
 
 This template is for installation and dependency issues.

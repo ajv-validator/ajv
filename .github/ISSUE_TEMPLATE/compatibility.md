@@ -1,14 +1,13 @@
 ---
 name: Browser and compatibility issue
 about: For issues that only happen in a specific environment
-title: ''
-labels: 'compatibility'
-assignees: ''
-
+title: ""
+labels: "compatibility"
+assignees: ""
 ---
 
 <!--
-Frequently Asked Questions: https://github.com/ajv-validator/ajv/blob/master/FAQ.md
+Frequently Asked Questions: https://github.com/ajv-validator/ajv/blob/master/docs/faq.md
 Please provide all info and reduce your schema and data to the smallest possible size.
 
 This template is for compatibility issues.

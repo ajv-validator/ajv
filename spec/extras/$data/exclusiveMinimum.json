@@ -5,7 +5,7 @@
       "properties": {
         "smaller": {},
         "larger": {
-          "exclusiveMinimum": { "$data": "1/smaller" }
+          "exclusiveMinimum": {"$data": "1/smaller"}
         }
       }
     },
@@ -60,7 +60,7 @@
         "smaller": {},
         "larger": {
           "exclusiveMinimum": 2.5,
-          "minimum": { "$data": "1/smaller" }
+          "minimum": {"$data": "1/smaller"}
         }
       }
     },
@@ -98,7 +98,7 @@
         "smaller": {},
         "larger": {
           "exclusiveMinimum": 3,
-          "minimum": { "$data": "1/smaller" }
+          "minimum": {"$data": "1/smaller"}
         }
       }
     },
@@ -136,7 +136,7 @@
         "smaller": {},
         "larger": {
           "exclusiveMinimum": 3.5,
-          "minimum": { "$data": "1/smaller" }
+          "minimum": {"$data": "1/smaller"}
         }
       }
     },
@@ -175,8 +175,8 @@
         "smaller": {},
         "smallerExclusive": {},
         "larger": {
-          "exclusiveMinimum": { "$data": "1/smallerExclusive" },
-          "minimum": { "$data": "1/smaller" }
+          "exclusiveMinimum": {"$data": "1/smallerExclusive"},
+          "minimum": {"$data": "1/smaller"}
         }
       }
     },
@@ -217,8 +217,8 @@
         "smaller": {},
         "smallerExclusive": {},
         "larger": {
-          "exclusiveMinimum": { "$data": "1/smallerExclusive" },
-          "minimum": { "$data": "1/smaller" }
+          "exclusiveMinimum": {"$data": "1/smallerExclusive"},
+          "minimum": {"$data": "1/smaller"}
         }
       }
     },
@@ -259,8 +259,8 @@
         "smaller": {},
         "smallerExclusive": {},
         "larger": {
-          "exclusiveMinimum": { "$data": "1/smallerExclusive" },
-          "minimum": { "$data": "1/smaller" }
+          "exclusiveMinimum": {"$data": "1/smallerExclusive"},
+          "minimum": {"$data": "1/smaller"}
         }
       }
     },
@@ -299,7 +299,7 @@
     "description": "items in array are > than their indeces",
     "schema": {
       "items": {
-        "exclusiveMinimum": { "$data": "0#" }
+        "exclusiveMinimum": {"$data": "0#"}
       }
     },
     "tests": [

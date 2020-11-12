@@ -1,0 +1,46 @@
+import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
+import type KeywordCxt from "../../compile/context"
+import {_, str, not} from "../../compile/codegen"
+import {alwaysValidSchema} from "../../compile/util"
+
+export type PropertyNamesError = ErrorObject<"propertyNames", {propertyName: string}>
+
+const error: KeywordErrorDefinition = {
+  message: ({params}) => str`property name '${params.propertyName}' is invalid`, // TODO double quotes?
+  params: ({params}) => _`{propertyName: ${params.propertyName}}`,
+}
+
+const def: CodeKeywordDefinition = {
+  keyword: "propertyNames",
+  type: "object",
+  schemaType: ["object", "boolean"],
+  error,
+  code(cxt: KeywordCxt) {
+    const {gen, schema, data, it} = cxt
+    if (alwaysValidSchema(it, schema)) return
+    const valid = gen.name("valid")
+
+    gen.forIn("key", data, (key) => {
+      cxt.setParams({propertyName: key})
+      cxt.subschema(
+        {
+          keyword: "propertyNames",
+          data: key,
+          dataTypes: ["string"],
+          propertyName: key,
+          compositeRule: true,
+          strictSchema: it.strictSchema,
+        },
+        valid
+      )
+      gen.if(not(valid), () => {
+        cxt.error(true)
+        if (!it.allErrors) gen.break()
+      })
+    })
+
+    cxt.ok(valid)
+  },
+}
+
+export default def

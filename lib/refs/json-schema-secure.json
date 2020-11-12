@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/json-schema-secure.json#",
   "title": "Meta-schema for the security assessment of JSON Schemas",
-  "description": "If a JSON Schema fails validation against this meta-schema, it may be unsafe to validate untrusted data",
+  "description": "If a JSON AnySchema fails validation against this meta-schema, it may be unsafe to validate untrusted data",
   "definitions": {
     "schemaArray": {
       "type": "array",
@@ -60,17 +60,11 @@
     "additionalProperties": {"$ref": "#"},
     "dependencies": {
       "additionalProperties": {
-        "anyOf": [
-          {"type": "array"},
-          {"$ref": "#"}
-        ]
+        "anyOf": [{"type": "array"}, {"$ref": "#"}]
       }
     },
     "items": {
-      "anyOf": [
-        {"$ref": "#"},
-        {"$ref": "#/definitions/schemaArray"}
-      ]
+      "anyOf": [{"$ref": "#"}, {"$ref": "#/definitions/schemaArray"}]
     },
     "definitions": {
       "additionalProperties": {"$ref": "#"}

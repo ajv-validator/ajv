@@ -1,11 +1,26 @@
+env:
+  browser: true,
 rules:
-  no-console: 0
-  no-empty: [2, allowEmptyCatch: true]
-  quotes: 0
-  no-invalid-this: 0
+  no-console: off
+  no-invalid-this: off
 globals:
   describe: false
   it: false
   before: false
   beforeEach: false
   afterEach: false
+overrides:
+  - files: ["*.ts"]
+    parserOptions:
+      project: ["./spec/tsconfig.json"]
+    rules:
+      "@typescript-eslint/explicit-function-return-type": off
+      "@typescript-eslint/explicit-member-accessibility": off
+      "@typescript-eslint/restrict-plus-operands": off
+      "@typescript-eslint/no-explicit-any": off
+      "@typescript-eslint/no-unsafe-assignment": off
+      "@typescript-eslint/no-unsafe-call": off
+      "@typescript-eslint/no-unsafe-member-access": off
+      "@typescript-eslint/no-unsafe-return": off
+      "@typescript-eslint/no-var-requires": off
+      "@typescript-eslint/ban-ts-comment": off

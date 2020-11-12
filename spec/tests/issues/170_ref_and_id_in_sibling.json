@@ -11,10 +11,10 @@
             "$id": "http://example.com/title",
             "type": "string"
           },
-          "file": { "$ref": "#/definitions/file-entry" }
+          "file": {"$ref": "#/definitions/file-entry"}
         },
         "definitions": {
-          "file-entry": { "type": "string" }
+          "file-entry": {"type": "string"}
         }
       },
       {
@@ -26,10 +26,10 @@
             "$id": "http://example.com/title",
             "type": "string"
           },
-          "file": { "$ref": "#/definitions/file-entry" }
+          "file": {"$ref": "#/definitions/file-entry"}
         },
         "definitions": {
-          "file-entry": { "type": "string" }
+          "file-entry": {"type": "string"}
         }
       }
     ],
@@ -64,10 +64,10 @@
             "$id": "http://example.com/0",
             "type": "string"
           },
-          { "$ref": "#/definitions/file-entry" }
+          {"$ref": "#/definitions/file-entry"}
         ],
         "definitions": {
-          "file-entry": { "type": "string" }
+          "file-entry": {"type": "string"}
         }
       },
       {
@@ -79,22 +79,22 @@
             "$id": "http://example.com/0",
             "type": "string"
           },
-          { "$ref": "#/definitions/file-entry" }
+          {"$ref": "#/definitions/file-entry"}
         ],
         "definitions": {
-          "file-entry": { "type": "string" }
+          "file-entry": {"type": "string"}
         }
       }
     ],
     "tests": [
       {
         "description": "valid array",
-        "data": [ "foo", "bar" ],
+        "data": ["foo", "bar"],
         "valid": true
       },
       {
         "description": "invalid array",
-        "data": [ "foo", 2 ],
+        "data": ["foo", 2],
         "valid": false
       }
     ]
@@ -110,10 +110,10 @@
             "$id": "http://example.com/0",
             "type": "number"
           },
-          { "$ref": "#/definitions/def" }
+          {"$ref": "#/definitions/def"}
         ],
         "definitions": {
-          "def": { "type": "string" }
+          "def": {"type": "string"}
         }
       },
       {
@@ -124,10 +124,10 @@
             "$id": "http://example.com/0",
             "type": "number"
           },
-          { "$ref": "#/definitions/def" }
+          {"$ref": "#/definitions/def"}
         ],
         "definitions": {
-          "def": { "type": "string" }
+          "def": {"type": "string"}
         }
       }
     ],
@@ -160,10 +160,10 @@
             "$id": "http://example.com/0",
             "type": "number"
           },
-          { "$ref": "#/definitions/def" }
+          {"$ref": "#/definitions/def"}
         ],
         "definitions": {
-          "def": { "type": "string" }
+          "def": {"type": "string"}
         }
       },
       {
@@ -174,10 +174,10 @@
             "$id": "http://example.com/0",
             "type": "number"
           },
-          { "$ref": "#/definitions/def" }
+          {"$ref": "#/definitions/def"}
         ],
         "definitions": {
-          "def": { "type": "string" }
+          "def": {"type": "string"}
         }
       }
     ],
@@ -211,10 +211,10 @@
             "type": "string",
             "maxLength": 3
           },
-          { "$ref": "#/definitions/def" }
+          {"$ref": "#/definitions/def"}
         ],
         "definitions": {
-          "def": { "type": "string" }
+          "def": {"type": "string"}
         }
       },
       {
@@ -226,10 +226,10 @@
             "type": "string",
             "maxLength": 3
           },
-          { "$ref": "#/definitions/def" }
+          {"$ref": "#/definitions/def"}
         ],
         "definitions": {
-          "def": { "type": "string" }
+          "def": {"type": "string"}
         }
       }
     ],
@@ -256,12 +256,12 @@
         "dependencies": {
           "foo": {
             "$id": "http://example.com/foo",
-            "required": [ "bar" ]
+            "required": ["bar"]
           },
-          "bar": { "$ref": "#/definitions/def" }
+          "bar": {"$ref": "#/definitions/def"}
         },
         "definitions": {
-          "def": { "required": [ "baz" ] }
+          "def": {"required": ["baz"]}
         }
       },
       {
@@ -271,29 +271,29 @@
         "dependencies": {
           "foo": {
             "$id": "http://example.com/foo",
-            "required": [ "bar" ]
+            "required": ["bar"]
           },
-          "bar": { "$ref": "#/definitions/def" }
+          "bar": {"$ref": "#/definitions/def"}
         },
         "definitions": {
-          "def": { "required": [ "baz" ] }
+          "def": {"required": ["baz"]}
         }
       }
     ],
     "tests": [
       {
         "description": "valid object",
-        "data": { "foo": 1, "bar": 2, "baz": 3 },
+        "data": {"foo": 1, "bar": 2, "baz": 3},
         "valid": true
       },
       {
         "description": "invalid object 2",
-        "data": { "foo": 1 },
+        "data": {"foo": 1},
         "valid": false
       },
       {
         "description": "invalid object 2",
-        "data": { "foo": 1, "bar": 2 },
+        "data": {"foo": 1, "bar": 2},
         "valid": false
       }
     ]
