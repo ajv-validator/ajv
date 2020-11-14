@@ -25,11 +25,7 @@ const SKIP_FORMAT_TESTS = SKIP_FORMATS.map((f) => `optional/format/${f}`)
 const SKIP = {
   6: [],
   7: ["optional/content", ...SKIP_FORMAT_TESTS],
-  2019: [
-    "optional/content",
-    ...SKIP_FORMAT_TESTS,
-    "refRemote", // TODO test "base URI change - change folder in subschema"
-  ],
+  2019: ["optional/content", ...SKIP_FORMAT_TESTS],
 }
 
 runTest(
