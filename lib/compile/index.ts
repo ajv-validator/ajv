@@ -254,8 +254,6 @@ export function resolveSchema(
   if (typeof schOrRef == "string") {
     const sch = resolveSchema.call(this, root, schOrRef)
     if (typeof sch?.schema !== "object") return
-    // TODO review - most of the time sch.baseId == normalizeId(sch.schema.$id)
-    if (sch.schema.$id) sch.baseId = resolveUrl(sch.baseId, sch.schema.$id)
     return getJsonPointer.call(this, p, sch)
   }
 
