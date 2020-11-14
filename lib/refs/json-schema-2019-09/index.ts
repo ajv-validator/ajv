@@ -1,5 +1,5 @@
-import type Ajv from "../../ajv"
-import type {SchemaObject} from "../../ajv"
+import type Ajv from "../../core"
+import type {SchemaObject} from "../../core"
 import metaSchema from "./schema.json"
 import metaApplicator from "./meta/applicator.json"
 import metaContent from "./meta/content.json"
