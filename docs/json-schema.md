@@ -828,7 +828,7 @@ _invalid_: `1.5`, `2.5`, `4`, `4.5`, `5`, `5.5`
 
 These keywords allow to implement conditional validation. Their values should be valid JSON Schemas (object or boolean).
 
-If `if` keyword is absent, the validation succeds.
+If `if` keyword is absent, the validation succeeds.
 
 If the data is valid against the sub-schema in `if` keyword, then the validation result is equal to the result of data validation against the sub-schema in `then` keyword (if `then` is absent, the validation succeeds).
 

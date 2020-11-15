@@ -2,7 +2,7 @@ import type {CodeGen, Code, Name, Scope} from "../compile/codegen"
 import type {SchemaEnv, SchemaCxt, SchemaObjCxt} from "../compile"
 import type {JSONType} from "../compile/rules"
 import type KeywordCxt from "../compile/context"
-import type Ajv from "../ajv"
+import type Ajv from "../core"
 
 interface _SchemaObject {
   $id?: string

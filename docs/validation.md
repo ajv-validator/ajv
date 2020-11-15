@@ -22,22 +22,58 @@
 
 ## JSON Schema draft-2019-09
 
-To enable JSON Schema draft-2019-09 support:
+The default export of Ajv provides support of JSON-Schema draft-07, without any of draft-2019-09 features:
 
 ```javascript
-const ajv = new Ajv({draft2019: true})
-const addMetaSchema2019 = require("ajv/dist/refs/json-schema-2019-09")
-addMetaSchema2019(ajv) // to add draft-2019-09 meta-schema without making it default
-// addMetaSchema2019(ajv, true) // to add it and make default
+const Ajv = require("ajv")
+const ajv = new Ajv()
 ```
 
-Option `draft2019: true` enables the following features:
+To use Ajv with the support of all JSON Schema draft-2019-09 features you need to use a different export:
+
+```javascript
+const Ajv2019 = require("ajv/dist/2019")
+// import Ajv from "ajv/dist/2019"
+const ajv = new Ajv2019()
+```
+
+Optionally, you can add draft-07 meta-schema, to use both draft-07 and draft-2019-09 schemas in one Ajv instance:
+
+```javascript
+const draft7MetaSchema = require("ajv/dist/refs/json-schema-draft-07.json")
+ajv.addMetaSchema(draft7MetaSchema)
+```
+
+Draft-2019-09 support is provided via a separate export in order to avoid increasing the bundle and generated code size for draft-07 users.
+
+With this import Ajv supports the following features:
 
 - keywords [`unevaluatedProperties`](./json-schema.md#unevaluatedproperties) and [`unevaluatedItems`](./json-schema.md#unevaluateditems)
 - keywords [`dependentRequired`](./json-schema.md#dependentrequired), [`dependentSchemas`](./json-schema.md#dependentschemas), [`maxContains`/`minContain`](./json-schema.md#maxcontains--mincontains)
 - dynamic recursive references with [`recursiveAnchor`/`recursiveReference`] - see [Extending recursive schemas](#extending-recursive-schemas)
+- draft-2019-09 meta-schema is the default.
 
-**Please note**: option `draft2019` is off by default because both `unevaluated*` keywords and dynamic recursive references may add additional code to compiled validation functions, depending on the schema, even if they are not used - so unless these features are used it is better to have them disabled. They can also be enabled separately - see [Advanced options](./api.md#advanced-options).
+**Please note**: Supporting dynamic recursive references and `unevaluatedProperties/Items` adds additional generated code even to the validation functions where these features are not used (when possible, Ajv determines which properties/items are "unevaluated" at compilation time, but support for dynamic references always adds additional generated code). If you are not using these features in your schemas it is recommended to use default Ajv export with JSON-Schema draft-07 support.
+
+You can also use individual draft-2019-09 features to Ajv with the advanced options `dynamicRef`, `next` and `unevaluated`. These options are changing how the code is generated for draft-07 keywords to support the new features of draft-2019-09, but they do not add the new keywords - they should be added separately. The code examples below shows how to enable individual draft-2019-09 features:
+
+```javascript
+const Ajv = require("ajv")
+
+// add support for unevaluatedProperties and unevaluatedItems without other 2019-09 features
+const ajv = new Ajv({unevaluated: true})
+ajv.addVocabulary(require("ajv/dist/vocabularies/unevaluated"))
+
+// add support for dependentRequired, dependentSchemas, maxContains and minContains
+const ajv = new Ajv({next: true})
+ajv.addVocabulary(require("ajv/dist/vocabularies/next"))
+
+// add support for dynamic recursive references
+const ajv = new Ajv({dynamicRef: true})
+ajv.addVocabulary(require("ajv/dist/vocabularies/dynamic"))
+```
+
+If you want to have support of all these features you should import Ajv from `"ajv/dist/2019"` as shown above.
 
 ## Validation basics
 
@@ -47,9 +83,9 @@ Ajv supports all validation keywords from draft-07 of JSON Schema standard - see
 
 [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package provides additional validation keywords that can be used with Ajv.
 
-### Annotation keywords
+### Metadata keywords
 
-JSON Schema specification defines several annotation keywords that describe schema itself but do not perform any validation.
+JSON Schema specification defines several metadata keywords that describe the schema itself but do not perform any validation.
 
 - `title` and `description`: information about the data represented by that schema
 - `$comment` (NEW in draft-07): information for developers. With option `$comment` Ajv logs or passes the comment string to the user-supplied function. See [Options](./api.md#options).
@@ -77,7 +113,7 @@ addFormats(ajv)
 
 See ajv-formats documentation for further details.
 
-It is recommended NOT to use "format" keyword implementations with untrusted data, as they use potentially unsafe regular expressions - see [ReDoS attack](./security.md#redos-attack).
+It is recommended NOT to use "format" keyword implementations with untrusted data, as they may use potentially unsafe regular expressions (even though known issues are fixed) - see [ReDoS attack](./security.md#redos-attack).
 
 **Please note**: if you need to use "format" keyword to validate untrusted data, you MUST assess their suitability and safety for your validation scenarios.
 
@@ -86,6 +122,7 @@ The following formats are defined in [ajv-formats](https://github.com/ajv-valida
 - _date_: full-date according to [RFC3339](http://tools.ietf.org/html/rfc3339#section-5.6).
 - _time_: time with optional time-zone.
 - _date-time_: date-time from the same source (time-zone is mandatory).
+- _duration_: duration from [RFC3339](https://tools.ietf.org/html/rfc3339#appendix-A)
 - _uri_: full URI.
 - _uri-reference_: URI reference, including full and relative URIs.
 - _uri-template_: URI template according to [RFC6570](https://tools.ietf.org/html/rfc6570)
@@ -158,7 +195,7 @@ See [Options](./api.md#options) and [addSchema](./api.md#add-schema) method.
 
 ### Extending recursive schemas
 
-While statically defined `$ref` keyword allows to split schemas to multiple files, it is difficult to extend recursive schemas - the recursive reference(s) in the original schema points to the original schema, and not to the extended one. So in JSON Schema draft-07 the only available solution to extend the recursive schema was to redifine all sections of the original schema that have recursion.
+While statically defined `$ref` keyword allows to split schemas to multiple files, it is difficult to extend recursive schemas - the recursive reference(s) in the original schema points to the original schema, and not to the extended one. So in JSON Schema draft-07 the only available solution to extend the recursive schema was to redefine all sections of the original schema that have recursion.
 
 It was particularly repetitive when extending meta-schema, as it has many recursive references, but even in a schema with a single recursive reference extending it was very verbose.
 
@@ -181,7 +218,7 @@ const treeSchema = {
 }
 ```
 
-The only way to extend this schema to prohibit additional properties is by adding `additionalProperties` keyword right in the schema - this approach can be impossible if you do not control the source of the original schema. Ajv also provided the additional keywords in [ajv-merge-patch](https://github.com/ajv-validator/ajv-merge-patch) package to extend schemas by treating them as plain JSON data. While this approach works, it is non-standard.
+The only way to extend this schema to prohibit additional properties is by adding `additionalProperties` keyword right in the schema - this approach can be impossible if you do not control the source of the original schema. Ajv also provided the additional keywords in [ajv-merge-patch](https://github.com/ajv-validator/ajv-merge-patch) package to extend schemas by treating them as plain JSON data. While this approach may work for you, it is non-standard and therefore not portable.
 
 The new keywords for dynamic recursive references allow extending this schema without modifying it:
 
@@ -207,9 +244,8 @@ const strictTreeSchema = {
   unevaluatedProperties: false,
 }
 
-const ajv = new Ajv({
-  dynamicRef: true, // to support dynamic recursive references
-  unevaluated: true, // to support unevaluatedProperties
+const Ajv2019 = require("ajv/dist/2019")
+const ajv = new Ajv2019({
   schemas: [treeSchema, strictTreeSchema],
 })
 const validate = ajv.getSchema("https://example.com/strict-tree")
@@ -222,7 +258,7 @@ At the moment Ajv implements the spec for dynamic recursive references with thes
 - `$recursiveAnchor`/`$dynamicAnchor` can only be used in the schema root.
 - `$recursiveRef`/`$dynamicRef` can only be hash fragments, without URI.
 
-Ajv also does not support dynamic references in [asynchronous schemas](#asynchronous-validation) (Ajv spec extension), it is assumed that the referenced schema is synchronous - there is no validation-time check.
+Ajv also does not support dynamic references in [asynchronous schemas](#asynchronous-validation) (Ajv extension) - it is assumed that the referenced schema is synchronous, and there is no validation-time check for it.
 
 ### \$data reference
 
@@ -627,7 +663,7 @@ With `useDefaults` option `default` keywords throws exception during schema comp
 - in `if` schema
 - in schemas generated by user-defined _macro_ keywords
 
-The strict mode option can change the behavior for these unsupported defaults (`strict: false` to ignore them, `"log"` to log a warning).
+The strict mode option can change the behaviour for these unsupported defaults (`strict: false` to ignore them, `"log"` to log a warning).
 
 See [Strict mode](./strict-mode.md).
 

@@ -33,7 +33,7 @@ Keyword definitions may have additional optional properties - see [types](../lib
 
 ### Define keyword with code generation function
 
-Starting from v7 Ajv uses [CodeGen module](../lib/compile/codegen/index.ts) for all pre-defined kwywords - see [codegen.md](./codegen.md) for details.
+Starting from v7 Ajv uses [CodeGen module](../lib/compile/codegen/index.ts) for all pre-defined keywords - see [codegen.md](./codegen.md) for details.
 
 This is the best approach for user defined keywords:
 

@@ -26,7 +26,7 @@ Ajv version 7 (beta) is released with these changes:
 **Please note**:
 
 - the support for JSON-Schema draft-04 is removed - if you have schemas using "id" attributes you have to replace them with "\$id" (or continue using [Ajv v6](https://github.com/ajv-validator/ajv/tree/v6) that will be supported until 02/28/2021).
-- all formats are separated to ajv-formats package - they have to be explicitely added if you use them.
+- all formats are separated to ajv-formats package - they have to be explicitly added if you use them.
 
 See [release notes](https://github.com/ajv-validator/ajv/releases/tag/v7.0.0-beta.0) for the details.
 
@@ -138,7 +138,7 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 - Ajv implements full JSON Schema [draft-06/07](http://json-schema.org/) standards (draft-04 is supported in v6):
   - all validation keywords (see [JSON Schema validation keywords](./docs/json-schema.md))
   - keyword "nullable" from [Open API 3 specification](https://swagger.io/docs/specification/data-models/data-types/).
-  - full support of remote refs (remote schemas have to be added with `addSchema` or compiled to be available)
+  - full support of remote references (remote schemas have to be added with `addSchema` or compiled to be available)
   - support of circular references between schemas
   - correct string lengths for strings with unicode pairs
   - [formats](#formats) defined by JSON Schema draft-07 standard (with [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin) and additional formats (can be turned off)
@@ -154,7 +154,7 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 - [user-defined keywords](#user-defined-keywords)
 - draft-06/07 keywords `const`, `contains`, `propertyNames` and `if/then/else`
 - draft-06 boolean schemas (`true`/`false` as a schema to always pass/fail).
-- assitional extension keywords with [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package
+- additional extension keywords with [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package
 - [\$data reference](./docs/validation.md#data-reference) to use values from the validated data as values for the schema keywords
 - [asynchronous validation](./docs/api.md#asynchronous-validation) of user-defined formats and keywords
 

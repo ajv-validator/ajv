@@ -1,6 +1,6 @@
 import type {AnySchema} from "../../types"
 import type {SchemaCxt, SchemaObjCxt} from ".."
-import type {InstanceOptions} from "../../ajv"
+import type {InstanceOptions} from "../../core"
 import {boolOrEmptySchema, topBoolOrEmptySchema} from "./boolSchema"
 import {coerceAndCheckDataType, getSchemaTypes} from "./dataType"
 import {schemaKeywords} from "./iterate"

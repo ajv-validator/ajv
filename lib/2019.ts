@@ -28,29 +28,39 @@ export {JSONSchemaType} from "./types/json-schema"
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
 import type {AnySchemaObject} from "./types"
-import AjvCore from "./core"
+import AjvCore, {Options} from "./core"
+
 import draft7Vocabularies from "./vocabularies/draft7"
-import draft7MetaSchema from "./refs/json-schema-draft-07.json"
+import dynamicVocabulary from "./vocabularies/dynamic"
+import nextVocabulary from "./vocabularies/next"
+import unevaluatedVocabulary from "./vocabularies/unevaluated"
+import addMetaSchema2019 from "./refs/json-schema-2019-09"
 
-const META_SUPPORT_DATA = ["/properties"]
+const META_SCHEMA_ID = "https://json-schema.org/draft/2019-09/schema"
 
-const META_SCHEMA_ID = "http://json-schema.org/draft-07/schema"
+export default class Ajv2019 extends AjvCore {
+  constructor(opts: Options = {}) {
+    super({
+      ...opts,
+      dynamicRef: true,
+      next: true,
+      unevaluated: true,
+    })
+  }
 
-export default class Ajv extends AjvCore {
   _addVocabularies(): void {
     super._addVocabularies()
+    this.addVocabulary(dynamicVocabulary)
     draft7Vocabularies.forEach((v) => this.addVocabulary(v))
+    this.addVocabulary(nextVocabulary)
+    this.addVocabulary(unevaluatedVocabulary)
   }
 
   _addDefaultMetaSchema(): void {
     super._addDefaultMetaSchema()
     const {$data, meta} = this.opts
     if (!meta) return
-    const metaSchema = $data
-      ? this.$dataMetaSchema(draft7MetaSchema, META_SUPPORT_DATA)
-      : draft7MetaSchema
-    this.addMetaSchema(metaSchema, META_SCHEMA_ID, false)
-    this.refs["http://json-schema.org/schema"] = META_SCHEMA_ID
+    addMetaSchema2019.call(this, $data)
   }
 
   defaultMeta(): string | AnySchemaObject | undefined {

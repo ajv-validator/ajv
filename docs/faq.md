@@ -74,7 +74,7 @@ There are several ways to implement the described logic that would allow two pro
 
 This problem is related to the problem explained above - properties treated as additional in the sense of `additionalProperties` keyword, based on `properties`/`patternProperties` keyword in the same schema object.
 
-See the exemple in [Filtering Data](https://github.com/ajv-validator/ajv#filtering-data) section of readme.
+See the example in [Filtering Data](https://github.com/ajv-validator/ajv#filtering-data) section of readme.
 
 ## Generating schemas with resolved references (\$ref)
 
@@ -84,7 +84,7 @@ See [#22](https://github.com/ajv-validator/ajv/issues/22), [#125](https://github
 
 1. The scope of Ajv is validating data against JSON Schemas; inlining referenced schemas is not necessary for validation. When Ajv generates code for validation it either inlines the code of referenced schema or uses function calls. Doing schema manipulation is more complex and out of scope.
 2. When schemas are recursive (or mutually recursive) resolving references would result in self-referencing recursive data-structures that can be difficult to process.
-3. There are cases when such inlining would also require adding (or modyfing) `id` attribute in the inlined schema fragment to make the resulting schema equivalent.
+3. There are cases when such inlining would also require adding (or modifying) `id` attribute in the inlined schema fragment to make the resulting schema equivalent.
 
 There were many conversations about the meaning of `$ref` in [JSON Schema GitHub organisation](https://github.com/json-schema-org). The consensus is that while it is possible to treat `$ref` as schema inclusion with two caveats (above), this interpretation is unnecessary complex. A more efficient approach is to treat `$ref` as a delegation, i.e. a special keyword that validates the current data instance against the referenced schema. The analogy with programming languages is that `$ref` is a function call rather than a macro. See [here](https://github.com/json-schema-org/json-schema-spec/issues/279), for example.
 

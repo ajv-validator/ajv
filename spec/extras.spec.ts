@@ -1,9 +1,9 @@
-import getAjvInstances from "./ajv_instances"
+import getAjvAllInstances from "./ajv_all_instances"
 import jsonSchemaTest from "json-schema-test"
 import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
 
-const instances = getAjvInstances(options, {
+const instances = getAjvAllInstances(options, {
   $data: true,
   formats: {allowedUnknown: true},
   strictTypes: false,

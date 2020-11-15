@@ -6,8 +6,8 @@ import type {
   EvaluatedProperties,
   EvaluatedItems,
 } from "../types"
-import type Ajv from "../ajv"
-import type {InstanceOptions} from "../ajv"
+import type Ajv from "../core"
+import type {InstanceOptions} from "../core"
 import {CodeGen, _, nil, Name, Code} from "./codegen"
 import {ValidationError} from "./error_classes"
 import N from "./names"

@@ -1,9 +1,9 @@
 import type {ErrorObject, SchemaObject, SchemaValidateFunction} from "../lib/types"
+import type Ajv from "../dist/core"
 // currently most tests include compiled code, if any code re-compiled locally, instanceof would fail
 import {_, nil} from "../dist/compile/codegen"
-import getAjvInstances from "./ajv_instances"
+import getAjvAllInstances from "./ajv_all_instances"
 import _Ajv from "./ajv"
-import type Ajv from ".."
 import assert from "assert"
 
 import chai from "./chai"
@@ -14,7 +14,7 @@ describe("User-defined keywords", () => {
   let ajv: Ajv, instances: Ajv[]
 
   beforeEach(() => {
-    instances = getAjvInstances(
+    instances = getAjvAllInstances(
       {
         allErrors: true,
         verbose: true,
@@ -620,7 +620,7 @@ describe("User-defined keywords", () => {
 
   describe('$data reference support with "validate" keywords (with $data option)', () => {
     beforeEach(() => {
-      instances = getAjvInstances(
+      instances = getAjvAllInstances(
         {
           allErrors: true,
           verbose: true,
