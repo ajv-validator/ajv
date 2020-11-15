@@ -1,5 +1,6 @@
-import type Ajv from ".."
+import type Ajv from "../dist/core"
 import type {SchemaObject} from ".."
+import _Ajv from "./ajv2019"
 import getAjvInstances from "./ajv_instances"
 import options from "./ajv_options"
 import assert from "assert"
@@ -8,7 +9,7 @@ describe("recursiveRef and dynamicRef", () => {
   let ajvs: Ajv[]
 
   beforeEach(() => {
-    ajvs = getAjvInstances(options, {dynamicRef: true, unevaluated: true})
+    ajvs = getAjvInstances(_Ajv, options)
   })
 
   describe("recursiveRef", () => {

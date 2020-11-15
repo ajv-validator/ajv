@@ -83,7 +83,6 @@ interface CurrentOptions {
   allowUnionTypes?: boolean
   validateFormats?: boolean
   // validation and reporting options:
-  draft2019?: boolean // NEW
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
@@ -254,11 +253,6 @@ export default class Ajv {
       ...opts,
       ...requiredOptions(opts),
     }
-    if (opts.draft2019) {
-      opts.next ??= true
-      opts.unevaluated ??= true
-      opts.dynamicRef ??= true
-    }
     this.logger = getLogger(opts.logger)
     const formatOpt = opts.validateFormats
     opts.validateFormats = false
@@ -283,8 +277,7 @@ export default class Ajv {
 
   _addDefaultMetaSchema(): void {
     const {$data, meta} = this.opts
-    if (!meta) return
-    if ($data) this.addMetaSchema($dataRefSchema, $dataRefSchema.$id, false)
+    if (meta && $data) this.addMetaSchema($dataRefSchema, $dataRefSchema.$id, false)
   }
 
   defaultMeta(): string | AnySchemaObject | undefined {
@@ -293,7 +286,7 @@ export default class Ajv {
   }
 
   // Validate data using schema
-  // AnySchema will be compiled and cached using schema itsekf as a key for Map
+  // AnySchema will be compiled and cached using schema itself as a key for Map
   validate(schema: Schema | string, data: unknown): boolean
   validate(schemaKeyRef: AnySchema | string, data: unknown): boolean | Promise<unknown>
   validate<T>(schema: Schema | JSONSchemaType<T> | string, data: unknown): data is T

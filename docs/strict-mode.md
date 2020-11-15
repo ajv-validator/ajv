@@ -2,7 +2,7 @@
 
 Strict mode intends to prevent any unexpected behaviours or silently ignored mistakes in user schemas. It does not change any validation results compared with JSON Schema specification, but it makes some schemas invalid and throws exception or logs warning (with `strict: "log"` option) in case any restriction is violated.
 
-To disable all strict mode restrictions use option `strict: false`. Someof the restrictions can be changed with their own options
+To disable all strict mode restrictions use option `strict: false`. Some of the restrictions can be changed with their own options
 
 - [Prohibit ignored keywords](#prohibit-ignored-keywords)
   - unknown keywords
@@ -18,7 +18,7 @@ To disable all strict mode restrictions use option `strict: false`. Someof the r
   - union types (also `allowUnionTypes` option)
   - contradictory types
   - require applicable types
-- [Strict number validation](#srict-number-validation)
+- [Strict number validation](#strict-number-validation)
 
 ### Prohibit ignored keywords
 
@@ -93,7 +93,7 @@ To reiterate, neither this nor other strict mode restrictions change the validat
 
 #### Prohibit unconstrained tuples
 
-Ajv also logs a warning if "items" is an array (for schema that defines a tuple) but neiter "minItems" nor "additionalItems"/"maxItems" keyword is present (or have a wrong value):
+Ajv also logs a warning if "items" is an array (for schema that defines a tuple) but neither "minItems" nor "additionalItems"/"maxItems" keyword is present (or have a wrong value):
 
 ```javascript
 {
@@ -127,7 +127,7 @@ An additional option `strictTypes` ("log" by default) imposes additional restric
 
 #### Prohibit union types
 
-With `srictTypes` option "type" keywords with multiple types (other than with "null") are prohibited.
+With `strictTypes` option "type" keywords with multiple types (other than with "null") are prohibited.
 
 Invalid:
 

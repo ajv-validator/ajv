@@ -1,10 +1,11 @@
+import _Ajv from "./ajv"
+import _Ajv2019 from "./ajv2019"
 import getAjvInstances from "./ajv_instances"
 import jsonSchemaTest from "json-schema-test"
 import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
 import addFormats from "ajv-formats"
 import draft6MetaSchema from "../dist/refs/json-schema-draft-06.json"
-import addMetaSchema2019 from "../dist/refs/json-schema-2019-09"
 import {toHash} from "../dist/compile/util"
 import chai from "./chai"
 
@@ -29,7 +30,7 @@ const SKIP = {
 }
 
 runTest(
-  getAjvInstances(options, {
+  getAjvInstances(_Ajv, options, {
     meta: false,
     strict: false,
     strictTypes: false,
@@ -40,7 +41,7 @@ runTest(
 )
 
 runTest(
-  getAjvInstances(options, {
+  getAjvInstances(_Ajv, options, {
     strict: false,
     strictTypes: false,
     ignoreKeywordsWithRef: true,
@@ -51,8 +52,7 @@ runTest(
 )
 
 runTest(
-  getAjvInstances(options, {
-    draft2019: true,
+  getAjvInstances(_Ajv2019, options, {
     strict: false,
     strictTypes: false,
     formats: toHash(SKIP_FORMATS),
@@ -67,9 +67,6 @@ function runTest(instances, draft: number, tests) {
       case 6:
         ajv.addMetaSchema(draft6MetaSchema)
         ajv.opts.defaultMeta = "http://json-schema.org/draft-06/schema#"
-        break
-      case 2019:
-        addMetaSchema2019(ajv, true)
         break
     }
     for (const id in remoteRefs) ajv.addSchema(remoteRefs[id], id)

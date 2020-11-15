@@ -5,6 +5,7 @@ require("../chai").should()
 describe("useDefaults option", () => {
   it("should replace undefined property with default value", () => {
     const instances = getAjvInstances(
+      _Ajv,
       {
         allErrors: true,
         loopRequired: 3,

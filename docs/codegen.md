@@ -5,7 +5,7 @@ Starting from v7 Ajv uses [CodeGen module](../lib/compile/codegen/index.ts) that
 The motivations for this change:
 
 - doT templates were difficult to maintain and to change, particularly for the occasional contributors.
-- they discouraged modularity within validation keywords code and also led to implicit dependancies between different parts of code.
+- they discouraged modularity within validation keywords code and also led to implicit dependencies between different parts of code.
 - they had risks of remote code execution in case untrusted schemas were used, even though all identified issues were patched.
 - ES6 template literals that are now widely supported offer a great alternative to both ASTs and to plain string concatenation - this option was not available when Ajv started.
 
@@ -56,7 +56,7 @@ if (num0 > 0) {
 
 These methods only accept instances of private class `_Code`, other values will be rejected by Typescript compiler - the risk to pass unsafe string is mitigated on type level.
 
-If a string variable were used in `_` template literal, its value would be safely wrapped in quotes - in many cases it is quite useful, as it allows to inject values that can be either string or number via the same template. In the worst case, the generated code could be invalid, but it will prevent the risk of code execution that atacker could pass via untrusted schema as a string value that should be inserted in code (e.g., instead of a number). Also see the comment in the example.
+If a string variable were used in `_` template literal, its value would be safely wrapped in quotes - in many cases it is quite useful, as it allows to inject values that can be either string or number via the same template. In the worst case, the generated code could be invalid, but it will prevent the risk of code execution that attacker could pass via untrusted schema as a string value that should be inserted in code (e.g., instead of a number). Also see the comment in the example.
 
 ## Code optimization
 
@@ -64,9 +64,9 @@ CodeGen class generates code trees and performs several optimizations before the
 
 1. removes empty and unreachable branches (e.g. `else` branch after `if(true)`, etc.).
 2. removes unused variable declarations.
-3. replaces variables that are used only once and assigned expressions that are explicitely marked as "constant" (i.e. having referential transparency) with the expressions themselves.
+3. replaces variables that are used only once and assigned expressions that are explicitly marked as "constant" (i.e. having referential transparency) with the expressions themselves.
 
-**Please note**: These optimizations assume that the expressions in `if` coditions, `for` statement headers and assigned expresions are free of any side effects - this is the case for all pre-defined validation keywords.
+**Please note**: These optimizations assume that the expressions in `if` conditions, `for` statement headers and assigned expressions are free of any side effects - this is the case for all pre-defined validation keywords.
 
 See [these tests](../spec/codegen.spec.ts) for examples.
 
@@ -81,6 +81,6 @@ Optimization mode can be changed with [options](./api.md#options):
 
 While tagged template literals wrap passed strings based on their run-time values, CodeGen class methods rely on types to ensure safety of passed parameters - there is no run-time checks that the passed value is an instance of \_Code class.
 
-It is strongly recommended to define addiitonal keywords only with Typescript - using plain JavaScript would still allow passing unsafe strings to code generation methods.
+It is strongly recommended to define additional keywords only with Typescript - using plain JavaScript would still allow passing unsafe strings to code generation methods.
 
 **Please note**: If your user-defined keywords need to have side-effects that are removed by optimization (see above), you may need to disable it.

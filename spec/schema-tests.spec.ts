@@ -1,10 +1,11 @@
+import _Ajv from "./ajv"
 import getAjvInstances from "./ajv_instances"
 import jsonSchemaTest from "json-schema-test"
 import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
 import addFormats from "ajv-formats"
 
-const instances = getAjvInstances(options, {strict: false, formats: {allowedUnknown: true}})
+const instances = getAjvInstances(_Ajv, options, {strict: false, formats: {allowedUnknown: true}})
 
 const remoteRefs = {
   "http://localhost:1234/integer.json": require("./JSON-Schema-Test-Suite/remotes/integer.json"),

@@ -74,7 +74,7 @@ Instead of the schema you can use the key that was previously passed to `addSche
 
 Validation errors will be available in the `errors` property of Ajv instance (`null` if there were no errors).
 
-In typescript this method can act as a type guard (similarly to function retured by `compile` method - see example there).
+In typescript this method can act as a type guard (similarly to function returned by `compile` method - see example there).
 
 **Please note**: every time this method is called the errors are overwritten so you need to copy them to another variable if you want to use them later.
 
@@ -257,7 +257,6 @@ const defaultOptions = {
   allowMatchingProperties: false,
   validateFormats: true,
   // validation and reporting options:
-  draft2019: false // NEW
   $data: false,
   allErrors: false,
   verbose: false,
@@ -272,9 +271,6 @@ const defaultOptions = {
   useDefaults: false,
   coerceTypes: false,
   // advanced options:
-  next: false, // NEW
-  unevaluated: false, // NEW
-  dynamicRef: false, // NEW
   meta: true,
   validateSchema: true,
   addUsedSchema: true,
@@ -285,7 +281,8 @@ const defaultOptions = {
   ownProperties: false,
   multipleOfPrecision: false,
   messages: true,
-  code: { // NEW
+  code: {
+    // NEW
     es5: false,
     lines: false,
     source: false,
@@ -300,7 +297,7 @@ const defaultOptions = {
 - _strict_: By default Ajv executes in strict mode, that is designed to prevent any unexpected behaviours or silently ignored mistakes in schemas (see [Strict Mode](./strict-mode.md) for more details). It does not change any validation results, but it makes some schemas invalid that would be otherwise valid according to JSON Schema specification. Option values:
   - `true` (default) - use strict mode and throw an exception when any strict mode restriction is violated.
   - `"log"` - log warning when any strict mode restriction is violated.
-  - `false` - ignore all strict mode restrictions. Also ignores `strictTypes` restrictions unless it is explicitely passed.
+  - `false` - ignore all strict mode restrictions. Also ignores `strictTypes` restrictions unless it is explicitly passed.
 - _strictTypes_: By default Ajv logs warning when "type" keyword is used in a way that may be incorrect or confusing to other people - see [Strict types](./strict-mode.md#strict-types) for more details. This option does not change validation results. Option values:
   - `true` - throw exception when any strictTypes restriction is violated.
   - `"log"` (default, unless option strict is `false`) - log warning when any strictTypes restriction is violated.
@@ -309,7 +306,7 @@ const defaultOptions = {
   - `true` - throw exception.
   - `"log"` (default, unless option strict is `false`) - log warning.
   - `false` - ignore strictTuples restriction violations.
-- _allowUnionTypes_: pass true to allow using multiple non-null types in "type" keyword (one of `strictTypes` restricitons). see [Strict types](./strict-mode.md#strict-types)
+- _allowUnionTypes_: pass true to allow using multiple non-null types in "type" keyword (one of `strictTypes` restrictions). see [Strict types](./strict-mode.md#strict-types)
 - _allowMatchingProperties_: pass true to allow overlap between "properties" and "patternProperties". Does not affect other strict mode restrictions. See [Strict Mode](./strict-mode.md).
 - _validateFormats_: format validation. Option values:
   - `true` (default) - validate formats (see [Formats](./validation.md#formats)). In [strict mode](./strict-mode.md) unknown formats will throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](./validation.md#data-reference)).
@@ -317,7 +314,6 @@ const defaultOptions = {
 
 #### Validation and reporting options
 
-- _draft2019_ (NEW in v7): add JSON Schema draft-2019-09 support. This option is equivalent to the combination of options `next`, `unevaluated` and `dynamicRef` (see [Advanced options](#advanced-options)). This option enables support for additional keywords (including `unevaluatedProperties` and `unevaluatedItems`) and for dynamic recursive references (see [Extending recursive schemas](./validation.md#extending-recursive-schemas)), but it does not add draft-2019-09 meta-schema - the default JSON Schema draft remains drat-07. See code example how to add it in [JSON Schema draft-2019-09](./validation.md#json-schema-draft-2019-09)
 - _\$data_: support [\$data references](./validation.md#data-reference). Draft 6 meta-schema that is added by default will be extended to allow them. If you want to use another meta-schema you need to use $dataMetaSchema method to add support for $data reference. See [API](#ajv-constructor-and-methods).
 - _allErrors_: check all rules collecting all errors. Default is to return after the first error.
 - _verbose_: include the reference to the part of the schema (`schema` and `parentSchema`) and validated data in errors (false by default).
@@ -351,9 +347,6 @@ const defaultOptions = {
 
 #### Advanced options
 
-- _next_ (NEW in v7): add support for the keywords from the next JSON-Schema draft (currently it is draft 2019-09): [`dependentRequired`](./json-schema.md#dependentrequired), [`dependentSchemas`](./json-schema.md#dependentschemas), [`maxContains`/`minContain`](./json-schema.md#maxcontains--mincontains). This option will be removed once the next draft is fully supported.
-- _unevaluated_ (NEW in v7): to track evaluated properties/items and support keywords [`unevaluatedProperties`](./json-schema.md#unevaluatedproperties) and [`unevaluatedItems`](./json-schema.md#unevaluateditems). Supporting these keywords may add additional validation-time logic even to validation functions where these keywords are not used. When possible, Ajv determines which properties/items are "unevaluated" at compilation time.
-- _dynamicRef_ (NEW in v7): to support `recursiveRef`/`recursiveAnchor` keywords (JSON Schema draft-2019-09) and `dynamicRef`/`dynamicAnchor` keywords (the upcoming JSON Schema draft). See [Extending recursive schemas](./validation.md#extending-recursive-schemas)
 - _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default). If an object is passed, it will be used as the default meta-schema for schemas that have no `$schema` keyword. This default meta-schema MUST have `$schema` keyword.
 - _validateSchema_: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can be http://json-schema.org/draft-07/schema or absent (draft-07 meta-schema will be used) or can be a reference to the schema previously added with `addMetaSchema` method. Option values:
   - `true` (default) - if the validation fails, throw the exception.
@@ -368,7 +361,7 @@ const defaultOptions = {
 - _loopRequired_: by default `required` keyword is compiled into a single expression (or a sequence of statements in `allErrors` mode). In case of a very large number of properties in this keyword it may result in a very big validation function. Pass integer to set the number of properties above which `required` keyword will be validated in a loop - smaller validation function size but also worse performance.
 - _loopEnum_ (NEW in v7): by default `enum` keyword is compiled into a single expression. In case of a very large number of allowed values it may result in a large validation function. Pass integer to set the number of values above which `enum` keyword will be validated in a loop.
 - _ownProperties_: by default Ajv iterates over all enumerable object properties; when this option is `true` only own enumerable object properties (i.e. found directly on the object rather than on its prototype) are iterated. Contributed by @mbroadst.
-- _multipleOfPrecision_: by default `multipleOf` keyword is validated by comparing the result of division with parseInt() of that result. It works for dividers that are bigger than 1. For small dividers such as 0.01 the result of the division is usually not integer (even when it should be integer, see issue [#84](https://github.com/ajv-validator/ajv/issues/84)). If you need to use fractional dividers set this option to some positive integer N to have `multipleOf` validated using this formula: `Math.abs(Math.round(division) - division) < 1e-N` (it is slower but allows for float arithmetics deviations).
+- _multipleOfPrecision_: by default `multipleOf` keyword is validated by comparing the result of division with parseInt() of that result. It works for dividers that are bigger than 1. For small dividers such as 0.01 the result of the division is usually not integer (even when it should be integer, see issue [#84](https://github.com/ajv-validator/ajv/issues/84)). If you need to use fractional dividers set this option to some positive integer N to have `multipleOf` validated using this formula: `Math.abs(Math.round(division) - division) < 1e-N` (it is slower but allows for float arithmetic deviations).
 - _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when messages are generated outside of Ajv code (e.g. with [ajv-i18n](https://github.com/ajv-validator/ajv-i18n)).
 - _code_ (new in v7): code generation options:
 
@@ -389,7 +382,7 @@ type CodeOptions = {
 }
 
 type Source = {
-  code: string // unlike func.toString() it includes assignments exernal to function scope
+  code: string // unlike func.toString() it includes assignments external to function scope
   scope: Scope // see Code generation (TODO)
 }
 ```

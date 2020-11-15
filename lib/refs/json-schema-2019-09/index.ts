@@ -1,5 +1,5 @@
 import type Ajv from "../../core"
-import type {SchemaObject} from "../../core"
+import type {AnySchemaObject} from "../../types"
 import metaSchema from "./schema.json"
 import metaApplicator from "./meta/applicator.json"
 import metaContent from "./meta/content.json"
@@ -8,20 +8,21 @@ import metaFormat from "./meta/format.json"
 import metaMetadata from "./meta/meta-data.json"
 import metaValidation from "./meta/validation.json"
 
-export default function addMetaSchema2019(ajv: Ajv, setDefault?: boolean): Ajv {
+const META_SUPPORT_DATA = ["/properties"]
+
+export default function addMetaSchema2019(this: Ajv, $data?: boolean): Ajv {
   ;[
     metaSchema,
     metaApplicator,
     metaContent,
     metaCore,
-    metaFormat,
+    with$data(this, metaFormat),
     metaMetadata,
-    metaValidation,
-  ].forEach(addMeta)
-  if (setDefault) ajv.opts.defaultMeta = "https://json-schema.org/draft/2019-09/schema"
-  return ajv
+    with$data(this, metaValidation),
+  ].forEach((sch) => this.addMetaSchema(sch, undefined, false))
+  return this
 
-  function addMeta(sch: SchemaObject): void {
-    ajv.addMetaSchema(sch, undefined, false)
+  function with$data(ajv: Ajv, sch: AnySchemaObject): AnySchemaObject {
+    return $data ? ajv.$dataMetaSchema(sch, META_SUPPORT_DATA) : sch
   }
 }

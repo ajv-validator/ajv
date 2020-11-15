@@ -84,7 +84,7 @@ Unlike JavaScript, only these numbers can be coerced to `boolean`:
 
 #### To string type
 
-`null` coerses to the empty string.
+`null` coerces to the empty string.
 
 #### To number/integer types
 
