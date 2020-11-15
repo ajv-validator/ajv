@@ -25,15 +25,16 @@
 The default export of Ajv provides support of JSON-Schema draft-07, without any of draft-2019-09 features:
 
 ```javascript
-const Ajv = require("ajv")
+import Ajv from "ajv"
+// const Ajv = require("ajv").default
 const ajv = new Ajv()
 ```
 
 To use Ajv with the support of all JSON Schema draft-2019-09 features you need to use a different export:
 
 ```javascript
-const Ajv2019 = require("ajv/dist/2019")
-// import Ajv from "ajv/dist/2019"
+import Ajv from "ajv/dist/2019"
+// const Ajv2019 = require("ajv/dist/2019").default
 const ajv = new Ajv2019()
 ```
 
@@ -58,19 +59,26 @@ With this import Ajv supports the following features:
 You can also use individual draft-2019-09 features to Ajv with the advanced options `dynamicRef`, `next` and `unevaluated`. These options are changing how the code is generated for draft-07 keywords to support the new features of draft-2019-09, but they do not add the new keywords - they should be added separately. The code examples below shows how to enable individual draft-2019-09 features:
 
 ```javascript
-const Ajv = require("ajv")
+import Ajv from "ajv"
+// const Ajv = require("ajv").default
 
 // add support for unevaluatedProperties and unevaluatedItems without other 2019-09 features
 const ajv = new Ajv({unevaluated: true})
-ajv.addVocabulary(require("ajv/dist/vocabularies/unevaluated"))
+import unevaluatedVocabulary from "ajv/dist/vocabularies/unevaluated"
+// const unevaluatedVocabulary = require("ajv/dist/vocabularies/unevaluated").default
+ajv.addVocabulary(unevaluatedVocabulary)
 
 // add support for dependentRequired, dependentSchemas, maxContains and minContains
 const ajv = new Ajv({next: true})
-ajv.addVocabulary(require("ajv/dist/vocabularies/next"))
+import nextVocabulary from "ajv/dist/vocabularies/next"
+// const nextVocabulary = require("ajv/dist/vocabularies/next").default
+ajv.addVocabulary(nextVocabulary)
 
 // add support for dynamic recursive references
 const ajv = new Ajv({dynamicRef: true})
-ajv.addVocabulary(require("ajv/dist/vocabularies/dynamic"))
+import dynamicVocabulary from "ajv/dist/vocabularies/dynamic"
+// const dynamicVocabulary = require("ajv/dist/vocabularies/dynamic").default
+ajv.addVocabulary(dynamicVocabulary)
 ```
 
 If you want to have support of all these features you should import Ajv from `"ajv/dist/2019"` as shown above.
@@ -244,7 +252,8 @@ const strictTreeSchema = {
   unevaluatedProperties: false,
 }
 
-const Ajv2019 = require("ajv/dist/2019")
+import Ajv2019 from "ajv/dist/2019"
+// const Ajv2019 = require("ajv/dist/2019").default
 const ajv = new Ajv2019({
   schemas: [treeSchema, strictTreeSchema],
 })

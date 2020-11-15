@@ -179,10 +179,10 @@ Try it in the Node.js REPL: https://runkit.com/npm/ajv
 In JavaScript:
 
 ```javascript
-// Node.js require:
-const Ajv = require("ajv")
 // or ESM/TypeScript import
 import Ajv from "ajv"
+// Node.js require:
+const Ajv = require("ajv").default
 
 const ajv = new Ajv() // options can be passed, e.g. {allErrors: true}
 const validate = ajv.compile(schema)
