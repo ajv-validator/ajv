@@ -5,12 +5,14 @@ const path = require("path")
 const browserify = require("browserify")
 const {minify} = require("terser")
 
+const [sourceFile, outFile, globalName] = process.argv.slice(2)
+
 const json = require(path.join(__dirname, "..", "package.json"))
 const bundleDir = path.join(__dirname, "..", "bundle")
 if (!fs.existsSync(bundleDir)) fs.mkdirSync(bundleDir)
 
-browserify({standalone: "Ajv"})
-  .require(path.join(__dirname, "..", json.main), {expose: json.name})
+browserify({standalone: globalName})
+  .require(path.join(__dirname, "../dist", sourceFile), {expose: sourceFile})
   .bundle(saveAndMinify)
 
 async function saveAndMinify(err, buf) {
@@ -19,7 +21,7 @@ async function saveAndMinify(err, buf) {
     process.exit(1)
   }
 
-  const bundlePath = path.join(bundleDir, json.name)
+  const bundlePath = path.join(bundleDir, outFile)
   const opts = {
     ecma: 2018,
     warnings: true,
@@ -29,11 +31,11 @@ async function saveAndMinify(err, buf) {
       unsafe_methods: true,
     },
     format: {
-      preamble: `/* ${json.name} ${json.version}: ${json.description} */`,
+      preamble: `/* ${json.name} ${json.version} (${globalName}): ${json.description} */`,
     },
     sourceMap: {
-      filename: json.name + ".min.js",
-      url: json.name + ".min.js.map",
+      filename: outFile + ".min.js",
+      url: outFile + ".min.js.map",
     },
   }
 
