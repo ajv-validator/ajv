@@ -1,4 +1,4 @@
-import type {AnySchemaObject, SchemaObject, AsyncSchema} from "../../dist/types"
+import type {AnySchemaObject, SchemaObject, AsyncSchema} from "../.."
 import _Ajv from "../ajv"
 import chai from "../chai"
 const should = chai.should()

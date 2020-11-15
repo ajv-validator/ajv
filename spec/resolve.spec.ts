@@ -1,4 +1,4 @@
-import type Ajv from "../dist/core"
+import type AjvCore from "../dist/core"
 import getAjvInstances from "./ajv_instances"
 import _Ajv from "./ajv"
 import {AnyValidateFunction} from "../dist/types"
@@ -6,7 +6,7 @@ import chai from "./chai"
 const should = chai.should()
 
 describe("resolve", () => {
-  let instances: Ajv[]
+  let instances: AjvCore[]
 
   beforeEach(() => {
     instances = getAjvInstances(_Ajv, {

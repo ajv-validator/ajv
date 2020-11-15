@@ -1,7 +1,7 @@
 import type {ErrorObject, SchemaObject, SchemaValidateFunction} from "../lib/types"
-import type Ajv from "../dist/core"
+import type AjvCore from "../dist/core"
 // currently most tests include compiled code, if any code re-compiled locally, instanceof would fail
-import {_, nil} from "../dist/compile/codegen"
+import {_, nil} from ".."
 import getAjvAllInstances from "./ajv_all_instances"
 import _Ajv from "./ajv"
 import assert from "assert"
@@ -11,7 +11,7 @@ const should = chai.should(),
   equal = require("../dist/compile/equal")
 
 describe("User-defined keywords", () => {
-  let ajv: Ajv, instances: Ajv[]
+  let ajv: AjvCore, instances: AjvCore[]
 
   beforeEach(() => {
     instances = getAjvAllInstances(

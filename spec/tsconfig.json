@@ -4,6 +4,7 @@
   "compilerOptions": {
     "outDir": "../.distspec",
     "types": ["node", "mocha"],
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "esModuleInterop": true
   }
 }

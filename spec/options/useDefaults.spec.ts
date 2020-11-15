@@ -1,5 +1,5 @@
 import _Ajv from "../ajv"
-const getAjvInstances = require("../ajv_instances")
+import getAjvInstances from "../ajv_instances"
 require("../chai").should()
 
 describe("useDefaults option", () => {

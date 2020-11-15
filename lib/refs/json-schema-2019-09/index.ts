@@ -1,12 +1,12 @@
 import type Ajv from "../../core"
 import type {AnySchemaObject} from "../../types"
-import metaSchema from "./schema.json"
-import metaApplicator from "./meta/applicator.json"
-import metaContent from "./meta/content.json"
-import metaCore from "./meta/core.json"
-import metaFormat from "./meta/format.json"
-import metaMetadata from "./meta/meta-data.json"
-import metaValidation from "./meta/validation.json"
+import metaSchema = require("./schema.json")
+import metaApplicator = require("./meta/applicator.json")
+import metaContent = require("./meta/content.json")
+import metaCore = require("./meta/core.json")
+import metaFormat = require("./meta/format.json")
+import metaMetadata = require("./meta/meta-data.json")
+import metaValidation = require("./meta/validation.json")
 
 const META_SUPPORT_DATA = ["/properties"]
 

@@ -1,14 +1,14 @@
-import type Ajv from "../dist/core"
+import type AjvCore from "../dist/core"
 import type {Options} from ".."
 
 export default function getAjvInstances(
-  _Ajv: typeof Ajv,
+  _Ajv: typeof AjvCore,
   options: Options,
   extraOpts: Options = {}
-): Ajv[] {
+): AjvCore[] {
   return _getAjvInstances(options, {...extraOpts, logger: false})
 
-  function _getAjvInstances(opts: Options, useOpts: Options): Ajv[] {
+  function _getAjvInstances(opts: Options, useOpts: Options): AjvCore[] {
     const optNames = Object.keys(opts)
     if (optNames.length) {
       opts = Object.assign({}, opts)

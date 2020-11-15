@@ -56,7 +56,7 @@ import {normalizeId, getSchemaRefs} from "./compile/resolve"
 import {getJSONTypes} from "./compile/validate/dataType"
 import {eachItem} from "./compile/util"
 
-import $dataRefSchema from "./refs/data.json"
+import $dataRefSchema = require("./refs/data.json")
 
 const META_IGNORE_OPTIONS: (keyof Options)[] = ["removeAdditional", "useDefaults", "coerceTypes"]
 const EXT_SCOPE_NAMES = new Set([
@@ -805,6 +805,3 @@ const $dataRef = {
 function schemaOrData(schema: AnySchema): AnySchemaObject {
   return {anyOf: [schema, $dataRef]}
 }
-
-module.exports = Ajv
-module.exports.default = Ajv

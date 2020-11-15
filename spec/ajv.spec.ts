@@ -1,7 +1,7 @@
 import type Ajv from ".."
 import _Ajv from "./ajv"
-import {_} from "../dist/compile/codegen"
-import assert from "assert"
+import {_} from ".."
+import assert = require("assert")
 import chai from "./chai"
 const should = chai.should()
 
