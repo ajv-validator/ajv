@@ -61,6 +61,7 @@ export default class Ajv2019 extends AjvCore {
     const {$data, meta} = this.opts
     if (!meta) return
     addMetaSchema2019.call(this, $data)
+    this.refs["http://json-schema.org/schema"] = META_SCHEMA_ID
   }
 
   defaultMeta(): string | AnySchemaObject | undefined {

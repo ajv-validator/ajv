@@ -69,6 +69,7 @@ const EXT_SCOPE_NAMES = new Set([
   "formats",
   "validate$data",
   "func",
+  "obj",
   "Error",
 ])
 
