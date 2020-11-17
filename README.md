@@ -12,6 +12,10 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07/
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 [![GitHub Sponsors](https://img.shields.io/badge/$-sponsors-brightgreen)](https://github.com/sponsors/epoberezkin)
 
+## Platinum sponsors
+
+[<img src="https://www.poberezkin.com/images/mozilla.svg" width="45%">](https://www.mozilla.org)[<img src="./.github/img/gap.svg" width="9%">](https://opencollective.com/ajv)[<img src="./.github/img/reserved.svg" width="45%">](https://opencollective.com/ajv)
+
 ## Using version 7 (beta)
 
 Ajv version 7 (beta) is released with these changes:
@@ -82,7 +86,7 @@ See [Getting started](#usage) for code example.
 
 [<img src="https://www.poberezkin.com/images/mozilla.png" width="240" height="68">](https://www.mozilla.org/en-US/moss/) &nbsp;&nbsp;&nbsp; [<img src="https://www.poberezkin.com/images/openjs.png" width="220" height="68">](https://openjsf.org/blog/2020/08/14/ajv-joins-openjs-foundation-as-an-incubation-project/)
 
-Ajv has been awarded a grant from Mozilla’s [Open Source Support (MOSS) program](https://www.mozilla.org/en-US/moss/) in the “Foundational Technology” track! It will sponsor the development of Ajv support of [JSON Schema version 2019-09](https://tools.ietf.org/html/draft-handrews-json-schema-02) and of [JSON Type Definition](https://tools.ietf.org/html/draft-ucarion-json-type-definition-04).
+Ajv has been awarded a grant from Mozilla’s [Open Source Support (MOSS) program](https://www.mozilla.org/en-US/moss/) in the “Foundational Technology” track! It will sponsor the development of Ajv support of [JSON Schema version 2019-09](https://tools.ietf.org/html/draft-handrews-json-schema-02) and of [JSON Type Definition (RFC8927)](https://datatracker.ietf.org/doc/rfc8927/).
 
 Ajv also joined [OpenJS Foundation](https://openjsf.org/) – having this support will help ensure the longevity and stability of Ajv for all its users.
 
