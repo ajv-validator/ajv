@@ -16,6 +16,7 @@ type ValidationTypes = {
 
 export interface ValidationRules {
   rules: RuleGroup[]
+  post: RuleGroup
   all: {[key: string]: boolean | Rule | undefined} // rules that have to be validated
   keywords: {[key: string]: boolean | undefined} // all known keywords (superset of "all")
   types: ValidationTypes
@@ -42,6 +43,7 @@ export function getRules(): ValidationRules {
   return {
     types: {...groups, integer: true, boolean: true, null: true},
     rules: [{rules: []}, groups.number, groups.string, groups.array, groups.object],
+    post: {rules: []},
     all: {type: true, $comment: true},
     keywords: {type: true, $comment: true},
   }

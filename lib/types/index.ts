@@ -96,6 +96,7 @@ interface _KeywordDef {
   $data?: boolean // keyword supports [$data reference](../../docs/validation.md#data-reference)
   implements?: string[] // other schema keywords that this keyword implements
   before?: string // keyword should be executed before this keyword (should be applicable to the same type)
+  post?: boolean // keyword should be executed after other keywords without post flag
   metaSchema?: AnySchemaObject // meta-schema for keyword schema value - it is better to use schemaType where applicable
   validateSchema?: AnyValidateFunction // compiled keyword metaSchema - should not be passed
   dependencies?: string[] // keywords that must be present in the same schema

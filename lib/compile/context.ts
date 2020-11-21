@@ -231,7 +231,10 @@ function validateKeywordUsage(
 
 const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/
 const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/
-function getData($data: string, {dataLevel, dataNames, dataPathArr}: SchemaCxt): Code | number {
+export function getData(
+  $data: string,
+  {dataLevel, dataNames, dataPathArr}: SchemaCxt
+): Code | number {
   let jsonPointer
   let data: Code
   if ($data === "") return N.rootData

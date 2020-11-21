@@ -525,7 +525,7 @@ export default class Ajv {
       def = kwdOrDef
       keyword = def.keyword
       if (Array.isArray(keyword) && !keyword.length) {
-        throw new Error("addKeywords: keyword must be non-empty array")
+        throw new Error("addKeywords: keyword must be string or non-empty array")
       }
     } else {
       throw new Error("invalid addKeywords parameters")
@@ -759,8 +759,10 @@ function addRule(
   definition?: AddedKeywordDefinition,
   dataType?: JSONType
 ): void {
+  const post = definition?.post
+  if (dataType && post) throw new Error('keyword with "post" flag cannot have "type"')
   const {RULES} = this
-  let ruleGroup = RULES.rules.find(({type: t}) => t === dataType)
+  let ruleGroup = post ? RULES.post : RULES.rules.find(({type: t}) => t === dataType)
   if (!ruleGroup) {
     ruleGroup = {type: dataType, rules: []}
     RULES.rules.push(ruleGroup)

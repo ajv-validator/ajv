@@ -24,14 +24,12 @@ export function schemaKeywords(
   }
   checkStrictTypes(it, types)
   gen.block(() => {
-    for (const group of RULES.rules) {
-      if (shouldUseGroup(schema, group)) {
-        groupKeywords(group)
-      }
-    }
+    for (const group of RULES.rules) groupKeywords(group)
+    groupKeywords(RULES.post)
   })
 
   function groupKeywords(group: RuleGroup): void {
+    if (!shouldUseGroup(schema, group)) return
     if (group.type) {
       gen.if(checkDataType(group.type, data, opts.strict))
       iterateKeywords(it, group)

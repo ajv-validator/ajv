@@ -522,7 +522,7 @@ export class CodeGen {
   }
 
   // returns code for object literal for the passed argument list of key-value pairs
-  object(...keyValues: [Name, SafeExpr | string][]): _Code {
+  object(...keyValues: [Name | string, SafeExpr | string][]): _Code {
     const code: CodeItem[] = ["{"]
     for (const [key, value] of keyValues) {
       if (code.length > 1) code.push(",")

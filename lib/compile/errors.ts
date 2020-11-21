@@ -65,9 +65,9 @@ export function extendErrors({
   gen.forRange("i", errsCount, N.errors, (i) => {
     gen.const(err, _`${N.vErrors}[${i}]`)
     gen.if(_`${err}.dataPath === undefined`, () =>
-      gen.assign(_`${err}.dataPath`, _`${strConcat(N.dataPath, it.errorPath)}`)
+      gen.assign(_`${err}.dataPath`, strConcat(N.dataPath, it.errorPath))
     )
-    gen.assign(_`${err}.schemaPath`, _`${str`${it.errSchemaPath}/${keyword}`}`)
+    gen.assign(_`${err}.schemaPath`, str`${it.errSchemaPath}/${keyword}`)
     if (it.opts.verbose) {
       gen.assign(_`${err}.schema`, schemaValue)
       gen.assign(_`${err}.data`, data)

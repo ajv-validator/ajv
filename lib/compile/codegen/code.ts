@@ -145,7 +145,7 @@ export function stringify(x: unknown): Code {
   return new _Code(safeStringify(x))
 }
 
-function safeStringify(x: unknown): string {
+export function safeStringify(x: unknown): string {
   return JSON.stringify(x)
     .replace(/\u2028/g, "\\u2028")
     .replace(/\u2029/g, "\\u2029")
