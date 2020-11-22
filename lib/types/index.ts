@@ -159,8 +159,8 @@ export type AddedKeywordDefinition = KeywordDefinition & {
 }
 
 export interface KeywordErrorDefinition {
-  message: string | ((cxt: KeywordErrorCxt) => Code)
-  params?: (cxt: KeywordErrorCxt) => Code
+  message: string | Code | ((cxt: KeywordErrorCxt) => Code)
+  params?: Code | ((cxt: KeywordErrorCxt) => Code)
 }
 
 export type Vocabulary = (KeywordDefinition | string)[]

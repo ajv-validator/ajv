@@ -118,11 +118,11 @@ function errorObjectCode(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): C
     [E.keyword, keyword],
     [N.dataPath, strConcat(N.dataPath, errorPath)],
     [E.schemaPath, str`${errSchemaPath}/${keyword}`],
-    [E.params, params ? params(cxt) : _`{}`],
+    [E.params, typeof params == "function" ? params(cxt) : params || _`{}`],
   ]
   if (propertyName) keyValues.push([E.propertyName, propertyName])
   if (opts.messages !== false) {
-    const msg = typeof message == "string" ? message : message(cxt)
+    const msg = typeof message == "function" ? message(cxt) : message
     keyValues.push([E.message, msg])
   }
   if (opts.verbose) {
