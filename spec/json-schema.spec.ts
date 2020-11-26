@@ -1,5 +1,7 @@
+// import type AjvCore from "../dist/core"
 import _Ajv from "./ajv"
 import _Ajv2019 from "./ajv2019"
+// import AjvPackFunc from "../dist/pack/instance"
 import getAjvInstances from "./ajv_instances"
 import jsonSchemaTest from "json-schema-test"
 import options from "./ajv_options"
@@ -28,6 +30,12 @@ const SKIP = {
   7: ["optional/content", ...SKIP_FORMAT_TESTS],
   2019: ["optional/content", ...SKIP_FORMAT_TESTS],
 }
+
+// function withPack(instances: AjvCore[]): (AjvCore | AjvPackFunc)[] {
+//   return (instances as (AjvCore | AjvPackFunc)[]).concat(
+//     instances.map((ajv) => new AjvPackFunc(ajv))
+//   )
+// }
 
 runTest(
   getAjvInstances(_Ajv, options, {
@@ -63,6 +71,7 @@ runTest(
 
 function runTest(instances, draft: number, tests) {
   for (const ajv of instances) {
+    ajv.opts.code.source = true
     switch (draft) {
       case 6:
         ajv.addMetaSchema(draft6MetaSchema)
@@ -73,10 +82,11 @@ function runTest(instances, draft: number, tests) {
     addFormats(ajv)
   }
 
+  // jsonSchemaTest(draft === 2019 ? instances : withPack(instances), {
   jsonSchemaTest(instances, {
     description: `JSON-Schema Test Suite draft-${draft}: ${instances.length} ajv instances with different options`,
     suites: {tests},
-    only: [],
+    only: true,
     skip: SKIP[draft],
     assert: chai.assert,
     afterError,

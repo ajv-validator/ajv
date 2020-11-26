@@ -2,7 +2,7 @@ import type {CodeKeywordDefinition, AnySchema} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {MissingRefError} from "../../compile/error_classes"
 import {callValidateCode} from "../code"
-import {_, nil, Code, Name} from "../../compile/codegen"
+import {_, nil, stringify, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 import {SchemaEnv, resolveRef} from "../../compile"
 import {mergeEvaluated} from "../../compile/util"
@@ -12,7 +12,7 @@ const def: CodeKeywordDefinition = {
   schemaType: "string",
   code(cxt: KeywordCxt) {
     const {gen, schema, it} = cxt
-    const {baseId, schemaEnv: env, validateName, self} = it
+    const {baseId, schemaEnv: env, validateName, opts, self} = it
     if (schema === "#" || schema === "#/") return callRootRef()
     const schOrEnv = resolveRef.call(self, env.root, baseId, schema)
     if (schOrEnv === undefined) throw new MissingRefError(baseId, schema)
@@ -38,7 +38,10 @@ const def: CodeKeywordDefinition = {
     }
 
     function inlineRefSchema(sch: AnySchema): void {
-      const schName = gen.scopeValue("schema", {ref: sch})
+      const schName = gen.scopeValue(
+        "schema",
+        opts.code.source === true ? {ref: sch, code: stringify(sch)} : {ref: sch}
+      )
       const valid = gen.name("valid")
       const schCxt = cxt.subschema(
         {

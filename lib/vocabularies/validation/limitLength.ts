@@ -1,7 +1,7 @@
 import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, str, operators} from "../../compile/codegen"
-import {ucs2length} from "../../compile/util"
+import ucs2length from "../../compile/ucs2length"
 
 const error: KeywordErrorDefinition = {
   message({keyword, schemaCode}) {
@@ -26,7 +26,7 @@ const def: CodeKeywordDefinition = {
     } else {
       const u2l = cxt.gen.scopeValue("func", {
         ref: ucs2length,
-        code: _`require("ajv/dist/compile/ucs2length")`,
+        code: _`require("ajv/dist/compile/ucs2length").default`,
       })
       len = _`${u2l}(${data})`
     }

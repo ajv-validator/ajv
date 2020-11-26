@@ -8,7 +8,7 @@ import type {
 } from "../types"
 import type Ajv from "../core"
 import type {InstanceOptions} from "../core"
-import {CodeGen, _, nil, Name, Code} from "./codegen"
+import {CodeGen, _, nil, stringify, Name, Code} from "./codegen"
 import {ValidationError} from "./error_classes"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
@@ -125,7 +125,12 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     dataPathArr: [nil], // TODO can its lenght be used as dataLevel if nil is removed?
     dataLevel: 0,
     dataTypes: [],
-    topSchemaRef: gen.scopeValue("schema", {ref: sch.schema}),
+    topSchemaRef: gen.scopeValue(
+      "schema",
+      this.opts.code.source === true
+        ? {ref: sch.schema, code: stringify(sch.schema)}
+        : {ref: sch.schema}
+    ),
     validateName,
     ValidationError: _ValidationError,
     schema: sch.schema,
@@ -153,7 +158,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     // console.log("\n\n\n *** \n", sourceCode)
     const makeValidate = new Function(`${N.self}`, `${N.scope}`, sourceCode)
     const validate: AnyValidateFunction = makeValidate(this, this.scope.get())
-    gen.scopeValue(validateName, {ref: validate})
+    this.scope.value(validateName, {ref: validate})
 
     validate.errors = null
     validate.schema = sch.schema
@@ -162,7 +167,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     if (this.opts.code.source === true) {
       validate.source = {
         code: sourceCode,
-        scope: this.scope,
+        scopeValues: gen._values,
       }
     }
     if (this.opts.unevaluated) {

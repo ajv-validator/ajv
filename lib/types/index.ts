@@ -1,4 +1,4 @@
-import type {CodeGen, Code, Name, Scope} from "../compile/codegen"
+import type {CodeGen, Code, Name, ScopeValueSets} from "../compile/codegen"
 import type {SchemaEnv, SchemaCxt, SchemaObjCxt} from "../compile"
 import type {JSONType} from "../compile/rules"
 import type KeywordCxt from "../compile/context"
@@ -33,7 +33,7 @@ export interface SchemaMap {
 
 interface SourceCode {
   code: string
-  scope: Scope
+  scopeValues: ScopeValueSets
 }
 
 interface DataValidationCxt {
