@@ -329,7 +329,7 @@ describe("resolve", () => {
     }
 
     function testInlined(validate: AnyValidateFunction, expectedInlined) {
-      const inlined: any = !validate.source?.code.includes("scope.validate")
+      const inlined: any = !validate.source?.scopeValues.validate
       inlined.should.equal(expectedInlined)
     }
   })

@@ -122,7 +122,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     parentData: N.parentData,
     parentDataProperty: N.parentDataProperty,
     dataNames: [N.data],
-    dataPathArr: [nil], // TODO can its lenght be used as dataLevel if nil is removed?
+    dataPathArr: [nil], // TODO can its length be used as dataLevel if nil is removed?
     dataLevel: 0,
     dataTypes: [],
     topSchemaRef: gen.scopeValue(
@@ -152,7 +152,8 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     validateFunctionCode(schemaCxt)
     gen.optimize(this.opts.code.optimize)
     // gen.optimize(1)
-    sourceCode = `${gen.scopeRefs(N.scope)}${gen}`
+    const funcCode = gen.toString()
+    sourceCode = `${gen.scopeRefs(N.scope)}return ${funcCode}`
     // console.log((codeSize += sourceCode.length), (nodeCount += gen.nodeCount))
     if (this.opts.code.process) sourceCode = this.opts.code.process(sourceCode, sch)
     // console.log("\n\n\n *** \n", sourceCode)
@@ -166,7 +167,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     if (sch.$async) (validate as AsyncValidateFunction).$async = true
     if (this.opts.code.source === true) {
       validate.source = {
-        code: sourceCode,
+        code: funcCode,
         scopeValues: gen._values,
       }
     }

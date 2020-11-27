@@ -1,7 +1,8 @@
-// import type AjvCore from "../dist/core"
+import type AjvCore from "../dist/core"
+import {_} from ".."
 import _Ajv from "./ajv"
 import _Ajv2019 from "./ajv2019"
-// import AjvPackFunc from "../dist/pack/instance"
+import AjvPackFunc from "../dist/pack/instance"
 import getAjvInstances from "./ajv_instances"
 import jsonSchemaTest from "json-schema-test"
 import options from "./ajv_options"
@@ -31,11 +32,11 @@ const SKIP = {
   2019: ["optional/content", ...SKIP_FORMAT_TESTS],
 }
 
-// function withPack(instances: AjvCore[]): (AjvCore | AjvPackFunc)[] {
-//   return (instances as (AjvCore | AjvPackFunc)[]).concat(
-//     instances.map((ajv) => new AjvPackFunc(ajv))
-//   )
-// }
+function withPack(instances: AjvCore[]): (AjvCore | AjvPackFunc)[] {
+  return (instances as (AjvCore | AjvPackFunc)[]).concat(
+    instances.map((ajv) => new AjvPackFunc(ajv))
+  )
+}
 
 runTest(
   getAjvInstances(_Ajv, options, {
@@ -80,13 +81,14 @@ function runTest(instances, draft: number, tests) {
     }
     for (const id in remoteRefs) ajv.addSchema(remoteRefs[id], id)
     addFormats(ajv)
+    ajv.opts.code.formats = _`require("ajv-formats/dist/formats").fullFormats` // TODO move to ajv-formats
   }
 
-  // jsonSchemaTest(draft === 2019 ? instances : withPack(instances), {
-  jsonSchemaTest(instances, {
+  jsonSchemaTest(draft === 2019 ? instances : withPack(instances), {
+    // jsonSchemaTest(instances, {
     description: `JSON-Schema Test Suite draft-${draft}: ${instances.length} ajv instances with different options`,
     suites: {tests},
-    only: true,
+    only: [],
     skip: SKIP[draft],
     assert: chai.assert,
     afterError,

@@ -31,7 +31,7 @@ export interface SchemaMap {
   [key: string]: AnySchema | undefined
 }
 
-interface SourceCode {
+export interface SourceCode {
   code: string
   scopeValues: ScopeValueSets
 }
