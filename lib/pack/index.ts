@@ -1,7 +1,8 @@
 import type Ajv from "../ajv"
 import type {AnyValidateFunction, SourceCode} from "../types"
 import type {ScopeValueSets, ValueScopeName} from "../compile/codegen/scope"
-import {_Code, Code} from "../compile/codegen/code"
+import {_Code, Code, _} from "../compile/codegen/code"
+import {SchemaEnv} from "../compile"
 
 export default function moduleCode(
   this: Ajv,
@@ -26,8 +27,14 @@ function funcExportCode(ajv: Ajv, source?: SourceCode): string {
   }
 
   function refValidateCode(n: ValueScopeName): Code | undefined {
-    const v = n.value?.ref
-    return typeof v == "function" ? validateCode((v as AnyValidateFunction).source) : undefined
+    const vRef = n.value?.ref
+    if (n.prefix === "validate" && typeof vRef == "function") {
+      return validateCode((vRef as AnyValidateFunction).source)
+    } else if (n.prefix === "root" && typeof vRef == "object") {
+      const env = vRef as SchemaEnv
+      return _`const ${n} = {validate: ${env.validateName}};\n${validateCode(env.validate?.source)}`
+    }
+    return undefined
   }
 }
 
