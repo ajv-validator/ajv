@@ -1,6 +1,6 @@
 import type AjvCore from "../dist/core"
 import type {Options} from ".."
-import AjvPackFunc from "../dist/pack/instance"
+import AjvPackFunc from "../dist/standalone/instance"
 
 export default function getAjvInstances(
   _Ajv: typeof AjvCore,
