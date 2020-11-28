@@ -15,5 +15,3 @@ const options: Options = fullTest
   : {allErrors: true, code: codeOptions}
 
 export default options
-
-module.exports = options

@@ -1,15 +1,13 @@
-import type AjvCore from "../dist/core"
-import {_} from ".."
 import _Ajv from "./ajv"
 import _Ajv2019 from "./ajv2019"
-import AjvPackFunc from "../dist/pack/instance"
-import getAjvInstances from "./ajv_instances"
+import getAjvInstances, {withPack} from "./ajv_instances"
 import jsonSchemaTest from "json-schema-test"
 import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
 import addFormats from "ajv-formats"
 import draft6MetaSchema from "../dist/refs/json-schema-draft-06.json"
 import {toHash} from "../dist/compile/util"
+import {_} from ".."
 import chai from "./chai"
 
 const remoteRefs = {
@@ -30,12 +28,6 @@ const SKIP = {
   6: [],
   7: ["optional/content", ...SKIP_FORMAT_TESTS],
   2019: ["optional/content", ...SKIP_FORMAT_TESTS],
-}
-
-function withPack(instances: AjvCore[]): (AjvCore | AjvPackFunc)[] {
-  return (instances as (AjvCore | AjvPackFunc)[]).concat(
-    instances.map((ajv) => new AjvPackFunc(ajv))
-  )
 }
 
 runTest(

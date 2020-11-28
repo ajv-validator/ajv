@@ -25,7 +25,7 @@
     "test-karma": "karma start",
     "test-browser": "rm -rf .browser && npm run bundle && scripts/prepare-tests && karma start",
     "test-all": "npm run test-cov && if-node-version 12 npm run test-browser",
-    "test": "npm run build && npm run json-tests && npm run eslint && npm run test-cov",
+    "test": "npm run build && npm run json-tests && npm run eslint && npm link && npm run test-cov",
     "test-ci": "AJV_FULL_TEST=true npm test",
     "prepublish": "npm run build",
     "watch": "watch \"npm run build\" ./lib"
