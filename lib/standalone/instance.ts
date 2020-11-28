@@ -1,5 +1,5 @@
 import Ajv, {AnySchema, AnyValidateFunction, ErrorObject} from "../core"
-import moduleCode from "."
+import standaloneCode from "."
 import requireFromString = require("require-from-string")
 
 export default class AjvPackFunc {
@@ -30,7 +30,7 @@ export default class AjvPackFunc {
   }
 
   private getStandalone<T = unknown>(v: AnyValidateFunction<T>): AnyValidateFunction<T> {
-    const validateModule = moduleCode.call(this.ajv, v)
+    const validateModule = standaloneCode(this.ajv, v)
     return requireFromString(validateModule) as AnyValidateFunction<T>
   }
 
