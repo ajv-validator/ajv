@@ -2,21 +2,12 @@ import Ajv, {AnySchema, AnyValidateFunction, ErrorObject} from "../core"
 import standaloneCode from "."
 import requireFromString = require("require-from-string")
 
-export default class AjvPackFunc {
+export default class AjvPack {
   errors?: ErrorObject[] | null // errors from the last validation
   constructor(readonly ajv: Ajv) {}
 
   validate<T = unknown>(schemaKeyRef: AnySchema | string, data: unknown | T): boolean | Promise<T> {
-    let v: AnyValidateFunction | undefined
-    if (typeof schemaKeyRef == "string") {
-      v = this.getSchema<T>(schemaKeyRef)
-      if (!v) throw new Error('no schema with key or ref "' + schemaKeyRef + '"')
-    } else {
-      v = this.compile<T>(schemaKeyRef)
-    }
-    const valid = v(data)
-    this.errors = valid ? null : v.errors
-    return valid
+    return Ajv.prototype.validate.call(this, schemaKeyRef, data)
   }
 
   compile<T = unknown>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T> {
@@ -30,16 +21,15 @@ export default class AjvPackFunc {
   }
 
   private getStandalone<T = unknown>(v: AnyValidateFunction<T>): AnyValidateFunction<T> {
-    const validateModule = standaloneCode(this.ajv, v)
-    return requireFromString(validateModule) as AnyValidateFunction<T>
+    return requireFromString(standaloneCode(this.ajv, v)) as AnyValidateFunction<T>
   }
 
-  addSchema(...args: Parameters<typeof Ajv.prototype.addSchema>): AjvPackFunc {
+  addSchema(...args: Parameters<typeof Ajv.prototype.addSchema>): AjvPack {
     this.ajv.addSchema.call(this.ajv, ...args)
     return this
   }
 
-  addKeyword(...args: Parameters<typeof Ajv.prototype.addKeyword>): AjvPackFunc {
+  addKeyword(...args: Parameters<typeof Ajv.prototype.addKeyword>): AjvPack {
     this.ajv.addKeyword.call(this.ajv, ...args)
     return this
   }

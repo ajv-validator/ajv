@@ -1,6 +1,6 @@
 import type AjvCore from "../dist/core"
 import type {Options} from ".."
-import AjvPackFunc from "../dist/standalone/instance"
+import AjvPack from "../dist/standalone/instance"
 
 export default function getAjvInstances(
   _Ajv: typeof AjvCore,
@@ -25,8 +25,6 @@ export default function getAjvInstances(
   }
 }
 
-export function withPack(instances: AjvCore[]): (AjvCore | AjvPackFunc)[] {
-  return (instances as (AjvCore | AjvPackFunc)[]).concat(
-    instances.map((ajv) => new AjvPackFunc(ajv))
-  )
+export function withPack(instances: AjvCore[]): (AjvCore | AjvPack)[] {
+  return (instances as (AjvCore | AjvPack)[]).concat(instances.map((ajv) => new AjvPack(ajv)))
 }

@@ -301,10 +301,9 @@ export default class Ajv {
     let v: AnyValidateFunction | undefined
     if (typeof schemaKeyRef == "string") {
       v = this.getSchema(schemaKeyRef)
-      if (!v) throw new Error('no schema with key or ref "' + schemaKeyRef + '"')
+      if (!v) throw new Error(`no schema with key or ref "${schemaKeyRef}"`)
     } else {
-      const sch = this._addSchema(schemaKeyRef)
-      v = sch.validate || this._compileSchemaEnv(sch)
+      v = this.compile<T>(schemaKeyRef)
     }
 
     const valid = v(data)
