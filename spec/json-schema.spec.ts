@@ -73,19 +73,16 @@ runTest(
 function runTest(instances, draft: number, tests) {
   for (const ajv of instances) {
     ajv.opts.code.source = true
-    switch (draft) {
-      case 6:
-        ajv.addMetaSchema(draft6MetaSchema)
-        ajv.opts.defaultMeta = "http://json-schema.org/draft-06/schema#"
-        break
+    if (draft === 6) {
+      ajv.addMetaSchema(draft6MetaSchema)
+      ajv.opts.defaultMeta = "http://json-schema.org/draft-06/schema#"
     }
     for (const id in remoteRefs) ajv.addSchema(remoteRefs[id], id)
     addFormats(ajv)
     ajv.opts.code.formats = _`require("ajv-formats/dist/formats").fullFormats` // TODO move to ajv-formats
   }
 
-  jsonSchemaTest(draft === 2019 ? instances : withPack(instances), {
-    // jsonSchemaTest(instances, {
+  jsonSchemaTest(withPack(instances), {
     description: `JSON-Schema Test Suite draft-${draft}: ${instances.length} ajv instances with different options`,
     suites: {tests},
     only: [],

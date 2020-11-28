@@ -152,8 +152,8 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     validateFunctionCode(schemaCxt)
     gen.optimize(this.opts.code.optimize)
     // gen.optimize(1)
-    const funcCode = gen.toString()
-    sourceCode = `${gen.scopeRefs(N.scope)}return ${funcCode}`
+    const validateCode = gen.toString()
+    sourceCode = `${gen.scopeRefs(N.scope)}return ${validateCode}`
     // console.log((codeSize += sourceCode.length), (nodeCount += gen.nodeCount))
     if (this.opts.code.process) sourceCode = this.opts.code.process(sourceCode, sch)
     // console.log("\n\n\n *** \n", sourceCode)
@@ -166,10 +166,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     validate.schemaEnv = sch
     if (sch.$async) (validate as AsyncValidateFunction).$async = true
     if (this.opts.code.source === true) {
-      validate.source = {
-        code: funcCode,
-        scopeValues: gen._values,
-      }
+      validate.source = {validateName, validateCode, scopeValues: gen._values}
     }
     if (this.opts.unevaluated) {
       const {props, items} = schemaCxt
@@ -179,6 +176,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
         dynamicProps: props instanceof Name,
         dynamicItems: items instanceof Name,
       }
+      if (validate.source) validate.source.evaluated = stringify(validate.evaluated)
     }
     sch.validate = validate
     return sch

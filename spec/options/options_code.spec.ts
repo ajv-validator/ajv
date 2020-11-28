@@ -1,3 +1,4 @@
+import type Ajv from "../.."
 import _Ajv from "../ajv"
 import chai from "../chai"
 const should = chai.should()
@@ -10,20 +11,19 @@ describe("code generation options", () => {
 
         function test(ajv) {
           const validate = ajv.compile({type: "number"})
-          validate.source.code.should.be.a("string")
+          validate.source.validateCode.should.be.a("string")
         }
       })
     })
 
     describe("= false and default", () => {
-      it("should not add source and sourceCode properties", () => {
+      it("should not add source property", () => {
         test(new _Ajv())
         test(new _Ajv({code: {source: false}}))
 
-        function test(ajv) {
+        function test(ajv: Ajv) {
           const validate = ajv.compile({type: "number"})
           should.not.exist(validate.source)
-          should.not.exist(validate.sourceCode)
         }
       })
     })
@@ -47,7 +47,7 @@ describe("code generation options", () => {
   })
 
   describe("passContext option", () => {
-    let ajv, contexts: any[]
+    let ajv: Ajv, contexts: any[]
 
     beforeEach(() => {
       contexts = []

@@ -32,8 +32,10 @@ export interface SchemaMap {
 }
 
 export interface SourceCode {
-  code: string
+  validateName: Name
+  validateCode: string
   scopeValues: ScopeValueSets
+  evaluated?: Code
 }
 
 interface DataValidationCxt {

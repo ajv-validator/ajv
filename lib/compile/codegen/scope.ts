@@ -150,7 +150,10 @@ export class ValueScope extends Scope {
   ): Code {
     return this._reduceValues(
       values,
-      (name: ValueScopeName) => name.value?.code,
+      (name: ValueScopeName) => {
+        if (name.value === undefined) throw new Error(`CodeGen: name "${name}" has no value`)
+        return name.value.code
+      },
       usedValues,
       getCode
     )
@@ -164,21 +167,20 @@ export class ValueScope extends Scope {
   ): Code {
     let code: Code = nil
     for (const prefix in values) {
+      const vs = values[prefix]
+      if (!vs) continue
       const nameSet = (usedValues[prefix] = usedValues[prefix] || new Set())
-      values[prefix]?.forEach((name: ValueScopeName) => {
+      vs.forEach((name: ValueScopeName) => {
         if (nameSet.has(name)) return
         nameSet.add(name)
-        const v = valueCode(name)
-        if (v) {
-          code = _`${code}const ${name} = ${valueCode(name)};`
-          return
-        }
-        const c = getCode?.(name)
+        let c = valueCode(name)
         if (c) {
+          code = _`${code}const ${name} = ${c};`
+        } else if ((c = getCode?.(name))) {
           code = _`${code}${c}`
-          return
+        } else {
+          throw new ValueError(name)
         }
-        throw new ValueError(name)
       })
     }
     return code

@@ -18,21 +18,23 @@ export default function moduleCode(
 
 function funcExportCode(ajv: Ajv, source?: SourceCode): string {
   const usedValues: ScopeValueSets = {}
-  return `"use strict"\nmodule.exports = ${validateCode(source)}`
+  return `"use strict";module.exports = ${source?.validateName};${validateCode(source)}`
 
   function validateCode(s?: SourceCode): Code {
     if (!s) throw new Error('moduleCode: function does not have "source" property')
     const scopeCode = ajv.scope.scopeCode(s.scopeValues, usedValues, refValidateCode)
-    return new _Code(`${s.code}\n${scopeCode}\n`)
+    const code = new _Code(`${scopeCode}${s.validateCode}`)
+    return s.evaluated ? _`${code}${s.validateName}.evaluated = ${s.evaluated};` : code
   }
 
   function refValidateCode(n: ValueScopeName): Code | undefined {
     const vRef = n.value?.ref
     if (n.prefix === "validate" && typeof vRef == "function") {
-      return validateCode((vRef as AnyValidateFunction).source)
+      const v = vRef as AnyValidateFunction
+      return validateCode(v.source)
     } else if (n.prefix === "root" && typeof vRef == "object") {
       const env = vRef as SchemaEnv
-      return _`const ${n} = {validate: ${env.validateName}};\n${validateCode(env.validate?.source)}`
+      return _`const ${n} = {validate: ${env.validateName}};${validateCode(env.validate?.source)}`
     }
     return undefined
   }
