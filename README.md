@@ -4,7 +4,7 @@
 
 The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07/2019-09 (draft-04 is supported in [version 6](https://github.com/ajv-validator/ajv/tree/v6)).
 
-[![Build Status](https://travis-ci.org/ajv-validator/ajv.svg?branch=master)](https://travis-ci.org/ajv-validator/ajv)
+[![build](https://github.com/ajv-validator/ajv/workflows/build/badge.svg)](https://github.com/ajv-validator/ajv/actions?query=workflow%3Abuild)
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![npm (beta)](https://img.shields.io/npm/v/ajv/beta)](https://www.npmjs.com/package/ajv/v/7.0.0-beta.7)
 [![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
