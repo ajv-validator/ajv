@@ -8,38 +8,67 @@ import assert = require("assert")
 describe("standalone code generation", () => {
   describe("multiple exports", () => {
     let ajv: Ajv
+    const numSchema = {
+      $id: "https://example.com/number.json",
+      type: "number",
+      minimum: 0,
+    }
+    const strSchema = {
+      $id: "https://example.com/string.json",
+      type: "string",
+      minLength: 2,
+    }
 
-    beforeEach(() => {
-      ajv = new _Ajv({code: {source: true}})
-      ajv.addSchema({
-        $id: "https://example.com/number.json",
-        type: "number",
-        minimum: 0,
+    describe("without schema keys", () => {
+      beforeEach(() => {
+        ajv = new _Ajv({code: {source: true}})
+        ajv.addSchema(numSchema)
+        ajv.addSchema(strSchema)
       })
-      ajv.addSchema({
-        $id: "https://example.com/string.json",
-        type: "string",
-        minLength: 2,
+
+      it("should generate module code with named exports", () => {
+        const moduleCode = standaloneCode(ajv, {
+          validateNumber: "https://example.com/number.json",
+          validateString: "https://example.com/string.json",
+        })
+        const m = requireFromString(moduleCode)
+        assert.strictEqual(Object.keys(m).length, 2)
+        testExports(m)
+      })
+
+      it("should generate module code with all exports", () => {
+        const moduleCode = standaloneCode(ajv)
+        const m = requireFromString(moduleCode)
+        assert.strictEqual(Object.keys(m).length, 2)
+        testExports({
+          validateNumber: m["https://example.com/number.json"],
+          validateString: m["https://example.com/string.json"],
+        })
       })
     })
 
-    it("should generate module code with named exports", () => {
-      const moduleCode = standaloneCode(ajv, {
-        validateNumber: "https://example.com/number.json",
-        validateString: "https://example.com/string.json",
+    describe("with schema keys", () => {
+      beforeEach(() => {
+        ajv = new _Ajv({code: {source: true}})
+        ajv.addSchema(numSchema, "validateNumber")
+        ajv.addSchema(strSchema, "validateString")
       })
-      const m = requireFromString(moduleCode)
-      assert.strictEqual(Object.keys(m).length, 2)
-      testExports(m)
-    })
 
-    it("should generate module code with all exports", () => {
-      const moduleCode = standaloneCode(ajv)
-      const m = requireFromString(moduleCode)
-      assert.strictEqual(Object.keys(m).length, 2)
-      testExports({
-        validateNumber: m["https://example.com/number.json"],
-        validateString: m["https://example.com/string.json"],
+      it("should generate module code with named exports", () => {
+        const moduleCode = standaloneCode(ajv, {
+          validateNumber: "validateNumber",
+          validateString: "validateString",
+        })
+        const m = requireFromString(moduleCode)
+        assert.strictEqual(Object.keys(m).length, 2)
+        testExports(m)
+      })
+
+      it("should generate module code with all exports", () => {
+        const moduleCode = standaloneCode(ajv)
+        const m = requireFromString(moduleCode)
+        assert.strictEqual(Object.keys(m).length, 2)
+        testExports(m)
       })
     })
 
