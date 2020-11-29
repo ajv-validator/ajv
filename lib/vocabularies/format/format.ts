@@ -53,7 +53,7 @@ const def: CodeKeywordDefinition = {
         () => gen.assign(fType, _`${fDef}.type || "string"`).assign(format, _`${fDef}.validate`),
         () => gen.assign(fType, _`"string"`).assign(format, fDef)
       )
-      cxt.fail$data(or(unknownFmt(), invalidFmt())) // TODO this is not tested. Possibly require ajv-formats to test formats in ajv as well
+      cxt.fail$data(or(unknownFmt(), invalidFmt()))
 
       function unknownFmt(): Code {
         if (opts.strict === false) return nil

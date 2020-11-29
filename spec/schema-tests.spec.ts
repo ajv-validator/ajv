@@ -4,8 +4,7 @@ import getAjvInstances, {withPack} from "./ajv_instances"
 import jsonSchemaTest from "json-schema-test"
 import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
-import {_} from ".."
-import addFormats from "ajv-formats"
+import ajvFormats from "ajv-formats"
 
 const instances = getAjvInstances(_Ajv, options, {strict: false, formats: {allowedUnknown: true}})
 
@@ -43,6 +42,5 @@ function addRemoteRefsAndFormats(ajv: AjvCore) {
   ajv.opts.code.source = true
   for (const id in remoteRefs) ajv.addSchema(remoteRefs[id], id)
   ajv.addSchema(remoteRefsWithIds)
-  addFormats(ajv)
-  ajv.opts.code.formats = _`require("ajv-formats/dist/formats").fullFormats` // TODO move to ajv-formats
+  ajvFormats(ajv)
 }

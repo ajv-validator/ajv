@@ -11,7 +11,7 @@ import type {JSONType} from "../rules"
 import KeywordCxt from "../context"
 import {extendErrors} from "../errors"
 import {callValidateCode} from "../../vocabularies/code"
-import {CodeGen, _, nil, not, Code, Name} from "../codegen"
+import {CodeGen, _, nil, not, stringify, Code, Name} from "../codegen"
 import N from "../names"
 
 type KeywordCompilationResult = AnySchema | SchemaValidateFunction | AnyValidateFunction
@@ -137,5 +137,8 @@ function checkAsync({schemaEnv}: SchemaObjCxt, def: FuncKeywordDefinition): void
 
 function useKeyword(gen: CodeGen, keyword: string, result?: KeywordCompilationResult): Name {
   if (result === undefined) throw new Error(`keyword "${keyword}" failed to compile`)
-  return gen.scopeValue("keyword", {ref: result}) // TODO value.code
+  return gen.scopeValue(
+    "keyword",
+    typeof result == "function" ? {ref: result} : {ref: result, code: stringify(result)}
+  )
 }

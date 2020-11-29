@@ -4,10 +4,9 @@ import getAjvInstances, {withPack} from "./ajv_instances"
 import jsonSchemaTest from "json-schema-test"
 import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
-import addFormats from "ajv-formats"
+import ajvFormats from "ajv-formats"
 import draft6MetaSchema from "../dist/refs/json-schema-draft-06.json"
 import {toHash} from "../dist/compile/util"
-import {_} from ".."
 import chai from "./chai"
 
 const remoteRefs = {
@@ -70,8 +69,7 @@ function runTest(instances, draft: number, tests) {
       ajv.opts.defaultMeta = "http://json-schema.org/draft-06/schema#"
     }
     for (const id in remoteRefs) ajv.addSchema(remoteRefs[id], id)
-    addFormats(ajv)
-    ajv.opts.code.formats = _`require("ajv-formats/dist/formats").fullFormats` // TODO move to ajv-formats
+    ajvFormats(ajv)
   }
 
   jsonSchemaTest(withPack(instances), {

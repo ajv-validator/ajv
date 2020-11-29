@@ -1,14 +1,12 @@
-import type Ajv from "../ajv"
+import type AjvCore from "../core"
 import type {AnyValidateFunction, SourceCode} from "../types"
 import type {ScopeValueSets, ValueScopeName} from "../compile/codegen/scope"
 import {_, _Code, Code, getProperty} from "../compile/codegen/code"
 import {SchemaEnv} from "../compile"
 
-type HashMap<T> = {[K in string]?: T}
-
 export default function standaloneCode(
-  ajv: Ajv,
-  refsOrFunc?: HashMap<string> | AnyValidateFunction
+  ajv: AjvCore,
+  refsOrFunc?: {[K in string]?: string} | AnyValidateFunction
 ): string {
   if (!ajv.opts.code.source) {
     throw new Error("moduleCode: ajv instance must have code.source option")
@@ -35,7 +33,7 @@ export default function standaloneCode(
   }
 
   function multiExportsCode<T extends SchemaEnv | string>(
-    schemas: HashMap<T>,
+    schemas: {[K in string]?: T},
     getValidateFunc: (schOrId: T) => AnyValidateFunction | undefined
   ): string {
     const usedValues: ScopeValueSets = {}
