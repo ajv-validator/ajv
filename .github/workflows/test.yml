@@ -3,7 +3,11 @@
 
 name: Node.js CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: ["*"]
 
 jobs:
   build:
@@ -23,3 +27,7 @@ jobs:
     - run: npm install
     - run: git submodule update --init
     - run: npm run test-ci
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
