@@ -1,0 +1,35 @@
+name: publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        registry: [npm, github]
+        include:
+          - registry: npm
+            registry-url: https://registry.npmjs.org/
+            token: ${{ secrets.NPM_TOKEN }}
+          - registry: github
+            registry-url: https://npm.pkg.github.com/
+            token: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          registry-url: ${{ matrix.registry-url }}
+      - run: npm install
+      - run: git submodule update --init
+      - run: npm run test-ci
+      - name: Publish beta version to ${{ matrix.registry }}
+        if: "github.event.release.prerelease"
+        run: npm publish --tag beta
+        env:
+          NODE_AUTH_TOKEN: ${{ matrix.token }}
