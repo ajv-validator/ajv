@@ -32,16 +32,16 @@ interface ValueScopeOptions extends ScopeOptions {
 
 export type ScopeStore = Record<string, ValueReference[] | undefined>
 
-interface ScopeValues {
-  [prefix: string]: Map<unknown, ValueScopeName> | undefined
+type ScopeValues = {
+  [Prefix in string]?: Map<unknown, ValueScopeName>
 }
 
-export interface ScopeValueSets {
-  [prefix: string]: Set<ValueScopeName> | undefined
+export type ScopeValueSets = {
+  [Prefix in string]?: Set<ValueScopeName>
 }
 
 export class Scope {
-  protected readonly _names: {[prefix: string]: NameGroup | undefined} = {}
+  protected readonly _names: {[Prefix in string]?: NameGroup} = {}
   protected readonly _prefixes?: Set<string>
   protected readonly _parent?: Scope
 
@@ -143,22 +143,44 @@ export class ValueScope extends Scope {
     })
   }
 
-  scopeCode(values: ScopeValues | ScopeValueSets = this._values): Code {
-    return this._reduceValues(values, (name: ValueScopeName) => {
-      const c = name.value?.code
-      if (c) return c
-      throw new ValueError(name)
-    })
+  scopeCode(
+    values: ScopeValues | ScopeValueSets = this._values,
+    usedValues?: ScopeValueSets,
+    getCode?: (n: ValueScopeName) => Code | undefined
+  ): Code {
+    return this._reduceValues(
+      values,
+      (name: ValueScopeName) => {
+        if (name.value === undefined) throw new Error(`CodeGen: name "${name}" has no value`)
+        return name.value.code
+      },
+      usedValues,
+      getCode
+    )
   }
 
   private _reduceValues(
     values: ScopeValues | ScopeValueSets,
-    valueCode: (n: ValueScopeName) => Code
+    valueCode: (n: ValueScopeName) => Code | undefined,
+    usedValues: ScopeValueSets = {},
+    getCode?: (n: ValueScopeName) => Code | undefined
   ): Code {
     let code: Code = nil
     for (const prefix in values) {
-      values[prefix]?.forEach((name: ValueScopeName) => {
-        code = _`${code}const ${name} = ${valueCode(name)};`
+      const vs = values[prefix]
+      if (!vs) continue
+      const nameSet = (usedValues[prefix] = usedValues[prefix] || new Set())
+      vs.forEach((name: ValueScopeName) => {
+        if (nameSet.has(name)) return
+        nameSet.add(name)
+        let c = valueCode(name)
+        if (c) {
+          code = _`${code}const ${name} = ${c};`
+        } else if ((c = getCode?.(name))) {
+          code = _`${code}${c}`
+        } else {
+          throw new ValueError(name)
+        }
       })
     }
     return code

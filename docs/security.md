@@ -7,7 +7,7 @@ JSON Schema, if properly used, can replace data sanitisation. It doesn't replace
 - [Circular references in objects](#circular-references-in-javascript-objects)
 - [Trusted schemas](#security-risks-of-trusted-schemas)
 - [ReDoS attack](#redos-attack)
-- [Content Security Policies](#content-security-policies)
+- [Content Security Policy](#content-security-policy)
 
 ## Security contact
 
@@ -74,12 +74,10 @@ Please assess the regular expressions you use in the schemas on their vulnerabil
 
 Whatever mitigation you choose, please assume all formats provided by ajv-formats as potentially unsafe and make your own assessment of their suitability for your validation scenarios.
 
-## Content Security Policies
+## Content Security Policy
 
-If you're using Ajv in a browser document that is loaded with a Content Security Policy (CSP), that policy will require a `script-src` directive that includes the value `'unsafe-eval'`.
+When using Ajv in a browser page with enabled Content Security Policy (CSP), `script-src` directive must include `'unsafe-eval'`.
 
-:warning: NOTE, however, that `unsafe-eval` is NOT recommended in a secure CSP[[1]](https://developer.chrome.com/extensions/contentSecurityPolicy#relaxing-eval), as it has the potential to open the document to cross-site scripting (XSS) attacks.
+**Please note**: `unsafe-eval` is NOT recommended in a secure CSP[[1]](https://developer.chrome.com/extensions/contentSecurityPolicy#relaxing-eval), as it has the potential to open the document to cross-site scripting (XSS) attacks.
 
-In order to make use of Ajv without easing your CSP, you can [pre-compile a schema using the CLI](https://github.com/ajv-validator/ajv-cli#compile-schemas). This will transpile the schema JSON into a JavaScript file that exports a `validate` function that works similarly to a schema compiled at runtime.
-
-Note that pre-compilation of schemas is performed using [ajv-pack](https://github.com/ajv-validator/ajv-pack) and there are [some limitations to the schema features it can compile](https://github.com/ajv-validator/ajv-pack#limitations). A successfully pre-compiled schema is equivalent to the same schema compiled at runtime.
+In order to use Ajv without relaxing CSP, you can [compile the schemas using CLI](https://github.com/ajv-validator/ajv-cli#compile-schemas) or programmatically in your build code - see [Standalone validation code](./standalone.md). Compiled JavaScript file can export one or several validation functions that have the same code as the schemas compiled at runtime.

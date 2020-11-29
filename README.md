@@ -51,7 +51,7 @@ See [Getting started](#usage) for code example.
 - [Getting started](#usage)
 - [Frequently Asked Questions](./docs/faq.md)
 - [Using in browser](#using-in-browser)
-  - [Content Security Policies](./docs/security.md#content-security-policies)
+  - [Content Security Policy](./docs/security.md#content-security-policy)
 - [Command line interface](#command-line-interface)
 - [API reference](./docs/api.md)
   - [Methods](./docs/api.md#ajv-constructor-and-methods)
@@ -66,6 +66,7 @@ See [Getting started](#usage) for code example.
   - [Validation basics](./docs/validation.md#validation-basics): [JSON Schema keywords](./docs/validation.md#validation-keywords), [annotations](./docs/validation.md#annotation-keywords), [formats](./docs/validation.md#formats)
   - [Modular schemas](./docs/validation.md#modular-schemas): [combining with \$ref](./docs/validation.md#ref), [\$data reference](./docs/validation.md#data-reference), [$merge and $patch](./docs/validation.md#merge-and-patch-keywords)
   - [Asynchronous schema compilation](./docs/validation.md#asynchronous-schema-compilation)
+  - [Standalone validation code](./docs/standalone.md)
   - [Asynchronous validation](./docs/validation.md#asynchronous-validation)
   - [Modifying data](./docs/validation.md#modifying-data-during-validation): [additional properties](./docs/validation.md#removing-additional-properties), [defaults](./docs/validation.md#assigning-defaults), [type coercion](./docs/validation.md#coercing-data-types)
 - [User-defined keywords](./docs/keywords.md)
@@ -75,7 +76,7 @@ See [Getting started](#usage) for code example.
   - [Circular references in objects](./docs/security.md#circular-references-in-javascript-objects)
   - [Trusted schemas](./docs/security.md#security-risks-of-trusted-schemas)
   - [ReDoS attack](./docs/security.md#redos-attack)
-  - [Content Security Policies](./docs/security.md#content-security-policies)
+  - [Content Security Policy](./docs/security.md#content-security-policy)
 - [Plugins](#plugins)
 - [Related packages](#related-packages)
 - [Some packages using Ajv](#some-packages-using-ajv)
@@ -250,7 +251,7 @@ The best performance is achieved when using compiled functions returned by `comp
 
 ## Using in browser
 
-See [Content Security Policies](./docs/security.md#content-security-policies) to decide the best approach how to use Ajv in the browser.
+See [Content Security Policy](./docs/security.md#content-security-policy) to decide the best approach how to use Ajv in the browser.
 
 Whether you use Ajv or compiled schemas, it is recommended that you bundle them together with your code.
 
@@ -273,7 +274,7 @@ The browser bundle is available on [cdnjs](https://cdnjs.com/libraries/ajv).
 CLI is available as a separate npm package [ajv-cli](https://github.com/ajv-validator/ajv-cli). It supports:
 
 - compiling JSON Schemas to test their validity
-- BETA: generating standalone module exporting a validation function to be used without Ajv (using [ajv-pack](https://github.com/ajv-validator/ajv-pack))
+- generating [standalone validation code](./docs/standalone.md) that exports validation function(s) to be used without Ajv
 - migrate schemas to draft-07 (using [json-schema-migrate](https://github.com/epoberezkin/json-schema-migrate))
 - validating data file(s) against JSON Schema
 - testing expected validity of data against JSON Schema
@@ -305,7 +306,6 @@ If you have published a useful plugin please submit a PR to add it to the next s
 - [ajv-istanbul](https://github.com/ajv-validator/ajv-istanbul) - plugin to instrument generated validation code to measure test coverage of your schemas
 - [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) - plugin with additional validation keywords (select, typeof, etc.)
 - [ajv-merge-patch](https://github.com/ajv-validator/ajv-merge-patch) - plugin with keywords $merge and $patch
-- [ajv-pack](https://github.com/ajv-validator/ajv-pack) - produces a compact module exporting validation functions
 - [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) - format validators for draft2019 that aren't included in [ajv-formats](https://github.com/ajv-validator/ajv-formats) (ie. `idn-hostname`, `idn-email`, `iri`, `iri-reference` and `duration`).
 
 ## Some packages using Ajv

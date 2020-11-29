@@ -1,10 +1,10 @@
 import _Ajv from "./ajv"
 import _Ajv2019 from "./ajv2019"
-import getAjvInstances from "./ajv_instances"
+import getAjvInstances, {withPack} from "./ajv_instances"
 import jsonSchemaTest from "json-schema-test"
 import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
-import addFormats from "ajv-formats"
+import ajvFormats from "ajv-formats"
 import draft6MetaSchema from "../dist/refs/json-schema-draft-06.json"
 import {toHash} from "../dist/compile/util"
 import chai from "./chai"
@@ -63,17 +63,16 @@ runTest(
 
 function runTest(instances, draft: number, tests) {
   for (const ajv of instances) {
-    switch (draft) {
-      case 6:
-        ajv.addMetaSchema(draft6MetaSchema)
-        ajv.opts.defaultMeta = "http://json-schema.org/draft-06/schema#"
-        break
+    ajv.opts.code.source = true
+    if (draft === 6) {
+      ajv.addMetaSchema(draft6MetaSchema)
+      ajv.opts.defaultMeta = "http://json-schema.org/draft-06/schema#"
     }
     for (const id in remoteRefs) ajv.addSchema(remoteRefs[id], id)
-    addFormats(ajv)
+    ajvFormats(ajv)
   }
 
-  jsonSchemaTest(instances, {
+  jsonSchemaTest(withPack(instances), {
     description: `JSON-Schema Test Suite draft-${draft}: ${instances.length} ajv instances with different options`,
     suites: {tests},
     only: [],

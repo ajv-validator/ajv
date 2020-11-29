@@ -25,17 +25,17 @@ function validateFunction(
   {gen, validateName, schema, schemaEnv, opts}: SchemaCxt,
   body: Block
 ): void {
-  gen.return(() =>
-    opts.code.es5
-      ? gen.func(validateName, _`${N.data}, ${N.valCxt}`, schemaEnv.$async, () => {
-          gen.code(_`"use strict"; ${funcSourceUrl(schema, opts)}`)
-          destructureValCxtES5(gen, opts)
-          gen.code(body)
-        })
-      : gen.func(validateName, _`${N.data}, ${destructureValCxt(opts)}`, schemaEnv.$async, () =>
-          gen.code(funcSourceUrl(schema, opts)).code(body)
-        )
-  )
+  if (opts.code.es5) {
+    gen.func(validateName, _`${N.data}, ${N.valCxt}`, schemaEnv.$async, () => {
+      gen.code(_`"use strict"; ${funcSourceUrl(schema, opts)}`)
+      destructureValCxtES5(gen, opts)
+      gen.code(body)
+    })
+  } else {
+    gen.func(validateName, _`${N.data}, ${destructureValCxt(opts)}`, schemaEnv.$async, () =>
+      gen.code(funcSourceUrl(schema, opts)).code(body)
+    )
+  }
 }
 
 function destructureValCxt(opts: InstanceOptions): Code {

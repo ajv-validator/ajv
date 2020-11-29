@@ -8,7 +8,7 @@ import type {
 } from "../types"
 import type Ajv from "../core"
 import type {InstanceOptions} from "../core"
-import {CodeGen, _, nil, Name, Code} from "./codegen"
+import {CodeGen, _, nil, stringify, Name, Code} from "./codegen"
 import {ValidationError} from "./error_classes"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
@@ -122,10 +122,15 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     parentData: N.parentData,
     parentDataProperty: N.parentDataProperty,
     dataNames: [N.data],
-    dataPathArr: [nil], // TODO can its lenght be used as dataLevel if nil is removed?
+    dataPathArr: [nil], // TODO can its length be used as dataLevel if nil is removed?
     dataLevel: 0,
     dataTypes: [],
-    topSchemaRef: gen.scopeValue("schema", {ref: sch.schema}),
+    topSchemaRef: gen.scopeValue(
+      "schema",
+      this.opts.code.source === true
+        ? {ref: sch.schema, code: stringify(sch.schema)}
+        : {ref: sch.schema}
+    ),
     validateName,
     ValidationError: _ValidationError,
     schema: sch.schema,
@@ -147,23 +152,21 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     validateFunctionCode(schemaCxt)
     gen.optimize(this.opts.code.optimize)
     // gen.optimize(1)
-    sourceCode = `${gen.scopeRefs(N.scope)}${gen}`
+    const validateCode = gen.toString()
+    sourceCode = `${gen.scopeRefs(N.scope)}return ${validateCode}`
     // console.log((codeSize += sourceCode.length), (nodeCount += gen.nodeCount))
     if (this.opts.code.process) sourceCode = this.opts.code.process(sourceCode, sch)
     // console.log("\n\n\n *** \n", sourceCode)
     const makeValidate = new Function(`${N.self}`, `${N.scope}`, sourceCode)
     const validate: AnyValidateFunction = makeValidate(this, this.scope.get())
-    gen.scopeValue(validateName, {ref: validate})
+    this.scope.value(validateName, {ref: validate})
 
     validate.errors = null
     validate.schema = sch.schema
     validate.schemaEnv = sch
     if (sch.$async) (validate as AsyncValidateFunction).$async = true
     if (this.opts.code.source === true) {
-      validate.source = {
-        code: sourceCode,
-        scope: this.scope,
-      }
+      validate.source = {validateName, validateCode, scopeValues: gen._values}
     }
     if (this.opts.unevaluated) {
       const {props, items} = schemaCxt
@@ -173,6 +176,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
         dynamicProps: props instanceof Name,
         dynamicItems: items instanceof Name,
       }
+      if (validate.source) validate.source.evaluated = stringify(validate.evaluated)
     }
     sch.validate = validate
     return sch

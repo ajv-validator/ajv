@@ -1,9 +1,10 @@
+import type AjvCore from "../dist/core"
 import _Ajv from "./ajv"
-import getAjvInstances from "./ajv_instances"
+import getAjvInstances, {withPack} from "./ajv_instances"
 import jsonSchemaTest from "json-schema-test"
 import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
-import addFormats from "ajv-formats"
+import ajvFormats from "ajv-formats"
 
 const instances = getAjvInstances(_Ajv, options, {strict: false, formats: {allowedUnknown: true}})
 
@@ -26,8 +27,8 @@ const remoteRefsWithIds = [
 
 instances.forEach(addRemoteRefsAndFormats)
 
-jsonSchemaTest(instances, {
-  description: "Schema tests of " + instances.length + " ajv instances with different options",
+jsonSchemaTest(withPack(instances), {
+  description: `Schema tests of ${instances.length} ajv instances with different options`,
   suites: {"Schema tests": require("./_json/tests")},
   only: [],
   assert: require("./chai").assert,
@@ -37,8 +38,9 @@ jsonSchemaTest(instances, {
   timeout: 10000,
 })
 
-function addRemoteRefsAndFormats(ajv) {
+function addRemoteRefsAndFormats(ajv: AjvCore) {
+  ajv.opts.code.source = true
   for (const id in remoteRefs) ajv.addSchema(remoteRefs[id], id)
   ajv.addSchema(remoteRefsWithIds)
-  addFormats(ajv)
+  ajvFormats(ajv)
 }

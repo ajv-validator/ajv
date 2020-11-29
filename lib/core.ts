@@ -15,6 +15,7 @@ export {
   AnySchema,
   ValidateFunction,
   AsyncValidateFunction,
+  AnyValidateFunction,
   ErrorObject,
 } from "./types"
 
@@ -237,12 +238,12 @@ export default class Ajv {
   logger: Logger
   // shared external scope values for compiled functions
   readonly scope = new ValueScope({scope: {}, prefixes: EXT_SCOPE_NAMES})
-  readonly schemas: {[key: string]: SchemaEnv | undefined} = {}
-  readonly refs: {[ref: string]: SchemaEnv | string | undefined} = {}
-  readonly formats: {[name: string]: AddedFormat | undefined} = {}
+  readonly schemas: {[Key in string]?: SchemaEnv} = {}
+  readonly refs: {[Ref in string]?: SchemaEnv | string} = {}
+  readonly formats: {[Name in string]?: AddedFormat} = {}
   readonly RULES: ValidationRules
   readonly _compilations: Set<SchemaEnv> = new Set()
-  private readonly _loading: {[ref: string]: Promise<AnySchemaObject> | undefined} = {}
+  private readonly _loading: {[Ref in string]?: Promise<AnySchemaObject>} = {}
   private readonly _cache: Map<AnySchema, SchemaEnv> = new Map()
   private readonly _metaOpts: InstanceOptions
 
@@ -300,10 +301,9 @@ export default class Ajv {
     let v: AnyValidateFunction | undefined
     if (typeof schemaKeyRef == "string") {
       v = this.getSchema(schemaKeyRef)
-      if (!v) throw new Error('no schema with key or ref "' + schemaKeyRef + '"')
+      if (!v) throw new Error(`no schema with key or ref "${schemaKeyRef}"`)
     } else {
-      const sch = this._addSchema(schemaKeyRef)
-      v = sch.validate || this._compileSchemaEnv(sch)
+      v = this.compile<T>(schemaKeyRef)
     }
 
     const valid = v(data)
