@@ -3,9 +3,13 @@ export type SomeJSONSchema = JSONSchemaType<Known, true>
 
 export type PartialSchema<T> = Partial<JSONSchemaType<T, true>>
 
-export type JSONSchemaType<T, _partial = false> = (T extends number
+type JSONType<T extends string, _partial extends boolean> = _partial extends true
+  ? T | undefined
+  : T
+
+export type JSONSchemaType<T, _partial extends boolean = false> = (T extends number
   ? {
-      type: "number" | "integer"
+      type: JSONType<"number" | "integer", _partial>
       minimum?: number
       maximum?: number
       exclusiveMinimum?: number
@@ -15,7 +19,7 @@ export type JSONSchemaType<T, _partial = false> = (T extends number
     }
   : T extends string
   ? {
-      type: "string"
+      type: JSONType<"string", _partial>
       minLength?: number
       maxLength?: number
       pattern?: string
@@ -28,7 +32,7 @@ export type JSONSchemaType<T, _partial = false> = (T extends number
   : T extends [any, ...any[]]
   ? {
       // JSON AnySchema for tuple
-      type: "array"
+      type: JSONType<"array", _partial>
       items: {
         [K in keyof T]-?: JSONSchemaType<T[K]> & Nullable<T[K]>
       } & {length: T["length"]}
@@ -36,33 +40,34 @@ export type JSONSchemaType<T, _partial = false> = (T extends number
     } & ({maxItems: T["length"]} | {additionalItems: false})
   : T extends any[]
   ? {
-      type: "array"
+      type: JSONType<"array", _partial>
       items: JSONSchemaType<T[0]>
       contains?: PartialSchema<T[0]>
       minItems?: number
       maxItems?: number
+      minContains?: number
+      maxContains?: number
       uniqueItems?: true
       additionalItems?: never
     }
   : T extends Record<string, any>
   ? {
-      // JSON AnySchema for records and dicitonaries
-      // "required" and "additionalProperties" are not optional because they are often forgotten
-      // "properties" are optional for more concise dicitonary schemas
+      // JSON AnySchema for records and dictionaries
+      // "required" is not optional because it is often forgotten
+      // "properties" are optional for more concise dictionary schemas
       // "patternProperties" and can be only used with interfaces that have string index
-      type: "object"
+      type: JSONType<"object", _partial>
       // "required" type does not guarantee that all required properties are listed
       // it only asserts that optional cannot be listed
       required: _partial extends true ? (keyof T)[] : RequiredMembers<T>[]
-      additionalProperties: boolean | JSONSchemaType<T[string]>
+      additionalProperties?: boolean | JSONSchemaType<T[string]>
+      unevaluatedProperties?: boolean | JSONSchemaType<T[string]>
       properties?: _partial extends true ? Partial<PropertiesSchema<T>> : PropertiesSchema<T>
-      patternProperties?: {
-        [pattern: string]: JSONSchemaType<T[string]>
-      }
+      patternProperties?: {[Pattern in string]?: JSONSchemaType<T[string]>}
       propertyNames?: JSONSchemaType<string>
-      dependencies?: {
-        [K in keyof T]?: (keyof T)[] | PartialSchema<T> | undefined
-      }
+      dependencies?: {[K in keyof T]?: (keyof T)[] | PartialSchema<T>}
+      dependentRequired?: {[K in keyof T]?: (keyof T)[]}
+      dependentSchemas?: {[K in keyof T]?: PartialSchema<T>}
       minProperties?: number
       maxProperties?: number
     }
@@ -75,10 +80,10 @@ export type JSONSchemaType<T, _partial = false> = (T extends number
   $id?: string
   $ref?: string
   $defs?: {
-    [key: string]: JSONSchemaType<Known, true>
+    [Key in string]?: JSONSchemaType<Known, true>
   }
   definitions?: {
-    [key: string]: JSONSchemaType<Known, true>
+    [Key in string]?: JSONSchemaType<Known, true>
   }
   allOf?: PartialSchema<T>[]
   anyOf?: PartialSchema<T>[]
@@ -104,8 +109,8 @@ type RequiredMembers<T> = {
 type Nullable<T> = undefined extends T
   ? {
       nullable: true
-      const?: never // any non-null value would fail `null`, `null` would fail any other value
-      enum?: (T | null)[] // `null` must be explicitely included in "enum" for `null` to pass
+      const?: never // any non-null value would fail `const: null`, `null` would fail any other value in const
+      enum?: (T | null)[] // `null` must be explicitly included in "enum" for `null` to pass
       default?: T | null
     }
   : {

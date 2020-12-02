@@ -17,8 +17,8 @@ type ValidationTypes = {
 export interface ValidationRules {
   rules: RuleGroup[]
   post: RuleGroup
-  all: {[key: string]: boolean | Rule | undefined} // rules that have to be validated
-  keywords: {[key: string]: boolean | undefined} // all known keywords (superset of "all")
+  all: {[Key in string]?: boolean | Rule} // rules that have to be validated
+  keywords: {[Key in string]?: boolean} // all known keywords (superset of "all")
   types: ValidationTypes
 }
 

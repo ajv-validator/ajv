@@ -27,9 +27,7 @@ export type Schema = SchemaObject | boolean
 
 export type AnySchema = Schema | AsyncSchema
 
-export interface SchemaMap {
-  [key: string]: AnySchema | undefined
-}
+export type SchemaMap = {[Key in string]?: AnySchema}
 
 export interface SourceCode {
   validateName: Name
@@ -38,10 +36,10 @@ export interface SourceCode {
   evaluated?: Code
 }
 
-interface DataValidationCxt {
+export interface DataValidationCxt<T extends string | number = string | number> {
   dataPath: string
-  parentData: Record<string, any> | any[]
-  parentDataProperty: string | number
+  parentData: {[K in T]: any} // object or array
+  parentDataProperty: T // string or number
   rootData: Record<string, any> | any[]
   dynamicAnchors: {[Ref in string]?: ValidateFunction}
 }
@@ -182,9 +180,7 @@ export interface KeywordErrorCxt {
   it: SchemaCxt
 }
 
-export interface KeywordCxtParams {
-  [x: string]: Code | string | number | undefined
-}
+export type KeywordCxtParams = {[P in string]?: Code | string | number}
 
 export type FormatValidator<T extends string | number> = (data: T) => boolean
 

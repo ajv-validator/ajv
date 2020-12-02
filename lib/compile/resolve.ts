@@ -6,9 +6,7 @@ import traverse = require("json-schema-traverse")
 import URI = require("uri-js")
 
 // the hash of local references inside the schema (created by getSchemaRefs), used for inline resolution
-export interface LocalRefs {
-  [ref: string]: AnySchemaObject | undefined
-}
+export type LocalRefs = {[Ref in string]?: AnySchemaObject}
 
 // TODO refactor to use keyword definitions
 const SIMPLE_INLINED = new Set([
@@ -94,7 +92,7 @@ const ANCHOR = /^[a-z_][-a-z0-9._]*$/i
 export function getSchemaRefs(this: Ajv, schema: AnySchema): LocalRefs {
   if (typeof schema == "boolean") return {}
   const schemaId = normalizeId(schema.$id)
-  const baseIds: {[jsonPtr: string]: string} = {"": schemaId}
+  const baseIds: {[JsonPtr in string]?: string} = {"": schemaId}
   const pathPrefix = getFullPath(schemaId, false)
   const localRefs: LocalRefs = {}
   const schemaRefs: Set<string> = new Set()

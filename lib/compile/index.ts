@@ -17,8 +17,8 @@ import {validateFunctionCode} from "./validate"
 import URI = require("uri-js")
 import {JSONType} from "./rules"
 
-export interface SchemaRefs {
-  [ref: string]: SchemaEnv | AnySchema | undefined
+export type SchemaRefs = {
+  [Ref in string]?: SchemaEnv | AnySchema
 }
 
 export interface SchemaCxt {

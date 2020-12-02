@@ -30,7 +30,7 @@ export function checkUnknownRules(it: SchemaCxt, schema: AnySchema = it.schema):
 
 export function schemaHasRules(
   schema: AnySchema,
-  rules: {[key: string]: boolean | Rule | undefined}
+  rules: {[Key in string]?: boolean | Rule}
 ): boolean {
   if (typeof schema == "boolean") return !schema
   for (const key in schema) if (rules[key]) return true

@@ -93,7 +93,7 @@ interface CurrentOptions {
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
   formats?: {[Name in string]?: Format}
   keywords?: Vocabulary
-  schemas?: AnySchema[] | {[key: string]: AnySchema}
+  schemas?: AnySchema[] | {[Key in string]?: AnySchema}
   logger?: Logger | false
   loadSchema?: (uri: string) => Promise<AnySchemaObject>
   // options to modify validated data:
@@ -606,10 +606,7 @@ export default class Ajv {
     return metaSchema
   }
 
-  private _removeAllSchemas(
-    schemas: {[ref: string]: SchemaEnv | string | undefined},
-    regex?: RegExp
-  ): void {
+  private _removeAllSchemas(schemas: {[Ref in string]?: SchemaEnv | string}, regex?: RegExp): void {
     for (const keyRef in schemas) {
       const sch = schemas[keyRef]
       if (!regex || regex.test(keyRef)) {
@@ -701,7 +698,7 @@ function addInitialSchemas(this: Ajv): void {
   const optsSchemas = this.opts.schemas
   if (!optsSchemas) return
   if (Array.isArray(optsSchemas)) this.addSchema(optsSchemas)
-  else for (const key in optsSchemas) this.addSchema(optsSchemas[key], key)
+  else for (const key in optsSchemas) this.addSchema(optsSchemas[key] as AnySchema, key)
 }
 
 function addInitialFormats(this: Ajv): void {
@@ -711,14 +708,17 @@ function addInitialFormats(this: Ajv): void {
   }
 }
 
-function addInitialKeywords(this: Ajv, defs: Vocabulary | {[x: string]: KeywordDefinition}): void {
+function addInitialKeywords(
+  this: Ajv,
+  defs: Vocabulary | {[K in string]?: KeywordDefinition}
+): void {
   if (Array.isArray(defs)) {
     this.addVocabulary(defs)
     return
   }
   this.logger.warn("keywords option as map is deprecated, pass array")
   for (const keyword in defs) {
-    const def = defs[keyword]
+    const def = defs[keyword] as KeywordDefinition
     if (!def.keyword) def.keyword = keyword
     this.addKeyword(def)
   }

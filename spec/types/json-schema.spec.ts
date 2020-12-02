@@ -14,7 +14,7 @@ interface MyData {
   boo?: true
   tuple?: [number, string]
   arr: {id: number}[]
-  map: {[x: string]: number}
+  map: {[K in string]?: number}
   notBoo?: string // should not be present if "boo" is present
   negativeIfBoo?: number // should be negative if "boo" is present
 }

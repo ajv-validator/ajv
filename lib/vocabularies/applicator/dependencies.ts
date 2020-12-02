@@ -10,9 +10,7 @@ import {_, str} from "../../compile/codegen"
 import {alwaysValidSchema} from "../../compile/util"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp, propertyInData} from "../code"
 
-interface PropertyDependencies {
-  [x: string]: string[]
-}
+type PropertyDependencies = {[K in string]?: string[]}
 
 type SchemaDependencies = SchemaMap
 
@@ -63,13 +61,13 @@ function splitDependencies({schema}: KeywordCxt): [PropertyDependencies, SchemaD
 
 export function validatePropertyDeps(
   cxt: KeywordCxt,
-  propertyDeps: {[x: string]: string[]} = cxt.schema
+  propertyDeps: {[K in string]?: string[]} = cxt.schema
 ): void {
   const {gen, data, it} = cxt
   if (Object.keys(propertyDeps).length === 0) return
   const missing = gen.let("missing")
   for (const prop in propertyDeps) {
-    const deps = propertyDeps[prop]
+    const deps = propertyDeps[prop] as string[]
     if (deps.length === 0) continue
     const hasProperty = propertyInData(data, prop, it.opts.ownProperties)
     cxt.setParams({
