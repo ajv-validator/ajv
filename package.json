@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "7.0.0-beta.8",
+  "version": "7.0.0-beta.9",
   "description": "Another JSON Schema Validator",
   "main": "dist/ajv.js",
   "types": "dist/ajv.d.ts",

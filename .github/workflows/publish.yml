@@ -21,20 +21,3 @@ jobs:
         run: npm publish --tag beta
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  publish-gpr:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 14
-          registry-url: https://npm.pkg.github.com/
-      - run: npm install
-      - run: git submodule update --init
-      - run: npm run test-ci
-      - name: Publish beta version to github registry
-        if: "github.event.release.prerelease"
-        run: npm publish --tag beta
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
