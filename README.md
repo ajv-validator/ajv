@@ -6,7 +6,7 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07/
 
 [![build](https://github.com/ajv-validator/ajv/workflows/build/badge.svg)](https://github.com/ajv-validator/ajv/actions?query=workflow%3Abuild)
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
-[![npm (beta)](https://img.shields.io/npm/v/ajv/beta)](https://www.npmjs.com/package/ajv/v/7.0.0-beta.9)
+[![npm (beta)](https://img.shields.io/npm/v/ajv/beta)](https://www.npmjs.com/package/ajv/v/7.0.0-rc.0)
 [![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![Coverage Status](https://coveralls.io/repos/github/ajv-validator/ajv/badge.svg?branch=master)](https://coveralls.io/github/ajv-validator/ajv?branch=master)
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
@@ -204,7 +204,8 @@ const ajv = new Ajv()
 
 type MyData = {foo: number}
 
-// optional schema type annotation for schema to match MyData type
+// Optional schema type annotation for schema to match MyData type.
+// To use JSONSchemaType set `strictNullChecks: true` in tsconfig `compilerOptions`.
 const schema: JSONSchemaType<MyData> = {
   type: "object",
   properties: {
