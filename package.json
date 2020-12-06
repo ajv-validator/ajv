@@ -68,7 +68,7 @@
     "uri-js": "^4.2.2"
   },
   "devDependencies": {
-    "@ajv-validator/config": "^0.2.3",
+    "@ajv-validator/config": "^0.3.0",
     "@types/chai": "^4.2.12",
     "@types/mocha": "^8.0.3",
     "@types/node": "^14.0.27",
