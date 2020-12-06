@@ -28,6 +28,8 @@ interface ScopeOptions {
 
 interface ValueScopeOptions extends ScopeOptions {
   scope: ScopeStore
+  es5?: boolean
+  lines?: boolean
 }
 
 export type ScopeStore = Record<string, ValueReference[] | undefined>
@@ -38,6 +40,12 @@ type ScopeValues = {
 
 export type ScopeValueSets = {
   [Prefix in string]?: Set<ValueScopeName>
+}
+
+export const varKinds = {
+  const: new Name("const"),
+  let: new Name("let"),
+  var: new Name("var"),
 }
 
 export class Scope {
@@ -92,13 +100,21 @@ export class ValueScopeName extends Name {
   }
 }
 
+interface VSOptions extends ValueScopeOptions {
+  _n: Code
+}
+
+const line = _`\n`
+
 export class ValueScope extends Scope {
   protected readonly _values: ScopeValues = {}
   protected readonly _scope: ScopeStore
+  readonly opts: VSOptions
 
   constructor(opts: ValueScopeOptions) {
     super(opts)
     this._scope = opts.scope
+    this.opts = {...opts, _n: opts.lines ? line : nil}
   }
 
   get(): ScopeStore {
@@ -175,9 +191,10 @@ export class ValueScope extends Scope {
         nameSet.add(name)
         let c = valueCode(name)
         if (c) {
-          code = _`${code}const ${name} = ${c};`
+          const def = this.opts.es5 ? varKinds.var : varKinds.const
+          code = _`${code}${def} ${name} = ${c};${this.opts._n}`
         } else if ((c = getCode?.(name))) {
-          code = _`${code}${c}`
+          code = _`${code}${c}${this.opts._n}`
         } else {
           throw new ValueError(name)
         }

@@ -1,9 +1,9 @@
 import type {ScopeValueSets, NameValue, ValueScope, ValueScopeName} from "./scope"
 import {_, nil, _Code, Code, Name, UsedNames, CodeItem, addCodeArg, _CodeOrName} from "./code"
-import {Scope} from "./scope"
+import {Scope, varKinds} from "./scope"
 
 export {_, str, strConcat, nil, getProperty, stringify, Name, Code} from "./code"
-export {Scope, ScopeStore, ValueScope, ScopeValueSets} from "./scope"
+export {Scope, ScopeStore, ValueScope, ScopeValueSets, varKinds} from "./scope"
 
 // type for expressions that can be safely inserted in code without quotes
 export type SafeExpr = Code | number | boolean | null
@@ -21,12 +21,6 @@ export const operators = {
   NOT: new _Code("!"),
   OR: new _Code("||"),
   AND: new _Code("&&"),
-}
-
-export const varKinds = {
-  const: new Name("const"),
-  let: new Name("let"),
-  var: new Name("var"),
 }
 
 abstract class Node {

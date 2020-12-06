@@ -113,7 +113,7 @@ interface CurrentOptions {
   loopRequired?: number
   loopEnum?: number // NEW
   ownProperties?: boolean
-  multipleOfPrecision?: boolean | number
+  multipleOfPrecision?: number
   messages?: boolean
   code?: CodeOptions // NEW
 }
@@ -237,7 +237,7 @@ export default class Ajv {
   errors?: ErrorObject[] | null // errors from the last validation
   logger: Logger
   // shared external scope values for compiled functions
-  readonly scope = new ValueScope({scope: {}, prefixes: EXT_SCOPE_NAMES})
+  readonly scope: ValueScope
   readonly schemas: {[Key in string]?: SchemaEnv} = {}
   readonly refs: {[Ref in string]?: SchemaEnv | string} = {}
   readonly formats: {[Name in string]?: AddedFormat} = {}
@@ -251,10 +251,9 @@ export default class Ajv {
   static MissingRefError = MissingRefError
 
   constructor(opts: Options = {}) {
-    opts = this.opts = {
-      ...opts,
-      ...requiredOptions(opts),
-    }
+    opts = this.opts = {...opts, ...requiredOptions(opts)}
+    const {es5, lines} = this.opts.code
+    this.scope = new ValueScope({scope: {}, prefixes: EXT_SCOPE_NAMES, es5, lines})
     this.logger = getLogger(opts.logger)
     const formatOpt = opts.validateFormats
     opts.validateFormats = false

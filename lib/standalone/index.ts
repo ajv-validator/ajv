@@ -1,6 +1,6 @@
 import type AjvCore from "../core"
 import type {AnyValidateFunction, SourceCode} from "../types"
-import type {ScopeValueSets, ValueScopeName} from "../compile/codegen/scope"
+import {ScopeValueSets, ValueScopeName, varKinds} from "../compile/codegen/scope"
 import {_, _Code, Code, getProperty} from "../compile/codegen/code"
 import {SchemaEnv} from "../compile"
 
@@ -11,6 +11,7 @@ export default function standaloneCode(
   if (!ajv.opts.code.source) {
     throw new Error("moduleCode: ajv instance must have code.source option")
   }
+  const _n = ajv.scope.opts._n
   return typeof refsOrFunc == "function"
     ? funcExportCode(refsOrFunc.source)
     : refsOrFunc !== undefined
@@ -29,7 +30,7 @@ export default function standaloneCode(
     const usedValues: ScopeValueSets = {}
     const n = source?.validateName
     const vCode = validateCode(usedValues, source)
-    return `"use strict";module.exports = ${n};module.exports.default = ${n};${vCode}`
+    return `"use strict";${_n}module.exports = ${n};${_n}module.exports.default = ${n};${_n}${vCode}`
   }
 
   function multiExportsCode<T extends SchemaEnv | string>(
@@ -42,7 +43,7 @@ export default function standaloneCode(
       const v = getValidateFunc(schemas[name] as T)
       if (v) {
         const vCode = validateCode(usedValues, v.source)
-        code = _`${code}exports${getProperty(name)} = ${v.source?.validateName};${vCode}`
+        code = _`${code}${_n}exports${getProperty(name)} = ${v.source?.validateName};${_n}${vCode}`
       }
     }
     return `${code}`
@@ -51,8 +52,8 @@ export default function standaloneCode(
   function validateCode(usedValues: ScopeValueSets, s?: SourceCode): Code {
     if (!s) throw new Error('moduleCode: function does not have "source" property')
     const scopeCode = ajv.scope.scopeCode(s.scopeValues, usedValues, refValidateCode)
-    const code = new _Code(`${scopeCode}${s.validateCode}`)
-    return s.evaluated ? _`${code}${s.validateName}.evaluated = ${s.evaluated};` : code
+    const code = new _Code(`${scopeCode}${_n}${s.validateCode}`)
+    return s.evaluated ? _`${code}${s.validateName}.evaluated = ${s.evaluated};${_n}` : code
 
     function refValidateCode(n: ValueScopeName): Code | undefined {
       const vRef = n.value?.ref
@@ -62,7 +63,8 @@ export default function standaloneCode(
       } else if (n.prefix === "root" && typeof vRef == "object") {
         const {validate, validateName} = vRef as SchemaEnv
         const vCode = validateCode(usedValues, validate?.source)
-        return _`const ${n} = {validate: ${validateName}};${vCode}`
+        const def = ajv.opts.code.es5 ? varKinds.var : varKinds.const
+        return _`${def} ${n} = {validate: ${validateName}};${_n}${vCode}`
       }
       return undefined
     }

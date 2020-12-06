@@ -279,7 +279,7 @@ const defaultOptions = {
   loopRequired: Infinity,
   loopEnum: Infinity, // NEW
   ownProperties: false,
-  multipleOfPrecision: false,
+  multipleOfPrecision: undefined,
   messages: true,
   code: {
     // NEW
