@@ -11,7 +11,7 @@ export default function standaloneCode(
   if (!ajv.opts.code.source) {
     throw new Error("moduleCode: ajv instance must have code.source option")
   }
-  const _n = ajv.scope.opts._n
+  const {_n} = ajv.scope.opts
   return typeof refsOrFunc == "function"
     ? funcExportCode(refsOrFunc.source)
     : refsOrFunc !== undefined
