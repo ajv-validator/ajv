@@ -576,7 +576,7 @@ export class CodeGen {
     from: SafeExpr,
     to: SafeExpr,
     forBody: (index: Name) => void,
-    varKind: Code = varKinds.let
+    varKind: Code = this.opts.es5 ? varKinds.var : varKinds.let
   ): CodeGen {
     const name = this._scope.toName(nameOrPrefix)
     return this._for(new ForRange(varKind, name, from, to), () => forBody(name))
@@ -606,7 +606,7 @@ export class CodeGen {
     nameOrPrefix: Name | string,
     obj: Code,
     forBody: (item: Name) => void,
-    varKind: Code = varKinds.const
+    varKind: Code = this.opts.es5 ? varKinds.var : varKinds.const
   ): CodeGen {
     if (this.opts.ownProperties) {
       return this.forOf(nameOrPrefix, _`Object.keys(${obj})`, forBody)
