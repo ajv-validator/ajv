@@ -1,7 +1,9 @@
-import type {CodeKeywordDefinition, AnySchema} from "../../types"
+import type {CodeKeywordDefinition, ErrorNoParams, AnySchema} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, not} from "../../compile/codegen"
 import {alwaysValidSchema} from "../../compile/util"
+
+export type AnyOfError = ErrorNoParams<"anyOf", AnySchema[]>
 
 const def: CodeKeywordDefinition = {
   keyword: "anyOf",

@@ -1,11 +1,16 @@
-import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
+import type {
+  CodeKeywordDefinition,
+  ErrorObject,
+  KeywordErrorDefinition,
+  AnySchema,
+} from "../../types"
 import type {SchemaObjCxt} from "../../compile"
 import type KeywordCxt from "../../compile/context"
 import {_, str, not, Name} from "../../compile/codegen"
 import {alwaysValidSchema} from "../../compile/util"
 import {checkStrictMode} from "../../compile/validate"
 
-export type IfKeywordError = ErrorObject<"if", {failingKeyword: string}>
+export type IfKeywordError = ErrorObject<"if", {failingKeyword: string}, AnySchema>
 
 const error: KeywordErrorDefinition = {
   message: ({params}) => str`should match "${params.ifClause}" schema`,

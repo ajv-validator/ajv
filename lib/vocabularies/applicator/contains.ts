@@ -1,11 +1,20 @@
-import type {CodeKeywordDefinition, KeywordErrorDefinition, ErrorObject} from "../../types"
+import type {
+  CodeKeywordDefinition,
+  KeywordErrorDefinition,
+  ErrorObject,
+  AnySchema,
+} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, str, Name} from "../../compile/codegen"
 import {Type} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
 import {checkStrictMode} from "../../compile/validate"
 
-export type ContainsError = ErrorObject<"contains", {minContains: number; maxContains?: number}>
+export type ContainsError = ErrorObject<
+  "contains",
+  {minContains: number; maxContains?: number},
+  AnySchema
+>
 
 const error: KeywordErrorDefinition = {
   message: ({params: {min, max}}) =>

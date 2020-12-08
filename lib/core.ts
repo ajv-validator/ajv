@@ -17,6 +17,7 @@ export {
   AsyncValidateFunction,
   AnyValidateFunction,
   ErrorObject,
+  ErrorNoParams,
 } from "./types"
 
 export {SchemaCxt, SchemaObjCxt} from "./compile"

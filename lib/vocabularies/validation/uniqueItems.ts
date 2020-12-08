@@ -4,7 +4,7 @@ import {checkDataTypes, getSchemaTypes, DataType} from "../../compile/validate/d
 import {_, str, Name} from "../../compile/codegen"
 import equal = require("fast-deep-equal")
 
-export type UniqueItemsError = ErrorObject<"uniqueItems", {i: number; j: number}>
+export type UniqueItemsError = ErrorObject<"uniqueItems", {i: number; j: number}, boolean>
 
 const error: KeywordErrorDefinition = {
   message: ({params: {i, j}}) =>

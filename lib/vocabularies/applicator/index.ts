@@ -1,4 +1,4 @@
-import type {ErrorObject, Vocabulary} from "../../types"
+import type {ErrorNoParams, Vocabulary} from "../../types"
 import additionalItems, {AdditionalItemsError} from "./additionalItems"
 import items from "./items"
 import contains, {ContainsError} from "./contains"
@@ -7,8 +7,8 @@ import propertyNames, {PropertyNamesError} from "./propertyNames"
 import additionalProperties, {AdditionalPropertiesError} from "./additionalProperties"
 import properties from "./properties"
 import patternProperties from "./patternProperties"
-import notKeyword from "./not"
-import anyOf from "./anyOf"
+import notKeyword, {NotKeywordError} from "./not"
+import anyOf, {AnyOfError} from "./anyOf"
 import oneOf, {OneOfError} from "./oneOf"
 import allOf from "./allOf"
 import ifKeyword, {IfKeywordError} from "./if"
@@ -37,16 +37,13 @@ const applicator: Vocabulary = [
 export default applicator
 
 export type ApplicatorKeywordError =
-  | ErrorWithoutParams
+  | ErrorNoParams<"false schema">
   | AdditionalItemsError
   | ContainsError
   | AdditionalPropertiesError
   | DependenciesError
   | IfKeywordError
+  | AnyOfError
   | OneOfError
+  | NotKeywordError
   | PropertyNamesError
-
-export type ErrorWithoutParams = ErrorObject<
-  "anyOf" | "not" | "false schema",
-  Record<string, never>
->

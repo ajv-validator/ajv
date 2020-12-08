@@ -73,7 +73,7 @@ export interface AsyncValidateFunction<T = unknown> extends ValidateFunction<T> 
 
 export type AnyValidateFunction<T = any> = ValidateFunction<T> | AsyncValidateFunction<T>
 
-export interface ErrorObject<K = string, P = Record<string, any>> {
+export interface ErrorObject<K extends string = string, P = Record<string, any>, S = unknown> {
   keyword: K
   dataPath: string
   schemaPath: string
@@ -83,10 +83,12 @@ export interface ErrorObject<K = string, P = Record<string, any>> {
   // Excluded if option `messages` set to false.
   message?: string
   // These are added with the `verbose` option.
-  schema?: unknown
+  schema?: S
   parentSchema?: AnySchemaObject
   data?: unknown
 }
+
+export type ErrorNoParams<K extends string, S = unknown> = ErrorObject<K, Record<string, never>, S>
 
 interface _KeywordDef {
   keyword: string | string[]

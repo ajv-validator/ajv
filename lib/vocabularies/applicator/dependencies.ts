@@ -10,18 +10,24 @@ import {_, str} from "../../compile/codegen"
 import {alwaysValidSchema} from "../../compile/util"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp, propertyInData} from "../code"
 
-type PropertyDependencies = {[K in string]?: string[]}
+export type PropertyDependencies = {[K in string]?: string[]}
 
-type SchemaDependencies = SchemaMap
+export type SchemaDependencies = SchemaMap
 
-export type DependenciesError = ErrorObject<
-  "dependencies",
+type Deps = PropertyDependencies | SchemaDependencies
+
+export type DependenciesError<
+  K extends string = "dependencies",
+  S extends Deps = Deps
+> = ErrorObject<
+  K,
   {
     property: string
     missingProperty: string
     depsCount: number
     deps: string // TODO change to string[]
-  }
+  },
+  S
 >
 
 export const error: KeywordErrorDefinition = {

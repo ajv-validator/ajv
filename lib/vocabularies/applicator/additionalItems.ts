@@ -1,11 +1,16 @@
-import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
+import type {
+  CodeKeywordDefinition,
+  ErrorObject,
+  KeywordErrorDefinition,
+  AnySchema,
+} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, str, not, Name} from "../../compile/codegen"
 import {Type} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
 import {checkStrictMode} from "../../compile/validate"
 
-export type AdditionalItemsError = ErrorObject<"additionalItems", {limit: number}>
+export type AdditionalItemsError = ErrorObject<"additionalItems", {limit: number}, AnySchema>
 
 const error: KeywordErrorDefinition = {
   message: ({params: {len}}) => str`should NOT have more than ${len} items`,

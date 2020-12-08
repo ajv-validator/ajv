@@ -9,7 +9,7 @@ import {
 } from "../code"
 import {_, str, nil, not, Name, Code} from "../../compile/codegen"
 
-export type RequiredError = ErrorObject<"required", {missingProperty: string}>
+export type RequiredError = ErrorObject<"required", {missingProperty: string}, string[]>
 
 const error: KeywordErrorDefinition = {
   message: ({params: {missingProperty}}) => str`should have required property '${missingProperty}'`,

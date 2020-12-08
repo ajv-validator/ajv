@@ -3,7 +3,7 @@ import type KeywordCxt from "../../compile/context"
 import {usePattern} from "../code"
 import {_, str} from "../../compile/codegen"
 
-export type PatternError = ErrorObject<"pattern", {pattern: string}>
+export type PatternError = ErrorObject<"pattern", {pattern: string}, string>
 
 const error: KeywordErrorDefinition = {
   message: ({schemaCode}) => str`should match pattern "${schemaCode}"`,

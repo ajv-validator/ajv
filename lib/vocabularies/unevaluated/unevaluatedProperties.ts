@@ -1,4 +1,9 @@
-import type {CodeKeywordDefinition, KeywordErrorDefinition, ErrorObject} from "../../types"
+import type {
+  CodeKeywordDefinition,
+  KeywordErrorDefinition,
+  ErrorObject,
+  AnySchema,
+} from "../../types"
 import {_, not, and, Name, Code} from "../../compile/codegen"
 import {alwaysValidSchema} from "../../compile/util"
 import N from "../../compile/names"
@@ -6,7 +11,8 @@ import {Type} from "../../compile/subschema"
 
 export type UnevaluatedPropertiesError = ErrorObject<
   "unevaluatedProperties",
-  {unevaluatedProperty: string}
+  {unevaluatedProperty: string},
+  AnySchema
 >
 
 const error: KeywordErrorDefinition = {

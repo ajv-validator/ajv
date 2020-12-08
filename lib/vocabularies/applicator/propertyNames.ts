@@ -1,9 +1,14 @@
-import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
+import type {
+  CodeKeywordDefinition,
+  ErrorObject,
+  KeywordErrorDefinition,
+  AnySchema,
+} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, str, not} from "../../compile/codegen"
 import {alwaysValidSchema} from "../../compile/util"
 
-export type PropertyNamesError = ErrorObject<"propertyNames", {propertyName: string}>
+export type PropertyNamesError = ErrorObject<"propertyNames", {propertyName: string}, AnySchema>
 
 const error: KeywordErrorDefinition = {
   message: ({params}) => str`property name '${params.propertyName}' is invalid`, // TODO double quotes?

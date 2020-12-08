@@ -3,6 +3,7 @@ import type {
   AddedKeywordDefinition,
   ErrorObject,
   KeywordErrorDefinition,
+  AnySchema,
 } from "../../types"
 import {allSchemaProperties, usePattern} from "../code"
 import {_, nil, or, not, Code, Name} from "../../compile/codegen"
@@ -12,7 +13,8 @@ import {alwaysValidSchema, schemaRefOrVal} from "../../compile/util"
 
 export type AdditionalPropertiesError = ErrorObject<
   "additionalProperties",
-  {additionalProperty: string}
+  {additionalProperty: string},
+  AnySchema
 >
 
 const error: KeywordErrorDefinition = {
