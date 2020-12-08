@@ -14,5 +14,3 @@ export default function getAjvSyncInstances(extraOpts?: Options): AjvCore[] {
     extraOpts
   )
 }
-
-module.exports = getAjvSyncInstances

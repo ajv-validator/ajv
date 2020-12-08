@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
 
 describe("issue #342, support uniqueItems with some non-JSON objects", () => {
   let validate

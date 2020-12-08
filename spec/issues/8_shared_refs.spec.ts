@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
 
 describe("issue #8: schema with shared references", () => {
   it("should be supported by addSchema", spec("addSchema"))

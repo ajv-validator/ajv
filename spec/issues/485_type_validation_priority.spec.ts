@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
 
 describe("issue #485, order of type validation", () => {
   it("should validate types before keywords", () => {

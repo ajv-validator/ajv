@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
 
 describe("removeAdditional option", () => {
   it("should remove all additional properties", () => {

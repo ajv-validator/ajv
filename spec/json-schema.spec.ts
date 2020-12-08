@@ -1,11 +1,11 @@
 import _Ajv from "./ajv"
 import _Ajv2019 from "./ajv2019"
 import getAjvInstances, {withPack} from "./ajv_instances"
-import jsonSchemaTest from "json-schema-test"
+import jsonSchemaTest = require("json-schema-test")
 import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
 import ajvFormats from "ajv-formats"
-import draft6MetaSchema from "../dist/refs/json-schema-draft-06.json"
+import draft6MetaSchema = require("../dist/refs/json-schema-draft-06.json")
 import {toHash} from "../dist/compile/util"
 import chai from "./chai"
 

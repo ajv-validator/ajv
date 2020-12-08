@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
 
 describe('issue #521, incorrect warning with "id" property', () => {
   it("should not log warning", () => {

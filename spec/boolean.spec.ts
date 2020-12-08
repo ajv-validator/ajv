@@ -1,7 +1,7 @@
 import _Ajv from "./ajv"
 import type Ajv from ".."
-
-require("./chai").should()
+import chai from "./chai"
+chai.should()
 
 describe("boolean schemas", () => {
   let ajvs: Ajv[]

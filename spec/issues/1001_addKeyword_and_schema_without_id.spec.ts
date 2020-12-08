@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
 
 describe("issue #1001: addKeyword breaks schema without ID", () => {
   it("should allow using schemas without ID with addKeyword", () => {

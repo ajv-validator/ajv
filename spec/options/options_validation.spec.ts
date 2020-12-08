@@ -1,6 +1,8 @@
 import type Ajv from "../.."
 import _Ajv from "../ajv"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
+
 const DATE_FORMAT = /^\d\d\d\d-[0-1]\d-[0-3]\d$/
 
 describe("validation options", () => {

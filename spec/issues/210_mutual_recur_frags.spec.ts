@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
 
 describe("issue #210, mutual recursive $refs that are schema fragments", () => {
   it("should compile and validate schema when one ref is fragment", () => {

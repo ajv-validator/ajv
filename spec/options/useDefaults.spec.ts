@@ -1,6 +1,7 @@
 import _Ajv from "../ajv"
 import getAjvInstances from "../ajv_instances"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
 
 describe("useDefaults option", () => {
   it("should replace undefined property with default value", () => {

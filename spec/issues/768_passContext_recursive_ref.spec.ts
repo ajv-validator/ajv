@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
 
 describe("issue #768, fix passContext in recursive $ref", () => {
   let ajv, contexts: any[]

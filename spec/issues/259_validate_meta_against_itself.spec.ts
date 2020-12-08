@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
 
 describe("issue #259, support validating [meta-]schemas against themselves", () => {
   it('should add schema before validation if "id" is the same as "$schema"', () => {

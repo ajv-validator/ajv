@@ -1,7 +1,7 @@
 import getAjvAllInstances from "./ajv_all_instances"
 import {withPack} from "./ajv_instances"
 import {_} from ".."
-import jsonSchemaTest from "json-schema-test"
+import jsonSchemaTest = require("json-schema-test")
 import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
 

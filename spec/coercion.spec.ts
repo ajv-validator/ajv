@@ -1,6 +1,7 @@
 import type Ajv from ".."
 import _Ajv from "./ajv"
-require("./chai").should()
+import chai from "./chai"
+chai.should()
 
 const coercionRules = {
   string: {

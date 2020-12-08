@@ -4,7 +4,7 @@ import type AjvCore from "../dist/core"
 import {_, nil} from ".."
 import getAjvAllInstances from "./ajv_all_instances"
 import _Ajv from "./ajv"
-import assert from "assert"
+import assert = require("assert")
 
 import chai from "./chai"
 const should = chai.should(),

@@ -3,7 +3,7 @@ import type {SchemaObject} from ".."
 import _Ajv from "./ajv2019"
 import getAjvInstances from "./ajv_instances"
 import options from "./ajv_options"
-import assert from "assert"
+import assert = require("assert")
 
 describe("recursiveRef and dynamicRef", () => {
   let ajvs: Ajv[]

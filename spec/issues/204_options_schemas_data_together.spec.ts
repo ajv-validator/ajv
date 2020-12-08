@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
 
 describe("issue #204, options schemas and $data used together", () => {
   it("should use v5 metaschemas by default", () => {

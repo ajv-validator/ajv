@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
 
 describe.skip("issue #273, schemaPath in error in referenced schema", () => {
   it("should have canonic reference with hash after file name", () => {

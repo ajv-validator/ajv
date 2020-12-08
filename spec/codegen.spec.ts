@@ -10,7 +10,7 @@ import {
   Code,
   Name,
 } from "../dist/compile/codegen"
-import assert from "assert"
+import assert = require("assert")
 
 describe("code generation", () => {
   describe("Name", () => {

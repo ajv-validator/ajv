@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
 
 describe("issue #743, property __proto__ should be removed with removeAdditional option", () => {
   it("should remove additional properties", () => {

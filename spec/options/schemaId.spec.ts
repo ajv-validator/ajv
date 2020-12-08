@@ -1,6 +1,6 @@
 import type Ajv from "../.."
 import _Ajv from "../ajv"
-import assert from "assert"
+import assert = require("assert")
 import chai from "../chai"
 const should = chai.should()
 

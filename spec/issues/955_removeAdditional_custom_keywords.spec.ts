@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
 
 describe("issue #955: option removeAdditional breaks user-defined keywords", () => {
   it("should support user-defined keywords with option removeAdditional", () => {

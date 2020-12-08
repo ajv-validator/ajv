@@ -1,4 +1,5 @@
 import type Ajv from ".."
+import type {KeywordCxt, SchemaObject} from ".."
 import _Ajv from "./ajv"
 import {_} from ".."
 import assert = require("assert")
@@ -62,7 +63,7 @@ describe("Ajv", () => {
         _ajv.compile(schema)
       }, /Unexpected token/)
 
-      function badEvenCode(cxt) {
+      function badEvenCode(cxt: KeywordCxt) {
         const op = cxt.schema ? _`===` : _`!===` // invalid on purpose
         cxt.pass(_`${cxt.data} % 2 ${op} 0`)
       }
@@ -456,7 +457,7 @@ describe("Ajv", () => {
       it("should validate only numbers", () => {
         ajv.addFormat("positive", {
           type: "number",
-          validate: function (x) {
+          validate: function (x: number) {
             return x > 0
           },
         })
@@ -475,7 +476,7 @@ describe("Ajv", () => {
         ajv = new _Ajv({$data: true, allowUnionTypes: true})
         ajv.addFormat("positive", {
           type: "number",
-          validate: function (x) {
+          validate: function (x: number) {
             return x > 0
           },
         })
@@ -583,7 +584,7 @@ describe("Ajv", () => {
         })
       })
 
-      function passValidationThrowCompile(schema) {
+      function passValidationThrowCompile(schema: SchemaObject) {
         ajv.validateSchema(schema).should.equal(true)
         should.throw(() => {
           ajv.compile(schema)

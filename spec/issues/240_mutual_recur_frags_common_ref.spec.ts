@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
 
 describe("issue #240, mutually recursive fragment refs reference a common schema", () => {
   const apiSchema = {

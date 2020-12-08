@@ -1,7 +1,8 @@
 import getAjvAsyncInstances from "./ajv_async_instances"
-import jsonSchemaTest from "json-schema-test"
+import jsonSchemaTest = require("json-schema-test")
 import {afterError} from "./after_test"
-import Ajv from "./ajv"
+import type Ajv from ".."
+import _Ajv from "./ajv"
 
 const instances = getAjvAsyncInstances({$data: true})
 
@@ -21,7 +22,7 @@ jsonSchemaTest(instances, {
   timeout: 10000,
 })
 
-function addAsyncFormatsAndKeywords(ajv) {
+function addAsyncFormatsAndKeywords(ajv: Ajv) {
   ajv.addFormat("date", /^\d\d\d\d-[0-1]\d-[0-3]\d$/)
 
   ajv.addFormat("english_word", {
@@ -53,7 +54,7 @@ function addAsyncFormatsAndKeywords(ajv) {
   })
 }
 
-function checkWordOnServer(str) {
+function checkWordOnServer(str: string): Promise<boolean> {
   return str === "tomorrow"
     ? Promise.resolve(true)
     : str === "manana"
@@ -61,7 +62,7 @@ function checkWordOnServer(str) {
     : Promise.reject(new Error("unknown word"))
 }
 
-function checkIdExists(schema, data) {
+function checkIdExists(schema: {table: string}, data: number): Promise<boolean> {
   switch (schema.table) {
     case "users":
       return check([1, 5, 8])
@@ -71,12 +72,12 @@ function checkIdExists(schema, data) {
       throw new Error("no such table")
   }
 
-  function check(IDs) {
-    return Promise.resolve(IDs.indexOf(data) >= 0)
+  function check(IDs: number[]): Promise<boolean> {
+    return Promise.resolve(IDs.includes(data))
   }
 }
 
-function checkIdExistsWithError(schema, data) {
+function checkIdExistsWithError(schema: {table: string}, data: number): Promise<boolean> {
   const {table} = schema
   switch (table) {
     case "users":
@@ -87,18 +88,18 @@ function checkIdExistsWithError(schema, data) {
       throw new Error("no such table")
   }
 
-  function check(_table, IDs) {
-    if (IDs.indexOf(data) >= 0) return Promise.resolve(true)
+  function check(_table: string, IDs: number[]): Promise<boolean> {
+    if (IDs.includes(data)) return Promise.resolve(true)
 
     const error = {
       keyword: "idExistsWithError",
       message: "id not found in table " + _table,
     }
-    return Promise.reject(new Ajv.ValidationError([error]))
+    return Promise.reject(new _Ajv.ValidationError([error]))
   }
 }
 
-function compileCheckIdExists(schema) {
+function compileCheckIdExists(schema: {table: string}): (data: number) => Promise<boolean> {
   switch (schema.table) {
     case "users":
       return compileCheck([1, 5, 8])
@@ -108,9 +109,7 @@ function compileCheckIdExists(schema) {
       throw new Error("no such table")
   }
 
-  function compileCheck(IDs) {
-    return function (data) {
-      return Promise.resolve(IDs.indexOf(data) >= 0)
-    }
+  function compileCheck(IDs: number[]): (data: number) => Promise<boolean> {
+    return (data) => Promise.resolve(IDs.includes(data))
   }
 }

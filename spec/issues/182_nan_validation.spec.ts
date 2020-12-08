@@ -1,5 +1,6 @@
 import _Ajv from "../ajv"
-require("../chai").should()
+import chai from "../chai"
+chai.should()
 
 describe("issue #182, NaN validation", () => {
   const ajv = new _Ajv({strictTypes: false})
