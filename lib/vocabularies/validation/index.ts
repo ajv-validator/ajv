@@ -34,7 +34,7 @@ export default validation
 type LimitError = ErrorObject<
   "maxItems" | "minItems" | "minProperties" | "maxProperties" | "minLength" | "maxLength",
   {limit: number},
-  number
+  number | {$data: string}
 >
 
 export type ValidationKeywordError =

@@ -15,7 +15,11 @@ const KWDs: {[K in Kwd]: {okStr: Comparison; ok: Code; fail: Code}} = {
   exclusiveMinimum: {okStr: ">", ok: ops.GT, fail: ops.LTE},
 }
 
-export type LimitNumberError = ErrorObject<Kwd, {limit: number; comparison: Comparison}, number>
+export type LimitNumberError = ErrorObject<
+  Kwd,
+  {limit: number; comparison: Comparison},
+  number | {$data: string}
+>
 
 const error: KeywordErrorDefinition = {
   message: ({keyword, schemaCode}) => str`should be ${KWDs[keyword as Kwd].okStr} ${schemaCode}`,
