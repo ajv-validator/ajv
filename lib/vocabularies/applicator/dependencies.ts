@@ -12,22 +12,19 @@ import {checkReportMissingProp, checkMissingProp, reportMissingProp, propertyInD
 
 export type PropertyDependencies = {[K in string]?: string[]}
 
-export type SchemaDependencies = SchemaMap
+export interface DependenciesErrorParams {
+  property: string
+  missingProperty: string
+  depsCount: number
+  deps: string // TODO change to string[]
+}
 
-type Deps = PropertyDependencies | SchemaDependencies
+type SchemaDependencies = SchemaMap
 
-export type DependenciesError<
-  K extends string = "dependencies",
-  S extends Deps = Deps
-> = ErrorObject<
-  K,
-  {
-    property: string
-    missingProperty: string
-    depsCount: number
-    deps: string // TODO change to string[]
-  },
-  S
+export type DependenciesError = ErrorObject<
+  "dependencies",
+  DependenciesErrorParams,
+  {[K in string]?: string[] | AnySchema}
 >
 
 export const error: KeywordErrorDefinition = {

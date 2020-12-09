@@ -1,12 +1,16 @@
-import type {CodeKeywordDefinition} from "../../types"
+import type {CodeKeywordDefinition, ErrorObject} from "../../types"
 import {
   validatePropertyDeps,
   error,
-  DependenciesError,
+  DependenciesErrorParams,
   PropertyDependencies,
 } from "../applicator/dependencies"
 
-export type DependentRequiredError = DependenciesError<"dependentRequired", PropertyDependencies>
+export type DependentRequiredError = ErrorObject<
+  "dependentRequired",
+  DependenciesErrorParams,
+  PropertyDependencies
+>
 
 const def: CodeKeywordDefinition = {
   keyword: "dependentRequired",
