@@ -16,7 +16,7 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07/
 
 [<img src="https://www.poberezkin.com/images/mozilla.svg" width="45%">](https://www.mozilla.org)[<img src="./.github/img/gap.svg" width="9%">](https://opencollective.com/ajv)[<img src="./.github/img/reserved.svg" width="45%">](https://opencollective.com/ajv)
 
-## Using version 7 (beta)
+## Using version 7
 
 Ajv version 7 (beta) is released with these changes:
 
@@ -42,8 +42,31 @@ npm install ajv@beta
 
 See [Getting started](#usage) for code example.
 
+## Contributing
+
+100+ people contributed to Ajv. You are very welcome to join by implementing new features that are valuable to many users and by improving documentation.
+
+Please do not be disappointed if your suggestion is not accepted - it is important to maintain the balance between the library size, performance and functionality. If it seems that a feature would benefit only a small number of users, its addition may be delayed until there is more support from the users community - so please submit the issue first to explain why this feature is important.
+
+Please include documentation and test coverage with any new feature implementations.
+
+To run tests:
+
+```bash
+npm install
+git submodule update --init
+npm test
+```
+
+`npm run build` - compiles typescript to `dist` folder.
+
+Please review [Contributing guidelines](./CONTRIBUTING.md) and [Code components](./docs/components.md).
+
 ## Contents
 
+- [Platinum sponsors](#platinum-sponsors)
+- [Using version 7](#using-version-7)
+- [Contributing](#contributing)
 - [Mozilla MOSS grant and OpenJS Foundation](#mozilla-moss-grant-and-openjs-foundation)
 - [Sponsors](#sponsors)
 - [Performance](#performance)
@@ -69,7 +92,12 @@ See [Getting started](#usage) for code example.
   - [Standalone validation code](./docs/standalone.md)
   - [Asynchronous validation](./docs/validation.md#asynchronous-validation)
   - [Modifying data](./docs/validation.md#modifying-data-during-validation): [additional properties](./docs/validation.md#removing-additional-properties), [defaults](./docs/validation.md#assigning-defaults), [type coercion](./docs/validation.md#coercing-data-types)
-- [User-defined keywords](./docs/keywords.md)
+- [Extending Ajv](#extending-ajv)
+  - User-defined keywords:
+    - [basics](./docs/validation.md#user-defined-keywords)
+    - [guide](./docs/keywords.md)
+  - [Plugins](#plugins)
+  - [Related packages](#related-packages)
 - [Security considerations](./docs/security.md)
   - [Security contact](./docs/security.md#security-contact)
   - [Untrusted schemas](./docs/security.md#untrusted-schemas)
@@ -77,10 +105,8 @@ See [Getting started](#usage) for code example.
   - [Trusted schemas](./docs/security.md#security-risks-of-trusted-schemas)
   - [ReDoS attack](./docs/security.md#redos-attack)
   - [Content Security Policy](./docs/security.md#content-security-policy)
-- [Plugins](#plugins)
-- [Related packages](#related-packages)
 - [Some packages using Ajv](#some-packages-using-ajv)
-- [Tests, Contributing, Changes history](#tests)
+- [Changes history](#changes-history)
 - [Support, Code of conduct, Contacts, License](#open-source-software-support)
 
 ## Mozilla MOSS grant and OpenJS Foundation
@@ -276,38 +302,44 @@ CLI is available as a separate npm package [ajv-cli](https://github.com/ajv-vali
 
 - compiling JSON Schemas to test their validity
 - generating [standalone validation code](./docs/standalone.md) that exports validation function(s) to be used without Ajv
-- migrate schemas to draft-07 (using [json-schema-migrate](https://github.com/epoberezkin/json-schema-migrate))
+- migrating schemas to draft-07 and draft-2019-09 (using [json-schema-migrate](https://github.com/epoberezkin/json-schema-migrate))
 - validating data file(s) against JSON Schema
 - testing expected validity of data against JSON Schema
 - referenced schemas
-- user-defined meta-schemas
+- user-defined meta-schemas, validation keywords and formats
 - files in JSON, JSON5, YAML, and JavaScript format
 - all Ajv options
 - reporting changes in data after validation in [JSON-patch](https://tools.ietf.org/html/rfc6902) format
 
-## Plugins
+## Extending Ajv
+
+### User defined keywords
+
+See section in [data validation](./docs/validation.md#user-defined-keywords) and the [detailed guide](./docs/keywords.md).
+
+### Plugins
 
 Ajv can be extended with plugins that add keywords, formats or functions to process generated code. When such plugin is published as npm package it is recommended that it follows these conventions:
 
-- it exports a function
-- this function accepts ajv instance as the first parameter and returns the same instance to allow chaining
-- this function can accept an optional configuration as the second parameter
+- it exports a function that accepts ajv instance as the first parameter - it allows using plugins with [ajv-cli](#command-line-interface).
+- this function returns the same instance to allow chaining.
+- this function can accept an optional configuration as the second parameter.
 
-Youcan import `Plugin` interface from ajv if you use Typescript.
+You can import `Plugin` interface from ajv if you use Typescript.
 
 If you have published a useful plugin please submit a PR to add it to the next section.
 
-## Related packages
+### Related packages
 
 - [ajv-bsontype](https://github.com/BoLaMN/ajv-bsontype) - plugin to validate mongodb's bsonType formats
 - [ajv-cli](https://github.com/jessedc/ajv-cli) - command line interface
-- [ajv-formats](https://github.com/ajv-validator/ajv-formats) - formats defined in JSON Schema specification.
+- [ajv-formats](https://github.com/ajv-validator/ajv-formats) - formats defined in JSON Schema specification
 - [ajv-errors](https://github.com/ajv-validator/ajv-errors) - plugin for defining error messages in the schema
 - [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) - internationalised error messages
 - [ajv-istanbul](https://github.com/ajv-validator/ajv-istanbul) - plugin to instrument generated validation code to measure test coverage of your schemas
 - [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) - plugin with additional validation keywords (select, typeof, etc.)
 - [ajv-merge-patch](https://github.com/ajv-validator/ajv-merge-patch) - plugin with keywords $merge and $patch
-- [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) - format validators for draft2019 that aren't included in [ajv-formats](https://github.com/ajv-validator/ajv-formats) (ie. `idn-hostname`, `idn-email`, `iri`, `iri-reference` and `duration`).
+- [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) - format validators for draft2019 that aren't included in [ajv-formats](https://github.com/ajv-validator/ajv-formats) (ie. `idn-hostname`, `idn-email`, `iri`, `iri-reference` and `duration`)
 
 ## Some packages using Ajv
 
@@ -333,22 +365,6 @@ If you have published a useful plugin please submit a PR to add it to the next s
 - [gh-pages-generator](https://github.com/epoberezkin/gh-pages-generator) - multi-page site generator converting markdown files to GitHub pages
 - [ESLint](https://github.com/eslint/eslint) - the pluggable linting utility for JavaScript and JSX
 - [Spectral](https://github.com/stoplightio/spectral) - the customizable linting utility for JSON/YAML, OpenAPI, AsyncAPI, and JSON Schema
-
-## Tests
-
-```
-npm install
-git submodule update --init
-npm test
-```
-
-## Contributing
-
-`npm run build` - compiles typescript to dist folder.
-
-`npm run watch` - automatically compiles typescript when files in lib folder change
-
-Please see [Contributing guidelines](./CONTRIBUTING.md)
 
 ## Changes history
 

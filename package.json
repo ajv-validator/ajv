@@ -27,8 +27,7 @@
     "test-all": "npm run test-cov && if-node-version 12 npm run test-browser",
     "test": "npm link && npm link ajv && npm run json-tests && npm run eslint && npm run test-cov",
     "test-ci": "AJV_FULL_TEST=true npm test",
-    "prepublish": "npm run build",
-    "watch": "watch \"npm run build\" ./lib"
+    "prepublish": "npm run build"
   },
   "nyc": {
     "exclude": [
@@ -97,8 +96,7 @@
     "terser": "^5.2.1",
     "ts-node": "^9.0.0",
     "tsify": "^5.0.2",
-    "typescript": "^4.0.0",
-    "watch": "^1.0.0"
+    "typescript": "^4.0.0"
   },
   "collective": {
     "type": "opencollective",
