@@ -1,19 +1,30 @@
 import _Ajv from "../ajv"
-import fhirSchema = require("./1344_schema.json")
 import standaloneCode from "../../dist/standalone"
 import requireFromString = require("require-from-string")
 import assert = require("assert")
 
-describe.only("issue #1344: FHIR schema", function () {
-  this.timeout(10000)
+const schema = {
+  $schema: "http://json-schema.org/draft-07/schema#",
+  $id: "schema",
+  $ref: "#/$defs/foo",
+  $defs: {
+    foo: {
+      type: "object",
+      properties: {
+        bar: {$ref: "#/$defs/bar"},
+      },
+    },
+    bar: {
+      oneOf: [{$ref: "#/$defs/foo"}],
+    },
+  },
+}
 
+describe("issue #1344: non-root recursive ref with standalone code", () => {
   it("should compile to standalone code", () => {
-    const ajv = new _Ajv({
-      strict: false,
-      code: {source: true},
-    })
-    ajv.addSchema(fhirSchema)
-    const validate = ajv.getSchema("http://hl7.org/fhir/json-schema/4.0#/definitions/Questionnaire")
+    const ajv = new _Ajv({code: {source: true}})
+    ajv.addSchema(schema)
+    const validate = ajv.getSchema("schema#/$defs/foo")
     assert(typeof validate == "function")
     assert.strictEqual(validate({}), true)
 

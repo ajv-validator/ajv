@@ -60,7 +60,7 @@ export default function standaloneCode(
       if (n.prefix === "validate" && typeof vRef == "function") {
         const v = vRef as AnyValidateFunction
         return validateCode(usedValues, v.source)
-      } else if (n.prefix === "root" && typeof vRef == "object") {
+      } else if ((n.prefix === "root" || n.prefix === "wrapper") && typeof vRef == "object") {
         const {validate, validateName} = vRef as SchemaEnv
         const vCode = validateCode(usedValues, validate?.source)
         const def = ajv.opts.code.es5 ? varKinds.var : varKinds.const
