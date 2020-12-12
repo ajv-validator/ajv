@@ -30,8 +30,7 @@ const def: CodeKeywordDefinition = {
       if (sch.validate) {
         v = gen.scopeValue("validate", {ref: sch.validate})
       } else {
-        const code = _`{validate: ${sch.validateName}}`
-        const wrapper = gen.scopeValue("wrapper", {ref: sch, code})
+        const wrapper = gen.scopeValue("wrapper", {ref: sch})
         v = _`${wrapper}.validate`
       }
       callRef(cxt, v, sch, sch.$async)
