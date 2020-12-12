@@ -14,13 +14,21 @@ export function dynamicRef(cxt: KeywordCxt, ref: string): void {
   const {gen, keyword, it} = cxt
   if (ref[0] !== "#") throw new Error(`"${keyword}" only supports hash fragment reference`)
   const anchor = ref.slice(1)
-  const v = gen.let("_v", _`${N.dynamicAnchors}${getProperty(anchor)}`)
   if (it.allErrors) {
-    gen.if(v, _callRef(v), _callRef(it.validateName))
+    _dynamicRef()
   } else {
     const valid = gen.let("valid", false)
-    gen.if(v, _callRef(v, valid), _callRef(it.validateName, valid))
+    _dynamicRef(valid)
     cxt.ok(valid)
+  }
+
+  function _dynamicRef(valid?: Name): void {
+    // if (it.dynamicAnchors[anchor]) {
+    const v = gen.let("_v", _`${N.dynamicAnchors}${getProperty(anchor)}`)
+    gen.if(v, _callRef(v, valid), _callRef(it.validateName, valid))
+    // } else {
+    // _callRef(it.validateName, valid)()
+    // }
   }
 
   function _callRef(validate: Code, valid?: Name): () => void {

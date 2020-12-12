@@ -22,11 +22,12 @@ const remoteRefs = {
 
 const SKIP_FORMATS = ["idn-email", "idn-hostname", "iri", "iri-reference"]
 const SKIP_FORMAT_TESTS = SKIP_FORMATS.map((f) => `optional/format/${f}`)
+const SKIP_DRAFT7 = ["optional/content", "optional/float-overflow", ...SKIP_FORMAT_TESTS]
 
 const SKIP = {
-  6: [],
-  7: ["optional/content", ...SKIP_FORMAT_TESTS],
-  2019: ["optional/content", ...SKIP_FORMAT_TESTS],
+  6: ["optional/float-overflow"],
+  7: SKIP_DRAFT7,
+  2019: ["recursiveRef", ...SKIP_DRAFT7],
 }
 
 runTest(
