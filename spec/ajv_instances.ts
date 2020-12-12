@@ -28,3 +28,9 @@ export default function getAjvInstances(
 export function withStandalone(instances: AjvCore[]): (AjvCore | AjvPack)[] {
   return (instances as (AjvCore | AjvPack)[]).concat(instances.map((ajv) => new AjvPack(ajv)))
 }
+
+export function getStandalone(_Ajv: typeof AjvCore, opts: Options = {}): AjvPack {
+  opts.code ||= {}
+  opts.code.source = true
+  return new AjvPack(new _Ajv(opts))
+}

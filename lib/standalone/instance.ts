@@ -6,12 +6,12 @@ export default class AjvPack {
   errors?: ErrorObject[] | null // errors from the last validation
   constructor(readonly ajv: Ajv) {}
 
-  validate<T = unknown>(schemaKeyRef: AnySchema | string, data: unknown | T): boolean | Promise<T> {
+  validate<T = unknown>(schemaKeyRef: AnySchema | string, data: unknown): data is T | Promise<T> {
     return Ajv.prototype.validate.call(this, schemaKeyRef, data)
   }
 
-  compile<T = unknown>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T> {
-    return this.getStandalone(this.ajv.compile<T>(schema))
+  compile<T = unknown>(schema: AnySchema, meta?: boolean): AnyValidateFunction<T> {
+    return this.getStandalone(this.ajv.compile<T>(schema, meta))
   }
 
   getSchema<T = unknown>(keyRef: string): AnyValidateFunction<T> | undefined {

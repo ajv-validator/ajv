@@ -1,3 +1,6 @@
+import type AjvCore from "../../dist/core"
+import type AjvPack from "../../dist/standalone/instance"
+import {getStandalone} from "../ajv_instances"
 import _Ajv from "../ajv"
 import chai from "../chai"
 chai.should()
@@ -39,62 +42,84 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
     },
   }
 
-  it("should compile and validate schema when one ref is fragment", () => {
-    const ajv = new _Ajv()
+  describe("one ref is fragment", () => {
+    it("should compile and validate schema", spec(new _Ajv()))
+    it("should compile and validate schema: standalone", spec(getStandalone(_Ajv)))
 
-    const librarySchema = {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      $id: "schema://library.schema#",
-      type: "object",
-      properties: {
-        name: {type: "string"},
-        links: {
+    function spec(ajv: AjvCore | AjvPack): () => void {
+      return () => {
+        const librarySchema = {
+          $schema: "http://json-schema.org/draft-07/schema#",
+          $id: "schema://library.schema#",
           type: "object",
           properties: {
-            catalogItems: {
-              type: "array",
-              items: {
-                $ref: "schema://catalog_item_resource_identifier.schema#",
-              },
-            },
-          },
-        },
-      },
-      definitions: {
-        resource_identifier: {
-          $id: "#resource_identifier",
-          allOf: [
-            {
+            name: {type: "string"},
+            links: {
               type: "object",
               properties: {
-                type: {
-                  type: "string",
-                  enum: ["Library"],
+                catalogItems: {
+                  type: "array",
+                  items: {
+                    $ref: "schema://catalog_item_resource_identifier.schema#",
+                  },
                 },
               },
             },
-            {$ref: "schema://api.schema#resource_identifier"},
-          ],
-        },
-      },
-    }
+          },
+          definitions: {
+            resource_identifier: {
+              $id: "#resource_identifier",
+              allOf: [
+                {
+                  type: "object",
+                  properties: {
+                    type: {
+                      type: "string",
+                      enum: ["Library"],
+                    },
+                  },
+                },
+                {$ref: "schema://api.schema#resource_identifier"},
+              ],
+            },
+          },
+        }
 
-    const catalogItemSchema = {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      $id: "schema://catalog_item.schema#",
-      type: "object",
-      properties: {
-        name: {type: "string"},
-        links: {
+        const catalogItemSchema = {
+          $schema: "http://json-schema.org/draft-07/schema#",
+          $id: "schema://catalog_item.schema#",
           type: "object",
           properties: {
-            library: {$ref: "schema://library.schema#resource_identifier"},
+            name: {type: "string"},
+            links: {
+              type: "object",
+              properties: {
+                library: {$ref: "schema://library.schema#resource_identifier"},
+              },
+            },
           },
-        },
-      },
-      definitions: {
-        resource_identifier: {
-          $id: "#resource_identifier",
+          definitions: {
+            resource_identifier: {
+              $id: "#resource_identifier",
+              allOf: [
+                {
+                  type: "object",
+                  properties: {
+                    type: {
+                      type: "string",
+                      enum: ["CatalogItem"],
+                    },
+                  },
+                },
+                {$ref: "schema://api.schema#resource_identifier"},
+              ],
+            },
+          },
+        }
+
+        const catalogItemResourceIdentifierSchema = {
+          $schema: "http://json-schema.org/draft-07/schema#",
+          $id: "schema://catalog_item_resource_identifier.schema#",
           allOf: [
             {
               type: "object",
@@ -105,116 +130,104 @@ describe("issue #240, mutually recursive fragment refs reference a common schema
                 },
               },
             },
-            {$ref: "schema://api.schema#resource_identifier"},
-          ],
-        },
-      },
-    }
-
-    const catalogItemResourceIdentifierSchema = {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      $id: "schema://catalog_item_resource_identifier.schema#",
-      allOf: [
-        {
-          type: "object",
-          properties: {
-            type: {
-              type: "string",
-              enum: ["CatalogItem"],
+            {
+              $ref: "schema://api.schema#resource_identifier",
             },
-          },
-        },
-        {
-          $ref: "schema://api.schema#resource_identifier",
-        },
-      ],
+          ],
+        }
+
+        ajv.addSchema(librarySchema)
+        ajv.addSchema(catalogItemSchema)
+        ajv.addSchema(catalogItemResourceIdentifierSchema)
+        ajv.addSchema(apiSchema)
+
+        const validate = ajv.compile(domainSchema)
+        testSchema(validate)
+      }
     }
-
-    ajv.addSchema(librarySchema)
-    ajv.addSchema(catalogItemSchema)
-    ajv.addSchema(catalogItemResourceIdentifierSchema)
-    ajv.addSchema(apiSchema)
-
-    const validate = ajv.compile(domainSchema)
-    testSchema(validate)
   })
 
-  it("should compile and validate schema when both refs are fragments", () => {
-    const ajv = new _Ajv()
+  describe("both refs are fragments", () => {
+    it("should compile and validate schema", spec(new _Ajv()))
+    it("should compile and validate schema: standalone", spec(getStandalone(_Ajv)))
 
-    const librarySchema = {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      $id: "schema://library.schema#",
-      type: "object",
-      properties: {
-        name: {type: "string"},
-        links: {
+    function spec(ajv: AjvCore | AjvPack): () => void {
+      return () => {
+        const librarySchema = {
+          $schema: "http://json-schema.org/draft-07/schema#",
+          $id: "schema://library.schema#",
           type: "object",
           properties: {
-            catalogItems: {
-              type: "array",
-              items: {$ref: "schema://catalog_item.schema#resource_identifier"},
-            },
-          },
-        },
-      },
-      definitions: {
-        resource_identifier: {
-          $id: "#resource_identifier",
-          allOf: [
-            {
+            name: {type: "string"},
+            links: {
               type: "object",
               properties: {
-                type: {
-                  type: "string",
-                  enum: ["Library"],
+                catalogItems: {
+                  type: "array",
+                  items: {$ref: "schema://catalog_item.schema#resource_identifier"},
                 },
               },
             },
-            {$ref: "schema://api.schema#resource_identifier"},
-          ],
-        },
-      },
-    }
+          },
+          definitions: {
+            resource_identifier: {
+              $id: "#resource_identifier",
+              allOf: [
+                {
+                  type: "object",
+                  properties: {
+                    type: {
+                      type: "string",
+                      enum: ["Library"],
+                    },
+                  },
+                },
+                {$ref: "schema://api.schema#resource_identifier"},
+              ],
+            },
+          },
+        }
 
-    const catalogItemSchema = {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      $id: "schema://catalog_item.schema#",
-      type: "object",
-      properties: {
-        name: {type: "string"},
-        links: {
+        const catalogItemSchema = {
+          $schema: "http://json-schema.org/draft-07/schema#",
+          $id: "schema://catalog_item.schema#",
           type: "object",
           properties: {
-            library: {$ref: "schema://library.schema#resource_identifier"},
-          },
-        },
-      },
-      definitions: {
-        resource_identifier: {
-          $id: "#resource_identifier",
-          allOf: [
-            {
+            name: {type: "string"},
+            links: {
               type: "object",
               properties: {
-                type: {
-                  type: "string",
-                  enum: ["CatalogItem"],
-                },
+                library: {$ref: "schema://library.schema#resource_identifier"},
               },
             },
-            {$ref: "schema://api.schema#resource_identifier"},
-          ],
-        },
-      },
+          },
+          definitions: {
+            resource_identifier: {
+              $id: "#resource_identifier",
+              allOf: [
+                {
+                  type: "object",
+                  properties: {
+                    type: {
+                      type: "string",
+                      enum: ["CatalogItem"],
+                    },
+                  },
+                },
+                {$ref: "schema://api.schema#resource_identifier"},
+              ],
+            },
+          },
+        }
+
+        ajv.addSchema(librarySchema)
+        ajv.addSchema(catalogItemSchema)
+        ajv.addSchema(apiSchema)
+
+        const validate = ajv.compile(domainSchema)
+        testSchema(validate)
+      }
     }
-
-    ajv.addSchema(librarySchema)
-    ajv.addSchema(catalogItemSchema)
-    ajv.addSchema(apiSchema)
-
-    const validate = ajv.compile(domainSchema)
-    testSchema(validate)
   })
 
   function testSchema(validate) {

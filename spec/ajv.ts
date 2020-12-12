@@ -1,4 +1,4 @@
-import type Ajv from ".."
+import type Ajv from "../dist/core"
 
 const AjvClass: typeof Ajv = typeof window == "object" ? (window as any).Ajv : require("" + "..")
 

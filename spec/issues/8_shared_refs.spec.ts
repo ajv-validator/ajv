@@ -1,38 +1,51 @@
+import type AjvCore from "../../dist/core"
+import type AjvPack from "../../dist/standalone/instance"
 import _Ajv from "../ajv"
+import {getStandalone} from "../ajv_instances"
 import chai from "../chai"
 chai.should()
 
 describe("issue #8: schema with shared references", () => {
-  it("should be supported by addSchema", spec("addSchema"))
+  const propertySchema = {
+    type: "string",
+    maxLength: 4,
+  }
 
-  it("should be supported by compile", spec("compile"))
+  const schema = {
+    $id: "obj.json#",
+    type: "object",
+    properties: {
+      foo: propertySchema,
+      bar: propertySchema,
+    },
+  }
 
-  function spec(method) {
-    return () => {
-      const ajv: any = new _Ajv()
+  it("should be supported by addSchema", () => {
+    spec(new _Ajv().addSchema(schema))
+  })
 
-      const propertySchema = {
-        type: "string",
-        maxLength: 4,
-      }
+  it("should be supported by compile", () => {
+    const ajv = new _Ajv()
+    ajv.compile(schema)
+    spec(ajv)
+  })
 
-      const schema = {
-        $id: "obj.json#",
-        type: "object",
-        properties: {
-          foo: propertySchema,
-          bar: propertySchema,
-        },
-      }
+  it("should be supported by addSchema: standalone", () => {
+    spec(getStandalone(_Ajv).addSchema(schema))
+  })
 
-      ajv[method](schema)
+  it("should be supported by compile: standalone", () => {
+    const ajv = getStandalone(_Ajv)
+    ajv.compile(schema)
+    spec(ajv)
+  })
 
-      let result = ajv.validate("obj.json#", {foo: "abc", bar: "def"})
-      result.should.equal(true)
+  function spec(ajv: AjvCore | AjvPack): void {
+    let result = ajv.validate("obj.json#", {foo: "abc", bar: "def"})
+    result.should.equal(true)
 
-      result = ajv.validate("obj.json#", {foo: "abcde", bar: "fghg"})
-      result.should.equal(false)
-      ajv.errors.should.have.length(1)
-    }
+    result = ajv.validate("obj.json#", {foo: "abcde", bar: "fghg"})
+    result.should.equal(false)
+    ajv.errors?.should.have.length(1)
   }
 })

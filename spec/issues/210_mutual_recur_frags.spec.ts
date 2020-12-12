@@ -1,73 +1,85 @@
+import type AjvCore from "../../dist/core"
+import type AjvPack from "../../dist/standalone/instance"
+import {getStandalone} from "../ajv_instances"
 import _Ajv from "../ajv"
 import chai from "../chai"
 chai.should()
 
 describe("issue #210, mutual recursive $refs that are schema fragments", () => {
-  it("should compile and validate schema when one ref is fragment", () => {
-    const ajv = new _Ajv()
+  describe("one ref is fragment", () => {
+    it("should compile and validate schema", spec(new _Ajv()))
+    it("should compile and validate schema: standalone", spec(getStandalone(_Ajv)))
 
-    ajv.addSchema({
-      $id: "foo",
-      definitions: {
-        bar: {
-          type: "object",
-          properties: {
-            baz: {
-              anyOf: [{enum: [42]}, {$ref: "boo"}],
+    function spec(ajv: AjvCore | AjvPack): () => void {
+      return () => {
+        ajv.addSchema({
+          $id: "foo",
+          definitions: {
+            bar: {
+              type: "object",
+              properties: {
+                baz: {
+                  anyOf: [{enum: [42]}, {$ref: "boo"}],
+                },
+              },
             },
           },
-        },
-      },
-    })
+        })
 
-    ajv.addSchema({
-      $id: "boo",
-      type: "object",
-      required: ["quux"],
-      properties: {
-        quux: {$ref: "foo#/definitions/bar"},
-      },
-    })
-
-    const validate = ajv.compile({$ref: "foo#/definitions/bar"})
-
-    validate({baz: {quux: {baz: 42}}}).should.equal(true)
-    validate({baz: {quux: {baz: "foo"}}}).should.equal(false)
-  })
-
-  it("should compile and validate schema when both refs are fragments", () => {
-    const ajv = new _Ajv()
-
-    ajv.addSchema({
-      $id: "foo",
-      definitions: {
-        bar: {
-          type: "object",
-          properties: {
-            baz: {
-              anyOf: [{enum: [42]}, {$ref: "boo#/definitions/buu"}],
-            },
-          },
-        },
-      },
-    })
-
-    ajv.addSchema({
-      $id: "boo",
-      definitions: {
-        buu: {
+        ajv.addSchema({
+          $id: "boo",
           type: "object",
           required: ["quux"],
           properties: {
             quux: {$ref: "foo#/definitions/bar"},
           },
-        },
-      },
-    })
+        })
 
-    const validate = ajv.compile({$ref: "foo#/definitions/bar"})
+        const validate = ajv.compile({$ref: "foo#/definitions/bar"})
+        validate({baz: {quux: {baz: 42}}}).should.equal(true)
+        validate({baz: {quux: {baz: "foo"}}}).should.equal(false)
+      }
+    }
+  })
 
-    validate({baz: {quux: {baz: 42}}}).should.equal(true)
-    validate({baz: {quux: {baz: "foo"}}}).should.equal(false)
+  describe("both refs are fragments", () => {
+    it("should compile and validate schema", spec(new _Ajv()))
+    it("should compile and validate schema: standalone", spec(getStandalone(_Ajv)))
+
+    function spec(ajv: AjvCore | AjvPack): () => void {
+      return () => {
+        ajv.addSchema({
+          $id: "foo",
+          definitions: {
+            bar: {
+              type: "object",
+              properties: {
+                baz: {
+                  anyOf: [{enum: [42]}, {$ref: "boo#/definitions/buu"}],
+                },
+              },
+            },
+          },
+        })
+
+        ajv.addSchema({
+          $id: "boo",
+          definitions: {
+            buu: {
+              type: "object",
+              required: ["quux"],
+              properties: {
+                quux: {$ref: "foo#/definitions/bar"},
+              },
+            },
+          },
+        })
+
+        const validate = ajv.compile({$ref: "foo#/definitions/bar"})
+
+        validate({baz: {quux: {baz: 42}}}).should.equal(true)
+        validate({baz: {quux: {baz: "foo"}}}).should.equal(false)
+      }
+    }
   })
 })
