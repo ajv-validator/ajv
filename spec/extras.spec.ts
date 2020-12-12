@@ -1,5 +1,5 @@
 import getAjvAllInstances from "./ajv_all_instances"
-import {withPack} from "./ajv_instances"
+import {withStandalone} from "./ajv_instances"
 import {_} from ".."
 import jsonSchemaTest = require("json-schema-test")
 import options from "./ajv_options"
@@ -17,7 +17,7 @@ instances.forEach((ajv) => {
   ajv.opts.code.formats = _`{allowedUnknown: true}`
 })
 
-jsonSchemaTest(withPack(instances), {
+jsonSchemaTest(withStandalone(instances), {
   description:
     "Extra keywords schemas tests of " + instances.length + " ajv instances with different options",
   suites: {extras: require("./_json/extras")},

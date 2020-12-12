@@ -25,6 +25,6 @@ export default function getAjvInstances(
   }
 }
 
-export function withPack(instances: AjvCore[]): (AjvCore | AjvPack)[] {
+export function withStandalone(instances: AjvCore[]): (AjvCore | AjvPack)[] {
   return (instances as (AjvCore | AjvPack)[]).concat(instances.map((ajv) => new AjvPack(ajv)))
 }

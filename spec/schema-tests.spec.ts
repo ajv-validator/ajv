@@ -1,6 +1,6 @@
 import type AjvCore from "../dist/core"
 import _Ajv from "./ajv"
-import getAjvInstances, {withPack} from "./ajv_instances"
+import getAjvInstances, {withStandalone} from "./ajv_instances"
 import jsonSchemaTest = require("json-schema-test")
 import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
@@ -27,7 +27,7 @@ const remoteRefsWithIds = [
 
 instances.forEach(addRemoteRefsAndFormats)
 
-jsonSchemaTest(withPack(instances), {
+jsonSchemaTest(withStandalone(instances), {
   description: `Schema tests of ${instances.length} ajv instances with different options`,
   suites: {"Schema tests": require("./_json/tests")},
   only: [],

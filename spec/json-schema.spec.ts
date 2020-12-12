@@ -1,6 +1,6 @@
 import _Ajv from "./ajv"
 import _Ajv2019 from "./ajv2019"
-import getAjvInstances, {withPack} from "./ajv_instances"
+import getAjvInstances, {withStandalone} from "./ajv_instances"
 import jsonSchemaTest = require("json-schema-test")
 import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"
@@ -72,7 +72,7 @@ function runTest(instances, draft: number, tests) {
     ajvFormats(ajv)
   }
 
-  jsonSchemaTest(withPack(instances), {
+  jsonSchemaTest(withStandalone(instances), {
     description: `JSON-Schema Test Suite draft-${draft}: ${instances.length} ajv instances with different options`,
     suites: {tests},
     only: [],
