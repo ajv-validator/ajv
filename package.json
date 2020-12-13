@@ -62,7 +62,7 @@
   "tonicExampleFilename": ".tonic_example.js",
   "dependencies": {
     "fast-deep-equal": "^3.1.1",
-    "json-schema-traverse": "^0.5.0",
+    "json-schema-traverse": "^1.0.0",
     "require-from-string": "^2.0.2",
     "uri-js": "^4.2.2"
   },
