@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -e
+
+npm run bundle
+
+echo "About to publish $GITHUB_REF to ajv-dist..."
+
+git config user.name "$GITHUB_ACTOR"
+
+git clone https://${GITHUB_TOKEN}@github.com/ajv-validator/ajv-dist.git ../ajv-dist
+
+rm -rf ../ajv-dist/dist
+mkdir ../ajv-dist/dist
+cp ./bundle/*.* ../ajv-dist/dist
+cd ../ajv-dist
+
+if [[ `git status --porcelain` ]]; then
+  echo "Changes detected. Updating master branch..."
+  git add -A
+  git commit -m "updated by publish build #$GITHUB_RUN_ID"
+  git push --quiet origin master > /dev/null 2>&1
+fi
+
+echo "Publishing tag..."
+
+git tag $GITHUB_REF
+git push --tags > /dev/null 2>&1
+
+echo "Done"
