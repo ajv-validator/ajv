@@ -6,7 +6,8 @@ npm run bundle
 
 echo "About to publish $GITHUB_REF to ajv-dist..."
 
-git config user.name "$GITHUB_ACTOR"
+git config user.email "$GIT_USER_EMAIL"
+git config user.name "$GIT_USER_NAME"
 
 git clone https://${GITHUB_TOKEN}@github.com/ajv-validator/ajv-dist.git ../ajv-dist
 
