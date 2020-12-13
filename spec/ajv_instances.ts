@@ -17,16 +17,14 @@ export default function getAjvInstances(
       const optName = optNames[0]
       useOpts1[optName] = opts[optName]
       delete opts[optName]
-      const instances = _getAjvInstances(opts, useOpts),
-        instances1 = _getAjvInstances(opts, useOpts1)
-      return instances.concat(instances1)
+      return [..._getAjvInstances(opts, useOpts), ..._getAjvInstances(opts, useOpts1)]
     }
     return [new _Ajv(useOpts)]
   }
 }
 
 export function withStandalone(instances: AjvCore[]): (AjvCore | AjvPack)[] {
-  return (instances as (AjvCore | AjvPack)[]).concat(instances.map((ajv) => new AjvPack(ajv)))
+  return [...(instances as (AjvCore | AjvPack)[]), ...instances.map((ajv) => new AjvPack(ajv))]
 }
 
 export function getStandalone(_Ajv: typeof AjvCore, opts: Options = {}): AjvPack {

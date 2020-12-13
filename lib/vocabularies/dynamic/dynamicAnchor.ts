@@ -1,7 +1,9 @@
 import type {CodeKeywordDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {_, getProperty} from "../../compile/codegen"
+import {_, getProperty, Code} from "../../compile/codegen"
 import N from "../../compile/names"
+import {SchemaEnv, compileSchema} from "../../compile"
+import {getValidate} from "../core/ref"
 
 const def: CodeKeywordDefinition = {
   keyword: "$dynamicAnchor",
@@ -10,16 +12,19 @@ const def: CodeKeywordDefinition = {
 }
 
 export function dynamicAnchor(cxt: KeywordCxt, anchor: string): void {
-  const {gen, keyword, it} = cxt
-  it.dynamicAnchors[anchor] = true
+  const {gen, it} = cxt
+  it.schemaEnv.root.dynamicAnchors[anchor] = true
   const v = _`${N.dynamicAnchors}${getProperty(anchor)}`
-  if (it.errSchemaPath === "#") {
-    gen.if(_`!${v}`, () => gen.assign(v, it.validateName))
-  } else {
-    // TODO add support for dynamicRef/recursiveRef not in schema root
-    // const validate = it.self.getSchema()
-    throw new Error(`"${keyword}" is only supported in schema root`)
-  }
+  const validate = it.errSchemaPath === "#" ? it.validateName : _getValidate(cxt)
+  gen.if(_`!${v}`, () => gen.assign(v, validate))
+}
+
+function _getValidate(cxt: KeywordCxt): Code {
+  const {schemaEnv, schema, self} = cxt.it
+  const {root, baseId, localRefs, meta} = schemaEnv.root
+  const sch = new SchemaEnv({schema, root, baseId, localRefs, meta})
+  compileSchema.call(self, sch)
+  return getValidate(cxt, sch)
 }
 
 export default def

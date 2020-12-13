@@ -23,12 +23,18 @@ export function dynamicRef(cxt: KeywordCxt, ref: string): void {
   }
 
   function _dynamicRef(valid?: Name): void {
-    // if (it.dynamicAnchors[anchor]) {
-    const v = gen.let("_v", _`${N.dynamicAnchors}${getProperty(anchor)}`)
-    gen.if(v, _callRef(v, valid), _callRef(it.validateName, valid))
-    // } else {
-    // _callRef(it.validateName, valid)()
-    // }
+    // TODO the assumption here is that `recursiveRef: #` always points to the root
+    // of the schema object, which is not correct, because there may be $id that
+    // makes # point to it, and the target schema may not contain dynamic/recursiveAnchor.
+    // Because of that 2 tests in recursiveRef.json fail.
+    // This is a similar problem to #815 (`$id` doesn't alter resolution scope for `{ "$ref": "#" }`).
+    // (This problem is not tested in JSON-Schema-Test-Suite)
+    if (it.schemaEnv.root.dynamicAnchors[anchor]) {
+      const v = gen.let("_v", _`${N.dynamicAnchors}${getProperty(anchor)}`)
+      gen.if(v, _callRef(v, valid), _callRef(it.validateName, valid))
+    } else {
+      _callRef(it.validateName, valid)()
+    }
   }
 
   function _callRef(validate: Code, valid?: Name): () => void {

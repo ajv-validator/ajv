@@ -41,7 +41,6 @@ export interface SchemaCxt {
   readonly strictSchema?: boolean
   readonly rootId: string
   baseId: string // the current schema base URI that should be used as the base for resolving URIs in references (\$ref)
-  dynamicAnchors: {[Ref in string]?: true}
   readonly schemaPath: Code // the run-time expression that evaluates to the property name of the current schema
   readonly errSchemaPath: string // this is actual string, should not be changed to Code
   readonly errorPath: Code
@@ -76,6 +75,7 @@ export class SchemaEnv implements SchemaEnvArgs {
   readonly meta?: boolean
   readonly $async?: boolean // true if the current schema is asynchronous.
   readonly refs: SchemaRefs = {}
+  readonly dynamicAnchors: {[Ref in string]?: true} = {}
   validate?: AnyValidateFunction
   validateName?: Name
 
@@ -138,7 +138,6 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     strictSchema: true,
     rootId,
     baseId: sch.baseId || rootId,
-    dynamicAnchors: {},
     schemaPath: nil,
     errSchemaPath: "#",
     errorPath: _`""`,

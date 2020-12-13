@@ -13,6 +13,8 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordCxt) {
     const {gen, schema, it} = cxt
     const {baseId, schemaEnv: env, validateName, opts, self} = it
+    // TODO See comment in dynamicRef.ts
+    // This has to be improved to resolve #815.
     if (schema === "#" || schema === "#/") return callRootRef()
     const schOrEnv = resolveRef.call(self, env.root, baseId, schema)
     if (schOrEnv === undefined) throw new MissingRefError(baseId, schema)
@@ -26,13 +28,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function callValidate(sch: SchemaEnv): void {
-      let v: Code
-      if (sch.validate) {
-        v = gen.scopeValue("validate", {ref: sch.validate})
-      } else {
-        const wrapper = gen.scopeValue("wrapper", {ref: sch})
-        v = _`${wrapper}.validate`
-      }
+      const v = getValidate(cxt, sch)
       callRef(cxt, v, sch, sch.$async)
     }
 
@@ -57,6 +53,13 @@ const def: CodeKeywordDefinition = {
       cxt.ok(valid)
     }
   },
+}
+
+export function getValidate(cxt: KeywordCxt, sch: SchemaEnv): Code {
+  const {gen} = cxt
+  return sch.validate
+    ? gen.scopeValue("validate", {ref: sch.validate})
+    : _`${gen.scopeValue("wrapper", {ref: sch})}.validate`
 }
 
 export function callRef(cxt: KeywordCxt, v: Code, sch?: SchemaEnv, $async?: boolean): void {
