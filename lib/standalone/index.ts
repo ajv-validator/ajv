@@ -1,8 +1,8 @@
 import type AjvCore from "../core"
 import type {AnyValidateFunction, SourceCode} from "../types"
+import type {SchemaEnv} from "../compile"
 import {ScopeValueSets, ValueScopeName, varKinds} from "../compile/codegen/scope"
 import {_, _Code, Code, getProperty} from "../compile/codegen/code"
-import {SchemaEnv} from "../compile"
 
 export default function standaloneCode(
   ajv: AjvCore,

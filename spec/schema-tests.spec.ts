@@ -1,6 +1,7 @@
 import type AjvCore from "../dist/core"
 import _Ajv from "./ajv"
-import getAjvInstances, {withStandalone} from "./ajv_instances"
+import getAjvInstances from "./ajv_instances"
+import {withStandalone} from "./ajv_standalone"
 import jsonSchemaTest = require("json-schema-test")
 import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"

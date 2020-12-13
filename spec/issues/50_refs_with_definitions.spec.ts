@@ -1,6 +1,6 @@
 import type AjvCore from "../../dist/core"
 import type AjvPack from "../../dist/standalone/instance"
-import {getStandalone} from "../ajv_instances"
+import {getStandalone} from "../ajv_standalone"
 import _Ajv from "../ajv"
 import chai from "../chai"
 const should = chai.should()

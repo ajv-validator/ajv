@@ -3,6 +3,7 @@ import jsonSchemaTest = require("json-schema-test")
 import {afterError} from "./after_test"
 import type Ajv from ".."
 import _Ajv from "./ajv"
+import chai from "./chai"
 
 const instances = getAjvAsyncInstances({$data: true})
 
@@ -14,7 +15,7 @@ jsonSchemaTest(instances, {
   suites: {"async schemas": require("./_json/async")},
   async: true,
   asyncValid: "data",
-  assert: require("./chai").assert,
+  assert: chai.assert,
   afterError,
   // afterEach: after.each,
   cwd: __dirname,
