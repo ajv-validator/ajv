@@ -300,7 +300,7 @@ export default class Ajv {
   ): boolean | Promise<T> {
     let v: AnyValidateFunction | undefined
     if (typeof schemaKeyRef == "string") {
-      v = this.getSchema(schemaKeyRef)
+      v = this.getSchema<T>(schemaKeyRef)
       if (!v) throw new Error(`no schema with key or ref "${schemaKeyRef}"`)
     } else {
       v = this.compile<T>(schemaKeyRef)

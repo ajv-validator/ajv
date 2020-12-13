@@ -1,7 +1,7 @@
 import type {ErrorObject, SchemaObject, SchemaValidateFunction} from "../lib/types"
 import type AjvCore from "../dist/core"
 // currently most tests include compiled code, if any code re-compiled locally, instanceof would fail
-import {_, nil} from ".."
+import {_, nil} from "../dist/compile/codegen/code"
 import getAjvAllInstances from "./ajv_all_instances"
 import _Ajv from "./ajv"
 import assert = require("assert")

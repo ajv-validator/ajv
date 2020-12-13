@@ -1,5 +1,5 @@
-const Ajv = require("..").default
-const Ajv2019 = require("../dist/2019").default
+const Ajv = require("./ajv").default
+const Ajv2019 = require("./ajv2019").default
 const assert = require("assert")
 
 describe("using Ajv with javascript", () => {

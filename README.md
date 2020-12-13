@@ -282,19 +282,37 @@ See [Content Security Policy](./docs/security.md#content-security-policy) to dec
 
 Whether you use Ajv or compiled schemas, it is recommended that you bundle them together with your code.
 
-If you need to use Ajv in several bundles you can create a separate UMD bundle using `npm run bundle` script (thanks to [siddo420](https://github.com/siddo420)).
+If you need to use Ajv in several bundles you can create a separate UMD bundles using `npm run bundle` script.
 
-Then you need to load Ajv in the browser:
+Then you need to load Ajv with support of JSON Schema draft-07 in the browser:
 
 ```html
-<script src="ajv.min.js"></script>
+<script src="bundle/ajv7.min.js"></script>
+<script>
+  ;(function () {
+    const Ajv = window.ajv7.default
+    const ajv = new Ajv()
+  })()
+</script>
 ```
 
-This bundle can be used with different module systems; it creates global `Ajv` if no module system is found.
+or to load the bundle that supports JSONSchema draft-2019-09:
+
+```html
+<script src="bundle/ajv2019.min.js"></script>
+<script>
+  ;(function () {
+    const Ajv = window.ajv2019.default
+    const ajv = new Ajv()
+  })()
+</script>
+```
+
+This bundle can be used with different module systems; it creates global `ajv` (or `ajv2019`) if no module system is found.
 
 The browser bundle is available on [cdnjs](https://cdnjs.com/libraries/ajv).
 
-**Please note**: some frameworks, e.g. Dojo, may redefine global require in such way that is not compatible with CommonJS module format. In such case Ajv bundle has to be loaded before the framework and then you can use global Ajv (see issue [#234](https://github.com/ajv-validator/ajv/issues/234)).
+**Please note**: some frameworks, e.g. Dojo, may redefine global require in a way that is not compatible with CommonJS module format. In this case Ajv bundle has to be loaded before the framework and then you can use global `ajv` (see issue [#234](https://github.com/ajv-validator/ajv/issues/234)).
 
 ## Command line interface
 

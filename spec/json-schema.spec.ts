@@ -1,6 +1,7 @@
 import _Ajv from "./ajv"
 import _Ajv2019 from "./ajv2019"
-import getAjvInstances, {withStandalone} from "./ajv_instances"
+import getAjvInstances from "./ajv_instances"
+import {withStandalone} from "./ajv_standalone"
 import jsonSchemaTest = require("json-schema-test")
 import options from "./ajv_options"
 import {afterError, afterEach} from "./after_test"

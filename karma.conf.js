@@ -11,7 +11,12 @@ module.exports = function (config) {
     frameworks: ["mocha"],
 
     // list of files / patterns to load in the browser
-    files: ["bundle/ajv.min.js", "node_modules/chai/chai.js", ".browser/*.spec.js"],
+    files: [
+      "bundle/ajv7.min.js",
+      "bundle/ajv2019.min.js",
+      "node_modules/chai/chai.js",
+      ".browser/*.spec.js",
+    ],
 
     // test results reporter to use
     // possible values: 'dots', 'progress'

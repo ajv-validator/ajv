@@ -6,7 +6,7 @@ export default class AjvPack {
   errors?: ErrorObject[] | null // errors from the last validation
   constructor(readonly ajv: Ajv) {}
 
-  validate<T = unknown>(schemaKeyRef: AnySchema | string, data: unknown): data is T | Promise<T> {
+  validate(schemaKeyRef: AnySchema | string, data: unknown): boolean | Promise<unknown> {
     return Ajv.prototype.validate.call(this, schemaKeyRef, data)
   }
 
