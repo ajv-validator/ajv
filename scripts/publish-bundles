@@ -2,7 +2,7 @@
 
 set -e
 
-if [[ $GITHUB_REF == refs/tags/v* ]]
+if [[ $GITHUB_REF == refs/tags/v* ]]; then
   npm run bundle
 
   echo "About to publish $GITHUB_REF to ajv-dist..."
