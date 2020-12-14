@@ -1,862 +1,282 @@
 ---
 page_name: keywords
-title: Ajv - Validation Keywords
+title: Ajv - User-defined keywords
 layout: main
 ---
-# JSON Schema validation keywords
-
-
-In a simple way, JSON Schema is an object with validation keywords.
-
-The keywords and their values define what rules the data should satisfy to be valid.
-
-
-## Keywords
-
-- [type](#type)
-- [Keywords for numbers](#keywords-for-numbers)
-    - [maximum / minimum and exclusiveMaximum / exclusiveMinimum](#maximum--minimum-and-exclusivemaximum--exclusiveminimum) (changed in draft-06)
-    - [multipleOf](#multipleof)
-- [Keywords for strings](#keywords-for-strings)
-    - [maxLength/minLength](#maxlength--minlength)
-    - [pattern](#pattern)
-    - [format](#format)
-    - [formatMaximum / formatMinimum and formatExclusiveMaximum / formatExclusiveMinimum](#formatmaximum--formatminimum-and-formatexclusivemaximum--formatexclusiveminimum-proposed) (proposed)
-- [Keywords for arrays](#keywords-for-arrays)
-    - [maxItems/minItems](#maxitems--minitems)
-    - [uniqueItems](#uniqueitems)
-    - [items](#items)
-    - [additionalItems](#additionalitems)
-    - [contains](#contains) (added in draft-06)
-- [Keywords for objects](#keywords-for-objects)
-    - [maxProperties/minProperties](#maxproperties--minproperties)
-    - [required](#required)
-    - [properties](#properties)
-    - [patternProperties](#patternproperties)
-    - [additionalProperties](#additionalproperties)
-    - [dependencies](#dependencies)
-    - [propertyNames](#propertynames) (added in draft-06)
-    - [patternRequired](#patternrequired-proposed) (proposed)
-- [Keywords for all types](#keywords-for-all-types)
-    - [enum](#enum)
-    - [const](#const) (added in draft-06)
-- [Compound keywords](#compound-keywords)
-    - [not](#not)
-    - [oneOf](#oneof)
-    - [anyOf](#anyof)
-    - [allOf](#allof)
-    - [if/then/else](#ifthenelse) (NEW in draft-07)
-
-
-
-## `type`
-
-`type` keyword requires that the data is of certain type (or some of types). Its value can be a string (the allowed type) or an array of strings (multiple allowed types).
-
-Type can be: `number`, `integer`, `string`, `boolean`, `array`, `object` or `null`.
-
-
-__Examples__
-
-1.  _schema_: `{ "type": "number" }`
-
-    _valid_: `1`, `1.5`
-
-    _invalid_: `"abc"`, `"1"`, `[]`, `{}`, `null`, `true`
-
-
-2.  _schema_: `{ "type": "integer" }`
-
-    _valid_: `1`, `2`
-
-    _invalid_: `"abc"`, `"1"`, `1.5`, `[]`, `{}`, `null`, `true`
-
-
-3.  _schema_: `{ "type": ["number", "string"] }`
-
-    _valid_: `1`, `1.5`, `"abc"`, `"1"`
-
-    _invalid_: `[]`, `{}`, `null`, `true`
-
-
-All examples above are JSON Schemas that only require data to be of certain type to be valid.
-
-Most other keywords apply only to a particular type of data. If the data is of different type, the keyword will not apply and the data will be considered valid.
-
-
-
-## Keywords for numbers
-
-
-### `maximum` / `minimum` and `exclusiveMaximum` / `exclusiveMinimum`
-
-The value of keyword `maximum` (`minimum`) should be a number. This value is the maximum (minimum) allowed value for the data to be valid.
-
-Draft-04: The value of keyword `exclusiveMaximum` (`exclusiveMinimum`) should be a boolean value. These keyword cannot be used without `maximum` (`minimum`). If this keyword value is equal to `true`, the data should not be equal to the value in `maximum` (`minimum`) keyword to be valid.
-
-Draft-06/07: The value of keyword `exclusiveMaximum` (`exclusiveMinimum`) should be a number. This value is the exclusive maximum (minimum) allowed value for the data to be valid (the data equal to this keyword value is invalid).
-
-Ajv supports both draft-04 and draft-06/07 syntaxes.
-
-
-__Examples__
-
-1.  _schema_: `{ "maximum": 5 }`
-
-    _valid_: `4`, `5`, any non-number (`"abc"`, `[]`, `{}`, `null`, `true`)
-
-    _invalid_: `6`, `7`
-
-
-2.  _schema_: `{ "minimum": 5 }`
-
-    _valid_: `5`, `6`, any non-number (`"abc"`, `[]`, `{}`, `null`, `true`)
-
-    _invalid_: `4`, `4.5`
-
-
-3.  _schema_:
-        draft-04: `{ "minimum": 5, "exclusiveMinimum": true }`
-        draft-06/07: `{ "exclusiveMinimum": 5 }`
-
-    _valid_: `6`, `7`, any non-number (`"abc"`, `[]`, `{}`, `null`, `true`)
-
-    _invalid_: `4.5`, `5`
-
-
-
-### `multipleOf`
-
-The value of the keyword should be a number. The data to be valid should be a multiple of the keyword value (i.e. the result of division of the data on the value should be integer).
-
-
-__Examples__
-
-1.  _schema_: `{ "multipleOf": 5 }`
-
-    _valid_: `5`, `10`, any non-number (`"abc"`, `[]`, `{}`, `null`, `true`)
-
-    _invalid_: `1`, `4`
-
-
-2.  _schema_: `{ "multipleOf": 2.5 }`
-
-    _valid_: `2.5`, `5`, `7.5`, any non-number (`"abc"`, `[]`, `{}`, `null`, `true`)
-
-    _invalid_: `1`, `4`
-
-
-
-## Keywords for strings
-
-### `maxLength` / `minLength`
-
-The value of the keywords should be a number. The data to be valid should have length satisfying this rule. Unicode pairs are counted as a single character.
-
-
-__Examples__
-
-1.  _schema_: `{ "maxLength": 5 }`
-
-    _valid_: `"abc"`, `"abcde"`, any non-string (`1`, `[]`, `{}`, `null`, `true`)
-
-    _invalid_: `"abcdef"`
-
-
-2.  _schema_: `{ "minLength": 2 }`
-
-    _valid_: `"ab"`, `"😀😀"`, any non-string (`1`, `[]`, `{}`, `null`, `true`)
-
-    _invalid_: `"a"`, `"😀"`
-
-
-
-### `pattern`
-
-The value of the keyword should be a string. The data to be valid should match the regular expression defined by the keyword value.
-
-Ajv uses `new RegExp(value)` to create the regular expression that will be used to test data.
-
-
-__Example__
-
-_schema_: `{ "pattern": "[abc]+" }`
-
-_valid_: `"a"`, `"abcd"`, `"cde"`, any non-string (`1`, `[]`, `{}`, `null`, `true`)
-
-_invalid_: `"def"`, `""`
-
-
-
-### `format`
-
-The value of the keyword should be a string. The data to be valid should match the format with this name.
-
-Ajv defines these formats: date, date-time, uri, email, hostname, ipv4, ipv6, regex.
-
-
-__Example__
-
-_schema_: `{ "format": "ipv4" }`
-
-_valid_: `"192.168.0.1"`, any non-string (`1`, `[]`, `{}`, `null`, `true`)
-
-_invalid_: `"abc"`
-
-
-
-### `formatMaximum` / `formatMinimum` and `formatExclusiveMaximum` / `formatExclusiveMinimum` (proposed)
-
-Defined in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package.
-
-The value of keyword `formatMaximum` (`formatMinimum`) should be a string. This value is the maximum (minimum) allowed value for the data to be valid as determined by `format` keyword.
-
-Ajv defines comparison rules for formats `"date"`, `"time"` and `"date-time"`.
-
-The value of keyword `formatExclusiveMaximum` (`formatExclusiveMinimum`) should be a boolean value. These keyword cannot be used without `formatMaximum` (`formatMinimum`). If this keyword value is equal to `true`, the data to be valid should not be equal to the value in `formatMaximum` (`formatMinimum`) keyword.
-
-
-__Example__
-
-_schema_:
-
-```json
-{
-    "format": "date",
-    "formatMaximum": "2016-02-06",
-    "formatExclusiveMaximum": true
+# User defined keywords
+
+## Contents
+
+- Define keyword with:
+  - [code generation function](#define-keyword-with-code-generation-function) - used by all pre-defined keywords
+  - [validation function](#define-keyword-with-validation-function)
+  - [compilation function](#define-keyword-with-compilation-function)
+  - [macro function](#define-keyword-with-macro-function)
+- [Schema compilation context](#schema-compilation-context)
+- [Validation time variables](#validation-time-variables)
+- [Ajv utilities](#ajv-utilities)
+- [Defining keyword errors](#defining-keyword-errors)
+
+### Common attributes of keyword definitions
+
+The usual interface to define all keywords has these properties:
+
+```typescript
+interface _KeywordDef {
+  keyword: string | string[]
+  type?: JSONType | JSONType[] // data type(s) that keyword applies to,
+  // if defined, it is usually "string", "number", "object" or "array"
+  schemaType?: JSONType | JSONType[] // the allowed type(s) of value that keyword must have in the schema
+  error?: {
+    message: string | ((cxt: KeywordCxt) => Code)
+    params?: (cxt: KeywordCxt) => Code
+  }
 }
 ```
 
-_valid_: `"2015-12-31"`, `"2016-02-05"`, any non-string
+Keyword definitions may have additional optional properties - see [types](../lib/types/index.ts) and [KeywordCxt](../lib/compile/context.ts).
 
-_invalid_: `"2016-02-06"`, `"2016-02-07"`, `"abc"`
+### Define keyword with code generation function
 
+Starting from v7 Ajv uses [CodeGen module](../lib/compile/codegen/index.ts) for all pre-defined keywords - see [codegen.md](./codegen.md) for details.
 
+This is the best approach for user defined keywords:
 
-## Keywords for arrays
+- safe against code injection
+- best performance
+- the precise control over validation process
+- access to the parent data and the path to the currently validated data
 
-### `maxItems` / `minItems`
+While Ajv can be safely used with plain JavaScript, it is strongly recommended to use Typescript for user-defined keywords that generate code - the prevention against code injection via untrusted schemas is partially based on the type system, not only on runtime checks.
 
-The value of the keywords should be a number. The data array to be valid should not have more (less) items than the keyword value.
+The usual keyword definition for keywords generating code extends common interface with "code" function:
 
-
-__Example__
-
-_schema_: `{ "maxItems": 3 }`
-
-_valid_: `[]`, `[1]`, `["1", 2, "3"]`, any non-array (`"abc"`, `1`, `{}`, `null`, `true`)
-
-_invalid_: `[1, 2, 3, 4]`
-
-
-
-### `uniqueItems`
-
-The value of the keyword should be a boolean. If the keyword value is `true`, the data array to be valid should have unique items.
-
-
-__Example__
-
-_schema_: `{ "uniqueItems": true }`
-
-_valid_: `[]`, `[1]`, `["1", 2, "3"]`, any non-array (`"abc"`, `1`, `{}`, `null`, `true`)
-
-_invalid_: `[1, 2, 1]`,  `[{ "a": 1, "b": 2 }, { "b": 2, "a": 1 }]`
-
-
-
-### `items`
-
-The value of the keyword should be an object or an array of objects.
-
-If the keyword value is an object, then for the data array to be valid each item of the array should be valid according to the schema in this value. In this case the "additionalItems" keyword is ignored.
-
-If the keyword value is an array, then items with indices less than the number of items in the keyword should be valid according to the schemas with the same indices. Whether additional items are valid will depend on "additionalItems" keyword.
-
-
-__Examples__
-
-1.  _schema_: `{ "items": { "type": "integer" } }`
-
-    _valid_: `[1,2,3]`, `[]`, any non-array (`1`, `"abc"`, `{}`, `null`, `true`)
-
-    _invalid_: `[1,"abc"]`
-
-
-2.  _schema_:
-    ```json
-    {
-        "items": [
-            { "type": "integer" },
-            { "type": "string" }
-        ]
-    }
-    ```
-
-    _valid_: `[1]`, `[1, "abc"]`, `[1, "abc", 2]`, `[]`, any non-array (`1`, `"abc"`, `{}`, `null`, `true`)
-
-    _invalid_: `["abc", 1]`, `["abc"]`
-
-
-
-### `additionalItems`
-
-The value of the keyword should be a boolean or an object.
-
-If "items" keyword is not present or it is an object, "additionalItems" keyword is ignored regardless of its value.
-
-If "items" keyword is an array and data array has not more items than the length of "items" keyword value, "additionalItems" keyword is also ignored.
-
-If the length of data array is bigger than the length of "items" keyword value than the result of the validation depends on the value of "additionalItems" keyword:
-
-- `false`: data is invalid
-- `true`: data is valid
-- an object: data is valid if all additional items (i.e. items with indices greater or equal than "items" keyword value length) are valid according to the schema in "additionalItems" keyword.
-
-
-__Examples__
-
-1.  _schema_: `{ "additionalItems": { "type": "integer" } }`
-
-    any data is valid against such schema - "additionalItems" is ignored.
-
-
-2.  _schema_:
-    ```json
-    {
-        "items": { "type": "integer" },
-        "additionalItems": { "type": "string" }
-    }
-    ```
-
-    _valid_: `[]`, `[1, 2]`, any non-array ("additionalItems" is ignored)
-
-    _invalid_: `[1, "abc"]`, (any array with some items other than integers)
-
-
-3.  _schema_:
-    ```json
-    {
-        "items": [
-            { "type": "integer" },
-            { "type": "integer" }
-        ],
-        "additionalItems": true
-    }
-    ```
-
-    _valid_: `[]`, `[1, 2]`, `[1, 2, 3]`, `[1, 2, "abc"]`, any non-array
-
-    _invalid_: `["abc"]`, `[1, "abc", 3]`
-
-
-4.  _schema_:
-    ```json
-    {
-        "items": [
-            { "type": "integer" },
-            { "type": "integer" }
-        ],
-        "additionalItems": { "type": "string" }
-    }
-    ```
-
-    _valid_: `[]`, `[1, 2]`, `[1, 2, "abc"]`, any non-array
-
-    _invalid_: `["abc"]`, `[1, 2, 3]`
-
-
-### `contains`
-
-The value of the keyword is a JSON Schema. The array is valid if it contains at least one item that is valid according to this schema.
-
-__Example__
-
-_schema_: `{ "contains": { "type": "integer" } }`
-
-_valid_: `[1]`, `[1, "foo"]`, any array with at least one integer, any non-array
-
-_invalid_: `[]`, `["foo", "bar"]`, any array without integers
-
-
-The schema from the example above is equivalent to:
-
-```json
-{
-    "not": {
-        "type": "array",
-        "items": {
-            "not": { "type": "integer" }
-        }
-    }
+```typescript
+interface CodeKeywordDefinition extends _KeywordDef {
+  code: (cxt: KeywordCxt, ruleType?: string) => void // code generation function
 }
 ```
 
+Example `even` keyword:
 
-## Keywords for objects
+```typescript
+import {_, KeywordCxt} from Ajv
 
-### `maxProperties` / `minProperties`
+ajv.addKeyword({
+  keyword: "even",
+  type: "number",
+  schemaType: "boolean",
+  // $data: true // to support [$data reference](./validation.md#data-reference), ...
+  code(cxt: KeywordCxt) {
+    const {data, schema} = cxt
+    const op = schema ? _`!==` : _`===`
+    cxt.fail(_`${data} %2 ${op} 0`) // ... the only code change needed is to use `cxt.fail$data` here
+  },
+})
 
-The value of the keywords should be a number. The data object to be valid should have not more (less) properties than the keyword value.
+const schema = {even: true}
+const validate = ajv.compile(schema)
+console.log(validate(2)) // true
+console.log(validate(3)) // false
+```
 
+Example `range` keyword:
 
-__Example__
+```typescript
+import {_, nil, KeywordCxt} from Ajv
 
-_schema_: `{ "maxProperties": 2 }`
+ajv.addKeyword({
+  keyword: "range",
+  type: "number",
+  code(cxt: KeywordCxt) {
+    const {schema, parentSchema, data} = cxt
+    const [min, max] = schema
+    const eq: Code = parentSchema.exclusiveRange ? _`=` : nil
+    gen.fail(_`${data} <${eq} ${min} || ${data} >${eq} ${max}`)
+  },
+  metaSchema: {
+    type: "array",
+    items: [{type: "number"}, {type: "number"}],
+    minItems: 2
+    additionalItems: false,
+  },
+})
+```
 
-_valid_: `{}`, `{"a": 1}`, `{"a": "1", "b": 2}`, any non-object
+You can review pre-defined Ajv keywords in [validation](../lib/validation) folder for more advanced examples - it is much easier to define code generation keywords than it was in the previous version of Ajv.
 
-_invalid_: `{"a": 1, "b": 2, "c": 3}`
+See [KeywordCxt](../lib/compile/context.ts) and [SchemaCxt](../lib/compile/index.ts) type definitions for more information about properties you can use in your keywords.
 
+### Define keyword with "validate" function
 
+Usual keyword definition for validation keywords:
 
-### `required`
+```typescript
+interface FuncKeywordDefinition extends _KeywordDef {
+  validate?: SchemaValidateFunction | DataValidateFunction // DataValidateFunction requires `schema: false` option
+  schema?: boolean // schema: false makes validate not to expect schema (DataValidateFunction)
+  modifying?: boolean
+  async?: boolean
+  valid?: boolean
+  errors?: boolean | "full"
+}
 
-The value of the keyword should be an array of unique strings. The data object to be valid should contain all properties with names equal to the elements in the keyword value.
+interface SchemaValidateFunction {
+  (schema: any, data: any, parentSchema?: AnySchemaObject, dataCxt?: DataValidationCxt):
+    | boolean
+    | Promise<any>
+  errors?: Partial<ErrorObject>[]
+}
 
-
-__Example__
-
-_schema_: `{ "required": ["a", "b"] }`
-
-_valid_: `{"a": 1, "b": 2}`, `{"a": 1, "b": 2, "c": 3}`, any non-object
-
-_invalid_: `{}`, `{"a": 1}`, `{"c": 3, "d":4}`
-
-
-
-### `properties`
-
-The value of the keyword should be a map with keys equal to data object properties. Each value in the map should be a JSON Schema. For data object to be valid the corresponding values in data object properties should be valid according to these schemas.
-
-__Please note__: `properties` keyword does not require that the properties mentioned in it are present in the object (see examples).
-
-__Example__
-
-_schema_:
-```json
-{
-    "properties": {
-        "foo": { "type": "string" },
-        "bar": {
-            "type": "number",
-            "minimum": 2
-        }
-    }
+interface DataValidateFunction {
+  (this: Ajv | any, data: any, dataCxt?: DataValidationCxt): boolean | Promise<any>
+  errors?: Partial<ErrorObject>[]
 }
 ```
 
-_valid_: `{}`, `{"foo": "a"}`, `{"foo": "a", "bar": 2}`, any non-object
+The function should return validation result as boolean. It can return an array of validation errors via `.errors` property of itself (otherwise a standard error will be used).
 
-_invalid_: `{"foo": 1}`, `{"foo": "a", "bar": 1}`
+`validate` keywords are suitable for:
 
+- testing your keywords before converting them to compiled/code keywords
+- defining keywords that do not depend on the schema value (e.g., when the value is always `true`). In this case you can add option `schema: false` to the keyword definition and the schemas won't be passed to the validation function, it will only receive the same parameters as compiled validation function.
+- defining keywords where the schema is a value used in some expression.
+- defining keywords that support [\$data reference](./validation.md#data-reference) - in this case `validate` or `code` function is required, either as the only option or in addition to `compile` or `macro`.
 
+Example: `constant` keyword (a synonym for draft-06 keyword `const`, it is equivalent to `enum` keyword with one item):
 
-### `patternProperties`
+```javascript
+ajv.addKeyword({
+  keyword: "constant",
+  validate: (schema, data) =>
+    typeof schema == "object" && schema !== null ? deepEqual(schema, data) : schema === data,
+  errors: false,
+})
 
-The value of this keyword should be a map where keys should be regular expressions and the values should be JSON Schemas. For data object to be valid the values in data object properties that match regular expression(s) should be valid according to the corresponding schema(s).
+const schema = {
+  constant: 2,
+}
+const validate = ajv.compile(schema)
+console.log(validate(2)) // true
+console.log(validate(3)) // false
 
-When the value in data object property matches multiple regular expressions it should be valid according to all the schemas for all matched regular expressions.
+const schema = {
+  constant: {foo: "bar"},
+}
+const validate = ajv.compile(schema)
+console.log(validate({foo: "bar"})) // true
+console.log(validate({foo: "baz"})) // false
+```
 
-__Please note__: `patternProperties` keyword does not require that properties matching patterns are present in the object (see examples).
+`const` keyword is already available in Ajv.
 
+**Please note:** If the keyword does not define errors (see [Reporting errors](./api.md#reporting-errors)) pass `errors: false` in its definition; it will make generated code more efficient.
 
-__Example__
+To add asynchronous keyword pass `async: true` in its definition.
 
-_schema_:
-```json
-{
-    "patternProperties": {
-        "^fo.*$": { "type": "string" },
-        "^ba.*$": { "type": "number" }
-    }
+### Define keyword with "compile" function
+
+The keyword is similar to "validate", with the difference that "compile" property has function that will be called during schema compilation and should return validation function:
+
+```typescript
+interface FuncKeywordDefinition extends _KeywordDef {
+  compile?: (schema: any, parentSchema: AnySchemaObject, it: SchemaObjCxt) => DataValidateFunction
+  schema?: boolean // schema: false makes validate not to expect schema (DataValidateFunction)
+  modifying?: boolean
+  async?: boolean
+  valid?: boolean
+  errors?: boolean | "full"
 }
 ```
 
-_valid_: `{}`, `{"foo": "a"}`, `{"foo": "a", "bar": 1}`, any non-object
+In some cases it is the best approach to define keywords, but it has the performance cost of an extra function call during validation. If keyword logic can be expressed via some other JSON Schema then `macro` keyword definition is more efficient (see below).
 
-_invalid_: `{"foo": 1}`, `{"foo": "a", "bar": "b"}`
+Example. `range` and `exclusiveRange` keywords using compiled schema:
 
+```javascript
+ajv.addKeyword({
+  keyword: "range",
+  type: "number",
+  compile([min, max], parentSchema) {
+    return parentSchema.exclusiveRange === true
+      ? (data) => data > min && data < max
+      : (data) => data >= min && data <= max
+  },
+  errors: false,
+  metaSchema: {
+    // schema to validate keyword value
+    type: "array",
+    items: [{type: "number"}, {type: "number"}],
+    minItems: 2,
+    additionalItems: false,
+  },
+})
 
+const schema = {
+  range: [2, 4],
+  exclusiveRange: true,
+}
+const validate = ajv.compile(schema)
+console.log(validate(2.01)) // true
+console.log(validate(3.99)) // true
+console.log(validate(2)) // false
+console.log(validate(4)) // false
+```
 
-### `additionalProperties`
+See note on errors and asynchronous keywords in the previous section.
 
-The value of the keyword should be either a boolean or a JSON Schema.
+### Define keyword with "macro" function
 
-If the value is `true` the keyword is ignored.
+Keyword definition:
 
-If the value is `false` the data object to be valid should not have "additional properties" (i.e. properties other than those used in "properties" keyword and those that match patterns in "patternProperties" keyword).
-
-If the value is a schema for the data object to be valid the values in all "additional properties" should be valid according to this schema.
-
-
-__Examples__
-
-1.  _schema_:
-    ```json
-    {
-        "properties": {
-            "foo": { "type": "number" }
-        },
-        "patternProperties": {
-            "^.*r$": { "type": "number" }
-        },
-        "additionalProperties": false
-    }
-    ```
-
-    _valid_: `{}`, `{"foo": 1}`, `{"foo": 1, "bar": 2}`, any non-object
-
-    _invalid_: `{"a": 3}`, `{"foo": 1, "baz": 3}`
-
-2. _schema_:
-    ```json
-    {
-        "properties": {
-            "foo": { "type": "number" }
-        },
-        "patternProperties": {
-            "^.*r$": { "type": "number" }
-        },
-        "additionalProperties": { "type": "string" }
-    }
-    ```
-
-    _valid_: `{}`, `{"a": "b"}`, `{"foo": 1}`, `{"foo": 1, "bar": 2}`, `{"foo": 1, "bar": 2, "a": "b"}`, any non-object
-
-    _invalid_: `{"a": 3}`, `{"foo": 1, "baz": 3}`
-
-3. _schema_:
-    ```json
-    {
-        "properties": {
-            "foo": { "type": "number" }
-        },
-        "additionalProperties": false,
-        "anyOf": [
-            {
-                "properties": {
-                    "bar": { "type": "number" }
-                }
-            },
-            {
-                "properties": {
-                    "baz": { "type": "number" }
-                }
-            }
-        ]
-    }
-    ```
-    _valid_: `{}`, `{"foo": 1}`, any non-object
-
-    _invalid_: `{"bar": 2}`, `{"baz": 3}`, `{"foo": 1, "bar": 2}`, etc.
-
-
-
-### `dependencies`
-
-The value of the keyword is a map with keys equal to data object properties. Each value in the map should be either an array of unique property names ("property dependency") or a JSON Schema ("schema dependency").
-
-For property dependency, if the data object contains a property that is a key in the keyword value, then to be valid the data object should also contain all properties from the array of properties.
-
-For schema dependency, if the data object contains a property that is a key in the keyword value, then to be valid the data object itself (NOT the property value) should be valid according to the schema.
-
-
-__Examples__
-
-1.  _schema (property dependency)_:
-    ```json
-    {
-        "dependencies": {
-            "foo": ["bar", "baz"]
-        }
-    }
-    ```
-
-    _valid_: `{"foo": 1, "bar": 2, "baz": 3}`, `{}`, `{"a": 1}`, any non-object
-
-    _invalid_: `{"foo": 1}`, `{"foo": 1, "bar": 2}`, `{"foo": 1, "baz": 3}`
-
-
-2.  _schema (schema dependency)_:
-    ```json
-    {
-        "dependencies": {
-            "foo": {
-                "properties": {
-                    "bar": { "type": "number" }
-                }
-            }
-        }
-    }
-    ```
-
-    _valid_: `{}`, `{"foo": 1}`, `{"foo": 1, "bar": 2}`, `{"a": 1}`, any non-object
-
-    _invalid_: `{"foo": 1, "bar": "a"}`
-
-
-
-### `propertyNames`
-
-The value of this keyword is a JSON Schema.
-
-For data object to be valid each property name in this object should be valid according to this schema.
-
-
-__Example__
-
-_schema_:
-
-```json
-{
-    "propertyNames": { "format": "email" }
+```typescript
+interface MacroKeywordDefinition extends FuncKeywordDefinition {
+  macro: (schema: any, parentSchema: AnySchemaObject, it: SchemaCxt) => AnySchema
 }
 ```
 
-_valid_: `{"foo@bar.com": "any", "bar@bar.com": "any"}`, any non-object
+"Macro" function is called during schema compilation. It is passed schema, parent schema and [schema compilation context](#schema-compilation-context) and it should return another schema that will be applied to the data in addition to the original schema.
 
-_invalid_: `{"foo": "any value"}`
+It is an efficient approach (in cases when the keyword logic can be expressed with another JSON Schema), because it is usually easy to implement and there is no extra function call during validation.
 
+In addition to the errors from the expanded schema macro keyword will add its own error in case validation fails.
 
+Example. `range` and `exclusiveRange` keywords from the previous example defined with macro:
 
-### `patternRequired` (proposed)
+```javascript
+ajv.addKeyword({
+  keyword: "range",
+  type: "number",
+  macro: ([minimum, maximum]) => ({minimum, maximum}), // schema with keywords minimum and maximum
+  // metaSchema: the same as in the example above
+})
+```
 
-Defined in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package.
+Macro keywords an be recursive - i.e. return schemas containing the same keyword. See the example of defining a recursive macro keyword `deepProperties` in the [test](../spec/keyword.spec.ts#L316).
 
-The value of this keyword should be an array of strings, each string being a regular expression. For data object to be valid each regular expression in this array should match at least one property name in the data object.
+## Schema compilation context
 
-If the array contains multiple regular expressions, more than one expression can match the same property name.
+Schema compilation context [SchemaCxt](../lib/compile/index.ts) is available in property `it` of [KeywordCxt](../lib/compile/context.ts) (and it is also the 3rd parameter of `compile` and `macro` keyword functions). See types in the source code on the properties you can use in this object.
 
-__Examples__
+## Validation time variables
 
-1.  _schema_: `{ "patternRequired": [ "f.*o" ] }`
+All function scoped variables available during validation are defined in [names](../lib/compile/names.ts).
 
-    _valid_: `{ "foo": 1 }`, `{ "-fo-": 1 }`, `{ "foo": 1, "bar": 2 }`, any non-object
+## Reporting errors
 
-    _invalid_: `{}`, `{ "bar": 2 }`, `{ "Foo": 1 }`,
+All keywords can define error messages with `KeywordErrorDefinition` object passed as `error` property of keyword definition:
 
-2.  _schema_: `{ "patternRequired": [ "f.*o", "b.*r" ] }`
-
-    _valid_: `{ "foo": 1, "bar": 2 }`, `{ "foobar": 3 }`, any non-object
-
-    _invalid_: `{}`, `{ "foo": 1 }`, `{ "bar": 2 }`
-
-
-
-## Keywords for all types
-
-### `enum`
-
-The value of the keyword should be an array of unique items of any types. The data is valid if it is deeply equal to one of items in the array.
-
-
-__Example__
-
-_schema_: `{ "enum": [ 2, "foo", {"foo": "bar" }, [1, 2, 3] ] }`
-
-_valid_: `2`, `"foo"`, `{"foo": "bar"}`, `[1, 2, 3]`
-
-_invalid_: `1`, `"bar"`, `{"foo": "baz"}`, `[1, 2, 3, 4]`, any value not in the array
-
-
-
-### `const`
-
-The value of this keyword can be anything. The data is valid if it is deeply equal to the value of the keyword.
-
-__Example__
-
-_schema_: `{ "const": "foo" }`
-
-_valid_: `"foo"`
-
-_invalid_: any other value
-
-
-The same can be achieved with `enum` keyword using the array with one item. But `const` keyword is more than just a syntax sugar for `enum`. In combination with the [$data reference](/#data-reference) it allows to define equality relations between different parts of the data. This cannot be achieved with `enum` keyword even with `$data` reference because `$data` cannot be used in place of one item - it can only be used in place of the whole array in `enum` keyword.
-
-
-__Example__
-
-_schema_:
-
-```json
-{
-    "properties": {
-        "foo": { "type": "number" },
-        "bar": { "const": { "$data": "1/foo" } }
-    }
+```typescript
+interface KeywordErrorDefinition {
+  message: string | ((cxt: KeywordErrorCxt) => Code)
+  params?: (cxt: KeywordErrorCxt) => Code
 }
 ```
 
-_valid_: `{ "foo": 1, "bar": 1 }`, `{}`
+`code` keywords can pass parameters to these functions via `cxt.setParams` (see implementations of pre-defined keywords), other keywords can only set a string message this way.
 
-_invalid_: `{ "foo": 1 }`, `{ "bar": 1 }`, `{ "foo": 1, "bar": 2 }`
+Another approach for reporting errors can be used for `validate` and `compile` keyword - they can define errors by assigning them to `.errors` property of the validation function. Asynchronous keywords can return promise that rejects with `new Ajv.ValidationError(errors)`, where `errors` is an array of validation errors (if you don't want to create errors in asynchronous keyword, its validation function can return the promise that resolves with `false`).
 
+Each error object in `errors` array should at least have properties `keyword`, `message` and `params`, other properties will be added.
 
-
-## Compound keywords
-
-### `not`
-
-The value of the keyword should be a JSON Schema. The data is valid if it is invalid according to this schema.
-
-
-__Examples__
-
-1.  _schema_: `{ "not": { "minimum": 3 } }`
-
-    _valid_: `1`, `2`
-
-    _invalid_: `3`, `4`, any non-number
-
-2.  _schema_:
-
-    ```json
-    {
-        "not": {
-            "items": {
-                "not": { "type": "string" }
-            }
-        }
-    }
-    ```
-
-    _valid_: `["a"]`, `[1, "a"]`, any array containing at least one string
-
-    _invalid_: `[]`, `[1]`, any non-array, any array not containing strings
-
-
-
-### `oneOf`
-
-The value of the keyword should be an array of JSON Schemas. The data is valid if it matches exactly one JSON Schema from this array. Validators have to validate data against all schemas to establish validity according to this keyword.
-
-
-__Example__
-
-_schema_:
-```json
-{
-    "oneOf": [
-        { "maximum": 3 },
-        { "type": "integer" }
-    ]
-}
-```
-
-_valid_: `1.5`, `2.5`, `4`, `5`, any non-number
-
-_invalid_: `2`, `3`, `4.5`, `5.5`
-
-
-
-### `anyOf`
-
-The value of the keyword should be an array of JSON Schemas. The data is valid if it is valid according to one or more JSON Schemas in this array. Validators only need to validate data against schemas in order until the first schema matches (or until all schemas have been tried). For this reason validating against this keyword is faster than against "oneOf" keyword in most cases.
-
-
-__Example__
-
-_schema_:
-```json
-{
-    "anyOf": [
-        { "maximum": 3 },
-        { "type": "integer" }
-    ]
-}
-```
-
-_valid_: `1.5`, `2`, `2.5`, `3`, `4`, `5`, any non-number
-
-_invalid_: `4.5`, `5.5`
-
-
-
-### `allOf`
-
-The value of the keyword should be an array of JSON Schemas. The data is valid if it is valid according to all JSON Schemas in this array.
-
-
-__Example__
-
-_schema_:
-```json
-{
-    "allOf": [
-        { "maximum": 3 },
-        { "type": "integer" }
-    ]
-}
-```
-
-_valid_: `2`, `3`
-
-_invalid_: `1.5`, `2.5`, `4`, `4.5`, `5`, `5.5`, any non-number
-
-
-
-### `if`/`then`/`else`
-
-These keywords allow to implement conditional validation. Their values should be valid JSON Schemas (object or boolean).
-
-If `if` keyword is absent, the validation succeds.
-
-If the data is valid against the sub-schema in `if` keyword, then the validation result is equal to the result of data validation against the sub-schema in `then` keyword (if `then` is absent, the validation succeeds).
-
-If the data is invalid against the sub-schema in `if` keyword, then the validation result is equal to the result of data validation against the sub-schema in `else` keyword (if `else` is absent, the validation succeeds).
-
-
-__Examples__
-
-1.  _schema_:
-
-    ```json
-    {
-        "if": { "properties": { "power": { "minimum": 9000 } } },
-        "then": { "required": [ "disbelief" ] },
-        "else": { "required": [ "confidence" ] }
-    }
-    ```
-
-    _valid_:
-
-    - `{ "power": 10000, "disbelief": true }`
-    - `{}`
-    - `{ "power": 1000, "confidence": true }`
-    - any non-object
-
-    _invalid_:
-
-    - `{ "power": 10000 }` (`disbelief` is required)
-    - `{ "power": 10000, "confidence": true }` (`disbelief` is required)
-    - `{ "power": 1000 }` (`confidence` is required)
-
-
-2.  _schema_:
-
-    ```json
-    {
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 1000,
-        "if": { "minimum": 100 },
-        "then": { "multipleOf": 100 },
-        "else": {
-            "if": { "minimum": 10 },
-            "then": { "multipleOf": 10 }
-        }
-    }
-    ```
-
-    _valid_: `1`, `5`, `10`, `20`, `50`, `100`, `200`, `500`, `1000`
-
-    _invalid_:
-
-    - `-1`, `0` (<1)
-    - `2000` (>1000)
-    - `11`, `57`, `123` (any number with more than one non-zero digit)
-    - non-integers
+If keyword doesn't define or return errors, the default error will be created in case the keyword fails validation.
