@@ -6,6 +6,9 @@ npm run bundle
 
 echo "About to publish $GITHUB_REF to ajv-dist..."
 
+echo "$GIT_USER_EMAIL"
+echo "$GIT_USER_NAME"
+
 git config user.email "$GIT_USER_EMAIL"
 git config user.name "$GIT_USER_NAME"
 
@@ -25,7 +28,7 @@ fi
 
 echo "Publishing tag..."
 
-git tag $GITHUB_REF
-git push --tags > /dev/null 2>&1
+# git tag $GITHUB_REF
+# git push --tags > /dev/null 2>&1
 
 echo "Done"
