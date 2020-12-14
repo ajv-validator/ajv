@@ -12,12 +12,12 @@
       "home": true
     },
     {
-      "page": "keywords",
+      "page": "json-schema",
       "linkText": "JSON-Schema keywords"
     },
     {
-      "page": "custom",
-      "linkText": "Custom keywords"
+      "page": "keywords",
+      "linkText": "User-defined keywords"
     },
     {
       "page": "faq",
@@ -35,29 +35,69 @@
       "title": "Ajv - Another JSON Schema Validator"
     },
     {
-      "file": "COERCION.md",
+      "file": "api.md",
+      "page": "api",
+      "title": "Ajv - API Reference"
+    },
+    {
+      "file": "codegen.md",
+      "page": "codegen",
+      "title": "Ajv - Code generation"
+    },
+    {
+      "file": "coercion.md",
       "page": "coercion",
-      "title": "Ajv - Types Coercion"
+      "title": "Ajv - Type coercion"
     },
     {
-      "file": "CUSTOM.md",
-      "page": "custom",
-      "title": "Ajv - Custom Keywords"
+      "file": "components.md",
+      "page": "components",
+      "title": "Ajv - Code components"
     },
     {
-      "file": "KEYWORDS.md",
-      "page": "keywords",
-      "title": "Ajv - Validation Keywords"
-    },
-    {
-      "file": "FAQ.md",
+      "file": "faq.md",
       "page": "faq",
       "title": "Ajv - Frequently Asked Questions"
     },
     {
+      "file": "json-schema.md",
+      "page": "json-schema",
+      "title": "Ajv - JSON Schema validation keywords"
+    },
+    {
+      "file": "keywords.md",
+      "page": "keywords",
+      "title": "Ajv - User-defined keywords"
+    },
+    {
+      "file": "security.md",
+      "page": "security",
+      "title": "Ajv - Security considerations"
+    },
+    {
+      "file": "standalone.md",
+      "page": "standalone",
+      "title": "Ajv - Standalone validation code"
+    },
+    {
+      "file": "strict-mode.md",
+      "page": "strict-mode",
+      "title": "Ajv - Strict mode"
+    },
+    {
+      "file": "validation.md",
+      "page": "validation",
+      "title": "Ajv - Data validation"
+    },
+    {
       "file": "CONTRIBUTING.md",
       "page": "contribute",
-      "title": "Ajv - Contributing Guidelines"
+      "title": "Ajv - Contributing guidelines"
+    },
+    {
+      "file": "CODE_OF_CONDUCT.md",
+      "page": "conduct",
+      "title": "Ajv - Contributor Covenant Code of Conduct"
     },
     {
       "file": "LICENSE",
