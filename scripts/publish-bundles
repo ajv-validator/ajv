@@ -2,33 +2,34 @@
 
 set -e
 
-npm run bundle
+if [[ $GITHUB_REF == refs/tags/v* ]]
+  npm run bundle
 
-echo "About to publish $GITHUB_REF to ajv-dist..."
+  echo "About to publish $GITHUB_REF to ajv-dist..."
 
-echo "$GIT_USER_EMAIL"
-echo "$GIT_USER_NAME"
+  git config --global user.name "$GIT_USER_NAME"
+  git config --global user.email "$GIT_USER_EMAIL"
 
-git config user.email "$GIT_USER_EMAIL"
-git config user.name "$GIT_USER_NAME"
+  git clone https://${GH_TOKEN_PUBLIC}@github.com/ajv-validator/ajv-dist.git ../ajv-dist
 
-git clone https://${GITHUB_TOKEN}@github.com/ajv-validator/ajv-dist.git ../ajv-dist
+  rm -rf ../ajv-dist/dist
+  mkdir ../ajv-dist/dist
+  cp ./bundle/*.* ../ajv-dist/dist
+  cd ../ajv-dist
 
-rm -rf ../ajv-dist/dist
-mkdir ../ajv-dist/dist
-cp ./bundle/*.* ../ajv-dist/dist
-cd ../ajv-dist
+  sed -E "s/\"version\": \"([^\"]*)\"/\"version\": \"${GITHUB_REF#refs/tags/v}\"/" package.json > new_package.json
+  mv new_package.json package.json
 
-if [[ `git status --porcelain` ]]; then
-  echo "Changes detected. Updating master branch..."
-  git add -A
-  git commit -m "updated by publish build #$GITHUB_RUN_ID"
-  git push --quiet origin master > /dev/null 2>&1
+  if [[ `git status --porcelain` ]]; then
+    echo "Changes detected. Updating master branch..."
+    git add -A
+    git commit -m "$GITHUB_REF: updated by ajv workflow https://github.com/ajv-validator/ajv/actions/runs/$GITHUB_RUN_ID"
+    git push --quiet origin master > /dev/null 2>&1
+  fi
+
+  echo "Publishing tag..."
+  git tag $GITHUB_REF
+  git push --tags > /dev/null 2>&1
+
+  echo "Done"
 fi
-
-echo "Publishing tag..."
-
-# git tag $GITHUB_REF
-# git push --tags > /dev/null 2>&1
-
-echo "Done"

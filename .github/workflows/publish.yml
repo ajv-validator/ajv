@@ -29,6 +29,6 @@ jobs:
       - name: Commit bundles to ajv-dist
         run: ./scripts/publish-bundles
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN_PUBLIC: ${{ secrets.GH_TOKEN_PUBLIC }}
           GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
           GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}

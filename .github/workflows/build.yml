@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [master, ajv-dist]
+    branches: [master]
   pull_request:
     branches: ["*"]
 
@@ -16,22 +16,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: git submodule update --init
       - run: npm run build
-      # - run: npm run test-ci
-      # - name: Coveralls
-      #   uses: coverallsapp/github-action@master
-      #   with:
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Commit bundles to ajv-dist
-        if: ${{ matrix.node-version == '14.x' }}
-        run: ./scripts/publish-bundles
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
-          GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
+      - run: npm run test-ci
+      - name: coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
