@@ -5,6 +5,7 @@ lib/
 
 _site/
 _source/
+.jekyll-cache
 
 .browser/
 .nyc_output/
