@@ -30,7 +30,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: update website
         if: ${{ matrix.node-version == '14.x' }}
-        run: ./scripts/publish-bundles
+        run: ./scripts/publish-gh-pages
         env:
           GH_TOKEN_PUBLIC: ${{ secrets.GH_TOKEN_PUBLIC }}
           GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
