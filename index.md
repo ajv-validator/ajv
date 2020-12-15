@@ -3,7 +3,7 @@ page_name: index
 title: Ajv - Another JSON Schema Validator
 layout: main
 ---
-<img align="right" alt="Ajv logo" width="160" src="https://ajv.js.org/images/ajv_logo.png">
+
 
 # Ajv: Another JSON Schema Validator
 

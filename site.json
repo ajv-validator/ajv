@@ -9,16 +9,28 @@
   "navigation": [
     {
       "page": "/index",
-      "linkText": "Home",
+      "linkText": "🏠",
       "home": true
     },
     {
-      "page": "/docs/json-schema",
-      "linkText": "JSON Schema"
+      "page": "/docs/validation",
+      "linkText": "Validation"
+    },
+    {
+      "page": "/docs/strict-mode",
+      "linkText": "Strict mode"
+    },
+    {
+      "page": "/docs/api",
+      "linkText": "API"
     },
     {
       "page": "/docs/keywords",
-      "linkText": "User-defined keywords"
+      "linkText": "Define keywords"
+    },
+    {
+      "page": "/docs/security",
+      "linkText": "Security"
     },
     {
       "page": "/docs/faq",
@@ -26,7 +38,7 @@
     },
     {
       "page": "/contribute",
-      "linkText": "Contributing"
+      "linkText": "Contribute"
     }
   ],
   "pages": [
