@@ -14,7 +14,7 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07/
 
 ## Platinum sponsors
 
-[<img src="https://www.poberezkin.com/images/mozilla.svg" width="45%">](https://www.mozilla.org)[<img src="./.github/img/gap.svg" width="9%">](https://opencollective.com/ajv)[<img src="./.github/img/reserved.svg" width="45%">](https://opencollective.com/ajv)
+[<img src="https://www.poberezkin.com/images/mozilla.svg" width="45%">](https://www.mozilla.org)[<img src="https://ajv.js.org/images/gap.svg" width="9%">](https://opencollective.com/ajv)[<img src="https://ajv.js.org/images/reserved.svg" width="45%">](https://opencollective.com/ajv)
 
 ## Using version 7
 

@@ -28,3 +28,10 @@ jobs:
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: update website
+        if: ${{ matrix.node-version == '14.x' }}
+        run: ./scripts/publish-bundles
+        env:
+          GH_TOKEN_PUBLIC: ${{ secrets.GH_TOKEN_PUBLIC }}
+          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
+          GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
