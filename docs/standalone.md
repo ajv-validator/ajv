@@ -1,5 +1,5 @@
 ---
-page_name: standalone
+page_name: docs/standalone
 title: Ajv - Standalone validation code
 layout: main
 ---
@@ -9,7 +9,7 @@ Ajv supports generating standalone modules with exported validation function(s),
 
 - to reduce the browser bundle size - Ajv is not included in the bundle (although if you have a large number of schemas the bundle can become bigger - when the total size of generated validation code is bigger than Ajv code).
 - to reduce the start-up time - the validation and compilation of schemas will happen during build time.
-- to avoid dynamic code evaluation with Function constructor (used for schema compilation) - when it is prohibited by the browser page [Content Security Policy](./security.md#content-security-policy).
+- to avoid dynamic code evaluation with Function constructor (used for schema compilation) - when it is prohibited by the browser page [Content Security Policy](./security.html#content-security-policy).
 
 This functionality in Ajv v7 supersedes deprecated package ajv-pack that can be used with Ajv v6. All schemas, including those with recursive references, formats and user-defined keywords are supported, with few [limitations](#configuration-and-limitations).
 
@@ -80,7 +80,7 @@ Ajv package should still be a run-time dependency for most schemas, but generate
 To support standalone code generation:
 
 - Ajv option `source.code` must be set to `true`
-- only `code` and `macro` user-defined keywords are supported (see [User defined keywords](./keywords.md)).
+- only `code` and `macro` user-defined keywords are supported (see [User defined keywords](./keywords.html)).
 - when `code` keywords define variables in shared scope using `gen.scopeValue`, they must provide `code` property with the code snippet. See source code of pre-defined keywords for examples in [vocabularies folder](../lib/vocabularies).
 - if formats are used in standalone code, ajv option `code.formats` should contain the code snippet that will evaluate to an object with all used formats definition - it can be a call to `require("...")` with the correct path (relative to the location of saved module):
 

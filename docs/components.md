@@ -1,5 +1,5 @@
 ---
-page_name: components
+page_name: docs/components
 title: Ajv - Code components
 layout: main
 ---
@@ -25,13 +25,13 @@ layout: main
 
 [lib/compile/subschema.ts](../lib/compile/subschema.ts) - creates schema context (`SchemaCxt`) to generate code for subschemas - used by all applicator keywords in [lib/vocabularies/applicator](../lib/vocabularies/applicator).
 
-[lib/compile/codegen](../lib/compile/codegen) - the api for [code generation](./codegen.md).
+[lib/compile/codegen](../lib/compile/codegen) - the api for [code generation](./codegen.html).
 
 [lib/compile/validate](../lib/compile/validate) - code to iterate the schema to generate code of validation function.
 
 ## Other components
 
-[lib/standalone](../lib/standalone) - module to generate [standalone validation code](./standalone.md).
+[lib/standalone](../lib/standalone) - module to generate [standalone validation code](./standalone.html).
 
 [lib/vocabularies](../lib/vocabularies) - pre-defined validation keywords.
 

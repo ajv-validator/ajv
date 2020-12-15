@@ -27,7 +27,7 @@ Ajv has a lot of features and maintaining documentation takes time. I appreciate
 
 ## Issues
 
-Before submitting the issue please search the existing issues and also review [Frequently Asked Questions](./docs/faq.md).
+Before submitting the issue please search the existing issues and also review [Frequently Asked Questions](./docs/faq.html).
 
 It is really important that you spend time to provide all the relevant information and to reduce both your schema and data to the smallest possible size when they still have the issue. Simplifying the issue also makes it more valuable for other users (in cases it turns out to be an incorrect usage rather than a bug).
 

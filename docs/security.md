@@ -1,5 +1,5 @@
 ---
-page_name: security
+page_name: docs/security
 title: Ajv - Security considerations
 layout: main
 ---
@@ -85,4 +85,4 @@ When using Ajv in a browser page with enabled Content Security Policy (CSP), `sc
 
 **Please note**: `unsafe-eval` is NOT recommended in a secure CSP[[1]](https://developer.chrome.com/extensions/contentSecurityPolicy#relaxing-eval), as it has the potential to open the document to cross-site scripting (XSS) attacks.
 
-In order to use Ajv without relaxing CSP, you can [compile the schemas using CLI](https://github.com/ajv-validator/ajv-cli#compile-schemas) or programmatically in your build code - see [Standalone validation code](./standalone.md). Compiled JavaScript file can export one or several validation functions that have the same code as the schemas compiled at runtime.
+In order to use Ajv without relaxing CSP, you can [compile the schemas using CLI](https://github.com/ajv-validator/ajv-cli#compile-schemas) or programmatically in your build code - see [Standalone validation code](./standalone.html). Compiled JavaScript file can export one or several validation functions that have the same code as the schemas compiled at runtime.

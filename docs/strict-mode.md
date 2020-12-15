@@ -1,5 +1,5 @@
 ---
-page_name: strict-mode
+page_name: docs/strict-mode
 title: Ajv - Strict mode
 layout: main
 ---
@@ -70,7 +70,7 @@ By default Ajv fails schema compilation in these cases.
 
 #### Prohibit unknown formats
 
-By default unknown formats throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](./validation.md#data-reference)). It is possible to opt out of format validation completely with options `validateFormats: false`. You can define all known formats with `addFormat` method or `formats` option - to have some format ignored pass `true` as its definition:
+By default unknown formats throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](./validation.html#data-reference)). It is possible to opt out of format validation completely with options `validateFormats: false`. You can define all known formats with `addFormat` method or `formats` option - to have some format ignored pass `true` as its definition:
 
 ```javascript
 const ajv = new Ajv({formats: {
@@ -78,11 +78,11 @@ const ajv = new Ajv({formats: {
 })
 ```
 
-Standard JSON Schema formats are provided in [ajv-formats](https://github.com/ajv-validator/ajv-formats) package - see [Formats](./validation.md#formats) section.
+Standard JSON Schema formats are provided in [ajv-formats](https://github.com/ajv-validator/ajv-formats) package - see [Formats](./validation.html#formats) section.
 
 #### Prohibit ignored defaults
 
-With `useDefaults` option Ajv modifies validated data by assigning defaults from the schema, but there are different limitations when the defaults can be ignored (see [Assigning defaults](./validation.md#assigning-defaults)). In strict mode Ajv fails schema compilation if such defaults are used in the schema.
+With `useDefaults` option Ajv modifies validated data by assigning defaults from the schema, but there are different limitations when the defaults can be ignored (see [Assigning defaults](./validation.html#assigning-defaults)). In strict mode Ajv fails schema compilation if such defaults are used in the schema.
 
 ### Prevent unexpected validation
 

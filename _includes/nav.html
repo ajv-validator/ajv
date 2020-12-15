@@ -1,43 +1,41 @@
 <ul id="page_links">
+      <li>
+        {% if page.page_name == '/index' %}
+          <span class="current_page">Home</span>
+        {% else %}
+          <a href="/" title="Home">Home</a>
+        {% endif %}
+      </li>
 
-  <li>
-    {% if page.page_name == 'index' %}
-      <span class="current_page">Home</span>
-    {% else %}
-      <a href="/" title="Home">Home</a>
-    {% endif %}
-  </li>
+      <li>
+        {% if page.page_name == '/docs/json-schema' %}
+          <span class="current_page">JSON Schema</span>
+        {% else %}
+          <a href="/docs/json-schema.html" title="JSON Schema">JSON Schema</a>
+        {% endif %}
+      </li>
 
-  <li>
-    {% if page.page_name == 'json-schema' %}
-      <span class="current_page">JSON-Schema keywords</span>
-    {% else %}
-      <a href="/json-schema.html" title="JSON-Schema keywords">JSON-Schema keywords</a>
-    {% endif %}
-  </li>
+      <li>
+        {% if page.page_name == '/docs/keywords' %}
+          <span class="current_page">User-defined keywords</span>
+        {% else %}
+          <a href="/docs/keywords.html" title="User-defined keywords">User-defined keywords</a>
+        {% endif %}
+      </li>
 
-  <li>
-    {% if page.page_name == 'keywords' %}
-      <span class="current_page">User-defined keywords</span>
-    {% else %}
-      <a href="/keywords.html" title="User-defined keywords">User-defined keywords</a>
-    {% endif %}
-  </li>
+      <li>
+        {% if page.page_name == '/docs/faq' %}
+          <span class="current_page">FAQ</span>
+        {% else %}
+          <a href="/docs/faq.html" title="FAQ">FAQ</a>
+        {% endif %}
+      </li>
 
-  <li>
-    {% if page.page_name == 'faq' %}
-      <span class="current_page">FAQ</span>
-    {% else %}
-      <a href="/faq.html" title="FAQ">FAQ</a>
-    {% endif %}
-  </li>
-
-  <li>
-    {% if page.page_name == 'contribute' %}
-      <span class="current_page">Contributing</span>
-    {% else %}
-      <a href="/contribute.html" title="Contributing">Contributing</a>
-    {% endif %}
-  </li>
-
+      <li>
+        {% if page.page_name == '/contribute' %}
+          <span class="current_page">Contributing</span>
+        {% else %}
+          <a href="/contribute.html" title="Contributing">Contributing</a>
+        {% endif %}
+      </li>
 </ul>

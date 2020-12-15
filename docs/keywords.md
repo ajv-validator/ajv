@@ -1,5 +1,5 @@
 ---
-page_name: keywords
+page_name: docs/keywords
 title: Ajv - User-defined keywords
 layout: main
 ---
@@ -38,7 +38,7 @@ Keyword definitions may have additional optional properties - see [types](../lib
 
 ### Define keyword with code generation function
 
-Starting from v7 Ajv uses [CodeGen module](../lib/compile/codegen/index.ts) for all pre-defined keywords - see [codegen.md](./codegen.md) for details.
+Starting from v7 Ajv uses [CodeGen module](../lib/compile/codegen/index.ts) for all pre-defined keywords - see [codegen.md](./codegen.html) for details.
 
 This is the best approach for user defined keywords:
 
@@ -66,7 +66,7 @@ ajv.addKeyword({
   keyword: "even",
   type: "number",
   schemaType: "boolean",
-  // $data: true // to support [$data reference](./validation.md#data-reference), ...
+  // $data: true // to support [$data reference](./validation.html#data-reference), ...
   code(cxt: KeywordCxt) {
     const {data, schema} = cxt
     const op = schema ? _`!==` : _`===`
@@ -141,7 +141,7 @@ The function should return validation result as boolean. It can return an array 
 - testing your keywords before converting them to compiled/code keywords
 - defining keywords that do not depend on the schema value (e.g., when the value is always `true`). In this case you can add option `schema: false` to the keyword definition and the schemas won't be passed to the validation function, it will only receive the same parameters as compiled validation function.
 - defining keywords where the schema is a value used in some expression.
-- defining keywords that support [\$data reference](./validation.md#data-reference) - in this case `validate` or `code` function is required, either as the only option or in addition to `compile` or `macro`.
+- defining keywords that support [\$data reference](./validation.html#data-reference) - in this case `validate` or `code` function is required, either as the only option or in addition to `compile` or `macro`.
 
 Example: `constant` keyword (a synonym for draft-06 keyword `const`, it is equivalent to `enum` keyword with one item):
 
@@ -170,7 +170,7 @@ console.log(validate({foo: "baz"})) // false
 
 `const` keyword is already available in Ajv.
 
-**Please note:** If the keyword does not define errors (see [Reporting errors](./api.md#reporting-errors)) pass `errors: false` in its definition; it will make generated code more efficient.
+**Please note:** If the keyword does not define errors (see [Reporting errors](./api.html#reporting-errors)) pass `errors: false` in its definition; it will make generated code more efficient.
 
 To add asynchronous keyword pass `async: true` in its definition.
 
@@ -252,7 +252,7 @@ ajv.addKeyword({
 })
 ```
 
-Macro keywords an be recursive - i.e. return schemas containing the same keyword. See the example of defining a recursive macro keyword `deepProperties` in the [test](../spec/keyword.spec.ts#L316).
+Macro keywords an be recursive - i.e. return schemas containing the same keyword. See the example of defining a recursive macro keyword `deepProperties` in the [test](https://github.com/ajv-validator/ajv/tree/master/spec/keyword.spec.ts#L316).
 
 ## Schema compilation context
 

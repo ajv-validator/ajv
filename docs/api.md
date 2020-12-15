@@ -1,5 +1,5 @@
 ---
-page_name: api
+page_name: docs/api
 title: Ajv - API Reference
 layout: main
 ---
@@ -25,7 +25,7 @@ See [Options](#options)
 
 Generate validating function and cache the compiled schema for future use.
 
-Validating function returns a boolean value (or promise for async schemas that must have `$async: true` property - see [Asynchronous validation](./validation.md#asynchronous-validation)). This function has properties `errors` and `schema`. Errors encountered during the last validation are assigned to `errors` property (it is assigned `null` if there was no errors). `schema` property contains the reference to the original schema.
+Validating function returns a boolean value (or promise for async schemas that must have `$async: true` property - see [Asynchronous validation](./validation.html#asynchronous-validation)). This function has properties `errors` and `schema`. Errors encountered during the last validation are assigned to `errors` property (it is assigned `null` if there was no errors). `schema` property contains the reference to the original schema.
 
 The schema passed to this method will be validated against meta-schema unless `validateSchema` option is false. If schema is invalid, an error will be thrown. See [options](#options).
 
@@ -53,7 +53,7 @@ if (validate(data)) {
 }
 ```
 
-See more advanced example in [the test](../spec/types/json-schema.spec.ts).
+See more advanced example in [the test](https://github.com/ajv-validator/ajv/tree/master/spec/types/json-schema.spec.ts).
 
 #### <a name="api-compileAsync"></a>ajv.compileAsync(schema: object, meta?: boolean): Promise\<Function\>
 
@@ -69,7 +69,7 @@ You can asynchronously compile meta-schema by passing `true` as the second param
 
 Similarly to `compile`, it can return type guard in typescript.
 
-See example in [Asynchronous compilation](./validation.md#asynchronous-schema-compilation).
+See example in [Asynchronous compilation](./validation.html#asynchronous-schema-compilation).
 
 #### ajv.validate(schemaOrRef: object | string, data: any): boolean
 
@@ -83,7 +83,7 @@ In typescript this method can act as a type guard (similarly to function returne
 
 **Please note**: every time this method is called the errors are overwritten so you need to copy them to another variable if you want to use them later.
 
-If the schema is asynchronous (has `$async` keyword on the top level) this method returns a Promise. See [Asynchronous validation](./validation.md#asynchronous-validation).
+If the schema is asynchronous (has `$async` keyword on the top level) this method returns a Promise. See [Asynchronous validation](./validation.html#asynchronous-validation).
 
 #### <a name="add-schema"></a>ajv.addSchema(schema: object | object[], key?: string): Ajv
 
@@ -207,7 +207,7 @@ interface KeywordDefinition {
   modifying?: true // MUST be passed if keyword modifies data
   valid?: boolean // to pre-define validation result, validation function result will be ignored -
   // this option MUST NOT be used with `macro` keywords.
-  $data?: true // to support [\$data reference](./validation.md#data-reference) as the value of keyword.
+  $data?: true // to support [\$data reference](./validation.html#data-reference) as the value of keyword.
   // The reference will be resolved at validation time. If the keyword has meta-schema,
   // it would be extended to allow $data and it will be used to validate the resolved value.
   // Supporting $data reference requires that keyword has `code` or `validate` function
@@ -223,11 +223,11 @@ interface KeywordDefinition {
 }
 ```
 
-`compile`, `macro` and `code` are mutually exclusive, only one should be used at a time. `validate` can be used separately or in addition to `compile` or `macro` to support [\$data reference](./validation.md#data-reference).
+`compile`, `macro` and `code` are mutually exclusive, only one should be used at a time. `validate` can be used separately or in addition to `compile` or `macro` to support [\$data reference](./validation.html#data-reference).
 
 **Please note**: If the keyword is validating data type that is different from the type(s) in its definition, the validation function will not be called (and expanded macro will not be used), so there is no need to check for data type inside validation function or inside schema returned by macro function (unless you want to enforce a specific type and for some reason do not want to use a separate `type` keyword for that). In the same way as standard keywords work, if the keyword does not apply to the data type being validated, the validation of this keyword will succeed.
 
-See [User defined keywords](./keywords.md) for more details.
+See [User defined keywords](./keywords.html) for more details.
 
 #### ajv.getKeyword(keyword: string): object | boolean
 
@@ -299,27 +299,27 @@ const defaultOptions = {
 
 #### Strict mode options (NEW in v7)
 
-- _strict_: By default Ajv executes in strict mode, that is designed to prevent any unexpected behaviours or silently ignored mistakes in schemas (see [Strict Mode](./strict-mode.md) for more details). It does not change any validation results, but it makes some schemas invalid that would be otherwise valid according to JSON Schema specification. Option values:
+- _strict_: By default Ajv executes in strict mode, that is designed to prevent any unexpected behaviours or silently ignored mistakes in schemas (see [Strict Mode](./strict-mode.html) for more details). It does not change any validation results, but it makes some schemas invalid that would be otherwise valid according to JSON Schema specification. Option values:
   - `true` (default) - use strict mode and throw an exception when any strict mode restriction is violated.
   - `"log"` - log warning when any strict mode restriction is violated.
   - `false` - ignore all strict mode restrictions. Also ignores `strictTypes` restrictions unless it is explicitly passed.
-- _strictTypes_: By default Ajv logs warning when "type" keyword is used in a way that may be incorrect or confusing to other people - see [Strict types](./strict-mode.md#strict-types) for more details. This option does not change validation results. Option values:
+- _strictTypes_: By default Ajv logs warning when "type" keyword is used in a way that may be incorrect or confusing to other people - see [Strict types](./strict-mode.html#strict-types) for more details. This option does not change validation results. Option values:
   - `true` - throw exception when any strictTypes restriction is violated.
   - `"log"` (default, unless option strict is `false`) - log warning when any strictTypes restriction is violated.
   - `false` - ignore all strictTypes restrictions violations.
-- _strictTuples_: By default Ajv logs warning when "items" is array and "minItems" and "maxItems"/"additionalItems" not present or different from the number of items. See [Strict mode](./strict-mode.md) for more details. This option does not change validation results. Option values:
+- _strictTuples_: By default Ajv logs warning when "items" is array and "minItems" and "maxItems"/"additionalItems" not present or different from the number of items. See [Strict mode](./strict-mode.html) for more details. This option does not change validation results. Option values:
   - `true` - throw exception.
   - `"log"` (default, unless option strict is `false`) - log warning.
   - `false` - ignore strictTuples restriction violations.
-- _allowUnionTypes_: pass true to allow using multiple non-null types in "type" keyword (one of `strictTypes` restrictions). see [Strict types](./strict-mode.md#strict-types)
-- _allowMatchingProperties_: pass true to allow overlap between "properties" and "patternProperties". Does not affect other strict mode restrictions. See [Strict Mode](./strict-mode.md).
+- _allowUnionTypes_: pass true to allow using multiple non-null types in "type" keyword (one of `strictTypes` restrictions). see [Strict types](./strict-mode.html#strict-types)
+- _allowMatchingProperties_: pass true to allow overlap between "properties" and "patternProperties". Does not affect other strict mode restrictions. See [Strict Mode](./strict-mode.html).
 - _validateFormats_: format validation. Option values:
-  - `true` (default) - validate formats (see [Formats](./validation.md#formats)). In [strict mode](./strict-mode.md) unknown formats will throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](./validation.md#data-reference)).
+  - `true` (default) - validate formats (see [Formats](./validation.html#formats)). In [strict mode](./strict-mode.html) unknown formats will throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](./validation.html#data-reference)).
   - `false` - do not validate any format keywords (TODO they will still collect annotations once supported).
 
 #### Validation and reporting options
 
-- _\$data_: support [\$data references](./validation.md#data-reference). Draft 6 meta-schema that is added by default will be extended to allow them. If you want to use another meta-schema you need to use $dataMetaSchema method to add support for $data reference. See [API](#ajv-constructor-and-methods).
+- _\$data_: support [\$data references](./validation.html#data-reference). Draft 6 meta-schema that is added by default will be extended to allow them. If you want to use another meta-schema you need to use $dataMetaSchema method to add support for $data reference. See [API](#ajv-constructor-and-methods).
 - _allErrors_: check all rules collecting all errors. Default is to return after the first error.
 - _verbose_: include the reference to the part of the schema (`schema` and `parentSchema`) and validated data in errors (false by default).
 - _\$comment_: log or pass the value of `$comment` keyword to a function. Option values:
@@ -332,20 +332,20 @@ const defaultOptions = {
 - _logger_: sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. See [Error logging](#error-logging). Option values:
   - logger instance - it should have methods `log`, `warn` and `error`. If any of these methods is missing an exception will be thrown.
   - `false` - logging is disabled.
-- _loadSchema_: asynchronous function that will be used to load remote schemas when `compileAsync` [method](#api-compileAsync) is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept remote schema uri as a parameter and return a Promise that resolves to a schema. See example in [Asynchronous compilation](./validation.md#asynchronous-schema-compilation).
+- _loadSchema_: asynchronous function that will be used to load remote schemas when `compileAsync` [method](#api-compileAsync) is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept remote schema uri as a parameter and return a Promise that resolves to a schema. See example in [Asynchronous compilation](./validation.html#asynchronous-schema-compilation).
 
 #### Options to modify validated data
 
-- _removeAdditional_: remove additional properties - see example in [Removing additional properties](./validation.md#removing-additional-properties). This option is not used if schema is added with `addMetaSchema` method. Option values:
+- _removeAdditional_: remove additional properties - see example in [Removing additional properties](./validation.html#removing-additional-properties). This option is not used if schema is added with `addMetaSchema` method. Option values:
   - `false` (default) - not to remove additional properties
   - `"all"` - all additional properties are removed, regardless of `additionalProperties` keyword in schema (and no validation is made for them).
   - `true` - only additional properties with `additionalProperties` keyword equal to `false` are removed.
   - `"failing"` - additional properties that fail schema validation will be removed (where `additionalProperties` keyword is `false` or schema).
-- _useDefaults_: replace missing or undefined properties and items with the values from corresponding `default` keywords. Default behaviour is to ignore `default` keywords. This option is not used if schema is added with `addMetaSchema` method. See examples in [Assigning defaults](./validation.md#assigning-defaults). Option values:
+- _useDefaults_: replace missing or undefined properties and items with the values from corresponding `default` keywords. Default behaviour is to ignore `default` keywords. This option is not used if schema is added with `addMetaSchema` method. See examples in [Assigning defaults](./validation.html#assigning-defaults). Option values:
   - `false` (default) - do not use defaults
   - `true` - insert defaults by value (object literal is used).
   - `"empty"` - in addition to missing or undefined, use defaults for properties and items that are equal to `null` or `""` (an empty string).
-- _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](./validation.md#coercing-data-types) and [coercion rules](./coercion.md). Option values:
+- _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](./validation.html#coercing-data-types) and [coercion rules](./coercion.html). Option values:
   - `false` (default) - no type coercion.
   - `true` - coerce scalar data types.
   - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
@@ -383,7 +383,7 @@ type CodeOptions = {
   // the number of code tree nodes by nearly 17%.
   // You would almost never need more than one optimization pass, unless you have some really complex schemas -
   // the second pass in the tests (it has quite complex schemas) only improves optimization by less than 0.1%.
-  // See [Code optimization](./codegen.md#code-optimization) for details.
+  // See [Code optimization](./codegen.html#code-optimization) for details.
 }
 
 type Source = {
@@ -394,7 +394,7 @@ type Source = {
 
 ## Validation errors
 
-In case of validation failure, Ajv assigns the array of errors to `errors` property of validation function (or to `errors` property of Ajv instance when `validate` or `validateSchema` methods were called). In case of [asynchronous validation](./validation.md#asynchronous-validation), the returned promise is rejected with exception `Ajv.ValidationError` that has `errors` property.
+In case of validation failure, Ajv assigns the array of errors to `errors` property of validation function (or to `errors` property of Ajv instance when `validate` or `validateSchema` methods were called). In case of [asynchronous validation](./validation.html#asynchronous-validation), the returned promise is rejected with exception `Ajv.ValidationError` that has `errors` property.
 
 ### Error objects
 
@@ -448,7 +448,7 @@ if (validate(data)) {
 }
 ```
 
-Also see an example in [this test](../spec/types/error-parameters.spec.ts)
+Also see an example in [this test](https://github.com/ajv-validator/ajv/tree/master/spec/types/error-parameters.spec.ts)
 
 - `maxItems`, `minItems`, `maxLength`, `minLength`, `maxProperties`, `minProperties`:
 

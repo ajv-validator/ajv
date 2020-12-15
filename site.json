@@ -2,29 +2,30 @@
   "repository": "https://github.com/ajv-validator/ajv",
   "folders": {
     "source": "_source",
-    "target": "."
+    "target": ".",
+    "includes": "_includes"
   },
   "layout": "main",
   "navigation": [
     {
-      "page": "index",
+      "page": "/index",
       "linkText": "Home",
       "home": true
     },
     {
-      "page": "json-schema",
-      "linkText": "JSON-Schema keywords"
+      "page": "/docs/json-schema",
+      "linkText": "JSON Schema"
     },
     {
-      "page": "keywords",
+      "page": "/docs/keywords",
       "linkText": "User-defined keywords"
     },
     {
-      "page": "faq",
+      "page": "/docs/faq",
       "linkText": "FAQ"
     },
     {
-      "page": "contribute",
+      "page": "/contribute",
       "linkText": "Contributing"
     }
   ],
@@ -35,58 +36,58 @@
       "title": "Ajv - Another JSON Schema Validator"
     },
     {
-      "file": "api.md",
-      "page": "api",
+      "file": "docs/api.md",
+      "page": "docs/api",
       "title": "Ajv - API Reference"
     },
     {
-      "file": "codegen.md",
-      "page": "codegen",
+      "file": "docs/codegen.md",
+      "page": "docs/codegen",
       "title": "Ajv - Code generation"
     },
     {
-      "file": "coercion.md",
-      "page": "coercion",
+      "file": "docs/coercion.md",
+      "page": "docs/coercion",
       "title": "Ajv - Type coercion"
     },
     {
-      "file": "components.md",
-      "page": "components",
+      "file": "docs/components.md",
+      "page": "docs/components",
       "title": "Ajv - Code components"
     },
     {
-      "file": "faq.md",
-      "page": "faq",
+      "file": "docs/faq.md",
+      "page": "docs/faq",
       "title": "Ajv - Frequently Asked Questions"
     },
     {
-      "file": "json-schema.md",
-      "page": "json-schema",
+      "file": "docs/json-schema.md",
+      "page": "docs/json-schema",
       "title": "Ajv - JSON Schema validation keywords"
     },
     {
-      "file": "keywords.md",
-      "page": "keywords",
+      "file": "docs/keywords.md",
+      "page": "docs/keywords",
       "title": "Ajv - User-defined keywords"
     },
     {
-      "file": "security.md",
-      "page": "security",
+      "file": "docs/security.md",
+      "page": "docs/security",
       "title": "Ajv - Security considerations"
     },
     {
-      "file": "standalone.md",
-      "page": "standalone",
+      "file": "docs/standalone.md",
+      "page": "docs/standalone",
       "title": "Ajv - Standalone validation code"
     },
     {
-      "file": "strict-mode.md",
-      "page": "strict-mode",
+      "file": "docs/strict-mode.md",
+      "page": "docs/strict-mode",
       "title": "Ajv - Strict mode"
     },
     {
-      "file": "validation.md",
-      "page": "validation",
+      "file": "docs/validation.md",
+      "page": "docs/validation",
       "title": "Ajv - Data validation"
     },
     {

@@ -1,5 +1,5 @@
 ---
-page_name: validation
+page_name: docs/validation
 title: Ajv - Data validation
 layout: main
 ---
@@ -54,8 +54,8 @@ Draft-2019-09 support is provided via a separate export in order to avoid increa
 
 With this import Ajv supports the following features:
 
-- keywords [`unevaluatedProperties`](./json-schema.md#unevaluatedproperties) and [`unevaluatedItems`](./json-schema.md#unevaluateditems)
-- keywords [`dependentRequired`](./json-schema.md#dependentrequired), [`dependentSchemas`](./json-schema.md#dependentschemas), [`maxContains`/`minContain`](./json-schema.md#maxcontains--mincontains)
+- keywords [`unevaluatedProperties`](./json-schema.html#unevaluatedproperties) and [`unevaluatedItems`](./json-schema.html#unevaluateditems)
+- keywords [`dependentRequired`](./json-schema.html#dependentrequired), [`dependentSchemas`](./json-schema.html#dependentschemas), [`maxContains`/`minContain`](./json-schema.html#maxcontains--mincontains)
 - dynamic recursive references with [`recursiveAnchor`/`recursiveReference`] - see [Extending recursive schemas](#extending-recursive-schemas)
 - draft-2019-09 meta-schema is the default.
 
@@ -92,7 +92,7 @@ If you want to have support of all these features you should import Ajv from `"a
 
 ### JSON Schema validation keywords
 
-Ajv supports all validation keywords from draft-07 of JSON Schema standard - see [JSON Schema validation keywords](./json-schema.md) for more details.
+Ajv supports all validation keywords from draft-07 of JSON Schema standard - see [JSON Schema validation keywords](./json-schema.html) for more details.
 
 [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package provides additional validation keywords that can be used with Ajv.
 
@@ -101,7 +101,7 @@ Ajv supports all validation keywords from draft-07 of JSON Schema standard - see
 JSON Schema specification defines several metadata keywords that describe the schema itself but do not perform any validation.
 
 - `title` and `description`: information about the data represented by that schema
-- `$comment` (NEW in draft-07): information for developers. With option `$comment` Ajv logs or passes the comment string to the user-supplied function. See [Options](./api.md#options).
+- `$comment` (NEW in draft-07): information for developers. With option `$comment` Ajv logs or passes the comment string to the user-supplied function. See [Options](./api.html#options).
 - `default`: a default value of the data instance, see [Assigning defaults](#assigning-defaults).
 - `examples` (NEW in draft-06): an array of data instances. Ajv does not check the validity of these instances against the schema.
 - `readOnly` and `writeOnly` (NEW in draft-07): marks data-instance as read-only or write-only in relation to the source of the data (database, api, etc.).
@@ -126,7 +126,7 @@ addFormats(ajv)
 
 See ajv-formats documentation for further details.
 
-It is recommended NOT to use "format" keyword implementations with untrusted data, as they may use potentially unsafe regular expressions (even though known issues are fixed) - see [ReDoS attack](./security.md#redos-attack).
+It is recommended NOT to use "format" keyword implementations with untrusted data, as they may use potentially unsafe regular expressions (even though known issues are fixed) - see [ReDoS attack](./security.html#redos-attack).
 
 **Please note**: if you need to use "format" keyword to validate untrusted data, you MUST assess their suitability and safety for your validation scenarios.
 
@@ -151,7 +151,7 @@ The following formats are defined in [ajv-formats](https://github.com/ajv-valida
 
 **Please note**: JSON Schema draft-07 also defines formats `iri`, `iri-reference`, `idn-hostname` and `idn-email` for URLs, hostnames and emails with international characters. These formats are available in [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) plugin.
 
-You can add and replace any formats using [addFormat](./api.md#api-addformat) method.
+You can add and replace any formats using [addFormat](./api.html#api-addformat) method.
 
 ## Modular schemas
 
@@ -194,7 +194,7 @@ const ajv = new Ajv()
 const validate = ajv.addSchema(defsSchema).compile(schema)
 ```
 
-See [Options](./api.md#options) and [addSchema](./api.md#add-schema) method.
+See [Options](./api.html#options) and [addSchema](./api.html#add-schema) method.
 
 **Please note**:
 
@@ -204,7 +204,7 @@ See [Options](./api.md#options) and [addSchema](./api.md#add-schema) method.
 - The actual location of the schema file in the file system is not used.
 - You can pass the identifier of the schema as the second parameter of `addSchema` method or as a property name in `schemas` option. This identifier can be used instead of (or in addition to) schema \$id.
 - You cannot have the same \$id (or the schema identifier) used for more than one schema - the exception will be thrown.
-- You can implement dynamic resolution of the referenced schemas using `compileAsync` method. In this way you can store schemas in any system (files, web, database, etc.) and reference them without explicitly adding to Ajv instance. See [Asynchronous schema compilation](./validation.md#asynchronous-schema-compilation).
+- You can implement dynamic resolution of the referenced schemas using `compileAsync` method. In this way you can store schemas in any system (files, web, database, etc.) and reference them without explicitly adding to Ajv instance. See [Asynchronous schema compilation](./validation.html#asynchronous-schema-compilation).
 
 ### Extending recursive schemas
 
@@ -265,7 +265,7 @@ const ajv = new Ajv2019({
 const validate = ajv.getSchema("https://example.com/strict-tree")
 ```
 
-See [dynamic-refs](../spec/dynamic-ref.spec.ts) test for the example using `$dynamicAnchor`/`$dynamicRef`.
+See [dynamic-refs](https://github.com/ajv-validator/ajv/tree/master/spec/dynamic-ref.spec.ts) test for the example using `$dynamicAnchor`/`$dynamicRef`.
 
 At the moment Ajv implements the spec for dynamic recursive references with these limitations:
 
@@ -400,7 +400,7 @@ If a keyword is used only for side-effects and its validation result is pre-defi
 
 The concerns you have to be aware of when extending JSON Schema standard with additional keywords are the portability and understanding of your schemas. You will have to support these keywords on other platforms and to properly document them so that everybody can understand and use your schemas.
 
-You can define keywords with [addKeyword](./api.md#api-addkeyword) method. Keywords are defined on the `ajv` instance level - new instances will not have previously defined keywords.
+You can define keywords with [addKeyword](./api.html#api-addkeyword) method. Keywords are defined on the `ajv` instance level - new instances will not have previously defined keywords.
 
 Ajv allows defining keywords with:
 
@@ -433,11 +433,11 @@ console.log(validate(4)) // false
 
 Several keywords (typeof, instanceof, range and propertyNames) are defined in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package - they can be used for your schemas and as a starting point for your own keywords.
 
-See [User-defined keywords](./keywords.md) for more details.
+See [User-defined keywords](./keywords.html) for more details.
 
 ## Asynchronous schema compilation
 
-During asynchronous compilation remote references are loaded using supplied function. See `compileAsync` [method](./api.md#api-compileAsync) and `loadSchema` [option](./api.md#options).
+During asynchronous compilation remote references are loaded using supplied function. See `compileAsync` [method](./api.html#api-compileAsync) and `loadSchema` [option](./api.html#options).
 
 Example:
 
@@ -457,13 +457,13 @@ function loadSchema(uri) {
 }
 ```
 
-**Please note**: [Option](./api.md#options) `missingRefs` should NOT be set to `"ignore"` or `"fail"` for asynchronous compilation to work.
+**Please note**: [Option](./api.html#options) `missingRefs` should NOT be set to `"ignore"` or `"fail"` for asynchronous compilation to work.
 
 ## Asynchronous validation
 
 Example in Node.js REPL: https://runkit.com/esp/ajv-asynchronous-validation
 
-You can define formats and keywords that perform validation asynchronously by accessing database or some other service. You should add `async: true` in the keyword or format definition (see [addFormat](./api.md#api-addformat), [addKeyword](./api.md#api-addkeyword) and [User-defined keywords](./keywords.md)).
+You can define formats and keywords that perform validation asynchronously by accessing database or some other service. You should add `async: true` in the keyword or format definition (see [addFormat](./api.html#api-addformat), [addKeyword](./api.html#api-addkeyword) and [User-defined keywords](./keywords.html)).
 
 If your schema uses asynchronous formats/keywords or refers to some schema that contains them it should have `"$async": true` keyword so that Ajv can compile it correctly. If asynchronous format/keyword or reference to asynchronous schema is used in the schema without `$async` keyword Ajv will throw an exception during schema compilation.
 
@@ -471,7 +471,7 @@ If your schema uses asynchronous formats/keywords or refers to some schema that 
 
 Validation function for an asynchronous format/keyword should return a promise that resolves with `true` or `false` (or rejects with `new Ajv.ValidationError(errors)` if you want to return errors from the keyword function).
 
-Ajv compiles asynchronous schemas to [async functions](http://tc39.github.io/ecmascript-asyncawait/). Async functions are supported in Node.js 7+ and all modern browsers. You can supply a transpiler as a function via `processCode` option. See [Options](./api.md#options).
+Ajv compiles asynchronous schemas to [async functions](http://tc39.github.io/ecmascript-asyncawait/). Async functions are supported in Node.js 7+ and all modern browsers. You can supply a transpiler as a function via `processCode` option. See [Options](./api.html#options).
 
 The compiled validation function has `$async: true` property (if the schema is asynchronous), so you can differentiate these functions if you are using both synchronous and asynchronous schemas.
 
@@ -533,13 +533,13 @@ const validate = ajv.compile(schema) // transpiled es7 async function
 validate(data).then(successFunc).catch(errorFunc)
 ```
 
-See [Options](./api.md#options).
+See [Options](./api.html#options).
 
 ## Modifying data during validation
 
 ### Removing additional properties
 
-With [option `removeAdditional`](./api.md#options) (added by [andyscott](https://github.com/andyscott)) you can filter data during the validation.
+With [option `removeAdditional`](./api.html#options) (added by [andyscott](https://github.com/andyscott)) you can filter data during the validation.
 
 This option modifies original data.
 
@@ -625,7 +625,7 @@ The schema above is also more efficient - it will compile into a faster function
 
 ### Assigning defaults
 
-With [option `useDefaults`](./api.md#options) Ajv will assign values from `default` keyword in the schemas of `properties` and `items` (when it is the array of schemas) to the missing properties and items.
+With [option `useDefaults`](./api.html#options) Ajv will assign values from `default` keyword in the schemas of `properties` and `items` (when it is the array of schemas) to the missing properties and items.
 
 With the option value `"empty"` properties and items equal to `null` or `""` (empty string) will be considered missing and assigned defaults.
 
@@ -679,7 +679,7 @@ With `useDefaults` option `default` keywords throws exception during schema comp
 
 The strict mode option can change the behaviour for these unsupported defaults (`strict: false` to ignore them, `"log"` to log a warning).
 
-See [Strict mode](./strict-mode.md).
+See [Strict mode](./strict-mode.html).
 
 ### Coercing data types
 
@@ -731,4 +731,4 @@ console.log(data) // { "foo": [1], "bar": false }
 
 The coercion rules, as you can see from the example, are different from JavaScript both to validate user input as expected and to have the coercion reversible (to correctly validate cases where different types are defined in subschemas of "anyOf" and other compound keywords).
 
-See [Coercion rules](./coercion.md) for details.
+See [Coercion rules](./coercion.html) for details.

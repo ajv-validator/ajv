@@ -1,5 +1,5 @@
 ---
-page_name: faq
+page_name: docs/faq
 title: Ajv - Frequently Asked Questions
 layout: main
 ---
@@ -12,16 +12,16 @@ The purpose of this document is to help find answers quicker. I am happy to cont
 Ajv implements JSON schema specification. Before submitting the issue about the behaviour of any validation keywords please review them in:
 
 - [JSON Schema specification](https://tools.ietf.org/html/draft-handrews-json-schema-validation-00) (draft-07)
-- [Validation keywords](./json-schema.md) in Ajv documentation
+- [Validation keywords](./json-schema.html) in Ajv documentation
 - [JSON Schema tutorial](https://spacetelescope.github.io/understanding-json-schema/) (for draft-04)
 
 #### Why Ajv validates empty object as valid?
 
-"properties" keyword does not require the presence of any properties, you need to use "required" keyword. It also doesn't require that the data is an object, so any other type of data will also be valid. To require a specific type use "type" keyword. [Strict types mode](./strict-mode.md#strict-types) introduced in v7 requires presence of "type" when "properties" are used, so the mistakes are less likely.
+"properties" keyword does not require the presence of any properties, you need to use "required" keyword. It also doesn't require that the data is an object, so any other type of data will also be valid. To require a specific type use "type" keyword. [Strict types mode](./strict-mode.html#strict-types) introduced in v7 requires presence of "type" when "properties" are used, so the mistakes are less likely.
 
 #### Why Ajv validates only the first item of the array?
 
-"items" keyword support [two syntaxes](./json-schema.md#items) - 1) when the schema applies to all items; 2) when there is a different schema for each item in the beginning of the array. This problem means you are using the second syntax.
+"items" keyword support [two syntaxes](./json-schema.html#items) - 1) when the schema applies to all items; 2) when there is a different schema for each item in the beginning of the array. This problem means you are using the second syntax.
 
 In v7 with option `strictTuples` (`"log"` by default) this problem is less likely to happen, as Ajv would log warning about missing "minItems" and other keywords that are required to constrain tuple size.
 
@@ -79,7 +79,7 @@ There are several ways to implement the described logic that would allow two pro
 
 This problem is related to the problem explained above - properties treated as additional in the sense of `additionalProperties` keyword, based on `properties`/`patternProperties` keyword in the same schema object.
 
-See the example in [Filtering Data](/#filtering-data) section of readme.
+See the example in [Filtering Data](/undefined#filtering-data) section of readme.
 
 ## Generating schemas with resolved references (\$ref)
 
@@ -98,4 +98,4 @@ There were many conversations about the meaning of `$ref` in [JSON Schema GitHub
 There are two possible approaches:
 
 1. Traverse schema (e.g. with json-schema-traverse) and replace every `$ref` with the referenced schema.
-2. Use a specially constructed JSON Schema with a [user-defined keyword](./keywords.md) to traverse and modify your schema.
+2. Use a specially constructed JSON Schema with a [user-defined keyword](./keywords.html) to traverse and modify your schema.

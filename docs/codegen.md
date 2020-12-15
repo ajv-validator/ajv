@@ -1,5 +1,5 @@
 ---
-page_name: codegen
+page_name: docs/codegen
 title: Ajv - Code generation
 layout: main
 ---
@@ -57,7 +57,7 @@ if (num0 > 0) {
 }
 ```
 
-`.const`, `.if` and `.code` above are methods of CodeGen class that generate code inside class instance `gen` - see [source code](../lib/compile/codegen/index.ts) for all available methods and [tests](../spec/codegen.spec.ts) for other code generation examples.
+`.const`, `.if` and `.code` above are methods of CodeGen class that generate code inside class instance `gen` - see [source code](../lib/compile/codegen/index.ts) for all available methods and [tests](https://github.com/ajv-validator/ajv/tree/master/spec/codegen.spec.ts) for other code generation examples.
 
 These methods only accept instances of private class `_Code`, other values will be rejected by Typescript compiler - the risk to pass unsafe string is mitigated on type level.
 
@@ -73,11 +73,11 @@ CodeGen class generates code trees and performs several optimizations before the
 
 **Please note**: These optimizations assume that the expressions in `if` conditions, `for` statement headers and assigned expressions are free of any side effects - this is the case for all pre-defined validation keywords.
 
-See [these tests](../spec/codegen.spec.ts) for examples.
+See [these tests](https://github.com/ajv-validator/ajv/tree/master/spec/codegen.spec.ts) for examples.
 
 By default Ajv does 1-pass optimization - based on the test suite it reduces the code size by 10.5% and the number of tree nodes by 16.7% (TODO benchmark the validation time). The second optimization pass changes it by less than 0.1%, so you won't need it unless you have really complex schemas or if you generate standalone code and want it to pass relevant eslint rules.
 
-Optimization mode can be changed with [options](./api.md#options):
+Optimization mode can be changed with [options](./api.html#options):
 
 - `{code: {optimize: false}}` - to disable (e.g., when schema compilation time is more important),
 - `{code: {optimize: 2}}` - 2-pass optimization.
