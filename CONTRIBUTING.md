@@ -114,7 +114,9 @@ If the question is advanced, it can be submitted to [Stack Overflow](http://stac
 
 ## Code
 
-Thanks a lot for considering contributing to Ajv. Many very useful features were created by its users.
+Thanks a lot for considering contributing to Ajv. Many great features were created by its users.
+
+Please review [Code components](./docs/components.md) document as well - it will help navigating the code.
 
 #### Development
 
