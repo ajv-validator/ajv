@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 echo "About to publish $GITHUB_REF to gh-pages..."
 
@@ -23,7 +23,8 @@ mv new-index.md index.md
 
 if [[ `git status --porcelain` ]]; then
   echo "Changes detected. Updating gh-pages branch..."
-  git commit -am "updated by ajv workflow https://github.com/ajv-validator/ajv/actions/runs/$GITHUB_RUN_ID"
+  git add -A
+  git commit -m "updated by ajv workflow https://github.com/ajv-validator/ajv/actions/runs/$GITHUB_RUN_ID"
   git push --quiet origin gh-pages > /dev/null 2>&1
 fi
 
