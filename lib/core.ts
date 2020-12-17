@@ -577,9 +577,10 @@ export default class Ajv {
   }
 
   errorsText(
-    errors: ErrorObject[] | null | undefined = this.errors, // optional array of validation errors
+    errors: ErrorObject[] | null | undefined = undefined, // optional array of validation errors
     {separator = ", ", dataVar = "data"}: ErrorsTextOptions = {} // optional options with properties `separator` and `dataVar`
   ): string {
+    if (!errors) errors = this.errors;
     if (!errors || errors.length === 0) return "No errors"
     return errors
       .map((e) => `${dataVar}${e.dataPath} ${e.message}`)
