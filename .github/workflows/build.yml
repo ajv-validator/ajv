@@ -29,7 +29,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: update website
-        if: ${{ matrix.node-version == '14.x' }}
+        if: ${{ github.event_name == 'push' && matrix.node-version == '14.x' }}
         run: ./scripts/publish-gh-pages
         env:
           GH_TOKEN_PUBLIC: ${{ secrets.GH_TOKEN_PUBLIC }}
