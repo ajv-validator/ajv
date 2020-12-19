@@ -1,4 +1,4 @@
-import type {CodeGen, Code, Name, ScopeValueSets} from "../compile/codegen"
+import type {CodeGen, Code, Name, ScopeValueSets, ValueScopeName} from "../compile/codegen"
 import type {SchemaEnv, SchemaCxt, SchemaObjCxt} from "../compile"
 import type {JSONType} from "../compile/rules"
 import type KeywordCxt from "../compile/context"
@@ -30,7 +30,7 @@ export type AnySchema = Schema | AsyncSchema
 export type SchemaMap = {[Key in string]?: AnySchema}
 
 export interface SourceCode {
-  validateName: Name
+  validateName: ValueScopeName
   validateCode: string
   scopeValues: ScopeValueSets
   evaluated?: Code

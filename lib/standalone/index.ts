@@ -51,6 +51,10 @@ export default function standaloneCode(
 
   function validateCode(usedValues: ScopeValueSets, s?: SourceCode): Code {
     if (!s) throw new Error('moduleCode: function does not have "source" property')
+    const {prefix} = s.validateName
+    const nameSet = (usedValues[prefix] = usedValues[prefix] || new Set())
+    nameSet.add(s.validateName)
+
     const scopeCode = ajv.scope.scopeCode(s.scopeValues, usedValues, refValidateCode)
     const code = new _Code(`${scopeCode}${_n}${s.validateCode}`)
     return s.evaluated ? _`${code}${s.validateName}.evaluated = ${s.evaluated};${_n}` : code

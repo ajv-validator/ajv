@@ -8,7 +8,7 @@ import type {
 } from "../types"
 import type Ajv from "../core"
 import type {InstanceOptions} from "../core"
-import {CodeGen, _, nil, stringify, Name, Code} from "./codegen"
+import {CodeGen, _, nil, stringify, Name, Code, ValueScopeName} from "./codegen"
 import {ValidationError} from "./error_classes"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
@@ -77,7 +77,7 @@ export class SchemaEnv implements SchemaEnvArgs {
   readonly refs: SchemaRefs = {}
   readonly dynamicAnchors: {[Ref in string]?: true} = {}
   validate?: AnyValidateFunction
-  validateName?: Name
+  validateName?: ValueScopeName
 
   constructor(env: SchemaEnvArgs) {
     let schema: AnySchemaObject | undefined

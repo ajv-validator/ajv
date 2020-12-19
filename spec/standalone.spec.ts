@@ -85,6 +85,82 @@ describe("standalone code generation", () => {
     }
   })
 
+  describe("two refs to the same schema (issue #1361)", () => {
+    const userSchema = {
+      $id: "user.json",
+      type: "object",
+      properties: {
+        name: {type: "string"},
+      },
+      required: ["name"],
+    }
+
+    const infoSchema = {
+      $id: "info.json",
+      type: "object",
+      properties: {
+        author: {$ref: "user.json"},
+        contributors: {
+          type: "array",
+          items: {$ref: "user.json"},
+        },
+      },
+      required: ["author", "contributors"],
+    }
+
+    describe("all exports", () => {
+      it("should not have duplicate functions", () => {
+        const ajv = new _Ajv({
+          allErrors: true,
+          code: {optimize: false, source: true},
+          inlineRefs: false, // it is needed to show the issue, schemas with refs won't be inlined anyway
+          schemas: [userSchema, infoSchema],
+        })
+
+        const moduleCode = standaloneCode(ajv)
+        assertNoDuplicateFunctions(moduleCode)
+        const {"user.json": user, "info.json": info} = requireFromString(moduleCode)
+        testExports({user, info})
+      })
+    })
+
+    describe("named exports", () => {
+      it("should not have duplicate functions", () => {
+        const ajv = new _Ajv({
+          allErrors: true,
+          code: {optimize: false, source: true},
+          inlineRefs: false, // it is needed to show the issue, schemas with refs won't be inlined anyway
+          schemas: [userSchema, infoSchema],
+        })
+
+        const moduleCode = standaloneCode(ajv, {user: "user.json", info: "info.json"})
+        assertNoDuplicateFunctions(moduleCode)
+        testExports(requireFromString(moduleCode))
+      })
+    })
+
+    function assertNoDuplicateFunctions(code: string): void {
+      const funcs = code.match(/function\s+([a-z0-9_$]+)/gi)
+      assert(Array.isArray(funcs))
+      assert(funcs.length > 0)
+      assert.strictEqual(funcs.length, new Set(funcs).size, "should have no duplicates")
+    }
+
+    function testExports(validate: {[n: string]: AnyValidateFunction<unknown>}): void {
+      assert.strictEqual(validate.user({}), false)
+      assert.strictEqual(validate.user({name: "usr1"}), true)
+
+      assert.strictEqual(validate.info({}), false)
+      assert.strictEqual(
+        validate.info({
+          author: {name: "usr1"},
+          contributors: [{name: "usr2"}],
+        }),
+        true
+      )
+    }
+  })
+
   it("should generate module code with a single export (ESM compatible)", () => {
     const ajv = new _Ajv({code: {source: true}})
     const v = ajv.compile({
