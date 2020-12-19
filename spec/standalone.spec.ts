@@ -85,7 +85,7 @@ describe("standalone code generation", () => {
     }
   })
 
-  describe.only("two refs to the same schema (issue #1361)", () => {
+  describe.skip("two refs to the same schema (issue #1361)", () => {
     const userSchema = {
       $id: "user.json",
       type: "object",
@@ -118,7 +118,8 @@ describe("standalone code generation", () => {
         })
 
         const moduleCode = standaloneCode(ajv)
-        console.log(moduleCode)
+        assertNoDuplicateFunctions(moduleCode)
+
         const {"user.json": validateUser, "info.json": validateInfo} = requireFromString(moduleCode)
         assert.strictEqual(validateUser({}), false)
         assert.strictEqual(validateUser({name: "usr1"}), true)
@@ -133,6 +134,13 @@ describe("standalone code generation", () => {
         )
       })
     })
+
+    function assertNoDuplicateFunctions(code: string): void {
+      const funcs = code.match(/function\s+([a-z0-9_$]+)/gi)
+      assert(Array.isArray(funcs))
+      assert(funcs.length > 0)
+      assert.strictEqual(funcs.length, new Set(funcs).size, "should have no duplicates")
+    }
   })
 
   it("should generate module code with a single export (ESM compatible)", () => {
