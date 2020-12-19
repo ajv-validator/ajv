@@ -85,6 +85,56 @@ describe("standalone code generation", () => {
     }
   })
 
+  describe.only("two refs to the same schema (issue #1361)", () => {
+    const userSchema = {
+      $id: "user.json",
+      type: "object",
+      properties: {
+        name: {type: "string"},
+      },
+      required: ["name"],
+    }
+
+    const infoSchema = {
+      $id: "info.json",
+      type: "object",
+      properties: {
+        author: {$ref: "user.json"},
+        contributors: {
+          type: "array",
+          items: {$ref: "user.json"},
+        },
+      },
+      required: ["author", "contributors"],
+    }
+
+    describe("all exports", () => {
+      it("should not have duplicate functions", () => {
+        const ajv = new _Ajv({
+          allErrors: true,
+          code: {optimize: false, source: true},
+          inlineRefs: false, // it is needed to show the issue, schemas with refs won't be inlined anyway
+          schemas: [userSchema, infoSchema],
+        })
+
+        const moduleCode = standaloneCode(ajv)
+        console.log(moduleCode)
+        const {"user.json": validateUser, "info.json": validateInfo} = requireFromString(moduleCode)
+        assert.strictEqual(validateUser({}), false)
+        assert.strictEqual(validateUser({name: "usr1"}), true)
+
+        assert.strictEqual(validateInfo({}), false)
+        assert.strictEqual(
+          validateInfo({
+            author: {name: "usr1"},
+            contributors: [{name: "usr2"}],
+          }),
+          true
+        )
+      })
+    })
+  })
+
   it("should generate module code with a single export (ESM compatible)", () => {
     const ajv = new _Ajv({code: {source: true}})
     const v = ajv.compile({
