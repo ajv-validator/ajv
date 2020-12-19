@@ -85,7 +85,7 @@ describe("standalone code generation", () => {
     }
   })
 
-  describe.skip("two refs to the same schema (issue #1361)", () => {
+  describe("two refs to the same schema (issue #1361)", () => {
     const userSchema = {
       $id: "user.json",
       type: "object",
@@ -119,19 +119,23 @@ describe("standalone code generation", () => {
 
         const moduleCode = standaloneCode(ajv)
         assertNoDuplicateFunctions(moduleCode)
+        const {"user.json": user, "info.json": info} = requireFromString(moduleCode)
+        testExports({user, info})
+      })
+    })
 
-        const {"user.json": validateUser, "info.json": validateInfo} = requireFromString(moduleCode)
-        assert.strictEqual(validateUser({}), false)
-        assert.strictEqual(validateUser({name: "usr1"}), true)
+    describe("named exports", () => {
+      it("should not have duplicate functions", () => {
+        const ajv = new _Ajv({
+          allErrors: true,
+          code: {optimize: false, source: true},
+          inlineRefs: false, // it is needed to show the issue, schemas with refs won't be inlined anyway
+          schemas: [userSchema, infoSchema],
+        })
 
-        assert.strictEqual(validateInfo({}), false)
-        assert.strictEqual(
-          validateInfo({
-            author: {name: "usr1"},
-            contributors: [{name: "usr2"}],
-          }),
-          true
-        )
+        const moduleCode = standaloneCode(ajv, {user: "user.json", info: "info.json"})
+        assertNoDuplicateFunctions(moduleCode)
+        testExports(requireFromString(moduleCode))
       })
     })
 
@@ -140,6 +144,20 @@ describe("standalone code generation", () => {
       assert(Array.isArray(funcs))
       assert(funcs.length > 0)
       assert.strictEqual(funcs.length, new Set(funcs).size, "should have no duplicates")
+    }
+
+    function testExports(validate: {[n: string]: AnyValidateFunction<unknown>}): void {
+      assert.strictEqual(validate.user({}), false)
+      assert.strictEqual(validate.user({name: "usr1"}), true)
+
+      assert.strictEqual(validate.info({}), false)
+      assert.strictEqual(
+        validate.info({
+          author: {name: "usr1"},
+          contributors: [{name: "usr2"}],
+        }),
+        true
+      )
     }
   })
 
