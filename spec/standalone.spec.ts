@@ -2,6 +2,7 @@ import type Ajv from "../dist/core"
 import type {AnyValidateFunction} from "../dist/core"
 import _Ajv from "./ajv"
 import standaloneCode from "../dist/standalone"
+import ajvFormats from "ajv-formats"
 import requireFromString = require("require-from-string")
 import assert = require("assert")
 
@@ -178,5 +179,37 @@ describe("standalone code generation", () => {
       assert.strictEqual(validate(-1), false)
       assert.strictEqual(validate("1"), false)
     }
+  })
+
+  describe("standalone code with ajv-formats", () => {
+    const schema = {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      definitions: {
+        User: {
+          type: "object",
+          properties: {
+            email: {
+              type: "string",
+              format: "email",
+            },
+          },
+          required: ["email"],
+          additionalProperties: false,
+        },
+      },
+    }
+
+    it("should support formats with standalone code", () => {
+      const ajv = new _Ajv({code: {source: true}})
+      ajvFormats(ajv)
+      ajv.addSchema(schema)
+      const moduleCode = standaloneCode(ajv, {validateUser: "#/definitions/User"})
+      const {validateUser} = requireFromString(moduleCode)
+
+      assert(typeof validateUser == "function")
+      assert.strictEqual(validateUser({}), false)
+      assert.strictEqual(validateUser({email: "foo"}), false)
+      assert.strictEqual(validateUser({email: "foo@bar.com"}), true)
+    })
   })
 })
