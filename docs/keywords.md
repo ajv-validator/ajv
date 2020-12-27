@@ -87,12 +87,12 @@ ajv.addKeyword({
     const {schema, parentSchema, data} = cxt
     const [min, max] = schema
     const eq: Code = parentSchema.exclusiveRange ? _`=` : nil
-    gen.fail(_`${data} <${eq} ${min} || ${data} >${eq} ${max}`)
+    cxt.fail(_`${data} <${eq} ${min} || ${data} >${eq} ${max}`)
   },
   metaSchema: {
     type: "array",
     items: [{type: "number"}, {type: "number"}],
-    minItems: 2
+    minItems: 2,
     additionalItems: false,
   },
 })
