@@ -76,6 +76,12 @@ This problem is related to the problem explained above - properties treated as a
 
 See the example in [Filtering Data](https://github.com/ajv-validator/ajv#filtering-data) section of readme.
 
+#### Using ajv v7 in ES5 environments
+
+ As of ajv v7, to support pre-ES6 env you will need to:
+ * recompile Typescript to es5 target - it's set to 2018 in the bundled compiled code.
+ * generate es5 code `(new Ajv({code:{es5:true}}))`, refs [Advanced options](https://github.com/ajv-validator/ajv/blob/master/docs/api.md#advanced-options).
+
 ## Generating schemas with resolved references (\$ref)
 
 See [#22](https://github.com/ajv-validator/ajv/issues/22), [#125](https://github.com/ajv-validator/ajv/issues/125), [#146](https://github.com/ajv-validator/ajv/issues/146), [#228](https://github.com/ajv-validator/ajv/issues/228), [#336](https://github.com/ajv-validator/ajv/issues/336), [#454](https://github.com/ajv-validator/ajv/issues/454).
