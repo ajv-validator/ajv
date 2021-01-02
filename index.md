@@ -79,6 +79,7 @@ Please review [Contributing guidelines](./contribute.html) and [Code components]
 - [Frequently Asked Questions](./docs/faq.html)
 - [Using in browser](#using-in-browser)
   - [Content Security Policy](./docs/security.html#content-security-policy)
+- [Using in ES5 environment](#using-in-es5-environment)
 - [Command line interface](#command-line-interface)
 - [API reference](./docs/api.html)
   - [Methods](./docs/api.html#ajv-constructor-and-methods)
@@ -311,6 +312,19 @@ This bundle can be used with different module systems; it creates global `ajv` (
 The browser bundle is available on [cdnjs](https://cdnjs.com/libraries/ajv).
 
 **Please note**: some frameworks, e.g. Dojo, may redefine global require in a way that is not compatible with CommonJS module format. In this case Ajv bundle has to be loaded before the framework and then you can use global `ajv` (see issue [#234](https://github.com/ajv-validator/ajv/issues/234)).
+
+## Using in ES5 environment
+
+You need to:
+
+- recompile Typescript to ES5 target - it is set to 2018 in the bundled compiled code.
+- generate ES5 validation code:
+
+```javascript
+const ajv = new Ajv({code: {es5: true}})
+```
+
+See [Advanced options](docs/api.html#advanced-options).
 
 ## Command line interface
 
