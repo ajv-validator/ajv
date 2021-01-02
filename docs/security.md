@@ -48,6 +48,7 @@ Some keywords in JSON Schemas can lead to very slow validation for certain data.
 You can validate your JSON schemas against [this meta-schema](../lib/refs/json-schema-secure.json) to check that these recommendations are followed:
 
 ```javascript
+ajv = new Ajv({strictTypes: false}) // this option is required for this schema
 const isSchemaSecure = ajv.compile(require("ajv/lib/refs/json-schema-secure.json"))
 
 const schema1 = {format: "email"}
