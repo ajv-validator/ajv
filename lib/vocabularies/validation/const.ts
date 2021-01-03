@@ -17,7 +17,7 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordCxt) {
     const eql = cxt.gen.scopeValue("func", {
       ref: equal,
-      code: _`require("ajv/dist/compile/equal")`,
+      code: _`require("ajv/lib/compile/equal")`,
     })
     // TODO optimize for scalar values in schema
     cxt.fail$data(_`!${eql}(${cxt.data}, ${cxt.schemaCode})`)

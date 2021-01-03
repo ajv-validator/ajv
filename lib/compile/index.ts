@@ -108,7 +108,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
   if (sch.$async) {
     _ValidationError = gen.scopeValue("Error", {
       ref: ValidationError,
-      code: _`require("ajv/dist/compile/error_classes").ValidationError`,
+      code: _`require("ajv/lib/compile/error_classes").ValidationError`,
     })
   }
 

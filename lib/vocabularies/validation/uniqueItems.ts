@@ -63,7 +63,7 @@ const def: CodeKeywordDefinition = {
     function loopN2(i: Name, j: Name): void {
       const eql = cxt.gen.scopeValue("func", {
         ref: equal,
-        code: _`require("ajv/dist/compile/equal")`,
+        code: _`require("ajv/lib/compile/equal")`,
       })
       const outer = gen.name("outer")
       gen.label(outer).for(_`;${i}--;`, () =>
