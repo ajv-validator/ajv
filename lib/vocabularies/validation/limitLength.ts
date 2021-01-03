@@ -26,7 +26,7 @@ const def: CodeKeywordDefinition = {
     } else {
       const u2l = cxt.gen.scopeValue("func", {
         ref: ucs2length,
-        code: _`require("ajv/dist/compile/ucs2length").default`,
+        code: _`require("ajv/lib/compile/ucs2length")`,
       })
       len = _`${u2l}(${data})`
     }
