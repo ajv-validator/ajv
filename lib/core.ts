@@ -82,6 +82,7 @@ interface CurrentOptions {
   strict?: boolean | "log"
   strictTypes?: boolean | "log"
   strictTuples?: boolean | "log"
+  strictRequired?: boolean | "log"
   allowMatchingProperties?: boolean // disables a strict mode restriction
   allowUnionTypes?: boolean
   validateFormats?: boolean
