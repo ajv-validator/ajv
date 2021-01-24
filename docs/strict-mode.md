@@ -19,6 +19,7 @@ To disable all strict mode restrictions use option `strict: false`. Some of the 
   - contradictory types
   - require applicable types
 - [Strict number validation](#strict-number-validation)
+- [Strict required](#strict-required)
 
 ### Prohibit ignored keywords
 
@@ -291,3 +292,8 @@ Both "properties" and "required" need `type: "object"` to satisfy `strictTypes` 
 ### Strict number validation
 
 Strict mode also affects number validation. By default Ajv fails `{"type": "number"}` (or `"integer"`) validation for `Infinity` and `NaN`.
+
+
+### Strict required
+
+An additional option `strictRequired` ("log" by default) validates that the `required` keyword contains only keys that are explicitly defined in the `properties` key of the object they are referencing.
