@@ -131,5 +131,5 @@ function strictTypesError(it: SchemaObjCxt, msg: string): void {
 function strictRequiredError(it: SchemaObjCxt, msg: string): void {
   const schemaPath = it.schemaEnv.baseId + it.errSchemaPath
   msg += ` at "${schemaPath}" (strictRequired)`
-  checkStrictMode(it, msg, it.opts.strictTypes)
+  checkStrictMode(it, msg, it.opts.strictRequired)
 }

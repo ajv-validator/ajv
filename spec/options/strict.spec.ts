@@ -238,6 +238,40 @@ describe("strict mode", () => {
       }, / minItems or maxItems\/additionalItems are not specified or different/)
     })
   })
+
+
+  describe("strictRequired option", () => {
+    const ajv = new _Ajv({strictRequired: true, strict: true})
+    it("should prohibit base case", () => {
+      should.throw(() => {
+        ajv.compile({
+          type: "object",
+          properties: {
+            notTest: {
+              type: "string"
+            }
+          },
+          required: ['test']
+        })
+      }, /required key "test" does not exist as a property at "#"/)
+    })
+
+    it("should prohibit in second level of a schema", () => {
+      should.throw(() => {
+        ajv.compile({
+          type: "object",
+          properties: {
+            test: {
+              type: "object",
+              properties: {
+              },
+              required:["keyname"]
+            }
+          },
+        })
+      }, /required key "keyname" does not exist as a property at "#\/properties\/test"/)
+    })
+  })
 })
 
 function testStrictMode(schema, logPattern) {
