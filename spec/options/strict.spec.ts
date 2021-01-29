@@ -271,6 +271,28 @@ describe("strict mode", () => {
         })
       }, /required key "keyname" does not exist as a property at "#\/properties\/test"/)
     })
+
+    it("should not throw with a same level if then", () => {
+      should.not.throw(() => {
+        ajv.compile({
+          type: "object",
+          properties: {foo: {}},
+          if: {required: ["foo",]},
+          then: {properties: {bar: {type: "boolean"}}} // it still complies with strictTypes here, as there is type: object above
+        })
+      })
+    })
+
+    it("should throw because if references a property that doesnt exist", () => {
+      should.throw(() => {
+        ajv.compile({
+          type: "object",
+          properties: {foo: {}},
+          if: {required: ["bar",]},
+          then: {properties: {bar: {type: "boolean"}}} // it still complies with strictTypes here, as there is type: object above
+        })
+      })
+    })
   })
 })
 
