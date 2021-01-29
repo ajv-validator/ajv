@@ -63,6 +63,9 @@ function iterateKeywords(it: SchemaObjCxt, group: RuleGroup): void {
 }
 
 function checkRequired(it: SchemaObjCxt): void {
+  if (it.schema.type === "object"){
+    it.properties = []
+  }
   if (it.properties.length === 0 && it.schema.type === "object" && it.schema.properties){
     it.properties = Object.keys(it.schema.properties)
   }

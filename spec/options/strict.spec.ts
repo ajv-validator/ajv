@@ -293,6 +293,23 @@ describe("strict mode", () => {
         })
       })
     })
+
+    it("should throw if property exists in parent but not in actual object required references", () => {
+      should.throw(() => {
+        ajv.compile({
+          type: "object",
+          properties: {foo: {
+            type: "object",
+            required: 'foo',
+            properties: {
+              "test": {
+                type: "number"
+              },
+            }
+          }}
+        })
+      })
+    })
   })
 })
 
