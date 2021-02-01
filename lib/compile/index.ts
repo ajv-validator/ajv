@@ -246,7 +246,7 @@ export function resolveSchema(
 ): SchemaEnv | undefined {
   const p = URI.parse(ref)
   const refPath = _getFullPath(p)
-  const baseId = getFullPath(root.baseId)
+  let baseId = getFullPath(root.baseId)
   // TODO `Object.keys(root.schema).length > 0` should not be needed - but removing breaks 2 tests
   if (Object.keys(root.schema).length > 0 && refPath === baseId) {
     return getJsonPointer.call(this, p, root)
@@ -262,7 +262,11 @@ export function resolveSchema(
 
   if (typeof schOrRef?.schema !== "object") return
   if (!schOrRef.validate) compileSchema.call(this, schOrRef)
-  if (id === normalizeId(ref)) return new SchemaEnv({schema: schOrRef.schema, root, baseId})
+  if (id === normalizeId(ref)) {
+    const {schema} = schOrRef
+    if (schema.$id) baseId = resolveUrl(baseId, schema.$id)
+    return new SchemaEnv({schema, root, baseId})
+  }
   return getJsonPointer.call(this, p, schOrRef)
 }
 
