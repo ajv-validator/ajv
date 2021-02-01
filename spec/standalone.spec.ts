@@ -142,7 +142,7 @@ describe("standalone code generation", () => {
       })
     })
 
-    describe.skip("mutually recursive schemas", () => {
+    describe("mutually recursive schemas", () => {
       const userSchema = {
         $id: "user.json",
         type: "object",
