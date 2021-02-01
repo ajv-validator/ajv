@@ -86,57 +86,118 @@ describe("standalone code generation", () => {
     }
   })
 
-  describe("two refs to the same schema (issue #1361)", () => {
-    const userSchema = {
-      $id: "user.json",
-      type: "object",
-      properties: {
-        name: {type: "string"},
-      },
-      required: ["name"],
-    }
-
-    const infoSchema = {
-      $id: "info.json",
-      type: "object",
-      properties: {
-        author: {$ref: "user.json"},
-        contributors: {
-          type: "array",
-          items: {$ref: "user.json"},
+  describe("issue #1361", () => {
+    describe("two refs to the same schema", () => {
+      const userSchema = {
+        $id: "user.json",
+        type: "object",
+        properties: {
+          name: {type: "string"},
         },
-      },
-      required: ["author", "contributors"],
-    }
+        required: ["name"],
+      }
 
-    describe("all exports", () => {
-      it("should not have duplicate functions", () => {
-        const ajv = new _Ajv({
-          allErrors: true,
-          code: {optimize: false, source: true},
-          inlineRefs: false, // it is needed to show the issue, schemas with refs won't be inlined anyway
-          schemas: [userSchema, infoSchema],
+      const infoSchema = {
+        $id: "info.json",
+        type: "object",
+        properties: {
+          author: {$ref: "user.json"},
+          contributors: {
+            type: "array",
+            items: {$ref: "user.json"},
+          },
+        },
+        required: ["author", "contributors"],
+      }
+
+      describe("all exports", () => {
+        it("should not have duplicate functions", () => {
+          const ajv = new _Ajv({
+            allErrors: true,
+            code: {optimize: false, source: true},
+            inlineRefs: false, // it is needed to show the issue, schemas with refs won't be inlined anyway
+            schemas: [userSchema, infoSchema],
+          })
+
+          const moduleCode = standaloneCode(ajv)
+          assertNoDuplicateFunctions(moduleCode)
+          const {"user.json": user, "info.json": info} = requireFromString(moduleCode)
+          testExports({user, info})
         })
+      })
 
-        const moduleCode = standaloneCode(ajv)
-        assertNoDuplicateFunctions(moduleCode)
-        const {"user.json": user, "info.json": info} = requireFromString(moduleCode)
-        testExports({user, info})
+      describe("named exports", () => {
+        it("should not have duplicate functions", () => {
+          const ajv = new _Ajv({
+            allErrors: true,
+            code: {optimize: false, source: true},
+            inlineRefs: false, // it is needed to show the issue, schemas with refs won't be inlined anyway
+            schemas: [userSchema, infoSchema],
+          })
+
+          const moduleCode = standaloneCode(ajv, {user: "user.json", info: "info.json"})
+          assertNoDuplicateFunctions(moduleCode)
+          testExports(requireFromString(moduleCode))
+        })
       })
     })
 
-    describe("named exports", () => {
-      it("should not have duplicate functions", () => {
-        const ajv = new _Ajv({
-          allErrors: true,
-          code: {optimize: false, source: true},
-          inlineRefs: false, // it is needed to show the issue, schemas with refs won't be inlined anyway
-          schemas: [userSchema, infoSchema],
-        })
+    describe("mutually recursive schemas", () => {
+      const userSchema = {
+        $id: "user.json",
+        type: "object",
+        properties: {
+          name: {type: "string"},
+          infos: {
+            type: "array",
+            items: {$ref: "info.json"},
+          },
+        },
+        required: ["name"],
+      }
 
-        const moduleCode = standaloneCode(ajv, {user: "user.json", info: "info.json"})
-        assertNoDuplicateFunctions(moduleCode)
-        testExports(requireFromString(moduleCode))
+      const infoSchema = {
+        $id: "info.json",
+        type: "object",
+        properties: {
+          author: {$ref: "user.json"},
+          contributors: {
+            type: "array",
+            items: {$ref: "user.json"},
+          },
+        },
+        required: ["author", "contributors"],
+      }
+
+      describe("all exports", () => {
+        it("should not have duplicate functions", () => {
+          const ajv = new _Ajv({
+            allErrors: true,
+            code: {optimize: false, source: true},
+            inlineRefs: false, // it is needed to show the issue, schemas with refs won't be inlined anyway
+            schemas: [userSchema, infoSchema],
+          })
+
+          const moduleCode = standaloneCode(ajv)
+          assertNoDuplicateFunctions(moduleCode)
+          const {"user.json": user, "info.json": info} = requireFromString(moduleCode)
+          testExports({user, info})
+        })
+      })
+
+      describe("named exports", () => {
+        it("should not have duplicate functions", () => {
+          const ajv = new _Ajv({
+            allErrors: true,
+            code: {optimize: false, source: true},
+            inlineRefs: false, // it is needed to show the issue, schemas with refs won't be inlined anyway
+            schemas: [userSchema, infoSchema],
+          })
+
+          const moduleCode = standaloneCode(ajv, {user: "user.json", info: "info.json"})
+          assertNoDuplicateFunctions(moduleCode)
+          testExports(requireFromString(moduleCode))
+        })
       })
     })
 

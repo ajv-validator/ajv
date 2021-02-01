@@ -42,6 +42,15 @@ export type ScopeValueSets = {
   [Prefix in string]?: Set<ValueScopeName>
 }
 
+export enum UsedValueState {
+  Started,
+  Completed,
+}
+
+export type UsedScopeValues = {
+  [Prefix in string]?: Map<ValueScopeName, UsedValueState | undefined>
+}
+
 export const varKinds = {
   const: new Name("const"),
   let: new Name("let"),
@@ -161,7 +170,7 @@ export class ValueScope extends Scope {
 
   scopeCode(
     values: ScopeValues | ScopeValueSets = this._values,
-    usedValues?: ScopeValueSets,
+    usedValues?: UsedScopeValues,
     getCode?: (n: ValueScopeName) => Code | undefined
   ): Code {
     return this._reduceValues(
@@ -178,17 +187,17 @@ export class ValueScope extends Scope {
   private _reduceValues(
     values: ScopeValues | ScopeValueSets,
     valueCode: (n: ValueScopeName) => Code | undefined,
-    usedValues: ScopeValueSets = {},
+    usedValues: UsedScopeValues = {},
     getCode?: (n: ValueScopeName) => Code | undefined
   ): Code {
     let code: Code = nil
     for (const prefix in values) {
       const vs = values[prefix]
       if (!vs) continue
-      const nameSet = (usedValues[prefix] = usedValues[prefix] || new Set())
+      const nameSet = (usedValues[prefix] = usedValues[prefix] || new Map())
       vs.forEach((name: ValueScopeName) => {
         if (nameSet.has(name)) return
-        nameSet.add(name)
+        nameSet.set(name, UsedValueState.Started)
         let c = valueCode(name)
         if (c) {
           const def = this.opts.es5 ? varKinds.var : varKinds.const
@@ -198,6 +207,7 @@ export class ValueScope extends Scope {
         } else {
           throw new ValueError(name)
         }
+        nameSet.set(name, UsedValueState.Completed)
       })
     }
     return code
