@@ -1095,6 +1095,10 @@ describe("User-defined keywords", () => {
         ajv.addKeyword("hyphens-are-valid")
       })
 
+      should.not.throw(() => {
+        ajv.addKeyword("colons:are-valid")
+      })
+
       should.throw(() => {
         ajv.addKeyword("3-start-with-number-not-valid")
       }, /invalid name/)
