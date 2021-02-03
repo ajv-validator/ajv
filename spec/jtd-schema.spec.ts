@@ -1,7 +1,7 @@
 import type AjvJTD from "../dist/jtd"
 import type {SchemaObject} from "../dist/jtd"
 import _AjvJTD from "./ajv_jtd"
-import {validation} from "./_json/jtd"
+import jtdValidationTests = require("./json-typedef-spec/tests/validation.json")
 import assert = require("assert")
 
 interface TestCase {
@@ -24,8 +24,8 @@ describe.skip("JTD validation", () => {
     ajv = new _AjvJTD({strict: false})
   })
 
-  for (const testName in validation) {
-    const {schema, instance, errors} = validation[testName] as TestCase
+  for (const testName in jtdValidationTests) {
+    const {schema, instance, errors} = jtdValidationTests[testName] as TestCase
     const valid = errors.length === 0
     describeOnly(testName, () => {
       it(`should be ${valid ? "valid" : "invalid"}`, () => {
