@@ -15,7 +15,7 @@ interface TestCaseError {
   schemaPath: string[]
 }
 
-const ONLY: RegExp[] = []
+const ONLY: RegExp[] = [/timestamp/]
 
 describe.skip("JTD validation", () => {
   let ajv: AjvJTD

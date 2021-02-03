@@ -1,7 +1,7 @@
 import type {CodeKeywordDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, and, Code} from "../../compile/codegen"
-import validDate from "../../compile/valid_date"
+import validTimestamp from "../../compile/timestamp"
 
 type IntType = "int8" | "uint8" | "int16" | "uint16" | "int32" | "uint32"
 
@@ -26,11 +26,11 @@ const def: CodeKeywordDefinition = {
         cond = _`typeof ${data} !== ${schema}`
         break
       case "timestamp": {
-        const vd = gen.scopeValue("func", {
-          ref: validDate,
-          code: _`require("ajv/dist/compile/valid_date").default`,
+        const vts = gen.scopeValue("func", {
+          ref: validTimestamp,
+          code: _`require("ajv/dist/compile/timestamp").default`,
         })
-        cond = _`!(${data} instanceof Date || (typeof ${data} == "string" && ${vd}(${data})))`
+        cond = _`!(${data} instanceof Date || (typeof ${data} == "string" && ${vts}(${data})))`
         break
       }
       case "float32":
