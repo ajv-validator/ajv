@@ -105,6 +105,7 @@ interface CurrentOptions {
   next?: boolean // NEW
   unevaluated?: boolean // NEW
   dynamicRef?: boolean // NEW
+  jtd?: boolean // NEW
   meta?: SchemaObject | boolean
   defaultMeta?: string | AnySchemaObject
   validateSchema?: boolean | "log"

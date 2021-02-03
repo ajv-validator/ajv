@@ -29,8 +29,8 @@ export {KeywordCxt}
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
 // import type {AnySchemaObject} from "./types"
-import AjvCore from "./core"
-// import draft7Vocabularies from "./vocabularies/draft7"
+import AjvCore, {Options} from "./core"
+import jtdVocabulary from "./vocabularies/jtd"
 // import draft7MetaSchema = require("./refs/json-schema-draft-07.json")
 
 // const META_SUPPORT_DATA = ["/properties"]
@@ -38,9 +38,16 @@ import AjvCore from "./core"
 // const META_SCHEMA_ID = "http://json-schema.org/draft-07/schema"
 
 export default class Ajv extends AjvCore {
+  constructor(opts: Options = {}) {
+    super({
+      ...opts,
+      jtd: true,
+    })
+  }
+
   _addVocabularies(): void {
     super._addVocabularies()
-    // draft7Vocabularies.forEach((v) => this.addVocabulary(v))
+    this.addVocabulary(jtdVocabulary)
   }
 
   // _addDefaultMetaSchema(): void {

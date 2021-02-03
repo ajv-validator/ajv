@@ -131,6 +131,7 @@ function checkKeywords(it: SchemaObjCxt): void {
 }
 
 function typeAndKeywords(it: SchemaObjCxt, errsCount?: Name): void {
+  if (it.opts.jtd) return schemaKeywords(it, [], false, errsCount)
   const types = getSchemaTypes(it.schema)
   const checkedTypes = coerceAndCheckDataType(it, types)
   schemaKeywords(it, types, !checkedTypes, errsCount)

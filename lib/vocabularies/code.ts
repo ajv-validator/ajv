@@ -1,8 +1,9 @@
 import type {AnySchema, SchemaMap} from "../types"
 import type {SchemaCxt} from "../compile"
 import type KeywordCxt from "../compile/context"
-import {CodeGen, _, or, nil, strConcat, getProperty, Code, Name} from "../compile/codegen"
+import {CodeGen, _, or, not, nil, strConcat, getProperty, Code, Name} from "../compile/codegen"
 import {alwaysValidSchema} from "../compile/util"
+import {Type} from "../compile/subschema"
 import N from "../compile/names"
 
 export function checkReportMissingProp(cxt: KeywordCxt, prop: string): void {
@@ -82,4 +83,24 @@ export function usePattern(gen: CodeGen, pattern: string): Name {
     ref: new RegExp(pattern, "u"),
     code: _`new RegExp(${pattern}, "u")`,
   })
+}
+
+export function validateArray(cxt: KeywordCxt): Name | boolean {
+  const {gen, data, schema, keyword, it} = cxt
+  if (alwaysValidSchema(it, schema)) return true
+  const valid = gen.name("valid")
+  const len = gen.const("len", _`${data}.length`)
+  gen.forRange("i", 0, len, (i) => {
+    cxt.subschema(
+      {
+        keyword,
+        dataProp: i,
+        dataPropType: Type.Num,
+        strictSchema: it.strictSchema,
+      },
+      valid
+    )
+    if (!it.allErrors) gen.if(not(valid), () => gen.break())
+  })
+  return valid
 }

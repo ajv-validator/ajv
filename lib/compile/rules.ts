@@ -44,7 +44,7 @@ export function getRules(): ValidationRules {
     types: {...groups, integer: true, boolean: true, null: true},
     rules: [{rules: []}, groups.number, groups.string, groups.array, groups.object],
     post: {rules: []},
-    all: {type: true, $comment: true},
-    keywords: {type: true, $comment: true},
+    all: {},
+    keywords: {},
   }
 }

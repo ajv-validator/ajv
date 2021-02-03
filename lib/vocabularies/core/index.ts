@@ -7,6 +7,7 @@ const core: Vocabulary = [
   "$id",
   "$defs",
   "$vocabulary",
+  {keyword: "$comment"},
   "definitions",
   idKeyword,
   refKeyword,
