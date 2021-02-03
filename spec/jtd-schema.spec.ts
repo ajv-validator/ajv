@@ -15,13 +15,13 @@ interface TestCaseError {
   schemaPath: string[]
 }
 
-const ONLY: RegExp[] = [/timestamp/]
+const ONLY: RegExp[] = ["type", "enum", "elements"].map((s) => new RegExp(`(^|.*\\s)${s}\\s.*-`))
 
-describe.skip("JTD validation", () => {
+describe("JTD validation", () => {
   let ajv: AjvJTD
 
   before(() => {
-    ajv = new _AjvJTD({strict: false})
+    ajv = new _AjvJTD({strict: false, logger: false})
   })
 
   for (const testName in jtdValidationTests) {
@@ -39,8 +39,8 @@ describe.skip("JTD validation", () => {
 
 function describeOnly(name: string, func: () => void) {
   if (ONLY.length > 0 && ONLY.some((p) => p.test(name))) {
-    describe.only(name, func)
-  } else {
     describe(name, func)
+  } else {
+    describe.skip(name, func)
   }
 }

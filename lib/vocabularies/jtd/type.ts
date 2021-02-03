@@ -1,6 +1,6 @@
 import type {CodeKeywordDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {_, and, Code} from "../../compile/codegen"
+import {_, or, Code} from "../../compile/codegen"
 import validTimestamp from "../../compile/timestamp"
 
 type IntType = "int8" | "uint8" | "int16" | "uint16" | "int32" | "uint32"
@@ -23,26 +23,26 @@ const def: CodeKeywordDefinition = {
     switch (schema) {
       case "boolean":
       case "string":
-        cond = _`typeof ${data} !== ${schema}`
+        cond = _`typeof ${data} == ${schema}`
         break
       case "timestamp": {
         const vts = gen.scopeValue("func", {
           ref: validTimestamp,
           code: _`require("ajv/dist/compile/timestamp").default`,
         })
-        cond = _`!(${data} instanceof Date || (typeof ${data} == "string" && ${vts}(${data})))`
+        cond = _`${data} instanceof Date || (typeof ${data} == "string" && ${vts}(${data}))`
         break
       }
       case "float32":
       case "float64":
-        cond = _`typeof ${data} !== "number"`
+        cond = _`typeof ${data} == "number"`
         break
       default: {
         const [min, max] = intRange[schema as IntType]
         cond = _`typeof ${data} == "number" && isFinite(${data}) && ${data} >= ${min} && ${data} <= ${max} && !(${data} % 1)`
       }
     }
-    cxt.fail(parentSchema.nullable ? and(cond, _`${data} !== null`) : cond)
+    cxt.pass(parentSchema.nullable ? or(_`${data} === null`, cond) : cond)
   },
   metaSchema: {
     enum: [
