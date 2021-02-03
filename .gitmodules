@@ -3,4 +3,4 @@
 	url = https://github.com/json-schema/JSON-Schema-Test-Suite.git
 [submodule "spec/json-typedef-spec"]
 	path = spec/json-typedef-spec
-	url = git@github.com:jsontypedef/json-typedef-spec.git
+	url = https://github.com/jsontypedef/json-typedef-spec.git
