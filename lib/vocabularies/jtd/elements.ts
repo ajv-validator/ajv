@@ -13,7 +13,7 @@ const def: CodeKeywordDefinition = {
       gen.let(valid, _`${data} === null`)
       cond = and(not(valid), cond)
     } else {
-      gen.let(valid)
+      gen.let(valid, false)
     }
     gen.if(cond, () =>
       gen

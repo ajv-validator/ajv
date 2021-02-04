@@ -15,7 +15,9 @@ interface TestCaseError {
   schemaPath: string[]
 }
 
-const ONLY: RegExp[] = ["type", "enum", "elements"].map((s) => new RegExp(`(^|.*\\s)${s}\\s.*-`))
+const ONLY: RegExp[] = ["type", "enum", "elements", "properties", "optionalProperties"].map(
+  (s) => new RegExp(`(^|.*\\s)${s}\\s.*-`)
+)
 
 describe("JTD validation", () => {
   let ajv: AjvJTD
