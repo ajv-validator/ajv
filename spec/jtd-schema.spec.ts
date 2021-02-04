@@ -20,10 +20,11 @@ const ONLY: RegExp[] = ["type", "enum", "elements", "properties", "optionalPrope
 )
 
 describe("JTD validation", () => {
-  let ajv: AjvJTD
+  let ajv, ajvAE: AjvJTD
 
   before(() => {
     ajv = new _AjvJTD({strict: false, logger: false})
+    ajvAE = new _AjvJTD({allErrors: true, strict: false, logger: false})
   })
 
   for (const testName in jtdValidationTests) {
@@ -34,6 +35,7 @@ describe("JTD validation", () => {
         // console.log(schema)
         // console.log(ajv.compile(schema).toString())
         assert.strictEqual(ajv.validate(schema, instance), valid)
+        assert.strictEqual(ajvAE.validate(schema, instance), valid)
       })
     })
   }
