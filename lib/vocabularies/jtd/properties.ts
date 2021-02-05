@@ -1,8 +1,8 @@
 import type {CodeKeywordDefinition} from "../../types"
+import type KeywordCxt from "../../compile/context"
 import {propertyInData, allSchemaProperties} from "../code"
 import {alwaysValidSchema, schemaRefOrVal} from "../../compile/util"
 import {_, not, and, Code, Name} from "../../compile/codegen"
-import {KeywordCxt} from "../../ajv"
 
 const def: CodeKeywordDefinition = {
   keyword: "properties",

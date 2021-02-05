@@ -85,22 +85,31 @@ export function usePattern(gen: CodeGen, pattern: string): Name {
   })
 }
 
-export function validateArray(cxt: KeywordCxt): Name | boolean {
-  const {gen, data, schema, keyword, it} = cxt
-  if (alwaysValidSchema(it, schema)) return true
+export function validateArray(cxt: KeywordCxt): Name {
+  const {gen, data, keyword, it} = cxt
   const valid = gen.name("valid")
-  const len = gen.const("len", _`${data}.length`)
-  gen.forRange("i", 0, len, (i) => {
-    cxt.subschema(
-      {
-        keyword,
-        dataProp: i,
-        dataPropType: Type.Num,
-        strictSchema: it.strictSchema,
-      },
-      valid
-    )
-    if (!it.allErrors) gen.if(not(valid), () => gen.break())
-  })
+  if (it.allErrors) {
+    const validArr = gen.let("valid", true)
+    validateItems(() => gen.assign(validArr, false))
+    return validArr
+  }
+  gen.var(valid, true)
+  validateItems(() => gen.break())
   return valid
+
+  function validateItems(notValid: () => void): void {
+    const len = gen.const("len", _`${data}.length`)
+    gen.forRange("i", 0, len, (i) => {
+      cxt.subschema(
+        {
+          keyword,
+          dataProp: i,
+          dataPropType: Type.Num,
+          strictSchema: it.strictSchema,
+        },
+        valid
+      )
+      gen.if(not(valid), notValid)
+    })
+  }
 }

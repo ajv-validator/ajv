@@ -62,7 +62,7 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
       if (patProps.length) {
         definedProp = or(definedProp, ...patProps.map((p) => _`${usePattern(gen, p)}.test(${key})`))
       }
-      return _`!(${definedProp})`
+      return not(definedProp)
     }
 
     function deleteAdditional(key: Name): void {

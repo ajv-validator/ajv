@@ -1,12 +1,15 @@
 import type {CodeKeywordDefinition} from "../../types"
+import type KeywordCxt from "../../compile/context"
+import {alwaysValidSchema} from "../../compile/util"
 import {validateArray} from "../code"
 import {_, not, and, Code} from "../../compile/codegen"
 
 const def: CodeKeywordDefinition = {
   keyword: "elements",
   schemaType: "object",
-  code(cxt) {
-    const {gen, data, parentSchema} = cxt
+  code(cxt: KeywordCxt) {
+    const {gen, data, schema, parentSchema, it} = cxt
+    if (alwaysValidSchema(it, schema)) return
     const valid = gen.name("valid")
     let cond: Code = _`Array.isArray(${data})`
     if (parentSchema.nullable) {
@@ -15,11 +18,7 @@ const def: CodeKeywordDefinition = {
     } else {
       gen.let(valid, false)
     }
-    gen.if(cond, () =>
-      gen
-        .assign(valid, _`${data}.length === 0`)
-        .if(not(valid), () => gen.assign(valid, validateArray(cxt)))
-    )
+    gen.if(cond, () => gen.assign(valid, validateArray(cxt)))
     cxt.pass(valid)
   },
 }

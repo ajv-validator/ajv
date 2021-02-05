@@ -19,6 +19,7 @@ const def: CodeKeywordDefinition = {
       validateTuple(schema)
     } else {
       it.items = true
+      if (alwaysValidSchema(it, schema)) return
       cxt.ok(validateArray(cxt))
     }
 
