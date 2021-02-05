@@ -2,26 +2,17 @@ import type {CodeKeywordDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {Type} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
-import {_, not, and, Code, Name} from "../../compile/codegen"
+import {not, Name} from "../../compile/codegen"
+import {checkNullableObject} from "./nullable"
 
 const def: CodeKeywordDefinition = {
   keyword: "values",
   schemaType: "object",
   code(cxt: KeywordCxt) {
-    const {gen, data, schema, parentSchema, it} = cxt
+    const {gen, data, schema, it} = cxt
     if (alwaysValidSchema(it, schema)) return
-    const valid = gen.name("valid")
-    let cond: Code
-    if (parentSchema.nullable) {
-      gen.let(valid, _`${data} === null`)
-      cond = not(valid)
-    } else {
-      gen.let(valid, false)
-      cond = data
-    }
-    gen.if(and(cond, _`typeof ${data} == "object" && !Array.isArray(${data})`), () =>
-      gen.assign(valid, validateMap())
-    )
+    const [valid, cond] = checkNullableObject(cxt, data)
+    gen.if(cond, () => gen.assign(valid, validateMap()))
     cxt.pass(valid)
 
     function validateMap(): Name | boolean {

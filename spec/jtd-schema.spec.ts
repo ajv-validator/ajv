@@ -21,8 +21,11 @@ const ONLY: RegExp[] = [
   "elements",
   "properties",
   "optionalProperties",
+  // "discriminator",
   "values",
 ].map((s) => new RegExp(`(^|.*\\s)${s}\\s.*-`))
+
+// const ONLY: RegExp[] = [/discriminator schema - ok/]
 
 describe("JTD validation", () => {
   let ajv, ajvAE: AjvJTD
@@ -39,6 +42,7 @@ describe("JTD validation", () => {
       it(`should be ${valid ? "valid" : "invalid"}`, () => {
         // console.log(schema)
         // console.log(ajv.compile(schema).toString())
+        // console.log(ajv.validate(schema, instance), ajv.errors)
         assert.strictEqual(ajv.validate(schema, instance), valid)
         assert.strictEqual(ajvAE.validate(schema, instance), valid)
       })

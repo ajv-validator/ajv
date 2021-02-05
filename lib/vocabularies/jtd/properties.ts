@@ -2,7 +2,8 @@ import type {CodeKeywordDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {propertyInData, allSchemaProperties} from "../code"
 import {alwaysValidSchema, schemaRefOrVal} from "../../compile/util"
-import {_, not, and, Code, Name} from "../../compile/codegen"
+import {_, and, Code, Name} from "../../compile/codegen"
+import {checkNullableObject} from "./nullable"
 
 const def: CodeKeywordDefinition = {
   keyword: "properties",
@@ -13,30 +14,20 @@ const def: CodeKeywordDefinition = {
 export function validateProperties(cxt: KeywordCxt): void {
   const {gen, data, parentSchema, it} = cxt
   const {additionalProperties} = parentSchema
-  let cond: Code
   const [allProps, properties] = schemaProperties("properties")
   const [allOptProps, optProperties] = schemaProperties("optionalProperties")
   if (properties.length === 0 && optProperties.length === 0 && additionalProperties) {
     return
   }
 
-  const valid = gen.name("valid")
-  if (parentSchema.nullable) {
-    gen.let(valid, _`${data} === null`)
-    cond = not(valid)
-  } else {
-    gen.let(valid, false)
-    cond = data
-  }
-
-  gen.if(_`${cond} && typeof ${data} == "object" && !Array.isArray(${data})`, () => {
-    gen.assign(valid, true)
-    gen.block(() => {
+  const [valid, cond] = checkNullableObject(cxt, data)
+  gen.if(cond, () =>
+    gen.assign(valid, true).block(() => {
       validateProps(properties, "properties", true)
       validateProps(optProperties, "optionalProperties")
       if (!additionalProperties) validateAdditional()
     })
-  })
+  )
   cxt.pass(valid)
 
   function schemaProperties(keyword: string): [string[], string[]] {
