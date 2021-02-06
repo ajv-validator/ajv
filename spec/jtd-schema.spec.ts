@@ -2,6 +2,7 @@ import type AjvJTD from "../dist/jtd"
 import type {SchemaObject} from "../dist/jtd"
 import _AjvJTD from "./ajv_jtd"
 import getAjvInstances from "./ajv_instances"
+import {withStandalone} from "./ajv_standalone"
 import jtdValidationTests = require("./json-typedef-spec/tests/validation.json")
 import jtdInvalidSchemasTests = require("./json-typedef-spec/tests/invalid_schemas.json")
 import assert = require("assert")
@@ -40,6 +41,7 @@ describe("JSON Type Definition", () => {
         allErrors: true,
         code: {es5: true, lines: true, optimize: false},
       })
+      ajvs.forEach((ajv) => (ajv.opts.code.source = true))
     })
 
     for (const testName in jtdValidationTests) {
@@ -47,7 +49,7 @@ describe("JSON Type Definition", () => {
       const valid = errors.length === 0
       describeOnly(testName, () => {
         it(`should be ${valid ? "valid" : "invalid"}`, () => {
-          ajvs.forEach((ajv) => {
+          withStandalone(ajvs).forEach((ajv) => {
             // console.log(ajv.compile(schema).toString())
             // console.log(ajv.validate(schema, instance), ajv.errors)
             assert.strictEqual(ajv.validate(schema, instance), valid)
