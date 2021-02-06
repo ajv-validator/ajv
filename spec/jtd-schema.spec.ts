@@ -3,6 +3,7 @@ import type {SchemaObject} from "../dist/jtd"
 import _AjvJTD from "./ajv_jtd"
 import getAjvInstances from "./ajv_instances"
 import jtdValidationTests = require("./json-typedef-spec/tests/validation.json")
+import jtdInvalidSchemasTests = require("./json-typedef-spec/tests/invalid_schemas.json")
 import assert = require("assert")
 
 interface TestCase {
@@ -30,29 +31,46 @@ interface TestCaseError {
 
 const ONLY: RegExp[] = []
 
-describe("JTD validation", () => {
-  let ajvs: AjvJTD[]
+describe("JSON Type Definition", () => {
+  describe("validation", () => {
+    let ajvs: AjvJTD[]
 
-  before(() => {
-    ajvs = getAjvInstances(_AjvJTD, {
-      allErrors: true,
-      code: {es5: true, lines: true, optimize: false},
-    })
-  })
-
-  for (const testName in jtdValidationTests) {
-    const {schema, instance, errors} = jtdValidationTests[testName] as TestCase
-    const valid = errors.length === 0
-    describeOnly(testName, () => {
-      it(`should be ${valid ? "valid" : "invalid"}`, () => {
-        ajvs.forEach((ajv) => {
-          // console.log(ajv.compile(schema).toString())
-          // console.log(ajv.validate(schema, instance), ajv.errors)
-          assert.strictEqual(ajv.validate(schema, instance), valid)
-        })
+    before(() => {
+      ajvs = getAjvInstances(_AjvJTD, {
+        allErrors: true,
+        code: {es5: true, lines: true, optimize: false},
       })
     })
-  }
+
+    for (const testName in jtdValidationTests) {
+      const {schema, instance, errors} = jtdValidationTests[testName] as TestCase
+      const valid = errors.length === 0
+      describeOnly(testName, () => {
+        it(`should be ${valid ? "valid" : "invalid"}`, () => {
+          ajvs.forEach((ajv) => {
+            // console.log(ajv.compile(schema).toString())
+            // console.log(ajv.validate(schema, instance), ajv.errors)
+            assert.strictEqual(ajv.validate(schema, instance), valid)
+          })
+        })
+      })
+    }
+  })
+
+  describe.skip("invalid schemas", () => {
+    let ajv: AjvJTD
+
+    before(() => {
+      ajv = new _AjvJTD()
+    })
+
+    for (const testName in jtdInvalidSchemasTests) {
+      const schema = jtdInvalidSchemasTests[testName]
+      it(`${testName} should be invalid schema`, () => {
+        assert.throws(() => ajv.compile(schema))
+      })
+    }
+  })
 })
 
 function describeOnly(name: string, func: () => void) {
