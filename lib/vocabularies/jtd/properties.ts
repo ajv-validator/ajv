@@ -20,7 +20,10 @@ export function validateProperties(cxt: KeywordCxt): void {
     return
   }
 
-  const [valid, cond] = checkNullableObject(cxt, data)
+  const [valid, cond] =
+    it.jtdDiscriminator === undefined
+      ? checkNullableObject(cxt, data)
+      : [gen.let("valid", false), true]
   gen.if(cond, () =>
     gen.assign(valid, true).block(() => {
       validateProps(properties, "properties", true)
@@ -64,7 +67,9 @@ export function validateProperties(cxt: KeywordCxt): void {
 
   function validateAdditional(): void {
     gen.forIn("key", data, (key: Name) => {
-      const addProp = isAdditional(key, allProps, "properties")
+      const _allProps =
+        it.jtdDiscriminator === undefined ? allProps : [it.jtdDiscriminator].concat(allProps)
+      const addProp = isAdditional(key, _allProps, "properties")
       const addOptProp = isAdditional(key, allOptProps, "optionalProperties")
       const extra =
         addProp === true ? addOptProp : addOptProp === true ? addProp : and(addProp, addOptProp)

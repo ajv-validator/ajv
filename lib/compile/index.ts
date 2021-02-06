@@ -51,6 +51,7 @@ export interface SchemaCxt {
   // You only need to use it if you have many steps in your keywords and potentially can define multiple errors.
   props?: EvaluatedProperties | Name // properties evaluated by this schema - used by parent schema or assigned to validation function
   items?: EvaluatedItems | Name // last item evaluated by this schema - used by parent schema or assigned to validation function
+  jtdDiscriminator?: string
   readonly createErrors?: boolean
   readonly opts: InstanceOptions // Ajv instance option.
   readonly self: Ajv // current Ajv instance

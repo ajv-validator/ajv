@@ -21,6 +21,7 @@ interface SubschemaContext {
   dataNames?: Name[]
   dataPathArr?: (Code | number)[]
   propertyName?: Name
+  jtdDiscriminator?: string
   compositeRule?: true
   createErrors?: boolean
   allErrors?: boolean
@@ -44,6 +45,7 @@ export type SubschemaArgs = Partial<{
   dataTypes: JSONType[]
   propertyName: Name
   dataPropType: Type
+  jtdDiscriminator: string
   compositeRule: true
   createErrors: boolean
   allErrors: boolean
@@ -145,11 +147,12 @@ function extendSubschemaData(
 
 function extendSubschemaMode(
   subschema: SubschemaContext,
-  {compositeRule, createErrors, allErrors, strictSchema}: SubschemaArgs
+  {jtdDiscriminator, compositeRule, createErrors, allErrors, strictSchema}: SubschemaArgs
 ): void {
   if (compositeRule !== undefined) subschema.compositeRule = compositeRule
   if (createErrors !== undefined) subschema.createErrors = createErrors
   if (allErrors !== undefined) subschema.allErrors = allErrors
+  subschema.jtdDiscriminator = jtdDiscriminator // not inherited
   subschema.strictSchema = strictSchema // not inherited
 }
 

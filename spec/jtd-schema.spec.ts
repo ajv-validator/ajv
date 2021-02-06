@@ -21,7 +21,7 @@ const ONLY: RegExp[] = [
   "elements",
   "properties",
   "optionalProperties",
-  // "discriminator",
+  "discriminator",
   "values",
 ].map((s) => new RegExp(`(^|.*\\s)${s}\\s.*-`))
 

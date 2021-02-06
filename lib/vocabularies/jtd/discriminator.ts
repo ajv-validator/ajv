@@ -13,12 +13,14 @@ const def: CodeKeywordDefinition = {
 
     gen.if(cond, () => {
       const tag = gen.const("tag", _`${data}${getProperty(schema)}`)
-      gen.if(false)
-      for (const tagValue in parentSchema.mapping) {
-        gen.elseIf(_`${tag} === ${tagValue}`)
-        gen.assign(valid, applyTagSchema(tagValue))
-      }
-      gen.endIf()
+      gen.if(_`typeof ${tag} == "string"`, () => {
+        gen.if(false)
+        for (const tagValue in parentSchema.mapping) {
+          gen.elseIf(_`${tag} === ${tagValue}`)
+          gen.assign(valid, applyTagSchema(tagValue))
+        }
+        gen.endIf()
+      })
     })
     cxt.pass(valid)
 
@@ -29,6 +31,7 @@ const def: CodeKeywordDefinition = {
           keyword: "mapping",
           schemaProp,
           strictSchema: it.strictSchema,
+          jtdDiscriminator: schema,
         },
         _valid
       )
