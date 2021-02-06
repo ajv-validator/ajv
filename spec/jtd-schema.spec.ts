@@ -1,6 +1,7 @@
 import type AjvJTD from "../dist/jtd"
 import type {SchemaObject} from "../dist/jtd"
 import _AjvJTD from "./ajv_jtd"
+import getAjvInstances from "./ajv_instances"
 import jtdValidationTests = require("./json-typedef-spec/tests/validation.json")
 import assert = require("assert")
 
@@ -30,11 +31,13 @@ interface TestCaseError {
 const ONLY: RegExp[] = []
 
 describe("JTD validation", () => {
-  let ajv, ajvAE: AjvJTD
+  let ajvs: AjvJTD[]
 
   before(() => {
-    ajv = new _AjvJTD({strict: false, logger: false})
-    ajvAE = new _AjvJTD({allErrors: true, strict: false, logger: false})
+    ajvs = getAjvInstances(_AjvJTD, {
+      allErrors: true,
+      code: {es5: true, lines: true, optimize: false},
+    })
   })
 
   for (const testName in jtdValidationTests) {
@@ -42,11 +45,11 @@ describe("JTD validation", () => {
     const valid = errors.length === 0
     describeOnly(testName, () => {
       it(`should be ${valid ? "valid" : "invalid"}`, () => {
-        // console.log(schema)
-        // console.log(ajv.compile(schema).toString())
-        // console.log(ajv.validate(schema, instance), ajv.errors)
-        assert.strictEqual(ajv.validate(schema, instance), valid)
-        assert.strictEqual(ajvAE.validate(schema, instance), valid)
+        ajvs.forEach((ajv) => {
+          // console.log(ajv.compile(schema).toString())
+          // console.log(ajv.validate(schema, instance), ajv.errors)
+          assert.strictEqual(ajv.validate(schema, instance), valid)
+        })
       })
     })
   }

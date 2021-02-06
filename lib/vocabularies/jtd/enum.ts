@@ -31,9 +31,6 @@ const def: CodeKeywordDefinition = {
       )
     }
   },
-  metaSchema: {
-    elements: {type: "string"},
-  },
 }
 
 export default def

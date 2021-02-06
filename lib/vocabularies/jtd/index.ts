@@ -18,6 +18,7 @@ const jtdVocabulary: Vocabulary = [
   optionalProperties,
   discriminator,
   values,
+  {keyword: "additionalProperties", schemaType: "boolean"},
   {keyword: "nullable", schemaType: "boolean"},
   {keyword: "metadata", schemaType: "object"},
 ]
