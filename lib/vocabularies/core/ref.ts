@@ -10,7 +10,7 @@ import {mergeEvaluated} from "../../compile/util"
 const def: CodeKeywordDefinition = {
   keyword: "$ref",
   schemaType: "string",
-  code(cxt: KeywordCxt) {
+  code(cxt: KeywordCxt): void {
     const {gen, schema, it} = cxt
     const {baseId, schemaEnv: env, validateName, opts, self} = it
     // TODO See comment in dynamicRef.ts

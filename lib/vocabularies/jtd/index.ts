@@ -1,4 +1,5 @@
 import type {Vocabulary} from "../../types"
+import refKeyword from "./ref"
 import typeKeyword from "./type"
 import enumKeyword from "./enum"
 import elements from "./elements"
@@ -8,6 +9,8 @@ import discriminator from "./discriminator"
 import values from "./values"
 
 const jtdVocabulary: Vocabulary = [
+  "definitions",
+  refKeyword,
   typeKeyword,
   enumKeyword,
   elements,
@@ -15,6 +18,8 @@ const jtdVocabulary: Vocabulary = [
   optionalProperties,
   discriminator,
   values,
+  {keyword: "nullable", schemaType: "boolean"},
+  {keyword: "metadata", schemaType: "object"},
 ]
 
 export default jtdVocabulary

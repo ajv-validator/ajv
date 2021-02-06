@@ -15,17 +15,19 @@ interface TestCaseError {
   schemaPath: string[]
 }
 
-const ONLY: RegExp[] = [
-  "type",
-  "enum",
-  "elements",
-  "properties",
-  "optionalProperties",
-  "discriminator",
-  "values",
-].map((s) => new RegExp(`(^|.*\\s)${s}\\s.*-`))
+// const ONLY: RegExp[] = [
+//   "empty",
+//   "ref",
+//   "type",
+//   "enum",
+//   "elements",
+//   "properties",
+//   "optionalProperties",
+//   "discriminator",
+//   "values",
+// ].map((s) => new RegExp(`(^|.*\\s)${s}\\s.*-`))
 
-// const ONLY: RegExp[] = [/discriminator schema - ok/]
+const ONLY: RegExp[] = []
 
 describe("JTD validation", () => {
   let ajv, ajvAE: AjvJTD
@@ -51,7 +53,7 @@ describe("JTD validation", () => {
 })
 
 function describeOnly(name: string, func: () => void) {
-  if (ONLY.length > 0 && ONLY.some((p) => p.test(name))) {
+  if (ONLY.length === 0 || ONLY.some((p) => p.test(name))) {
     describe(name, func)
   } else {
     describe.skip(name, func)
