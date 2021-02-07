@@ -33,7 +33,8 @@ interface TestCaseError {
 const ONLY: RegExp[] = []
 
 describe("JSON Type Definition", () => {
-  describe("validation", () => {
+  describe("validation", function () {
+    this.timeout(10000)
     let ajvs: AjvJTD[]
 
     before(() => {
