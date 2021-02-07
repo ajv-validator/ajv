@@ -3,12 +3,14 @@ import type KeywordCxt from "../../compile/context"
 import {Type} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
 import {not, Name} from "../../compile/codegen"
+import {checkMetadata} from "./metadata"
 import {checkNullableObject} from "./nullable"
 
 const def: CodeKeywordDefinition = {
   keyword: "values",
   schemaType: "object",
   code(cxt: KeywordCxt) {
+    checkMetadata(cxt)
     const {gen, data, schema, it} = cxt
     if (alwaysValidSchema(it, schema)) return
     const [valid, cond] = checkNullableObject(cxt, data)

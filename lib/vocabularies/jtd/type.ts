@@ -2,6 +2,7 @@ import type {CodeKeywordDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, or, Code} from "../../compile/codegen"
 import validTimestamp from "../../compile/timestamp"
+import {checkMetadata} from "./metadata"
 
 type IntType = "int8" | "uint8" | "int16" | "uint16" | "int32" | "uint32"
 
@@ -18,6 +19,7 @@ const def: CodeKeywordDefinition = {
   keyword: "type",
   schemaType: "string",
   code(cxt: KeywordCxt) {
+    checkMetadata(cxt)
     const {gen, data, schema, parentSchema} = cxt
     let cond: Code
     switch (schema) {

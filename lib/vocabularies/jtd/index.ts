@@ -9,6 +9,7 @@ import optionalProperties from "./optionalProperties"
 import discriminator from "./discriminator"
 import values from "./values"
 import union from "./union"
+import metadata from "./metadata"
 
 const jtdVocabulary: Vocabulary = [
   "definitions",
@@ -21,9 +22,9 @@ const jtdVocabulary: Vocabulary = [
   discriminator,
   values,
   union,
+  metadata,
   {keyword: "additionalProperties", schemaType: "boolean"},
   {keyword: "nullable", schemaType: "boolean"},
-  {keyword: "metadata", schemaType: "object"},
 ]
 
 export default jtdVocabulary

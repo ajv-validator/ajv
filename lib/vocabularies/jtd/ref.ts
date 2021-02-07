@@ -5,11 +5,13 @@ import {_, not, nil, stringify} from "../../compile/codegen"
 import {MissingRefError} from "../../compile/error_classes"
 import N from "../../compile/names"
 import {getValidate, callRef} from "../core/ref"
+import {checkMetadata} from "./metadata"
 
 const def: CodeKeywordDefinition = {
   keyword: "ref",
   schemaType: "string",
   code(cxt: KeywordCxt) {
+    checkMetadata(cxt)
     const {gen, data, schema: ref, parentSchema, it} = cxt
     const {
       schemaEnv: {root},

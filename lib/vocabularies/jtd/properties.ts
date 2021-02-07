@@ -3,6 +3,7 @@ import type KeywordCxt from "../../compile/context"
 import {propertyInData, allSchemaProperties} from "../code"
 import {alwaysValidSchema, schemaRefOrVal} from "../../compile/util"
 import {_, and, Code, Name} from "../../compile/codegen"
+import {checkMetadata} from "./metadata"
 import {checkNullableObject} from "./nullable"
 
 const def: CodeKeywordDefinition = {
@@ -12,6 +13,7 @@ const def: CodeKeywordDefinition = {
 }
 
 export function validateProperties(cxt: KeywordCxt): void {
+  checkMetadata(cxt)
   const {gen, data, parentSchema, it} = cxt
   const {additionalProperties, nullable} = parentSchema
   if (it.jtdDiscriminator && nullable) throw new Error("JTD: nullable inside discriminator mapping")

@@ -52,6 +52,7 @@ export interface SchemaCxt {
   props?: EvaluatedProperties | Name // properties evaluated by this schema - used by parent schema or assigned to validation function
   items?: EvaluatedItems | Name // last item evaluated by this schema - used by parent schema or assigned to validation function
   jtdDiscriminator?: string
+  jtdMetadata?: boolean
   readonly createErrors?: boolean
   readonly opts: InstanceOptions // Ajv instance option.
   readonly self: Ajv // current Ajv instance

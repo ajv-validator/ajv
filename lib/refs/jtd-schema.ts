@@ -5,7 +5,12 @@ type MetaSchema = (root: boolean) => SchemaObject
 const shared: MetaSchema = (root) => {
   const sch: SchemaObject = {
     nullable: {type: "boolean"},
-    metadata: {optionalProperties: {}, additionalProperties: true},
+    metadata: {
+      optionalProperties: {
+        union: {elements: {ref: "schema"}},
+      },
+      additionalProperties: true,
+    },
   }
   if (root) sch.definitions = {values: {ref: "schema"}}
   return sch
@@ -83,7 +88,9 @@ const discriminatorForm: MetaSchema = (root) => ({
     discriminator: {type: "string"},
     mapping: {
       values: {
-        union: [propertiesForm(false), optionalPropertiesForm(false)],
+        metadata: {
+          union: [propertiesForm(false), optionalPropertiesForm(false)],
+        },
       },
     },
   },
@@ -97,26 +104,20 @@ const valuesForm: MetaSchema = (root) => ({
   optionalProperties: shared(root),
 })
 
-const unionForm: MetaSchema = (root) => ({
-  properties: {
-    union: {elements: {ref: "schema"}},
-  },
-  optionalProperties: shared(root),
-})
-
 const schema: MetaSchema = (root) => ({
-  union: [
-    emptyForm,
-    refForm,
-    typeForm,
-    enumForm,
-    elementsForm,
-    propertiesForm,
-    optionalPropertiesForm,
-    discriminatorForm,
-    valuesForm,
-    unionForm,
-  ].map((s) => s(root)),
+  metadata: {
+    union: [
+      emptyForm,
+      refForm,
+      typeForm,
+      enumForm,
+      elementsForm,
+      propertiesForm,
+      optionalPropertiesForm,
+      discriminatorForm,
+      valuesForm,
+    ].map((s) => s(root)),
+  },
 })
 
 const jtdMetaSchema: SchemaObject = {

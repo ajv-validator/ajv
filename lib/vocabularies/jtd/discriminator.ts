@@ -1,13 +1,15 @@
 import type {CodeKeywordDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {checkNullableObject} from "./nullable"
 import {_, getProperty, Name} from "../../compile/codegen"
+import {checkMetadata} from "./metadata"
+import {checkNullableObject} from "./nullable"
 
 const def: CodeKeywordDefinition = {
   keyword: "discriminator",
   schemaType: "string",
   implements: ["mapping"],
   code(cxt: KeywordCxt) {
+    checkMetadata(cxt)
     const {gen, data, schema, parentSchema, it} = cxt
     const [valid, cond] = checkNullableObject(cxt, data)
 

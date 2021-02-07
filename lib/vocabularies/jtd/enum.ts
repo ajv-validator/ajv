@@ -1,11 +1,13 @@
 import type {CodeKeywordDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, or, not, Code} from "../../compile/codegen"
+import {checkMetadata} from "./metadata"
 
 const def: CodeKeywordDefinition = {
   keyword: "enum",
   schemaType: "array",
   code(cxt: KeywordCxt) {
+    checkMetadata(cxt)
     const {gen, data, schema, schemaValue, parentSchema, it} = cxt
     if (schema.length === 0) throw new Error("enum must have non-empty array")
     if (schema.length !== new Set(schema).size) throw new Error("enum items must be unique")
