@@ -35,7 +35,6 @@ const def: CodeKeywordDefinition = {
               keyword: "values",
               dataProp: key,
               dataPropType: Type.Str,
-              strictSchema: it.strictSchema,
             },
             _valid
           )

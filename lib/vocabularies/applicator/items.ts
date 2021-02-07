@@ -39,7 +39,6 @@ const def: CodeKeywordDefinition = {
               keyword: "items",
               schemaProp: i,
               dataProp: i,
-              strictSchema: it.strictSchema,
             },
             valid
           )

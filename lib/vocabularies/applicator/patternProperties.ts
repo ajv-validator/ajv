@@ -57,7 +57,6 @@ const def: CodeKeywordDefinition = {
               schemaProp: pat,
               dataProp: key,
               dataPropType: Type.Str,
-              strictSchema: it.strictSchema,
             },
             valid
           )

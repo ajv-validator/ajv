@@ -107,7 +107,6 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
         keyword: "additionalProperties",
         dataProp: key,
         dataPropType: Type.Str,
-        strictSchema: it.strictSchema,
       }
       if (errors === false) {
         Object.assign(subschema, {

@@ -105,7 +105,6 @@ export function validateArray(cxt: KeywordCxt): Name {
           keyword,
           dataProp: i,
           dataPropType: Type.Num,
-          strictSchema: it.strictSchema,
         },
         valid
       )

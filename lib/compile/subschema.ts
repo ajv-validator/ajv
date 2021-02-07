@@ -8,7 +8,6 @@ import {JSONType} from "./rules"
 interface SubschemaContext {
   // TODO use Optional? align with SchemCxt property types
   schema: AnySchema
-  strictSchema?: boolean
   schemaPath: Code
   errSchemaPath: string
   topSchemaRef?: Code
@@ -37,7 +36,6 @@ export type SubschemaArgs = Partial<{
   keyword: string
   schemaProp: string | number
   schema: AnySchema
-  strictSchema: boolean
   schemaPath: Code
   errSchemaPath: string
   topSchemaRef: Code
@@ -64,15 +62,7 @@ export function applySubschema(it: SchemaObjCxt, appl: SubschemaArgs, valid: Nam
 
 function getSubschema(
   it: SchemaObjCxt,
-  {
-    keyword,
-    schemaProp,
-    schema,
-    strictSchema,
-    schemaPath,
-    errSchemaPath,
-    topSchemaRef,
-  }: SubschemaArgs
+  {keyword, schemaProp, schema, schemaPath, errSchemaPath, topSchemaRef}: SubschemaArgs
 ): SubschemaContext {
   if (keyword !== undefined && schema !== undefined) {
     throw new Error('both "keyword" and "schema" passed, only one allowed')
@@ -99,7 +89,6 @@ function getSubschema(
     }
     return {
       schema,
-      strictSchema,
       schemaPath,
       topSchemaRef,
       errSchemaPath,
@@ -149,21 +138,13 @@ function extendSubschemaData(
 
 function extendSubschemaMode(
   subschema: SubschemaContext,
-  {
-    jtdDiscriminator,
-    jtdMetadata,
-    compositeRule,
-    createErrors,
-    allErrors,
-    strictSchema,
-  }: SubschemaArgs
+  {jtdDiscriminator, jtdMetadata, compositeRule, createErrors, allErrors}: SubschemaArgs
 ): void {
   if (compositeRule !== undefined) subschema.compositeRule = compositeRule
   if (createErrors !== undefined) subschema.createErrors = createErrors
   if (allErrors !== undefined) subschema.allErrors = allErrors
   subschema.jtdDiscriminator = jtdDiscriminator // not inherited
   subschema.jtdMetadata = jtdMetadata // not inherited
-  subschema.strictSchema = strictSchema // not inherited
 }
 
 function getErrorPath(

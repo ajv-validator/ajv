@@ -10,7 +10,7 @@ const def: CodeKeywordDefinition = {
   implements: ["mapping"],
   code(cxt: KeywordCxt) {
     checkMetadata(cxt)
-    const {gen, data, schema, parentSchema, it} = cxt
+    const {gen, data, schema, parentSchema} = cxt
     const [valid, cond] = checkNullableObject(cxt, data)
 
     gen.if(cond, () => {
@@ -32,7 +32,6 @@ const def: CodeKeywordDefinition = {
         {
           keyword: "mapping",
           schemaProp,
-          strictSchema: it.strictSchema,
           jtdDiscriminator: schema,
         },
         _valid

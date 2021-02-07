@@ -41,7 +41,6 @@ const def: CodeKeywordDefinition = {
       const schCxt = cxt.subschema(
         {
           schema: sch,
-          strictSchema: true,
           dataTypes: [],
           schemaPath: nil,
           topSchemaRef: schName,

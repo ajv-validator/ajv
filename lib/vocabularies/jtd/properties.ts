@@ -77,7 +77,6 @@ export function validateProperties(cxt: KeywordCxt): void {
         keyword,
         schemaProp: prop,
         dataProp: prop,
-        strictSchema: it.strictSchema,
       },
       _valid
     )

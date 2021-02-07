@@ -38,7 +38,6 @@ export interface SchemaCxt {
   readonly ValidationError?: Name
   readonly schema: AnySchema // current schema object - equal to parentSchema passed via KeywordCxt
   readonly schemaEnv: SchemaEnv
-  readonly strictSchema?: boolean
   readonly rootId: string
   baseId: string // the current schema base URI that should be used as the base for resolving URIs in references (\$ref)
   readonly schemaPath: Code // the run-time expression that evaluates to the property name of the current schema
@@ -137,7 +136,6 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     ValidationError: _ValidationError,
     schema: sch.schema,
     schemaEnv: sch,
-    strictSchema: true,
     rootId,
     baseId: sch.baseId || rootId,
     schemaPath: nil,

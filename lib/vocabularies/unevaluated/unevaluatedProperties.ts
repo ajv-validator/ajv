@@ -62,7 +62,6 @@ const def: CodeKeywordDefinition = {
             keyword: "unevaluatedProperties",
             dataProp: key,
             dataPropType: Type.Str,
-            strictSchema: it.strictSchema,
           },
           valid
         )
