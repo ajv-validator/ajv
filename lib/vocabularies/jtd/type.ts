@@ -44,21 +44,6 @@ const def: CodeKeywordDefinition = {
     }
     cxt.pass(parentSchema.nullable ? or(_`${data} === null`, cond) : cond)
   },
-  // metaSchema: {
-  //   enum: [
-  //     "boolean",
-  //     "timestamp",
-  //     "string",
-  //     "float32",
-  //     "float64",
-  //     "int8",
-  //     "uint8",
-  //     "int16",
-  //     "uint16",
-  //     "int32",
-  //     "uint32",
-  //   ],
-  // },
 }
 
 export default def

@@ -627,8 +627,9 @@ export default class Ajv {
     validateSchema = this.opts.validateSchema,
     addSchema = this.opts.addUsedSchema
   ): SchemaEnv {
-    if (typeof schema != "object" && typeof schema != "boolean") {
-      throw new Error("schema must be object or boolean")
+    if (typeof schema != "object") {
+      if (this.opts.jtd) throw new Error("schema must be object")
+      else if (typeof schema != "boolean") throw new Error("schema must be object or boolean")
     }
     let sch = this._cache.get(schema)
     if (sch !== undefined) return sch

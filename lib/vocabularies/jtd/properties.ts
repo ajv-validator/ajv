@@ -13,7 +13,11 @@ const def: CodeKeywordDefinition = {
 
 export function validateProperties(cxt: KeywordCxt): void {
   const {gen, data, parentSchema, it} = cxt
-  const {additionalProperties} = parentSchema
+  const {additionalProperties, nullable} = parentSchema
+  if (it.jtdDiscriminator && nullable) throw new Error("JTD: nullable inside discriminator mapping")
+  if (commonProperties()) {
+    throw new Error("JTD: properties and optionalProperties have common members")
+  }
   const [allProps, properties] = schemaProperties("properties")
   const [allOptProps, optProperties] = schemaProperties("optionalProperties")
   if (properties.length === 0 && optProperties.length === 0 && additionalProperties) {
@@ -33,9 +37,22 @@ export function validateProperties(cxt: KeywordCxt): void {
   )
   cxt.pass(valid)
 
+  function commonProperties(): boolean {
+    const props = parentSchema.properties as Record<string, any> | undefined
+    const optProps = parentSchema.optionalProperties as Record<string, any> | undefined
+    if (!(props && optProps)) return false
+    for (const p in props) {
+      if (Object.prototype.hasOwnProperty.call(optProps, p)) return true
+    }
+    return false
+  }
+
   function schemaProperties(keyword: string): [string[], string[]] {
     const schema = parentSchema[keyword]
     const allPs = schema ? allSchemaProperties(schema) : []
+    if (it.jtdDiscriminator && allPs.some((p) => p === it.jtdDiscriminator)) {
+      throw new Error(`JTD: discriminator tag used in ${keyword}`)
+    }
     const ps = allPs.filter((p) => !alwaysValidSchema(it, schema[p]))
     return [allPs, ps]
   }
@@ -88,7 +105,12 @@ export function validateProperties(cxt: KeywordCxt): void {
     if (props.length > 8) {
       // TODO maybe an option instead of hard-coded 8?
       const propsSchema = schemaRefOrVal(it, parentSchema[keyword], keyword)
-      additional = _`!${propsSchema}.hasOwnProperty(${key})`
+      const hasProp = gen.scopeValue("func", {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        ref: Object.prototype.hasOwnProperty,
+        code: _`Object.prototype.hasOwnProperty`,
+      })
+      additional = _`!${hasProp}.call(${propsSchema}, ${key})`
     } else if (props.length) {
       additional = and(...props.map((p) => _`${key} !== ${p}`))
     } else {

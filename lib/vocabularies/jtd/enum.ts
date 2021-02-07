@@ -8,6 +8,7 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordCxt) {
     const {gen, data, schema, schemaValue, parentSchema, it} = cxt
     if (schema.length === 0) throw new Error("enum must have non-empty array")
+    if (schema.length !== new Set(schema).size) throw new Error("enum items must be unique")
     let valid: Code
     if (schema.length >= it.opts.loopEnum) {
       if (parentSchema.nullable) {

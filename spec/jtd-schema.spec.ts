@@ -47,30 +47,27 @@ describe("JSON Type Definition", () => {
     for (const testName in jtdValidationTests) {
       const {schema, instance, errors} = jtdValidationTests[testName] as TestCase
       const valid = errors.length === 0
-      describeOnly(testName, () => {
-        it(`should be ${valid ? "valid" : "invalid"}`, () => {
+      describeOnly(testName, () =>
+        it(`should be ${valid ? "valid" : "invalid"}`, () =>
           withStandalone(ajvs).forEach((ajv) => {
             // console.log(ajv.compile(schema).toString())
             // console.log(ajv.validate(schema, instance), ajv.errors)
             assert.strictEqual(ajv.validate(schema, instance), valid)
-          })
-        })
-      })
+          }))
+      )
     }
   })
 
-  describe.skip("invalid schemas", () => {
+  describe("invalid schemas", () => {
     let ajv: AjvJTD
 
-    before(() => {
-      ajv = new _AjvJTD()
-    })
+    before(() => (ajv = new _AjvJTD()))
 
     for (const testName in jtdInvalidSchemasTests) {
       const schema = jtdInvalidSchemasTests[testName]
-      it(`${testName} should be invalid schema`, () => {
-        assert.throws(() => ajv.compile(schema))
-      })
+      describe(testName, () =>
+        it("should be invalid schema", () => assert.throws(() => ajv.compile(schema)))
+      )
     }
   })
 })

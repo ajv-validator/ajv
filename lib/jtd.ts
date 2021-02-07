@@ -24,18 +24,16 @@ export {SchemaCxt, SchemaObjCxt} from "./compile"
 import KeywordCxt from "./compile/context"
 export {KeywordCxt}
 // export {DefinedError} from "./vocabularies/errors"
-// export {JSONType} from "./compile/rules"
-// export {JSONSchemaType} from "./types/json-schema"
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
-// import type {AnySchemaObject} from "./types"
+import type {AnySchemaObject} from "./types"
 import AjvCore, {Options} from "./core"
 import jtdVocabulary from "./vocabularies/jtd"
-// import draft7MetaSchema = require("./refs/json-schema-draft-07.json")
+import jtdMetaSchema from "./refs/jtd-schema"
 
 // const META_SUPPORT_DATA = ["/properties"]
 
-// const META_SCHEMA_ID = "http://json-schema.org/draft-07/schema"
+const META_SCHEMA_ID = "JTD-meta-schema"
 
 export default class Ajv extends AjvCore {
   constructor(opts: Options = {}) {
@@ -50,19 +48,14 @@ export default class Ajv extends AjvCore {
     this.addVocabulary(jtdVocabulary)
   }
 
-  // _addDefaultMetaSchema(): void {
-  //   super._addDefaultMetaSchema()
-  //   const {$data, meta} = this.opts
-  //   if (!meta) return
-  //   const metaSchema = $data
-  //     ? this.$dataMetaSchema(draft7MetaSchema, META_SUPPORT_DATA)
-  //     : draft7MetaSchema
-  //   this.addMetaSchema(metaSchema, META_SCHEMA_ID, false)
-  //   this.refs["http://json-schema.org/schema"] = META_SCHEMA_ID
-  // }
+  _addDefaultMetaSchema(): void {
+    super._addDefaultMetaSchema()
+    if (!this.opts.meta) return
+    this.addMetaSchema(jtdMetaSchema, META_SCHEMA_ID, false)
+  }
 
-  // defaultMeta(): string | AnySchemaObject | undefined {
-  //   return (this.opts.defaultMeta =
-  //     super.defaultMeta() || (this.getSchema(META_SCHEMA_ID) ? META_SCHEMA_ID : undefined))
-  // }
+  defaultMeta(): string | AnySchemaObject | undefined {
+    return (this.opts.defaultMeta =
+      super.defaultMeta() || (this.getSchema(META_SCHEMA_ID) ? META_SCHEMA_ID : undefined))
+  }
 }
