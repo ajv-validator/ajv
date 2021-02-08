@@ -1,6 +1,24 @@
 # JSON Type Definition
 
-This document informally describes JSON Type Definitions specification to help Ajv users to start using it. For formal definition please refer to [RFC8927](https://datatracker.ietf.org/doc/rfc8927/). Please report any contradictions in this document with the specification.
+This document informally describes JSON Type Definition (JTD) specification to help Ajv users to start using it. For formal definition please refer to [RFC8927](https://datatracker.ietf.org/doc/rfc8927/). Please report any contradictions in this document with the specification.
+
+## Contents
+
+- [JTD schema forms](#jtd-schema-forms):
+  - [type](#type-schema-form) (for primitive values)
+  - [enum](#enum-schema-form)
+  - [elements](#elements-schema-form) (for arrays)
+  - [properties](#properties-schema-form) (for records)
+  - [discriminator](#discriminator-schema-form) (for tagged union of records)
+  - [values](#values-schema-form) (for dictionary)
+  - [ref](#ref-schema-form) (to reference a schema in definitions)
+  - [empty](#empty-schema-form) (for any data)
+- [Extending JTD](#extending-jtd)
+  - [metadata](#metadata-schema-member)
+  - [union](#union-keyword)
+  - [user-defined keywords](#user-defined-keywords)
+
+## JTD schema forms
 
 JTD specification defines 8 different forms that the schema for JSON can take for one of most widely used data types in JSON messages (API requests and responses).
 
@@ -13,7 +31,7 @@ All forms require that:
 
 Root schema can have member `definitions` that has a dictionary of schemas that can be references from any other schemas using form `ref`
 
-## Type schema form
+### Type schema form
 
 This form defines a primitive value.
 
@@ -45,7 +63,7 @@ Unlike JSON Schema, JTD does not allow defining values that can take one of seve
 }
 ```
 
-## Enum schema form
+### Enum schema form
 
 This form defines a string that can take one of the values from the list (the values in the list must be unique).
 
@@ -61,7 +79,7 @@ Unlike JSON Schema, JTD does not allow defining `enum` with values of any other 
 }
 ```
 
-## Elements schema form
+### Elements schema form
 
 This form defines a homogenous array of any size (possibly empty) with the elements that satisfy a given schema.
 
@@ -85,7 +103,7 @@ Valid data: `[]`, `["foo"]`, `["foo", "bar"]`
 
 Invalid data: `["foo", 1]`, any type other than array
 
-## Properties schema form
+### Properties schema form
 
 This form defines record (JSON object) that has defined required and optional properties.
 
@@ -144,7 +162,7 @@ Invalid data: `{}`, `{foo: 1}`, `{foo: "bar", bar: "3"}`, any type other than ob
 }
 ```
 
-## Discriminator schema form
+### Discriminator schema form
 
 This form defines discriminated (tagged) union of different record types.
 
@@ -202,7 +220,7 @@ Invalid data: `{}`, `{foo: "1"}`, `{version: 1, foo: "1"}`, any type other than 
 }
 ```
 
-## Values schema form
+### Values schema form
 
 This form defines a homogenous dictionary where the values of members satisfy a given schema.
 
@@ -226,7 +244,7 @@ Valid data: `{}`, `{"foo": 1}`, `{"foo": 1, "bar": 2}`
 
 Invalid data: `{"foo": "bar"}`, any type other than object
 
-## Ref schema form
+### Ref schema form
 
 This form defines a reference to the schema that is present in the corresponding key in the `definitions` member of the root schema.
 
@@ -281,6 +299,35 @@ Unlike JSON Schema, JTD does not allow to reference:
 }
 ```
 
-## Empty schema form
+### Empty schema form
 
 Empty JTD schema defines the data instance that can be of any type, including JSON `null` (even if `nullable` member is not present). It cannot have any member other than `nullable` and `metadata`.
+
+## Extending JTD
+
+### Metadata schema member
+
+Each schema form may have an optional member `metadata` that JTD reserves for implementation/application specific extensions. Ajv uses this member as a location where any non-standard keywords can be used, such as:
+- `union` keyword included in Ajv
+- any user-defined keywords, for example keywords defined in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package
+- JSON Schema keywords, as long as their names are different from standard JTD keywords. It can be used to enable a gradual migration from JSON Schema to JTD, should it be required.
+
+**Please note**: Ajv-specific extension to JTD are likely to be unsupported by other tools, so while it may simplify adoption, it undermines the cross-platform objective of using JTD. While it is ok to put some human readable information in `metadata` member, it is recommended not to add any validation logic there (even if it is supported by Ajv).
+
+Additional restrictions that Ajv enforces on `metadata` schema member:
+- you cannot use standard JTD keywords there. While strictly speaking it is allowed by the specification, these keywords should be ignored inside `metadata` - the general approach of Ajv is to avoid anything that is ignored.
+- you need to define all members used in `metadata` as keywords. If they are no-op it can be done with `ajv.addKeyword("my-metadata-keyword")`. This restriction can be removed by disabling [strict mode](https://github.com/ajv-validator/ajv/blob/master/docs/strict-mode.md), without affecting the strictness of JTD - unknown keywords would still be prohibited in the schema itself.
+
+### Union keyword
+
+Ajv defines `union` keyword that is used in the schema that validates JTD schemas ([meta-schema](../lib/refs/jtd-schema.ts)).
+
+This keyword can be used only inside `metadata` schema member.
+
+**Please note**: This keyword is non-standard and it is not supported in other JTD tools, so it is recommended NOT to use this keyword in schemas for your data if you want them to be cross-platform.
+
+### User-defined keywords
+
+Any user-defined keywords that can be used in JSON Schema schemas can also be used in JTD schemas, including the keywords in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package.
+
+**Please note**: It is strongly recommended to only use it to simplify migration from JSON Schema to JTD and not to use non-standard keywords in the new schemas, as these keywords are not supported by any other tools.
