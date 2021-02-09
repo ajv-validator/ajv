@@ -308,6 +308,7 @@ Empty JTD schema defines the data instance that can be of any type, including JS
 ### Metadata schema member
 
 Each schema form may have an optional member `metadata` that JTD reserves for implementation/application specific extensions. Ajv uses this member as a location where any non-standard keywords can be used, such as:
+
 - `union` keyword included in Ajv
 - any user-defined keywords, for example keywords defined in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package
 - JSON Schema keywords, as long as their names are different from standard JTD keywords. It can be used to enable a gradual migration from JSON Schema to JTD, should it be required.
@@ -315,6 +316,7 @@ Each schema form may have an optional member `metadata` that JTD reserves for im
 **Please note**: Ajv-specific extension to JTD are likely to be unsupported by other tools, so while it may simplify adoption, it undermines the cross-platform objective of using JTD. While it is ok to put some human readable information in `metadata` member, it is recommended not to add any validation logic there (even if it is supported by Ajv).
 
 Additional restrictions that Ajv enforces on `metadata` schema member:
+
 - you cannot use standard JTD keywords there. While strictly speaking it is allowed by the specification, these keywords should be ignored inside `metadata` - the general approach of Ajv is to avoid anything that is ignored.
 - you need to define all members used in `metadata` as keywords. If they are no-op it can be done with `ajv.addKeyword("my-metadata-keyword")`. This restriction can be removed by disabling [strict mode](https://github.com/ajv-validator/ajv/blob/master/docs/strict-mode.md), without affecting the strictness of JTD - unknown keywords would still be prohibited in the schema itself.
 

@@ -139,7 +139,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     rootId,
     baseId: sch.baseId || rootId,
     schemaPath: nil,
-    errSchemaPath: "#",
+    errSchemaPath: this.opts.jtd ? "" : "#",
     errorPath: _`""`,
     opts: this.opts,
     self: this,

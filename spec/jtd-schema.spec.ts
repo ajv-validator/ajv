@@ -6,6 +6,7 @@ import {withStandalone} from "./ajv_standalone"
 import jtdValidationTests = require("./json-typedef-spec/tests/validation.json")
 import jtdInvalidSchemasTests = require("./json-typedef-spec/tests/invalid_schemas.json")
 import assert = require("assert")
+// import AjvPack from "../dist/standalone/instance"
 
 interface TestCase {
   schema: SchemaObject
@@ -17,6 +18,11 @@ interface TestCaseError {
   instancePath: string[]
   schemaPath: string[]
 }
+
+// interface JTDError {
+//   instancePath: string
+//   schemaPath: string
+// }
 
 // const ONLY: RegExp[] = [
 //   "empty",
@@ -54,9 +60,26 @@ describe("JSON Type Definition", () => {
             // console.log(ajv.compile(schema).toString())
             // console.log(ajv.validate(schema, instance), ajv.errors)
             assert.strictEqual(ajv.validate(schema, instance), valid)
+            // const opts = ajv instanceof AjvPack ? ajv.ajv.opts : ajv.opts
+            // if (opts.allErrors) {
+            //   assert.deepStrictEqual(ajv.errors, valid ? null : convertErrors(errors))
+            // }
           }))
       )
     }
+
+    // function convertErrors(errors: TestCaseError[]): JTDError[] {
+    //   return errors.map((e) =>
+    //     ({
+    //       instancePath: jsonPointer(e.instancePath),
+    //       schemaPath: jsonPointer(e.schemaPath)
+    //     })
+    //   )
+    // }
+
+    // function jsonPointer(error: string[]): string {
+    //   return error.map((s) => `/${s}`).join("")
+    // }
   })
 
   describe("invalid schemas", () => {

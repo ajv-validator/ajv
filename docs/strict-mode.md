@@ -25,6 +25,7 @@ To disable all strict mode restrictions use option `strict: false`. Some of the 
 ## JSON Type Definition schemas
 
 JTD specification is strict - whether Ajv strict mode is enabled or not it will not allow schemas with ignored or ambiguous elements, including:
+
 - unknown schema keywords
 - combining multiple schema forms in one schema
 - defining the same property as both required and optional

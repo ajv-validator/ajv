@@ -97,22 +97,33 @@ function returnErrors(it: SchemaCxt, errs: Code): void {
 
 const E = {
   keyword: new Name("keyword"),
-  schemaPath: new Name("schemaPath"),
+  schemaPath: new Name("schemaPath"), // also used in JTD errors
   params: new Name("params"),
   propertyName: new Name("propertyName"),
   message: new Name("message"),
   schema: new Name("schema"),
   parentSchema: new Name("parentSchema"),
+  // JTD error properties
+  instancePath: new Name("instancePath"),
 }
 
 function errorObjectCode(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): Code {
-  const {
-    keyword,
-    data,
-    schemaValue,
-    it: {gen, createErrors, topSchemaRef, schemaPath, errorPath, errSchemaPath, propertyName, opts},
-  } = cxt
+  const {createErrors, opts} = cxt.it
   if (createErrors === false) return _`{}`
+  return opts.jtd ? jtdErrorObject(cxt) : ajvErrorObject(cxt, error)
+}
+
+function jtdErrorObject({gen, keyword, it}: KeywordErrorCxt): Code {
+  const {errorPath, errSchemaPath} = it
+  return gen.object(
+    [E.instancePath, strConcat(N.dataPath, errorPath)],
+    [E.schemaPath, str`${errSchemaPath}/${keyword}`]
+  )
+}
+
+function ajvErrorObject(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): Code {
+  const {keyword, data, schemaValue, it} = cxt
+  const {gen, topSchemaRef, schemaPath, errorPath, errSchemaPath, propertyName, opts} = it
   const {params, message} = error
   const keyValues: [Name, SafeExpr | string][] = [
     [E.keyword, keyword],
