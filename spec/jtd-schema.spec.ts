@@ -46,6 +46,7 @@ describe("JSON Type Definition", () => {
     before(() => {
       ajvs = getAjvInstances(_AjvJTD, {
         allErrors: true,
+        inlineRefs: false,
         code: {es5: true, lines: true, optimize: false},
       })
       ajvs.forEach((ajv) => (ajv.opts.code.source = true))

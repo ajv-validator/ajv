@@ -77,7 +77,7 @@ const EXT_SCOPE_NAMES = new Set([
 
 export type Options = CurrentOptions & DeprecatedOptions
 
-interface CurrentOptions {
+export interface CurrentOptions {
   // strict mode options (NEW)
   strict?: boolean | "log"
   strictTypes?: boolean | "log"
@@ -118,6 +118,7 @@ interface CurrentOptions {
   multipleOfPrecision?: number
   messages?: boolean
   code?: CodeOptions // NEW
+  ajvErrors?: boolean
 }
 
 export interface CodeOptions {

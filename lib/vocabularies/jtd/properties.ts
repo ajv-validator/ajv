@@ -92,11 +92,14 @@ export function validateProperties(cxt: KeywordCxt): void {
       const extra =
         addProp === true ? addOptProp : addOptProp === true ? addProp : and(addProp, addOptProp)
       gen.if(extra, () => {
-        if (it.opts.removeAdditional) gen.code(_`delete ${data}[${key}]`)
-        // cxt.setParams({additionalProperty: key})
-        cxt.error()
-        gen.assign(valid, false)
-        if (!it.opts.allErrors) gen.break()
+        if (it.opts.removeAdditional) {
+          gen.code(_`delete ${data}[${key}]`)
+        } else {
+          // cxt.setParams({additionalProperty: key})
+          cxt.error()
+          gen.assign(valid, false)
+          if (!it.opts.allErrors) gen.break()
+        }
       })
     })
   }

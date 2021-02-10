@@ -27,7 +27,7 @@ export {KeywordCxt}
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
 import type {AnySchemaObject} from "./types"
-import AjvCore, {Options} from "./core"
+import AjvCore, {CurrentOptions} from "./core"
 import jtdVocabulary from "./vocabularies/jtd"
 import jtdMetaSchema from "./refs/jtd-schema"
 
@@ -35,11 +35,40 @@ import jtdMetaSchema from "./refs/jtd-schema"
 
 const META_SCHEMA_ID = "JTD-meta-schema"
 
+export type JTDOptions = CurrentOptions & {
+  // strict mode options not supported with JTD:
+  strictTypes?: never
+  strictTuples?: never
+  allowMatchingProperties?: never
+  allowUnionTypes?: never
+  validateFormats?: never
+  // validation and reporting options not supported with JTD:
+  $data?: never
+  verbose?: never
+  $comment?: never
+  formats?: never
+  loadSchema?: never
+  // options to modify validated data:
+  useDefaults?: never
+  coerceTypes?: never
+  // advanced options:
+  next?: never
+  unevaluated?: never
+  dynamicRef?: never
+  meta?: boolean
+  defaultMeta?: never
+  inlineRefs?: boolean
+  loopRequired?: never
+  multipleOfPrecision?: never
+  ajvErrors?: boolean
+}
+
 export default class Ajv extends AjvCore {
-  constructor(opts: Options = {}) {
+  constructor(opts: JTDOptions = {}) {
     super({
       ...opts,
       jtd: true,
+      messages: opts.messages ?? false,
     })
   }
 

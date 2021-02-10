@@ -110,20 +110,25 @@ const E = {
 function errorObjectCode(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): Code {
   const {createErrors, opts} = cxt.it
   if (createErrors === false) return _`{}`
-  return opts.jtd ? jtdErrorObject(cxt) : ajvErrorObject(cxt, error)
+  return opts.jtd && !opts.ajvErrors ? jtdErrorObject(cxt, error) : ajvErrorObject(cxt, error)
 }
 
-function jtdErrorObject({gen, keyword, it}: KeywordErrorCxt): Code {
-  const {errorPath, errSchemaPath} = it
-  return gen.object(
+function jtdErrorObject(cxt: KeywordErrorCxt, {message}: KeywordErrorDefinition): Code {
+  const {gen, keyword, it} = cxt
+  const {errorPath, errSchemaPath, opts} = it
+  const keyValues: [Name, SafeExpr | string][] = [
     [E.instancePath, strConcat(N.dataPath, errorPath)],
-    [E.schemaPath, str`${errSchemaPath}/${keyword}`]
-  )
+    [E.schemaPath, str`${errSchemaPath}/${keyword}`],
+  ]
+  if (opts.messages) {
+    keyValues.push([E.message, typeof message == "function" ? message(cxt) : message])
+  }
+  return gen.object(...keyValues)
 }
 
 function ajvErrorObject(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): Code {
-  const {keyword, data, schemaValue, it} = cxt
-  const {gen, topSchemaRef, schemaPath, errorPath, errSchemaPath, propertyName, opts} = it
+  const {gen, keyword, data, schemaValue, it} = cxt
+  const {topSchemaRef, schemaPath, errorPath, errSchemaPath, propertyName, opts} = it
   const {params, message} = error
   const keyValues: [Name, SafeExpr | string][] = [
     [E.keyword, keyword],
@@ -132,9 +137,8 @@ function ajvErrorObject(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): Co
     [E.params, typeof params == "function" ? params(cxt) : params || _`{}`],
   ]
   if (propertyName) keyValues.push([E.propertyName, propertyName])
-  if (opts.messages !== false) {
-    const msg = typeof message == "function" ? message(cxt) : message
-    keyValues.push([E.message, msg])
+  if (opts.messages) {
+    keyValues.push([E.message, typeof message == "function" ? message(cxt) : message])
   }
   if (opts.verbose) {
     keyValues.push(

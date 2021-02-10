@@ -2,6 +2,15 @@
 
 This document informally describes JSON Type Definition (JTD) specification to help Ajv users to start using it. For formal definition please refer to [RFC8927](https://datatracker.ietf.org/doc/rfc8927/). Please report any contradictions in this document with the specification.
 
+To use JTD schemas you need to import a different Ajv class:
+
+```javascript
+const AjvJTD = require("ajv/dist/jtd").default
+// or in TypeScript:
+// import Ajv from "ajv/dist/jtd"
+const ajv = new AjvJTD()
+```
+
 ## Contents
 
 - [JTD schema forms](#jtd-schema-forms):
@@ -17,6 +26,7 @@ This document informally describes JSON Type Definition (JTD) specification to h
   - [metadata](#metadata-schema-member)
   - [union](#union-keyword)
   - [user-defined keywords](#user-defined-keywords)
+- [Validation errors](#validation-errors)
 
 ## JTD schema forms
 
