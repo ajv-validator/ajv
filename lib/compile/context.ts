@@ -8,13 +8,7 @@ import {SchemaCxt, SchemaObjCxt} from "./index"
 import {JSONType} from "./rules"
 import {checkDataTypes, DataType} from "./validate/dataType"
 import {schemaRefOrVal, unescapeJsonPointer, mergeEvaluated} from "./util"
-import {
-  reportError,
-  reportExtraError,
-  resetErrorsCount,
-  keywordError,
-  keyword$DataError,
-} from "./errors"
+import {reportError, reportExtraError, resetErrorsCount, keyword$DataError} from "./errors"
 import {CodeGen, _, nil, or, not, getProperty, Code, Name} from "./codegen"
 import N from "./names"
 import {applySubschema, SubschemaArgs} from "./subschema"
@@ -25,7 +19,7 @@ export default class KeywordCxt implements KeywordErrorCxt {
   readonly keyword: string
   readonly data: Name // Name referencing the current level of the data instance
   readonly $data?: string | false
-  readonly schema: any // keyword value in the schema
+  schema: any // keyword value in the schema
   readonly schemaValue: Code | number | boolean // Code reference to keyword schema value or primitive value
   readonly schemaCode: Code | number | boolean // Code reference to resolved schema value (different if schema is $data)
   readonly schemaType: JSONType[] // allowed type(s) of keyword value in the schema
@@ -33,7 +27,7 @@ export default class KeywordCxt implements KeywordErrorCxt {
   readonly errsCount?: Name // Name reference to the number of validation errors collected before this keyword,
   // requires option trackErrors in keyword definition
   params: KeywordCxtParams // object to pass parameters to error messages from keyword code
-  readonly it: SchemaObjCxt // schema compilation context (schema is guaranted to be an object, not boolean)
+  readonly it: SchemaObjCxt // schema compilation context (schema is guaranteed to be an object, not boolean)
   readonly def: AddedKeywordDefinition
 
   constructor(it: SchemaObjCxt, def: AddedKeywordDefinition, keyword: string) {
@@ -102,7 +96,7 @@ export default class KeywordCxt implements KeywordErrorCxt {
   }
 
   error(append?: true): void {
-    ;(append ? reportExtraError : reportError)(this, this.def.error || keywordError)
+    ;(append ? reportExtraError : reportError)(this, this.def.error)
   }
 
   $dataError(): void {

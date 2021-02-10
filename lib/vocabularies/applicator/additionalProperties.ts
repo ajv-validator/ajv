@@ -52,8 +52,13 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
       let definedProp: Code
       if (props.length > 8) {
         // TODO maybe an option instead of hard-coded 8?
+        const hasProp = gen.scopeValue("func", {
+          // eslint-disable-next-line @typescript-eslint/unbound-method
+          ref: Object.prototype.hasOwnProperty,
+          code: _`Object.prototype.hasOwnProperty`,
+        })
         const propsSchema = schemaRefOrVal(it, parentSchema.properties, "properties")
-        definedProp = _`${propsSchema}.hasOwnProperty(${key})`
+        definedProp = _`${hasProp}.call(${propsSchema}, ${key})`
       } else if (props.length) {
         definedProp = or(...props.map((p) => _`${key} === ${p}`))
       } else {
@@ -62,7 +67,7 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
       if (patProps.length) {
         definedProp = or(definedProp, ...patProps.map((p) => _`${usePattern(gen, p)}.test(${key})`))
       }
-      return _`!(${definedProp})`
+      return not(definedProp)
     }
 
     function deleteAdditional(key: Name): void {
@@ -102,7 +107,6 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
         keyword: "additionalProperties",
         dataProp: key,
         dataPropType: Type.Str,
-        strictSchema: it.strictSchema,
       }
       if (errors === false) {
         Object.assign(subschema, {

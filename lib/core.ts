@@ -77,7 +77,7 @@ const EXT_SCOPE_NAMES = new Set([
 
 export type Options = CurrentOptions & DeprecatedOptions
 
-interface CurrentOptions {
+export interface CurrentOptions {
   // strict mode options (NEW)
   strict?: boolean | "log"
   strictTypes?: boolean | "log"
@@ -105,6 +105,7 @@ interface CurrentOptions {
   next?: boolean // NEW
   unevaluated?: boolean // NEW
   dynamicRef?: boolean // NEW
+  jtd?: boolean // NEW
   meta?: SchemaObject | boolean
   defaultMeta?: string | AnySchemaObject
   validateSchema?: boolean | "log"
@@ -117,6 +118,7 @@ interface CurrentOptions {
   multipleOfPrecision?: number
   messages?: boolean
   code?: CodeOptions // NEW
+  ajvErrors?: boolean
 }
 
 export interface CodeOptions {
@@ -626,8 +628,9 @@ export default class Ajv {
     validateSchema = this.opts.validateSchema,
     addSchema = this.opts.addUsedSchema
   ): SchemaEnv {
-    if (typeof schema != "object" && typeof schema != "boolean") {
-      throw new Error("schema must be object or boolean")
+    if (typeof schema != "object") {
+      if (this.opts.jtd) throw new Error("schema must be object")
+      else if (typeof schema != "boolean") throw new Error("schema must be object or boolean")
     }
     let sch = this._cache.get(schema)
     if (sch !== undefined) return sch

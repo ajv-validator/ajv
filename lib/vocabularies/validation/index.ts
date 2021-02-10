@@ -24,6 +24,7 @@ const validation: Vocabulary = [
   limitItems,
   uniqueItems,
   // any
+  {keyword: "type", schemaType: ["string", "array"]},
   {keyword: "nullable", schemaType: "boolean"},
   constKeyword,
   enumKeyword,

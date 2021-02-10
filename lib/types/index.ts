@@ -76,6 +76,7 @@ export type AnyValidateFunction<T = any> = ValidateFunction<T> | AsyncValidateFu
 export interface ErrorObject<K extends string = string, P = Record<string, any>, S = unknown> {
   keyword: K
   dataPath: string
+  instancePath?: string
   schemaPath: string
   params: P
   // Added to validation errors of "propertyNames" keyword schema

@@ -38,7 +38,6 @@ export interface SchemaCxt {
   readonly ValidationError?: Name
   readonly schema: AnySchema // current schema object - equal to parentSchema passed via KeywordCxt
   readonly schemaEnv: SchemaEnv
-  readonly strictSchema?: boolean
   readonly rootId: string
   baseId: string // the current schema base URI that should be used as the base for resolving URIs in references (\$ref)
   readonly schemaPath: Code // the run-time expression that evaluates to the property name of the current schema
@@ -51,6 +50,8 @@ export interface SchemaCxt {
   // You only need to use it if you have many steps in your keywords and potentially can define multiple errors.
   props?: EvaluatedProperties | Name // properties evaluated by this schema - used by parent schema or assigned to validation function
   items?: EvaluatedItems | Name // last item evaluated by this schema - used by parent schema or assigned to validation function
+  jtdDiscriminator?: string
+  jtdMetadata?: boolean
   readonly createErrors?: boolean
   readonly opts: InstanceOptions // Ajv instance option.
   readonly self: Ajv // current Ajv instance
@@ -135,11 +136,10 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     ValidationError: _ValidationError,
     schema: sch.schema,
     schemaEnv: sch,
-    strictSchema: true,
     rootId,
     baseId: sch.baseId || rootId,
     schemaPath: nil,
-    errSchemaPath: "#",
+    errSchemaPath: this.opts.jtd ? "" : "#",
     errorPath: _`""`,
     opts: this.opts,
     self: this,

@@ -251,36 +251,37 @@ Option defaults:
 const defaultOptions = {
   // strict mode options (NEW)
   strict: true,
-  strictTypes: "log",
-  strictTuples: "log",
-  allowUnionTypes: false,
-  allowMatchingProperties: false,
-  validateFormats: true,
+  strictTypes: "log", // *
+  strictTuples: "log", // *
+  allowUnionTypes: false, // *
+  allowMatchingProperties: false, // *
+  validateFormats: true, // *
   // validation and reporting options:
-  $data: false,
+  $data: false, // *
   allErrors: false,
-  verbose: false,
-  $comment: false,
+  verbose: false, // *
+  $comment: false, // *
   formats: {},
   keywords: {},
   schemas: {},
   logger: undefined,
-  loadSchema: undefined, // function(uri: string): Promise {}
+  loadSchema: undefined, // *, function(uri: string): Promise {}
   // options to modify validated data:
   removeAdditional: false,
-  useDefaults: false,
-  coerceTypes: false,
+  useDefaults: false, // *
+  coerceTypes: false, // *
   // advanced options:
   meta: true,
   validateSchema: true,
   addUsedSchema: true,
   inlineRefs: true,
   passContext: false,
-  loopRequired: Infinity,
+  loopRequired: Infinity, // *
   loopEnum: Infinity, // NEW
   ownProperties: false,
-  multipleOfPrecision: undefined,
-  messages: true,
+  multipleOfPrecision: undefined, // *
+  messages: true, // false with JTD
+  ajvErrors: false // only with JTD
   code: {
     // NEW
     es5: false,
@@ -291,6 +292,8 @@ const defaultOptions = {
   },
 }
 ```
+
+<sup>\*</sup> these options are not supported with JSON Type Definition schemas
 
 #### Strict mode options (NEW in v7)
 
@@ -363,6 +366,7 @@ const defaultOptions = {
 - _ownProperties_: by default Ajv iterates over all enumerable object properties; when this option is `true` only own enumerable object properties (i.e. found directly on the object rather than on its prototype) are iterated. Contributed by @mbroadst.
 - _multipleOfPrecision_: by default `multipleOf` keyword is validated by comparing the result of division with parseInt() of that result. It works for dividers that are bigger than 1. For small dividers such as 0.01 the result of the division is usually not integer (even when it should be integer, see issue [#84](https://github.com/ajv-validator/ajv/issues/84)). If you need to use fractional dividers set this option to some positive integer N to have `multipleOf` validated using this formula: `Math.abs(Math.round(division) - division) < 1e-N` (it is slower but allows for float arithmetic deviations).
 - _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when messages are generated outside of Ajv code (e.g. with [ajv-i18n](https://github.com/ajv-validator/ajv-i18n)).
+- _ajvErrors_: this option is only supported with JTD schemas to generate error objects with the properties described in the first part of [Validation errors](#validation-errors) section, otherwise JTD errors are generated when JTD schemas are used (see the second part of [the same section](#validation-errors)).
 - _code_ (new in v7): code generation options:
 
 ```typescript
@@ -393,7 +397,7 @@ In case of validation failure, Ajv assigns the array of errors to `errors` prope
 
 ### Error objects
 
-Each error is an object with the following properties:
+Each error reported when validating against JSON Schema (also when validating against JTD schema with option `ajvErrors`) is an object with the following properties:
 
 ```typescript
 interface ErrorObject {
@@ -412,6 +416,19 @@ interface ErrorObject {
   data?: any // the data validated by the keyword (added with `verbose` option).
 }
 ```
+
+[JTD specification](./json-type-definition.md) defines strict format for validation errors, where each error is an object with the following properties:
+
+```typescript
+interface JTDErrorObject {
+  instancePath: string // JSON Pointer to the location in the data instance
+  schemaPath: string // JSON Pointer to the location in the schema
+}
+```
+
+This error format is used when using JTD schemas. To simplify usage, you may still generate Ajv error objects using `ajvErrors` option. You can also add a human-readable error message to error objects using option `messages`.
+
+**Please note**: Ajv is not fully consistent with JTD regarding the error objects in some scenarios - it will be consistent by  the time Ajv version 8 is released. Therefore it is not recommended yet to use error objects for any advanced application logic.
 
 ### Error parameters
 

@@ -17,7 +17,7 @@ export const keyword$DataError: KeywordErrorDefinition = {
 
 export function reportError(
   cxt: KeywordErrorCxt,
-  error: KeywordErrorDefinition,
+  error: KeywordErrorDefinition = keywordError,
   overrideAllErrors?: boolean
 ): void {
   const {it} = cxt
@@ -30,7 +30,10 @@ export function reportError(
   }
 }
 
-export function reportExtraError(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): void {
+export function reportExtraError(
+  cxt: KeywordErrorCxt,
+  error: KeywordErrorDefinition = keywordError
+): void {
   const {it} = cxt
   const {gen, compositeRule, allErrors} = it
   const errObj = errorObjectCode(cxt, error)
@@ -97,22 +100,38 @@ function returnErrors(it: SchemaCxt, errs: Code): void {
 
 const E = {
   keyword: new Name("keyword"),
-  schemaPath: new Name("schemaPath"),
+  schemaPath: new Name("schemaPath"), // also used in JTD errors
   params: new Name("params"),
   propertyName: new Name("propertyName"),
   message: new Name("message"),
   schema: new Name("schema"),
   parentSchema: new Name("parentSchema"),
+  // JTD error properties
+  instancePath: new Name("instancePath"),
 }
 
 function errorObjectCode(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): Code {
-  const {
-    keyword,
-    data,
-    schemaValue,
-    it: {gen, createErrors, topSchemaRef, schemaPath, errorPath, errSchemaPath, propertyName, opts},
-  } = cxt
+  const {createErrors, opts} = cxt.it
   if (createErrors === false) return _`{}`
+  return (opts.jtd && !opts.ajvErrors ? jtdErrorObject : ajvErrorObject)(cxt, error)
+}
+
+function jtdErrorObject(cxt: KeywordErrorCxt, {message}: KeywordErrorDefinition): Code {
+  const {gen, keyword, it} = cxt
+  const {errorPath, errSchemaPath, opts} = it
+  const keyValues: [Name, SafeExpr | string][] = [
+    [E.instancePath, strConcat(N.dataPath, errorPath)],
+    [E.schemaPath, str`${errSchemaPath}/${keyword}`],
+  ]
+  if (opts.messages) {
+    keyValues.push([E.message, typeof message == "function" ? message(cxt) : message])
+  }
+  return gen.object(...keyValues)
+}
+
+function ajvErrorObject(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): Code {
+  const {gen, keyword, data, schemaValue, it} = cxt
+  const {topSchemaRef, schemaPath, errorPath, errSchemaPath, propertyName, opts} = it
   const {params, message} = error
   const keyValues: [Name, SafeExpr | string][] = [
     [E.keyword, keyword],
@@ -121,9 +140,8 @@ function errorObjectCode(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): C
     [E.params, typeof params == "function" ? params(cxt) : params || _`{}`],
   ]
   if (propertyName) keyValues.push([E.propertyName, propertyName])
-  if (opts.messages !== false) {
-    const msg = typeof message == "function" ? message(cxt) : message
-    keyValues.push([E.message, msg])
+  if (opts.messages) {
+    keyValues.push([E.message, typeof message == "function" ? message(cxt) : message])
   }
   if (opts.verbose) {
     keyValues.push(

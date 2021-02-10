@@ -101,7 +101,7 @@ JSON Schema specification defines several metadata keywords that describe the sc
 - `examples` (NEW in draft-06): an array of data instances. Ajv does not check the validity of these instances against the schema.
 - `readOnly` and `writeOnly` (NEW in draft-07): marks data-instance as read-only or write-only in relation to the source of the data (database, api, etc.).
 - `contentEncoding`: [RFC 2045](https://tools.ietf.org/html/rfc2045#section-6.1), e.g., "base64".
-- `contentMediaType`: [RFC 2046](https://tools.ietf.org/html/rfc2046), e.g., "image/png".
+- `contentMediaType`: [RFC 2046](https://datatracker.ietf.org/doc/rfc2046/), e.g., "image/png".
 
 **Please note**: Ajv does not implement validation of the keywords `examples`, `contentEncoding` and `contentMediaType` but it reserves them. If you want to create a plugin that implements any of them, it should remove these keywords from the instance.
 
@@ -133,15 +133,15 @@ The following formats are defined in [ajv-formats](https://github.com/ajv-valida
 - _duration_: duration from [RFC3339](https://tools.ietf.org/html/rfc3339#appendix-A)
 - _uri_: full URI.
 - _uri-reference_: URI reference, including full and relative URIs.
-- _uri-template_: URI template according to [RFC6570](https://tools.ietf.org/html/rfc6570)
+- _uri-template_: URI template according to [RFC6570](https://datatracker.ietf.org/doc/rfc6570/)
 - _url_ (deprecated): [URL record](https://url.spec.whatwg.org/#concept-url).
 - _email_: email address.
 - _hostname_: host name according to [RFC1034](http://tools.ietf.org/html/rfc1034#section-3.5).
 - _ipv4_: IP address v4.
 - _ipv6_: IP address v6.
 - _regex_: tests whether a string is a valid regular expression by passing it to RegExp constructor.
-- _uuid_: Universally Unique IDentifier according to [RFC4122](http://tools.ietf.org/html/rfc4122).
-- _json-pointer_: JSON-pointer according to [RFC6901](https://tools.ietf.org/html/rfc6901).
+- _uuid_: Universally Unique Identifier according to [RFC4122](https://datatracker.ietf.org/doc/rfc4122/).
+- _json-pointer_: JSON-pointer according to [RFC6901](https://datatracker.ietf.org/doc/rfc6901/).
 - _relative-json-pointer_: relative JSON-pointer according to [this draft](http://tools.ietf.org/html/draft-luff-relative-json-pointer-00).
 
 **Please note**: JSON Schema draft-07 also defines formats `iri`, `iri-reference`, `idn-hostname` and `idn-email` for URLs, hostnames and emails with international characters. These formats are available in [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) plugin.
@@ -275,7 +275,7 @@ With `$data` option you can use values from the validated data as the values for
 
 `$data` reference is supported in the keywords: const, enum, format, maximum/minimum, exclusiveMaximum / exclusiveMinimum, maxLength / minLength, maxItems / minItems, maxProperties / minProperties, formatMaximum / formatMinimum, formatExclusiveMaximum / formatExclusiveMinimum, multipleOf, pattern, required, uniqueItems.
 
-The value of "$data" should be a [JSON-pointer](https://tools.ietf.org/html/rfc6901) to the data (the root is always the top level data object, even if the $data reference is inside a referenced subschema) or a [relative JSON-pointer](http://tools.ietf.org/html/draft-luff-relative-json-pointer-00) (it is relative to the current point in data; if the \$data reference is inside a referenced subschema it cannot point to the data outside of the root level for this subschema).
+The value of "$data" should be a [JSON-pointer](https://datatracker.ietf.org/doc/rfc6901/) to the data (the root is always the top level data object, even if the $data reference is inside a referenced subschema) or a [relative JSON-pointer](http://tools.ietf.org/html/draft-luff-relative-json-pointer-00) (it is relative to the current point in data; if the \$data reference is inside a referenced subschema it cannot point to the data outside of the root level for this subschema).
 
 Examples.
 
@@ -322,7 +322,7 @@ const validData = {
 
 ### $merge and $patch keywords
 
-With the package [ajv-merge-patch](https://github.com/ajv-validator/ajv-merge-patch) you can use the keywords `$merge` and `$patch` that allow extending JSON Schemas with patches using formats [JSON Merge Patch (RFC 7396)](https://tools.ietf.org/html/rfc7396) and [JSON Patch (RFC 6902)](https://tools.ietf.org/html/rfc6902).
+With the package [ajv-merge-patch](https://github.com/ajv-validator/ajv-merge-patch) you can use the keywords `$merge` and `$patch` that allow extending JSON Schemas with patches using formats [JSON Merge Patch (RFC 7396)](https://datatracker.ietf.org/doc/rfc7396/) and [JSON Patch (RFC 6902)](https://datatracker.ietf.org/doc/rfc6902/).
 
 To add keywords `$merge` and `$patch` to Ajv instance use this code:
 
