@@ -5,9 +5,9 @@ layout: main
 ---
 
 
-# Ajv: Another JSON Schema Validator
+# Ajv: Another JSON schema validator
 
-The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07/2019-09 (draft-04 is supported in [version 6](https://github.com/ajv-validator/ajv/tree/v6)).
+The fastest JSON schema validator for Node.js and browser. Supports JSON Schema draft-06/07/2019-09 (draft-04 is supported in [version 6](https://github.com/ajv-validator/ajv/tree/v6)) and JSON Type Definition [RFC8927](https://datatracker.ietf.org/doc/rfc8927/).
 
 [![build](https://github.com/ajv-validator/ajv/workflows/build/badge.svg)](https://github.com/ajv-validator/ajv/actions?query=workflow%3Abuild)
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
@@ -22,9 +22,10 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07/
 
 ## Using version 7
 
-Ajv version 7 is released with these changes:
+Ajv version 7 has these new features:
 
 - support of JSON Schema draft-2019-09 features: [`unevaluatedProperties`](./docs/json-schema.html#unevaluatedproperties) and [`unevaluatedItems`](./docs/json-schema.html#unevaluateditems), [dynamic recursive references](./docs/validation.html#extending-recursive-schemas) and other [additional keywords](./docs/json-schema.html#json-schema-draft-2019-09).
+- NEW: support of JSON Type Definition [RFC8927](https://datatracker.ietf.org/doc/rfc8927/) (from [v7.1.0](https://github.com/ajv-validator/ajv-keywords/releases/tag/v7.1.0))
 - to reduce the mistakes in JSON schemas and unexpected validation results, [strict mode](./docs/strict-mode.html) is added - it prohibits ignored or ambiguous JSON Schema elements.
 - to make code injection from untrusted schemas impossible, [code generation](./docs/codegen.html) is fully re-written to be safe and to allow code optimization (compiled schema code size is reduced by more than 10%).
 - to simplify Ajv extensions, the new keyword API that is used by pre-defined keywords is available to user-defined keywords - it is much easier to define any keywords now, especially with subschemas. [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package was updated to use the new API (in [v4.0.0](https://github.com/ajv-validator/ajv-keywords/releases/tag/v4.0.0))
@@ -76,6 +77,9 @@ Please review [Contributing guidelines](./contribute.html) and [Code components]
 - [Performance](#performance)
 - [Features](#features)
 - [Getting started](#usage)
+- [Choosing schema language](#choosing-schema-language)
+  - [JSON Schema](#json-schema)
+  - [JSON Type Definition](#json-type-definition)
 - [Frequently Asked Questions](./docs/faq.html)
 - [Using in browser](#using-in-browser)
   - [Content Security Policy](./docs/security.html#content-security-policy)
@@ -171,7 +175,7 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 
 ## Features
 
-- Ajv implements full JSON Schema [draft-06/07](http://json-schema.org/) standards (draft-04 is supported in v6):
+- Ajv implements JSON Schema [draft-06/07/2019-09](http://json-schema.org/) standards (draft-04 is supported in v6):
   - all validation keywords (see [JSON Schema validation keywords](./docs/json-schema.html))
   - keyword "nullable" from [Open API 3 specification](https://swagger.io/docs/specification/data-models/data-types/).
   - full support of remote references (remote schemas have to be added with `addSchema` or compiled to be available)
@@ -179,6 +183,10 @@ Performance of different validators by [json-schema-benchmark](https://github.co
   - correct string lengths for strings with unicode pairs
   - [formats](#formats) defined by JSON Schema draft-07 standard (with [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin) and additional formats (can be turned off)
   - [validates schemas against meta-schema](./docs/api.html#api-validateschema)
+- NEW: supports [JSON Type Definition](https://datatracker.ietf.org/doc/rfc8927/):
+  - all forms (see [JSON Type Definition schema forms](./docs/json-type-definition.md))
+  - meta-schema for JTD schemas
+  - "union" keyword and user-defined keywords (can be used inside "metadata" member of the schema)
 - supports [browsers](#using-in-browser) and Node.js 0.10-14.x
 - [asynchronous loading](./docs/validation.html#asynchronous-schema-compilation) of referenced schemas during compilation
 - "All errors" validation mode with [option allErrors](./docs/api.html#options)
@@ -267,6 +275,26 @@ if (validate(data)) {
 }
 ```
 
+With JSON Type Definition schema:
+
+```javascript
+const Ajv = require("ajv").default
+
+const ajv = new Ajv() // options can be passed, e.g. {allErrors: true}
+const schema = {
+  properties: {
+    foo: {type: "float64"},
+  },
+}
+const validate = ajv.compile(schema)
+const valid = validate({foo: 1}) // true
+if (!valid) console.log(validate.errors)
+// Unlike JSON Schema:
+const valid1 = validate(1) // false, bot an object
+const valid2 = validate({}) // false, foo is required
+const valid3 = validate({foo: 1, bar: 2}) // false, bar is additional
+```
+
 See [this test](./spec/types/json-schema.spec.ts) for an advanced example, [API reference](./docs/api.html) and [Options](./docs/api.html#options) for more details.
 
 Ajv compiles schemas to functions and caches them in all cases (using schema itself as a key for Map) or another function passed via options), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
@@ -295,7 +323,7 @@ Then you need to load Ajv with support of JSON Schema draft-07 in the browser:
 </script>
 ```
 
-or to load the bundle that supports JSONSchema draft-2019-09:
+To load the bundle that supports JSON Schema draft-2019-09:
 
 ```html
 <script src="bundle/ajv2019.min.js"></script>
@@ -307,11 +335,74 @@ or to load the bundle that supports JSONSchema draft-2019-09:
 </script>
 ```
 
+To load the bundle that supports JSON Type Definition:
+
+```html
+<script src="bundle/ajvJTD.min.js"></script>
+<script>
+  ;(function () {
+    const Ajv = window.ajvJTD.default
+    const ajv = new Ajv()
+  })()
+</script>
+```
+
 This bundle can be used with different module systems; it creates global `ajv` (or `ajv2019`) if no module system is found.
 
 The browser bundle is available on [cdnjs](https://cdnjs.com/libraries/ajv).
 
 **Please note**: some frameworks, e.g. Dojo, may redefine global require in a way that is not compatible with CommonJS module format. In this case Ajv bundle has to be loaded before the framework and then you can use global `ajv` (see issue [#234](https://github.com/ajv-validator/ajv/issues/234)).
+
+## Choosing schema language
+
+Both JSON Schema and JSON Type Definition are cross-platform specifications with implementations in multiple programming languages that help you define the shape and requirements to your JSON data.
+
+This section compares their pros/cons to help decide which specification fits your application better.
+
+### JSON Schema
+
+- Pros
+  - Wide specification adoption.
+  - Used as part of OpenAPI specification.
+  - Support of complex validation scenarios:
+    - untagged unions and boolean logic
+    - conditional schemas and dependencies
+    - restrictions on the number ranges and the size of strings, arrays and objects
+    - semantic validation with formats, patterns and content keywords
+    - distribute strict record definitions across multiple schemas (with unevaluatedProperties)
+  - Can be effectively used for validation of any JavaScript objects and configuration files.
+- Cons
+  - Defines the collection of restrictions on the data, rather than the shape of the data.
+  - No standard support for tagged unions.
+  - Complex and error prone for the new users (Ajv has [strict mode](./docs/strict-mode) to compensate for it, but it is not cross-platform).
+  - Some parts of specification are difficult to implement, creating the risk of implementations divergence:
+    - reference resolution model
+    - unevaluatedProperties/unevaluatedItems
+    - dynamic recursive references
+  - Internet draft status (rather than RFC)
+
+See [JSON Schema](./docs/json-schema.html) for the list of defined keywords.
+
+### JSON Type Definition
+
+- Pros:
+  - Aligned with type systems of many languages - can be used to generate type definitions and efficient parsers and serializers to/from these types.
+  - Very simple, enforcing the best practices for cross-platform JSON API modelling.
+  - Simple to implement, ensuring consistency across implementations.
+  - Defines the shape of JSON data via strictly defined schema forms (rather than the collection of restrictions).
+  - Effective support for tagged unions.
+  - Designed to protect against user mistakes.
+  - Approved as [RFC8927](https://datatracker.ietf.org/doc/rfc8927/)
+- Cons:
+  - Limited, compared with JSON Schema - no support for untagged unions<sup>\*</sup>, conditionals, references between different schema files<sup>\*\*</sup>, etc.
+  - No meta-schema in the specification<sup>\*</sup>.
+  - Brand new - limited industry adoption (as of January 2021).
+
+<sup>\*</sup> Ajv defines meta-schema for JTD schemas and non-standard keyword "union" that can be used inside "metadata" object.
+
+<sup>\*\*</sup> You can still combine schemas from multiple files in the application code.
+
+See [JSON Type Definition](./docs/json-type-definition.md) for the list of defined schema forms.
 
 ## Using in ES5 environment
 
@@ -339,7 +430,7 @@ CLI is available as a separate npm package [ajv-cli](https://github.com/ajv-vali
 - user-defined meta-schemas, validation keywords and formats
 - files in JSON, JSON5, YAML, and JavaScript format
 - all Ajv options
-- reporting changes in data after validation in [JSON-patch](https://tools.ietf.org/html/rfc6902) format
+- reporting changes in data after validation in [JSON-patch](https://datatracker.ietf.org/doc/rfc6902/) format
 
 ## Extending Ajv
 
