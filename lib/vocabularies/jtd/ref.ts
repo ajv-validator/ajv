@@ -24,7 +24,7 @@ const def: CodeKeywordDefinition = {
       gen.var(valid, false)
       validateJtdRef()
     }
-    cxt.pass(valid)
+    cxt.ok(valid)
 
     function validateJtdRef(): void {
       const refSchema = (root.schema as AnySchemaObject).definitions?.[ref]
@@ -52,7 +52,7 @@ const def: CodeKeywordDefinition = {
           dataTypes: [],
           schemaPath: nil,
           topSchemaRef: schName,
-          errSchemaPath: `#/definitions/${ref}`,
+          errSchemaPath: `/definitions/${ref}`,
         },
         valid
       )

@@ -8,13 +8,7 @@ import {SchemaCxt, SchemaObjCxt} from "./index"
 import {JSONType} from "./rules"
 import {checkDataTypes, DataType} from "./validate/dataType"
 import {schemaRefOrVal, unescapeJsonPointer, mergeEvaluated} from "./util"
-import {
-  reportError,
-  reportExtraError,
-  resetErrorsCount,
-  keywordError,
-  keyword$DataError,
-} from "./errors"
+import {reportError, reportExtraError, resetErrorsCount, keyword$DataError} from "./errors"
 import {CodeGen, _, nil, or, not, getProperty, Code, Name} from "./codegen"
 import N from "./names"
 import {applySubschema, SubschemaArgs} from "./subschema"
@@ -102,7 +96,7 @@ export default class KeywordCxt implements KeywordErrorCxt {
   }
 
   error(append?: true): void {
-    ;(append ? reportExtraError : reportError)(this, this.def.error || keywordError)
+    ;(append ? reportExtraError : reportError)(this, this.def.error)
   }
 
   $dataError(): void {

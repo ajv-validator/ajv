@@ -60,18 +60,27 @@ export function validateProperties(cxt: KeywordCxt): void {
   }
 
   function validateProps(props: string[], keyword: string, required?: boolean): void {
+    const _valid = gen.var("valid")
     for (const prop of props) {
       gen.if(
         propertyInData(data, prop, it.opts.ownProperties),
-        () => gen.assign(valid, and(valid, applyPropertySchema(prop, keyword))),
-        required ? () => gen.assign(valid, false) : undefined
+        () => applyPropertySchema(prop, keyword, _valid),
+        missingProperty
       )
-      cxt.ok(valid)
+      cxt.ok(_valid)
+    }
+
+    function missingProperty(): void {
+      if (required) {
+        gen.assign(_valid, false)
+        cxt.error()
+      } else {
+        gen.assign(_valid, true)
+      }
     }
   }
 
-  function applyPropertySchema(prop: string, keyword: string): Name {
-    const _valid = gen.name("valid")
+  function applyPropertySchema(prop: string, keyword: string, _valid: Name): void {
     cxt.subschema(
       {
         keyword,
@@ -80,7 +89,6 @@ export function validateProperties(cxt: KeywordCxt): void {
       },
       _valid
     )
-    return _valid
   }
 
   function validateAdditional(): void {
@@ -97,7 +105,6 @@ export function validateProperties(cxt: KeywordCxt): void {
         } else {
           // cxt.setParams({additionalProperty: key})
           cxt.error()
-          gen.assign(valid, false)
           if (!it.opts.allErrors) gen.break()
         }
       })

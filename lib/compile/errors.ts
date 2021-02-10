@@ -17,7 +17,7 @@ export const keyword$DataError: KeywordErrorDefinition = {
 
 export function reportError(
   cxt: KeywordErrorCxt,
-  error: KeywordErrorDefinition,
+  error: KeywordErrorDefinition = keywordError,
   overrideAllErrors?: boolean
 ): void {
   const {it} = cxt
@@ -30,7 +30,10 @@ export function reportError(
   }
 }
 
-export function reportExtraError(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): void {
+export function reportExtraError(
+  cxt: KeywordErrorCxt,
+  error: KeywordErrorDefinition = keywordError
+): void {
   const {it} = cxt
   const {gen, compositeRule, allErrors} = it
   const errObj = errorObjectCode(cxt, error)
@@ -110,7 +113,7 @@ const E = {
 function errorObjectCode(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): Code {
   const {createErrors, opts} = cxt.it
   if (createErrors === false) return _`{}`
-  return opts.jtd && !opts.ajvErrors ? jtdErrorObject(cxt, error) : ajvErrorObject(cxt, error)
+  return (opts.jtd && !opts.ajvErrors ? jtdErrorObject : ajvErrorObject)(cxt, error)
 }
 
 function jtdErrorObject(cxt: KeywordErrorCxt, {message}: KeywordErrorDefinition): Code {

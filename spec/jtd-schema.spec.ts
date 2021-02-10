@@ -70,12 +70,10 @@ describe("JSON Type Definition", () => {
     }
 
     // function convertErrors(errors: TestCaseError[]): JTDError[] {
-    //   return errors.map((e) =>
-    //     ({
-    //       instancePath: jsonPointer(e.instancePath),
-    //       schemaPath: jsonPointer(e.schemaPath)
-    //     })
-    //   )
+    //   return errors.map((e) => ({
+    //     instancePath: jsonPointer(e.instancePath),
+    //     schemaPath: jsonPointer(e.schemaPath),
+    //   }))
     // }
 
     // function jsonPointer(error: string[]): string {
