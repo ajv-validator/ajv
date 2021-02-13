@@ -742,7 +742,7 @@ function getLogger(logger?: Partial<Logger> | false): Logger {
   throw new Error("logger must implement log, warn and error methods")
 }
 
-const KEYWORD_NAME = /^[a-z_$][a-z0-9_$-:]*$/i
+const KEYWORD_NAME = /^[a-z_$][a-z0-9_$:-]*$/i
 
 function checkKeyword(this: Ajv, keyword: string | string[], def?: KeywordDefinition): void {
   const {RULES} = this

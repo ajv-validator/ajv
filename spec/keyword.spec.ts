@@ -1100,6 +1100,10 @@ describe("User-defined keywords", () => {
       })
 
       should.throw(() => {
+        ajv.addKeyword("single-'quote-not-valid")
+      }, /invalid name/)
+
+      should.throw(() => {
         ajv.addKeyword("3-start-with-number-not-valid")
       }, /invalid name/)
 
