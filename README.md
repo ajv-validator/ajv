@@ -214,8 +214,10 @@ Try it in the Node.js REPL: https://runkit.com/npm/ajv
 In JavaScript:
 
 ```javascript
-// or ESM/TypeScript import
+// ESM/TypeScript import when it's installed locally
 import Ajv from "ajv"
+// ESM/TypeScript import when using inside <script type="module"> or Deno
+import Ajv from "https://cdn.skypack.dev/ajv"
 // Node.js require:
 const Ajv = require("ajv").default
 
