@@ -1,108 +1,167 @@
-/* eslint-disable @typescript-eslint/no-empty-interface */
-import type {JTDSchema} from "../.."
-import chai from "../chai"
-const should = chai.should()
+/* eslint-disable @typescript-eslint/no-empty-interface,no-void */
+import type {JTDSchemaType} from "../../dist/jtd"
 
-describe("JTDSchema typechecks", () => {
+/** type is true if T is identically E */
+type TypeEquality<T, E> = [T] extends [E] ? ([E] extends [T] ? true : false) : false
+
+interface A {
+  type: "a"
+  a: number
+}
+
+interface B {
+  type: "b"
+  b?: string
+}
+
+describe("JTDSchemaType typechecks", () => {
   it("should typecheck number schemas", () => {
-    const numf: JTDSchema<number> = {type: "float64"}
-    should.exist(numf)
-    const numi: JTDSchema<number> = {type: "int32"}
-    should.exist(numi)
+    const numf: JTDSchemaType<number> = {type: "float64"}
+    const numi: JTDSchemaType<number> = {type: "int32"}
     // @ts-expect-error
-    const numl: JTDSchema<number> = {type: "int64"}
-    should.exist(numl)
+    const numl: JTDSchemaType<number> = {type: "int64"}
+    // number literals don't work
+    // @ts-expect-error
+    const nums: JTDSchemaType<1 | 2 | 3> = {type: "int32"}
+    const numNull: JTDSchemaType<number | null> = {type: "int32", nullable: true}
+
+    void [numf, numi, numl, nums, numNull]
   })
 
   it("should typecheck boolean schemas", () => {
-    const bool: JTDSchema<boolean> = {type: "boolean"}
-    should.exist(bool)
-    // boolean literals can't be reduced
-    const boolTrue: JTDSchema<true> = {type: "boolean"}
-    should.exist(boolTrue)
+    const bool: JTDSchemaType<boolean> = {type: "boolean"}
+    // boolean literals don't
+    // @ts-expect-error
+    const boolTrue: JTDSchemaType<true> = {type: "boolean"}
+    const boolNull: JTDSchemaType<boolean | null> = {type: "boolean", nullable: true}
+
+    void [bool, boolTrue, boolNull]
   })
 
   it("should typecheck string schemas", () => {
-    const str: JTDSchema<string> = {type: "string"}
-    should.exist(str)
-    const time: JTDSchema<string> = {type: "timestamp"}
-    should.exist(time)
+    const str: JTDSchemaType<string> = {type: "string"}
+    const time: JTDSchemaType<string> = {type: "timestamp"}
+    const strNull: JTDSchemaType<string | null> = {type: "string", nullable: true}
+
+    void [str, time, strNull]
+  })
+
+  it("should typecheck dates", () => {
+    const time: JTDSchemaType<Date> = {type: "timestamp"}
+    const timeNull: JTDSchemaType<Date | null> = {type: "timestamp", nullable: true}
+
+    void [time, timeNull]
   })
 
   it("should typecheck enumeration schemas", () => {
-    const enumerate: JTDSchema<"a" | "b"> = {enum: ["a", "b"]}
-    should.exist(enumerate)
+    const enumerate: JTDSchemaType<"a" | "b"> = {enum: ["a", "b"]}
     // don't need to specify everything
-    const enumerateMissing: JTDSchema<"a" | "b" | "c"> = {enum: ["a", "b"]}
-    should.exist(enumerateMissing)
+    const enumerateMissing: JTDSchemaType<"a" | "b" | "c"> = {enum: ["a", "b"]}
+    // must all be string literals
     // @ts-expect-error
-    const enumerateNumber: JTDSchema<"a" | "b" | 5> = {enum: ["a", "b"]}
-    should.exist(enumerateNumber)
+    const enumerateNumber: JTDSchemaType<"a" | "b" | 5> = {enum: ["a", "b"]}
+    // can't overgeneralize in schema
     // @ts-expect-error
-    const enumerateString: JTDSchema<"a" | "b"> = {type: "string"}
-    should.exist(enumerateString)
+    const enumerateString: JTDSchemaType<"a" | "b"> = {type: "string"}
+    const enumerateNull: JTDSchemaType<"a" | "b" | null> = {enum: ["a", "b"], nullable: true}
+
+    void [enumerate, enumerateMissing, enumerateNumber, enumerateString, enumerateNull]
   })
 
   it("should typecheck elements schemas", () => {
-    const elements: JTDSchema<number[]> = {elements: {type: "float64"}}
-    should.exist(elements)
-    // homogenous tuples works
-    const tupleHomo: JTDSchema<[number, number]> = {elements: {type: "float64"}}
-    should.exist(tupleHomo)
-    // not heterogeneous
-    const tupleHeteroNum: JTDSchema<[number, string]> = {
+    const elements: JTDSchemaType<number[]> = {elements: {type: "float64"}}
+    const readonlyElements: JTDSchemaType<readonly number[]> = {elements: {type: "float64"}}
+    // tuples don't work
+    // @ts-expect-error
+    const tupleHomo: JTDSchemaType<[number, number]> = {elements: {type: "float64"}}
+    const tupleHeteroNum: JTDSchemaType<[number, string]> = {
       // @ts-expect-error
       elements: {type: "float64"},
     }
-    should.exist(tupleHeteroNum)
-    const tupleHeteroString: JTDSchema<[number, string]> = {
+    const tupleHeteroString: JTDSchemaType<[number, string]> = {
       // @ts-expect-error
       elements: {type: "string"},
     }
-    should.exist(tupleHeteroString)
+    const elemNull: JTDSchemaType<number[] | null> = {elements: {type: "float64"}, nullable: true}
+
+    // can typecheck an array of unions
+    const unionElem: TypeEquality<JTDSchemaType<(A | B)[]>, never> = false
+    // can't typecheck a union of arrays
+    const elemUnion: TypeEquality<JTDSchemaType<A[] | B[]>, never> = true
+
+    void [
+      elements,
+      readonlyElements,
+      tupleHomo,
+      tupleHeteroNum,
+      tupleHeteroString,
+      elemNull,
+      unionElem,
+      elemUnion,
+    ]
   })
 
   it("should typecheck values schemas", () => {
-    const values: JTDSchema<Record<string, number>> = {values: {type: "float64"}}
-    should.exist(values)
-    const valuesDefined: JTDSchema<{prop: number}> = {values: {type: "float64"}}
-    should.exist(valuesDefined)
+    const values: JTDSchemaType<Record<string, number>> = {values: {type: "float64"}}
+    const readonlyValues: JTDSchemaType<Readonly<Record<string, number>>> = {
+      values: {type: "float64"},
+    }
+    // values must be a whole mapping
+    // @ts-expect-error
+    const valuesDefined: JTDSchemaType<{prop: number}> = {values: {type: "float64"}}
+    const valuesNull: JTDSchemaType<Record<string, number> | null> = {
+      values: {type: "float64"},
+      nullable: true,
+    }
+
+    // can typecheck a values of unions
+    const unionValues: TypeEquality<JTDSchemaType<Record<string, A | B>>, never> = false
+    // can't typecheck a union of values
+    const valuesUnion: TypeEquality<
+      JTDSchemaType<Record<string, A> | Record<string, B>>,
+      never
+    > = true
+
+    void [values, readonlyValues, valuesDefined, valuesNull, unionValues, valuesUnion]
   })
 
   it("should typecheck properties schemas", () => {
-    const properties: JTDSchema<{a: number; b: string}> = {
+    const properties: JTDSchemaType<{a: number; b: string}> = {
       properties: {a: {type: "float64"}, b: {type: "string"}},
     }
-    should.exist(properties)
-    const optionalProperties: JTDSchema<{a?: number; b?: string}> = {
+    const optionalProperties: JTDSchemaType<{a?: number; b?: string}> = {
       optionalProperties: {a: {type: "float64"}, b: {type: "string"}},
       additionalProperties: false,
     }
-    should.exist(optionalProperties)
-    const mixedProperties: JTDSchema<{a: number; b?: string}> = {
+    const mixedProperties: JTDSchemaType<{a: number; b?: string}> = {
       properties: {a: {type: "float64"}},
       optionalProperties: {b: {type: "string"}},
       additionalProperties: true,
     }
-    should.exist(mixedProperties)
-    const fewerProperties: JTDSchema<{a: number; b: string}> = {
+    const fewerProperties: JTDSchemaType<{a: number; b: string}> = {
       // @ts-expect-error
       properties: {a: {type: "float64"}},
     }
-    should.exist(fewerProperties)
+    const propertiesNull: JTDSchemaType<{a: number; b: string} | null> = {
+      properties: {a: {type: "float64"}, b: {type: "string"}},
+      nullable: true,
+    }
+
+    // can't use properties for any object (e.g. keyof = never)
+    const noProperties: TypeEquality<JTDSchemaType<unknown>, never> = true
+
+    void [
+      properties,
+      optionalProperties,
+      mixedProperties,
+      fewerProperties,
+      propertiesNull,
+      noProperties,
+    ]
   })
 
   it("should typecheck discriminator schemas", () => {
-    interface A {
-      type: "a"
-      a: number
-    }
-    interface B {
-      type: "b"
-      b?: string
-    }
-
-    const union: JTDSchema<A | B> = {
+    const union: JTDSchemaType<A | B> = {
       discriminator: "type",
       mapping: {
         a: {properties: {a: {type: "float64"}}},
@@ -111,8 +170,8 @@ describe("JTDSchema typechecks", () => {
         },
       },
     }
-    should.exist(union)
-    const unionDuplicate: JTDSchema<A | B> = {
+    // can't mess up, e.g. value type isn't a union
+    const unionDuplicate: JTDSchemaType<A | B> = {
       discriminator: "type",
       mapping: {
         a: {properties: {a: {type: "float64"}}},
@@ -120,93 +179,121 @@ describe("JTDSchema typechecks", () => {
         b: {properties: {a: {type: "float64"}}},
       },
     }
-    should.exist(unionDuplicate)
-    const unionMissing: JTDSchema<A | B> = {
+    // must specify everything
+    const unionMissing: JTDSchemaType<A | B> = {
       discriminator: "type",
       // @ts-expect-error
       mapping: {
         a: {properties: {a: {type: "float64"}}},
       },
     }
-    should.exist(unionMissing)
+    // can use any valid discrinimator
+    type Mult = JTDSchemaType<(A & {typ: "alpha"}) | (B & {typ: "beta"})>
+    const multOne: Mult = {
+      discriminator: "type",
+      mapping: {
+        a: {properties: {a: {type: "float64"}, typ: {enum: ["alpha"]}}},
+        b: {
+          properties: {typ: {enum: ["beta"]}},
+          optionalProperties: {b: {type: "string"}},
+        },
+      },
+    }
+    const multTwo: Mult = {
+      discriminator: "typ",
+      mapping: {
+        alpha: {properties: {a: {type: "float64"}, type: {enum: ["a"]}}},
+        beta: {
+          properties: {type: {enum: ["b"]}},
+          optionalProperties: {b: {type: "string"}},
+        },
+      },
+    }
+    const unionNull: JTDSchemaType<A | B | null> = {
+      discriminator: "type",
+      mapping: {
+        a: {properties: {a: {type: "float64"}}},
+        b: {
+          optionalProperties: {b: {type: "string"}},
+        },
+      },
+      nullable: true,
+    }
+
+    // properties must have common key
+    const noCommon: TypeEquality<
+      JTDSchemaType<{key1: "a"; a: number} | {key2: "b"; b: string}>,
+      never
+    > = true
+
+    void [union, unionDuplicate, unionMissing, multOne, multTwo, unionNull, noCommon]
   })
 
   it("should typecheck empty schemas", () => {
-    const empty: JTDSchema<Record<string, never>> = {}
-    should.exist(empty)
-    // probably shouldn't accept this
-    const emptyButFull: JTDSchema<{a: string}> = {}
-    should.exist(emptyButFull)
+    const empty: JTDSchemaType<Record<string, never>> = {}
+    // can only use empty for empty and null
+    // @ts-expect-error
+    const emptyButFull: JTDSchemaType<{a: string}> = {}
+    const emptyNull: JTDSchemaType<null> = {nullable: true}
+    const emptyMeta: JTDSchemaType<Record<string, never>> = {metadata: {}}
+
+    void [empty, emptyButFull, emptyNull, emptyMeta]
   })
 
   it("should typecheck ref schemas", () => {
-    const refs: JTDSchema<number[], {num: number}> = {
+    const refs: JTDSchemaType<number[], {num: number}> = {
       definitions: {
         num: {type: "float64"},
       },
       elements: {ref: "num"},
     }
-    should.exist(refs)
-    const missingDef: JTDSchema<number[], {num: number}> = {
+    const missingDef: JTDSchemaType<number[], {num: number}> = {
       // @ts-expect-error
       definitions: {},
       elements: {ref: "num"},
     }
-    should.exist(missingDef)
-    const missingType: JTDSchema<number[]> = {
+    const missingType: JTDSchemaType<number[]> = {
       definitions: {},
       // @ts-expect-error
       elements: {ref: "num"},
     }
-    should.exist(missingType)
+    const nullRefs: JTDSchemaType<number | null, {num: number}> = {
+      definitions: {
+        num: {type: "float64"},
+      },
+      ref: "num",
+      nullable: true,
+    }
+    const refsNullOne: JTDSchemaType<number | null, {num: number | null}> = {
+      definitions: {
+        num: {type: "float64", nullable: true},
+      },
+      ref: "num",
+    }
+    const refsNullTwo: JTDSchemaType<number | null, {num: number | null}> = {
+      definitions: {
+        num: {type: "float64", nullable: true},
+      },
+      ref: "num",
+      nullable: true,
+    }
+
+    void [refs, missingDef, missingType, nullRefs, refsNullOne, refsNullTwo]
   })
 
   it("should typecheck metadata schemas", () => {
-    const meta: JTDSchema<number> = {type: "float32", metadata: {key: "val"}}
-    should.exist(meta)
+    const meta: JTDSchemaType<number> = {type: "float32", metadata: {key: "val"}}
+    const emptyMeta: JTDSchemaType<Record<string, never>> = {metadata: {key: "val"}}
+    const nullMeta: JTDSchemaType<null> = {nullable: true, metadata: {key: "val"}}
+
+    void [meta, emptyMeta, nullMeta]
   })
 
   it("should typecheck nullable schemas", () => {
-    const isNull: JTDSchema<null> = {nullable: true}
-    should.exist(isNull)
-    const notNull: JTDSchema<number> = {type: "float32", nullable: false}
-    should.exist(notNull)
-    const numNull: JTDSchema<number | null> = {type: "float32", nullable: true}
-    should.exist(numNull)
+    const isNull: JTDSchemaType<null> = {nullable: true}
     // @ts-expect-error
-    const numNotNull: JTDSchema<number | null> = {type: "float32"}
-    should.exist(numNotNull)
-    const boolNull: JTDSchema<boolean | null> = {type: "boolean", nullable: true}
-    should.exist(boolNull)
-    const stringNull: JTDSchema<string | null> = {type: "string", nullable: true}
-    should.exist(stringNull)
-    const enumNull: JTDSchema<"a" | "b" | null> = {enum: ["a", "b"], nullable: true}
-    should.exist(enumNull)
-    const elementsNull: JTDSchema<string[] | null> = {
-      elements: {type: "string"},
-      nullable: true,
-    }
-    should.exist(elementsNull)
-    const valuesNull: JTDSchema<Record<string, string> | null> = {
-      values: {type: "string"},
-      nullable: true,
-    }
-    should.exist(valuesNull)
-    const propsNull: JTDSchema<{a: string; b: number} | null> = {
-      properties: {a: {type: "string"}, b: {type: "int32"}},
-      nullable: true,
-    }
-    should.exist(propsNull)
-    const optPropsNull: JTDSchema<{a?: string; b?: number} | null> = {
-      optionalProperties: {a: {type: "string"}, b: {type: "int32"}},
-      nullable: true,
-    }
-    should.exist(optPropsNull)
-    const refNull: JTDSchema<number | null, {num: number}> = {
-      ref: "num",
-      nullable: true,
-      definitions: {num: {type: "float64"}},
-    }
-    should.exist(refNull)
+    const numNotNull: JTDSchemaType<number | null> = {type: "float32"}
+
+    void [isNull, numNotNull]
   })
 })
