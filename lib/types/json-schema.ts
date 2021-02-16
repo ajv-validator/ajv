@@ -38,7 +38,7 @@ export type JSONSchemaType<T, _partial extends boolean = false> = (T extends num
       } & {length: T["length"]}
       minItems: T["length"]
     } & ({maxItems: T["length"]} | {additionalItems: false})
-  : T extends any[]
+  : T extends readonly any[]
   ? {
       type: JSONType<"array", _partial>
       items: JSONSchemaType<T[0]>
