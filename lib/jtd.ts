@@ -27,6 +27,7 @@ export {KeywordCxt}
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
 import type {AnySchemaObject} from "./types"
+export {JTDSchemaType} from "./types/jtd-schema"
 import AjvCore, {CurrentOptions} from "./core"
 import jtdVocabulary from "./vocabularies/jtd"
 import jtdMetaSchema from "./refs/jtd-schema"

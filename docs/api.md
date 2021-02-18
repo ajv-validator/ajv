@@ -428,7 +428,7 @@ interface JTDErrorObject {
 
 This error format is used when using JTD schemas. To simplify usage, you may still generate Ajv error objects using `ajvErrors` option. You can also add a human-readable error message to error objects using option `messages`.
 
-**Please note**: Ajv is not fully consistent with JTD regarding the error objects in some scenarios - it will be consistent by  the time Ajv version 8 is released. Therefore it is not recommended yet to use error objects for any advanced application logic.
+**Please note**: Ajv is not fully consistent with JTD regarding the error objects in some scenarios - it will be consistent by the time Ajv version 8 is released. Therefore it is not recommended yet to use error objects for any advanced application logic.
 
 ### Error parameters
 
