@@ -8,6 +8,7 @@ import {
   noPropertyInData,
 } from "../code"
 import {_, str, nil, not, Name, Code} from "../../compile/codegen"
+import {checkStrictMode} from "../../compile/validate"
 
 export type RequiredError = ErrorObject<
   "required",
@@ -33,6 +34,18 @@ const def: CodeKeywordDefinition = {
     const useLoop = schema.length >= opts.loopRequired
     if (it.allErrors) allErrorsMode()
     else exitOnErrorMode()
+
+    if (opts.strictRequired) {
+      const props = cxt.parentSchema.properties
+      const otherProps = cxt.it.definedProperties
+      for (const requiredKey of schema) {
+        if (props && props[requiredKey] === undefined && otherProps.has(requiredKey) === false) {
+          const schemaPath = it.schemaEnv.baseId + it.errSchemaPath
+          const msg = `required key "${requiredKey}" does not exist as a property at "${schemaPath}" (strictRequired)`
+          checkStrictMode(it, msg, it.opts.strictRequired)
+        }
+      }
+    }
 
     function allErrorsMode(): void {
       if (useLoop || $data) {

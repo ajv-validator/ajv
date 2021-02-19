@@ -32,7 +32,7 @@ export interface SchemaCxt {
   readonly dataLevel: number // the level of the currently validated data,
   // it can be used to access both the property names and the data on all levels from the top.
   dataTypes: JSONType[] // data types applied to the current part of data instance
-  properties: string[] // list of properties to keep track of for required checks
+  definedProperties: Set<string> // set of properties to keep track of for required checks
   readonly topSchemaRef: Code
   readonly validateName: Name
   evaluated?: Name
@@ -126,7 +126,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     dataPathArr: [nil], // TODO can its length be used as dataLevel if nil is removed?
     dataLevel: 0,
     dataTypes: [],
-    properties: [],
+    definedProperties: new Set<string>(),
     topSchemaRef: gen.scopeValue(
       "schema",
       this.opts.code.source === true

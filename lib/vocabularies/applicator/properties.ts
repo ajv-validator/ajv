@@ -30,6 +30,7 @@ const def: CodeKeywordDefinition = {
         if (!it.allErrors) gen.else().var(valid, true)
         gen.endIf()
       }
+      cxt.it.definedProperties.add(prop)
       cxt.ok(valid)
     }
 
