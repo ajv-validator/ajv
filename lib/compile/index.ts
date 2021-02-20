@@ -79,6 +79,8 @@ export class SchemaEnv implements SchemaEnvArgs {
   readonly dynamicAnchors: {[Ref in string]?: true} = {}
   validate?: AnyValidateFunction
   validateName?: ValueScopeName
+  serialize?: (data: unknown) => string
+  serializeName?: ValueScopeName
 
   constructor(env: SchemaEnvArgs) {
     let schema: AnySchemaObject | undefined
@@ -216,7 +218,7 @@ function inlineOrCompile(this: Ajv, sch: SchemaEnv): AnySchema | SchemaEnv {
 }
 
 // Index of schema compilation in the currently compiled list
-function getCompilingSchema(this: Ajv, schEnv: SchemaEnv): SchemaEnv | void {
+export function getCompilingSchema(this: Ajv, schEnv: SchemaEnv): SchemaEnv | void {
   for (const sch of this._compilations) {
     if (sameSchemaEnv(sch, schEnv)) return sch
   }

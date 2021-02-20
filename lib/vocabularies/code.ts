@@ -21,7 +21,8 @@ export function checkMissingProp(
 ): Code {
   return or(
     ...properties.map(
-      (prop) => _`${noPropertyInData(gen, data, prop, opts.ownProperties)} && (${missing} = ${prop})`
+      (prop) =>
+        _`${noPropertyInData(gen, data, prop, opts.ownProperties)} && (${missing} = ${prop})`
     )
   )
 }
@@ -40,7 +41,12 @@ export function isOwnProperty(gen: CodeGen, data: Name, property: Name | string)
   return _`${hasProp}.call(${data}, ${property})`
 }
 
-export function propertyInData(gen: CodeGen, data: Name, property: Name | string, ownProperties?: boolean): Code {
+export function propertyInData(
+  gen: CodeGen,
+  data: Name,
+  property: Name | string,
+  ownProperties?: boolean
+): Code {
   const cond = _`${data}${getProperty(property)} !== undefined`
   return ownProperties ? _`${cond} && ${isOwnProperty(gen, data, property)}` : cond
 }

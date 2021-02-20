@@ -63,6 +63,7 @@ import $dataRefSchema = require("./refs/data.json")
 const META_IGNORE_OPTIONS: (keyof Options)[] = ["removeAdditional", "useDefaults", "coerceTypes"]
 const EXT_SCOPE_NAMES = new Set([
   "validate",
+  "serialize",
   "wrapper",
   "root",
   "schema",
@@ -622,7 +623,7 @@ export default class Ajv {
     }
   }
 
-  private _addSchema(
+  _addSchema(
     schema: AnySchema,
     meta?: boolean,
     validateSchema = this.opts.validateSchema,

@@ -26,13 +26,14 @@ export {KeywordCxt}
 // export {DefinedError} from "./vocabularies/errors"
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
-import type {AnySchemaObject} from "./types"
+import type {AnySchemaObject, SchemaObject} from "./types"
 import type {JTDSchemaType} from "./types/jtd-schema"
 export {JTDSchemaType}
 import AjvCore, {CurrentOptions} from "./core"
 import jtdVocabulary from "./vocabularies/jtd"
 import jtdMetaSchema from "./refs/jtd-schema"
-// import {SerializeFunction, compileSerializer} from "./compile/serialize"
+import {compileSerializer} from "./compile/serialize"
+import {SchemaEnv} from "./compile"
 
 // const META_SUPPORT_DATA = ["/properties"]
 
@@ -91,7 +92,15 @@ export default class Ajv extends AjvCore {
       super.defaultMeta() || (this.getSchema(META_SCHEMA_ID) ? META_SCHEMA_ID : undefined))
   }
 
-  // compileSerializer<T>(schema: JTDSchemaType<T>): SerializeFunction<T> {
-  //   return compileSerializer.call(this, schema, schema.definitions || {}) as SerializeFunction<T>
-  // }
+  compileSerializer<T = unknown>(schema: SchemaObject | JTDSchemaType<T>): (data: T) => string {
+    const sch = this._addSchema(schema)
+    return sch.serialize || this._compileSerializer(sch)
+  }
+
+  private _compileSerializer<T>(sch: SchemaEnv): (data: T) => string {
+    compileSerializer.call(this, sch, (sch.schema as AnySchemaObject).definitions || {})
+    /* istanbul ignore if */
+    if (!sch.serialize) throw new Error("ajv implementation error")
+    return sch.serialize
+  }
 }

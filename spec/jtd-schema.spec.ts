@@ -48,7 +48,7 @@ describe("JSON Type Definition", () => {
         allErrors: true,
         inlineRefs: false,
         code: {es5: true, lines: true, optimize: false},
-      })
+      }) as AjvJTD[]
       ajvs.forEach((ajv) => (ajv.opts.code.source = true))
     })
 
@@ -90,6 +90,24 @@ describe("JSON Type Definition", () => {
       const schema = jtdInvalidSchemasTests[testName]
       describe(testName, () =>
         it("should be invalid schema", () => assert.throws(() => ajv.compile(schema)))
+      )
+    }
+  })
+
+  describe.skip("serialize", () => {
+    const ajv = new _AjvJTD()
+
+    for (const testName in jtdValidationTests) {
+      const {schema, instance, errors} = jtdValidationTests[testName] as TestCase
+      const valid = errors.length === 0
+      if (!valid) continue
+      describeOnly(testName, () =>
+        it(`should serialize data`, () => {
+          const serialize = ajv.compileSerializer(schema)
+          console.log(serialize.toString())
+          assert.deepStrictEqual(JSON.parse(serialize(instance)), instance)
+          // const opts = ajv instanceof AjvPack ? ajv.ajv.opts : ajv.opts
+        })
       )
     }
   })
