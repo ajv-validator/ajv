@@ -25,7 +25,7 @@ const def: CodeKeywordDefinition = {
       if (hasDefault(prop)) {
         applyPropertySchema(prop)
       } else {
-        gen.if(propertyInData(data, prop, it.opts.ownProperties))
+        gen.if(propertyInData(gen, data, prop, it.opts.ownProperties))
         applyPropertySchema(prop)
         if (!it.allErrors) gen.else().var(valid, true)
         gen.endIf()

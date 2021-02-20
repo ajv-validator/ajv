@@ -60,7 +60,7 @@ const def: CodeKeywordDefinition = {
     function loopAllRequired(): void {
       gen.forOf("prop", schemaCode as Code, (prop) => {
         cxt.setParams({missingProperty: prop})
-        gen.if(noPropertyInData(data, prop, opts.ownProperties), () => cxt.error())
+        gen.if(noPropertyInData(gen, data, prop, opts.ownProperties), () => cxt.error())
       })
     }
 
@@ -70,7 +70,7 @@ const def: CodeKeywordDefinition = {
         missing,
         schemaCode as Code,
         () => {
-          gen.assign(valid, propertyInData(data, missing, opts.ownProperties))
+          gen.assign(valid, propertyInData(gen, data, missing, opts.ownProperties))
           gen.if(not(valid), () => {
             cxt.error()
             gen.break()
