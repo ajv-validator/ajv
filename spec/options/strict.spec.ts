@@ -239,7 +239,6 @@ describe("strict mode", () => {
     })
   })
 
-
   describe("strictRequired option", () => {
     const ajv = new _Ajv({strictRequired: true, strict: true})
     it("should prohibit base case", () => {
@@ -248,10 +247,10 @@ describe("strict mode", () => {
           type: "object",
           properties: {
             notTest: {
-              type: "string"
-            }
+              type: "string",
+            },
           },
-          required: ['test']
+          required: ["test"],
         })
       }, /required key "test" does not exist as a property at "#"/)
     })
@@ -263,10 +262,9 @@ describe("strict mode", () => {
           properties: {
             test: {
               type: "object",
-              properties: {
-              },
-              required:["keyname"]
-            }
+              properties: {},
+              required: ["keyname"],
+            },
           },
         })
       }, /required key "keyname" does not exist as a property at "#\/properties\/test"/)
@@ -277,19 +275,38 @@ describe("strict mode", () => {
         ajv.compile({
           type: "object",
           properties: {foo: {}},
-          if: {required: ["foo",]},
-          then: {properties: {bar: {type: "boolean"}}} // it still complies with strictTypes here, as there is type: object above
+          if: {required: ["foo"]},
+          then: {properties: {bar: {type: "boolean"}}}, // it still complies with strictTypes here, as there is type: object above
         })
       })
     })
 
-    it("should throw because if references a property that doesnt exist", () => {
-      should.throw(() => {
+    it("should not throw because if references a property as required and it is defined", () => {
+      should.not.throw(() => {
         ajv.compile({
           type: "object",
           properties: {foo: {}},
-          if: {required: ["bar",]},
-          then: {properties: {bar: {type: "boolean"}}} // it still complies with strictTypes here, as there is type: object above
+          if: {required: ["bar"]},
+          then: {properties: {bar: {type: "boolean"}}},
+        })
+      })
+    })
+
+    it("should throw if a required property exists in a parent object but not in the subschema that the require keyword references", () => {
+      should.throw(() => {
+        ajv.compile({
+          type: "object",
+          properties: {
+            foo: {
+              type: "object",
+              required: "foo",
+              properties: {
+                test: {
+                  type: "integer",
+                },
+              },
+            },
+          },
         })
       })
     })
@@ -298,15 +315,17 @@ describe("strict mode", () => {
       should.throw(() => {
         ajv.compile({
           type: "object",
-          properties: {foo: {
-            type: "object",
-            required: 'foo',
-            properties: {
-              "test": {
-                type: "number"
+          properties: {
+            foo: {
+              type: "object",
+              required: "foo",
+              properties: {
+                test: {
+                  type: "number",
+                },
               },
-            }
-          }}
+            },
+          },
         })
       })
     })
