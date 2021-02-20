@@ -27,10 +27,12 @@ export {KeywordCxt}
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
 import type {AnySchemaObject} from "./types"
-export {JTDSchemaType} from "./types/jtd-schema"
+import type {JTDSchemaType} from "./types/jtd-schema"
+export {JTDSchemaType}
 import AjvCore, {CurrentOptions} from "./core"
 import jtdVocabulary from "./vocabularies/jtd"
 import jtdMetaSchema from "./refs/jtd-schema"
+// import {SerializeFunction, compileSerializer} from "./compile/serialize"
 
 // const META_SUPPORT_DATA = ["/properties"]
 
@@ -88,4 +90,8 @@ export default class Ajv extends AjvCore {
     return (this.opts.defaultMeta =
       super.defaultMeta() || (this.getSchema(META_SCHEMA_ID) ? META_SCHEMA_ID : undefined))
   }
+
+  // compileSerializer<T>(schema: JTDSchemaType<T>): SerializeFunction<T> {
+  //   return compileSerializer.call(this, schema, schema.definitions || {}) as SerializeFunction<T>
+  // }
 }
