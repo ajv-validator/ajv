@@ -252,7 +252,7 @@ describe("strict mode", () => {
           },
           required: ["test"],
         })
-      }, /required key "test" does not exist as a property at "#"/)
+      }, 'strict mode: required property "test" is not defined at "#" (strictRequired)')
     })
 
     it("should prohibit in second level of a schema", () => {
@@ -267,7 +267,7 @@ describe("strict mode", () => {
             },
           },
         })
-      }, /required key "keyname" does not exist as a property at "#\/properties\/test"/)
+      }, 'strict mode: required property "keyname" is not defined at "#/properties/test" (strictRequired)')
     })
 
     it("should not throw with a same level if then", () => {
@@ -276,7 +276,7 @@ describe("strict mode", () => {
           type: "object",
           properties: {foo: {}},
           if: {required: ["foo"]},
-          then: {properties: {bar: {type: "boolean"}}}, // it still complies with strictTypes here, as there is type: object above
+          then: {properties: {bar: {type: "boolean"}}},
         })
       })
     })
