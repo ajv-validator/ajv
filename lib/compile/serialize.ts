@@ -39,7 +39,6 @@ interface SerializeCxt {
   readonly self: Ajv // current Ajv instance
   readonly schemaEnv: SchemaEnv
   readonly definitions: SchemaObjectMap
-  readonly jsonStr: Name
   schema: SchemaObject
   data: Code
 }
@@ -55,14 +54,12 @@ export function compileSerializer(
   const {ownProperties} = this.opts
   const gen = new CodeGen(this.scope, {es5, lines, ownProperties})
   const serializeName = gen.scopeName("serialize")
-  const jsonStr = gen.name("json")
   const cxt = {
     self: this,
     gen,
     schema: sch.schema as SchemaObject,
     schemaEnv: sch,
     definitions,
-    jsonStr,
     data: N.data,
   }
 
@@ -71,9 +68,9 @@ export function compileSerializer(
     this._compilations.add(sch)
     sch.serializeName = serializeName
     gen.func(serializeName, N.data, false, () => {
-      gen.let(jsonStr, str``)
+      gen.let(N.json, str``)
       serializeCode(cxt)
-      gen.return(jsonStr)
+      gen.return(N.json)
     })
     gen.optimize(this.opts.code.optimize)
     const serializeFuncCode = gen.toString()
@@ -105,47 +102,49 @@ function serializeCode(cxt: SerializeCxt): void {
 }
 
 function serializeNullable(cxt: SerializeCxt, serializeForm: (_cxt: SerializeCxt) => void): void {
-  const {gen, schema, jsonStr, data} = cxt
+  const {gen, schema, data} = cxt
   if (!schema.nullable) return serializeForm(cxt)
   gen.if(
     _`${data} === undefined || ${data} === null`,
-    () => gen.add(jsonStr, _`"null"`),
+    () => gen.add(N.json, _`"null"`),
     () => serializeForm(cxt)
   )
 }
 
 function serializeElements(cxt: SerializeCxt): void {
-  const {gen, schema, jsonStr, data} = cxt
-  gen.add(jsonStr, str`[`)
+  const {gen, schema, data} = cxt
+  gen.add(N.json, str`[`)
   const first = gen.let("first", true)
   gen.forOf("el", data, (el) => {
     addComma(cxt, first)
     serializeCode({...cxt, schema: schema.elements, data: el})
   })
-  gen.add(jsonStr, str`]`)
+  gen.add(N.json, str`]`)
 }
 
 function serializeValues(cxt: SerializeCxt): void {
-  const {gen, schema, jsonStr, data} = cxt
-  gen.add(jsonStr, str`{`)
+  const {gen, schema, data} = cxt
+  gen.add(N.json, str`{`)
   const first = gen.let("first", true)
-  gen.forIn("key", data, (key) => serializeKeyValue(cxt, key, schema.values, first))
-  gen.add(jsonStr, str`}`)
+  gen.forIn("key", data, (key) =>
+    serializeKeyValue(cxt, key, schema.values, first)
+  )
+  gen.add(N.json, str`}`)
 }
 
 function serializeKeyValue(cxt: SerializeCxt, key: Name, schema: SchemaObject, first: Name): void {
-  const {gen, jsonStr, data} = cxt
+  const {gen, data} = cxt
   addComma(cxt, first)
   serializeString({...cxt, data: key})
-  gen.add(jsonStr, str`:`)
+  gen.add(N.json, str`:`)
   const value = gen.const("value", _`${data}${getProperty(key)}`)
   serializeCode({...cxt, schema, data: value})
 }
 
 function serializeDiscriminator(cxt: SerializeCxt): void {
-  const {gen, schema, jsonStr, data} = cxt
+  const {gen, schema, data} = cxt
   const {discriminator} = schema
-  gen.add(jsonStr, str`{${JSON.stringify(discriminator)}:`)
+  gen.add(N.json, str`{${JSON.stringify(discriminator)}:`)
   const tag = gen.const("tag", _`${data}${getProperty(discriminator)}`)
   serializeString({...cxt, data: tag})
   gen.if(false)
@@ -155,18 +154,18 @@ function serializeDiscriminator(cxt: SerializeCxt): void {
     serializeSchemaProperties({...cxt, schema: sch}, discriminator)
   }
   gen.endIf()
-  gen.add(jsonStr, str`}`)
+  gen.add(N.json, str`}`)
 }
 
 function serializeProperties(cxt: SerializeCxt): void {
-  const {gen, jsonStr} = cxt
-  gen.add(jsonStr, str`{`)
+  const {gen} = cxt
+  gen.add(N.json, str`{`)
   serializeSchemaProperties(cxt)
-  gen.add(jsonStr, str`}`)
+  gen.add(N.json, str`}`)
 }
 
 function serializeSchemaProperties(cxt: SerializeCxt, discriminator?: string): void {
-  const {gen, schema, jsonStr, data} = cxt
+  const {gen, schema, data} = cxt
   const {properties, optionalProperties} = schema
   const props = keys(properties)
   const optProps = keys(optionalProperties)
@@ -207,8 +206,8 @@ function serializeSchemaProperties(cxt: SerializeCxt, discriminator?: string): v
 
   function serializeProperty(key: string, propSchema: SchemaObject, value: Name): void {
     if (first) first = false
-    else gen.add(jsonStr, str`,`)
-    gen.add(jsonStr, str`${JSON.stringify(key)}:`)
+    else gen.add(N.json, str`,`)
+    gen.add(N.json, str`${JSON.stringify(key)}:`)
     serializeCode({...cxt, schema: propSchema, data: value})
   }
 
@@ -218,10 +217,10 @@ function serializeSchemaProperties(cxt: SerializeCxt, discriminator?: string): v
 }
 
 function serializeType(cxt: SerializeCxt): void {
-  const {gen, schema, jsonStr, data} = cxt
+  const {gen, schema, data} = cxt
   switch (schema.type) {
     case "boolean":
-      gen.add(jsonStr, _`${data} ? "true" : "false"`)
+      gen.add(N.json, _`${data} ? "true" : "false"`)
       break
     case "string":
       serializeString(cxt)
@@ -229,7 +228,7 @@ function serializeType(cxt: SerializeCxt): void {
     case "timestamp":
       gen.if(
         _`${data} instanceof Date`,
-        () => gen.add(jsonStr, _`${data}.toISOString()`),
+        () => gen.add(N.json, _`${data}.toISOString()`),
         () => serializeString(cxt)
       )
       break
@@ -238,23 +237,23 @@ function serializeType(cxt: SerializeCxt): void {
   }
 }
 
-function serializeString({gen, jsonStr, data}: SerializeCxt): void {
-  gen.add(jsonStr, _`${quoteFunc(gen)}(${data})`)
+function serializeString({gen, data}: SerializeCxt): void {
+  gen.add(N.json, _`${quoteFunc(gen)}(${data})`)
 }
 
-function serializeNumber({gen, jsonStr, data}: SerializeCxt): void {
-  gen.add(jsonStr, _`"" + ${data}`)
+function serializeNumber({gen, data}: SerializeCxt): void {
+  gen.add(N.json, _`"" + ${data}`)
 }
 
 function serializeRef(cxt: SerializeCxt): void {
-  const {gen, self, jsonStr, data, definitions, schema, schemaEnv} = cxt
+  const {gen, self, data, definitions, schema, schemaEnv} = cxt
   const {ref} = schema
   const refSchema = definitions[ref]
   if (!refSchema) throw new MissingRefError("", ref, `No definition ${ref}`)
   if (!hasRef(refSchema)) return serializeCode({...cxt, schema: refSchema})
   const {root} = schemaEnv
   const sch = compileSerializer.call(self, new SchemaEnv({schema: refSchema, root}), definitions)
-  gen.add(jsonStr, _`${getSerialize(gen, sch)}(${data})`)
+  gen.add(N.json, _`${getSerialize(gen, sch)}(${data})`)
 }
 
 function getSerialize(gen: CodeGen, sch: SchemaEnv): Code {
@@ -263,15 +262,15 @@ function getSerialize(gen: CodeGen, sch: SchemaEnv): Code {
     : _`${gen.scopeValue("wrapper", {ref: sch})}.serialize`
 }
 
-function serializeEmpty({gen, jsonStr, data}: SerializeCxt): void {
-  gen.add(jsonStr, _`JSON.stringify(${data})`)
+function serializeEmpty({gen, data}: SerializeCxt): void {
+  gen.add(N.json, _`JSON.stringify(${data})`)
 }
 
-function addComma({gen, jsonStr}: SerializeCxt, first: Name): void {
+function addComma({gen}: SerializeCxt, first: Name): void {
   gen.if(
     first,
     () => gen.assign(first, false),
-    () => gen.add(jsonStr, str`,`)
+    () => gen.add(N.json, str`,`)
   )
 }
 
