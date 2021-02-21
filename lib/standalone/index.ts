@@ -1,8 +1,8 @@
 import type AjvCore from "../core"
 import type {AnyValidateFunction, SourceCode} from "../types"
 import type {SchemaEnv} from "../compile"
-import {ScopeValueSets, ValueScopeName, varKinds} from "../compile/codegen/scope"
-import {_, _Code, Code, getProperty} from "../compile/codegen/code"
+import {UsedScopeValues, UsedValueState, ValueScopeName, varKinds} from "../compile/codegen/scope"
+import {_, nil, _Code, Code, getProperty} from "../compile/codegen/code"
 
 export default function standaloneCode(
   ajv: AjvCore,
@@ -27,7 +27,7 @@ export default function standaloneCode(
   }
 
   function funcExportCode(source?: SourceCode): string {
-    const usedValues: ScopeValueSets = {}
+    const usedValues: UsedScopeValues = {}
     const n = source?.validateName
     const vCode = validateCode(usedValues, source)
     return `"use strict";${_n}module.exports = ${n};${_n}module.exports.default = ${n};${_n}${vCode}`
@@ -37,7 +37,7 @@ export default function standaloneCode(
     schemas: {[K in string]?: T},
     getValidateFunc: (schOrId: T) => AnyValidateFunction | undefined
   ): string {
-    const usedValues: ScopeValueSets = {}
+    const usedValues: UsedScopeValues = {}
     let code = _`"use strict";`
     for (const name in schemas) {
       const v = getValidateFunc(schemas[name] as T)
@@ -49,11 +49,10 @@ export default function standaloneCode(
     return `${code}`
   }
 
-  function validateCode(usedValues: ScopeValueSets, s?: SourceCode): Code {
+  function validateCode(usedValues: UsedScopeValues, s?: SourceCode): Code {
     if (!s) throw new Error('moduleCode: function does not have "source" property')
-    const {prefix} = s.validateName
-    const nameSet = (usedValues[prefix] = usedValues[prefix] || new Set())
-    nameSet.add(s.validateName)
+    if (usedState(s.validateName) === UsedValueState.Completed) return nil
+    setUsedState(s.validateName, UsedValueState.Started)
 
     const scopeCode = ajv.scope.scopeCode(s.scopeValues, usedValues, refValidateCode)
     const code = new _Code(`${scopeCode}${_n}${s.validateCode}`)
@@ -66,11 +65,24 @@ export default function standaloneCode(
         return validateCode(usedValues, v.source)
       } else if ((n.prefix === "root" || n.prefix === "wrapper") && typeof vRef == "object") {
         const {validate, validateName} = vRef as SchemaEnv
-        const vCode = validateCode(usedValues, validate?.source)
+        if (!validateName) throw new Error("ajv internal error")
         const def = ajv.opts.code.es5 ? varKinds.var : varKinds.const
-        return _`${def} ${n} = {validate: ${validateName}};${_n}${vCode}`
+        const wrapper = _`${def} ${n} = {validate: ${validateName}};`
+        if (usedState(validateName) === UsedValueState.Started) return wrapper
+        const vCode = validateCode(usedValues, validate?.source)
+        return _`${wrapper}${_n}${vCode}`
       }
       return undefined
+    }
+
+    function usedState(name: ValueScopeName): UsedValueState | undefined {
+      return usedValues[name.prefix]?.get(name)
+    }
+
+    function setUsedState(name: ValueScopeName, state: UsedValueState): void {
+      const {prefix} = name
+      const names = (usedValues[prefix] = usedValues[prefix] || new Map())
+      names.set(name, state)
     }
   }
 }

@@ -45,9 +45,8 @@ export default class Ajv extends AjvCore {
 
   _addDefaultMetaSchema(): void {
     super._addDefaultMetaSchema()
-    const {$data, meta} = this.opts
-    if (!meta) return
-    const metaSchema = $data
+    if (!this.opts.meta) return
+    const metaSchema = this.opts.$data
       ? this.$dataMetaSchema(draft7MetaSchema, META_SUPPORT_DATA)
       : draft7MetaSchema
     this.addMetaSchema(metaSchema, META_SCHEMA_ID, false)

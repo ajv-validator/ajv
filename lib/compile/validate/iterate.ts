@@ -21,7 +21,7 @@ export function schemaKeywords(
     gen.block(() => keywordCode(it, "$ref", (RULES.all.$ref as Rule).definition)) // TODO typecast
     return
   }
-  checkStrictTypes(it, types)
+  if (!opts.jtd) checkStrictTypes(it, types)
   gen.block(() => {
     for (const group of RULES.rules) groupKeywords(group)
     groupKeywords(RULES.post)

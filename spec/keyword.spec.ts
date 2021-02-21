@@ -1095,6 +1095,14 @@ describe("User-defined keywords", () => {
         ajv.addKeyword("hyphens-are-valid")
       })
 
+      should.not.throw(() => {
+        ajv.addKeyword("colons:are-valid")
+      })
+
+      should.throw(() => {
+        ajv.addKeyword("single-'quote-not-valid")
+      }, /invalid name/)
+
       should.throw(() => {
         ajv.addKeyword("3-start-with-number-not-valid")
       }, /invalid name/)
@@ -1154,10 +1162,7 @@ describe("User-defined keywords", () => {
 
   describe("getKeyword", () => {
     // TODO update this test
-    it("should return boolean for reserved and unknown keywords", () => {
-      ajv.getKeyword("type").should.equal(true)
-      // ajv.getKeyword("properties").should.equal(true)
-      // ajv.getKeyword("additionalProperties").should.equal(true)
+    it("should return false for unknown keywords", () => {
       ajv.getKeyword("unknown").should.equal(false)
     })
 
