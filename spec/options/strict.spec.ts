@@ -329,6 +329,40 @@ describe("strict mode", () => {
         })
       })
     })
+    it("should not throw because all referenced properties are defined", () => {
+      should.not.throw(() => {
+        ajv.compile({
+          properties: {foo: {}, bar: {}},
+          allOf: [
+            {
+              allOf: [
+                {
+                  if: {required: ["foo"]},
+                  then: {required: ["bar"]},
+                },
+              ],
+            },
+          ],
+        })
+      })
+    })
+    it("should throw because baz does not exist as a property", () => {
+      should.throw(() => {
+        ajv.compile({
+          properties: {foo: {}, bar: {}},
+          allOf: [
+            {
+              allOf: [
+                {
+                  if: {required: ["bar"]},
+                  then: {required: ["baz"]},
+                },
+              ],
+            },
+          ],
+        })
+      })
+    })
   })
 })
 
