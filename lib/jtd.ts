@@ -32,7 +32,7 @@ export {JTDSchemaType}
 import AjvCore, {CurrentOptions} from "./core"
 import jtdVocabulary from "./vocabularies/jtd"
 import jtdMetaSchema from "./refs/jtd-schema"
-import {compileSerializer} from "./compile/serialize"
+import {compileSerializer} from "./compile/jtd/serialize"
 import {SchemaEnv} from "./compile"
 
 // const META_SUPPORT_DATA = ["/properties"]

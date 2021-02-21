@@ -1,12 +1,12 @@
-import type Ajv from "../core"
-import type {SchemaObject} from "../types"
-import {SchemaEnv, getCompilingSchema} from "."
-import {_, str, and, getProperty, CodeGen, Code, Name} from "./codegen"
-import {MissingRefError} from "./error_classes"
-import N from "./names"
-import {isOwnProperty} from "../vocabularies/code"
-import {hasRef} from "../vocabularies/jtd/ref"
-import quote from "../runtime/quote"
+import type Ajv from "../../core"
+import type {SchemaObject} from "../../types"
+import {SchemaEnv, getCompilingSchema} from ".."
+import {_, str, and, getProperty, CodeGen, Code, Name} from "../codegen"
+import {MissingRefError} from "../error_classes"
+import N from "../names"
+import {isOwnProperty} from "../../vocabularies/code"
+import {hasRef} from "../../vocabularies/jtd/ref"
+import quote from "../../runtime/quote"
 
 type SchemaObjectMap = {[Ref in string]?: SchemaObject}
 
