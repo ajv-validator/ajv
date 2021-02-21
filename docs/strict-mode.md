@@ -15,13 +15,13 @@ To disable all strict mode restrictions use option `strict: false`. Some of the 
     - ignored defaults
   - [Prevent unexpected validation](#prevent-unexpected-validation)
     - overlap between "properties" and "patternProperties" keywords (also `allowMatchingProperties` option)
+    - required properties have to be present in properties [Strict required](#strict-required)  
     - unconstrained tuples (also `strictTuples` option)
   - [Strict types](#strict-types) (also `strictTypes` option)
     - union types (also `allowUnionTypes` option)
     - contradictory types
     - require applicable types
   - [Strict number validation](#strict-number-validation)
-  - [Strict required](#strict-required)  
 
 ## JSON Type Definition schemas
 
@@ -315,4 +315,4 @@ Strict mode also affects number validation. By default Ajv fails `{"type": "numb
 
 ### Strict required
 
-An additional option `strictRequired` ("log" by default) validates that the `required` keyword contains only keys that are explicitly defined in the `properties` key of the object they are referencing.
+Often times a typo can lead to a key being set as required that is not even present in the object. `strictRequired` validates that the `required` keyword contains only keys that are explicitly defined in the `properties` key of the object they are referencing.
