@@ -167,3 +167,10 @@ export function evaluatedPropsToName(gen: CodeGen, ps?: EvaluatedProperties): Na
 export function setEvaluated(gen: CodeGen, props: Name, ps: {[K in string]?: true}): void {
   Object.keys(ps).forEach((p) => gen.assign(_`${props}${getProperty(p)}`, true))
 }
+
+export function func(gen: CodeGen, f: {code: Code}): Name {
+  return gen.scopeValue("func", {
+    ref: f,
+    code: f.code,
+  })
+}

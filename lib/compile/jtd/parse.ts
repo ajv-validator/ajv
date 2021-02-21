@@ -3,12 +3,19 @@ import type {SchemaObject} from "../../types"
 import {jtdForms, JTDForm, SchemaObjectMap} from "./types"
 import {SchemaEnv, getCompilingSchema} from ".."
 import {_, str, and, getProperty, CodeGen, Code, Name} from "../codegen"
-import {_Code} from "../codegen/code"
 import {MissingRefError} from "../error_classes"
 import N from "../names"
 import {isOwnProperty} from "../../vocabularies/code"
 import {hasRef} from "../../vocabularies/jtd/ref"
-import jsonParse from "../../runtime/jsonParse"
+import {intRange, IntType} from "../../vocabularies/jtd/type"
+import {
+  parseJson,
+  parseJsonNumber,
+  parseJsonInteger,
+  parseJsonString,
+} from "../../runtime/parseJson"
+import {func} from "../util"
+import validTimestamp from "../timestamp"
 
 type GenParse = (cxt: ParseCxt) => void
 
@@ -18,7 +25,7 @@ const genParse: {[F in JTDForm]: GenParse} = {
   discriminator: parseDiscriminator,
   properties: parseProperties,
   optionalProperties: parseProperties,
-  enum: parseString,
+  enum: parseEnum,
   type: parseType,
   ref: parseRef,
 }
@@ -30,7 +37,6 @@ interface ParseCxt {
   readonly definitions: SchemaObjectMap
   schema: SchemaObject
   data: Code
-  jsonPos: Name | number
 }
 
 export default function compileParser(
@@ -51,7 +57,6 @@ export default function compileParser(
     schemaEnv: sch,
     definitions,
     data: N.data,
-    jsonPos: 0,
   }
 
   let sourceCode: string | undefined
@@ -60,15 +65,13 @@ export default function compileParser(
     sch.parseName = parseName
     gen.func(parseName, N.json, false, () => {
       gen.let(N.data)
-      gen.let(N.jsonPos)
+      gen.let(N.jsonPos, 0)
+      gen.const(N.jsonLen, _`${N.json}.length`)
       parseCode(cxt)
       gen.if(
-        _`${N.jsonPos} === ${N.json}.length`,
+        _`${N.jsonPos} === ${N.jsonLen}`,
         () => gen.return(N.data),
-        () => throwSyntaxError(gen)
-        // gen.throw(
-        //   _`new SyntaxError("Unexpected token " + ${N.json}[${N.jsonPos}] + " in JSON at position " + ${N.jsonPos})`
-        // )
+        () => jsonSyntaxError(cxt)
       )
     })
     gen.optimize(this.opts.code.optimize)
@@ -103,58 +106,43 @@ function parseCode(cxt: ParseCxt): void {
 function parseNullable(cxt: ParseCxt, parseForm: GenParse): void {
   const {gen, schema, data} = cxt
   if (!schema.nullable) return parseForm(cxt)
-  tryParse(cxt, "null", () => gen.assign(data, null), parseForm)
-}
-
-function tryParse(cxt: ParseCxt, s: string, success: GenParse, fail: GenParse): void {
-  const {gen, jsonPos} = cxt
-  const slice =
-    s.length === 1 ? _`${N.json}[${jsonPos}]` : _`${N.json}.slice(${jsonPos}, ${s.length})`
-  gen.if(
-    _`${slice} === ${s}`,
-    () => {
-      addJsonPos()
-      success(cxt)
-    },
-    () => fail(cxt)
-  )
-
-  function addJsonPos(): void {
-    if (jsonPos instanceof Name) {
-      gen.add(jsonPos, s.length)
-    } else {
-      gen.assign(N.jsonPos, jsonPos + s.length)
-      cxt.jsonPos = N.jsonPos
-    }
-  }
+  tryParseToken(cxt, "null", parseForm, () => gen.assign(data, null))
 }
 
 function parseElements(cxt: ParseCxt): void {
   const {gen, schema, data} = cxt
-  gen.add(N.json, str`[`)
-  const first = gen.let("first", true)
-  gen.forOf("el", data, (el) => {
-    addComma(cxt, first)
+  parseToken(cxt, "[")
+  const ix = gen.let("i", 0)
+  gen.assign(data, _`[]`)
+  parseItems(cxt, "]", () => {
+    const el = gen.let("el")
     parseCode({...cxt, schema: schema.elements, data: el})
+    gen.assign(_`${data}[${ix}++]`, el)
   })
-  gen.add(N.json, str`]`)
 }
 
 function parseValues(cxt: ParseCxt): void {
   const {gen, schema, data} = cxt
-  gen.add(N.json, str`{`)
-  const first = gen.let("first", true)
-  gen.forIn("key", data, (key) => parseKeyValue(cxt, key, schema.values, first))
-  gen.add(N.json, str`}`)
+  parseToken(cxt, "{")
+  gen.assign(data, _`{}`)
+  parseItems(cxt, "}", () => parseKeyValue(cxt, schema.values))
 }
 
-function parseKeyValue(cxt: ParseCxt, key: Name, schema: SchemaObject, first: Name): void {
+function parseItems(cxt: ParseCxt, endToken: string, block: () => void): void {
+  const {gen} = cxt
+  gen.for(_`;${N.jsonPos}<${N.jsonLen} && ${jsonSlice(1)}!==${endToken};`, () => {
+    block()
+    tryParseToken(cxt, ",", () => gen.break())
+  })
+  parseToken(cxt, endToken)
+}
+
+function parseKeyValue(cxt: ParseCxt, schema: SchemaObject): void {
   const {gen, data} = cxt
-  addComma(cxt, first)
+  const key = gen.let("key")
   parseString({...cxt, data: key})
-  gen.add(N.json, str`:`)
-  const value = gen.const("value", _`${data}${getProperty(key)}`)
-  parseCode({...cxt, schema, data: value})
+  parseToken(cxt, ":")
+  parseCode({...cxt, schema, data: _`${data}[${key}]`})
 }
 
 function parseDiscriminator(cxt: ParseCxt): void {
@@ -198,9 +186,7 @@ function parseSchemaProperties(cxt: ParseCxt, discriminator?: string): void {
   }
   if (schema.additionalProperties) {
     gen.forIn("key", data, (key) =>
-      gen.if(isAdditional(key, allProps), () =>
-        parseKeyValue(cxt, key, {}, gen.let("first", first))
-      )
+      gen.if(isAdditional(key, allProps), () => parseKeyValue(cxt, {}))
     )
   }
 
@@ -236,29 +222,73 @@ function parseType(cxt: ParseCxt): void {
   const {gen, schema, data} = cxt
   switch (schema.type) {
     case "boolean":
-      gen.add(N.json, _`${data} ? "true" : "false"`)
+      parseBoolean(true, parseBoolean(false, jsonSyntaxError))(cxt)
       break
     case "string":
       parseString(cxt)
       break
-    case "timestamp":
-      gen.if(
-        _`${data} instanceof Date`,
-        () => gen.add(N.json, _`${data}.toISOString()`),
-        () => parseString(cxt)
-      )
+    case "timestamp": {
+      // TODO parse timestamp?
+      parseString(cxt)
+      const vts = func(gen, validTimestamp)
+      gen.if(_`!${vts}(${data})`, () => gen.throw(_`new SyntaxError("JSON: invalid timestamp")`))
       break
-    default:
+    }
+    case "float32":
+    case "float64":
       parseNumber(cxt)
+      break
+    default: {
+      parseNumber(cxt, true)
+      const [min, max] = intRange[schema.type as IntType]
+      gen.if(_`${data} < ${min} || ${data} > ${max}`, () =>
+        gen.throw(_`new SyntaxError("JSON: integer out of range")`)
+      )
+    }
   }
 }
 
-function parseString({gen, data}: ParseCxt): void {
-  gen.add(N.json, _`${jsonParseFunc(gen)}(${data})`)
+function parseString(cxt: ParseCxt): void {
+  parseToken(cxt, '"')
+  parseWith(cxt, parseJsonString)
 }
 
-function parseNumber({gen, data}: ParseCxt): void {
-  gen.add(N.json, _`"" + ${data}`)
+function parseEnum(cxt: ParseCxt): void {
+  const {gen, data, schema} = cxt
+  const enumSch = schema.enum
+  parseToken(cxt, '"')
+  // TODO loopEnum
+  gen.if(false)
+  for (const value of enumSch) {
+    const valueStr = JSON.stringify(value).slice(1) // remove starting quote
+    gen.elseIf(_`${jsonSlice(valueStr.length)} === ${valueStr}`)
+    gen.assign(data, str`${value}`)
+    gen.add(N.jsonPos, valueStr.length)
+  }
+  gen.else()
+  jsonSyntaxError(cxt)
+  gen.endIf()
+}
+
+function parseNumber(cxt: ParseCxt, int?: boolean): void {
+  const {gen} = cxt
+  gen.if(
+    _`"-0123456789".indexOf(${jsonSlice(1)}) < 0`,
+    () => jsonSyntaxError(cxt),
+    () => parseWith(cxt, int ? parseJsonInteger : parseJsonNumber)
+  )
+}
+
+function parseBoolean(bool: boolean, fail: GenParse): GenParse {
+  return (cxt) => {
+    const {gen, data} = cxt
+    tryParseToken(
+      cxt,
+      `${bool}`,
+      () => fail(cxt),
+      () => gen.assign(data, bool)
+    )
+  }
 }
 
 function parseRef(cxt: ParseCxt): void {
@@ -279,36 +309,42 @@ function getParse(gen: CodeGen, sch: SchemaEnv): Code {
 }
 
 function parseEmpty(cxt: ParseCxt): void {
-  const {gen, data, jsonPos} = cxt
-  gen.assign(_`[${data}, ${N.jsonPos}]`, _`${jsonParseFunc(gen)}(${N.json}, ${jsonPos})`)
-  cxt.jsonPos = N.jsonPos
+  parseWith(cxt, parseJson)
 }
 
-function addComma({gen}: ParseCxt, first: Name): void {
+function parseWith({gen, data}: ParseCxt, parseFunc: {code: Code}): void {
+  const func = gen.scopeValue("func", {
+    ref: parseFunc,
+    code: parseFunc.code,
+  })
+  gen.assign(_`[${data}, ${N.jsonPos}]`, _`${func}(${N.json}, ${N.jsonPos})`)
+}
+
+function parseToken(cxt: ParseCxt, tok: string): void {
+  tryParseToken(cxt, tok, jsonSyntaxError)
+}
+
+function tryParseToken(cxt: ParseCxt, tok: string, fail: GenParse, success?: GenParse): void {
+  const {gen} = cxt
+  const n = tok.length
   gen.if(
-    first,
-    () => gen.assign(first, false),
-    () => gen.add(N.json, str`,`)
+    _`${jsonSlice(n)} === ${tok}`,
+    () => {
+      gen.add(N.jsonPos, n)
+      success?.(cxt)
+    },
+    () => fail(cxt)
   )
 }
 
-function jsonParseFunc(gen: CodeGen): Name {
-  return gen.scopeValue("func", {
-    ref: jsonParse,
-    code: _`require("ajv/dist/runtime/jsonParse").default`,
-  })
+function jsonSlice(len: number | Name): Code {
+  return len === 1
+    ? _`${N.json}[${N.jsonPos}]`
+    : _`${N.json}.slice(${N.jsonPos}, ${N.jsonPos}+${len})`
 }
 
-function syntaxError(json: string, jsonPos: number): void {
-  throw new SyntaxError(`Unexpected token ${json[jsonPos]} in JSON at position ${jsonPos}`)
-}
-
-const syntaxErrorCode = new _Code(syntaxError.toString())
-
-function throwSyntaxError(gen: CodeGen): void {
-  const throwError = gen.scopeValue("func", {
-    ref: syntaxError,
-    code: syntaxErrorCode,
-  })
-  gen.code(_`${throwError}(${N.json}, ${N.jsonPos})`)
+function jsonSyntaxError(cxt: ParseCxt): void {
+  cxt.gen.throw(
+    _`new SyntaxError("Unexpected token "+${N.json}[${N.jsonPos}]+" in JSON at position "+${N.jsonPos})`
+  )
 }

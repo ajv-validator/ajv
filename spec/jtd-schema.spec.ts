@@ -121,7 +121,7 @@ describe("JSON Type Definition", () => {
         if (valid) {
           it(`should parse valid JSON string`, () => {
             const parse = ajv.compileParser(schema)
-            console.log(parse.toString())
+            console.log(schema, instance, `"${JSON.stringify(instance)}"`, parse.toString())
             assert.deepStrictEqual(parse(JSON.stringify(instance)), instance)
           })
         } else {

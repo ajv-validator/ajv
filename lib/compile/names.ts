@@ -20,6 +20,7 @@ const names = {
   // JTD serialize/parse name for JSON string and position
   json: new Name("json"),
   jsonPos: new Name("jsonPos"),
+  jsonLen: new Name("jsonLen"),
 }
 
 export default names

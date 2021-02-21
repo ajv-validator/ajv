@@ -1,3 +1,5 @@
+import {_} from "./codegen"
+
 const DATE_TIME = /^(\d\d\d\d)-(\d\d)-(\d\d)(?:t|\s)(\d\d):(\d\d):(\d\d)(?:\.\d+)?(?:z|([+-]\d\d)(?::?(\d\d))?)$/i
 const DAYS = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
@@ -25,3 +27,5 @@ export default function validTimestamp(str: string): boolean {
       (hr - tzH === 23 && min - tzM === 59 && sec === 60))
   )
 }
+
+validTimestamp.code = _`require("ajv/dist/compile/timestamp").default`
