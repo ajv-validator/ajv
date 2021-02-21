@@ -18,41 +18,9 @@ export function parseJson(s: string, pos: number): [unknown, number] {
 
 parseJson.code = _`require("ajv/dist/runtime/parseJson").parseJson`
 
-// TODO combile parsing integers and numbers with extra parameters for digits size
-export function parseJsonNumber(s: string, pos: number): [number, number] {
-  let numStr
-  ;[numStr, pos] = parseIntStr(s, pos)
-  let c: string
-  let digits: string
-  if (s[pos] === ".") {
-    numStr += "."
-    pos++
-    ;[digits, pos] = parseDigits(s, pos)
-    numStr += digits
-  }
-  if (((c = s[pos]), c === "e" || c === "E")) {
-    numStr += "e"
-    pos++
-    if (((c = s[pos]), c === "+" || c === "-")) {
-      numStr += c
-      pos++
-    }
-    ;[digits, pos] = parseDigits(s, pos)
-    numStr += digits
-  }
-  return [+numStr, pos]
-}
-
-parseJsonNumber.code = _`require("ajv/dist/runtime/parseJson").parseJsonNumber`
-
-export function parseJsonInteger(s: string, pos: number): [number, number] {
-  const res: [string | number, number] = parseIntStr(s, pos)
-  res[0] = +res[0]
-  return res as [number, number]
-}
-
-function parseIntStr(s: string, pos: number): [string, number] {
+export function parseJsonNumber(s: string, pos: number, maxDigits?: number): [number, number] {
   let numStr = ""
+  let c: string
   if (s[pos] === "-") {
     numStr += "-"
     pos++
@@ -61,30 +29,40 @@ function parseIntStr(s: string, pos: number): [string, number] {
     numStr += "0"
     pos++
   } else {
-    let digits: string
-    ;[digits, pos] = parseDigits(s, pos)
-    numStr += digits
+    parseDigits(maxDigits)
   }
-  return [numStr, pos]
-}
-
-function parseDigits(s: string, pos: number): [string, number] {
-  let numStr = ""
-  let c: string
-  let digit: boolean | undefined
-  while (((c = s[pos]), c >= "0" && c <= "9")) {
-    digit = true
-    numStr += c
+  if (maxDigits) return [+numStr, pos]
+  if (s[pos] === ".") {
+    numStr += "."
     pos++
+    parseDigits()
   }
-  if (!digit) {
-    if (pos < s.length) unexpectedToken(s[pos], pos)
-    else unexpectedEnd()
+  if (((c = s[pos]), c === "e" || c === "E")) {
+    numStr += "e"
+    pos++
+    if (((c = s[pos]), c === "+" || c === "-")) {
+      numStr += c
+      pos++
+    }
+    parseDigits()
   }
-  return [numStr, pos]
+  return [+numStr, pos]
+
+  function parseDigits(maxLen?: number): void {
+    let digit: boolean | undefined
+    while (((c = s[pos]), c >= "0" && c <= "9" && (maxLen === undefined || maxLen-- > 0))) {
+      digit = true
+      numStr += c
+      pos++
+    }
+    if (!digit) {
+      if (pos < s.length) unexpectedToken(s[pos], pos)
+      else unexpectedEnd()
+    }
+  }
 }
 
-parseJsonInteger.code = _`require("ajv/dist/runtime/parseJson").parseJsonInteger`
+parseJsonNumber.code = _`require("ajv/dist/runtime/parseJson").parseJsonNumber`
 
 const escapedChars: {[X in string]?: string} = {
   b: "\b",

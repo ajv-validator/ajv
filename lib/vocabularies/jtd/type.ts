@@ -7,13 +7,13 @@ import {checkMetadata} from "./metadata"
 
 export type IntType = "int8" | "uint8" | "int16" | "uint16" | "int32" | "uint32"
 
-export const intRange: {[T in IntType]: [number, number]} = {
-  int8: [-128, 127],
-  uint8: [0, 255],
-  int16: [-32768, 32767],
-  uint16: [0, 65535],
-  int32: [-2147483648, 2147483647],
-  uint32: [0, 4294967295],
+export const intRange: {[T in IntType]: [number, number, number]} = {
+  int8: [-128, 127, 3],
+  uint8: [0, 255, 3],
+  int16: [-32768, 32767, 5],
+  uint16: [0, 65535, 5],
+  int32: [-2147483648, 2147483647, 10],
+  uint32: [0, 4294967295, 10],
 }
 
 const def: CodeKeywordDefinition = {

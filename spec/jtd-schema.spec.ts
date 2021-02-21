@@ -24,19 +24,19 @@ interface TestCaseError {
 //   schemaPath: string
 // }
 
-// const ONLY: RegExp[] = [
-//   "empty",
+const ONLY: RegExp[] = [
+  "empty",
 //   "ref",
-//   "type",
-//   "enum",
-//   "elements",
+  "type",
+  "enum",
+  "elements",
 //   "properties",
 //   "optionalProperties",
 //   "discriminator",
-//   "values",
-// ].map((s) => new RegExp(`(^|.*\\s)${s}\\s.*-`))
+  "values",
+].map((s) => new RegExp(`(^|.*\\s)${s}\\s.*-`))
 
-const ONLY: RegExp[] = []
+// const ONLY: RegExp[] = []
 
 describe("JSON Type Definition", () => {
   describe("validation", function () {
@@ -55,7 +55,7 @@ describe("JSON Type Definition", () => {
     for (const testName in jtdValidationTests) {
       const {schema, instance, errors} = jtdValidationTests[testName] as TestCase
       const valid = errors.length === 0
-      describeOnly(testName, () =>
+      describe(testName, () =>
         it(`should be ${valid ? "valid" : "invalid"}`, () =>
           withStandalone(ajvs).forEach((ajv) => {
             // console.log(ajv.compile(schema).toString())
@@ -101,7 +101,7 @@ describe("JSON Type Definition", () => {
       const {schema, instance, errors} = jtdValidationTests[testName] as TestCase
       const valid = errors.length === 0
       if (!valid) continue
-      describeOnly(testName, () =>
+      describe(testName, () =>
         it(`should serialize data`, () => {
           const serialize = ajv.compileSerializer(schema)
           // console.log(serialize.toString())
@@ -111,7 +111,7 @@ describe("JSON Type Definition", () => {
     }
   })
 
-  describe.skip("parse", () => {
+  describe("parse", () => {
     const ajv = new _AjvJTD()
 
     for (const testName in jtdValidationTests) {
@@ -121,13 +121,13 @@ describe("JSON Type Definition", () => {
         if (valid) {
           it(`should parse valid JSON string`, () => {
             const parse = ajv.compileParser(schema)
-            console.log(schema, instance, `"${JSON.stringify(instance)}"`, parse.toString())
+            // console.log(schema, instance, `"${JSON.stringify(instance)}"`, parse.toString())
             assert.deepStrictEqual(parse(JSON.stringify(instance)), instance)
           })
         } else {
           it(`should throw exception on invalid JSON string`, () => {
             const parse = ajv.compileParser(schema)
-            console.log(parse.toString())
+            // console.log(parse.toString())
             assert.throws(() => parse(JSON.stringify(instance)))
           })
         }

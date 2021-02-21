@@ -87,7 +87,7 @@ suite.add("invalid test data: JSON.parse", () => {
   try {
     JSON.parse(invalidNestedElements)
     throw new Error()
-  } catch(e) {}
+  } catch (e) {}
 })
 
 console.log()

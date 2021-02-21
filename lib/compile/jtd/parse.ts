@@ -2,18 +2,13 @@ import type Ajv from "../../core"
 import type {SchemaObject} from "../../types"
 import {jtdForms, JTDForm, SchemaObjectMap} from "./types"
 import {SchemaEnv, getCompilingSchema} from ".."
-import {_, str, and, getProperty, CodeGen, Code, Name} from "../codegen"
+import {_, str, and, nil, getProperty, CodeGen, Code, Name, SafeExpr} from "../codegen"
 import {MissingRefError} from "../error_classes"
 import N from "../names"
 import {isOwnProperty} from "../../vocabularies/code"
 import {hasRef} from "../../vocabularies/jtd/ref"
 import {intRange, IntType} from "../../vocabularies/jtd/type"
-import {
-  parseJson,
-  parseJsonNumber,
-  parseJsonInteger,
-  parseJsonString,
-} from "../../runtime/parseJson"
+import {parseJson, parseJsonNumber, parseJsonString} from "../../runtime/parseJson"
 import {func} from "../util"
 import validTimestamp from "../timestamp"
 
@@ -239,8 +234,8 @@ function parseType(cxt: ParseCxt): void {
       parseNumber(cxt)
       break
     default: {
-      parseNumber(cxt, true)
-      const [min, max] = intRange[schema.type as IntType]
+      const [min, max, maxDigits] = intRange[schema.type as IntType]
+      parseNumber(cxt, maxDigits)
       gen.if(_`${data} < ${min} || ${data} > ${max}`, () =>
         gen.throw(_`new SyntaxError("JSON: integer out of range")`)
       )
@@ -270,12 +265,12 @@ function parseEnum(cxt: ParseCxt): void {
   gen.endIf()
 }
 
-function parseNumber(cxt: ParseCxt, int?: boolean): void {
+function parseNumber(cxt: ParseCxt, maxDigits?: number): void {
   const {gen} = cxt
   gen.if(
     _`"-0123456789".indexOf(${jsonSlice(1)}) < 0`,
     () => jsonSyntaxError(cxt),
-    () => parseWith(cxt, int ? parseJsonInteger : parseJsonNumber)
+    () => parseWith(cxt, parseJsonNumber, maxDigits)
   )
 }
 
@@ -312,12 +307,15 @@ function parseEmpty(cxt: ParseCxt): void {
   parseWith(cxt, parseJson)
 }
 
-function parseWith({gen, data}: ParseCxt, parseFunc: {code: Code}): void {
-  const func = gen.scopeValue("func", {
+function parseWith({gen, data}: ParseCxt, parseFunc: {code: Code}, args?: SafeExpr): void {
+  const f = gen.scopeValue("func", {
     ref: parseFunc,
     code: parseFunc.code,
   })
-  gen.assign(_`[${data}, ${N.jsonPos}]`, _`${func}(${N.json}, ${N.jsonPos})`)
+  gen.assign(
+    _`[${data}, ${N.jsonPos}]`,
+    _`${f}(${N.json}, ${N.jsonPos}${args ? _`, ${args}` : nil})`
+  )
 }
 
 function parseToken(cxt: ParseCxt, tok: string): void {
