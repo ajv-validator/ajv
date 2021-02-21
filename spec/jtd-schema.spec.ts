@@ -94,7 +94,7 @@ describe("JSON Type Definition", () => {
     }
   })
 
-  describe.skip("serialize", () => {
+  describe("serialize", () => {
     const ajv = new _AjvJTD()
 
     for (const testName in jtdValidationTests) {
@@ -104,7 +104,7 @@ describe("JSON Type Definition", () => {
       describeOnly(testName, () =>
         it(`should serialize data`, () => {
           const serialize = ajv.compileSerializer(schema)
-          console.log(serialize.toString())
+          // console.log(serialize.toString())
           assert.deepStrictEqual(JSON.parse(serialize(instance)), instance)
           // const opts = ajv instanceof AjvPack ? ajv.ajv.opts : ajv.opts
         })

@@ -1,12 +1,12 @@
 import type Ajv from "../core"
 import type {SchemaObject} from "../types"
 import {SchemaEnv, getCompilingSchema} from "."
-import {_, str, and, getProperty, stringify, CodeGen, Code, Name} from "./codegen"
-import {_Code} from "./codegen/code"
+import {_, str, and, getProperty, CodeGen, Code, Name} from "./codegen"
 import {MissingRefError} from "./error_classes"
 import N from "./names"
 import {isOwnProperty} from "../vocabularies/code"
 import {hasRef} from "../vocabularies/jtd/ref"
+import quote from "../runtime/quote"
 
 type SchemaObjectMap = {[Ref in string]?: SchemaObject}
 
@@ -129,14 +129,17 @@ function serializeValues(cxt: SerializeCxt): void {
   const {gen, schema, jsonStr, data} = cxt
   gen.add(jsonStr, str`{`)
   const first = gen.let("first", true)
-  gen.forIn("key", data, (key) => {
-    addComma(cxt, first)
-    serializeString({...cxt, data: key})
-    gen.add(jsonStr, str`:`)
-    const value = gen.const("value", _`${data}${getProperty(key)}`)
-    serializeCode({...cxt, schema: schema.values, data: value})
-  })
+  gen.forIn("key", data, (key) => serializeKeyValue(cxt, key, schema.values, first))
   gen.add(jsonStr, str`}`)
+}
+
+function serializeKeyValue(cxt: SerializeCxt, key: Name, schema: SchemaObject, first: Name): void {
+  const {gen, jsonStr, data} = cxt
+  addComma(cxt, first)
+  serializeString({...cxt, data: key})
+  gen.add(jsonStr, str`:`)
+  const value = gen.const("value", _`${data}${getProperty(key)}`)
+  serializeCode({...cxt, schema, data: value})
 }
 
 function serializeDiscriminator(cxt: SerializeCxt): void {
@@ -145,11 +148,11 @@ function serializeDiscriminator(cxt: SerializeCxt): void {
   gen.add(jsonStr, str`{${JSON.stringify(discriminator)}:`)
   const tag = gen.const("tag", _`${data}${getProperty(discriminator)}`)
   serializeString({...cxt, data: tag})
-  const first = gen.let("first", false)
   gen.if(false)
   for (const tagValue in schema.mapping) {
     gen.elseIf(_`${tag} === ${tagValue}`)
-    serializeSchemaProperties({...cxt, schema: schema.mapping[tagValue]}, first)
+    const sch = schema.mapping[tagValue]
+    serializeSchemaProperties({...cxt, schema: sch}, discriminator)
   }
   gen.endIf()
   gen.add(jsonStr, str`}`)
@@ -158,32 +161,59 @@ function serializeDiscriminator(cxt: SerializeCxt): void {
 function serializeProperties(cxt: SerializeCxt): void {
   const {gen, jsonStr} = cxt
   gen.add(jsonStr, str`{`)
-  const first = gen.let("first", true)
-  serializeSchemaProperties(cxt, first)
+  serializeSchemaProperties(cxt)
   gen.add(jsonStr, str`}`)
 }
 
-function serializeSchemaProperties(cxt: SerializeCxt, first: Name): void {
+function serializeSchemaProperties(cxt: SerializeCxt, discriminator?: string): void {
   const {gen, schema, jsonStr, data} = cxt
   const {properties, optionalProperties} = schema
-  for (const key in properties || {}) {
-    serializeProperty(key, keyValue(key))
+  const props = keys(properties)
+  const optProps = keys(optionalProperties)
+  const allProps = allProperties(props.concat(optProps))
+  let first = !discriminator
+  for (const key of props) {
+    serializeProperty(key, properties[key], keyValue(key))
   }
-  for (const key in optionalProperties || {}) {
+  for (const key of optProps) {
     const value = keyValue(key)
     gen.if(and(_`${value} !== undefined`, isOwnProperty(gen, data, key)), () =>
-      serializeProperty(key, value)
+      serializeProperty(key, optionalProperties[key], value)
     )
+  }
+  if (schema.additionalProperties) {
+    gen.forIn("key", data, (key) =>
+      gen.if(isAdditional(key, allProps), () =>
+        serializeKeyValue(cxt, key, {}, gen.let("first", first))
+      )
+    )
+  }
+
+  function keys(ps?: SchemaObjectMap): string[] {
+    return ps ? Object.keys(ps) : []
+  }
+
+  function allProperties(ps: string[]): string[] {
+    if (discriminator) ps.push(discriminator)
+    if (new Set(ps).size !== ps.length) {
+      throw new Error("JTD: properties/optionalProperties/disciminator overlap")
+    }
+    return ps
   }
 
   function keyValue(key: string): Name {
     return gen.const("value", _`${data}${getProperty(key)}`)
   }
 
-  function serializeProperty(key: string, value: Name): void {
-    addComma(cxt, first)
+  function serializeProperty(key: string, propSchema: SchemaObject, value: Name): void {
+    if (first) first = false
+    else gen.add(jsonStr, str`,`)
     gen.add(jsonStr, str`${JSON.stringify(key)}:`)
-    serializeCode({...cxt, data: value})
+    serializeCode({...cxt, schema: propSchema, data: value})
+  }
+
+  function isAdditional(key: Name, ps: string[]): Code | true {
+    return ps.length ? and(...ps.map((p) => _`${key} !== ${p}`)) : true
   }
 }
 
@@ -245,57 +275,9 @@ function addComma({gen, jsonStr}: SerializeCxt, first: Name): void {
   )
 }
 
-// eslint-disable-next-line no-control-regex, no-misleading-character-class
-const rxEscapable = /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g
-
-const rxEscapableRx = /rxEscapable/g
-
-const escaped: {[K in string]?: string} = {
-  "\b": "\\b",
-  "\t": "\\t",
-  "\n": "\\n",
-  "\f": "\\f",
-  "\r": "\\r",
-  '"': '\\"',
-  "\\": "\\\\",
-}
-
-const escapedRx = /escapedRx/g
-
-function quote(s: string): string {
-  rxEscapable.lastIndex = 0
-  return (
-    '"' +
-    (rxEscapable.test(s)
-      ? s.replace(rxEscapable, (a) => {
-          const c = escaped[a]
-          return typeof c === "string"
-            ? c
-            : "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4)
-        })
-      : s) +
-    '"'
-  )
-}
-
 function quoteFunc(gen: CodeGen): Name {
-  // const quoteName = gen.getScopeValue("func", quote)
-  // if (quoteName) return quoteName
-  const escapedName = gen.scopeValue("obj", {
-    ref: escaped,
-    code: stringify(escaped),
-  })
-  const rxEscapableName = gen.scopeValue("obj", {
-    ref: rxEscapable,
-    code: new _Code(rxEscapable.toString()),
-  })
   return gen.scopeValue("func", {
     ref: quote,
-    code: new _Code(
-      quote
-        .toString()
-        .replace(rxEscapableRx, rxEscapableName.toString())
-        .replace(escapedRx, escapedName.toString())
-    ),
+    code: _`require("ajv/dist/runtime/quote").default`,
   })
 }
