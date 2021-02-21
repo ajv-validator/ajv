@@ -28,7 +28,7 @@
     "test": "npm link && npm link ajv && npm run json-tests && npm run eslint && npm run test-cov",
     "test-ci": "AJV_FULL_TEST=true npm test",
     "prepublish": "npm run build",
-    "benchmark": "npm i && npm run build && npm link && cd ./benchmark && npm link ajv && npm i && node ./serialize"
+    "benchmark": "npm i && npm run build && npm link && cd ./benchmark && npm link ajv && npm i && node ./jtd"
   },
   "nyc": {
     "exclude": [

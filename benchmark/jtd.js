@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 /* eslint-disable no-console */
 const Ajv = require("ajv/dist/jtd").default
 const Benchmark = require("benchmark")
@@ -61,6 +62,33 @@ const serializer = ajv.compileSerializer(testSchema)
 
 suite.add("test data: compiled JTD serializer", () => serializer(testData))
 suite.add("test data: JSON.stringify", () => JSON.stringify(testData))
+
+const nestedElementsSchema = {
+  elements: {
+    elements: {
+      type: "int32",
+    },
+  },
+}
+
+const validNestedElements = JSON.stringify([[], [1, 2], [3, 4, 5]])
+const invalidNestedElements = JSON.stringify([[], [1, 2], {}, [3, 4, 5]])
+
+const parse = ajv.compileParser(nestedElementsSchema)
+
+suite.add("valid test data: compiled JTD parser", () => parse(validNestedElements))
+suite.add("valid test data: JSON.parse", () => JSON.parse(validNestedElements))
+suite.add("invalid test data: compiled JTD parser", () => {
+  try {
+    parse(invalidNestedElements)
+  } catch (e) {}
+})
+suite.add("invalid test data: JSON.parse", () => {
+  try {
+    JSON.parse(invalidNestedElements)
+    throw new Error()
+  } catch(e) {}
+})
 
 console.log()
 

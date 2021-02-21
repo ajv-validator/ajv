@@ -18,15 +18,16 @@ export function parseJson(s: string, pos: number): [unknown, number] {
 
 parseJson.code = _`require("ajv/dist/runtime/parseJson").parseJson`
 
+// TODO combile parsing integers and numbers with extra parameters for digits size
 export function parseJsonNumber(s: string, pos: number): [number, number] {
   let numStr
-  [numStr, pos] = parseIntStr(s, pos)
+  ;[numStr, pos] = parseIntStr(s, pos)
   let c: string
   let digits: string
   if (s[pos] === ".") {
     numStr += "."
     pos++
-    [digits, pos] = parseDigits(s, pos)
+    ;[digits, pos] = parseDigits(s, pos)
     numStr += digits
   }
   if (((c = s[pos]), c === "e" || c === "E")) {
@@ -36,7 +37,7 @@ export function parseJsonNumber(s: string, pos: number): [number, number] {
       numStr += c
       pos++
     }
-    [digits, pos] = parseDigits(s, pos)
+    ;[digits, pos] = parseDigits(s, pos)
     numStr += digits
   }
   return [+numStr, pos]
@@ -61,7 +62,7 @@ function parseIntStr(s: string, pos: number): [string, number] {
     pos++
   } else {
     let digits: string
-    [digits, pos] = parseDigits(s, pos)
+    ;[digits, pos] = parseDigits(s, pos)
     numStr += digits
   }
   return [numStr, pos]
