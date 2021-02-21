@@ -106,9 +106,32 @@ describe("JSON Type Definition", () => {
           const serialize = ajv.compileSerializer(schema)
           // console.log(serialize.toString())
           assert.deepStrictEqual(JSON.parse(serialize(instance)), instance)
-          // const opts = ajv instanceof AjvPack ? ajv.ajv.opts : ajv.opts
         })
       )
+    }
+  })
+
+  describe.skip("parse", () => {
+    const ajv = new _AjvJTD()
+
+    for (const testName in jtdValidationTests) {
+      const {schema, instance, errors} = jtdValidationTests[testName] as TestCase
+      const valid = errors.length === 0
+      describeOnly(testName, () => {
+        if (valid) {
+          it(`should parse valid JSON string`, () => {
+            const parse = ajv.compileParser(schema)
+            console.log(parse.toString())
+            assert.deepStrictEqual(parse(JSON.stringify(instance)), instance)
+          })
+        } else {
+          it(`should throw exception on invalid JSON string`, () => {
+            const parse = ajv.compileParser(schema)
+            console.log(parse.toString())
+            assert.throws(() => parse(JSON.stringify(instance)))
+          })
+        }
+      })
     }
   })
 })

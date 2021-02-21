@@ -17,8 +17,9 @@ const names = {
   // "globals"
   self: new Name("self"),
   scope: new Name("scope"),
-  // JTD serialize/parse name for JSON string
-  json: new Name("json")
+  // JTD serialize/parse name for JSON string and position
+  json: new Name("json"),
+  jsonPos: new Name("jsonPos"),
 }
 
 export default names

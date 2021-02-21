@@ -1,5 +1,6 @@
 import type Ajv from "../../core"
 import type {SchemaObject} from "../../types"
+import {jtdForms, JTDForm, SchemaObjectMap} from "./types"
 import {SchemaEnv, getCompilingSchema} from ".."
 import {_, str, and, getProperty, CodeGen, Code, Name} from "../codegen"
 import {MissingRefError} from "../error_classes"
@@ -8,22 +9,7 @@ import {isOwnProperty} from "../../vocabularies/code"
 import {hasRef} from "../../vocabularies/jtd/ref"
 import quote from "../../runtime/quote"
 
-type SchemaObjectMap = {[Ref in string]?: SchemaObject}
-
-const jtdForms = [
-  "elements",
-  "values",
-  "discriminator",
-  "properties",
-  "optionalProperties",
-  "enum",
-  "type",
-  "ref",
-] as const
-
-type JTDForm = typeof jtdForms[number]
-
-const genSerialize: {[S in JTDForm]: (cxt: SerializeCxt) => void} = {
+const genSerialize: {[F in JTDForm]: (cxt: SerializeCxt) => void} = {
   elements: serializeElements,
   values: serializeValues,
   discriminator: serializeDiscriminator,
@@ -43,7 +29,7 @@ interface SerializeCxt {
   data: Code
 }
 
-export function compileSerializer(
+export default function compileSerializer(
   this: Ajv,
   sch: SchemaEnv,
   definitions: SchemaObjectMap
@@ -54,7 +40,7 @@ export function compileSerializer(
   const {ownProperties} = this.opts
   const gen = new CodeGen(this.scope, {es5, lines, ownProperties})
   const serializeName = gen.scopeName("serialize")
-  const cxt = {
+  const cxt: SerializeCxt = {
     self: this,
     gen,
     schema: sch.schema as SchemaObject,
@@ -126,9 +112,7 @@ function serializeValues(cxt: SerializeCxt): void {
   const {gen, schema, data} = cxt
   gen.add(N.json, str`{`)
   const first = gen.let("first", true)
-  gen.forIn("key", data, (key) =>
-    serializeKeyValue(cxt, key, schema.values, first)
-  )
+  gen.forIn("key", data, (key) => serializeKeyValue(cxt, key, schema.values, first))
   gen.add(N.json, str`}`)
 }
 

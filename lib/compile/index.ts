@@ -81,6 +81,8 @@ export class SchemaEnv implements SchemaEnvArgs {
   validateName?: ValueScopeName
   serialize?: (data: unknown) => string
   serializeName?: ValueScopeName
+  parse?: (data: string) => unknown
+  parseName?: ValueScopeName
 
   constructor(env: SchemaEnvArgs) {
     let schema: AnySchemaObject | undefined

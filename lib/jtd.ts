@@ -32,7 +32,8 @@ export {JTDSchemaType}
 import AjvCore, {CurrentOptions} from "./core"
 import jtdVocabulary from "./vocabularies/jtd"
 import jtdMetaSchema from "./refs/jtd-schema"
-import {compileSerializer} from "./compile/jtd/serialize"
+import compileSerializer from "./compile/jtd/serialize"
+import compileParser from "./compile/jtd/parse"
 import {SchemaEnv} from "./compile"
 
 // const META_SUPPORT_DATA = ["/properties"]
@@ -97,10 +98,22 @@ export default class Ajv extends AjvCore {
     return sch.serialize || this._compileSerializer(sch)
   }
 
+  compileParser<T = unknown>(schema: SchemaObject | JTDSchemaType<T>): (json: string) => T {
+    const sch = this._addSchema(schema)
+    return (sch.parse || this._compileParser(sch)) as (json: string) => T
+  }
+
   private _compileSerializer<T>(sch: SchemaEnv): (data: T) => string {
     compileSerializer.call(this, sch, (sch.schema as AnySchemaObject).definitions || {})
     /* istanbul ignore if */
     if (!sch.serialize) throw new Error("ajv implementation error")
     return sch.serialize
+  }
+
+  private _compileParser(sch: SchemaEnv): (json: string) => unknown {
+    compileParser.call(this, sch, (sch.schema as AnySchemaObject).definitions || {})
+    /* istanbul ignore if */
+    if (!sch.parse) throw new Error("ajv implementation error")
+    return sch.parse
   }
 }

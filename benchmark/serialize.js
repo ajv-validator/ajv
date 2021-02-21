@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 const Ajv = require("ajv/dist/jtd").default
-const Benchmark = require('benchmark')
+const Benchmark = require("benchmark")
 const jtdValidationTests = require("../spec/json-typedef-spec/tests/validation.json")
 
-const ajv = new Ajv
-const suite = new Benchmark.Suite
+const ajv = new Ajv()
+const suite = new Benchmark.Suite()
 const tests = []
 
 for (const testName in jtdValidationTests) {
@@ -13,7 +13,7 @@ for (const testName in jtdValidationTests) {
   if (!valid) continue
   tests.push({
     serialize: ajv.compileSerializer(schema),
-    data: instance
+    data: instance,
   })
 }
 
@@ -34,27 +34,27 @@ const testSchema = {
     obj: {
       properties: {
         foo: {type: "string"},
-        bar: {type: "int8"}
-      }
-    }
+        bar: {type: "int8"},
+      },
+    },
   },
   properties: {
-    a: {ref: "obj"}
+    a: {ref: "obj"},
   },
   optionalProperties: {
-    b: {ref: "obj"}
-  }
+    b: {ref: "obj"},
+  },
 }
 
 const testData = {
   a: {
     foo: "foo1",
-    bar: 1
+    bar: 1,
   },
   b: {
     foo: "foo2",
-    bar: 2
-  }
+    bar: 2,
+  },
 }
 
 const serializer = ajv.compileSerializer(testSchema)
@@ -68,6 +68,6 @@ suite
   .on("cycle", (event) => console.log(String(event.target)))
   .on("complete", function () {
     // eslint-disable-next-line no-invalid-this
-    console.log('The fastest is "' + this.filter('fastest').map('name') + '"');
+    console.log('The fastest is "' + this.filter("fastest").map("name") + '"')
   })
   .run({async: true})

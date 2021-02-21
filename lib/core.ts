@@ -64,6 +64,7 @@ const META_IGNORE_OPTIONS: (keyof Options)[] = ["removeAdditional", "useDefaults
 const EXT_SCOPE_NAMES = new Set([
   "validate",
   "serialize",
+  "parse",
   "wrapper",
   "root",
   "schema",
