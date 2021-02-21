@@ -14,6 +14,9 @@ const def: CodeKeywordDefinition = {
       apDef.code(new KeywordCxt(it, apDef, "additionalProperties"))
     }
     const allProps = allSchemaProperties(schema)
+    for (const prop of allProps) {
+      it.definedProperties.add(prop)
+    }
     if (it.opts.unevaluated && allProps.length && it.props !== true) {
       it.props = mergeEvaluated.props(gen, toHash(allProps), it.props)
     }

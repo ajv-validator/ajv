@@ -36,10 +36,10 @@ const def: CodeKeywordDefinition = {
     else exitOnErrorMode()
 
     if (opts.strictRequired) {
-      const parentProps = cxt.parentSchema.properties
+      const props = cxt.parentSchema.properties
       const {definedProperties} = cxt.it
       for (const requiredKey of schema) {
-        if (parentProps?.[requiredKey] === undefined && !definedProperties.has(requiredKey)) {
+        if (props && props[requiredKey] === undefined && definedProperties.has(requiredKey) === false) {
           const schemaPath = it.schemaEnv.baseId + it.errSchemaPath
           const msg = `required property "${requiredKey}" is not defined at "${schemaPath}" (strictRequired)`
           checkStrictMode(it, msg, it.opts.strictRequired)
