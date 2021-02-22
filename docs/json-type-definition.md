@@ -22,6 +22,7 @@ const ajv = new AjvJTD()
   - [values](#values-schema-form) (for dictionary)
   - [ref](#ref-schema-form) (to reference a schema in definitions)
   - [empty](#empty-schema-form) (for any data)
+- [JTDSchemaType](#jtdschematype)
 - [Extending JTD](#extending-jtd)
   - [metadata](#metadata-schema-member)
   - [union](#union-keyword)
@@ -312,6 +313,73 @@ Unlike JSON Schema, JTD does not allow to reference:
 ### Empty schema form
 
 Empty JTD schema defines the data instance that can be of any type, including JSON `null` (even if `nullable` member is not present). It cannot have any member other than `nullable` and `metadata`.
+
+## JTDSchemaType
+
+The type `JTDSchemaType` can be used to validate that the written schema matches the type you expect to validate. This type is strict such that if typescript compiles, you should require no further type guards. The downside of this is that the types that `JTDSchemaType` can verify are limited to the types that JTD can verify. If a type doesn't verify, `JTDSchemaType` should resolve to `never`, throwing an error when you try to assign to it. This means that types like `1 | 2 | 3`, or general untagged unions (outside of unions of string literals) cannot be used with `JTDSchemaType`.
+
+### Most Schemas
+
+Most straightforward types should work with `JTDSchemaType`, e.g.
+```typescript
+interface MyType {
+    num: number;
+    optionalStr?: string;
+    nullableEnum: "1" | "2";
+    values: Record<string, number>;
+}
+
+const schema: JTDSchemaType<MyType> = {
+    properties: {
+        num: { type: "float64" },
+        nullableEnum: { enum: ["1", "2"], nullable: true },
+        values: { values: { type: "int32" } },
+    },
+    optionalProperties: {
+        optionalStr: { type: "string" },
+    }
+}
+```
+will compile. Using `schema` with AJV will guarantee type safety.
+
+### Ref Schemas
+
+Ref schemas are a little more advanced, because the types of every definition must be specified in advance.
+A simple ref schema is relatively straightforward:
+```typescript
+const schema: JTDSchemaType<{ val: number }, { num: number }> = {
+    definitions: {
+        num: { type: "float64" }
+    },
+    properties: {
+        val: { ref: "num" }
+    },
+}
+```
+note that the type of all definitions was included as a second argument to `JTDSchemaType`.
+
+This also works for recursive schemas:
+```typescript
+type LinkedList = { val: number, next?: LinkedList }
+const schema: JTDSchemaType<LinkedList, { node: LinkedList }> = {
+    definitions: {
+        node: {
+            properties: {
+                val: { type: "float64" },
+            },
+            optionalProperties: {
+                next: { ref: "node" },
+            },
+        },
+    },
+    ref: "node",
+}
+```
+
+### Notable Omissions
+
+`JTDSchemaType` currently validats that if the schema compiles it will verify an accurate type, but there are a few places with potentially unexpected behavior.
+`JTDSchemaType` doesn't verify the schema is correct. It won't reject schemas that definitions anywhere by the root, and it won't reject discriminator schemas that still define the descriminator in mapping properties. It also won't verify that enum schemas have every enum member as this isn't generally feasible in typescript yet.
 
 ## Extending JTD
 
