@@ -58,8 +58,8 @@ export type JTDSchemaType<T, D extends Record<string, unknown> = Record<string, 
           [K in keyof D]: [Exclude<T, null>] extends [Exclude<D[K], null>] ? {ref: K} : never
         }[keyof D] & {nullable: true}
       : never)
-  // empty - empty schemas also treat nullable differently in that it's now optional
-  | (unknown extends T ? {nullable?: true} : never)
+  // empty - empty schemas also treat nullable differently in that it's now fully ignored
+  | (unknown extends T ? {nullable?: boolean} : never)
   // all other types
   | ((
       | // numbers - only accepts the type number

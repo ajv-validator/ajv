@@ -177,17 +177,7 @@ describe("JTDSchemaType", () => {
       nullable: true,
     }
 
-    // can't use properties for any object (e.g. keyof = never)
-    const noProperties: TypeEquality<JTDSchemaType<unknown>, never> = true
-
-    void [
-      properties,
-      optionalProperties,
-      mixedProperties,
-      fewerProperties,
-      propertiesNull,
-      noProperties,
-    ]
+    void [properties, optionalProperties, mixedProperties, fewerProperties, propertiesNull]
   })
 
   it("should typecheck discriminator schemas", () => {
@@ -263,6 +253,8 @@ describe("JTDSchemaType", () => {
     const empty: JTDSchemaType<unknown> = {}
     // unknown can be null
     const emptyUnknown: JTDSchemaType<unknown> = {nullable: true}
+    // somewhat unintuitively, it can still have nullable: false even though it can be null
+    const falseUnknown: JTDSchemaType<unknown> = {nullable: false}
     // can only use empty for empty and null
     // @ts-expect-error
     const emptyButFull: JTDSchemaType<{a: string}> = {}
@@ -271,7 +263,7 @@ describe("JTDSchemaType", () => {
     // constant null not representable
     const emptyNull: TypeEquality<JTDSchemaType<null>, never> = true
 
-    void [empty, emptyUnknown, emptyButFull, emptyMeta, emptyNull]
+    void [empty, emptyUnknown, falseUnknown, emptyButFull, emptyMeta, emptyNull]
   })
 
   it("should typecheck ref schemas", () => {
