@@ -133,16 +133,18 @@ function parseItems(cxt: ParseCxt, endToken: string, block: () => void): void {
 }
 
 function parseKeyValue(cxt: ParseCxt, schema: SchemaObject): void {
-  const {gen, data} = cxt
+  const {gen} = cxt
   const key = gen.let("key")
   parseString({...cxt, data: key})
+  checkDuplicateProperty(cxt, key)
   parseToken(cxt, ":")
-  parseCode({...cxt, schema, data: _`${data}[${key}]`})
+  parsePropertyValue(cxt, key, schema)
 }
 
 function parseDiscriminator(cxt: ParseCxt): void {
   const {gen, schema, data} = cxt
   const {discriminator} = schema
+
   gen.add(N.json, str`{${JSON.stringify(discriminator)}:`)
   const tag = gen.const("tag", _`${data}${getProperty(discriminator)}`)
   parseString({...cxt, data: tag})
@@ -157,10 +159,45 @@ function parseDiscriminator(cxt: ParseCxt): void {
 }
 
 function parseProperties(cxt: ParseCxt): void {
+  // TODO check missing properties
+  const {gen, schema, data} = cxt
+  const {properties, optionalProperties, additionalProperties} = schema
+  parseToken(cxt, "{")
+  gen.assign(data, _`{}`)
+  parseItems(cxt, "}", () => {
+    const key = gen.let("key")
+    parseString({...cxt, data: key})
+    checkDuplicateProperty(cxt, key)
+    parseToken(cxt, ":")
+    gen.if(false)
+    parseDefinedProperty(cxt, key, properties)
+    parseDefinedProperty(cxt, key, optionalProperties)
+    gen.else()
+    if (additionalProperties) {
+      parseEmpty({...cxt, data: _`${data}[${key}]`})
+    } else {
+      gen.throw(_`new Error("JSON: property "+${key}+" not allowed")`)
+    }
+    gen.endIf()
+  })
+}
+
+function parseDefinedProperty(cxt: ParseCxt, key: Name, schemas: SchemaObjectMap = {}): void {
   const {gen} = cxt
-  gen.add(N.json, str`{`)
-  parseSchemaProperties(cxt)
-  gen.add(N.json, str`}`)
+  for (const prop in schemas) {
+    gen.elseIf(_`${key} === ${prop}`)
+    parsePropertyValue(cxt, key, schemas[prop] as SchemaObject)
+  }
+}
+
+function checkDuplicateProperty({gen, data}: ParseCxt, key: Name): void {
+  gen.if(isOwnProperty(gen, data, key), () =>
+    gen.throw(_`new Error("JSON: duplicate property " + ${key})`)
+  )
+}
+
+function parsePropertyValue(cxt: ParseCxt, key: Name, schema: SchemaObject): void {
+  parseCode({...cxt, schema, data: _`${cxt.data}[${key}]`})
 }
 
 function parseSchemaProperties(cxt: ParseCxt, discriminator?: string): void {

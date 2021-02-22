@@ -26,13 +26,13 @@ interface TestCaseError {
 
 const ONLY: RegExp[] = [
   "empty",
-//   "ref",
+  // "ref",
   "type",
   "enum",
   "elements",
-//   "properties",
-//   "optionalProperties",
-//   "discriminator",
+  // "properties",
+  // "optionalProperties",
+  // "discriminator",
   "values",
 ].map((s) => new RegExp(`(^|.*\\s)${s}\\s.*-`))
 
