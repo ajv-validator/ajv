@@ -357,7 +357,14 @@ describe("JTDDataType typechecks", () => {
     const enumSchema = {enum: ["a", "b"]} as const
     const enumerated: TypeEquality<JTDDataType<typeof enumSchema>, "a" | "b"> = true
 
-    void [enumerated]
+    // if you forget const on an enum it will error
+    const enumStringSchema = {enum: ["a", "b"]}
+    const enumString: TypeEquality<JTDDataType<typeof enumStringSchema>, never> = true
+    // also if not a string
+    const enumNumSchema = {enum: [3]} as const
+    const enumNum: TypeEquality<JTDDataType<typeof enumNumSchema>, never> = true
+
+    void [enumerated, enumString, enumNum]
   })
 
   it("should typecheck elements schemas", () => {
