@@ -30,9 +30,9 @@ const ONLY: RegExp[] = [
   "type",
   "enum",
   "elements",
-  // "properties",
-  // "optionalProperties",
-  // "discriminator",
+  "properties",
+  "optionalProperties",
+  "discriminator",
   "values",
 ].map((s) => new RegExp(`(^|.*\\s)${s}\\s.*-`))
 

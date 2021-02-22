@@ -2,10 +2,10 @@ import type Ajv from "../../core"
 import type {SchemaObject} from "../../types"
 import {jtdForms, JTDForm, SchemaObjectMap} from "./types"
 import {SchemaEnv, getCompilingSchema} from ".."
-import {_, str, and, nil, getProperty, CodeGen, Code, Name, SafeExpr} from "../codegen"
+import {_, str, and, nil, not, CodeGen, Code, Name, SafeExpr} from "../codegen"
 import {MissingRefError} from "../error_classes"
 import N from "../names"
-import {isOwnProperty} from "../../vocabularies/code"
+import {isOwnProperty, hasPropFunc} from "../../vocabularies/code"
 import {hasRef} from "../../vocabularies/jtd/ref"
 import {intRange, IntType} from "../../vocabularies/jtd/type"
 import {parseJson, parseJsonNumber, parseJsonString} from "../../runtime/parseJson"
@@ -124,12 +124,16 @@ function parseValues(cxt: ParseCxt): void {
 }
 
 function parseItems(cxt: ParseCxt, endToken: string, block: () => void): void {
+  tryParseItems(cxt, endToken, block)
+  parseToken(cxt, endToken)
+}
+
+function tryParseItems(cxt: ParseCxt, endToken: string, block: () => void): void {
   const {gen} = cxt
   gen.for(_`;${N.jsonPos}<${N.jsonLen} && ${jsonSlice(1)}!==${endToken};`, () => {
     block()
     tryParseToken(cxt, ",", () => gen.break())
   })
-  parseToken(cxt, endToken)
 }
 
 function parseKeyValue(cxt: ParseCxt, schema: SchemaObject): void {
@@ -142,36 +146,66 @@ function parseKeyValue(cxt: ParseCxt, schema: SchemaObject): void {
 }
 
 function parseDiscriminator(cxt: ParseCxt): void {
-  const {gen, schema, data} = cxt
-  const {discriminator} = schema
-
-  gen.add(N.json, str`{${JSON.stringify(discriminator)}:`)
-  const tag = gen.const("tag", _`${data}${getProperty(discriminator)}`)
-  parseString({...cxt, data: tag})
-  gen.if(false)
-  for (const tagValue in schema.mapping) {
+  const {gen, data, schema} = cxt
+  const {discriminator, mapping} = schema
+  parseToken(cxt, "{")
+  gen.assign(data, _`{}`)
+  const startPos = gen.const("pos", N.jsonPos)
+  const value = gen.let("value")
+  const tag = gen.let("tag")
+  tryParseItems(cxt, "}", () => {
+    const key = gen.let("key")
+    parseString({...cxt, data: key})
+    parseToken(cxt, ":")
+    gen.if(
+      _`${key} === ${discriminator}`,
+      () => {
+        parseString({...cxt, data: tag})
+        gen.assign(_`${data}[${key}]`, tag)
+        gen.break()
+      },
+      () => parseEmpty({...cxt, data: value}) // can be discarded/skipped
+    )
+  })
+  gen.assign(N.jsonPos, startPos)
+  gen.if(_`${tag} === undefined`)
+  gen.throw(_`new Error("JSON: discriminator tag not found")`)
+  for (const tagValue in mapping) {
     gen.elseIf(_`${tag} === ${tagValue}`)
-    const sch = schema.mapping[tagValue]
-    parseSchemaProperties({...cxt, schema: sch}, discriminator)
+    parseSchemaProperties({...cxt, schema: mapping[tagValue]}, discriminator)
   }
+  gen.else()
+  gen.throw(_`new Error("JSON: discriminator value not in schema")`)
   gen.endIf()
-  gen.add(N.json, str`}`)
 }
 
 function parseProperties(cxt: ParseCxt): void {
-  // TODO check missing properties
-  const {gen, schema, data} = cxt
-  const {properties, optionalProperties, additionalProperties} = schema
+  const {gen, data} = cxt
   parseToken(cxt, "{")
   gen.assign(data, _`{}`)
+  parseSchemaProperties(cxt)
+}
+
+function parseSchemaProperties(cxt: ParseCxt, discriminator?: string): void {
+  const {gen, schema, data} = cxt
+  const {properties, optionalProperties, additionalProperties} = schema
   parseItems(cxt, "}", () => {
     const key = gen.let("key")
     parseString({...cxt, data: key})
-    checkDuplicateProperty(cxt, key)
+    if (discriminator) {
+      gen.if(_`${key} !== ${discriminator}`, () => checkDuplicateProperty(cxt, key))
+    } else {
+      checkDuplicateProperty(cxt, key)
+    }
     parseToken(cxt, ":")
     gen.if(false)
     parseDefinedProperty(cxt, key, properties)
     parseDefinedProperty(cxt, key, optionalProperties)
+    if (discriminator) {
+      gen.elseIf(_`${key} === ${discriminator}`)
+      const tag = gen.let("tag")
+      parseString({...cxt, data: tag}) // can be discarded, it is already assigned
+    }
     gen.else()
     if (additionalProperties) {
       parseEmpty({...cxt, data: _`${data}[${key}]`})
@@ -180,6 +214,13 @@ function parseProperties(cxt: ParseCxt): void {
     }
     gen.endIf()
   })
+  if (properties) {
+    const hasProp = hasPropFunc(gen)
+    const allProps: Code = and(
+      ...Object.keys(properties).map((p): Code => _`${hasProp}.call(${data}, ${p})`)
+    )
+    gen.if(not(allProps), () => gen.throw(_`new Error("JSON: missing required properties")`))
+  }
 }
 
 function parseDefinedProperty(cxt: ParseCxt, key: Name, schemas: SchemaObjectMap = {}): void {
@@ -198,56 +239,6 @@ function checkDuplicateProperty({gen, data}: ParseCxt, key: Name): void {
 
 function parsePropertyValue(cxt: ParseCxt, key: Name, schema: SchemaObject): void {
   parseCode({...cxt, schema, data: _`${cxt.data}[${key}]`})
-}
-
-function parseSchemaProperties(cxt: ParseCxt, discriminator?: string): void {
-  const {gen, schema, data} = cxt
-  const {properties, optionalProperties} = schema
-  const props = keys(properties)
-  const optProps = keys(optionalProperties)
-  const allProps = allProperties(props.concat(optProps))
-  let first = !discriminator
-  for (const key of props) {
-    parseProperty(key, properties[key], keyValue(key))
-  }
-  for (const key of optProps) {
-    const value = keyValue(key)
-    gen.if(and(_`${value} !== undefined`, isOwnProperty(gen, data, key)), () =>
-      parseProperty(key, optionalProperties[key], value)
-    )
-  }
-  if (schema.additionalProperties) {
-    gen.forIn("key", data, (key) =>
-      gen.if(isAdditional(key, allProps), () => parseKeyValue(cxt, {}))
-    )
-  }
-
-  function keys(ps?: SchemaObjectMap): string[] {
-    return ps ? Object.keys(ps) : []
-  }
-
-  function allProperties(ps: string[]): string[] {
-    if (discriminator) ps.push(discriminator)
-    if (new Set(ps).size !== ps.length) {
-      throw new Error("JTD: properties/optionalProperties/disciminator overlap")
-    }
-    return ps
-  }
-
-  function keyValue(key: string): Name {
-    return gen.const("value", _`${data}${getProperty(key)}`)
-  }
-
-  function parseProperty(key: string, propSchema: SchemaObject, value: Name): void {
-    if (first) first = false
-    else gen.add(N.json, str`,`)
-    gen.add(N.json, str`${JSON.stringify(key)}:`)
-    parseCode({...cxt, schema: propSchema, data: value})
-  }
-
-  function isAdditional(key: Name, ps: string[]): Code | true {
-    return ps.length ? and(...ps.map((p) => _`${key} !== ${p}`)) : true
-  }
 }
 
 function parseType(cxt: ParseCxt): void {

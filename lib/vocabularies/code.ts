@@ -32,13 +32,16 @@ export function reportMissingProp(cxt: KeywordCxt, missing: Name): void {
   cxt.error()
 }
 
-export function isOwnProperty(gen: CodeGen, data: Name, property: Name | string): Code {
-  const hasProp = gen.scopeValue("func", {
+export function hasPropFunc(gen: CodeGen): Name {
+  return gen.scopeValue("func", {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     ref: Object.prototype.hasOwnProperty,
     code: _`Object.prototype.hasOwnProperty`,
   })
-  return _`${hasProp}.call(${data}, ${property})`
+}
+
+export function isOwnProperty(gen: CodeGen, data: Name, property: Name | string): Code {
+  return _`${hasPropFunc(gen)}.call(${data}, ${property})`
 }
 
 export function propertyInData(
