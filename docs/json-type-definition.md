@@ -325,14 +325,14 @@ Most straightforward types should work with `JTDSchemaType`, e.g.
 interface MyType {
     num: number;
     optionalStr?: string;
-    nullableEnum: "1" | "2";
+    nullableEnum: "v1.0" | "v1.2" | null;
     values: Record<string, number>;
 }
 
 const schema: JTDSchemaType<MyType> = {
     properties: {
         num: { type: "float64" },
-        nullableEnum: { enum: ["1", "2"], nullable: true },
+        nullableEnum: { enum: ["v1.0", "v1.2"], nullable: true },
         values: { values: { type: "int32" } },
     },
     optionalProperties: {
