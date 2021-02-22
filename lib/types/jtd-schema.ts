@@ -46,14 +46,20 @@ type StringType = "string" | "timestamp"
 /** actual schema */
 export type JTDSchemaType<T, D extends Record<string, unknown> = Record<string, never>> = (
   | // refs - where null wasn't specified, must match exactly
-  ({[K in keyof D]: [T] extends [D[K]] ? {ref: K} : never}[keyof D] & {nullable?: false})
+  (null extends EnumString<keyof D>
+      ? never
+      : {[K in keyof D]: [T] extends [D[K]] ? {ref: K} : never}[keyof D] & {nullable?: false})
   // nulled refs - if ref is nullable and nullable is specified, then it can
   // match either null or non-null definitions
-  | (null extends T
+  | (null extends EnumString<keyof D>
+      ? never
+      : null extends T
       ? {
           [K in keyof D]: [Exclude<T, null>] extends [Exclude<D[K], null>] ? {ref: K} : never
         }[keyof D] & {nullable: true}
       : never)
+  // empty - empty schemas also treat nullable differently in that it's now optional
+  | (unknown extends T ? {nullable?: true} : never)
   // all other types
   | ((
       | // numbers - only accepts the type number
@@ -129,14 +135,6 @@ export type JTDSchemaType<T, D extends Record<string, unknown> = Record<string, 
                   : never
               }[keyof Exclude<T, null>]
           : never)
-      // empty schema
-      // NOTE there should only be one type that extends Record<string, never> so unions
-      // shouldn't be a worry
-      | (T extends Record<string, never> ? unknown : never)
-      // null
-      // NOTE we have to check this too because null as an exclusive type also
-      // qualifies for the empty schema
-      | (true extends TypeEquality<T, null> ? unknown : never)
     ) &
       (null extends T
         ? {
