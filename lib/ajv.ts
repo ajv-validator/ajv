@@ -15,6 +15,7 @@ export {
   AnySchema,
   ValidateFunction,
   AsyncValidateFunction,
+  SchemaValidateFunction,
   ErrorObject,
   ErrorNoParams,
 } from "./types"
