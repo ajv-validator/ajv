@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-interface,no-void */
 import _Ajv from "../ajv_jtd"
-import type {JTDSchemaType} from "../../dist/jtd"
+import type {JTDSchemaType, JTDDataType} from "../../dist/jtd"
 import chai from "../chai"
 const should = chai.should()
 
@@ -18,6 +18,11 @@ interface B {
 }
 
 type MyData = A | B
+
+interface LinkedList {
+  val: number
+  next?: LinkedList
+}
 
 const mySchema: JTDSchemaType<MyData> = {
   discriminator: "type",
@@ -323,5 +328,108 @@ describe("JTDSchemaType", () => {
     const numNotNull: JTDSchemaType<number | null> = {type: "float32"}
 
     void [isNull, numNotNull]
+  })
+})
+
+describe("JTDDataType typechecks", () => {
+  it("should typecheck number schemas", () => {
+    const numSchema = {type: "float64"} as const
+    const num: TypeEquality<JTDDataType<typeof numSchema>, number> = true
+
+    void [num]
+  })
+
+  it("should typecheck string schemas", () => {
+    const strSchema = {type: "string"} as const
+    const str: TypeEquality<JTDDataType<typeof strSchema>, string> = true
+
+    void [str]
+  })
+
+  it("should typecheck timestamp schemas", () => {
+    const timeSchema = {type: "timestamp"} as const
+    const time: TypeEquality<JTDDataType<typeof timeSchema>, string | Date> = true
+
+    void [time]
+  })
+
+  it("should typecheck enum schemas", () => {
+    const enumSchema = {enum: ["a", "b"]} as const
+    const enumerated: TypeEquality<JTDDataType<typeof enumSchema>, "a" | "b"> = true
+
+    void [enumerated]
+  })
+
+  it("should typecheck elements schemas", () => {
+    const elementsSchema = {elements: {type: "float64"}} as const
+    const elem: TypeEquality<JTDDataType<typeof elementsSchema>, number[]> = true
+
+    void [elem]
+  })
+
+  it("should typecheck properties schemas", () => {
+    const bothPropsSchema = {
+      properties: {a: {type: "float64"}},
+      optionalProperties: {b: {type: "string"}},
+    } as const
+    const both: TypeEquality<JTDDataType<typeof bothPropsSchema>, {a: number; b?: string}> = true
+
+    const reqPropsSchema = {properties: {a: {type: "float64"}}} as const
+    const req: TypeEquality<JTDDataType<typeof reqPropsSchema>, {a: number}> = true
+
+    const optPropsSchema = {optionalProperties: {b: {type: "string"}}} as const
+    const opt: TypeEquality<JTDDataType<typeof optPropsSchema>, {b?: string}> = true
+
+    void [both, req, opt]
+  })
+
+  it("should typecheck values schemas", () => {
+    const valuesSchema = {values: {type: "float64"}} as const
+    const values: TypeEquality<JTDDataType<typeof valuesSchema>, Record<string, number>> = true
+
+    void [values]
+  })
+
+  it("should typecheck discriminator schemas", () => {
+    const discriminatorSchema = {
+      discriminator: "type",
+      mapping: {
+        a: {properties: {a: {type: "float64"}}},
+        b: {optionalProperties: {b: {type: "string"}}},
+      },
+    } as const
+    const disc: TypeEquality<JTDDataType<typeof discriminatorSchema>, A | B> = true
+
+    void [disc]
+  })
+
+  it("should typecheck ref schemas", () => {
+    const refSchema = {
+      definitions: {num: {type: "float64", nullable: true}},
+      ref: "num",
+      nullable: true,
+    } as const
+    const ref: TypeEquality<JTDDataType<typeof refSchema>, number | null> = true
+
+    // works for recursive schemas
+    const llSchema = {
+      definitions: {
+        node: {
+          properties: {val: {type: "float64"}},
+          optionalProperties: {next: {ref: "node"}},
+        },
+      },
+      ref: "node",
+    } as const
+    const list: TypeEquality<JTDDataType<typeof llSchema>, LinkedList> = true
+
+    void [ref, list]
+  })
+
+  it("should typecheck empty schemas", () => {
+    const emptySchema = {metadata: {}} as const
+    const empty: TypeEquality<JTDDataType<typeof emptySchema>, unknown> = true
+
+    void [empty]
   })
 })

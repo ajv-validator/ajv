@@ -28,8 +28,8 @@ export {KeywordCxt}
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
 import type {AnySchemaObject, SchemaObject, JTDParser} from "./types"
-import type {JTDSchemaType} from "./types/jtd-schema"
-export {JTDSchemaType}
+import type {JTDSchemaType, JTDDataType} from "./types/jtd-schema"
+export {JTDSchemaType, JTDDataType}
 import AjvCore, {CurrentOptions} from "./core"
 import jtdVocabulary from "./vocabularies/jtd"
 import jtdMetaSchema from "./refs/jtd-schema"

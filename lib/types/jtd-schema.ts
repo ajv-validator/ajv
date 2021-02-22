@@ -149,3 +149,67 @@ export type JTDSchemaType<T, D extends Record<string, unknown> = Record<string, 
   // TODO these should only be allowed at the top level
   definitions?: {[K in keyof D]: JTDSchemaType<D[K], D>}
 }
+
+type JTDDataDef<S, D extends Record<string, unknown>> =
+  | (// ref
+    S extends {ref: string}
+      ? JTDDataDef<D[S["ref"]], D>
+      : // type
+      S extends {type: NumberType}
+      ? number
+      : S extends {type: "string"}
+      ? string
+      : S extends {type: "timestamp"}
+      ? string | Date
+      : // enum
+      S extends {enum: readonly (infer E)[]}
+      ? string extends E
+        ? never
+        : [E] extends [string]
+        ? E
+        : never
+      : // elements
+      S extends {elements: infer E}
+      ? JTDDataDef<E, D>[]
+      : // properties
+      S extends {
+          properties: Record<string, unknown>
+          optionalProperties?: Record<string, unknown>
+          additionalProperties?: boolean
+        }
+      ? {-readonly [K in keyof S["properties"]]-?: JTDDataDef<S["properties"][K], D>} &
+          {
+            -readonly [K in keyof S["optionalProperties"]]+?: JTDDataDef<
+              S["optionalProperties"][K],
+              D
+            >
+          }
+      : S extends {
+          properties?: Record<string, unknown>
+          optionalProperties: Record<string, unknown>
+          additionalProperties?: boolean
+        }
+      ? {-readonly [K in keyof S["properties"]]-?: JTDDataDef<S["properties"][K], D>} &
+          {
+            -readonly [K in keyof S["optionalProperties"]]+?: JTDDataDef<
+              S["optionalProperties"][K],
+              D
+            >
+          }
+      : // values
+      S extends {values: infer V}
+      ? Record<string, JTDDataDef<V, D>>
+      : // discriminator
+      S extends {discriminator: infer M; mapping: Record<string, unknown>}
+      ? [M] extends [string]
+        ? {
+            [K in keyof S["mapping"]]: JTDDataDef<S["mapping"][K], D> & {[KM in M]: K}
+          }[keyof S["mapping"]]
+        : never
+      : // empty
+        unknown)
+  | (S extends {nullable: true} ? null : never)
+
+export type JTDDataType<S> = S extends {definitions: Record<string, unknown>}
+  ? JTDDataDef<S, S["definitions"]>
+  : JTDDataDef<S, Record<string, never>>
