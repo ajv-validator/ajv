@@ -58,17 +58,7 @@ export default function compileParser(
   try {
     this._compilations.add(sch)
     sch.parseName = parseName
-    gen.func(parseName, N.json, false, () => {
-      gen.let(N.data)
-      gen.let(N.jsonPos, 0)
-      gen.const(N.jsonLen, _`${N.json}.length`)
-      parseCode(cxt)
-      gen.if(
-        _`${N.jsonPos} === ${N.jsonLen}`,
-        () => gen.return(N.data),
-        () => jsonSyntaxError(cxt)
-      )
-    })
+    parserFunction(cxt, parseName)
     gen.optimize(this.opts.code.optimize)
     const parseFuncCode = gen.toString()
     sourceCode = `${gen.scopeRefs(N.scope)}return ${parseFuncCode}`
@@ -85,6 +75,19 @@ export default function compileParser(
     this._compilations.delete(sch)
   }
   return sch
+}
+
+function parserFunction(cxt: ParseCxt, parseName: Name): void {
+  const {gen} = cxt
+  gen.func(parseName, _`${N.json}, ${N.jsonPos}, ${N.jsonPart}`, false, () => {
+    gen.let(N.data)
+    gen.assign(N.jsonPos, _`${N.jsonPos} || 0`)
+    gen.const(N.jsonLen, _`${N.json}.length`)
+    parseCode(cxt)
+    gen.if(N.jsonPart, () => gen.return(_`[${N.data}, ${N.jsonPos}]`))
+    gen.if(_`${N.jsonPos} === ${N.jsonLen}`, () => gen.return(N.data))
+    jsonSyntaxError(cxt)
+  })
 }
 
 function parseCode(cxt: ParseCxt): void {
@@ -315,17 +318,17 @@ function parseBoolean(bool: boolean, fail: GenParse): GenParse {
 }
 
 function parseRef(cxt: ParseCxt): void {
-  const {gen, self, data, definitions, schema, schemaEnv} = cxt
+  const {gen, self, definitions, schema, schemaEnv} = cxt
   const {ref} = schema
   const refSchema = definitions[ref]
   if (!refSchema) throw new MissingRefError("", ref, `No definition ${ref}`)
   if (!hasRef(refSchema)) return parseCode({...cxt, schema: refSchema})
   const {root} = schemaEnv
   const sch = compileParser.call(self, new SchemaEnv({schema: refSchema, root}), definitions)
-  gen.add(N.json, _`${getParse(gen, sch)}(${data})`)
+  partialParse(cxt, getParser(gen, sch), true)
 }
 
-function getParse(gen: CodeGen, sch: SchemaEnv): Code {
+function getParser(gen: CodeGen, sch: SchemaEnv): Code {
   return sch.parse
     ? gen.scopeValue("parse", {ref: sch.parse})
     : _`${gen.scopeValue("wrapper", {ref: sch})}.parse`
@@ -335,14 +338,18 @@ function parseEmpty(cxt: ParseCxt): void {
   parseWith(cxt, parseJson)
 }
 
-function parseWith({gen, data}: ParseCxt, parseFunc: {code: Code}, args?: SafeExpr): void {
-  const f = gen.scopeValue("func", {
+function parseWith(cxt: ParseCxt, parseFunc: {code: Code}, args?: SafeExpr): void {
+  const f = cxt.gen.scopeValue("func", {
     ref: parseFunc,
     code: parseFunc.code,
   })
+  partialParse(cxt, f, args)
+}
+
+function partialParse({gen, data}: ParseCxt, parseFunc: Name, args?: SafeExpr): void {
   gen.assign(
     _`[${data}, ${N.jsonPos}]`,
-    _`${f}(${N.json}, ${N.jsonPos}${args ? _`, ${args}` : nil})`
+    _`${parseFunc}(${N.json}, ${N.jsonPos}${args ? _`, ${args}` : nil})`
   )
 }
 

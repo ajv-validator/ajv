@@ -24,19 +24,19 @@ interface TestCaseError {
 //   schemaPath: string
 // }
 
-const ONLY: RegExp[] = [
-  "empty",
-  // "ref",
-  "type",
-  "enum",
-  "elements",
-  "properties",
-  "optionalProperties",
-  "discriminator",
-  "values",
-].map((s) => new RegExp(`(^|.*\\s)${s}\\s.*-`))
+// const ONLY: RegExp[] = [
+//   "empty",
+//   "ref",
+//   "type",
+//   "enum",
+//   "elements",
+//   "properties",
+//   "optionalProperties",
+//   "discriminator",
+//   "values",
+// ].map((s) => new RegExp(`(^|.*\\s)${s}\\s.*-`))
 
-// const ONLY: RegExp[] = []
+const ONLY: RegExp[] = []
 
 describe("JSON Type Definition", () => {
   describe("validation", function () {

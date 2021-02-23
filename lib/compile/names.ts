@@ -21,6 +21,7 @@ const names = {
   json: new Name("json"),
   jsonPos: new Name("jsonPos"),
   jsonLen: new Name("jsonLen"),
+  jsonPart: new Name("jsonPart"),
 }
 
 export default names
