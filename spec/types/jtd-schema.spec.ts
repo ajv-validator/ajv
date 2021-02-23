@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-interface,no-void */
+import _Ajv from "../ajv_jtd"
 import type {JTDSchemaType} from "../../dist/jtd"
+import chai from "../chai"
+const should = chai.should()
 
 /** type is true if T is identically E */
 type TypeEquality<T, E> = [T] extends [E] ? ([E] extends [T] ? true : false) : false
@@ -14,7 +17,32 @@ interface B {
   b?: string
 }
 
-describe("JTDSchemaType typechecks", () => {
+type MyData = A | B
+
+const mySchema: JTDSchemaType<MyData> = {
+  discriminator: "type",
+  mapping: {
+    a: {properties: {a: {type: "float64"}}},
+    b: {optionalProperties: {b: {type: "string"}}},
+  },
+}
+
+describe("JTDSchemaType", () => {
+  it("validation should prove the data type", () => {
+    const ajv = new _Ajv()
+    const validate = ajv.compile<MyData>(mySchema)
+    const validData: unknown = {type: "a", a: 1}
+    if (validate(validData) && validData.type === "a") {
+      validData.a.should.equal(1)
+    }
+    should.not.exist(validate.errors)
+
+    if (ajv.validate<MyData>(mySchema, validData) && validData.type === "a") {
+      validData.a.should.equal(1)
+    }
+    should.not.exist(ajv.errors)
+  })
+
   it("should typecheck number schemas", () => {
     const numf: JTDSchemaType<number> = {type: "float64"}
     const numi: JTDSchemaType<number> = {type: "int32"}
@@ -147,7 +175,17 @@ describe("JTDSchemaType typechecks", () => {
       nullable: true,
     }
 
-    void [properties, optionalProperties, mixedProperties, fewerProperties, propertiesNull]
+    // can't use properties for any object (e.g. keyof = never)
+    const noProperties: TypeEquality<JTDSchemaType<unknown>, never> = true
+
+    void [
+      properties,
+      optionalProperties,
+      mixedProperties,
+      fewerProperties,
+      propertiesNull,
+      noProperties,
+    ]
   })
 
   it("should typecheck discriminator schemas", () => {
@@ -199,15 +237,6 @@ describe("JTDSchemaType typechecks", () => {
         },
       },
     }
-    const unionWithDiscriminator: JTDSchemaType<A | B> = {
-      discriminator: "type",
-      mapping: {
-        a: {properties: {type: {enum: ["a"]}, a: {type: "float64"}}},
-        b: {
-          optionalProperties: {b: {type: "string"}},
-        },
-      },
-    }
     const unionNull: JTDSchemaType<A | B | null> = {
       discriminator: "type",
       mapping: {
@@ -225,29 +254,18 @@ describe("JTDSchemaType typechecks", () => {
       never
     > = true
 
-    void [
-      union,
-      unionDuplicate,
-      unionMissing,
-      multOne,
-      multTwo,
-      unionWithDiscriminator,
-      unionNull,
-      noCommon,
-    ]
+    void [union, unionDuplicate, unionMissing, multOne, multTwo, unionNull, noCommon]
   })
 
   it("should typecheck empty schemas", () => {
     const empty: JTDSchemaType<Record<string, never>> = {}
-    // unknown can be null
-    const emptyUnknown: JTDSchemaType<unknown> = {nullable: true}
     // can only use empty for empty and null
     // @ts-expect-error
     const emptyButFull: JTDSchemaType<{a: string}> = {}
     const emptyNull: JTDSchemaType<null> = {nullable: true}
     const emptyMeta: JTDSchemaType<Record<string, never>> = {metadata: {}}
 
-    void [empty, emptyUnknown, emptyButFull, emptyNull, emptyMeta]
+    void [empty, emptyButFull, emptyNull, emptyMeta]
   })
 
   it("should typecheck ref schemas", () => {
@@ -288,22 +306,7 @@ describe("JTDSchemaType typechecks", () => {
       nullable: true,
     }
 
-    // can type recursive schemas
-    type LinkedList = {val: number; next: LinkedList} | null
-    const linkedListSchema: JTDSchemaType<LinkedList, {node: LinkedList}> = {
-      definitions: {
-        node: {
-          properties: {
-            val: {type: "float64"},
-            next: {ref: "node"},
-          },
-          nullable: true,
-        },
-      },
-      ref: "node",
-    }
-
-    void [refs, missingDef, missingType, nullRefs, refsNullOne, refsNullTwo, linkedListSchema]
+    void [refs, missingDef, missingType, nullRefs, refsNullOne, refsNullTwo]
   })
 
   it("should typecheck metadata schemas", () => {
