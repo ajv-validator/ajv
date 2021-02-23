@@ -14,7 +14,9 @@ for (const testName in jtdValidationTests) {
   if (!valid) continue
   tests.push({
     serialize: ajv.compileSerializer(schema),
+    parse: ajv.compileParser(schema),
     data: instance,
+    json: JSON.stringify(instance),
   })
 }
 
@@ -63,32 +65,37 @@ const serializer = ajv.compileSerializer(testSchema)
 suite.add("test data: compiled JTD serializer", () => serializer(testData))
 suite.add("test data: JSON.stringify", () => JSON.stringify(testData))
 
-const nestedElementsSchema = {
-  elements: {
-    elements: {
-      type: "int32",
-    },
+suite.add("JTD test suite: compiled JTD parsers", () => {
+  for (const test of tests) {
+    test.parse(test.json)
+  }
+})
+
+suite.add("JTD test suite: JSON.parse", () => {
+  for (const test of tests) {
+    JSON.parse(test.json)
+  }
+})
+
+const validTestData = JSON.stringify(testData)
+
+const invalidTestData = JSON.stringify({
+  a: {
+    foo: "foo1",
+    bar: "1",
   },
-}
-
-const validNestedElements = JSON.stringify([[], [1, 2], [3, 4, 5]])
-const invalidNestedElements = JSON.stringify([[], [1, 2], {}, [3, 4, 5]])
-
-const parse = ajv.compileParser(nestedElementsSchema)
-
-suite.add("valid test data: compiled JTD parser", () => parse(validNestedElements))
-suite.add("valid test data: JSON.parse", () => JSON.parse(validNestedElements))
-suite.add("invalid test data: compiled JTD parser", () => {
-  try {
-    parse(invalidNestedElements)
-  } catch (e) {}
+  b: {
+    foo: "foo2",
+    bar: 2,
+  },
 })
-suite.add("invalid test data: JSON.parse", () => {
-  try {
-    JSON.parse(invalidNestedElements)
-    throw new Error()
-  } catch (e) {}
-})
+
+const parse = ajv.compileParser(testSchema)
+
+suite.add("valid test data: compiled JTD parser", () => parse(validTestData))
+suite.add("valid test data: JSON.parse", () => JSON.parse(validTestData))
+suite.add("invalid test data: compiled JTD parser", () => parse(invalidTestData))
+suite.add("invalid test data: JSON.parse", () => JSON.parse(invalidTestData))
 
 console.log()
 

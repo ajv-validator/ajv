@@ -32,6 +32,7 @@ interface ParseCxt {
   readonly definitions: SchemaObjectMap
   schema: SchemaObject
   data: Code
+  parseName: Name
 }
 
 export default function compileParser(
@@ -52,13 +53,14 @@ export default function compileParser(
     schemaEnv: sch,
     definitions,
     data: N.data,
+    parseName,
   }
 
   let sourceCode: string | undefined
   try {
     this._compilations.add(sch)
     sch.parseName = parseName
-    parserFunction(cxt, parseName)
+    parserFunction(cxt)
     gen.optimize(this.opts.code.optimize)
     const parseFuncCode = gen.toString()
     sourceCode = `${gen.scopeRefs(N.scope)}return ${parseFuncCode}`
@@ -77,10 +79,13 @@ export default function compileParser(
   return sch
 }
 
-function parserFunction(cxt: ParseCxt, parseName: Name): void {
-  const {gen} = cxt
+const undef = _`undefined`
+
+function parserFunction(cxt: ParseCxt): void {
+  const {gen, parseName} = cxt
   gen.func(parseName, _`${N.json}, ${N.jsonPos}, ${N.jsonPart}`, false, () => {
     gen.let(N.data)
+    gen.assign(_`${parseName}.error`, undef)
     gen.assign(N.jsonPos, _`${N.jsonPos} || 0`)
     gen.const(N.jsonLen, _`${N.json}.length`)
     parseCode(cxt)
@@ -173,13 +178,13 @@ function parseDiscriminator(cxt: ParseCxt): void {
   })
   gen.assign(N.jsonPos, startPos)
   gen.if(_`${tag} === undefined`)
-  gen.throw(_`new Error("JSON: discriminator tag not found")`)
+  parsingErrorMsg(cxt, "discriminator tag not found")
   for (const tagValue in mapping) {
     gen.elseIf(_`${tag} === ${tagValue}`)
     parseSchemaProperties({...cxt, schema: mapping[tagValue]}, discriminator)
   }
   gen.else()
-  gen.throw(_`new Error("JSON: discriminator value not in schema")`)
+  parsingErrorMsg(cxt, "discriminator value not in schema")
   gen.endIf()
 }
 
@@ -214,7 +219,7 @@ function parseSchemaProperties(cxt: ParseCxt, discriminator?: string): void {
     if (additionalProperties) {
       parseEmpty({...cxt, data: _`${data}[${key}]`})
     } else {
-      gen.throw(_`new Error("JSON: property "+${key}+" not allowed")`)
+      parsingErrorMsg(cxt, str`property ${key} not allowed`)
     }
     gen.endIf()
   })
@@ -223,7 +228,7 @@ function parseSchemaProperties(cxt: ParseCxt, discriminator?: string): void {
     const allProps: Code = and(
       ...Object.keys(properties).map((p): Code => _`${hasProp}.call(${data}, ${p})`)
     )
-    gen.if(not(allProps), () => gen.throw(_`new Error("JSON: missing required properties")`))
+    gen.if(not(allProps), () => parsingErrorMsg(cxt, "missing required properties"))
   }
 }
 
@@ -258,7 +263,7 @@ function parseType(cxt: ParseCxt): void {
       // TODO parse timestamp?
       parseString(cxt)
       const vts = func(gen, validTimestamp)
-      gen.if(_`!${vts}(${data})`, () => gen.throw(_`new SyntaxError("JSON: invalid timestamp")`))
+      gen.if(_`!${vts}(${data})`, () => parsingErrorMsg(cxt, "invalid timestamp"))
       break
     }
     case "float32":
@@ -269,7 +274,7 @@ function parseType(cxt: ParseCxt): void {
       const [min, max, maxDigits] = intRange[schema.type as IntType]
       parseNumber(cxt, maxDigits)
       gen.if(_`${data} < ${min} || ${data} > ${max}`, () =>
-        gen.throw(_`new SyntaxError("JSON: integer out of range")`)
+        parsingErrorMsg(cxt, "integer out of range")
       )
     }
   }
@@ -348,11 +353,13 @@ function parseWith(cxt: ParseCxt, parseFunc: {code: Code}, args?: SafeExpr): voi
   partialParse(cxt, f, args)
 }
 
-function partialParse({gen, data}: ParseCxt, parseFunc: Name, args?: SafeExpr): void {
+function partialParse(cxt: ParseCxt, parseFunc: Name, args?: SafeExpr): void {
+  const {gen, data} = cxt
   gen.assign(
     _`[${data}, ${N.jsonPos}]`,
     _`${parseFunc}(${N.json}, ${N.jsonPos}${args ? _`, ${args}` : nil})`
   )
+  gen.if(_`${data} === undefined`, () => parsingError(cxt, _`${parseFunc}.error`))
 }
 
 function parseToken(cxt: ParseCxt, tok: string): void {
@@ -384,7 +391,14 @@ function jsonSlice(len: number | Name): Code {
 }
 
 function jsonSyntaxError(cxt: ParseCxt): void {
-  cxt.gen.throw(
-    _`new SyntaxError("Unexpected token "+${N.json}[${N.jsonPos}]+" in JSON at position "+${N.jsonPos})`
-  )
+  parsingErrorMsg(cxt, _`"unexpected token " + ${N.json}[${N.jsonPos}]`)
+}
+
+function parsingErrorMsg(cxt: ParseCxt, msg: Code | string): void {
+  parsingError(cxt, cxt.gen.object(["message", msg], ["position", N.jsonPos]))
+}
+
+function parsingError({gen, parseName}: ParseCxt, err: Code): void {
+  gen.assign(_`${parseName}.error`, err)
+  gen.return(_`${N.jsonPart} ? [undefined, ${N.jsonPos}] : undefined`)
 }

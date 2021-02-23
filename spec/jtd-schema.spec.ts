@@ -1,5 +1,5 @@
 import type AjvJTD from "../dist/jtd"
-import type {SchemaObject} from "../dist/jtd"
+import type {SchemaObject, JTDParser} from "../dist/jtd"
 import _AjvJTD from "./ajv_jtd"
 import getAjvInstances from "./ajv_instances"
 import {withStandalone} from "./ajv_standalone"
@@ -122,18 +122,28 @@ describe("JSON Type Definition", () => {
           it(`should parse valid JSON string`, () => {
             const parse = ajv.compileParser(schema)
             // console.log(schema, instance, `"${JSON.stringify(instance)}"`, parse.toString())
-            assert.deepStrictEqual(parse(JSON.stringify(instance)), instance)
-            assert.deepStrictEqual(parse(`  ${JSON.stringify(instance, null, 2)}  `), instance)
+            shouldParse(parse, JSON.stringify(instance), instance)
+            shouldParse(parse, `  ${JSON.stringify(instance, null, 2)}  `, instance)
           })
         } else {
           it(`should throw exception on invalid JSON string`, () => {
             const parse = ajv.compileParser(schema)
             // console.log(parse.toString())
-            assert.throws(() => parse(JSON.stringify(instance)))
-            assert.throws(() => parse(`  ${JSON.stringify(instance, null, 2)}  `))
+            shouldFail(parse, JSON.stringify(instance))
+            shouldFail(parse, `  ${JSON.stringify(instance, null, 2)}  `)
           })
         }
       })
+    }
+
+    function shouldParse(parse: JTDParser, str: string, res: unknown): void {
+      assert.deepStrictEqual(parse(str), res)
+      assert.strictEqual(parse.error, undefined)
+    }
+
+    function shouldFail(parse: JTDParser, str: string): void {
+      assert.strictEqual(parse(str), undefined)
+      assert.strictEqual(typeof parse.error, "object")
     }
   })
 })

@@ -17,6 +17,9 @@ export {
   AsyncValidateFunction,
   ErrorObject,
   ErrorNoParams,
+  JTDParser,
+  JTDParserError,
+  JTDErrorObject,
 } from "./types"
 
 export {Plugin, Options, CodeOptions, InstanceOptions, Logger, ErrorsTextOptions} from "./core"
@@ -26,7 +29,7 @@ export {KeywordCxt}
 // export {DefinedError} from "./vocabularies/errors"
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
-import type {AnySchemaObject, SchemaObject} from "./types"
+import type {AnySchemaObject, SchemaObject, JTDParser} from "./types"
 import type {JTDSchemaType} from "./types/jtd-schema"
 export {JTDSchemaType}
 import AjvCore, {CurrentOptions} from "./core"
@@ -98,9 +101,9 @@ export default class Ajv extends AjvCore {
     return sch.serialize || this._compileSerializer(sch)
   }
 
-  compileParser<T = unknown>(schema: SchemaObject | JTDSchemaType<T>): (json: string) => T {
+  compileParser<T = unknown>(schema: SchemaObject | JTDSchemaType<T>): JTDParser<T> {
     const sch = this._addSchema(schema)
-    return (sch.parse || this._compileParser(sch)) as (json: string) => T
+    return (sch.parse || this._compileParser(sch)) as JTDParser<T>
   }
 
   private _compileSerializer<T>(sch: SchemaEnv): (data: T) => string {
@@ -110,7 +113,7 @@ export default class Ajv extends AjvCore {
     return sch.serialize
   }
 
-  private _compileParser(sch: SchemaEnv): (json: string) => unknown {
+  private _compileParser(sch: SchemaEnv): JTDParser {
     compileParser.call(this, sch, (sch.schema as AnySchemaObject).definitions || {})
     /* istanbul ignore if */
     if (!sch.parse) throw new Error("ajv implementation error")
