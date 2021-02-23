@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-interface,no-void */
+import _Ajv from "../ajv_jtd"
 import type {JTDSchemaType} from "../../dist/jtd"
+import chai from "../chai"
+const should = chai.should()
 
 /** type is true if T is identically E */
 type TypeEquality<T, E> = [T] extends [E] ? ([E] extends [T] ? true : false) : false
@@ -14,7 +17,32 @@ interface B {
   b?: string
 }
 
-describe("JTDSchemaType typechecks", () => {
+type MyData = A | B
+
+const mySchema: JTDSchemaType<MyData> = {
+  discriminator: "type",
+  mapping: {
+    a: {properties: {a: {type: "float64"}}},
+    b: {optionalProperties: {b: {type: "string"}}},
+  },
+}
+
+describe("JTDSchemaType", () => {
+  it("validation should prove the data type", () => {
+    const ajv = new _Ajv()
+    const validate = ajv.compile<MyData>(mySchema)
+    const validData: unknown = {type: "a", a: 1}
+    if (validate(validData) && validData.type === "a") {
+      validData.a.should.equal(1)
+    }
+    should.not.exist(validate.errors)
+
+    if (ajv.validate<MyData>(mySchema, validData) && validData.type === "a") {
+      validData.a.should.equal(1)
+    }
+    should.not.exist(ajv.errors)
+  })
+
   it("should typecheck number schemas", () => {
     const numf: JTDSchemaType<number> = {type: "float64"}
     const numi: JTDSchemaType<number> = {type: "int32"}
