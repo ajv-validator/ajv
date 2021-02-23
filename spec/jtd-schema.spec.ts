@@ -123,12 +123,14 @@ describe("JSON Type Definition", () => {
             const parse = ajv.compileParser(schema)
             // console.log(schema, instance, `"${JSON.stringify(instance)}"`, parse.toString())
             assert.deepStrictEqual(parse(JSON.stringify(instance)), instance)
+            assert.deepStrictEqual(parse(`  ${JSON.stringify(instance, null, 2)}  `), instance)
           })
         } else {
           it(`should throw exception on invalid JSON string`, () => {
             const parse = ajv.compileParser(schema)
             // console.log(parse.toString())
             assert.throws(() => parse(JSON.stringify(instance)))
+            assert.throws(() => parse(`  ${JSON.stringify(instance, null, 2)}  `))
           })
         }
       })

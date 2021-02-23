@@ -8,7 +8,7 @@ import N from "../names"
 import {isOwnProperty, hasPropFunc} from "../../vocabularies/code"
 import {hasRef} from "../../vocabularies/jtd/ref"
 import {intRange, IntType} from "../../vocabularies/jtd/type"
-import {parseJson, parseJsonNumber, parseJsonString} from "../../runtime/parseJson"
+import {parseJson, parseJsonNumber, parseJsonString, skipWhitespace} from "../../runtime/parseJson"
 import {func} from "../util"
 import validTimestamp from "../timestamp"
 
@@ -84,6 +84,7 @@ function parserFunction(cxt: ParseCxt, parseName: Name): void {
     gen.assign(N.jsonPos, _`${N.jsonPos} || 0`)
     gen.const(N.jsonLen, _`${N.json}.length`)
     parseCode(cxt)
+    whitespace(gen)
     gen.if(N.jsonPart, () => gen.return(_`[${N.data}, ${N.jsonPos}]`))
     gen.if(_`${N.jsonPos} === ${N.jsonLen}`, () => gen.return(N.data))
     jsonSyntaxError(cxt)
@@ -298,6 +299,7 @@ function parseEnum(cxt: ParseCxt): void {
 
 function parseNumber(cxt: ParseCxt, maxDigits?: number): void {
   const {gen} = cxt
+  gen.assign(N.jsonPos, _`${func(gen, skipWhitespace)}(${N.json}, ${N.jsonPos})`)
   gen.if(
     _`"-0123456789".indexOf(${jsonSlice(1)}) < 0`,
     () => jsonSyntaxError(cxt),
@@ -360,6 +362,7 @@ function parseToken(cxt: ParseCxt, tok: string): void {
 function tryParseToken(cxt: ParseCxt, tok: string, fail: GenParse, success?: GenParse): void {
   const {gen} = cxt
   const n = tok.length
+  whitespace(gen)
   gen.if(
     _`${jsonSlice(n)} === ${tok}`,
     () => {
@@ -368,6 +371,10 @@ function tryParseToken(cxt: ParseCxt, tok: string, fail: GenParse, success?: Gen
     },
     () => fail(cxt)
   )
+}
+
+function whitespace(gen: CodeGen): void {
+  gen.assign(N.jsonPos, _`${func(gen, skipWhitespace)}(${N.json}, ${N.jsonPos})`)
 }
 
 function jsonSlice(len: number | Name): Code {
