@@ -79,7 +79,7 @@
     "chai": "^4.0.1",
     "cross-env": "^7.0.2",
     "eslint": "^7.8.1",
-    "eslint-config-prettier": "^7.0.0",
+    "eslint-config-prettier": "^8.0.0",
     "glob": "^7.0.0",
     "husky": "^5.0.9",
     "if-node-version": "^1.0.0",
