@@ -60,7 +60,7 @@ import {normalizeId, getSchemaRefs} from "./compile/resolve"
 import {getJSONTypes} from "./compile/validate/dataType"
 import {eachItem} from "./compile/util"
 
-import $dataRefSchema = require("./refs/data.json")
+import * as $dataRefSchema from "./refs/data.json"
 
 const META_IGNORE_OPTIONS: (keyof Options)[] = ["removeAdditional", "useDefaults", "coerceTypes"]
 const EXT_SCOPE_NAMES = new Set([

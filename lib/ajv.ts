@@ -31,7 +31,7 @@ export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./com
 import type {AnySchemaObject} from "./types"
 import AjvCore from "./core"
 import draft7Vocabularies from "./vocabularies/draft7"
-import draft7MetaSchema = require("./refs/json-schema-draft-07.json")
+import * as draft7MetaSchema from "./refs/json-schema-draft-07.json"
 
 const META_SUPPORT_DATA = ["/properties"]
 
