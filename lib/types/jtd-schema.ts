@@ -133,8 +133,6 @@ export type JTDSchemaType<T, D extends Record<string, unknown> = Record<string, 
       // NOTE there should only be one type that extends Record<string, never> so unions
       // shouldn't be a worry
       | (T extends Record<string, never> ? unknown : never)
-      // unknown also allows empty schema
-      | (unknown extends T ? unknown : never)
       // null
       // NOTE we have to check this too because null as an exclusive type also
       // qualifies for the empty schema
