@@ -31,6 +31,7 @@ export {KeywordCxt}
 export {DefinedError} from "./vocabularies/errors"
 export {JSONType} from "./compile/rules"
 export {JSONSchemaType} from "./types/json-schema"
+export {JTDSchemaType} from "./types/jtd-schema"
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
 import type {
@@ -50,6 +51,7 @@ import type {
   AddedFormat,
 } from "./types"
 import type {JSONSchemaType} from "./types/json-schema"
+import type {JTDSchemaType} from "./types/jtd-schema"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
 import {getRules, ValidationRules, Rule, RuleGroup, JSONType} from "./compile/rules"
 import {SchemaEnv, compileSchema, resolveSchema} from "./compile"
@@ -293,7 +295,7 @@ export default class Ajv {
   // AnySchema will be compiled and cached using schema itself as a key for Map
   validate(schema: Schema | string, data: unknown): boolean
   validate(schemaKeyRef: AnySchema | string, data: unknown): boolean | Promise<unknown>
-  validate<T>(schema: Schema | JSONSchemaType<T> | string, data: unknown): data is T
+  validate<T>(schema: Schema | JTDSchemaType<T> | JSONSchemaType<T> | string, data: unknown): data is T
   validate<T>(schema: AsyncSchema, data: unknown | T): Promise<T>
   validate<T>(schemaKeyRef: AnySchema | string, data: unknown): data is T | Promise<T>
   validate<T>(
@@ -315,7 +317,7 @@ export default class Ajv {
 
   // Create validation function for passed schema
   // _meta: true if schema is a meta-schema. Used internally to compile meta schemas of user-defined keywords.
-  compile<T = unknown>(schema: Schema | JSONSchemaType<T>, _meta?: boolean): ValidateFunction<T>
+  compile<T = unknown>(schema: Schema | JTDSchemaType<T> | JSONSchemaType<T>, _meta?: boolean): ValidateFunction<T>
   compile<T = unknown>(schema: AsyncSchema, _meta?: boolean): AsyncValidateFunction<T>
   compile<T = unknown>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T>
   compile<T = unknown>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T> {
