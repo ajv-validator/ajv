@@ -1,9 +1,9 @@
 import type {AnySchema, AnySchemaObject} from "../types"
 import type Ajv from "../ajv"
 import {eachItem} from "./util"
-import equal = require("fast-deep-equal")
-import traverse = require("json-schema-traverse")
-import URI = require("uri-js")
+import * as equal from "fast-deep-equal"
+import * as traverse from "json-schema-traverse"
+import * as URI from "uri-js"
 
 // the hash of local references inside the schema (created by getSchemaRefs), used for inline resolution
 export type LocalRefs = {[Ref in string]?: AnySchemaObject}
