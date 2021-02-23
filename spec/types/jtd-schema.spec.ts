@@ -175,17 +175,7 @@ describe("JTDSchemaType", () => {
       nullable: true,
     }
 
-    // can't use properties for any object (e.g. keyof = never)
-    const noProperties: TypeEquality<JTDSchemaType<unknown>, never> = true
-
-    void [
-      properties,
-      optionalProperties,
-      mixedProperties,
-      fewerProperties,
-      propertiesNull,
-      noProperties,
-    ]
+    void [properties, optionalProperties, mixedProperties, fewerProperties, propertiesNull]
   })
 
   it("should typecheck discriminator schemas", () => {
@@ -237,6 +227,15 @@ describe("JTDSchemaType", () => {
         },
       },
     }
+    const unionWithDiscriminator: JTDSchemaType<A | B> = {
+      discriminator: "type",
+      mapping: {
+        a: {properties: {type: {enum: ["a"]}, a: {type: "float64"}}},
+        b: {
+          optionalProperties: {b: {type: "string"}},
+        },
+      },
+    }
     const unionNull: JTDSchemaType<A | B | null> = {
       discriminator: "type",
       mapping: {
@@ -254,18 +253,29 @@ describe("JTDSchemaType", () => {
       never
     > = true
 
-    void [union, unionDuplicate, unionMissing, multOne, multTwo, unionNull, noCommon]
+    void [
+      union,
+      unionDuplicate,
+      unionMissing,
+      multOne,
+      multTwo,
+      unionWithDiscriminator,
+      unionNull,
+      noCommon,
+    ]
   })
 
   it("should typecheck empty schemas", () => {
     const empty: JTDSchemaType<Record<string, never>> = {}
+    // unknown can be null
+    const emptyUnknown: JTDSchemaType<unknown> = {nullable: true}
     // can only use empty for empty and null
     // @ts-expect-error
     const emptyButFull: JTDSchemaType<{a: string}> = {}
     const emptyNull: JTDSchemaType<null> = {nullable: true}
     const emptyMeta: JTDSchemaType<Record<string, never>> = {metadata: {}}
 
-    void [empty, emptyButFull, emptyNull, emptyMeta]
+    void [empty, emptyUnknown, emptyButFull, emptyNull, emptyMeta]
   })
 
   it("should typecheck ref schemas", () => {
@@ -306,7 +316,22 @@ describe("JTDSchemaType", () => {
       nullable: true,
     }
 
-    void [refs, missingDef, missingType, nullRefs, refsNullOne, refsNullTwo]
+    // can type recursive schemas
+    type LinkedList = {val: number; next: LinkedList} | null
+    const linkedListSchema: JTDSchemaType<LinkedList, {node: LinkedList}> = {
+      definitions: {
+        node: {
+          properties: {
+            val: {type: "float64"},
+            next: {ref: "node"},
+          },
+          nullable: true,
+        },
+      },
+      ref: "node",
+    }
+
+    void [refs, missingDef, missingType, nullRefs, refsNullOne, refsNullTwo, linkedListSchema]
   })
 
   it("should typecheck metadata schemas", () => {
