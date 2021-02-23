@@ -274,6 +274,8 @@ if (validate(data)) {
 
 With JSON Type Definition schema:
 
+In JavaScript:
+
 ```javascript
 const Ajv = require("ajv").default
 
@@ -290,6 +292,22 @@ if (!valid) console.log(validate.errors)
 const valid1 = validate(1) // false, bot an object
 const valid2 = validate({}) // false, foo is required
 const valid3 = validate({foo: 1, bar: 2}) // false, bar is additional
+```
+
+In TypeScript:
+
+```typescript
+import {JTDSchemaType} from "ajv"
+
+type MyData = {foo: number}
+
+// Optional schema type annotation for schema to match MyData type.
+// To use JTDSchemaType set `strictNullChecks: true` in tsconfig `compilerOptions`.
+const schema: JTDSchemaType<MyData> = {
+  properties: {
+    foo: {type: "float64"},
+  },
+}
 ```
 
 See [this test](./spec/types/json-schema.spec.ts) for an advanced example, [API reference](./docs/api.md) and [Options](./docs/api.md#options) for more details.
