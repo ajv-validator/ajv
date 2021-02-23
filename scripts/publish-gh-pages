@@ -8,7 +8,7 @@ rm -rf ../gh-pages
 
 git config --global user.name "$GIT_USER_NAME"
 git config --global user.email "$GIT_USER_EMAIL"
-git clone -b gh-pages --single-branch https://${GH_TOKEN_PUBLIC}@github.com/ajv-validator/ajv.git ../gh-pages
+git clone -b gh-pages --single-branch https://"${GH_TOKEN_PUBLIC}"@github.com/ajv-validator/ajv.git ../gh-pages
 SOURCE=../gh-pages/_source
 mkdir -p $SOURCE
 cp *.md $SOURCE
@@ -21,7 +21,7 @@ node ./generate
 sed -E "s/<img[^>]+ajv_logo[^>]+>//" index.md > new-index.md
 mv new-index.md index.md
 
-if [[ `git status --porcelain` ]]; then
+if [[ $(git status --porcelain) ]]; then
   echo "Changes detected. Updating gh-pages branch..."
   git add -A
   git commit -m "updated by ajv workflow https://github.com/ajv-validator/ajv/actions/runs/$GITHUB_RUN_ID"
