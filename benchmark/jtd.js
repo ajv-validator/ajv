@@ -20,17 +20,17 @@ for (const testName in jtdValidationTests) {
   })
 }
 
-suite.add("JTD test suite: compiled JTD serializers", () => {
-  for (const test of tests) {
-    test.serialize(test.data)
-  }
-})
+// suite.add("JTD test suite: compiled JTD serializers", () => {
+//   for (const test of tests) {
+//     test.serialize(test.data)
+//   }
+// })
 
-suite.add("JTD test suite: JSON.stringify", () => {
-  for (const test of tests) {
-    JSON.stringify(test.data)
-  }
-})
+// suite.add("JTD test suite: JSON.stringify", () => {
+//   for (const test of tests) {
+//     JSON.stringify(test.data)
+//   }
+// })
 
 const testSchema = {
   definitions: {
@@ -60,10 +60,10 @@ const testData = {
   },
 }
 
-const serializer = ajv.compileSerializer(testSchema)
+// const serializer = ajv.compileSerializer(testSchema)
 
-suite.add("test data: compiled JTD serializer", () => serializer(testData))
-suite.add("test data: JSON.stringify", () => JSON.stringify(testData))
+// suite.add("test data: compiled JTD serializer", () => serializer(testData))
+// suite.add("test data: JSON.stringify", () => JSON.stringify(testData))
 
 suite.add("JTD test suite: compiled JTD parsers", () => {
   for (const test of tests) {

@@ -126,7 +126,7 @@ describe("JSON Type Definition", () => {
             shouldParse(parse, `  ${JSON.stringify(instance, null, 2)}  `, instance)
           })
         } else {
-          it(`should throw exception on invalid JSON string`, () => {
+          it(`should return undefined on invalid JSON string`, () => {
             const parse = ajv.compileParser(schema)
             // console.log(parse.toString())
             shouldFail(parse, JSON.stringify(instance))
@@ -138,12 +138,14 @@ describe("JSON Type Definition", () => {
 
     function shouldParse(parse: JTDParser, str: string, res: unknown): void {
       assert.deepStrictEqual(parse(str), res)
-      assert.strictEqual(parse.error, undefined)
+      assert.strictEqual(parse.message, undefined)
+      assert.strictEqual(parse.position, undefined)
     }
 
     function shouldFail(parse: JTDParser, str: string): void {
       assert.strictEqual(parse(str), undefined)
-      assert.strictEqual(typeof parse.error, "object")
+      assert.strictEqual(typeof parse.message, "string")
+      assert.strictEqual(typeof parse.position, "number")
     }
   })
 })

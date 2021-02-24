@@ -55,18 +55,8 @@ export interface ValidateFunction<T = unknown> {
 
 export interface JTDParser<T = unknown> {
   (json: string): T | undefined
-  error?: JTDParserError
-}
-
-export interface JTDParserError {
-  message: string
-  position: number
-  jtd?: JTDErrorObject
-}
-
-export interface JTDErrorObject {
-  schemaPath: string
-  instancePath: string
+  message?: string
+  position?: number
 }
 
 export type EvaluatedProperties = {[K in string]?: true} | true

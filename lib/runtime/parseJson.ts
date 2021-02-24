@@ -122,14 +122,6 @@ export function parseJsonString(s: string, pos: number): [string, number] {
 
 parseJsonString.code = _`require("ajv/dist/runtime/parseJson").parseJsonString`
 
-export function skipWhitespace(s: string, pos: number): number {
-  let c: string
-  while (((c = s[pos]), c === " " || c === "\n" || c === "\r" || c === "\t")) pos++
-  return pos
-}
-
-skipWhitespace.code = _`require("ajv/dist/runtime/parseJson").skipWhitespace`
-
 function unexpectedEnd(): never {
   throw new SyntaxError("Unexpected end of JSON input")
 }

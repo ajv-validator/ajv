@@ -8,7 +8,7 @@ import N from "../names"
 import {isOwnProperty, hasPropFunc} from "../../vocabularies/code"
 import {hasRef} from "../../vocabularies/jtd/ref"
 import {intRange, IntType} from "../../vocabularies/jtd/type"
-import {parseJson, parseJsonNumber, parseJsonString, skipWhitespace} from "../../runtime/parseJson"
+import {parseJson, parseJsonNumber, parseJsonString} from "../../runtime/parseJson"
 import {func} from "../util"
 import validTimestamp from "../timestamp"
 
@@ -33,6 +33,7 @@ interface ParseCxt {
   schema: SchemaObject
   data: Code
   parseName: Name
+  char: Name
 }
 
 export default function compileParser(
@@ -54,6 +55,7 @@ export default function compileParser(
     definitions,
     data: N.data,
     parseName,
+    char: gen.name("c"),
   }
 
   let sourceCode: string | undefined
@@ -82,14 +84,16 @@ export default function compileParser(
 const undef = _`undefined`
 
 function parserFunction(cxt: ParseCxt): void {
-  const {gen, parseName} = cxt
+  const {gen, parseName, char} = cxt
   gen.func(parseName, _`${N.json}, ${N.jsonPos}, ${N.jsonPart}`, false, () => {
     gen.let(N.data)
-    gen.assign(_`${parseName}.error`, undef)
+    gen.let(char)
+    gen.assign(_`${parseName}.message`, undef)
+    gen.assign(_`${parseName}.position`, undef)
     gen.assign(N.jsonPos, _`${N.jsonPos} || 0`)
     gen.const(N.jsonLen, _`${N.json}.length`)
     parseCode(cxt)
-    whitespace(gen)
+    _skipWhitespace(cxt)
     gen.if(N.jsonPart, () => gen.return(_`[${N.data}, ${N.jsonPos}]`))
     gen.if(_`${N.jsonPos} === ${N.jsonLen}`, () => gen.return(N.data))
     jsonSyntaxError(cxt)
@@ -178,13 +182,13 @@ function parseDiscriminator(cxt: ParseCxt): void {
   })
   gen.assign(N.jsonPos, startPos)
   gen.if(_`${tag} === undefined`)
-  parsingErrorMsg(cxt, "discriminator tag not found")
+  parsingError(cxt, str`discriminator tag not found`)
   for (const tagValue in mapping) {
     gen.elseIf(_`${tag} === ${tagValue}`)
     parseSchemaProperties({...cxt, schema: mapping[tagValue]}, discriminator)
   }
   gen.else()
-  parsingErrorMsg(cxt, "discriminator value not in schema")
+  parsingError(cxt, str`discriminator value not in schema`)
   gen.endIf()
 }
 
@@ -219,7 +223,7 @@ function parseSchemaProperties(cxt: ParseCxt, discriminator?: string): void {
     if (additionalProperties) {
       parseEmpty({...cxt, data: _`${data}[${key}]`})
     } else {
-      parsingErrorMsg(cxt, str`property ${key} not allowed`)
+      parsingError(cxt, str`property ${key} not allowed`)
     }
     gen.endIf()
   })
@@ -228,7 +232,7 @@ function parseSchemaProperties(cxt: ParseCxt, discriminator?: string): void {
     const allProps: Code = and(
       ...Object.keys(properties).map((p): Code => _`${hasProp}.call(${data}, ${p})`)
     )
-    gen.if(not(allProps), () => parsingErrorMsg(cxt, "missing required properties"))
+    gen.if(not(allProps), () => parsingError(cxt, str`missing required properties`))
   }
 }
 
@@ -263,7 +267,7 @@ function parseType(cxt: ParseCxt): void {
       // TODO parse timestamp?
       parseString(cxt)
       const vts = func(gen, validTimestamp)
-      gen.if(_`!${vts}(${data})`, () => parsingErrorMsg(cxt, "invalid timestamp"))
+      gen.if(_`!${vts}(${data})`, () => parsingError(cxt, str`invalid timestamp`))
       break
     }
     case "float32":
@@ -274,7 +278,7 @@ function parseType(cxt: ParseCxt): void {
       const [min, max, maxDigits] = intRange[schema.type as IntType]
       parseNumber(cxt, maxDigits)
       gen.if(_`${data} < ${min} || ${data} > ${max}`, () =>
-        parsingErrorMsg(cxt, "integer out of range")
+        parsingError(cxt, str`integer out of range`)
       )
     }
   }
@@ -304,7 +308,7 @@ function parseEnum(cxt: ParseCxt): void {
 
 function parseNumber(cxt: ParseCxt, maxDigits?: number): void {
   const {gen} = cxt
-  gen.assign(N.jsonPos, _`${func(gen, skipWhitespace)}(${N.json}, ${N.jsonPos})`)
+  _skipWhitespace(cxt)
   gen.if(
     _`"-0123456789".indexOf(${jsonSlice(1)}) < 0`,
     () => jsonSyntaxError(cxt),
@@ -359,7 +363,7 @@ function partialParse(cxt: ParseCxt, parseFunc: Name, args?: SafeExpr): void {
     _`[${data}, ${N.jsonPos}]`,
     _`${parseFunc}(${N.json}, ${N.jsonPos}${args ? _`, ${args}` : nil})`
   )
-  gen.if(_`${data} === undefined`, () => parsingError(cxt, _`${parseFunc}.error`))
+  gen.if(_`${data} === undefined`, () => parsingError(cxt, _`${parseFunc}.message`))
 }
 
 function parseToken(cxt: ParseCxt, tok: string): void {
@@ -369,7 +373,7 @@ function parseToken(cxt: ParseCxt, tok: string): void {
 function tryParseToken(cxt: ParseCxt, tok: string, fail: GenParse, success?: GenParse): void {
   const {gen} = cxt
   const n = tok.length
-  whitespace(gen)
+  _skipWhitespace(cxt)
   gen.if(
     _`${jsonSlice(n)} === ${tok}`,
     () => {
@@ -380,8 +384,10 @@ function tryParseToken(cxt: ParseCxt, tok: string, fail: GenParse, success?: Gen
   )
 }
 
-function whitespace(gen: CodeGen): void {
-  gen.assign(N.jsonPos, _`${func(gen, skipWhitespace)}(${N.json}, ${N.jsonPos})`)
+function _skipWhitespace({gen, char: c}: ParseCxt): void {
+  gen.code(
+    _`while((${c}=${N.json}[${N.jsonPos}],${c}===" "||${c}==="\\n"||${c}==="\\r"||${c}==="\\t"))${N.jsonPos}++;`
+  )
 }
 
 function jsonSlice(len: number | Name): Code {
@@ -391,14 +397,11 @@ function jsonSlice(len: number | Name): Code {
 }
 
 function jsonSyntaxError(cxt: ParseCxt): void {
-  parsingErrorMsg(cxt, _`"unexpected token " + ${N.json}[${N.jsonPos}]`)
+  parsingError(cxt, _`"unexpected token " + ${N.json}[${N.jsonPos}]`)
 }
 
-function parsingErrorMsg(cxt: ParseCxt, msg: Code | string): void {
-  parsingError(cxt, cxt.gen.object(["message", msg], ["position", N.jsonPos]))
-}
-
-function parsingError({gen, parseName}: ParseCxt, err: Code): void {
-  gen.assign(_`${parseName}.error`, err)
+function parsingError({gen, parseName}: ParseCxt, msg: Code): void {
+  gen.assign(_`${parseName}.message`, msg)
+  gen.assign(_`${parseName}.position`, N.jsonPos)
   gen.return(_`${N.jsonPart} ? [undefined, ${N.jsonPos}] : undefined`)
 }
