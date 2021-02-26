@@ -93,8 +93,11 @@ function parserFunction(cxt: ParseCxt): void {
     gen.assign(N.jsonPos, _`${N.jsonPos} || 0`)
     gen.const(N.jsonLen, _`${N.json}.length`)
     parseCode(cxt)
-    _skipWhitespace(cxt)
-    gen.if(N.jsonPart, () => gen.return(_`[${N.data}, ${N.jsonPos}]`))
+    skipWhitespace(cxt)
+    gen.if(N.jsonPart, () => {
+      gen.assign(_`${parseName}.position`, N.jsonPos)
+      gen.return(N.data)
+    })
     gen.if(_`${N.jsonPos} === ${N.jsonLen}`, () => gen.return(N.data))
     jsonSyntaxError(cxt)
   })
@@ -108,8 +111,31 @@ function parseCode(cxt: ParseCxt): void {
       break
     }
   }
-  parseNullable(cxt, form ? genParse[form] : parseEmpty)
+  if (form) parseNullable(cxt, genParse[form])
+  else parseEmpty(cxt)
 }
+
+const parseBoolean = parseBooleanToken(true, parseBooleanToken(false, jsonSyntaxError))
+
+// function parseEmptyCode(cxt: ParseCxt): void {
+//   const {gen, data, char: c} = cxt
+//   skipWhitespace(cxt)
+//   gen.assign(c, _`${N.json}[${N.jsonPos}]`)
+//   gen.if(_`${c} === "t" || ${c} === "f"`)
+//   parseBoolean(cxt)
+//   gen.elseIf(_`${c} === "n"`)
+//   tryParseToken(cxt, "null", jsonSyntaxError, () => gen.assign(data, null))
+//   gen.elseIf(_`${c} === '"'`)
+//   parseString(cxt)
+//   gen.elseIf(_`${c} === "["`)
+//   parseElements({...cxt, schema: {elements: {}}})
+//   gen.elseIf(_`${c} === "{"`)
+//   parseValues({...cxt, schema: {values: {}}})
+//   gen.else()
+//   parseNumber(cxt)
+//   gen.endIf()
+//   skipWhitespace(cxt)
+// }
 
 function parseNullable(cxt: ParseCxt, parseForm: GenParse): void {
   const {gen, schema, data} = cxt
@@ -258,7 +284,7 @@ function parseType(cxt: ParseCxt): void {
   const {gen, schema, data} = cxt
   switch (schema.type) {
     case "boolean":
-      parseBoolean(true, parseBoolean(false, jsonSyntaxError))(cxt)
+      parseBoolean(cxt)
       break
     case "string":
       parseString(cxt)
@@ -308,7 +334,7 @@ function parseEnum(cxt: ParseCxt): void {
 
 function parseNumber(cxt: ParseCxt, maxDigits?: number): void {
   const {gen} = cxt
-  _skipWhitespace(cxt)
+  skipWhitespace(cxt)
   gen.if(
     _`"-0123456789".indexOf(${jsonSlice(1)}) < 0`,
     () => jsonSyntaxError(cxt),
@@ -316,7 +342,7 @@ function parseNumber(cxt: ParseCxt, maxDigits?: number): void {
   )
 }
 
-function parseBoolean(bool: boolean, fail: GenParse): GenParse {
+function parseBooleanToken(bool: boolean, fail: GenParse): GenParse {
   return (cxt) => {
     const {gen, data} = cxt
     tryParseToken(
@@ -359,10 +385,8 @@ function parseWith(cxt: ParseCxt, parseFunc: {code: Code}, args?: SafeExpr): voi
 
 function partialParse(cxt: ParseCxt, parseFunc: Name, args?: SafeExpr): void {
   const {gen, data} = cxt
-  gen.assign(
-    _`[${data}, ${N.jsonPos}]`,
-    _`${parseFunc}(${N.json}, ${N.jsonPos}${args ? _`, ${args}` : nil})`
-  )
+  gen.assign(data, _`${parseFunc}(${N.json}, ${N.jsonPos}${args ? _`, ${args}` : nil})`)
+  gen.assign(N.jsonPos, _`${parseFunc}.position`)
   gen.if(_`${data} === undefined`, () => parsingError(cxt, _`${parseFunc}.message`))
 }
 
@@ -373,7 +397,7 @@ function parseToken(cxt: ParseCxt, tok: string): void {
 function tryParseToken(cxt: ParseCxt, tok: string, fail: GenParse, success?: GenParse): void {
   const {gen} = cxt
   const n = tok.length
-  _skipWhitespace(cxt)
+  skipWhitespace(cxt)
   gen.if(
     _`${jsonSlice(n)} === ${tok}`,
     () => {
@@ -384,7 +408,7 @@ function tryParseToken(cxt: ParseCxt, tok: string, fail: GenParse, success?: Gen
   )
 }
 
-function _skipWhitespace({gen, char: c}: ParseCxt): void {
+function skipWhitespace({gen, char: c}: ParseCxt): void {
   gen.code(
     _`while((${c}=${N.json}[${N.jsonPos}],${c}===" "||${c}==="\\n"||${c}==="\\r"||${c}==="\\t"))${N.jsonPos}++;`
   )
@@ -403,5 +427,5 @@ function jsonSyntaxError(cxt: ParseCxt): void {
 function parsingError({gen, parseName}: ParseCxt, msg: Code): void {
   gen.assign(_`${parseName}.message`, msg)
   gen.assign(_`${parseName}.position`, N.jsonPos)
-  gen.return(_`${N.jsonPart} ? [undefined, ${N.jsonPos}] : undefined`)
+  gen.return(undef)
 }
