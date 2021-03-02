@@ -20,6 +20,7 @@ To disable all strict mode restrictions use option `strict: false`. Some of the 
     - ignored defaults
   - [Prevent unexpected validation](#prevent-unexpected-validation)
     - overlap between "properties" and "patternProperties" keywords (also `allowMatchingProperties` option)
+    - required properties have to be present in properties [Strict required](#strict-required)
     - unconstrained tuples (also `strictTuples` option)
   - [Strict types](#strict-types) (also `strictTypes` option)
     - union types (also `allowUnionTypes` option)
@@ -114,6 +115,14 @@ By default Ajv fails schema compilation if a pattern in "patternProperties" matc
 In addition to allowing such patterns by using option `strict: false`, there is an option `allowMatchingProperties: true` to only allow this case without disabling other strict mode restrictions - there are some rare cases when this is necessary.
 
 To reiterate, neither this nor other strict mode restrictions change the validation results - they only restrict which schemas are valid.
+
+#### Strict required
+
+With option `strictRequired` set to `"log"` or `true` Ajv logs warning or throws exception if the property used in "required" keyword is not defined in "properties" keyword in the same or some parent schema relating to the same object (data instance).
+
+By default this option is disabled.
+
+**Please note** there are certain scenarios when property defined in the parent schema will not be taken into account.
 
 #### Prohibit unconstrained tuples
 
