@@ -72,7 +72,7 @@ export function validatePropertyDeps(
   for (const prop in propertyDeps) {
     const deps = propertyDeps[prop] as string[]
     if (deps.length === 0) continue
-    const hasProperty = propertyInData(data, prop, it.opts.ownProperties)
+    const hasProperty = propertyInData(gen, data, prop, it.opts.ownProperties)
     cxt.setParams({
       property: prop,
       depsCount: deps.length,
@@ -98,7 +98,7 @@ export function validateSchemaDeps(cxt: KeywordCxt, schemaDeps: SchemaMap = cxt.
   for (const prop in schemaDeps) {
     if (alwaysValidSchema(it, schemaDeps[prop] as AnySchema)) continue
     gen.if(
-      propertyInData(data, prop, it.opts.ownProperties),
+      propertyInData(gen, data, prop, it.opts.ownProperties),
       () => {
         const schCxt = cxt.subschema({keyword, schemaProp: prop}, valid)
         cxt.mergeValidEvaluated(schCxt, valid)

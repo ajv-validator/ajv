@@ -57,15 +57,15 @@ const def: CodeKeywordDefinition = {
         valid
       )
     }
-
-    function hasRef(schema: AnySchemaObject): boolean {
-      for (const key in schema) {
-        let sch: AnySchemaObject
-        if (key === "ref" || (typeof (sch = schema[key]) == "object" && hasRef(sch))) return true
-      }
-      return false
-    }
   },
+}
+
+export function hasRef(schema: AnySchemaObject): boolean {
+  for (const key in schema) {
+    let sch: AnySchemaObject
+    if (key === "ref" || (typeof (sch = schema[key]) == "object" && hasRef(sch))) return true
+  }
+  return false
 }
 
 export default def

@@ -50,6 +50,69 @@ if (validate(data)) {
 
 See more advanced example in [the test](../spec/types/json-schema.spec.ts).
 
+#### <a name="jtd-serialize"></a>ajv.compileSerializer(schema: object): (data: any) =\> string (NEW)
+
+Generate serializing function based on the [JTD schema](./json-type-definition.md) (caches the schema) - only in JTD instance of Ajv (see example below).
+
+Serializers compiled from JTD schemas can be more than 10 times faster than using `JSON.stringify`, because they do not traverse all the data, only the properties that are defined in the schema.
+
+Properties not defined in the schema will not be included in serialized JSON, unless the schema has `additionalProperties: true` flag. It can also be beneficial from the application security point of view, as it prevents leaking accidentally/temporarily added additional properties to the API responses.
+
+If you use JTD with typescript, the type for the schema can be derived from the data type, and generated serializer would only accept correct data type in this case:
+
+```typescript
+import Ajv, {JTDSchemaType} from "ajv/dist/jtd"
+const ajv = new Ajv()
+
+interface MyData = {
+  foo: number
+  bar?: string
+}
+
+const mySchema: JTDSchemaType<MyData> = {
+  properties: {
+    foo: {type: "int32"} // any JTD number type would be accepted here
+  },
+  optionalProperties: {
+    bar: {type: "string"}
+  }
+}
+
+const serializeMyData = ajv.compileSerializer(mySchema)
+
+// serializeMyData has type (x: MyData) => string
+// it prevents you from accidentally passing the wrong type
+```
+
+**Please note**: Compiled serializers do NOT validate passed data, it is assumed that the data is valid according to the schema. In the future there may be an option added that would make serializers also validate the data.
+
+#### <a name="jtd-parse"></a>ajv.compileParser(schema: object): (json: string) =\> any (NEW)
+
+Generate parsing function based on the [JTD schema](./json-type-definition.md) (caches the schema) - only in JTD instance of Ajv (see example below).
+
+Parsers compiled from JTD schemas have comparable performance to `JSON.parse`<sup>*</sup> in case JSON string is valid according to the schema (and they do not just parse JSON - they ensure that parsed JSON is valid according to the schema as they parse), but they can be many times faster in case the string is invalid - for example, if schema expects an object, and JSON string is array the parser would fail on the first character.
+
+Parsing will fail if there are properties not defined in the schema, unless the schema has `additionalProperties: true` flag.
+
+If you use JTD with typescript, the type for the schema can be derived from the data type, and generated parser will return correct data type (see definitions example in the [serialize](#jtd-serialize) section):
+
+```typescript
+const parseMyData = ajv.compileParser(mySchema)
+
+// parseMyData has type (s: string) => MyData | undefined
+// it returns correct data type in case parsing is successful and undefined if not
+
+const validData = parseMyData('{"foo":1}') // {foo: 1} - success
+
+const invalidData = parseMyData('{"x":1}') // undefined - failure
+console.log(parseMyData.position) // 4
+console.log(parseMyData.message) // property x not allowed
+```
+
+**Please note**: generated parsers is a NEW Ajv functionality (as of March 2021), there can be some edge cases that are not handled correctly - please report any issues/submit fixes.
+
+<sup>*</sup> As long as empty schema `{}` is not used - there is a possibility to improve performance in this case. Also, the performance of parsing `discriminator` schemas depends on the position of discriminator tag in the schema - the best parsing performance will be achieved if the tag is the first property - this is how compiled JTD serializers generate JSON in case of discriminator schemas.
+
 #### <a name="api-compileAsync"></a>ajv.compileAsync(schema: object, meta?: boolean): Promise\<Function\>
 
 Asynchronous version of `compile` method that loads missing remote schemas using asynchronous function in `options.loadSchema`. This function returns a Promise that resolves to a validation function. An optional callback passed to `compileAsync` will be called with 2 parameters: error (or null) and validating function. The returned promise will reject (and the callback will be called with an error) when:

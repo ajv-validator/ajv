@@ -1,6 +1,6 @@
 import type {CodeKeywordDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {propertyInData, allSchemaProperties} from "../code"
+import {propertyInData, allSchemaProperties, isOwnProperty} from "../code"
 import {alwaysValidSchema, schemaRefOrVal} from "../../compile/util"
 import {_, and, Code, Name} from "../../compile/codegen"
 import {checkMetadata} from "./metadata"
@@ -63,7 +63,7 @@ export function validateProperties(cxt: KeywordCxt): void {
     const _valid = gen.var("valid")
     for (const prop of props) {
       gen.if(
-        propertyInData(data, prop, it.opts.ownProperties),
+        propertyInData(gen, data, prop, it.opts.ownProperties),
         () => applyPropertySchema(prop, keyword, _valid),
         missingProperty
       )
@@ -116,12 +116,7 @@ export function validateProperties(cxt: KeywordCxt): void {
     if (props.length > 8) {
       // TODO maybe an option instead of hard-coded 8?
       const propsSchema = schemaRefOrVal(it, parentSchema[keyword], keyword)
-      const hasProp = gen.scopeValue("func", {
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-        ref: Object.prototype.hasOwnProperty,
-        code: _`Object.prototype.hasOwnProperty`,
-      })
-      additional = _`!${hasProp}.call(${propsSchema}, ${key})`
+      additional = isOwnProperty(gen, propsSchema as Code, key)
     } else if (props.length) {
       additional = and(...props.map((p) => _`${key} !== ${p}`))
     } else {

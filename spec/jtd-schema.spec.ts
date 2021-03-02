@@ -1,5 +1,5 @@
 import type AjvJTD from "../dist/jtd"
-import type {SchemaObject} from "../dist/jtd"
+import type {SchemaObject, JTDParser} from "../dist/jtd"
 import _AjvJTD from "./ajv_jtd"
 import getAjvInstances from "./ajv_instances"
 import {withStandalone} from "./ajv_standalone"
@@ -48,14 +48,14 @@ describe("JSON Type Definition", () => {
         allErrors: true,
         inlineRefs: false,
         code: {es5: true, lines: true, optimize: false},
-      })
+      }) as AjvJTD[]
       ajvs.forEach((ajv) => (ajv.opts.code.source = true))
     })
 
     for (const testName in jtdValidationTests) {
       const {schema, instance, errors} = jtdValidationTests[testName] as TestCase
       const valid = errors.length === 0
-      describeOnly(testName, () =>
+      describe(testName, () =>
         it(`should be ${valid ? "valid" : "invalid"}`, () =>
           withStandalone(ajvs).forEach((ajv) => {
             // console.log(ajv.compile(schema).toString())
@@ -91,6 +91,61 @@ describe("JSON Type Definition", () => {
       describe(testName, () =>
         it("should be invalid schema", () => assert.throws(() => ajv.compile(schema)))
       )
+    }
+  })
+
+  describe("serialize", () => {
+    const ajv = new _AjvJTD()
+
+    for (const testName in jtdValidationTests) {
+      const {schema, instance, errors} = jtdValidationTests[testName] as TestCase
+      const valid = errors.length === 0
+      if (!valid) continue
+      describe(testName, () =>
+        it(`should serialize data`, () => {
+          const serialize = ajv.compileSerializer(schema)
+          // console.log(serialize.toString())
+          assert.deepStrictEqual(JSON.parse(serialize(instance)), instance)
+        })
+      )
+    }
+  })
+
+  describe("parse", () => {
+    const ajv = new _AjvJTD()
+
+    for (const testName in jtdValidationTests) {
+      const {schema, instance, errors} = jtdValidationTests[testName] as TestCase
+      const valid = errors.length === 0
+      describeOnly(testName, () => {
+        if (valid) {
+          it(`should parse valid JSON string`, () => {
+            const parse = ajv.compileParser(schema)
+            // console.log(schema, instance, `"${JSON.stringify(instance)}"`, parse.toString())
+            shouldParse(parse, JSON.stringify(instance), instance)
+            shouldParse(parse, `  ${JSON.stringify(instance, null, 2)}  `, instance)
+          })
+        } else {
+          it(`should return undefined on invalid JSON string`, () => {
+            const parse = ajv.compileParser(schema)
+            // console.log(parse.toString())
+            shouldFail(parse, JSON.stringify(instance))
+            shouldFail(parse, `  ${JSON.stringify(instance, null, 2)}  `)
+          })
+        }
+      })
+    }
+
+    function shouldParse(parse: JTDParser, str: string, res: unknown): void {
+      assert.deepStrictEqual(parse(str), res)
+      assert.strictEqual(parse.message, undefined)
+      assert.strictEqual(parse.position, undefined)
+    }
+
+    function shouldFail(parse: JTDParser, str: string): void {
+      assert.strictEqual(parse(str), undefined)
+      assert.strictEqual(typeof parse.message, "string")
+      assert.strictEqual(typeof parse.position, "number")
     }
   })
 })

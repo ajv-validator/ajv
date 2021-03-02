@@ -8,20 +8,21 @@ import N from "../compile/names"
 
 export function checkReportMissingProp(cxt: KeywordCxt, prop: string): void {
   const {gen, data, it} = cxt
-  gen.if(noPropertyInData(data, prop, it.opts.ownProperties), () => {
+  gen.if(noPropertyInData(gen, data, prop, it.opts.ownProperties), () => {
     cxt.setParams({missingProperty: _`${prop}`}, true)
     cxt.error()
   })
 }
 
 export function checkMissingProp(
-  {data, it: {opts}}: KeywordCxt,
+  {gen, data, it: {opts}}: KeywordCxt,
   properties: string[],
   missing: Name
 ): Code {
   return or(
     ...properties.map(
-      (prop) => _`${noPropertyInData(data, prop, opts.ownProperties)} && (${missing} = ${prop})`
+      (prop) =>
+        _`${noPropertyInData(gen, data, prop, opts.ownProperties)} && (${missing} = ${prop})`
     )
   )
 }
@@ -31,22 +32,36 @@ export function reportMissingProp(cxt: KeywordCxt, missing: Name): void {
   cxt.error()
 }
 
-function isOwnProperty(data: Name, property: Name | string): Code {
-  return _`Object.prototype.hasOwnProperty.call(${data}, ${property})`
+export function hasPropFunc(gen: CodeGen): Name {
+  return gen.scopeValue("func", {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    ref: Object.prototype.hasOwnProperty,
+    code: _`Object.prototype.hasOwnProperty`,
+  })
 }
 
-export function propertyInData(data: Name, property: Name | string, ownProperties?: boolean): Code {
+export function isOwnProperty(gen: CodeGen, data: Name, property: Name | string): Code {
+  return _`${hasPropFunc(gen)}.call(${data}, ${property})`
+}
+
+export function propertyInData(
+  gen: CodeGen,
+  data: Name,
+  property: Name | string,
+  ownProperties?: boolean
+): Code {
   const cond = _`${data}${getProperty(property)} !== undefined`
-  return ownProperties ? _`${cond} && ${isOwnProperty(data, property)}` : cond
+  return ownProperties ? _`${cond} && ${isOwnProperty(gen, data, property)}` : cond
 }
 
 export function noPropertyInData(
+  gen: CodeGen,
   data: Name,
   property: Name | string,
   ownProperties?: boolean
 ): Code {
   const cond = _`${data}${getProperty(property)} === undefined`
-  return ownProperties ? _`${cond} || !${isOwnProperty(data, property)}` : cond
+  return ownProperties ? _`${cond} || !${isOwnProperty(gen, data, property)}` : cond
 }
 
 export function allSchemaProperties(schemaMap?: SchemaMap): string[] {

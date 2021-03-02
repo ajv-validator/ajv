@@ -2,17 +2,18 @@ import type {CodeKeywordDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, or, Code} from "../../compile/codegen"
 import validTimestamp from "../../compile/timestamp"
+import {func} from "../../compile/util"
 import {checkMetadata} from "./metadata"
 
-type IntType = "int8" | "uint8" | "int16" | "uint16" | "int32" | "uint32"
+export type IntType = "int8" | "uint8" | "int16" | "uint16" | "int32" | "uint32"
 
-const intRange: {[T in IntType]: [number, number]} = {
-  int8: [-128, 127],
-  uint8: [0, 255],
-  int16: [-32768, 32767],
-  uint16: [0, 65535],
-  int32: [-2147483648, 2147483647],
-  uint32: [0, 4294967295],
+export const intRange: {[T in IntType]: [number, number, number]} = {
+  int8: [-128, 127, 3],
+  uint8: [0, 255, 3],
+  int16: [-32768, 32767, 5],
+  uint16: [0, 65535, 5],
+  int32: [-2147483648, 2147483647, 10],
+  uint32: [0, 4294967295, 10],
 }
 
 const def: CodeKeywordDefinition = {
@@ -28,10 +29,7 @@ const def: CodeKeywordDefinition = {
         cond = _`typeof ${data} == ${schema}`
         break
       case "timestamp": {
-        const vts = gen.scopeValue("func", {
-          ref: validTimestamp,
-          code: _`require("ajv/dist/compile/timestamp").default`,
-        })
+        const vts = func(gen, validTimestamp)
         cond = _`${data} instanceof Date || (typeof ${data} == "string" && ${vts}(${data}))`
         break
       }
