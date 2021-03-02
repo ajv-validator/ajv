@@ -238,6 +238,132 @@ describe("strict mode", () => {
       }, / minItems or maxItems\/additionalItems are not specified or different/)
     })
   })
+
+  describe("strictRequired option", () => {
+    const ajv = new _Ajv({strictRequired: true, strict: true})
+    it("should prohibit base case", () => {
+      should.throw(() => {
+        ajv.compile({
+          type: "object",
+          properties: {
+            notTest: {
+              type: "string",
+            },
+          },
+          required: ["test"],
+        })
+      }, 'strict mode: required property "test" is not defined at "#" (strictRequired)')
+    })
+
+    it("should prohibit in second level of a schema", () => {
+      should.throw(() => {
+        ajv.compile({
+          type: "object",
+          properties: {
+            test: {
+              type: "object",
+              properties: {},
+              required: ["keyname"],
+            },
+          },
+        })
+      }, 'strict mode: required property "keyname" is not defined at "#/properties/test" (strictRequired)')
+    })
+
+    it.skip("should not throw with a same level if then", () => {
+      should.not.throw(() => {
+        ajv.compile({
+          type: "object",
+          properties: {foo: {}},
+          if: {required: ["foo"]},
+          then: {properties: {bar: {type: "boolean"}}},
+        })
+      })
+    })
+
+    it.skip("should not throw because if references a property as required and it is defined", () => {
+      should.not.throw(() => {
+        ajv.compile({
+          type: "object",
+          properties: {foo: {}},
+          if: {required: ["bar"]},
+          then: {properties: {bar: {type: "boolean"}}},
+        })
+      })
+    })
+
+    it("should throw if a required property exists in a parent object but not in the subschema that the require keyword references", () => {
+      should.throw(() => {
+        ajv.compile({
+          type: "object",
+          properties: {
+            foo: {
+              type: "object",
+              required: "foo",
+              properties: {
+                test: {
+                  type: "integer",
+                },
+              },
+            },
+          },
+        })
+      })
+    })
+
+    it("should throw if property exists in parent but not in actual object required references", () => {
+      should.throw(() => {
+        ajv.compile({
+          type: "object",
+          properties: {
+            foo: {
+              type: "object",
+              required: "foo",
+              properties: {
+                test: {
+                  type: "number",
+                },
+              },
+            },
+          },
+        })
+      })
+    })
+    it.skip("should not throw because all referenced properties are defined", () => {
+      should.not.throw(() => {
+        ajv.compile({
+          properties: {foo: {}, bar: {}},
+          allOf: [
+            {
+              allOf: [
+                {
+                  if: {required: ["foo"]},
+                  then: {required: ["bar"]},
+                },
+              ],
+            },
+          ],
+        })
+      })
+    })
+    it("should throw because baz does not exist as a property", () => {
+      should.throw(() => {
+        ajv.compile({
+          properties: {foo: {}, bar: {}},
+          allOf: [
+            {
+              allOf: [
+                {
+                  if: {required: ["bar"]},
+                  then: {required: ["baz"]},
+                },
+              ],
+            },
+          ],
+        })
+      })
+    })
+  })
 })
 
 function testStrictMode(schema, logPattern) {

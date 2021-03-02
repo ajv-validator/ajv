@@ -42,6 +42,7 @@ export type SubschemaArgs = Partial<{
   data: Name | Code
   dataProp: Code | string | number
   dataTypes: JSONType[]
+  definedProperties: Set<string>
   propertyName: Name
   dataPropType: Type
   jtdDiscriminator: string
@@ -131,6 +132,7 @@ function extendSubschemaData(
     subschema.data = _nextData
     subschema.dataLevel = it.dataLevel + 1
     subschema.dataTypes = []
+    it.definedProperties = new Set<string>()
     subschema.parentData = it.data
     subschema.dataNames = [...it.dataNames, _nextData]
   }
