@@ -241,18 +241,28 @@ describe("strict mode", () => {
 
   describe("strictRequired option", () => {
     const ajv = new _Ajv({strictRequired: true, strict: true})
-    it("should prohibit base case", () => {
-      should.throw(() => {
-        ajv.compile({
-          type: "object",
-          properties: {
-            notTest: {
-              type: "string",
-            },
+
+    describe("base case", () => {
+      const schema = {
+        type: "object",
+        properties: {
+          notTest: {
+            type: "string",
           },
-          required: ["test"],
-        })
-      }, 'strict mode: required property "test" is not defined at "#" (strictRequired)')
+        },
+        required: ["test"],
+      }
+
+      it("should prohibit with strictRequired: true", () => {
+        should.throw(
+          () => ajv.compile(schema),
+          'strict mode: required property "test" is not defined at "#" (strictRequired)'
+        )
+      })
+
+      it("should NOT prohibit when strictRequired is not set", () => {
+        should.not.throw(() => new _Ajv().compile(schema))
+      })
     })
 
     it("should prohibit in second level of a schema", () => {
@@ -276,17 +286,6 @@ describe("strict mode", () => {
           type: "object",
           properties: {foo: {}},
           if: {required: ["foo"]},
-          then: {properties: {bar: {type: "boolean"}}},
-        })
-      })
-    })
-
-    it.skip("should not throw because if references a property as required and it is defined", () => {
-      should.not.throw(() => {
-        ajv.compile({
-          type: "object",
-          properties: {foo: {}},
-          if: {required: ["bar"]},
           then: {properties: {bar: {type: "boolean"}}},
         })
       })
@@ -329,9 +328,11 @@ describe("strict mode", () => {
         })
       })
     })
+
     it.skip("should not throw because all referenced properties are defined", () => {
       should.not.throw(() => {
         ajv.compile({
+          type: "object",
           properties: {foo: {}, bar: {}},
           allOf: [
             {
@@ -346,9 +347,11 @@ describe("strict mode", () => {
         })
       })
     })
+
     it("should throw because baz does not exist as a property", () => {
       should.throw(() => {
         ajv.compile({
+          type: "object",
           properties: {foo: {}, bar: {}},
           allOf: [
             {

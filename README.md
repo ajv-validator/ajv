@@ -89,7 +89,7 @@ Please review [Contributing guidelines](./CONTRIBUTING.md) and [Code components]
 - NEW: [Strict mode](./docs/strict-mode.md#strict-mode)
   - [Prohibit ignored keywords](./docs/strict-mode.md#prohibit-ignored-keywords)
   - [Prevent unexpected validation](./docs/strict-mode.md#prevent-unexpected-validation)
-  - [Strict types](./docs/strict-mode.md#strict-types)  
+  - [Strict types](./docs/strict-mode.md#strict-types)
   - [Strict number validation](./docs/strict-mode.md#strict-number-validation)
 - [Data validation](./docs/validation.md)
   - [Validation basics](./docs/validation.md#validation-basics): [JSON Schema keywords](./docs/validation.md#validation-keywords), [annotations](./docs/validation.md#annotation-keywords), [formats](./docs/validation.md#formats)
