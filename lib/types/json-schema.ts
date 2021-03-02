@@ -98,11 +98,11 @@ type Known = KnownRecord | [Known, ...Known[]] | Known[] | number | string | boo
 
 interface KnownRecord extends Record<string, Known> {}
 
-type PropertiesSchema<T> = {
+export type PropertiesSchema<T> = {
   [K in keyof T]-?: (JSONSchemaType<T[K]> & Nullable<T[K]>) | {$ref: string}
 }
 
-type RequiredMembers<T> = {
+export type RequiredMembers<T> = {
   [K in keyof T]-?: undefined extends T[K] ? never : K
 }[keyof T]
 
