@@ -21,8 +21,8 @@ Supports JSON Schema draft-06/07/2019-09 (draft-04 is supported in [version 6](h
 
 Ajv version 7 has these new features:
 
+- NEW: support of JSON Type Definition [RFC8927](https://datatracker.ietf.org/doc/rfc8927/) (from [v7.1.0](https://github.com/ajv-validator/ajv-keywords/releases/tag/v7.1.0)), including generation of [serializers](./docs/api.md#jtd-serialize) and [parsers](./docs/api.md#jtd-parse) from JTD schemas that are more efficient than native JSON serialization/parsing, combining JSON string parsing and validation in one function.
 - support of JSON Schema draft-2019-09 features: [`unevaluatedProperties`](./docs/json-schema.md#unevaluatedproperties) and [`unevaluatedItems`](./docs/json-schema.md#unevaluateditems), [dynamic recursive references](./docs/validation.md#extending-recursive-schemas) and other [additional keywords](./docs/json-schema.md#json-schema-draft-2019-09).
-- NEW: support of JSON Type Definition [RFC8927](https://datatracker.ietf.org/doc/rfc8927/) (from [v7.1.0](https://github.com/ajv-validator/ajv-keywords/releases/tag/v7.1.0))
 - to reduce the mistakes in JSON schemas and unexpected validation results, [strict mode](./docs/strict-mode.md) is added - it prohibits ignored or ambiguous JSON Schema elements.
 - to make code injection from untrusted schemas impossible, [code generation](./docs/codegen.md) is fully re-written to be safe and to allow code optimization (compiled schema code size is reduced by more than 10%).
 - to simplify Ajv extensions, the new keyword API that is used by pre-defined keywords is available to user-defined keywords - it is much easier to define any keywords now, especially with subschemas. [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package was updated to use the new API (in [v4.0.0](https://github.com/ajv-validator/ajv-keywords/releases/tag/v4.0.0))
