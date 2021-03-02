@@ -1,7 +1,7 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_} from "../../compile/codegen"
-import equal = require("fast-deep-equal")
+import * as equal from "fast-deep-equal"
 
 export type ConstError = ErrorObject<"const", {allowedValue: any}>
 
