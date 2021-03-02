@@ -90,7 +90,7 @@ const serializeMyData = ajv.compileSerializer(mySchema)
 
 Generate parsing function based on the [JTD schema](./json-type-definition.md) (caches the schema) - only in JTD instance of Ajv (see example below).
 
-Parsers compiled from JTD schemas have comparable performance to `JSON.parse`<sup>*</sup> in case JSON string is valid according to the schema (and they do not just parse JSON - they ensure that parsed JSON is valid according to the schema as they parse), but they can be many times faster in case the string is invalid - for example, if schema expects an object, and JSON string is array the parser would fail on the first character.
+Parsers compiled from JTD schemas have comparable performance to `JSON.parse`<sup>\*</sup> in case JSON string is valid according to the schema (and they do not just parse JSON - they ensure that parsed JSON is valid according to the schema as they parse), but they can be many times faster in case the string is invalid - for example, if schema expects an object, and JSON string is array the parser would fail on the first character.
 
 Parsing will fail if there are properties not defined in the schema, unless the schema has `additionalProperties: true` flag.
 
@@ -111,7 +111,7 @@ console.log(parseMyData.message) // property x not allowed
 
 **Please note**: generated parsers is a NEW Ajv functionality (as of March 2021), there can be some edge cases that are not handled correctly - please report any issues/submit fixes.
 
-<sup>*</sup> As long as empty schema `{}` is not used - there is a possibility to improve performance in this case. Also, the performance of parsing `discriminator` schemas depends on the position of discriminator tag in the schema - the best parsing performance will be achieved if the tag is the first property - this is how compiled JTD serializers generate JSON in case of discriminator schemas.
+<sup>\*</sup> As long as empty schema `{}` is not used - there is a possibility to improve performance in this case. Also, the performance of parsing `discriminator` schemas depends on the position of discriminator tag in the schema - the best parsing performance will be achieved if the tag is the first property - this is how compiled JTD serializers generate JSON in case of discriminator schemas.
 
 #### <a name="api-compileAsync"></a>ajv.compileAsync(schema: object, meta?: boolean): Promise\<Function\>
 
@@ -316,6 +316,7 @@ const defaultOptions = {
   strict: true,
   strictTypes: "log", // *
   strictTuples: "log", // *
+  strictRequired: false, // *
   allowUnionTypes: false, // *
   allowMatchingProperties: false, // *
   validateFormats: true, // *
@@ -372,6 +373,10 @@ const defaultOptions = {
   - `true` - throw exception.
   - `"log"` (default, unless option strict is `false`) - log warning.
   - `false` - ignore strictTuples restriction violations.
+- _strictRequired_: Ajv can log warning or throw exception when the property used in "required" keyword is not defined in "properties" keyword. See [Strict mode](./strict-mode.md) for more details. This option does not change validation results. Option values:
+  - `true` - throw exception.
+  - `"log"` - log warning.
+  - `false` (default) - ignore strictRequired restriction violations.
 - _allowUnionTypes_: pass true to allow using multiple non-null types in "type" keyword (one of `strictTypes` restrictions). see [Strict types](./strict-mode.md#strict-types)
 - _allowMatchingProperties_: pass true to allow overlap between "properties" and "patternProperties". Does not affect other strict mode restrictions. See [Strict Mode](./strict-mode.md).
 - _validateFormats_: format validation. Option values:

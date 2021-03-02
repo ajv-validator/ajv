@@ -321,58 +321,63 @@ The type `JTDSchemaType` can be used to validate that the written schema matches
 ### Most Schemas
 
 Most straightforward types should work with `JTDSchemaType`, e.g.
+
 ```typescript
 interface MyType {
-    num: number;
-    optionalStr?: string;
-    nullableEnum: "v1.0" | "v1.2" | null;
-    values: Record<string, number>;
+  num: number
+  optionalStr?: string
+  nullableEnum: "v1.0" | "v1.2" | null
+  values: Record<string, number>
 }
 
 const schema: JTDSchemaType<MyType> = {
-    properties: {
-        num: { type: "float64" },
-        nullableEnum: { enum: ["v1.0", "v1.2"], nullable: true },
-        values: { values: { type: "int32" } },
-    },
-    optionalProperties: {
-        optionalStr: { type: "string" },
-    }
+  properties: {
+    num: {type: "float64"},
+    nullableEnum: {enum: ["v1.0", "v1.2"], nullable: true},
+    values: {values: {type: "int32"}},
+  },
+  optionalProperties: {
+    optionalStr: {type: "string"},
+  },
 }
 ```
+
 will compile. Using `schema` with AJV will guarantee type safety.
 
 ### Ref Schemas
 
 Ref schemas are a little more advanced, because the types of every definition must be specified in advance.
 A simple ref schema is relatively straightforward:
+
 ```typescript
-const schema: JTDSchemaType<{ val: number }, { num: number }> = {
-    definitions: {
-        num: { type: "float64" }
-    },
-    properties: {
-        val: { ref: "num" }
-    },
+const schema: JTDSchemaType<{val: number}, {num: number}> = {
+  definitions: {
+    num: {type: "float64"},
+  },
+  properties: {
+    val: {ref: "num"},
+  },
 }
 ```
+
 note that the type of all definitions was included as a second argument to `JTDSchemaType`.
 
 This also works for recursive schemas:
+
 ```typescript
-type LinkedList = { val: number, next?: LinkedList }
-const schema: JTDSchemaType<LinkedList, { node: LinkedList }> = {
-    definitions: {
-        node: {
-            properties: {
-                val: { type: "float64" },
-            },
-            optionalProperties: {
-                next: { ref: "node" },
-            },
-        },
+type LinkedList = {val: number; next?: LinkedList}
+const schema: JTDSchemaType<LinkedList, {node: LinkedList}> = {
+  definitions: {
+    node: {
+      properties: {
+        val: {type: "float64"},
+      },
+      optionalProperties: {
+        next: {ref: "node"},
+      },
     },
-    ref: "node",
+  },
+  ref: "node",
 }
 ```
 
