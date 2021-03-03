@@ -155,7 +155,9 @@ console.log(validate({foo: "baz"})) // false
 
 `const` keyword is already available in Ajv.
 
-**Please note:** If the keyword does not define errors (see [Reporting errors](./api.md#reporting-errors)) pass `errors: false` in its definition; it will make generated code more efficient.
+::: tip Please note
+If the keyword does not define errors (see [Reporting errors](./api.md#reporting-errors)) pass `errors: false` in its definition; it will make generated code more efficient.
+:::
 
 To add asynchronous keyword pass `async: true` in its definition.
 

@@ -100,7 +100,9 @@ With option `strictRequired` set to `"log"` or `true` Ajv logs warning or throws
 
 By default this option is disabled.
 
-**Please note** there are certain scenarios when property defined in the parent schema will not be taken into account.
+::: warning Please note
+there are certain scenarios when property defined in the parent schema will not be taken into account.
+:::
 
 #### Unconstrained tuples <Badge text="strictTuples option" />
 
@@ -248,7 +250,9 @@ The schema above violates `strictTypes` as "array" type is not compatible with o
 }
 ```
 
-**Please note**: type "number" can be narrowed to "integer", the opposite would violate `strictTypes`.
+::: warning Please note
+Type "number" can be narrowed to "integer", the opposite would violate `strictTypes`.
+:::
 
 #### Require applicable types
 

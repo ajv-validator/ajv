@@ -59,7 +59,9 @@ The value of keyword `maximum` (`minimum`) should be a number. This value is the
 
 The value of keyword `exclusiveMaximum` (`exclusiveMinimum`) should be a number. This value is the exclusive maximum (minimum) allowed value for the data to be valid (the data equal to this keyword value is invalid).
 
-**Please note**: Boolean value for keywords `exclusiveMaximum` (`exclusiveMinimum`) is no longer supported.
+::: warning Please note
+Boolean value for keywords `exclusiveMaximum` (`exclusiveMinimum`) is no longer supported.
+:::
 
 **Examples**
 
@@ -375,7 +377,9 @@ _invalid_: `{}`, `{a: 1}`, `{c: 3, d: 4}`
 
 The value of the keyword should be a map with keys equal to data object properties. Each value in the map should be a JSON Schema. For data object to be valid the corresponding values in data object properties should be valid according to these schemas.
 
-**Please note**: `properties` keyword does not require that the properties mentioned in it are present in the object (see examples).
+::: warning Please note
+`properties` keyword does not require that the properties mentioned in it are present in the object (see examples).
+:::
 
 **Example**
 
@@ -404,10 +408,10 @@ The value of this keyword should be a map where keys should be regular expressio
 
 When the value in data object property matches multiple regular expressions it should be valid according to all the schemas for all matched regular expressions.
 
-**Please note**:
-
+::: warning Please note
 1. `patternProperties` keyword does not require that properties matching patterns are present in the object (see examples).
 2. By default, Ajv does not allow schemas where patterns in `patternProperties` match any property name in `properties` keyword - that leads to unexpected validation results. It can be allowed with option `allowMatchingProperties`. See [Strict mode](./strict-mode.md)
+:::
 
 **Example**
 

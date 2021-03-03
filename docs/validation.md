@@ -36,7 +36,9 @@ With this import Ajv supports the following features:
 - dynamic recursive references with [`recursiveAnchor`/`recursiveReference`] - see [Extending recursive schemas](#extending-recursive-schemas)
 - draft-2019-09 meta-schema is the default.
 
-**Please note**: Supporting dynamic recursive references and `unevaluatedProperties/Items` adds additional generated code even to the validation functions where these features are not used (when possible, Ajv determines which properties/items are "unevaluated" at compilation time, but support for dynamic references always adds additional generated code). If you are not using these features in your schemas it is recommended to use default Ajv export with JSON-Schema draft-07 support.
+::: warning Please note
+Supporting dynamic recursive references and `unevaluatedProperties/Items` adds additional generated code even to the validation functions where these features are not used (when possible, Ajv determines which properties/items are "unevaluated" at compilation time, but support for dynamic references always adds additional generated code). If you are not using these features in your schemas it is recommended to use default Ajv export with JSON-Schema draft-07 support.
+:::
 
 You can also use individual draft-2019-09 features to Ajv with the advanced options `dynamicRef`, `next` and `unevaluated`. These options are changing how the code is generated for draft-07 keywords to support the new features of draft-2019-09, but they do not add the new keywords - they should be added separately. The code examples below shows how to enable individual draft-2019-09 features:
 
@@ -85,7 +87,9 @@ JSON Schema specification defines several metadata keywords that describe the sc
 - `contentEncoding`: [RFC 2045](https://tools.ietf.org/html/rfc2045#section-6.1), e.g., "base64".
 - `contentMediaType`: [RFC 2046](https://datatracker.ietf.org/doc/rfc2046/), e.g., "image/png".
 
-**Please note**: Ajv does not implement validation of the keywords `examples`, `contentEncoding` and `contentMediaType` but it reserves them. If you want to create a plugin that implements any of them, it should remove these keywords from the instance.
+::: warning Please note
+Ajv does not implement validation of the keywords `examples`, `contentEncoding` and `contentMediaType` but it reserves them. If you want to create a plugin that implements any of them, it should remove these keywords from the instance.
+:::
 
 ### Formats
 
@@ -105,7 +109,9 @@ See ajv-formats documentation for further details.
 
 It is recommended NOT to use "format" keyword implementations with untrusted data, as they may use potentially unsafe regular expressions (even though known issues are fixed) - see [ReDoS attack](./security.md#redos-attack).
 
-**Please note**: if you need to use "format" keyword to validate untrusted data, you MUST assess their suitability and safety for your validation scenarios.
+::: danger Please note
+If you need to use "format" keyword to validate untrusted data, you MUST assess their suitability and safety for your validation scenarios.
+:::
 
 The following formats are defined in [ajv-formats](https://github.com/ajv-validator/ajv-formats) for string validation with "format" keyword:
 
@@ -126,7 +132,9 @@ The following formats are defined in [ajv-formats](https://github.com/ajv-valida
 - _json-pointer_: JSON-pointer according to [RFC6901](https://datatracker.ietf.org/doc/rfc6901/).
 - _relative-json-pointer_: relative JSON-pointer according to [this draft](http://tools.ietf.org/html/draft-luff-relative-json-pointer-00).
 
-**Please note**: JSON Schema draft-07 also defines formats `iri`, `iri-reference`, `idn-hostname` and `idn-email` for URLs, hostnames and emails with international characters. These formats are available in [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) plugin.
+::: warning Please note
+JSON Schema draft-07 also defines formats `iri`, `iri-reference`, `idn-hostname` and `idn-email` for URLs, hostnames and emails with international characters. These formats are available in [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) plugin.
+:::
 
 You can add and replace any formats using [addFormat](./api.md#api-addformat) method.
 
@@ -173,8 +181,7 @@ const validate = ajv.addSchema(defsSchema).compile(schema)
 
 See [Options](./api.md#options) and [addSchema](./api.md#add-schema) method.
 
-**Please note**:
-
+::: tip Please note
 - `$ref` is resolved as the uri-reference using schema \$id as the base URI (see the example).
 - References can be recursive (and mutually recursive) to implement the schemas for different data structures (such as linked lists, trees, graphs, etc.).
 - You don't have to host your schema files at the URIs that you use as schema \$id. These URIs are only used to identify the schemas, and according to JSON Schema specification validators should not expect to be able to download the schemas from these URIs.
@@ -182,6 +189,7 @@ See [Options](./api.md#options) and [addSchema](./api.md#add-schema) method.
 - You can pass the identifier of the schema as the second parameter of `addSchema` method or as a property name in `schemas` option. This identifier can be used instead of (or in addition to) schema \$id.
 - You cannot have the same \$id (or the schema identifier) used for more than one schema - the exception will be thrown.
 - You can implement dynamic resolution of the referenced schemas using `compileAsync` method. In this way you can store schemas in any system (files, web, database, etc.) and reference them without explicitly adding to Ajv instance. See [Asynchronous schema compilation](./validation.md#asynchronous-schema-compilation).
+:::
 
 ### Extending recursive schemas
 
@@ -434,7 +442,9 @@ function loadSchema(uri) {
 }
 ```
 
-**Please note**: [Option](./api.md#options) `missingRefs` should NOT be set to `"ignore"` or `"fail"` for asynchronous compilation to work.
+::: warning Please note
+[Option](./api.md#options) `missingRefs` should NOT be set to `"ignore"` or `"fail"` for asynchronous compilation to work.
+:::
 
 ## Asynchronous validation
 
@@ -444,7 +454,9 @@ You can define formats and keywords that perform validation asynchronously by ac
 
 If your schema uses asynchronous formats/keywords or refers to some schema that contains them it should have `"$async": true` keyword so that Ajv can compile it correctly. If asynchronous format/keyword or reference to asynchronous schema is used in the schema without `$async` keyword Ajv will throw an exception during schema compilation.
 
-**Please note**: all asynchronous subschemas that are referenced from the current or other schemas should have `"$async": true` keyword as well, otherwise the schema compilation will fail.
+::: warning Please note
+All asynchronous subschemas that are referenced from the current or other schemas should have `"$async": true` keyword as well, otherwise the schema compilation will fail.
+:::
 
 Validation function for an asynchronous format/keyword should return a promise that resolves with `true` or `false` (or rejects with `new Ajv.ValidationError(errors)` if you want to return errors from the keyword function).
 
@@ -556,7 +568,11 @@ If `removeAdditional` option in the example above were `"all"` then both `additi
 
 If the option were `"failing"` then property `additional1` would have been removed regardless of its value and property `additional2` would have been removed only if its value were failing the schema in the inner `additionalProperties` (so in the example above it would have stayed because it passes the schema, but any non-number would have been removed).
 
-**Please note**: If you use `removeAdditional` option with `additionalProperties` keyword inside `anyOf`/`oneOf` keywords your validation can fail with this schema, for example:
+::: warning Please note
+If you use `removeAdditional` option with `additionalProperties` keyword inside `anyOf`/`oneOf` keywords your validation can fail with this schema
+:::
+
+For example:
 
 ```javascript
 {
@@ -608,7 +624,9 @@ With the option value `"empty"` properties and items equal to `null` or `""` (em
 
 This option modifies original data.
 
-**Please note**: the default value is inserted in the generated validation code as a literal, so the value inserted in the data will be the deep clone of the default in the schema.
+::: warning Please note
+The default value is inserted in the generated validation code as a literal, so the value inserted in the data will be the deep clone of the default in the schema.
+:::
 
 Example 1 (`default` in `properties`):
 
@@ -664,7 +682,9 @@ When you are validating user inputs all your data properties are usually strings
 
 This option modifies original data.
 
-**Please note**: if you pass a scalar value to the validating function its type will be coerced and it will pass the validation, but the value of the variable you pass won't be updated because scalars are passed by value.
+::: warning Please note
+If you pass a scalar value to the validating function its type will be coerced and it will pass the validation, but the value of the variable you pass won't be updated because scalars are passed by value.
+:::
 
 Example 1:
 
