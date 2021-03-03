@@ -1,5 +1,7 @@
 # Standalone validation code
 
+[[toc]]
+
 Ajv supports generating standalone modules with exported validation function(s), with one default export or multiple named exports, that are pre-compiled and can be used without Ajv. It is useful for several reasons:
 
 - to reduce the browser bundle size - Ajv is not included in the bundle (although if you have a large number of schemas the bundle can become bigger - when the total size of generated validation code is bigger than Ajv code).

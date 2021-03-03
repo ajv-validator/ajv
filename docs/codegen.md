@@ -1,5 +1,7 @@
 # Code generation
 
+[[toc]]
+
 Starting from v7 Ajv uses [CodeGen module](../lib/compile/codegen/index.ts) that replaced [doT](https://github.com/olado/dot) templates used earlier.
 
 The motivations for this change:

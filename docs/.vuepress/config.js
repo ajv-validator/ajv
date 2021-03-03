@@ -1,6 +1,12 @@
+const {slugify} = require("@vuepress/shared-utils")
+
 module.exports = {
   title: "Ajv: Another JSON validator",
   description: "Just playing around",
+  markdown: {
+    slugify: (str) => slugify(str.replace(/<Badge[^>]*\/>/, "")),
+    toc: {includeLevel: [2, 3, 4]}
+  },
   themeConfig: {
     logo: "https://ajv.js.org/images/ajv_logo.png",
     nav: [
@@ -39,23 +45,19 @@ module.exports = {
           "/json-type-definition",
           "/api",
           "/keywords",
-          "/coercion"    
-        ]
+          "/coercion",
+        ],
       },
       {
         title: "Code generation & design",
         collapsable: false,
-        children: [
-          "/standalone",
-          "/codegen",
-          "/components",    
-        ]
+        children: ["/standalone", "/codegen", "/components"],
       },
     ],
     nextLinks: false,
     prevLinks: false,
-    repo: 'ajv-validator/ajv',
-    docsDir: 'docs',
+    repo: "ajv-validator/ajv",
+    docsDir: "docs",
     editLinks: true,
   },
 }

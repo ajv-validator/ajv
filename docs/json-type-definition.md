@@ -11,23 +11,7 @@ const AjvJTD = require("ajv/dist/jtd").default
 const ajv = new AjvJTD()
 ```
 
-## Contents
-
-- [JTD schema forms](#jtd-schema-forms):
-  - [type](#type-schema-form) (for primitive values)
-  - [enum](#enum-schema-form)
-  - [elements](#elements-schema-form) (for arrays)
-  - [properties](#properties-schema-form) (for records)
-  - [discriminator](#discriminator-schema-form) (for tagged union of records)
-  - [values](#values-schema-form) (for dictionary)
-  - [ref](#ref-schema-form) (to reference a schema in definitions)
-  - [empty](#empty-schema-form) (for any data)
-- [JTDSchemaType](#jtdschematype)
-- [Extending JTD](#extending-jtd)
-  - [metadata](#metadata-schema-member)
-  - [union](#union-keyword)
-  - [user-defined keywords](#user-defined-keywords)
-- [Validation errors](#validation-errors)
+[[toc]]
 
 ## JTD schema forms
 
@@ -42,7 +26,7 @@ All forms require that:
 
 Root schema can have member `definitions` that has a dictionary of schemas that can be references from any other schemas using form `ref`
 
-### Type schema form
+### Type form <Badge text="primitive values" />
 
 This form defines a primitive value.
 
@@ -74,7 +58,7 @@ Unlike JSON Schema, JTD does not allow defining values that can take one of seve
 }
 ```
 
-### Enum schema form
+### Enum form
 
 This form defines a string that can take one of the values from the list (the values in the list must be unique).
 
@@ -90,7 +74,7 @@ Unlike JSON Schema, JTD does not allow defining `enum` with values of any other 
 }
 ```
 
-### Elements schema form
+### Elements form <Badge text="arrays" />
 
 This form defines a homogenous array of any size (possibly empty) with the elements that satisfy a given schema.
 
@@ -114,7 +98,7 @@ Valid data: `[]`, `["foo"]`, `["foo", "bar"]`
 
 Invalid data: `["foo", 1]`, any type other than array
 
-### Properties schema form
+### Properties form <Badge text="objects" />
 
 This form defines record (JSON object) that has defined required and optional properties.
 
@@ -173,7 +157,7 @@ Invalid data: `{}`, `{foo: 1}`, `{foo: "bar", bar: "3"}`, any type other than ob
 }
 ```
 
-### Discriminator schema form
+### Discriminator form <Badge text="tagged union" />
 
 This form defines discriminated (tagged) union of different record types.
 
@@ -231,7 +215,7 @@ Invalid data: `{}`, `{foo: "1"}`, `{version: 1, foo: "1"}`, any type other than 
 }
 ```
 
-### Values schema form
+### Values form <Badge text="dictionary" />
 
 This form defines a homogenous dictionary where the values of members satisfy a given schema.
 
@@ -255,7 +239,7 @@ Valid data: `{}`, `{"foo": 1}`, `{"foo": 1, "bar": 2}`
 
 Invalid data: `{"foo": "bar"}`, any type other than object
 
-### Ref schema form
+### Ref form <Badge text="reference definitions" />
 
 This form defines a reference to the schema that is present in the corresponding key in the `definitions` member of the root schema.
 
@@ -310,7 +294,7 @@ Unlike JSON Schema, JTD does not allow to reference:
 }
 ```
 
-### Empty schema form
+### Empty form <Badge text="any data" />
 
 Empty JTD schema defines the data instance that can be of any type, including JSON `null` (even if `nullable` member is not present). It cannot have any member other than `nullable` and `metadata`.
 
@@ -416,3 +400,7 @@ This keyword can be used only inside `metadata` schema member.
 Any user-defined keywords that can be used in JSON Schema schemas can also be used in JTD schemas, including the keywords in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package.
 
 **Please note**: It is strongly recommended to only use it to simplify migration from JSON Schema to JTD and not to use non-standard keywords in the new schemas, as these keywords are not supported by any other tools.
+
+## Validation errors
+
+TODO

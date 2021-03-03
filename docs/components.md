@@ -1,5 +1,7 @@
 # Code components
 
+[[toc]]
+
 ## Ajv classes
 
 [lib/core.ts](../lib/core.ts) - core Ajv class without any keywords. All Ajv methods for managing schemas and extensions are defined in this class.
@@ -7,6 +9,8 @@
 [lib/ajv.ts](../lib/ajv.ts) - subclass of Ajv core with JSON Schema draft-07 keywords.
 
 [lib/2019.ts](../lib/2019.ts) - subclass of Ajv core with JSON Schema draft-2019-09 keywords.
+
+[lib/jtd.ts](../lib/jtd.ts) - subclass of Ajv core with JSON Type Definition support.
 
 ## Schema compilation
 

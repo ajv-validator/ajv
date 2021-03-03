@@ -4,6 +4,8 @@ In a simple way, JSON Schema is an object with validation keywords.
 
 The keywords and their values define what rules the data should satisfy to be valid.
 
+[[toc]]
+
 ## JSON Schema draft-2019-09
 
 v7 added support for all new keywords in draft-2019-09:
@@ -16,45 +18,6 @@ v7 added support for all new keywords in draft-2019-09:
 - [$recursiveAnchor/$recursiveRef](./validation.md#extending-recursive-schemas)
 
 There is also support for [$dynamicAnchor/$dynamicRef](./validation.md#extending-recursive-schemas) from the next version of JSON Schema draft that will replace `$recursiveAnchor`/`$recursiveRef`.
-
-## Included keywords
-
-- [type](#type)
-- [Keywords for numbers](#keywords-for-numbers)
-  - [maximum / minimum and exclusiveMaximum / exclusiveMinimum](#maximum--minimum-and-exclusivemaximum--exclusiveminimum)
-  - [multipleOf](#multipleof)
-- [Keywords for strings](#keywords-for-strings)
-  - [maxLength/minLength](#maxlength--minlength)
-  - [pattern](#pattern)
-  - [format](#format)
-- [Keywords for arrays](#keywords-for-arrays)
-  - [maxItems/minItems](#maxitems--minitems)
-  - [uniqueItems](#uniqueitems)
-  - [items](#items)
-  - [additionalItems](#additionalitems)
-  - [contains](#contains)
-  - [maxContains/minContains](#maxcontains--mincontains)
-  - [unevaluatedItems](#unevaluateditems) (NEW: added in draft 2019-09)
-- [Keywords for objects](#keywords-for-objects)
-  - [maxProperties/minProperties](#maxproperties--minproperties)
-  - [required](#required)
-  - [properties](#properties)
-  - [patternProperties](#patternproperties)
-  - [additionalProperties](#additionalproperties)
-  - [dependencies](#dependencies) (deprecated from draft 2019-09)
-  - [dependentRequired](#dependentrequired) (NEW: added in draft 2019-09)
-  - [dependentSchemas](#dependentschemas) (NEW: added in draft 2019-09)
-  - [propertyNames](#propertynames)
-  - [unevaluatedProperties](#unevaluatedproperties) (NEW: added in draft 2019-09)
-- [Keywords for all types](#keywords-for-all-types)
-  - [enum](#enum)
-  - [const](#const) (added in draft-06)
-- [Compound keywords](#compound-keywords)
-  - [not](#not)
-  - [oneOf](#oneof)
-  - [anyOf](#anyof)
-  - [allOf](#allof)
-  - [if/then/else](#ifthenelse)
 
 ## `type`
 
@@ -339,7 +302,7 @@ _valid_: `[1, 2]`, `[1, 2, 3, "foo"]`, any array with 2 or 3 integers
 
 _invalid_: `[]`, `[1, "foo"]`, `[1, 2, 3, 4]`, any array with fewer than 2 or more than 3 integers
 
-### `unevaluatedItems`
+### `unevaluatedItems` <Badge text="NEW: draft 2019-09" />
 
 The value of this keyword is a JSON Schema (can be a boolean).
 
@@ -542,7 +505,7 @@ If the value is a schema for the data object to be valid the values in all "addi
 
     _invalid_: `{bar: 2}`, `{baz: 3}`, `{foo: 1, bar: 2}`, etc.
 
-### `dependencies`
+### `dependencies` <Badge text="deprecated in draft 2019-09" type="warning" />
 
 This keyword is deprecated. The same functionality is available with keywords `dependentRequired` and `dependentSchemas`.
 
@@ -588,7 +551,7 @@ For schema dependency, if the data object contains a property that is a key in t
 
     _invalid_: `{foo: 1, bar: "a"}`
 
-### `dependentRequired`
+### `dependentRequired` <Badge text="NEW: draft 2019-09" />
 
 The value of this keyword should be a map with keys equal to data object properties. Each value in the map should be an array of unique property names.
 
@@ -611,7 +574,7 @@ _valid_: `{foo: 1, bar: 2, baz: 3}`, `{}`, `{a: 1}`
 
 _invalid_: `{foo: 1}`, `{foo: 1, bar: 2}`, `{foo: 1, baz: 3}`
 
-### `dependentSchemas`
+### `dependentSchemas` <Badge text="NEW: draft 2019-09" />
 
 The value of the keyword should be a map with keys equal to data object properties. Each value in the map should be a JSON Schema.
 
@@ -661,7 +624,7 @@ _valid_: `{"foo@bar.com": "any", "bar@bar.com": "any"}`
 
 _invalid_: `{foo: "any value"}`
 
-### `unevaluatedProperties`
+### `unevaluatedProperties` <Badge text="NEW: draft 2019-09" />
 
 The value of this keyword is a JSON Schema (can be a boolean).
 

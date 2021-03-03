@@ -2,12 +2,7 @@
 
 JSON Schema, if properly used, can replace data sanitisation. It doesn't replace other API security considerations. It also introduces additional security aspects to consider.
 
-- [Security contact](#security-contact)
-- [Untrusted schemas](#untrusted-schemas)
-- [Circular references in objects](#circular-references-in-javascript-objects)
-- [Trusted schemas](#security-risks-of-trusted-schemas)
-- [ReDoS attack](#redos-attack)
-- [Content Security Policy](#content-security-policy)
+[[toc]]
 
 ## Security contact
 

@@ -1,24 +1,6 @@
 # Data validation
 
-- [Data validation](#data-validation)
-  - [JSON Schema draft-2019-09](#json-schema-draft-2019-09)
-  - [Validation basics](#validation-basics)
-    - [JSON Schema validation keywords](#json-schema-validation-keywords)
-    - [Annotation keywords](#annotation-keywords)
-    - [Formats](#formats)
-  - [Modular schemas](#modular-schemas)
-    - [<a name="ref"></a>Combining schemas with \$ref](#combining-schemas-with-ref)
-    - [Extending recursive schemas](#extending-recursive-schemas)
-    - [\$data reference](#data-reference)
-    - [$merge and $patch keywords](#merge-and-patch-keywords)
-  - [User-defined keywords](#user-defined-keywords)
-  - [Asynchronous schema compilation](#asynchronous-schema-compilation)
-  - [Asynchronous validation](#asynchronous-validation)
-    - [Using transpilers](#using-transpilers)
-  - [Modifying data during validation](#modifying-data-during-validation)
-    - [Removing additional properties](#removing-additional-properties)
-    - [Assigning defaults](#assigning-defaults)
-    - [Coercing data types](#coercing-data-types)
+[[toc]]
 
 ## JSON Schema draft-2019-09
 
@@ -150,7 +132,7 @@ You can add and replace any formats using [addFormat](./api.md#api-addformat) me
 
 ## Modular schemas
 
-### <a name="ref"></a>Combining schemas with \$ref
+### <a name="ref"></a>Combining schemas with $ref
 
 You can structure your validation logic across multiple schema files and have schemas reference each other using `$ref` keyword.
 
@@ -269,7 +251,7 @@ At the moment Ajv implements the spec for dynamic recursive references with thes
 
 Ajv also does not support dynamic references in [asynchronous schemas](#asynchronous-validation) (Ajv extension) - it is assumed that the referenced schema is synchronous, and there is no validation-time check for it.
 
-### \$data reference
+### $data reference
 
 With `$data` option you can use values from the validated data as the values for the schema keywords. See [proposal](https://github.com/json-schema-org/json-schema-spec/issues/51) for more information about how it works.
 

@@ -1,18 +1,8 @@
 # User defined keywords
 
-## Contents
+[[toc]]
 
-- Define keyword with:
-  - [code generation function](#define-keyword-with-code-generation-function) - used by all pre-defined keywords
-  - [validation function](#define-keyword-with-validation-function)
-  - [compilation function](#define-keyword-with-compilation-function)
-  - [macro function](#define-keyword-with-macro-function)
-- [Schema compilation context](#schema-compilation-context)
-- [Validation time variables](#validation-time-variables)
-- [Ajv utilities](#ajv-utilities)
-- [Defining keyword errors](#defining-keyword-errors)
-
-### Common attributes of keyword definitions
+## Common attributes of keyword definitions
 
 The usual interface to define all keywords has these properties:
 
@@ -31,7 +21,7 @@ interface _KeywordDef {
 
 Keyword definitions may have additional optional properties - see [types](../lib/types/index.ts) and [KeywordCxt](../lib/compile/context.ts).
 
-### Define keyword with code generation function
+### Define keyword with code generation function <Badge text="recommended" />
 
 Starting from v7 Ajv uses [CodeGen module](../lib/compile/codegen/index.ts) for all pre-defined keywords - see [codegen.md](./codegen.md) for details.
 

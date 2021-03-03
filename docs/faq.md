@@ -2,6 +2,8 @@
 
 The purpose of this document is to help find answers quicker. I am happy to continue the discussion about these issues, so please comment on some of the issues mentioned below or create a new issue if it seems more appropriate.
 
+[[toc]]
+
 ## Using JSON schema
 
 Ajv implements JSON schema specification. Before submitting the issue about the behaviour of any validation keywords please review them in:
