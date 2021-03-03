@@ -8,7 +8,7 @@ module.exports = {
     toc: {includeLevel: [2, 3, 4]}
   },
   themeConfig: {
-    logo: "https://ajv.js.org/images/ajv_logo.png",
+    logo: "/ajv.svg",
     nav: [
       {text: "Home", link: "/"},
       {

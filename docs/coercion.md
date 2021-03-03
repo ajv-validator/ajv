@@ -1,4 +1,4 @@
-# Ajv type coercion rules
+# Type coercion rules
 
 To enable type coercion pass option `coerceTypes` to Ajv with `true` or `array` (it is `false` by default). See [example](./validation.md#coercing-data-types).
 
