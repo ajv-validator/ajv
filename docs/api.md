@@ -169,6 +169,7 @@ Ajv return it instance for method chaining from all methods with the prefix `add
 ```javascript
 const validate = new Ajv().addSchema(schema).addFormat(name, regex).getSchema(uri)
 ```
+
 :::
 
 #### ajv.addMetaSchema(schema: object | object[], key?: string): Ajv

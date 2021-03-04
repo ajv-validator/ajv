@@ -41,3 +41,6 @@ bundle/
 package-lock.json
 
 spec/_json/*.js
+
+docs/CODE_OF_CONDUCT.md
+docs/CONTRIBUTING.md

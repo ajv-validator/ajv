@@ -5,7 +5,7 @@ module.exports = {
   description: "Just playing around",
   markdown: {
     slugify: (str) => slugify(str.replace(/<Badge[^>]*\/>/, "")),
-    toc: {includeLevel: [2, 3, 4]}
+    toc: {includeLevel: [2, 3, 4]},
   },
   themeConfig: {
     logo: "/ajv.svg",
@@ -33,17 +33,27 @@ module.exports = {
     ],
     sidebar: [
       "/",
-      "/faq",
-      "/security",
       {
-        title: "Validation",
+        title: "Guide",
+        collapsable: false,
+        children: [
+          "/guide/getting-started",
+          "/guide/typescript",
+          "/guide/schema-language",
+          "/guide/managing-schemas",
+          "/guide/modular-schemas",
+          "/guide/environments",
+        ]
+      },
+      {
+        title: "Reference",
         collapsable: false,
         children: [
           "/validation",
-          "/strict-mode",
+          "/api",
           "/json-schema",
           "/json-type-definition",
-          "/api",
+          "/strict-mode",
           "/keywords",
           "/coercion",
         ],
@@ -53,9 +63,18 @@ module.exports = {
         collapsable: false,
         children: ["/standalone", "/codegen", "/components"],
       },
+      {
+        title: "Information",
+        collapsable: false,
+        children: [
+          "/faq",
+          "/security",
+          "/CONTRIBUTING",
+          ["/CODE_OF_CONDUCT", "Code of conduct"],
+          ["/LICENSE", "License"]
+        ],
+      },
     ],
-    nextLinks: false,
-    prevLinks: false,
     repo: "ajv-validator/ajv",
     docsDir: "docs",
     editLinks: true,

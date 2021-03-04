@@ -1,3 +1,7 @@
+---
+permalink: /contributing
+---
+
 # Contributing
 
 Thank you for your help making Ajv better! Every contribution is appreciated. If you plan to implement a new feature or some other change please create an issue first, to make sure that your work is not lost.

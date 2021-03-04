@@ -409,9 +409,10 @@ The value of this keyword should be a map where keys should be regular expressio
 When the value in data object property matches multiple regular expressions it should be valid according to all the schemas for all matched regular expressions.
 
 ::: warning Please note
+
 1. `patternProperties` keyword does not require that properties matching patterns are present in the object (see examples).
 2. By default, Ajv does not allow schemas where patterns in `patternProperties` match any property name in `properties` keyword - that leads to unexpected validation results. It can be allowed with option `allowMatchingProperties`. See [Strict mode](./strict-mode.md)
-:::
+   :::
 
 **Example**
 

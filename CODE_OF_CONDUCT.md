@@ -1,3 +1,7 @@
+---
+permalink: /code_of_conduct
+---
+
 # Contributor Covenant Code of Conduct
 
 ## Our Pledge
