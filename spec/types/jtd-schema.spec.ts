@@ -331,7 +331,7 @@ describe("JTDSchemaType", () => {
   })
 })
 
-describe("JTDDataType typechecks", () => {
+describe("JTDDataType", () => {
   it("should typecheck number schemas", () => {
     const numSchema = {type: "float64"} as const
     const num: TypeEquality<JTDDataType<typeof numSchema>, number> = true
@@ -387,7 +387,23 @@ describe("JTDDataType typechecks", () => {
     const optPropsSchema = {optionalProperties: {b: {type: "string"}}} as const
     const opt: TypeEquality<JTDDataType<typeof optPropsSchema>, {b?: string}> = true
 
-    void [both, req, opt]
+    const noAddSchema = {
+      optionalProperties: {b: {type: "string"}},
+      additionalProperties: false,
+    } as const
+    const noAdd: TypeEquality<JTDDataType<typeof noAddSchema>, {b?: string}> = true
+
+    const addSchema = {
+      optionalProperties: {b: {type: "string"}},
+      additionalProperties: true,
+    } as const
+    const add: TypeEquality<
+      JTDDataType<typeof addSchema>,
+      {b?: string; [key: string]: unknown}
+    > = true
+    const addVal: JTDDataType<typeof addSchema> = {b: "b", additional: 6}
+
+    void [both, req, opt, noAdd, add, addVal]
   })
 
   it("should typecheck values schemas", () => {

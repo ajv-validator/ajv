@@ -183,7 +183,8 @@ type JTDDataDef<S, D extends Record<string, unknown>> =
               S["optionalProperties"][K],
               D
             >
-          }
+          } &
+          ([S["additionalProperties"]] extends [true] ? Record<string, unknown> : unknown)
       : S extends {
           properties?: Record<string, unknown>
           optionalProperties: Record<string, unknown>
@@ -195,7 +196,8 @@ type JTDDataDef<S, D extends Record<string, unknown>> =
               S["optionalProperties"][K],
               D
             >
-          }
+          } &
+          ([S["additionalProperties"]] extends [true] ? Record<string, unknown> : unknown)
       : // values
       S extends {values: infer V}
       ? Record<string, JTDDataDef<V, D>>
