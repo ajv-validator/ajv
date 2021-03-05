@@ -2,13 +2,15 @@
 
 [[toc]]
 
+## Comparison
+
 Both [JSON Schema](../json-schema.md) and [JSON Type Definition](../json-type-definition.md) are cross-platform specifications with implementations in multiple programming languages that define the shape of your JSON data.
 
 You can see the difference between the two specifications in [Getting started](./getting-started) section examples.
 
 This section compares their pros/cons to help decide which specification fits your application better.
 
-## JSON Schema
+### JSON Schema
 
 - Pros
   - Wide specification adoption.
@@ -32,7 +34,7 @@ This section compares their pros/cons to help decide which specification fits yo
 
 See [JSON Schema](../json-schema.md) for more information and the list of defined keywords.
 
-## JSON Type Definition
+### JSON Type Definition
 
 - Pros:
   - Aligned with type systems of many languages - can be used to generate type definitions and efficient parsers and serializers to/from these types.

@@ -1,4 +1,4 @@
-# Modular schemas
+# Combining schemas
 
 ## <a name="ref"></a>Combining schemas with $ref
 

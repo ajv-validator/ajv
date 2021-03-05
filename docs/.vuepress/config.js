@@ -41,7 +41,8 @@ module.exports = {
           "/guide/typescript",
           "/guide/schema-language",
           "/guide/managing-schemas",
-          "/guide/modular-schemas",
+          "/guide/combining-schemas",
+          "/guide/user-keywords",
           "/guide/environments",
         ]
       },

@@ -851,3 +851,19 @@ If the data is invalid against the sub-schema in `if` keyword, then the validati
     - `2000` (>1000)
     - `11`, `57`, `123` (any integer with more than one non-zero digit)
     - non-integers
+
+## Metadata keywords
+
+JSON Schema specification defines several metadata keywords that describe the schema itself but do not perform any validation.
+
+- `title` and `description`: information about the data represented by that schema
+- `$comment`: information for developers. With option `$comment` Ajv logs or passes the comment string to the user-supplied function. See [Options](./api.md#options).
+- `default`: a default value of the data instance, see [Assigning defaults](#assigning-defaults).
+- `examples`: an array of data instances. Ajv does not check the validity of these instances against the schema.
+- `readOnly` and `writeOnly`: marks data-instance as read-only or write-only in relation to the source of the data (database, api, etc.).
+- `contentEncoding`: [RFC 2045](https://tools.ietf.org/html/rfc2045#section-6.1), e.g., "base64".
+- `contentMediaType`: [RFC 2046](https://datatracker.ietf.org/doc/rfc2046/), e.g., "image/png".
+
+::: warning Please note
+Ajv does not implement validation of the keywords `examples`, `contentEncoding` and `contentMediaType` but it reserves them. If you want to create a plugin that implements any of them, it should remove these keywords from the instance.
+:::

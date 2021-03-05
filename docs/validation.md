@@ -75,22 +75,6 @@ Ajv supports all validation keywords from draft-07 of JSON Schema standard - see
 
 [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package provides additional validation keywords that can be used with Ajv.
 
-### Metadata keywords
-
-JSON Schema specification defines several metadata keywords that describe the schema itself but do not perform any validation.
-
-- `title` and `description`: information about the data represented by that schema
-- `$comment` (NEW in draft-07): information for developers. With option `$comment` Ajv logs or passes the comment string to the user-supplied function. See [Options](./api.md#options).
-- `default`: a default value of the data instance, see [Assigning defaults](#assigning-defaults).
-- `examples` (NEW in draft-06): an array of data instances. Ajv does not check the validity of these instances against the schema.
-- `readOnly` and `writeOnly` (NEW in draft-07): marks data-instance as read-only or write-only in relation to the source of the data (database, api, etc.).
-- `contentEncoding`: [RFC 2045](https://tools.ietf.org/html/rfc2045#section-6.1), e.g., "base64".
-- `contentMediaType`: [RFC 2046](https://datatracker.ietf.org/doc/rfc2046/), e.g., "image/png".
-
-::: warning Please note
-Ajv does not implement validation of the keywords `examples`, `contentEncoding` and `contentMediaType` but it reserves them. If you want to create a plugin that implements any of them, it should remove these keywords from the instance.
-:::
-
 ### Formats
 
 From version 7 Ajv does not include formats defined by JSON Schema specification - these and several other formats are provided by [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin.
@@ -137,55 +121,6 @@ JSON Schema draft-07 also defines formats `iri`, `iri-reference`, `idn-hostname`
 :::
 
 You can add and replace any formats using [addFormat](./api.md#api-addformat) method.
-
-## User-defined keywords
-
-The advantages of defining keywords are:
-
-- allow creating validation scenarios that cannot be expressed using pre-defined keywords
-- simplify your schemas
-- help bringing a bigger part of the validation logic to your schemas
-- make your schemas more expressive, less verbose and closer to your application domain
-- implement data processors that modify your data (`modifying` option MUST be used in keyword definition) and/or create side effects while the data is being validated
-
-If a keyword is used only for side-effects and its validation result is pre-defined, use option `valid: true/false` in keyword definition to simplify both generated code (no error handling in case of `valid: true`) and your keyword functions (no need to return any validation result).
-
-The concerns you have to be aware of when extending JSON Schema standard with additional keywords are the portability and understanding of your schemas. You will have to support these keywords on other platforms and to properly document them so that everybody can understand and use your schemas.
-
-You can define keywords with [addKeyword](./api.md#api-addkeyword) method. Keywords are defined on the `ajv` instance level - new instances will not have previously defined keywords.
-
-Ajv allows defining keywords with:
-
-- code generation function (used by all pre-defined keywords)
-- validation function
-- compilation function
-- macro function
-
-Example. `range` and `exclusiveRange` keywords using compiled schema:
-
-```javascript
-ajv.addKeyword({
-  keyword: "range",
-  type: "number",
-  schemaType: "array",
-  implements: "exclusiveRange",
-  compile: ([min, max], parentSchema) =>
-    parentSchema.exclusiveRange === true
-      ? (data) => data > min && data < max
-      : (data) => data >= min && data <= max,
-})
-
-const schema = {range: [2, 4], exclusiveRange: true}
-const validate = ajv.compile(schema)
-console.log(validate(2.01)) // true
-console.log(validate(3.99)) // true
-console.log(validate(2)) // false
-console.log(validate(4)) // false
-```
-
-Several keywords (typeof, instanceof, range and propertyNames) are defined in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package - they can be used for your schemas and as a starting point for your own keywords.
-
-See [User-defined keywords](./keywords.md) for more details.
 
 ## Asynchronous validation
 

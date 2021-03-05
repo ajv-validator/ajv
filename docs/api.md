@@ -6,7 +6,7 @@
 
 ## Ajv constructor and methods
 
-#### new Ajv(options: object)
+### `new Ajv(options: object)`
 
 Create Ajv instance:
 
@@ -16,7 +16,7 @@ const ajv = new Ajv()
 
 See [Options](#options)
 
-#### ajv.compile(schema: object): (data: any) =\> boolean | Promise\<any\>
+### `ajv.compile(schema: object): (data: any) => boolean | Promise<any>`
 
 Generate validating function and cache the compiled schema for future use.
 
@@ -50,7 +50,9 @@ if (validate(data)) {
 
 See more advanced example in [the test](../spec/types/json-schema.spec.ts).
 
-#### <a name="jtd-serialize"></a>ajv.compileSerializer(schema: object): (data: any) =\> string <Badge text="NEW" />
+<a name="jtd-serialize"></a>
+
+### `ajv.compileSerializer(schema: object): (data: any) => string` <Badge text="NEW" />
 
 Generate serializing function based on the [JTD schema](./json-type-definition.md) (caches the schema) - only in JTD instance of Ajv (see example below).
 
@@ -88,7 +90,9 @@ const serializeMyData = ajv.compileSerializer(mySchema)
 Compiled serializers do NOT validate passed data, it is assumed that the data is valid according to the schema. In the future there may be an option added that would make serializers also validate the data.
 :::
 
-#### <a name="jtd-parse"></a>ajv.compileParser(schema: object): (json: string) =\> any <Badge text="NEW" />
+<a name="jtd-parse"></a>
+
+### `ajv.compileParser(schema: object): (json: string) => any` <Badge text="NEW" />
 
 Generate parsing function based on the [JTD schema](./json-type-definition.md) (caches the schema) - only in JTD instance of Ajv (see example below).
 
@@ -117,7 +121,9 @@ Generated parsers is a NEW Ajv functionality (as of March 2021), there can be so
 
 <sup>\*</sup> As long as empty schema `{}` is not used - there is a possibility to improve performance in this case. Also, the performance of parsing `discriminator` schemas depends on the position of discriminator tag in the schema - the best parsing performance will be achieved if the tag is the first property - this is how compiled JTD serializers generate JSON in case of discriminator schemas.
 
-#### <a name="api-compileAsync"></a>ajv.compileAsync(schema: object, meta?: boolean): Promise\<Function\>
+<a name="api-compileAsync"></a>
+
+### `ajv.compileAsync(schema: object, meta?: boolean): Promise<Function>`
 
 Asynchronous version of `compile` method that loads missing remote schemas using asynchronous function in `options.loadSchema`. This function returns a Promise that resolves to a validation function. An optional callback passed to `compileAsync` will be called with 2 parameters: error (or null) and validating function. The returned promise will reject (and the callback will be called with an error) when:
 
@@ -133,7 +139,7 @@ Similarly to `compile`, it can return type guard in typescript.
 
 See example in [Asynchronous compilation](./validation.md#asynchronous-schema-compilation).
 
-#### ajv.validate(schemaOrRef: object | string, data: any): boolean
+### `ajv.validate(schemaOrRef: object | string, data: any): boolean`
 
 Validate data using passed schema (it will be compiled and cached).
 
@@ -149,7 +155,9 @@ Every time this method is called the errors are overwritten so you need to copy 
 
 If the schema is asynchronous (has `$async` keyword on the top level) this method returns a Promise. See [Asynchronous validation](./validation.md#asynchronous-validation).
 
-#### <a name="add-schema"></a>ajv.addSchema(schema: object | object[], key?: string): Ajv
+<a name="add-schema"></a>
+
+### `ajv.addSchema(schema: object | object[], key?: string): Ajv`
 
 Add schema(s) to validator instance. This method does not compile schemas (but it still validates them). Because of that dependencies can be added in any order and circular dependencies are supported. It also prevents unnecessary compilation of schemas that are containers for other schemas but not used as a whole.
 
@@ -172,13 +180,15 @@ const validate = new Ajv().addSchema(schema).addFormat(name, regex).getSchema(ur
 
 :::
 
-#### ajv.addMetaSchema(schema: object | object[], key?: string): Ajv
+### `ajv.addMetaSchema(schema: object | object[], key?: string): Ajv`
 
 Adds meta schema(s) that can be used to validate other schemas. That function should be used instead of `addSchema` because there may be instance options that would compile a meta schema incorrectly (at the moment it is `removeAdditional` option).
 
 There is no need to explicitly add draft-07 meta schema (http://json-schema.org/draft-07/schema) - it is added by default, unless option `meta` is set to `false`. You only need to use it if you have a changed meta-schema that you want to use to validate your schemas. See `validateSchema`.
 
-#### <a name="api-validateschema"></a>ajv.validateSchema(schema: object): boolean
+<a name="api-validateschema"></a>
+
+### `ajv.validateSchema(schema: object): boolean`
 
 Validates schema. This method should be used to validate schemas rather than `validate` due to the inconsistency of `uri` format in JSON Schema standard.
 
@@ -190,11 +200,11 @@ If schema has `$schema` property, then the schema with this id (that should be p
 
 Errors will be available at `ajv.errors`.
 
-#### ajv.getSchema(key: string): undefined | ((data: any) =\> boolean | Promise\<any\>)
+### `ajv.getSchema(key: string): undefined | ((data: any) => boolean | Promise<any>)`
 
 Retrieve compiled schema previously added with `addSchema` by the key passed to `addSchema` or by its full reference (id). The returned validating function has `schema` property with the reference to the original schema.
 
-#### ajv.removeSchema(schemaOrRef: object | string | RegExp): Ajv
+### `ajv.removeSchema(schemaOrRef: object | string | RegExp): Ajv`
 
 Remove added/cached schema. Even if schema is referenced by other schemas it can be safely removed as dependent schemas have local references.
 
@@ -207,7 +217,9 @@ Schema can be removed using:
 
 If no parameter is passed all schemas but meta-schemas will be removed and the cache will be cleared.
 
-#### <a name="api-addformat"></a>ajv.addFormat(name: string, format: Format): Ajv
+<a name="api-addformat"></a>
+
+### `ajv.addFormat(name: string, format: Format): Ajv`
 
 ```typescript
 type Format =
@@ -238,7 +250,9 @@ interface FormatDefinition { // actual type definition is more precise - see typ
 
 Formats can be also added via `formats` option.
 
-#### <a name="api-addkeyword"></a>ajv.addKeyword(definition: object):s Ajv
+<a name="api-addkeyword"></a>
+
+### `ajv.addKeyword(definition: object): Ajv`
 
 Add validation keyword to Ajv instance.
 
@@ -298,11 +312,11 @@ If the keyword is validating data type that is different from the type(s) in its
 
 See [User defined keywords](./keywords.md) for more details.
 
-#### ajv.getKeyword(keyword: string): object | boolean
+### `ajv.getKeyword(keyword: string): object | boolean`
 
 Returns keyword definition, `false` if the keyword is unknown.
 
-#### ajv.removeKeyword(keyword: string): Ajv
+### `ajv.removeKeyword(keyword: string): Ajv`
 
 Removes added or pre-defined keyword so you can redefine them.
 
@@ -312,7 +326,7 @@ While this method can be used to extend pre-defined keywords, it can also be use
 The schemas compiled before the keyword is removed will continue to work without changes. To recompile schemas use `removeSchema` method and compile them again.
 :::
 
-#### ajv.errorsText(errors?: object[], options?: object): string
+### `ajv.errorsText(errors?: object[], options?: object): string`
 
 Returns the text with all errors in a String.
 
@@ -372,7 +386,7 @@ const defaultOptions = {
 
 <sup>\*</sup> these options are not supported with JSON Type Definition schemas
 
-#### Strict mode options (NEW in v7)
+### Strict mode options (NEW in v7)
 
 - _strict_: By default Ajv executes in strict mode, that is designed to prevent any unexpected behaviours or silently ignored mistakes in schemas (see [Strict Mode](./strict-mode.md) for more details). It does not change any validation results, but it makes some schemas invalid that would be otherwise valid according to JSON Schema specification. Option values:
   - `true` (default) - use strict mode and throw an exception when any strict mode restriction is violated.
@@ -396,7 +410,7 @@ const defaultOptions = {
   - `true` (default) - validate formats (see [Formats](./validation.md#formats)). In [strict mode](./strict-mode.md) unknown formats will throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](./validation.md#data-reference)).
   - `false` - do not validate any format keywords (TODO they will still collect annotations once supported).
 
-#### Validation and reporting options
+### Validation and reporting options
 
 - _\$data_: support [\$data references](./validation.md#data-reference). Draft 6 meta-schema that is added by default will be extended to allow them. If you want to use another meta-schema you need to use $dataMetaSchema method to add support for $data reference. See [API](#ajv-constructor-and-methods).
 - _allErrors_: check all rules collecting all errors. Default is to return after the first error.
@@ -413,7 +427,7 @@ const defaultOptions = {
   - `false` - logging is disabled.
 - _loadSchema_: asynchronous function that will be used to load remote schemas when `compileAsync` [method](#api-compileAsync) is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept remote schema uri as a parameter and return a Promise that resolves to a schema. See example in [Asynchronous compilation](./validation.md#asynchronous-schema-compilation).
 
-#### Options to modify validated data
+### Options to modify validated data
 
 - _removeAdditional_: remove additional properties - see example in [Removing additional properties](./validation.md#removing-additional-properties). This option is not used if schema is added with `addMetaSchema` method. Option values:
   - `false` (default) - not to remove additional properties
@@ -429,7 +443,7 @@ const defaultOptions = {
   - `true` - coerce scalar data types.
   - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
-#### Advanced options
+### Advanced options
 
 - _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default). If an object is passed, it will be used as the default meta-schema for schemas that have no `$schema` keyword. This default meta-schema MUST have `$schema` keyword.
 - _validateSchema_: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can be http://json-schema.org/draft-07/schema or absent (draft-07 meta-schema will be used) or can be a reference to the schema previously added with `addMetaSchema` method. Option values:
