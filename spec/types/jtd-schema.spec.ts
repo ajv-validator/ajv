@@ -30,14 +30,14 @@ const mySchema: JTDSchemaType<MyData> = {
 describe("JTDSchemaType", () => {
   it("validation should prove the data type", () => {
     const ajv = new _Ajv()
-    const validate = ajv.compile<MyData>(mySchema)
+    const validate = ajv.compile(mySchema)
     const validData: unknown = {type: "a", a: 1}
     if (validate(validData) && validData.type === "a") {
       validData.a.should.equal(1)
     }
     should.not.exist(validate.errors)
 
-    if (ajv.validate<MyData>(mySchema, validData) && validData.type === "a") {
+    if (ajv.validate(mySchema, validData) && validData.type === "a") {
       validData.a.should.equal(1)
     }
     should.not.exist(ajv.errors)
