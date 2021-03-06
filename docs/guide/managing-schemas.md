@@ -47,16 +47,19 @@ const schema_user = require("./schema_user.json")
 const ajv = new Ajv()
 const validate_user = ajv.compile(schema_user)
 
+
+
+
+
 // this is just some abstract API framework
 app.post("/user", async (cxt) => {
-if (validate_user(cxt.body)) {
-// create user
-} else {
-// report error
-cxt.status(400)
-}
+  if (validate_user(cxt.body)) {
+    // create user
+  } else {
+    // report error
+    cxt.status(400)
+  }
 })
-
 ````
 </code-block>
 
@@ -81,7 +84,6 @@ app.post("/user", async (cxt) => {
   }
 })
 ````
-
 </code-block>
 </code-group>
 
@@ -132,21 +134,24 @@ And then you can import Ajv instance and access any schema in any application mo
 ```javascript
 const {ajv} = require("./validation")
 
+
+
+
+
 // this is just some abstract API framework
 app.post("/user", async (cxt) => {
-const validate = ajv.getSchema("user")
-if (validate(cxt.body)) {
-// create user
-} else {
-// report error
-cxt.status(400)
-}
+  const validate = ajv.getSchema("user")
+  if (validate(cxt.body)) {
+    // create user
+  } else {
+    // report error
+    cxt.status(400)
+  }
 })
-
 ````
 </code-block>
 
-<code-block title="TypeScript">
+<code-block title="users.ts">
 ```javascript
 import ajv from "./validation"
 
@@ -165,7 +170,6 @@ app.post("/user", async (cxt) => {
   }
 })
 ````
-
 </code-block>
 </code-group>
 
@@ -214,7 +218,8 @@ then the above logic can be simpler:
 
 ```javascript
 const schema_user = require("./schema_user.json")
-const validate = ajv.getSchema("https://example.com/user.json") || ajv.compile(schema_user)
+const validate = ajv.getSchema("https://example.com/user.json")
+              || ajv.compile(schema_user)
 ```
 
 The above is possible because when the schema has `$id` attribute `compile` method both compiles the schema (returning the validation function) and adds it to the Ajv instance cache at the same time.

@@ -14,7 +14,6 @@ const addFormats = require("ajv-formats")
 
 const ajv = new Ajv()
 addFormats(ajv)
-
 ````
 </code-block>
 

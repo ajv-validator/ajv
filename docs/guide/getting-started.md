@@ -38,25 +38,24 @@ const Ajv = require("ajv").default
 const ajv = new Ajv() // options can be passed, e.g. {allErrors: true}
 
 const schema = {
-type: "object",
-properties: {
-foo: {type: "integer"},
-bar: {type: "string"}
-},
-required: ["foo"],
-additionalProperties: false
+  type: "object",
+  properties: {
+    foo: {type: "integer"},
+    bar: {type: "string"}
+  },
+  required: ["foo"],
+  additionalProperties: false
 }
 
 const validate = ajv.compile(schema)
 
 const validData = {
-foo: 1,
-bar: "abc"
+  foo: 1,
+  bar: "abc"
 }
 
 const valid = validate(data)
 if (!valid) console.log(validate.errors)
-
 ````
 </code-block>
 
@@ -120,12 +119,12 @@ const Ajv = require("ajv/dist/jtd").default
 const ajv = new Ajv() // options can be passed, e.g. {allErrors: true}
 
 const schema = {
-properties: {
-foo: {type: "int32"}
-},
-optionalProperties: {
-bar: {type: "string"}
-}
+  properties: {
+    foo: {type: "int32"}
+  },
+  optionalProperties: {
+    bar: {type: "string"}
+  }
 }
 
 const serialize = ajv.compileSerializer(schema)
@@ -134,8 +133,8 @@ console.log(serialize(data))
 const parse = ajv.compileParser(schema)
 
 const data = {
-foo: 1,
-bar: "abc"
+  foo: 1,
+  bar: "abc"
 }
 
 const json = '{"foo": 1, "bar": "abc"}'
@@ -145,15 +144,14 @@ console.log(parseAndLog(json)) // logs {foo: 1, bar: "abc"}
 console.log(parseAndLog(invalidJson)) // logs error and position
 
 function parseAndLog(json) {
-const data = parse(json)
-if (data === undefined) {
-console.log(parse.message) // error message from the last parse call
-console.log(parse.position) // error position in string
-} else {
-console.log(data)
+  const data = parse(json)
+  if (data === undefined) {
+    console.log(parse.message) // error message from the last parse call
+    console.log(parse.position) // error position in string
+  } else {
+    console.log(data)
+  }
 }
-}
-
 ```
 </code-block>
 </code-group>
@@ -165,4 +163,3 @@ You would have smaller performance benefits in case your schema contains some pr
 ::: warning Please note
 Compiled parsers, unlike JSON.parse, do not throw the exception in case JSON string is not a valid JSON or in case data is invalid according to the schema. As soon as the parser determines that either JSON or data is invalid, it returns `undefined` and reports error and position via parsers properties `message` and `position`.
 :::
-```

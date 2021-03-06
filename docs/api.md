@@ -498,6 +498,6 @@ const ajv = new Ajv({
 })
 ```
 
-## Options
+##### Options
 
 This section is moved to [Initialization options](./options) page
