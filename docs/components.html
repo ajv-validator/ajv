@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Code components | Ajv: Another JSON validator</title>
+    <meta name="generator" content="VuePress 1.8.2">
+    
+    <meta name="description" content="Just playing around">
+    
+    <link rel="preload" href="/assets/css/0.styles.5602d0b5.css" as="style"><link rel="preload" href="/assets/js/app.3700f5d4.js" as="script"><link rel="preload" href="/assets/js/2.c39c7893.js" as="script"><link rel="preload" href="/assets/js/3.52058d6e.js" as="script"><link rel="preload" href="/assets/js/14.6af0e427.js" as="script"><link rel="prefetch" href="/assets/js/10.0c797806.js"><link rel="prefetch" href="/assets/js/11.231638bd.js"><link rel="prefetch" href="/assets/js/12.7cb56b5a.js"><link rel="prefetch" href="/assets/js/13.5cbf9c64.js"><link rel="prefetch" href="/assets/js/15.306bbc40.js"><link rel="prefetch" href="/assets/js/16.f1f0fc53.js"><link rel="prefetch" href="/assets/js/17.e7f14f36.js"><link rel="prefetch" href="/assets/js/18.0c2f5039.js"><link rel="prefetch" href="/assets/js/19.eb2d2c44.js"><link rel="prefetch" href="/assets/js/20.ec341781.js"><link rel="prefetch" href="/assets/js/21.76ff0ff9.js"><link rel="prefetch" href="/assets/js/22.2a3ccbf2.js"><link rel="prefetch" href="/assets/js/23.daacf022.js"><link rel="prefetch" href="/assets/js/24.6e1979a8.js"><link rel="prefetch" href="/assets/js/25.bd1d2358.js"><link rel="prefetch" href="/assets/js/26.a9f101a9.js"><link rel="prefetch" href="/assets/js/27.41000e45.js"><link rel="prefetch" href="/assets/js/28.fa98308e.js"><link rel="prefetch" href="/assets/js/29.dedaeff1.js"><link rel="prefetch" href="/assets/js/30.fbda5289.js"><link rel="prefetch" href="/assets/js/31.ba11fe07.js"><link rel="prefetch" href="/assets/js/32.8b12729d.js"><link rel="prefetch" href="/assets/js/33.c1d40d2d.js"><link rel="prefetch" href="/assets/js/34.339232a2.js"><link rel="prefetch" href="/assets/js/4.f5c01cd3.js"><link rel="prefetch" href="/assets/js/5.09986f3b.js"><link rel="prefetch" href="/assets/js/6.c7b6ae79.js"><link rel="prefetch" href="/assets/js/7.b97164a1.js"><link rel="prefetch" href="/assets/js/8.574fc119.js"><link rel="prefetch" href="/assets/js/9.337eac3a.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.5602d0b5.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><img src="/ajv.svg" alt="Ajv: Another JSON validator" class="logo"> <span class="site-name can-hide">Ajv: Another JSON validator</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Guide" class="dropdown-title"><span class="title">Guide</span> <span class="arrow down"></span></button> <button type="button" aria-label="Guide" class="mobile-dropdown-title"><span class="title">Guide</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/guide/getting-started.html" class="nav-link">
+  Getting started
+</a></li><li class="dropdown-item"><!----> <a href="/guide/typescript.html" class="nav-link">
+  Using with TypeScript
+</a></li><li class="dropdown-item"><!----> <a href="/guide/schema-language.html" class="nav-link">
+  Choosing schema language
+</a></li><li class="dropdown-item"><!----> <a href="/guide/managing-schemas.html" class="nav-link">
+  Managing schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/combining-schemas.html" class="nav-link">
+  Combining schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/formats.html" class="nav-link">
+  Format validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/modifying-data.html" class="nav-link">
+  Modifying data
+</a></li><li class="dropdown-item"><!----> <a href="/guide/user-keywords.html" class="nav-link">
+  User-defined keywords
+</a></li><li class="dropdown-item"><!----> <a href="/guide/async-validation.html" class="nav-link">
+  Asynchronous validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/environments.html" class="nav-link">
+  Execution environments
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Learn more" class="dropdown-title"><span class="title">Learn more</span> <span class="arrow down"></span></button> <button type="button" aria-label="Learn more" class="mobile-dropdown-title"><span class="title">Learn more</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><h4>
+          Reference
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/api.html" class="nav-link">
+  API Reference
+</a></li><li class="dropdown-subitem"><a href="/options.html" class="nav-link">
+  Initialization options
+</a></li><li class="dropdown-subitem"><a href="/json-schema.html" class="nav-link">
+  JSON Schema
+</a></li><li class="dropdown-subitem"><a href="/json-type-definition.html" class="nav-link">
+  JSON Type Definition
+</a></li><li class="dropdown-subitem"><a href="/strict-mode.html" class="nav-link">
+  Strict mode
+</a></li><li class="dropdown-subitem"><a href="/standalone.html" class="nav-link">
+  Standalone validation code
+</a></li><li class="dropdown-subitem"><a href="/keywords.html" class="nav-link">
+  User defined keywords
+</a></li><li class="dropdown-subitem"><a href="/coercion.html" class="nav-link">
+  Type coercion rules
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Contributors
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/contributing.html" class="nav-link">
+  Contributing guide
+</a></li><li class="dropdown-subitem"><a href="/codegen.html" class="nav-link">
+  Code generation design
+</a></li><li class="dropdown-subitem"><a href="/components.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  Code components
+</a></li><li class="dropdown-subitem"><a href="/code_of_conduct.html" class="nav-link">
+  Code of Conduct
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Information
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/security.html" class="nav-link">
+  Security
+</a></li><li class="dropdown-subitem"><a href="/faq.html" class="nav-link">
+  FAQ
+</a></li><li class="dropdown-subitem"><a href="/license.html" class="nav-link">
+  License
+</a></li></ul></li></ul></div></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Guide" class="dropdown-title"><span class="title">Guide</span> <span class="arrow down"></span></button> <button type="button" aria-label="Guide" class="mobile-dropdown-title"><span class="title">Guide</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/guide/getting-started.html" class="nav-link">
+  Getting started
+</a></li><li class="dropdown-item"><!----> <a href="/guide/typescript.html" class="nav-link">
+  Using with TypeScript
+</a></li><li class="dropdown-item"><!----> <a href="/guide/schema-language.html" class="nav-link">
+  Choosing schema language
+</a></li><li class="dropdown-item"><!----> <a href="/guide/managing-schemas.html" class="nav-link">
+  Managing schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/combining-schemas.html" class="nav-link">
+  Combining schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/formats.html" class="nav-link">
+  Format validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/modifying-data.html" class="nav-link">
+  Modifying data
+</a></li><li class="dropdown-item"><!----> <a href="/guide/user-keywords.html" class="nav-link">
+  User-defined keywords
+</a></li><li class="dropdown-item"><!----> <a href="/guide/async-validation.html" class="nav-link">
+  Asynchronous validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/environments.html" class="nav-link">
+  Execution environments
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Learn more" class="dropdown-title"><span class="title">Learn more</span> <span class="arrow down"></span></button> <button type="button" aria-label="Learn more" class="mobile-dropdown-title"><span class="title">Learn more</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><h4>
+          Reference
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/api.html" class="nav-link">
+  API Reference
+</a></li><li class="dropdown-subitem"><a href="/options.html" class="nav-link">
+  Initialization options
+</a></li><li class="dropdown-subitem"><a href="/json-schema.html" class="nav-link">
+  JSON Schema
+</a></li><li class="dropdown-subitem"><a href="/json-type-definition.html" class="nav-link">
+  JSON Type Definition
+</a></li><li class="dropdown-subitem"><a href="/strict-mode.html" class="nav-link">
+  Strict mode
+</a></li><li class="dropdown-subitem"><a href="/standalone.html" class="nav-link">
+  Standalone validation code
+</a></li><li class="dropdown-subitem"><a href="/keywords.html" class="nav-link">
+  User defined keywords
+</a></li><li class="dropdown-subitem"><a href="/coercion.html" class="nav-link">
+  Type coercion rules
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Contributors
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/contributing.html" class="nav-link">
+  Contributing guide
+</a></li><li class="dropdown-subitem"><a href="/codegen.html" class="nav-link">
+  Code generation design
+</a></li><li class="dropdown-subitem"><a href="/components.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  Code components
+</a></li><li class="dropdown-subitem"><a href="/code_of_conduct.html" class="nav-link">
+  Code of Conduct
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Information
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/security.html" class="nav-link">
+  Security
+</a></li><li class="dropdown-subitem"><a href="/faq.html" class="nav-link">
+  FAQ
+</a></li><li class="dropdown-subitem"><a href="/license.html" class="nav-link">
+  License
+</a></li></ul></li></ul></div></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Guide</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/getting-started.html" class="sidebar-link">Getting started</a></li><li><a href="/guide/typescript.html" class="sidebar-link">Using with TypeScript</a></li><li><a href="/guide/schema-language.html" class="sidebar-link">Choosing schema language</a></li><li><a href="/guide/managing-schemas.html" class="sidebar-link">Managing schemas</a></li><li><a href="/guide/combining-schemas.html" class="sidebar-link">Combining schemas</a></li><li><a href="/guide/formats.html" class="sidebar-link">Format validation</a></li><li><a href="/guide/modifying-data.html" class="sidebar-link">Modifying data during validation</a></li><li><a href="/guide/user-keywords.html" class="sidebar-link">User-defined keywords</a></li><li><a href="/guide/async-validation.html" class="sidebar-link">Asynchronous validation</a></li><li><a href="/guide/environments.html" class="sidebar-link">Execution environments</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Reference</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/api.html" class="sidebar-link">API Reference</a></li><li><a href="/options.html" class="sidebar-link">Initialization options</a></li><li><a href="/json-schema.html" class="sidebar-link">JSON Schema</a></li><li><a href="/json-type-definition.html" class="sidebar-link">JSON Type Definition</a></li><li><a href="/strict-mode.html" class="sidebar-link">Strict mode</a></li><li><a href="/standalone.html" class="sidebar-link">Standalone validation code</a></li><li><a href="/keywords.html" class="sidebar-link">User defined keywords</a></li><li><a href="/coercion.html" class="sidebar-link">Type coercion rules</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>Contributors</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/contributing/" class="sidebar-link">Contributing guide</a></li><li><a href="/codegen.html" class="sidebar-link">Code generation design</a></li><li><a href="/components.html" aria-current="page" class="active sidebar-link">Code components</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/components.html#ajv-classes" class="sidebar-link">Ajv classes</a></li><li class="sidebar-sub-header"><a href="/components.html#schema-compilation" class="sidebar-link">Schema compilation</a></li><li class="sidebar-sub-header"><a href="/components.html#other-components" class="sidebar-link">Other components</a></li></ul></li><li><a href="/code_of_conduct/" class="sidebar-link">Code of conduct</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Information</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/faq.html" class="sidebar-link">Frequently Asked Questions</a></li><li><a href="/security.html" class="sidebar-link">Security considerations</a></li><li><a href="/license.html" class="sidebar-link">License</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="code-components"><a href="#code-components" class="header-anchor">#</a> Code components</h1> <p></p><div class="table-of-contents"><ul><li><a href="#ajv-classes">Ajv classes</a></li><li><a href="#schema-compilation">Schema compilation</a></li><li><a href="#other-components">Other components</a></li></ul></div><p></p> <h2 id="ajv-classes"><a href="#ajv-classes" class="header-anchor">#</a> Ajv classes</h2> <p><a href="https://github.com/ajv-validator/ajv/blob/master/lib/core.ts" target="_blank" rel="noopener noreferrer">lib/core.ts<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> - core Ajv class without any keywords. All Ajv methods for managing schemas and extensions are defined in this class.</p> <p><a href="https://github.com/ajv-validator/ajv/blob/master/lib/ajv.ts" target="_blank" rel="noopener noreferrer">lib/ajv.ts<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> - subclass of Ajv core with JSON Schema draft-07 keywords.</p> <p><a href="https://github.com/ajv-validator/ajv/blob/master/lib/2019.ts" target="_blank" rel="noopener noreferrer">lib/2019.ts<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> - subclass of Ajv core with JSON Schema draft-2019-09 keywords.</p> <p><a href="https://github.com/ajv-validator/ajv/blob/master/lib/jtd.ts" target="_blank" rel="noopener noreferrer">lib/jtd.ts<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> - subclass of Ajv core with JSON Type Definition support.</p> <h2 id="schema-compilation"><a href="#schema-compilation" class="header-anchor">#</a> Schema compilation</h2> <p><a href="https://github.com/ajv-validator/ajv/blob/master/lib/compile" target="_blank" rel="noopener noreferrer">lib/compile<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> - code for schema compilation</p> <p><a href="https://github.com/ajv-validator/ajv/blob/master/lib/compile/index.ts" target="_blank" rel="noopener noreferrer">lib/compile/index.ts<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> - the main recursive function code for schema compilation, functions for reference resolution, the interface for schema compilation context (<code>SchemaCxt</code>).</p> <p><a href="https://github.com/ajv-validator/ajv/blob/master/lib/compile/context.ts" target="_blank" rel="noopener noreferrer">lib/compile/context.ts<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> - the class for keyword code generation <code>KeywordCxt</code>. All pre-defined keywords and user-defined keywords that use <code>code</code> function are passed an instance of this class.</p> <p><a href="https://github.com/ajv-validator/ajv/blob/master/lib/compile/rules.ts" target="_blank" rel="noopener noreferrer">lib/compile/rules.ts<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> - data structure to store references to all all keyword definitions that were added to Ajv instance, organised by data type.</p> <p><a href="https://github.com/ajv-validator/ajv/blob/master/lib/compile/subschema.ts" target="_blank" rel="noopener noreferrer">lib/compile/subschema.ts<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> - creates schema context (<code>SchemaCxt</code>) to generate code for subschemas - used by all applicator keywords in <a href="https://github.com/ajv-validator/ajv/blob/master/lib/vocabularies/applicator" target="_blank" rel="noopener noreferrer">lib/vocabularies/applicator<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>.</p> <p><a href="https://github.com/ajv-validator/ajv/blob/master/lib/compile/codegen" target="_blank" rel="noopener noreferrer">lib/compile/codegen<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> - the api for <a href="/codegen.html">code generation</a>.</p> <p><a href="https://github.com/ajv-validator/ajv/blob/master/lib/compile/validate" target="_blank" rel="noopener noreferrer">lib/compile/validate<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> - code to iterate the schema to generate code of validation function.</p> <h2 id="other-components"><a href="#other-components" class="header-anchor">#</a> Other components</h2> <p><a href="https://github.com/ajv-validator/ajv/blob/master/lib/standalone" target="_blank" rel="noopener noreferrer">lib/standalone<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> - module to generate <a href="/standalone.html">standalone validation code</a>.</p> <p><a href="https://github.com/ajv-validator/ajv/blob/master/lib/vocabularies" target="_blank" rel="noopener noreferrer">lib/vocabularies<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> - pre-defined validation keywords.</p> <p><a href="https://github.com/ajv-validator/ajv/blob/master/lib/refs" target="_blank" rel="noopener noreferrer">lib/refs<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> - JSON Schema meta-schemas.</p></div> <footer class="page-edit"><div class="edit-link"><a href="https://github.com/ajv-validator/ajv/edit/master/docs/components.md" target="_blank" rel="noopener noreferrer">Edit this page</a> <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></div> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/codegen.html" class="prev">
+        Code generation design
+      </a></span> <span class="next"><a href="/code_of_conduct/">
+        Code of conduct
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.3700f5d4.js" defer></script><script src="/assets/js/2.c39c7893.js" defer></script><script src="/assets/js/3.52058d6e.js" defer></script><script src="/assets/js/14.6af0e427.js" defer></script>
+  </body>
+</html>

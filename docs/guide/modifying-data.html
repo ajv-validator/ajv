@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Modifying data during validation | Ajv: Another JSON validator</title>
+    <meta name="generator" content="VuePress 1.8.2">
+    
+    <meta name="description" content="Just playing around">
+    
+    <link rel="preload" href="/assets/css/0.styles.5602d0b5.css" as="style"><link rel="preload" href="/assets/js/app.3700f5d4.js" as="script"><link rel="preload" href="/assets/js/2.c39c7893.js" as="script"><link rel="preload" href="/assets/js/3.52058d6e.js" as="script"><link rel="preload" href="/assets/js/23.daacf022.js" as="script"><link rel="prefetch" href="/assets/js/10.0c797806.js"><link rel="prefetch" href="/assets/js/11.231638bd.js"><link rel="prefetch" href="/assets/js/12.7cb56b5a.js"><link rel="prefetch" href="/assets/js/13.5cbf9c64.js"><link rel="prefetch" href="/assets/js/14.6af0e427.js"><link rel="prefetch" href="/assets/js/15.306bbc40.js"><link rel="prefetch" href="/assets/js/16.f1f0fc53.js"><link rel="prefetch" href="/assets/js/17.e7f14f36.js"><link rel="prefetch" href="/assets/js/18.0c2f5039.js"><link rel="prefetch" href="/assets/js/19.eb2d2c44.js"><link rel="prefetch" href="/assets/js/20.ec341781.js"><link rel="prefetch" href="/assets/js/21.76ff0ff9.js"><link rel="prefetch" href="/assets/js/22.2a3ccbf2.js"><link rel="prefetch" href="/assets/js/24.6e1979a8.js"><link rel="prefetch" href="/assets/js/25.bd1d2358.js"><link rel="prefetch" href="/assets/js/26.a9f101a9.js"><link rel="prefetch" href="/assets/js/27.41000e45.js"><link rel="prefetch" href="/assets/js/28.fa98308e.js"><link rel="prefetch" href="/assets/js/29.dedaeff1.js"><link rel="prefetch" href="/assets/js/30.fbda5289.js"><link rel="prefetch" href="/assets/js/31.ba11fe07.js"><link rel="prefetch" href="/assets/js/32.8b12729d.js"><link rel="prefetch" href="/assets/js/33.c1d40d2d.js"><link rel="prefetch" href="/assets/js/34.339232a2.js"><link rel="prefetch" href="/assets/js/4.f5c01cd3.js"><link rel="prefetch" href="/assets/js/5.09986f3b.js"><link rel="prefetch" href="/assets/js/6.c7b6ae79.js"><link rel="prefetch" href="/assets/js/7.b97164a1.js"><link rel="prefetch" href="/assets/js/8.574fc119.js"><link rel="prefetch" href="/assets/js/9.337eac3a.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.5602d0b5.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><img src="/ajv.svg" alt="Ajv: Another JSON validator" class="logo"> <span class="site-name can-hide">Ajv: Another JSON validator</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Guide" class="dropdown-title"><span class="title">Guide</span> <span class="arrow down"></span></button> <button type="button" aria-label="Guide" class="mobile-dropdown-title"><span class="title">Guide</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/guide/getting-started.html" class="nav-link">
+  Getting started
+</a></li><li class="dropdown-item"><!----> <a href="/guide/typescript.html" class="nav-link">
+  Using with TypeScript
+</a></li><li class="dropdown-item"><!----> <a href="/guide/schema-language.html" class="nav-link">
+  Choosing schema language
+</a></li><li class="dropdown-item"><!----> <a href="/guide/managing-schemas.html" class="nav-link">
+  Managing schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/combining-schemas.html" class="nav-link">
+  Combining schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/formats.html" class="nav-link">
+  Format validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/modifying-data.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  Modifying data
+</a></li><li class="dropdown-item"><!----> <a href="/guide/user-keywords.html" class="nav-link">
+  User-defined keywords
+</a></li><li class="dropdown-item"><!----> <a href="/guide/async-validation.html" class="nav-link">
+  Asynchronous validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/environments.html" class="nav-link">
+  Execution environments
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Learn more" class="dropdown-title"><span class="title">Learn more</span> <span class="arrow down"></span></button> <button type="button" aria-label="Learn more" class="mobile-dropdown-title"><span class="title">Learn more</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><h4>
+          Reference
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/api.html" class="nav-link">
+  API Reference
+</a></li><li class="dropdown-subitem"><a href="/options.html" class="nav-link">
+  Initialization options
+</a></li><li class="dropdown-subitem"><a href="/json-schema.html" class="nav-link">
+  JSON Schema
+</a></li><li class="dropdown-subitem"><a href="/json-type-definition.html" class="nav-link">
+  JSON Type Definition
+</a></li><li class="dropdown-subitem"><a href="/strict-mode.html" class="nav-link">
+  Strict mode
+</a></li><li class="dropdown-subitem"><a href="/standalone.html" class="nav-link">
+  Standalone validation code
+</a></li><li class="dropdown-subitem"><a href="/keywords.html" class="nav-link">
+  User defined keywords
+</a></li><li class="dropdown-subitem"><a href="/coercion.html" class="nav-link">
+  Type coercion rules
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Contributors
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/contributing.html" class="nav-link">
+  Contributing guide
+</a></li><li class="dropdown-subitem"><a href="/codegen.html" class="nav-link">
+  Code generation design
+</a></li><li class="dropdown-subitem"><a href="/components.html" class="nav-link">
+  Code components
+</a></li><li class="dropdown-subitem"><a href="/code_of_conduct.html" class="nav-link">
+  Code of Conduct
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Information
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/security.html" class="nav-link">
+  Security
+</a></li><li class="dropdown-subitem"><a href="/faq.html" class="nav-link">
+  FAQ
+</a></li><li class="dropdown-subitem"><a href="/license.html" class="nav-link">
+  License
+</a></li></ul></li></ul></div></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Guide" class="dropdown-title"><span class="title">Guide</span> <span class="arrow down"></span></button> <button type="button" aria-label="Guide" class="mobile-dropdown-title"><span class="title">Guide</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/guide/getting-started.html" class="nav-link">
+  Getting started
+</a></li><li class="dropdown-item"><!----> <a href="/guide/typescript.html" class="nav-link">
+  Using with TypeScript
+</a></li><li class="dropdown-item"><!----> <a href="/guide/schema-language.html" class="nav-link">
+  Choosing schema language
+</a></li><li class="dropdown-item"><!----> <a href="/guide/managing-schemas.html" class="nav-link">
+  Managing schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/combining-schemas.html" class="nav-link">
+  Combining schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/formats.html" class="nav-link">
+  Format validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/modifying-data.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  Modifying data
+</a></li><li class="dropdown-item"><!----> <a href="/guide/user-keywords.html" class="nav-link">
+  User-defined keywords
+</a></li><li class="dropdown-item"><!----> <a href="/guide/async-validation.html" class="nav-link">
+  Asynchronous validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/environments.html" class="nav-link">
+  Execution environments
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Learn more" class="dropdown-title"><span class="title">Learn more</span> <span class="arrow down"></span></button> <button type="button" aria-label="Learn more" class="mobile-dropdown-title"><span class="title">Learn more</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><h4>
+          Reference
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/api.html" class="nav-link">
+  API Reference
+</a></li><li class="dropdown-subitem"><a href="/options.html" class="nav-link">
+  Initialization options
+</a></li><li class="dropdown-subitem"><a href="/json-schema.html" class="nav-link">
+  JSON Schema
+</a></li><li class="dropdown-subitem"><a href="/json-type-definition.html" class="nav-link">
+  JSON Type Definition
+</a></li><li class="dropdown-subitem"><a href="/strict-mode.html" class="nav-link">
+  Strict mode
+</a></li><li class="dropdown-subitem"><a href="/standalone.html" class="nav-link">
+  Standalone validation code
+</a></li><li class="dropdown-subitem"><a href="/keywords.html" class="nav-link">
+  User defined keywords
+</a></li><li class="dropdown-subitem"><a href="/coercion.html" class="nav-link">
+  Type coercion rules
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Contributors
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/contributing.html" class="nav-link">
+  Contributing guide
+</a></li><li class="dropdown-subitem"><a href="/codegen.html" class="nav-link">
+  Code generation design
+</a></li><li class="dropdown-subitem"><a href="/components.html" class="nav-link">
+  Code components
+</a></li><li class="dropdown-subitem"><a href="/code_of_conduct.html" class="nav-link">
+  Code of Conduct
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Information
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/security.html" class="nav-link">
+  Security
+</a></li><li class="dropdown-subitem"><a href="/faq.html" class="nav-link">
+  FAQ
+</a></li><li class="dropdown-subitem"><a href="/license.html" class="nav-link">
+  License
+</a></li></ul></li></ul></div></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>Guide</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/getting-started.html" class="sidebar-link">Getting started</a></li><li><a href="/guide/typescript.html" class="sidebar-link">Using with TypeScript</a></li><li><a href="/guide/schema-language.html" class="sidebar-link">Choosing schema language</a></li><li><a href="/guide/managing-schemas.html" class="sidebar-link">Managing schemas</a></li><li><a href="/guide/combining-schemas.html" class="sidebar-link">Combining schemas</a></li><li><a href="/guide/formats.html" class="sidebar-link">Format validation</a></li><li><a href="/guide/modifying-data.html" aria-current="page" class="active sidebar-link">Modifying data during validation</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/modifying-data.html#general-considerations" class="sidebar-link">General considerations</a></li><li class="sidebar-sub-header"><a href="/guide/modifying-data.html#removing-additional-properties" class="sidebar-link">Removing additional properties</a></li><li class="sidebar-sub-header"><a href="/guide/modifying-data.html#assigning-defaults" class="sidebar-link">Assigning defaults</a></li><li class="sidebar-sub-header"><a href="/guide/modifying-data.html#coercing-data-types" class="sidebar-link">Coercing data types</a></li></ul></li><li><a href="/guide/user-keywords.html" class="sidebar-link">User-defined keywords</a></li><li><a href="/guide/async-validation.html" class="sidebar-link">Asynchronous validation</a></li><li><a href="/guide/environments.html" class="sidebar-link">Execution environments</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Reference</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/api.html" class="sidebar-link">API Reference</a></li><li><a href="/options.html" class="sidebar-link">Initialization options</a></li><li><a href="/json-schema.html" class="sidebar-link">JSON Schema</a></li><li><a href="/json-type-definition.html" class="sidebar-link">JSON Type Definition</a></li><li><a href="/strict-mode.html" class="sidebar-link">Strict mode</a></li><li><a href="/standalone.html" class="sidebar-link">Standalone validation code</a></li><li><a href="/keywords.html" class="sidebar-link">User defined keywords</a></li><li><a href="/coercion.html" class="sidebar-link">Type coercion rules</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Contributors</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/contributing/" class="sidebar-link">Contributing guide</a></li><li><a href="/codegen.html" class="sidebar-link">Code generation design</a></li><li><a href="/components.html" class="sidebar-link">Code components</a></li><li><a href="/code_of_conduct/" class="sidebar-link">Code of conduct</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Information</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/faq.html" class="sidebar-link">Frequently Asked Questions</a></li><li><a href="/security.html" class="sidebar-link">Security considerations</a></li><li><a href="/license.html" class="sidebar-link">License</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="modifying-data-during-validation"><a href="#modifying-data-during-validation" class="header-anchor">#</a> Modifying data during validation</h1> <p></p><div class="table-of-contents"><ul><li><a href="#general-considerations">General considerations</a></li><li><a href="#removing-additional-properties">Removing additional properties</a></li><li><a href="#assigning-defaults">Assigning defaults</a></li><li><a href="#coercing-data-types">Coercing data types</a></li></ul></div><p></p> <h2 id="general-considerations"><a href="#general-considerations" class="header-anchor">#</a> General considerations</h2> <p>Ajv has several options that allow to modify data during validation:</p> <ul><li>removeAdditional - to remove properties not defined in the schema object.</li> <li>useDefaults - to assign defaults from the schema to the validated data properties.</li> <li>coerceTypes - to change data type, when possible, to match the type(s) in the schema.</li></ul> <p>You can also define keywords that modify data.</p> <div class="custom-block tip"><p class="custom-block-title">Please note</p> <p>It is not possible to modify the root data instance passed to the validation function, only data properties can be modified. This is related to how JavaScript passes parameters, and not a limitation of Ajv.</p></div> <div class="custom-block warning"><p class="custom-block-title">Please note</p> <p>This functionality is non-standard - this is likely to be unsupported in other JSON Schema validator implementations.</p></div> <div class="custom-block danger"><p class="custom-block-title">Please note</p> <p>While pure schema validation produces the results independent of the keywords and subschema order, enabling any feature that may modify the data makes validation impure and its results are likely to depend on the order of evaluation of keywords and subschemas.</p> <p>The order of evaluation of subschemas in keywords like <code>allOf</code> is always the same as the order of subschemas in the array.</p> <p>On another hand, the order of evaluation of keywords, while consistent between validations and not dependent on how schema object is created, is neither documented nor guaranteed, so it can change in the future major versions (and, in rare cases, it can change in minor version - e.g. when there is bug that needs to be fixed).</p> <p>It is strongly recommended to always put user-defined keywords that can mutate data in separate subschemas inside <code>allOf</code> keyword to make the order of evaluation unambiguous. The exceptions to this recommendation are pre-defined <code>default</code> and <code>type</code> keywords - they must remain in the same schema as other keywords.</p></div> <h2 id="removing-additional-properties"><a href="#removing-additional-properties" class="header-anchor">#</a> Removing additional properties</h2> <p>With <a href="/guide/api.html#options">option <code>removeAdditional</code></a> (added by <a href="https://github.com/andyscott" target="_blank" rel="noopener noreferrer">andyscott<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>) you can filter data during the validation.</p> <p>This option modifies original data.</p> <p>Example:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> ajv <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Ajv</span><span class="token punctuation">(</span><span class="token punctuation">{</span>removeAdditional<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> schema <span class="token operator">=</span> <span class="token punctuation">{</span>
+  additionalProperties<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  properties<span class="token operator">:</span> <span class="token punctuation">{</span>
+    foo<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    bar<span class="token operator">:</span> <span class="token punctuation">{</span>
+      additionalProperties<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+      properties<span class="token operator">:</span> <span class="token punctuation">{</span>
+        baz<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;string&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> data <span class="token operator">=</span> <span class="token punctuation">{</span>
+  foo<span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+  additional1<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token comment">// will be removed; `additionalProperties` == false</span>
+  bar<span class="token operator">:</span> <span class="token punctuation">{</span>
+    baz<span class="token operator">:</span> <span class="token string">&quot;abc&quot;</span><span class="token punctuation">,</span>
+    additional2<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token comment">// will NOT be removed; `additionalProperties` != false</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> validate <span class="token operator">=</span> ajv<span class="token punctuation">.</span><span class="token function">compile</span><span class="token punctuation">(</span>schema<span class="token punctuation">)</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">validate</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span> <span class="token comment">// { &quot;foo&quot;: 0, &quot;bar&quot;: { &quot;baz&quot;: &quot;abc&quot;, &quot;additional2&quot;: 2 }</span>
+</code></pre></div><p>If <code>removeAdditional</code> option in the example above were <code>&quot;all&quot;</code> then both <code>additional1</code> and <code>additional2</code> properties would have been removed.</p> <p>If the option were <code>&quot;failing&quot;</code> then property <code>additional1</code> would have been removed regardless of its value and property <code>additional2</code> would have been removed only if its value were failing the schema in the inner <code>additionalProperties</code> (so in the example above it would have stayed because it passes the schema, but any non-number would have been removed).</p> <div class="custom-block warning"><p class="custom-block-title">Please note</p> <p>If you use <code>removeAdditional</code> option with <code>additionalProperties</code> keyword inside <code>anyOf</code>/<code>oneOf</code> keywords your validation can fail with this schema</p></div> <p>For example:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  type<span class="token operator">:</span> <span class="token string">&quot;object&quot;</span><span class="token punctuation">,</span>
+  oneOf<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      properties<span class="token operator">:</span> <span class="token punctuation">{</span>
+        foo<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;string&quot;</span><span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      required<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&quot;foo&quot;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+      additionalProperties<span class="token operator">:</span> <span class="token boolean">false</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      properties<span class="token operator">:</span> <span class="token punctuation">{</span>
+        bar<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;integer&quot;</span><span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      required<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&quot;bar&quot;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+      additionalProperties<span class="token operator">:</span> <span class="token boolean">false</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>The intention of the schema above is to allow objects with either the string property &quot;foo&quot; or the integer property &quot;bar&quot;, but not with both and not with any other properties.</p> <p>With the option <code>removeAdditional: true</code> the validation will pass for the object <code>{ &quot;foo&quot;: &quot;abc&quot;}</code> but will fail for the object <code>{&quot;bar&quot;: 1}</code>. It happens because while the first subschema in <code>oneOf</code> is validated, the property <code>bar</code> is removed because it is an additional property according to the standard (because it is not included in <code>properties</code> keyword in the same schema).</p> <p>While this behaviour is unexpected (issues <a href="https://github.com/ajv-validator/ajv/issues/129" target="_blank" rel="noopener noreferrer">#129<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>, <a href="https://github.com/ajv-validator/ajv/issues/134" target="_blank" rel="noopener noreferrer">#134<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>), it is correct. To have the expected behaviour (both objects are allowed and additional properties are removed) the schema has to be refactored in this way:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  type<span class="token operator">:</span> <span class="token string">&quot;object&quot;</span><span class="token punctuation">,</span>
+  properties<span class="token operator">:</span> <span class="token punctuation">{</span>
+    foo<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;string&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    bar<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;integer&quot;</span><span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  additionalProperties<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  oneOf<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>required<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&quot;foo&quot;</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>required<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&quot;bar&quot;</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>The schema above is also more efficient - it will compile into a faster function.</p> <h2 id="assigning-defaults"><a href="#assigning-defaults" class="header-anchor">#</a> Assigning defaults</h2> <p>With <a href="/guide/api.html#options">option <code>useDefaults</code></a> Ajv will assign values from <code>default</code> keyword in the schemas of <code>properties</code> and <code>items</code> (when it is the array of schemas) to the missing properties and items.</p> <p>With the option value <code>&quot;empty&quot;</code> properties and items equal to <code>null</code> or <code>&quot;&quot;</code> (empty string) will be considered missing and assigned defaults.</p> <p>This option modifies original data.</p> <div class="custom-block warning"><p class="custom-block-title">Please note</p> <p>The default value is inserted in the generated validation code as a literal, so the value inserted in the data will be the deep clone of the default in the schema.</p></div> <p>Example 1 (<code>default</code> in <code>properties</code>):</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> ajv <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Ajv</span><span class="token punctuation">(</span><span class="token punctuation">{</span>useDefaults<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> schema <span class="token operator">=</span> <span class="token punctuation">{</span>
+  type<span class="token operator">:</span> <span class="token string">&quot;object&quot;</span><span class="token punctuation">,</span>
+  properties<span class="token operator">:</span> <span class="token punctuation">{</span>
+    foo<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    bar<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;string&quot;</span><span class="token punctuation">,</span> <span class="token keyword">default</span><span class="token operator">:</span> <span class="token string">&quot;baz&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  required<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&quot;foo&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;bar&quot;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> data <span class="token operator">=</span> <span class="token punctuation">{</span>foo<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> validate <span class="token operator">=</span> ajv<span class="token punctuation">.</span><span class="token function">compile</span><span class="token punctuation">(</span>schema<span class="token punctuation">)</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">validate</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span> <span class="token comment">// { &quot;foo&quot;: 1, &quot;bar&quot;: &quot;baz&quot; }</span>
+</code></pre></div><p>Example 2 (<code>default</code> in <code>items</code>):</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> schema <span class="token operator">=</span> <span class="token punctuation">{</span>
+  type<span class="token operator">:</span> <span class="token string">&quot;array&quot;</span><span class="token punctuation">,</span>
+  items<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;string&quot;</span><span class="token punctuation">,</span> <span class="token keyword">default</span><span class="token operator">:</span> <span class="token string">&quot;foo&quot;</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> data <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>
+
+<span class="token keyword">const</span> validate <span class="token operator">=</span> ajv<span class="token punctuation">.</span><span class="token function">compile</span><span class="token punctuation">(</span>schema<span class="token punctuation">)</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">validate</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span> <span class="token comment">// [ 1, &quot;foo&quot; ]</span>
+</code></pre></div><p>With <code>useDefaults</code> option <code>default</code> keywords throws exception during schema compilation when used in:</p> <ul><li>not in <code>properties</code> or <code>items</code> subschemas</li> <li>in schemas inside <code>anyOf</code>, <code>oneOf</code> and <code>not</code> (see <a href="https://github.com/ajv-validator/ajv/issues/42" target="_blank" rel="noopener noreferrer">#42<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>)</li> <li>in <code>if</code> schema</li> <li>in schemas generated by user-defined <em>macro</em> keywords</li></ul> <p>The strict mode option can change the behaviour for these unsupported defaults (<code>strict: false</code> to ignore them, <code>&quot;log&quot;</code> to log a warning).</p> <p>See <a href="/guide/strict-mode.html">Strict mode</a>.</p> <h2 id="coercing-data-types"><a href="#coercing-data-types" class="header-anchor">#</a> Coercing data types</h2> <p>When you are validating user inputs all your data properties are usually strings. The option <code>coerceTypes</code> allows you to have your data types coerced to the types specified in your schema <code>type</code> keywords, both to pass the validation and to use the correctly typed data afterwards.</p> <p>This option modifies original data.</p> <div class="custom-block warning"><p class="custom-block-title">Please note</p> <p>If you pass a scalar value to the validating function its type will be coerced and it will pass the validation, but the value of the variable you pass won't be updated because scalars are passed by value.</p></div> <p>Example 1:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> ajv <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Ajv</span><span class="token punctuation">(</span><span class="token punctuation">{</span>coerceTypes<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> schema <span class="token operator">=</span> <span class="token punctuation">{</span>
+  type<span class="token operator">:</span> <span class="token string">&quot;object&quot;</span><span class="token punctuation">,</span>
+  properties<span class="token operator">:</span> <span class="token punctuation">{</span>
+    foo<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    bar<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;boolean&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  required<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&quot;foo&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;bar&quot;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> data <span class="token operator">=</span> <span class="token punctuation">{</span>foo<span class="token operator">:</span> <span class="token string">&quot;1&quot;</span><span class="token punctuation">,</span> bar<span class="token operator">:</span> <span class="token string">&quot;false&quot;</span><span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> validate <span class="token operator">=</span> ajv<span class="token punctuation">.</span><span class="token function">compile</span><span class="token punctuation">(</span>schema<span class="token punctuation">)</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">validate</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span> <span class="token comment">// { &quot;foo&quot;: 1, &quot;bar&quot;: false }</span>
+</code></pre></div><p>Example 2 (array coercions):</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> ajv <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Ajv</span><span class="token punctuation">(</span><span class="token punctuation">{</span>coerceTypes<span class="token operator">:</span> <span class="token string">&quot;array&quot;</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> schema <span class="token operator">=</span> <span class="token punctuation">{</span>
+  properties<span class="token operator">:</span> <span class="token punctuation">{</span>
+    foo<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;array&quot;</span><span class="token punctuation">,</span> items<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    bar<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;boolean&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> data <span class="token operator">=</span> <span class="token punctuation">{</span>foo<span class="token operator">:</span> <span class="token string">&quot;1&quot;</span><span class="token punctuation">,</span> bar<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&quot;false&quot;</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> validate <span class="token operator">=</span> ajv<span class="token punctuation">.</span><span class="token function">compile</span><span class="token punctuation">(</span>schema<span class="token punctuation">)</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">validate</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span> <span class="token comment">// { &quot;foo&quot;: [1], &quot;bar&quot;: false }</span>
+</code></pre></div><p>The coercion rules, as you can see from the example, are different from JavaScript both to validate user input as expected and to have the coercion reversible (to correctly validate cases where different types are defined in subschemas of &quot;anyOf&quot; and other compound keywords).</p> <p>See <a href="/guide/coercion.html">Type coercion rules</a> for details.</p></div> <footer class="page-edit"><div class="edit-link"><a href="https://github.com/ajv-validator/ajv/edit/master/docs/guide/modifying-data.md" target="_blank" rel="noopener noreferrer">Edit this page</a> <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></div> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/guide/formats.html" class="prev">
+        Format validation
+      </a></span> <span class="next"><a href="/guide/user-keywords.html">
+        User-defined keywords
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.3700f5d4.js" defer></script><script src="/assets/js/2.c39c7893.js" defer></script><script src="/assets/js/3.52058d6e.js" defer></script><script src="/assets/js/23.daacf022.js" defer></script>
+  </body>
+</html>

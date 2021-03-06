@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Code generation design | Ajv: Another JSON validator</title>
+    <meta name="generator" content="VuePress 1.8.2">
+    
+    <meta name="description" content="Just playing around">
+    
+    <link rel="preload" href="/assets/css/0.styles.5602d0b5.css" as="style"><link rel="preload" href="/assets/js/app.3700f5d4.js" as="script"><link rel="preload" href="/assets/js/2.c39c7893.js" as="script"><link rel="preload" href="/assets/js/3.52058d6e.js" as="script"><link rel="preload" href="/assets/js/12.7cb56b5a.js" as="script"><link rel="prefetch" href="/assets/js/10.0c797806.js"><link rel="prefetch" href="/assets/js/11.231638bd.js"><link rel="prefetch" href="/assets/js/13.5cbf9c64.js"><link rel="prefetch" href="/assets/js/14.6af0e427.js"><link rel="prefetch" href="/assets/js/15.306bbc40.js"><link rel="prefetch" href="/assets/js/16.f1f0fc53.js"><link rel="prefetch" href="/assets/js/17.e7f14f36.js"><link rel="prefetch" href="/assets/js/18.0c2f5039.js"><link rel="prefetch" href="/assets/js/19.eb2d2c44.js"><link rel="prefetch" href="/assets/js/20.ec341781.js"><link rel="prefetch" href="/assets/js/21.76ff0ff9.js"><link rel="prefetch" href="/assets/js/22.2a3ccbf2.js"><link rel="prefetch" href="/assets/js/23.daacf022.js"><link rel="prefetch" href="/assets/js/24.6e1979a8.js"><link rel="prefetch" href="/assets/js/25.bd1d2358.js"><link rel="prefetch" href="/assets/js/26.a9f101a9.js"><link rel="prefetch" href="/assets/js/27.41000e45.js"><link rel="prefetch" href="/assets/js/28.fa98308e.js"><link rel="prefetch" href="/assets/js/29.dedaeff1.js"><link rel="prefetch" href="/assets/js/30.fbda5289.js"><link rel="prefetch" href="/assets/js/31.ba11fe07.js"><link rel="prefetch" href="/assets/js/32.8b12729d.js"><link rel="prefetch" href="/assets/js/33.c1d40d2d.js"><link rel="prefetch" href="/assets/js/34.339232a2.js"><link rel="prefetch" href="/assets/js/4.f5c01cd3.js"><link rel="prefetch" href="/assets/js/5.09986f3b.js"><link rel="prefetch" href="/assets/js/6.c7b6ae79.js"><link rel="prefetch" href="/assets/js/7.b97164a1.js"><link rel="prefetch" href="/assets/js/8.574fc119.js"><link rel="prefetch" href="/assets/js/9.337eac3a.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.5602d0b5.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><img src="/ajv.svg" alt="Ajv: Another JSON validator" class="logo"> <span class="site-name can-hide">Ajv: Another JSON validator</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Guide" class="dropdown-title"><span class="title">Guide</span> <span class="arrow down"></span></button> <button type="button" aria-label="Guide" class="mobile-dropdown-title"><span class="title">Guide</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/guide/getting-started.html" class="nav-link">
+  Getting started
+</a></li><li class="dropdown-item"><!----> <a href="/guide/typescript.html" class="nav-link">
+  Using with TypeScript
+</a></li><li class="dropdown-item"><!----> <a href="/guide/schema-language.html" class="nav-link">
+  Choosing schema language
+</a></li><li class="dropdown-item"><!----> <a href="/guide/managing-schemas.html" class="nav-link">
+  Managing schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/combining-schemas.html" class="nav-link">
+  Combining schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/formats.html" class="nav-link">
+  Format validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/modifying-data.html" class="nav-link">
+  Modifying data
+</a></li><li class="dropdown-item"><!----> <a href="/guide/user-keywords.html" class="nav-link">
+  User-defined keywords
+</a></li><li class="dropdown-item"><!----> <a href="/guide/async-validation.html" class="nav-link">
+  Asynchronous validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/environments.html" class="nav-link">
+  Execution environments
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Learn more" class="dropdown-title"><span class="title">Learn more</span> <span class="arrow down"></span></button> <button type="button" aria-label="Learn more" class="mobile-dropdown-title"><span class="title">Learn more</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><h4>
+          Reference
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/api.html" class="nav-link">
+  API Reference
+</a></li><li class="dropdown-subitem"><a href="/options.html" class="nav-link">
+  Initialization options
+</a></li><li class="dropdown-subitem"><a href="/json-schema.html" class="nav-link">
+  JSON Schema
+</a></li><li class="dropdown-subitem"><a href="/json-type-definition.html" class="nav-link">
+  JSON Type Definition
+</a></li><li class="dropdown-subitem"><a href="/strict-mode.html" class="nav-link">
+  Strict mode
+</a></li><li class="dropdown-subitem"><a href="/standalone.html" class="nav-link">
+  Standalone validation code
+</a></li><li class="dropdown-subitem"><a href="/keywords.html" class="nav-link">
+  User defined keywords
+</a></li><li class="dropdown-subitem"><a href="/coercion.html" class="nav-link">
+  Type coercion rules
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Contributors
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/contributing.html" class="nav-link">
+  Contributing guide
+</a></li><li class="dropdown-subitem"><a href="/codegen.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  Code generation design
+</a></li><li class="dropdown-subitem"><a href="/components.html" class="nav-link">
+  Code components
+</a></li><li class="dropdown-subitem"><a href="/code_of_conduct.html" class="nav-link">
+  Code of Conduct
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Information
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/security.html" class="nav-link">
+  Security
+</a></li><li class="dropdown-subitem"><a href="/faq.html" class="nav-link">
+  FAQ
+</a></li><li class="dropdown-subitem"><a href="/license.html" class="nav-link">
+  License
+</a></li></ul></li></ul></div></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Guide" class="dropdown-title"><span class="title">Guide</span> <span class="arrow down"></span></button> <button type="button" aria-label="Guide" class="mobile-dropdown-title"><span class="title">Guide</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/guide/getting-started.html" class="nav-link">
+  Getting started
+</a></li><li class="dropdown-item"><!----> <a href="/guide/typescript.html" class="nav-link">
+  Using with TypeScript
+</a></li><li class="dropdown-item"><!----> <a href="/guide/schema-language.html" class="nav-link">
+  Choosing schema language
+</a></li><li class="dropdown-item"><!----> <a href="/guide/managing-schemas.html" class="nav-link">
+  Managing schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/combining-schemas.html" class="nav-link">
+  Combining schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/formats.html" class="nav-link">
+  Format validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/modifying-data.html" class="nav-link">
+  Modifying data
+</a></li><li class="dropdown-item"><!----> <a href="/guide/user-keywords.html" class="nav-link">
+  User-defined keywords
+</a></li><li class="dropdown-item"><!----> <a href="/guide/async-validation.html" class="nav-link">
+  Asynchronous validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/environments.html" class="nav-link">
+  Execution environments
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Learn more" class="dropdown-title"><span class="title">Learn more</span> <span class="arrow down"></span></button> <button type="button" aria-label="Learn more" class="mobile-dropdown-title"><span class="title">Learn more</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><h4>
+          Reference
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/api.html" class="nav-link">
+  API Reference
+</a></li><li class="dropdown-subitem"><a href="/options.html" class="nav-link">
+  Initialization options
+</a></li><li class="dropdown-subitem"><a href="/json-schema.html" class="nav-link">
+  JSON Schema
+</a></li><li class="dropdown-subitem"><a href="/json-type-definition.html" class="nav-link">
+  JSON Type Definition
+</a></li><li class="dropdown-subitem"><a href="/strict-mode.html" class="nav-link">
+  Strict mode
+</a></li><li class="dropdown-subitem"><a href="/standalone.html" class="nav-link">
+  Standalone validation code
+</a></li><li class="dropdown-subitem"><a href="/keywords.html" class="nav-link">
+  User defined keywords
+</a></li><li class="dropdown-subitem"><a href="/coercion.html" class="nav-link">
+  Type coercion rules
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Contributors
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/contributing.html" class="nav-link">
+  Contributing guide
+</a></li><li class="dropdown-subitem"><a href="/codegen.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  Code generation design
+</a></li><li class="dropdown-subitem"><a href="/components.html" class="nav-link">
+  Code components
+</a></li><li class="dropdown-subitem"><a href="/code_of_conduct.html" class="nav-link">
+  Code of Conduct
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Information
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/security.html" class="nav-link">
+  Security
+</a></li><li class="dropdown-subitem"><a href="/faq.html" class="nav-link">
+  FAQ
+</a></li><li class="dropdown-subitem"><a href="/license.html" class="nav-link">
+  License
+</a></li></ul></li></ul></div></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Guide</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/getting-started.html" class="sidebar-link">Getting started</a></li><li><a href="/guide/typescript.html" class="sidebar-link">Using with TypeScript</a></li><li><a href="/guide/schema-language.html" class="sidebar-link">Choosing schema language</a></li><li><a href="/guide/managing-schemas.html" class="sidebar-link">Managing schemas</a></li><li><a href="/guide/combining-schemas.html" class="sidebar-link">Combining schemas</a></li><li><a href="/guide/formats.html" class="sidebar-link">Format validation</a></li><li><a href="/guide/modifying-data.html" class="sidebar-link">Modifying data during validation</a></li><li><a href="/guide/user-keywords.html" class="sidebar-link">User-defined keywords</a></li><li><a href="/guide/async-validation.html" class="sidebar-link">Asynchronous validation</a></li><li><a href="/guide/environments.html" class="sidebar-link">Execution environments</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Reference</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/api.html" class="sidebar-link">API Reference</a></li><li><a href="/options.html" class="sidebar-link">Initialization options</a></li><li><a href="/json-schema.html" class="sidebar-link">JSON Schema</a></li><li><a href="/json-type-definition.html" class="sidebar-link">JSON Type Definition</a></li><li><a href="/strict-mode.html" class="sidebar-link">Strict mode</a></li><li><a href="/standalone.html" class="sidebar-link">Standalone validation code</a></li><li><a href="/keywords.html" class="sidebar-link">User defined keywords</a></li><li><a href="/coercion.html" class="sidebar-link">Type coercion rules</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>Contributors</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/contributing/" class="sidebar-link">Contributing guide</a></li><li><a href="/codegen.html" aria-current="page" class="active sidebar-link">Code generation design</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/codegen.html#safe-code-generation" class="sidebar-link">Safe code generation</a></li><li class="sidebar-sub-header"><a href="/codegen.html#code-optimization" class="sidebar-link">Code optimization</a></li><li class="sidebar-sub-header"><a href="/codegen.html#user-defined-keywords" class="sidebar-link">User-defined keywords</a></li></ul></li><li><a href="/components.html" class="sidebar-link">Code components</a></li><li><a href="/code_of_conduct/" class="sidebar-link">Code of conduct</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Information</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/faq.html" class="sidebar-link">Frequently Asked Questions</a></li><li><a href="/security.html" class="sidebar-link">Security considerations</a></li><li><a href="/license.html" class="sidebar-link">License</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="code-generation-design"><a href="#code-generation-design" class="header-anchor">#</a> Code generation design</h1> <p></p><div class="table-of-contents"><ul><li><a href="#safe-code-generation">Safe code generation</a></li><li><a href="#code-optimization">Code optimization</a></li><li><a href="#user-defined-keywords">User-defined keywords</a></li></ul></div><p></p> <p>Starting from v7 Ajv uses <a href="https://github.com/ajv-validator/ajv/blob/master/lib/compile/codegen/index.ts" target="_blank" rel="noopener noreferrer">CodeGen module<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> that replaced <a href="https://github.com/olado/dot" target="_blank" rel="noopener noreferrer">doT<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> templates used earlier.</p> <p>The motivations for this change:</p> <ul><li>doT templates were difficult to maintain and to change, particularly for the occasional contributors.</li> <li>they discouraged modularity within validation keywords code and also led to implicit dependencies between different parts of code.</li> <li>they had risks of remote code execution in case untrusted schemas were used, even though all identified issues were patched.</li> <li>ES6 template literals that are now widely supported offer a great alternative to both ASTs and to plain string concatenation - this option was not available when Ajv started.</li></ul> <h2 id="safe-code-generation"><a href="#safe-code-generation" class="header-anchor">#</a> Safe code generation</h2> <p>CodeGen module defines two tagged templates that should be passed to all code generation methods and used in other tagged templates:</p> <ul><li><code>_</code> - to create instances of private _Code class that will not be escaped when used in code or other tagged templates.</li> <li><code>str</code> - to create code for string expressions.</li></ul> <p>For example, this code:</p> <div class="language-typescript extra-class"><pre class="language-typescript"><code><span class="token keyword">const</span> x <span class="token operator">=</span> <span class="token number">0</span>
+<span class="token comment">// Name is a subclass of _Code that can be safely used in code - it only allows valid identifiers</span>
+<span class="token comment">// gen.const creates a unique variable name with the prefix &quot;num&quot;.</span>
+<span class="token keyword">const</span> num<span class="token operator">:</span> Name <span class="token operator">=</span> gen<span class="token punctuation">.</span><span class="token keyword">const</span><span class="token punctuation">(</span><span class="token string">&quot;num&quot;</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span>
+gen<span class="token punctuation">.</span><span class="token keyword">if</span><span class="token punctuation">(</span>
+  <span class="token comment">// _`...` returns the instance of _Code with safe interpolation of `num` and `x`.</span>
+  <span class="token comment">// if `x` was a string, it would be inserted into code as a quoted string value rather than as a code fragment,</span>
+  <span class="token comment">// so if `x` contained some code, it would not be executed.</span>
+  _<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>num<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> &gt; </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>x<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span>
+  <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">log</span><span class="token punctuation">(</span><span class="token string">&quot;greater&quot;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">log</span><span class="token punctuation">(</span><span class="token string">&quot;smaller or equal&quot;</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">function</span> <span class="token function">log</span><span class="token punctuation">(</span>comparison<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">)</span><span class="token operator">:</span> <span class="token keyword">void</span> <span class="token punctuation">{</span>
+  <span class="token comment">// msg creates a string expression with concatenation - see generated code below</span>
+  <span class="token comment">// type Code = _Code | Name, _Code can only be constructed with template literals</span>
+  <span class="token keyword">const</span> msg<span class="token operator">:</span> Code <span class="token operator">=</span> str<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>num<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> is </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>comparison<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> than </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>x<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span>
+  <span class="token comment">// msg is _Code instance, so it will be inserted via another template without quotes</span>
+  gen<span class="token punctuation">.</span><span class="token function">code</span><span class="token punctuation">(</span>_<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">console.log(</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>msg<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>generates this javascript code:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> num0 <span class="token operator">=</span> <span class="token number">5</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>num0 <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>num0 <span class="token operator">+</span> <span class="token string">&quot; is greater than 0&quot;</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>num0 <span class="token operator">+</span> <span class="token string">&quot; is smaller or equal than 0&quot;</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><code>.const</code>, <code>.if</code> and <code>.code</code> above are methods of CodeGen class that generate code inside class instance <code>gen</code> - see <a href="https://github.com/ajv-validator/ajv/blob/master/lib/compile/codegen/index.ts" target="_blank" rel="noopener noreferrer">source code<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> for all available methods and <a href="../spec/codegen.spec.ts">tests</a> for other code generation examples.</p> <p>These methods only accept instances of private class <code>_Code</code>, other values will be rejected by Typescript compiler - the risk to pass unsafe string is mitigated on type level.</p> <p>If a string variable were used in <code>_</code> template literal, its value would be safely wrapped in quotes - in many cases it is quite useful, as it allows to inject values that can be either string or number via the same template. In the worst case, the generated code could be invalid, but it will prevent the risk of code execution that attacker could pass via untrusted schema as a string value that should be inserted in code (e.g., instead of a number). Also see the comment in the example.</p> <h2 id="code-optimization"><a href="#code-optimization" class="header-anchor">#</a> Code optimization</h2> <p>CodeGen class generates code trees and performs several optimizations before the code is rendered:</p> <ol><li>removes empty and unreachable branches (e.g. <code>else</code> branch after <code>if(true)</code>, etc.).</li> <li>removes unused variable declarations.</li> <li>replaces variables that are used only once and assigned expressions that are explicitly marked as &quot;constant&quot; (i.e. having referential transparency) with the expressions themselves.</li></ol> <div class="custom-block warning"><p class="custom-block-title">Please note</p> <p>These optimizations assume that the expressions in <code>if</code> conditions, <code>for</code> statement headers and assigned expressions are free of any side effects - this is the case for all pre-defined validation keywords.</p></div> <p>See <a href="../spec/codegen.spec.ts">these tests</a> for examples.</p> <p>By default Ajv does 1-pass optimization - based on the test suite it reduces the code size by 10.5% and the number of tree nodes by 16.7% (TODO benchmark the validation time). The second optimization pass changes it by less than 0.1%, so you won't need it unless you have really complex schemas or if you generate standalone code and want it to pass relevant eslint rules.</p> <p>Optimization mode can be changed with <a href="/api.html#options">options</a>:</p> <ul><li><code>{code: {optimize: false}}</code> - to disable (e.g., when schema compilation time is more important),</li> <li><code>{code: {optimize: 2}}</code> - 2-pass optimization.</li></ul> <h2 id="user-defined-keywords"><a href="#user-defined-keywords" class="header-anchor">#</a> User-defined keywords</h2> <p>While tagged template literals wrap passed strings based on their run-time values, CodeGen class methods rely on types to ensure safety of passed parameters - there is no run-time checks that the passed value is an instance of _Code class.</p> <p>It is strongly recommended to define additional keywords only with Typescript - using plain JavaScript would still allow passing unsafe strings to code generation methods.</p> <div class="custom-block warning"><p class="custom-block-title">Please note</p> <p>If your user-defined keywords need to have side-effects that are removed by optimization (see above), you may need to disable it.</p></div></div> <footer class="page-edit"><div class="edit-link"><a href="https://github.com/ajv-validator/ajv/edit/master/docs/codegen.md" target="_blank" rel="noopener noreferrer">Edit this page</a> <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></div> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/contributing/" class="prev">
+        Contributing guide
+      </a></span> <span class="next"><a href="/components.html">
+        Code components
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.3700f5d4.js" defer></script><script src="/assets/js/2.c39c7893.js" defer></script><script src="/assets/js/3.52058d6e.js" defer></script><script src="/assets/js/12.7cb56b5a.js" defer></script>
+  </body>
+</html>
