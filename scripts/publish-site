@@ -3,6 +3,7 @@
 set -ex
 
 echo "About to publish $GITHUB_REF to gh-pages..."
+rm -rf ../gh-pages
 
 function copyReplace {
   sed "s/](.\/docs\//](.\//g" $1 > $2
@@ -15,14 +16,17 @@ copyReplace LICENSE docs/license.md
 
 npm run docs:build
 
-rm -rf ../gh-pages
-
 git config --global user.name "$GIT_USER_NAME"
 git config --global user.email "$GIT_USER_EMAIL"
 git clone -b gh-pages --single-branch https://"${GH_TOKEN_PUBLIC}"@github.com/ajv-validator/ajv.git ../gh-pages
 
-cp -R docs/.vuepress/dist/ ../gh-pages/docs
+rsync -a ./docs/.vuepress/dist/ ../gh-pages/docs
+ls ../gh-pages/docs
+
 cd ../gh-pages
+
+ls docs
+git status --porcelain
 
 if [[ $(git status --porcelain) ]]; then
   echo "Changes detected. Updating gh-pages branch..."
