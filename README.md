@@ -1,4 +1,4 @@
-<img align="right" alt="Ajv logo" width="160" src="https://ajv.js.org/images/ajv_logo.png">
+<img align="right" alt="Ajv logo" width="160" src="/img/ajv.svg">
 
 &nbsp;
 
@@ -20,7 +20,7 @@ Supports JSON Schema draft-06/07/2019-09 (draft-04 is supported in [version 6](h
 ## Platinum sponsors
 
 ::: v-pre
-[<img src="https://www.poberezkin.com/images/mozilla.svg" width="45%">](https://www.mozilla.org)<img src="https://ajv.js.org/images/gap.svg" width="9%">[<img src="https://ajv.js.org/images/reserved.svg" width="45%">](https://opencollective.com/ajv)
+[<img src="/img/mozilla.svg" width="45%">](https://www.mozilla.org)<img src="/img/gap.svg" width="9%">[<img src="/img/reserved.svg" width="45%">](https://opencollective.com/ajv)
 :::
 
 ## Using version 7
@@ -139,7 +139,7 @@ Please also review [Contributing guidelines](./CONTRIBUTING.md) and [Code compon
 ## Mozilla MOSS grant and OpenJS Foundation
 
 ::: v-pre
-[<img src="https://www.poberezkin.com/images/mozilla.png" width="240" height="68">](https://www.mozilla.org/en-US/moss/)<img src="https://ajv.js.org/images/gap.svg" width="9%">[<img src="https://www.poberezkin.com/images/openjs.png" width="220" height="68">](https://openjsf.org/blog/2020/08/14/ajv-joins-openjs-foundation-as-an-incubation-project/)
+[<img src="/img/mozilla.svg" width="240" height="68">](https://www.mozilla.org/en-US/moss/)<img src="/img/gap.svg" width="9%">[<img src="/img/openjs.png" width="220" height="68">](https://openjsf.org/blog/2020/08/14/ajv-joins-openjs-foundation-as-an-incubation-project/)
 :::
 
 Ajv has been awarded a grant from Mozilla’s [Open Source Support (MOSS) program](https://www.mozilla.org/en-US/moss/) in the “Foundational Technology” track! It will sponsor the development of Ajv support of [JSON Schema version 2019-09](https://tools.ietf.org/html/draft-handrews-json-schema-02) and of [JSON Type Definition (RFC8927)](https://datatracker.ietf.org/doc/rfc8927/).

@@ -21,12 +21,8 @@ git config --global user.email "$GIT_USER_EMAIL"
 git clone -b gh-pages --single-branch https://"${GH_TOKEN_PUBLIC}"@github.com/ajv-validator/ajv.git ../gh-pages
 
 rsync -a ./docs/.vuepress/dist/ ../gh-pages/docs
-ls ../gh-pages/docs
 
 cd ../gh-pages
-
-ls docs
-git status --porcelain
 
 if [[ $(git status --porcelain) ]]; then
   echo "Changes detected. Updating gh-pages branch..."
