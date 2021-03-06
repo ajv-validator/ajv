@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
 
 echo "About to publish $GITHUB_REF to gh-pages..."
 
-cp CODE_OF_CONDUCT.md docs
-cp CONTRIBUTING.md docs
-cp LICENSE docs/LICENSE.md
+function copyReplace {
+  sed "s/](.\/docs\//](.\//" $1 > $2
+}
+
+copyReplace README.md docs/README.md
+copyReplace CODE_OF_CONDUCT.md docs/CODE_OF_CONDUCT.md
+copyReplace CONTRIBUTING.md docs/CONTRIBUTING.md
+copyReplace LICENSE docs/LICENSE.md
