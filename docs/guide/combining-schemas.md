@@ -1,5 +1,7 @@
 # Combining schemas
 
+[[toc]]
+
 ## <a name="ref"></a>Combining schemas with $ref
 
 You can structure your validation logic across multiple schema files and have schemas reference each other using `$ref` keyword.
@@ -49,7 +51,7 @@ See [Options](./api.md#options) and [addSchema](./api.md#add-schema) method.
 - The actual location of the schema file in the file system is not used.
 - You can pass the identifier of the schema as the second parameter of `addSchema` method or as a property name in `schemas` option. This identifier can be used instead of (or in addition to) schema \$id.
 - You cannot have the same \$id (or the schema identifier) used for more than one schema - the exception will be thrown.
-- You can implement dynamic resolution of the referenced schemas using `compileAsync` method. In this way you can store schemas in any system (files, web, database, etc.) and reference them without explicitly adding to Ajv instance. See [Asynchronous schema compilation](./validation.md#asynchronous-schema-compilation).
+- You can implement dynamic resolution of the referenced schemas using `compileAsync` method. In this way you can store schemas in any system (files, web, database, etc.) and reference them without explicitly adding to Ajv instance. See [Asynchronous schema compilation](./managing-schemas.md#asynchronous-schema-compilation).
   :::
 
 ## Extending recursive schemas

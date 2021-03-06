@@ -4,11 +4,11 @@ permalink: /code_of_conduct
 
 # Contributor Covenant Code of Conduct
 
-## Our Pledge
+### Our Pledge
 
 We commit to creating and maintaining an open and welcoming environment. We, as contributors and maintainers, commit to building a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, religion, or sexual identity and orientation.
 
-## Our Standards
+### Our Standards
 
 **Behaviour that contributes to creating a positive environment include**:
 
@@ -29,13 +29,13 @@ We commit to creating and maintaining an open and welcoming environment. We, as 
 - Publishing others' private information, such as a physical or electronic address, without explicit permission
 - Other conduct which could reasonably be considered inappropriate in a professional setting
 
-## Our Responsibilities
+### Our Responsibilities
 
 Project maintainers are responsible for clarifying the standards of acceptable behaviour and are expected to take appropriate and fair corrective action in response to any instances of unacceptable behaviour.
 
 Project maintainers have the right and responsibility to remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned to this Code of Conduct, or to ban temporarily or permanently any contributor for other behaviors that they deem inappropriate, threatening, offensive, or harmful.
 
-## Scope
+### Scope
 
 The goal of this Code of Conduct is to set standards and expectations around how we interact within this community. It’s scope applies to all project participants and covers all interactions within the community associated with this project including, but not limited to, email communication, issue trackers, source code repositories, forums, and social media. 
 
@@ -46,7 +46,7 @@ Examples of representing a project or community include:
 
 Representation of a project may be further defined and clarified by project maintainers.
 
-## Enforcement
+### Enforcement
 
 We will not tolerate abuse, harassment, or any other unacceptable behaviour made against community members, project maintainers, or members of our project team, either online or offline.
 
@@ -56,7 +56,7 @@ Reports of violations will be investigated in a respectful, professional manner 
 
 Project maintainers who do not follow or enforce the Code of Conduct in good faith may face temporary or permanent repercussions or removal as determined by other members of the project's leadership.
 
-## Attribution
+### Attribution
 
 This Code of Conduct is adapted from the [Contributor Covenant][https://www.contributor-covenant.org], version 1.4,
 available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html

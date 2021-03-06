@@ -18,7 +18,7 @@ See [Options](./options)
 
 Generate validating function and cache the compiled schema for future use.
 
-Validating function returns a boolean value (or promise for async schemas that must have `$async: true` property - see [Asynchronous validation](./validation.md#asynchronous-validation)). This function has properties `errors` and `schema`. Errors encountered during the last validation are assigned to `errors` property (it is assigned `null` if there was no errors). `schema` property contains the reference to the original schema.
+Validating function returns a boolean value (or promise for async schemas that must have `$async: true` property - see [Asynchronous validation](./guide/async-validation.md)). This function has properties `errors` and `schema`. Errors encountered during the last validation are assigned to `errors` property (it is assigned `null` if there was no errors). `schema` property contains the reference to the original schema.
 
 The schema passed to this method will be validated against meta-schema unless `validateSchema` option is false. If schema is invalid, an error will be thrown. See [options](#options).
 
@@ -135,7 +135,7 @@ You can asynchronously compile meta-schema by passing `true` as the second param
 
 Similarly to `compile`, it can return type guard in typescript.
 
-See example in [Asynchronous compilation](./validation.md#asynchronous-schema-compilation).
+See example in [Asynchronous compilation](./guide/managing-schemas.md#asynchronous-schema-compilation).
 
 ### ajv.validate(schemaOrRef: object | string, data: any): boolean
 
@@ -151,7 +151,7 @@ In typescript this method can act as a type guard (similarly to function returne
 Every time this method is called the errors are overwritten so you need to copy them to another variable if you want to use them later.
 :::
 
-If the schema is asynchronous (has `$async` keyword on the top level) this method returns a Promise. See [Asynchronous validation](./validation.md#asynchronous-validation).
+If the schema is asynchronous (has `$async` keyword on the top level) this method returns a Promise. See [Asynchronous validation](./guide/async-validation.md).
 
 <a name="add-schema"></a>
 
@@ -332,7 +332,7 @@ Options can have properties `separator` (string used to separate errors, ", " by
 
 ## Validation errors
 
-In case of validation failure, Ajv assigns the array of errors to `errors` property of validation function (or to `errors` property of Ajv instance when `validate` or `validateSchema` methods were called). In case of [asynchronous validation](./validation.md#asynchronous-validation), the returned promise is rejected with exception `Ajv.ValidationError` that has `errors` property.
+In case of validation failure, Ajv assigns the array of errors to `errors` property of validation function (or to `errors` property of Ajv instance when `validate` or `validateSchema` methods were called). In case of [asynchronous validation](./guide/async-validation.md), the returned promise is rejected with exception `Ajv.ValidationError` that has `errors` property.
 
 ### Error objects
 

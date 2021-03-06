@@ -76,11 +76,11 @@ const ajv = new Ajv({formats: {
 })
 ```
 
-Standard JSON Schema formats are provided in [ajv-formats](https://github.com/ajv-validator/ajv-formats) package - see [Formats](./validation.md#formats) section.
+Standard JSON Schema formats are provided in [ajv-formats](https://github.com/ajv-validator/ajv-formats) package - see [Formats](./guide/formats) section.
 
 #### Ignored defaults
 
-With `useDefaults` option Ajv modifies validated data by assigning defaults from the schema, but there are different limitations when the defaults can be ignored (see [Assigning defaults](./validation.md#assigning-defaults)). In strict mode Ajv fails schema compilation if such defaults are used in the schema.
+With `useDefaults` option Ajv modifies validated data by assigning defaults from the schema, but there are different limitations when the defaults can be ignored (see [Assigning defaults](./guide/modifying-data.md#assigning-defaults)). In strict mode Ajv fails schema compilation if such defaults are used in the schema.
 
 ### Prevent unexpected validation
 

@@ -22,7 +22,7 @@ Supports JSON Schema draft-06/07/2019-09 (draft-04 is supported in [version 6](h
 Ajv version 7 has these new features:
 
 - NEW: support of JSON Type Definition [RFC8927](https://datatracker.ietf.org/doc/rfc8927/) (from [v7.1.0](https://github.com/ajv-validator/ajv-keywords/releases/tag/v7.1.0)), including generation of [serializers](./docs/api.md#jtd-serialize) and [parsers](./docs/api.md#jtd-parse) from JTD schemas that are more efficient than native JSON serialization/parsing, combining JSON string parsing and validation in one function.
-- support of JSON Schema draft-2019-09 features: [`unevaluatedProperties`](./docs/json-schema.md#unevaluatedproperties) and [`unevaluatedItems`](./docs/json-schema.md#unevaluateditems), [dynamic recursive references](./docs/validation.md#extending-recursive-schemas) and other [additional keywords](./docs/json-schema.md#json-schema-draft-2019-09).
+- support of JSON Schema draft-2019-09 features: [`unevaluatedProperties`](./docs/json-schema.md#unevaluatedproperties) and [`unevaluatedItems`](./docs/json-schema.md#unevaluateditems), [dynamic recursive references](./docs/guide/combining-schemas.md#extending-recursive-schemas) and other [additional keywords](./docs/json-schema.md#json-schema-draft-2019-09).
 - to reduce the mistakes in JSON schemas and unexpected validation results, [strict mode](./docs/strict-mode.md) is added - it prohibits ignored or ambiguous JSON Schema elements.
 - to make code injection from untrusted schemas impossible, [code generation](./docs/codegen.md) is fully re-written to be safe and to allow code optimization (compiled schema code size is reduced by more than 10%).
 - to simplify Ajv extensions, the new keyword API that is used by pre-defined keywords is available to user-defined keywords - it is much easier to define any keywords now, especially with subschemas. [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package was updated to use the new API (in [v4.0.0](https://github.com/ajv-validator/ajv-keywords/releases/tag/v4.0.0))
@@ -46,9 +46,23 @@ See [Getting started](#usage) for code example.
 
 ## Contributing
 
-100+ people contributed to Ajv. You are very welcome to join by implementing new features that are valuable to many users and by improving documentation.
+More than 100 people contributed to Ajv, and we would love to have you join the development. We welcome implementing new features that will benefit many users and ideas to improve our documentation.
 
-Please do not be disappointed if your suggestion is not accepted - it is important to maintain the balance between the library size, performance and functionality. If it seems that a feature would benefit only a small number of users, its addition may be delayed until there is more support from the users community - so please submit the issue first to explain why this feature is important.
+At Ajv, we are committed to creating more equitable and inclusive spaces for our community and team members to contribute to discussions that affect both this project and our ongoing work in the open source ecosystem.
+
+We strive to create an environment of respect and healthy discourse by setting standards for our interactions and we expect it from all members of our community  - from long term project member to first time visitor. For more information, review our [code of conduct](./CODE_OF_CONDUCT.md) and values.
+
+### How we make decisions
+
+We value conscious curation of our library size, and balancing performance and functionality. To that end, we cannot accept every suggestion. When evaluating pull requests we consider:
+- Will this benefit many users or a niche use case?
+- How will this impact the performance of Ajv?
+- How will this expand our library size?
+
+To help us evaluate and understand, when you submit an issue and pull request:
+- Explain why this feature is important to the user base
+- Include documentation
+- Include test coverage with any new feature implementations
 
 Please include documentation and test coverage with any new feature implementations.
 
@@ -62,7 +76,7 @@ npm test
 
 `npm run build` - compiles typescript to `dist` folder.
 
-Please review [Contributing guidelines](./CONTRIBUTING.md) and [Code components](./docs/components.md).
+Please also review [Contributing guidelines](./CONTRIBUTING.md) and [Code components](./docs/components.md).
 
 ## Contents
 
@@ -89,16 +103,17 @@ Please review [Contributing guidelines](./CONTRIBUTING.md) and [Code components]
   - [Prevent unexpected validation](./docs/strict-mode.md#prevent-unexpected-validation)
   - [Strict types](./docs/strict-mode.md#strict-types)
   - [Strict number validation](./docs/strict-mode.md#strict-number-validation)
-- [Data validation](./docs/validation.md)
-  - [Validation basics](./docs/validation.md#validation-basics): [JSON Schema keywords](./docs/validation.md#validation-keywords), [annotations](./docs/validation.md#annotation-keywords), [formats](./docs/validation.md#formats)
-  - [Modular schemas](./docs/validation.md#modular-schemas): [combining with \$ref](./docs/validation.md#ref), [\$data reference](./docs/guide/combining-schemas.md#data-reference), [$merge and $patch](./docs/validation.md#merge-and-patch-keywords)
-  - [Asynchronous schema compilation](./docs/validation.md#asynchronous-schema-compilation)
+- [Validation guide](./docs/guide/getting-started.md)
+  - [Getting started](./docs/guide/getting-started.md)
+  - [Validating formats](./docs/guide/formats.md)
+  - [Modular schemas](./docs/guide/combining-schemas.md): [combining with \$ref](./docs/guide/combining-schemas#ref), [\$data reference](./docs/guide/combining-schemas.md#data-reference), [$merge and $patch](./docs/guide/combining-schemas#merge-and-patch-keywords)
+  - [Asynchronous schema compilation](./docs/guide/managing-schemas.md#asynchronous-schema-compilation)
   - [Standalone validation code](./docs/standalone.md)
-  - [Asynchronous validation](./docs/validation.md#asynchronous-validation)
-  - [Modifying data](./docs/validation.md#modifying-data-during-validation): [additional properties](./docs/validation.md#removing-additional-properties), [defaults](./docs/validation.md#assigning-defaults), [type coercion](./docs/validation.md#coercing-data-types)
+  - [Asynchronous validation](./docs/guide/async-validation.md)
+  - [Modifying data](./docs/guide/modifying-data.md): [additional properties](./docs/guide/modifying-data.md#removing-additional-properties), [defaults](./docs/guide/modifying-data.md#assigning-defaults), [type coercion](./docs/guide/modifying-data.md#coercing-data-types)
 - [Extending Ajv](#extending-ajv)
   - User-defined keywords:
-    - [basics](./docs/validation.md#user-defined-keywords)
+    - [basics](./docs/guide/user-keywords.md)
     - [guide](./docs/keywords.md)
   - [Plugins](#plugins)
   - [Related packages](#related-packages)
@@ -183,13 +198,13 @@ Performance of different validators by [json-schema-benchmark](https://github.co
   - meta-schema for JTD schemas
   - "union" keyword and user-defined keywords (can be used inside "metadata" member of the schema)
 - supports [browsers](#using-in-browser) and Node.js 0.10-14.x
-- [asynchronous loading](./docs/validation.md#asynchronous-schema-compilation) of referenced schemas during compilation
+- [asynchronous loading](./docs/guide/managing-schemas.md#asynchronous-schema-compilation) of referenced schemas during compilation
 - "All errors" validation mode with [option allErrors](./docs/api.md#options)
 - [error messages with parameters](./docs/api.md#validation-errors) describing error reasons to allow error message generation
 - i18n error messages support with [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) package
-- [removing-additional-properties](./docs/validation.md#removing-additional-properties)
-- [assigning defaults](./docs/validation.md#assigning-defaults) to missing properties and items
-- [coercing data](./docs/validation.md#coercing-data-types) to the types specified in `type` keywords
+- [removing-additional-properties](./docs/guide/modifying-data.md#removing-additional-properties)
+- [assigning defaults](./docs/guide/modifying-data.md#assigning-defaults) to missing properties and items
+- [coercing data](./docs/guide/modifying-data.md#coercing-data-types) to the types specified in `type` keywords
 - [user-defined keywords](#user-defined-keywords)
 - draft-06/07 keywords `const`, `contains`, `propertyNames` and `if/then/else`
 - draft-06 boolean schemas (`true`/`false` as a schema to always pass/fail).
@@ -229,7 +244,7 @@ See more examples in [Guide: getting started](./docs/guide/getting-started)
 
 ### User defined keywords
 
-See section in [data validation](./docs/validation.md#user-defined-keywords) and the [detailed guide](./docs/keywords.md).
+See section in [data validation](./docs/guide/user-keywords.md) and the [detailed guide](./docs/keywords.md).
 
 ### Plugins
 

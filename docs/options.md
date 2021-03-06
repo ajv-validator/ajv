@@ -124,7 +124,7 @@ Format validation.
 
 Option values:
 
-- `true` (default) - validate formats (see [Formats](./validation.md#formats)). In [strict mode](./strict-mode.md) unknown formats will throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](./guide/combining-schemas.md#data-reference)).
+- `true` (default) - validate formats (see [Formats](./guide/formats.md)). In [strict mode](./strict-mode.md) unknown formats will throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](./guide/combining-schemas.md#data-reference)).
 - `false` - do not validate any format keywords (TODO they will still collect annotations once supported).
 
 ## Validation and reporting options
@@ -174,13 +174,13 @@ Option values:
 
 ### loadSchema
 
-Asynchronous function that will be used to load remote schemas when `compileAsync` [method](#api-compileAsync) is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept remote schema uri as a parameter and return a Promise that resolves to a schema. See example in [Asynchronous compilation](./validation.md#asynchronous-schema-compilation).
+Asynchronous function that will be used to load remote schemas when `compileAsync` [method](#api-compileAsync) is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept remote schema uri as a parameter and return a Promise that resolves to a schema. See example in [Asynchronous compilation](./guide/managing-schemas.md#asynchronous-schema-compilation).
 
 ## Options to modify validated data
 
 ### removeAdditional
 
-Remove additional properties - see example in [Removing additional properties](./validation.md#removing-additional-properties).
+Remove additional properties - see example in [Removing additional properties](./guide/modifying-data.md#removing-additional-properties).
 
 This option is not used if schema is added with `addMetaSchema` method.
 
@@ -195,7 +195,7 @@ Option values:
 
 Replace missing or undefined properties and items with the values from corresponding `default` keywords. Default behaviour is to ignore `default` keywords. This option is not used if schema is added with `addMetaSchema` method.
 
-See examples in [Assigning defaults](./validation.md#assigning-defaults).
+See examples in [Assigning defaults](./guide/modifying-data.md#assigning-defaults).
 
 Option values:
 
@@ -205,7 +205,7 @@ Option values:
 
 ### coerceTypes
 
-Change data type of data to match `type` keyword. See the example in [Coercing data types](./validation.md#coercing-data-types) and [coercion rules](./coercion.md).
+Change data type of data to match `type` keyword. See the example in [Coercing data types](./guide/modifying-data.md#coercing-data-types) and [coercion rules](./coercion.md).
 
 Option values:
 
