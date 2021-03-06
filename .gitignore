@@ -41,3 +41,8 @@ bundle/
 package-lock.json
 
 spec/_json/*.js
+
+docs/README.md
+docs/code_of_conduct.md
+docs/contributing.md
+docs/license.md
