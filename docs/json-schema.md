@@ -1,8 +1,10 @@
-# JSON Schema validation keywords
+# JSON Schema
 
 In a simple way, JSON Schema is an object with validation keywords.
 
 The keywords and their values define what rules the data should satisfy to be valid.
+
+[[toc]]
 
 ## JSON Schema draft-2019-09
 
@@ -13,48 +15,9 @@ v7 added support for all new keywords in draft-2019-09:
 - [dependentRequired](#dependentrequired)
 - [dependentSchemas](#dependentschemas)
 - [maxContains/minContains](#maxcontains--mincontains)
-- [$recursiveAnchor/$recursiveRef](./validation.md#extending-recursive-schemas)
+- [$recursiveAnchor/$recursiveRef](./guide/combining-schemas.md#extending-recursive-schemas)
 
-There is also support for [$dynamicAnchor/$dynamicRef](./validation.md#extending-recursive-schemas) from the next version of JSON Schema draft that will replace `$recursiveAnchor`/`$recursiveRef`.
-
-## Included keywords
-
-- [type](#type)
-- [Keywords for numbers](#keywords-for-numbers)
-  - [maximum / minimum and exclusiveMaximum / exclusiveMinimum](#maximum--minimum-and-exclusivemaximum--exclusiveminimum)
-  - [multipleOf](#multipleof)
-- [Keywords for strings](#keywords-for-strings)
-  - [maxLength/minLength](#maxlength--minlength)
-  - [pattern](#pattern)
-  - [format](#format)
-- [Keywords for arrays](#keywords-for-arrays)
-  - [maxItems/minItems](#maxitems--minitems)
-  - [uniqueItems](#uniqueitems)
-  - [items](#items)
-  - [additionalItems](#additionalitems)
-  - [contains](#contains)
-  - [maxContains/minContains](#maxcontains--mincontains)
-  - [unevaluatedItems](#unevaluateditems) (NEW: added in draft 2019-09)
-- [Keywords for objects](#keywords-for-objects)
-  - [maxProperties/minProperties](#maxproperties--minproperties)
-  - [required](#required)
-  - [properties](#properties)
-  - [patternProperties](#patternproperties)
-  - [additionalProperties](#additionalproperties)
-  - [dependencies](#dependencies) (deprecated from draft 2019-09)
-  - [dependentRequired](#dependentrequired) (NEW: added in draft 2019-09)
-  - [dependentSchemas](#dependentschemas) (NEW: added in draft 2019-09)
-  - [propertyNames](#propertynames)
-  - [unevaluatedProperties](#unevaluatedproperties) (NEW: added in draft 2019-09)
-- [Keywords for all types](#keywords-for-all-types)
-  - [enum](#enum)
-  - [const](#const) (added in draft-06)
-- [Compound keywords](#compound-keywords)
-  - [not](#not)
-  - [oneOf](#oneof)
-  - [anyOf](#anyof)
-  - [allOf](#allof)
-  - [if/then/else](#ifthenelse)
+There is also support for [$dynamicAnchor/$dynamicRef](./guide/combining-schemas.md#extending-recursive-schemas) from the next version of JSON Schema draft that will replace `$recursiveAnchor`/`$recursiveRef`.
 
 ## `type`
 
@@ -96,7 +59,9 @@ The value of keyword `maximum` (`minimum`) should be a number. This value is the
 
 The value of keyword `exclusiveMaximum` (`exclusiveMinimum`) should be a number. This value is the exclusive maximum (minimum) allowed value for the data to be valid (the data equal to this keyword value is invalid).
 
-**Please note**: Boolean value for keywords `exclusiveMaximum` (`exclusiveMinimum`) is no longer supported.
+::: warning Please note
+Boolean value for keywords `exclusiveMaximum` (`exclusiveMinimum`) is no longer supported.
+:::
 
 **Examples**
 
@@ -339,7 +304,7 @@ _valid_: `[1, 2]`, `[1, 2, 3, "foo"]`, any array with 2 or 3 integers
 
 _invalid_: `[]`, `[1, "foo"]`, `[1, 2, 3, 4]`, any array with fewer than 2 or more than 3 integers
 
-### `unevaluatedItems`
+### `unevaluatedItems` <Badge text="NEW: draft 2019-09" />
 
 The value of this keyword is a JSON Schema (can be a boolean).
 
@@ -412,7 +377,9 @@ _invalid_: `{}`, `{a: 1}`, `{c: 3, d: 4}`
 
 The value of the keyword should be a map with keys equal to data object properties. Each value in the map should be a JSON Schema. For data object to be valid the corresponding values in data object properties should be valid according to these schemas.
 
-**Please note**: `properties` keyword does not require that the properties mentioned in it are present in the object (see examples).
+::: warning Please note
+`properties` keyword does not require that the properties mentioned in it are present in the object (see examples).
+:::
 
 **Example**
 
@@ -441,10 +408,11 @@ The value of this keyword should be a map where keys should be regular expressio
 
 When the value in data object property matches multiple regular expressions it should be valid according to all the schemas for all matched regular expressions.
 
-**Please note**:
+::: warning Please note
 
 1. `patternProperties` keyword does not require that properties matching patterns are present in the object (see examples).
 2. By default, Ajv does not allow schemas where patterns in `patternProperties` match any property name in `properties` keyword - that leads to unexpected validation results. It can be allowed with option `allowMatchingProperties`. See [Strict mode](./strict-mode.md)
+   :::
 
 **Example**
 
@@ -542,7 +510,7 @@ If the value is a schema for the data object to be valid the values in all "addi
 
     _invalid_: `{bar: 2}`, `{baz: 3}`, `{foo: 1, bar: 2}`, etc.
 
-### `dependencies`
+### `dependencies` <Badge text="deprecated in draft 2019-09" type="warning" />
 
 This keyword is deprecated. The same functionality is available with keywords `dependentRequired` and `dependentSchemas`.
 
@@ -588,7 +556,7 @@ For schema dependency, if the data object contains a property that is a key in t
 
     _invalid_: `{foo: 1, bar: "a"}`
 
-### `dependentRequired`
+### `dependentRequired` <Badge text="NEW: draft 2019-09" />
 
 The value of this keyword should be a map with keys equal to data object properties. Each value in the map should be an array of unique property names.
 
@@ -611,7 +579,7 @@ _valid_: `{foo: 1, bar: 2, baz: 3}`, `{}`, `{a: 1}`
 
 _invalid_: `{foo: 1}`, `{foo: 1, bar: 2}`, `{foo: 1, baz: 3}`
 
-### `dependentSchemas`
+### `dependentSchemas` <Badge text="NEW: draft 2019-09" />
 
 The value of the keyword should be a map with keys equal to data object properties. Each value in the map should be a JSON Schema.
 
@@ -661,7 +629,7 @@ _valid_: `{"foo@bar.com": "any", "bar@bar.com": "any"}`
 
 _invalid_: `{foo: "any value"}`
 
-### `unevaluatedProperties`
+### `unevaluatedProperties` <Badge text="NEW: draft 2019-09" />
 
 The value of this keyword is a JSON Schema (can be a boolean).
 
@@ -733,7 +701,7 @@ _valid_: `"foo"`
 
 _invalid_: any other value
 
-The same can be achieved with `enum` keyword using the array with one item. But `const` keyword is more than just a syntax sugar for `enum`. In combination with the [\$data reference](./validation.md#data-reference) it allows to define equality relations between different parts of the data. This cannot be achieved with `enum` keyword even with `$data` reference because `$data` cannot be used in place of one item - it can only be used in place of the whole array in `enum` keyword.
+The same can be achieved with `enum` keyword using the array with one item. But `const` keyword is more than just a syntax sugar for `enum`. In combination with the [$data reference](./guide/combining-schemas.md#data-reference) it allows to define equality relations between different parts of the data. This cannot be achieved with `enum` keyword even with `$data` reference because `$data` cannot be used in place of one item - it can only be used in place of the whole array in `enum` keyword.
 
 **Example**
 
@@ -883,3 +851,19 @@ If the data is invalid against the sub-schema in `if` keyword, then the validati
     - `2000` (>1000)
     - `11`, `57`, `123` (any integer with more than one non-zero digit)
     - non-integers
+
+## Metadata keywords
+
+JSON Schema specification defines several metadata keywords that describe the schema itself but do not perform any validation.
+
+- `title` and `description`: information about the data represented by that schema
+- `$comment`: information for developers. With option `$comment` Ajv logs or passes the comment string to the user-supplied function. See [Options](./api.md#options).
+- `default`: a default value of the data instance, see [Assigning defaults](#assigning-defaults).
+- `examples`: an array of data instances. Ajv does not check the validity of these instances against the schema.
+- `readOnly` and `writeOnly`: marks data-instance as read-only or write-only in relation to the source of the data (database, api, etc.).
+- `contentEncoding`: [RFC 2045](https://tools.ietf.org/html/rfc2045#section-6.1), e.g., "base64".
+- `contentMediaType`: [RFC 2046](https://datatracker.ietf.org/doc/rfc2046/), e.g., "image/png".
+
+::: warning Please note
+Ajv does not implement validation of the keywords `examples`, `contentEncoding` and `contentMediaType` but it reserves them. If you want to create a plugin that implements any of them, it should remove these keywords from the instance.
+:::

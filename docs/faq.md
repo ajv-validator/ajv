@@ -2,12 +2,14 @@
 
 The purpose of this document is to help find answers quicker. I am happy to continue the discussion about these issues, so please comment on some of the issues mentioned below or create a new issue if it seems more appropriate.
 
+[[toc]]
+
 ## Using JSON schema
 
 Ajv implements JSON schema specification. Before submitting the issue about the behaviour of any validation keywords please review them in:
 
 - [JSON Schema specification](https://tools.ietf.org/html/draft-handrews-json-schema-validation-00) (draft-07)
-- [Validation keywords](./json-schema.md) in Ajv documentation
+- [JSON Schema reference](./json-schema.md) in Ajv documentation
 - [JSON Schema tutorial](https://spacetelescope.github.io/understanding-json-schema/) (for draft-04)
 
 #### Why Ajv validates empty object as valid?
@@ -76,11 +78,11 @@ This problem is related to the problem explained above - properties treated as a
 
 See the example in [Filtering Data](https://github.com/ajv-validator/ajv#filtering-data) section of readme.
 
-## Generating schemas with resolved references (\$ref)
+## Generating schemas with resolved references ($ref)
 
 See [#22](https://github.com/ajv-validator/ajv/issues/22), [#125](https://github.com/ajv-validator/ajv/issues/125), [#146](https://github.com/ajv-validator/ajv/issues/146), [#228](https://github.com/ajv-validator/ajv/issues/228), [#336](https://github.com/ajv-validator/ajv/issues/336), [#454](https://github.com/ajv-validator/ajv/issues/454).
 
-#### Why Ajv does not replace references (\$ref) with the actual referenced schemas as some validators do?
+#### Why Ajv does not replace references ($ref) with the actual referenced schemas as some validators do?
 
 1. The scope of Ajv is validating data against JSON Schemas; inlining referenced schemas is not necessary for validation. When Ajv generates code for validation it either inlines the code of referenced schema or uses function calls. Doing schema manipulation is more complex and out of scope.
 2. When schemas are recursive (or mutually recursive) resolving references would result in self-referencing recursive data-structures that can be difficult to process.

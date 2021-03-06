@@ -2,12 +2,7 @@
 
 JSON Schema, if properly used, can replace data sanitisation. It doesn't replace other API security considerations. It also introduces additional security aspects to consider.
 
-- [Security contact](#security-contact)
-- [Untrusted schemas](#untrusted-schemas)
-- [Circular references in objects](#circular-references-in-javascript-objects)
-- [Trusted schemas](#security-risks-of-trusted-schemas)
-- [ReDoS attack](#redos-attack)
-- [Content Security Policy](#content-security-policy)
+[[toc]]
 
 ## Security contact
 
@@ -43,9 +38,11 @@ Some keywords in JSON Schemas can lead to very slow validation for certain data.
 - `patternProperties` for large property names - use `propertyNames` to mitigate, but some regular expressions can have exponential evaluation time as well.
 - `uniqueItems` for large non-scalar arrays - use `maxItems` to mitigate
 
-**Please note**: The suggestions above to prevent slow validation would only work if you do NOT use `allErrors: true` in production code (using it would continue validation after validation errors).
+::: danger Please note
+The suggestions above to prevent slow validation would only work if you do NOT use `allErrors: true` in production code (using it would continue validation after validation errors).
+:::
 
-You can validate your JSON schemas against [this meta-schema](../lib/refs/json-schema-secure.json) to check that these recommendations are followed:
+You can validate your JSON schemas against [this meta-schema](https://github.com/ajv-validator/ajv/blob/master/lib/refs/json-schema-secure.json) to check that these recommendations are followed:
 
 ```javascript
 ajv = new Ajv({strictTypes: false}) // this option is required for this schema
@@ -58,7 +55,9 @@ const schema2 = {format: "email", maxLength: MAX_LENGTH}
 isSchemaSecure(schema2) // true
 ```
 
-**Please note**: following all these recommendation is not a guarantee that validation of untrusted data is safe - it can still lead to some undesirable results.
+::: danger Please note
+Following all these recommendation is not a guarantee that validation using of untrusted data is safe - it can still lead to some undesirable results.
+:::
 
 ## ReDoS attack
 
@@ -66,7 +65,11 @@ Certain regular expressions can lead to the exponential evaluation time even wit
 
 Please assess the regular expressions you use in the schemas on their vulnerability to this attack - see [safe-regex](https://github.com/substack/safe-regex), for example.
 
-**Please note**: some formats that [ajv-formats](https://github.com/ajv-validator/ajv-formats) package implements use [regular expressions](https://github.com/ajv-validator/ajv-formats/blob/master/src/formats.ts) that can be vulnerable to ReDoS attack, so if you use Ajv to validate data from untrusted sources **it is strongly recommended** to consider the following:
+::: warning Please note
+Some formats that [ajv-formats](https://github.com/ajv-validator/ajv-formats) package implements use [regular expressions](https://github.com/ajv-validator/ajv-formats/blob/master/src/formats.ts) that can be vulnerable to ReDoS attack.
+:::
+
+If you use Ajv to validate data from untrusted sources **it is strongly recommended** to consider the following:
 
 - making assessment of "format" implementations in [ajv-formats](https://github.com/ajv-validator/ajv-formats).
 - passing `"fast"` option to ajv-formats plugin (see its docs) that simplifies some of the regular expressions (although it does not guarantee that they are safe).
@@ -79,6 +82,8 @@ Whatever mitigation you choose, please assume all formats provided by ajv-format
 
 When using Ajv in a browser page with enabled Content Security Policy (CSP), `script-src` directive must include `'unsafe-eval'`.
 
-**Please note**: `unsafe-eval` is NOT recommended in a secure CSP[[1]](https://developer.chrome.com/extensions/contentSecurityPolicy#relaxing-eval), as it has the potential to open the document to cross-site scripting (XSS) attacks.
+::: warning Please note
+`unsafe-eval` is NOT recommended in a secure CSP[[1]](https://developer.chrome.com/extensions/contentSecurityPolicy#relaxing-eval), as it has the potential to open the document to cross-site scripting (XSS) attacks.
+:::
 
 In order to use Ajv without relaxing CSP, you can [compile the schemas using CLI](https://github.com/ajv-validator/ajv-cli#compile-schemas) or programmatically in your build code - see [Standalone validation code](./standalone.md). Compiled JavaScript file can export one or several validation functions that have the same code as the schemas compiled at runtime.
