@@ -102,7 +102,7 @@ interface _KeywordDef {
   type?: JSONType | JSONType[] // data types that keyword applies to
   schemaType?: JSONType | JSONType[] // allowed type(s) of keyword value in the schema
   allowUndefined?: boolean // used for keywords that can be invoked by other keywords, not being present in the schema
-  $data?: boolean // keyword supports [$data reference](../../docs/validation.md#data-reference)
+  $data?: boolean // keyword supports [$data reference](../../docs/guide/combining-schemas.md#data-reference)
   implements?: string[] // other schema keywords that this keyword implements
   before?: string // keyword should be executed before this keyword (should be applicable to the same type)
   post?: boolean // keyword should be executed after other keywords without post flag
