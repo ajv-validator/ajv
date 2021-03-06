@@ -14,9 +14,10 @@ If a keyword is used only for side-effects and its validation result is pre-defi
 
 ::: warning Please note
 When extending JSON Schema standard with additional keywords, you have several potential concerns to be aware of:
+
 - portability of your schemas - they would only work with JavaScript or TypeScript applications where you can use Ajv.
 - additional documentation required to maintain your schemas.
-:::
+  :::
 
 ::: danger Please note
 While it is possible to define additional keywords for JSON Type Definition schemas (these keywords can only be used in `metadata` member of the schema), it is strongly recommended not to do it - JTD is specifically designed for cross-platform APIs.

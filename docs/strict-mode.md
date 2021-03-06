@@ -68,7 +68,7 @@ By default Ajv fails schema compilation in these cases.
 
 #### Unknown formats
 
-By default unknown formats throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](./validation.md#data-reference)). It is possible to opt out of format validation completely with options `validateFormats: false`. You can define all known formats with `addFormat` method or `formats` option - to have some format ignored pass `true` as its definition:
+By default unknown formats throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](./guide/combining-schemas.md#data-reference)). It is possible to opt out of format validation completely with options `validateFormats: false`. You can define all known formats with `addFormat` method or `formats` option - to have some format ignored pass `true` as its definition:
 
 ```javascript
 const ajv = new Ajv({formats: {

@@ -2,7 +2,7 @@
 
 [[toc]]
 
-Starting from v7 Ajv uses [CodeGen module](../lib/compile/codegen/index.ts) that replaced [doT](https://github.com/olado/dot) templates used earlier.
+Starting from v7 Ajv uses [CodeGen module](https://github.com/ajv-validator/ajv/blob/master/lib/compile/codegen/index.ts) that replaced [doT](https://github.com/olado/dot) templates used earlier.
 
 The motivations for this change:
 
@@ -39,7 +39,7 @@ function log(comparison: string): void {
   // type Code = _Code | Name, _Code can only be constructed with template literals
   const msg: Code = str`${num} is ${comparison} than ${x}`
   // msg is _Code instance, so it will be inserted via another template without quotes
-  gen.code(_`console log(${msg})`)
+  gen.code(_`console.log(${msg})`)
 }
 ```
 
@@ -54,7 +54,7 @@ if (num0 > 0) {
 }
 ```
 
-`.const`, `.if` and `.code` above are methods of CodeGen class that generate code inside class instance `gen` - see [source code](../lib/compile/codegen/index.ts) for all available methods and [tests](../spec/codegen.spec.ts) for other code generation examples.
+`.const`, `.if` and `.code` above are methods of CodeGen class that generate code inside class instance `gen` - see [source code](https://github.com/ajv-validator/ajv/blob/master/lib/compile/codegen/index.ts) for all available methods and [tests](../spec/codegen.spec.ts) for other code generation examples.
 
 These methods only accept instances of private class `_Code`, other values will be rejected by Typescript compiler - the risk to pass unsafe string is mitigated on type level.
 

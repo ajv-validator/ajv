@@ -391,7 +391,7 @@ Additional restrictions that Ajv enforces on `metadata` schema member:
 
 ### Union keyword
 
-Ajv defines `union` keyword that is used in the schema that validates JTD schemas ([meta-schema](../lib/refs/jtd-schema.ts)).
+Ajv defines `union` keyword that is used in the schema that validates JTD schemas ([meta-schema](https://github.com/ajv-validator/ajv/blob/master/lib/refs/jtd-schema.ts)).
 
 This keyword can be used only inside `metadata` schema member.
 

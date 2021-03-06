@@ -12,24 +12,55 @@ module.exports = {
     nav: [
       {text: "Home", link: "/"},
       {
-        text: "Validation",
+        text: "Guide",
         items: [
-          {text: "Validating data", link: "/validation"},
-          {text: "Strict mode", link: "/strict-mode"},
-          {text: "JSON Schema", link: "/json-schema"},
-          {text: "JSON Type Definition", link: "/json-type-definition"},
-          {text: "Type coercion", link: "/coercion"},
+          {link: "/guide/getting-started", text: "Getting started"},
+          {link: "/guide/typescript", text: "Using with TypeScript"},
+          {link: "/guide/schema-language", text: "Choosing schema language"},
+          {link: "/guide/managing-schemas", text: "Managing schemas"},
+          {link: "/guide/combining-schemas", text: "Combining schemas"},
+          {link: "/guide/formats", text: "Format validation"},
+          {link: "/guide/modifying-data", text: "Modifying data"},
+          {link: "/guide/user-keywords", text: "User-defined keywords"},
+          {link: "/guide/async-validation", text: "Asynchronous validation"},
+          {link: "/guide/standalone", text: "Standalone validation code"},
+          {link: "/guide/environments", text: "Execution environments"},
         ],
       },
       {
-        text: "API",
+        text: "Learn more",
         items: [
-          {text: "Methods & options", link: "/api"},
-          {text: "Define keywords", link: "/keywords"},
+          {
+            text: "Reference",
+            items: [
+              {link: "/api", text: "API Reference"},
+              {link: "/options", text: "Initialization options"},
+              {link: "/json-schema", text: "JSON Schema"},
+              {link: "/json-type-definition", text: "JSON Type Definition"},
+              {link: "/strict-mode", text: "Strict mode"},
+              {link: "/keywords", text: "User defined keywords"},
+              {link: "/coercion", text: "Type coercion rules"},
+            ],
+          },
+          {
+            text: "Contributors",
+            items: [
+              {link: "/CONTRIBUTING", text: "Contributing"},
+              {link: "/codegen", text: "Code generation design"},
+              {link: "/components", text: "Code components"},
+              {link: "/CODE_OF_CONDUCT", text: "Code of Conduct"},
+            ],
+          },
+          {
+            text: "Information",
+            items: [
+              {link: "/security", text: "Security"},
+              {link: "/faq", text: "FAQ"},
+              {link: "/LICENSE", text: "License"},
+            ],
+          },
         ],
       },
-      {text: "Security", link: "/security"},
-      {text: "FAQ", link: "/faq"},
     ],
     sidebar: [
       "/",
@@ -42,16 +73,19 @@ module.exports = {
           "/guide/schema-language",
           "/guide/managing-schemas",
           "/guide/combining-schemas",
+          "/guide/formats",
+          "/guide/modifying-data",
           "/guide/user-keywords",
+          "/guide/async-validation",
           "/guide/environments",
-        ]
+        ],
       },
       {
         title: "Reference",
         collapsable: false,
         children: [
-          "/validation",
           "/api",
+          "/options",
           "/json-schema",
           "/json-type-definition",
           "/strict-mode",
@@ -60,9 +94,14 @@ module.exports = {
         ],
       },
       {
-        title: "Code generation & design",
+        title: "Contributors",
         collapsable: false,
-        children: ["/standalone", "/codegen", "/components"],
+        children: [
+          "/CONTRIBUTING",
+          "/codegen",
+          "/components",
+          ["/CODE_OF_CONDUCT", "Code of conduct"],
+        ],
       },
       {
         title: "Information",
@@ -70,10 +109,8 @@ module.exports = {
         children: [
           "/faq",
           "/security",
-          "/CONTRIBUTING",
-          ["/CODE_OF_CONDUCT", "Code of conduct"],
-          ["/LICENSE", "License"]
-        ],
+          ["/LICENSE", "License"],
+        ]
       },
     ],
     repo: "ajv-validator/ajv",

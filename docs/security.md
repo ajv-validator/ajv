@@ -42,7 +42,7 @@ Some keywords in JSON Schemas can lead to very slow validation for certain data.
 The suggestions above to prevent slow validation would only work if you do NOT use `allErrors: true` in production code (using it would continue validation after validation errors).
 :::
 
-You can validate your JSON schemas against [this meta-schema](../lib/refs/json-schema-secure.json) to check that these recommendations are followed:
+You can validate your JSON schemas against [this meta-schema](https://github.com/ajv-validator/ajv/blob/master/lib/refs/json-schema-secure.json) to check that these recommendations are followed:
 
 ```javascript
 ajv = new Ajv({strictTypes: false}) // this option is required for this schema

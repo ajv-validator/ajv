@@ -22,18 +22,18 @@ import Ajv, {JSONSchemaType} from "ajv"
 const ajv = new Ajv() // options can be passed, e.g. {allErrors: true}
 
 interface MyData {
-  foo: number
-  bar?: string
+foo: number
+bar?: string
 }
 
 const schema: JSONSchemaType<MyData> = {
-  type: "object",
-  properties: {
-    foo: {type: "integer"},
-    bar: {type: "string"}
-  },
-  required: ["foo"],
-  additionalProperties: false
+type: "object",
+properties: {
+foo: {type: "integer"},
+bar: {type: "string"}
+},
+required: ["foo"],
+additionalProperties: false
 }
 
 // validate is a type guard for MyData - type is inferred from schema type
@@ -44,17 +44,18 @@ const validate = ajv.compile(schema)
 // const validate = ajv.compile<MyData>(schema)
 
 const validData = {
-  foo: 1,
-  bar: "abc"
+foo: 1,
+bar: "abc"
 }
 
 if (validate(data)) {
-  // data is MyData here
-  console.log(data.foo)
+// data is MyData here
+console.log(data.foo)
 } else {
-  console.log(validate.errors)
+console.log(validate.errors)
 }
-```
+
+````
 </code-block>
 
 <code-block title="JSON Type Definition">
@@ -95,7 +96,8 @@ if (validate(data)) {
 } else {
   console.log(validate.errors)
 }
-``````
+````
+
 </code-block>
 </code-group>
 
@@ -105,7 +107,7 @@ See [this test](https://github.com/ajv-validator/ajv/tree/master/spec/types/json
 
 With [JSON Schema](../json-schema), the validation error type is an open union, but it can be cast to a tagged union (using validation keyword as tag) for easier error handling.
 
-This is not useful with [JSON Type Definition](../json-type-definition), as it defines errors for schema forms, not for  keywords.
+This is not useful with [JSON Type Definition](../json-type-definition), as it defines errors for schema forms, not for keywords.
 
 Continuing the example above:
 
@@ -117,22 +119,23 @@ import {DefinedError} from "ajv"
 // ...
 
 if (validate(data)) {
-  // data is MyData here
-  console.log(data.foo)
+// data is MyData here
+console.log(data.foo)
 } else {
-  // The type cast is needed, as Ajv uses a wider type to allow extension
-  // You can extend this type to include your error types as needed.
-  for (const err of validate.errors as DefinedError[]) {
-    switch (err.keyword) {
-      case "type":
-        // err type is narrowed here to have "type" error params properties
-        console.log(err.params.type)
-        break
-      // ...
-    }
-  }
+// The type cast is needed, as Ajv uses a wider type to allow extension
+// You can extend this type to include your error types as needed.
+for (const err of validate.errors as DefinedError[]) {
+switch (err.keyword) {
+case "type":
+// err type is narrowed here to have "type" error params properties
+console.log(err.params.type)
+break
+// ...
 }
-```
+}
+}
+
+````
 </code-block>
 </code-group>
 
@@ -200,6 +203,7 @@ function parseAndLogFoo(json: string): void {
     console.log(data.foo)
   }
 }
-```
+````
+
 </code-block>
 </code-group>

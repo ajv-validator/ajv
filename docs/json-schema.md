@@ -15,9 +15,9 @@ v7 added support for all new keywords in draft-2019-09:
 - [dependentRequired](#dependentrequired)
 - [dependentSchemas](#dependentschemas)
 - [maxContains/minContains](#maxcontains--mincontains)
-- [$recursiveAnchor/$recursiveRef](./validation.md#extending-recursive-schemas)
+- [$recursiveAnchor/$recursiveRef](./guide/combining-schemas.md#extending-recursive-schemas)
 
-There is also support for [$dynamicAnchor/$dynamicRef](./validation.md#extending-recursive-schemas) from the next version of JSON Schema draft that will replace `$recursiveAnchor`/`$recursiveRef`.
+There is also support for [$dynamicAnchor/$dynamicRef](./guide/combining-schemas.md#extending-recursive-schemas) from the next version of JSON Schema draft that will replace `$recursiveAnchor`/`$recursiveRef`.
 
 ## `type`
 
@@ -701,7 +701,7 @@ _valid_: `"foo"`
 
 _invalid_: any other value
 
-The same can be achieved with `enum` keyword using the array with one item. But `const` keyword is more than just a syntax sugar for `enum`. In combination with the [\$data reference](./validation.md#data-reference) it allows to define equality relations between different parts of the data. This cannot be achieved with `enum` keyword even with `$data` reference because `$data` cannot be used in place of one item - it can only be used in place of the whole array in `enum` keyword.
+The same can be achieved with `enum` keyword using the array with one item. But `const` keyword is more than just a syntax sugar for `enum`. In combination with the [$data reference](./guide/combining-schemas.md#data-reference) it allows to define equality relations between different parts of the data. This cannot be achieved with `enum` keyword even with `$data` reference because `$data` cannot be used in place of one item - it can only be used in place of the whole array in `enum` keyword.
 
 **Example**
 

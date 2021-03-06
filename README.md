@@ -93,7 +93,7 @@ Please review [Contributing guidelines](./CONTRIBUTING.md) and [Code components]
   - [Strict number validation](./docs/strict-mode.md#strict-number-validation)
 - [Data validation](./docs/validation.md)
   - [Validation basics](./docs/validation.md#validation-basics): [JSON Schema keywords](./docs/validation.md#validation-keywords), [annotations](./docs/validation.md#annotation-keywords), [formats](./docs/validation.md#formats)
-  - [Modular schemas](./docs/validation.md#modular-schemas): [combining with \$ref](./docs/validation.md#ref), [\$data reference](./docs/validation.md#data-reference), [$merge and $patch](./docs/validation.md#merge-and-patch-keywords)
+  - [Modular schemas](./docs/validation.md#modular-schemas): [combining with \$ref](./docs/validation.md#ref), [\$data reference](./docs/guide/combining-schemas.md#data-reference), [$merge and $patch](./docs/validation.md#merge-and-patch-keywords)
   - [Asynchronous schema compilation](./docs/validation.md#asynchronous-schema-compilation)
   - [Standalone validation code](./docs/standalone.md)
   - [Asynchronous validation](./docs/validation.md#asynchronous-validation)
@@ -196,7 +196,7 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 - draft-06/07 keywords `const`, `contains`, `propertyNames` and `if/then/else`
 - draft-06 boolean schemas (`true`/`false` as a schema to always pass/fail).
 - additional extension keywords with [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package
-- [\$data reference](./docs/validation.md#data-reference) to use values from the validated data as values for the schema keywords
+- [\$data reference](./docs/guide/combining-schemas.md#data-reference) to use values from the validated data as values for the schema keywords
 - [asynchronous validation](./docs/api.md#asynchronous-validation) of user-defined formats and keywords
 
 ## Install

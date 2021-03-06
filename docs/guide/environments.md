@@ -104,7 +104,7 @@ If any of this is important, you may have better results with pre-compiled [stan
 
 Ajv can be used from the terminal in any operating system supported by Node.js
 
-CLI is available as a separate npm package [ajv-cli](https://github.com/ajv-validator/ajv-cli). 
+CLI is available as a separate npm package [ajv-cli](https://github.com/ajv-validator/ajv-cli).
 
 It supports:
 

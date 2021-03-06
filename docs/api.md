@@ -1,12 +1,10 @@
 # API Reference
 
-- [Ajv constructor and methods](#ajv-constructor-and-methods)
-- [Options](#options)
-- [Validation errors](#validation-errors)
+[[toc]]
 
 ## Ajv constructor and methods
 
-### `new Ajv(options: object)`
+### new Ajv(options: object)
 
 Create Ajv instance:
 
@@ -14,9 +12,9 @@ Create Ajv instance:
 const ajv = new Ajv()
 ```
 
-See [Options](#options)
+See [Options](./options)
 
-### `ajv.compile(schema: object): (data: any) => boolean | Promise<any>`
+### ajv.compile(schema: object): (data: any) => boolean | Promise < any >
 
 Generate validating function and cache the compiled schema for future use.
 
@@ -52,7 +50,7 @@ See more advanced example in [the test](../spec/types/json-schema.spec.ts).
 
 <a name="jtd-serialize"></a>
 
-### `ajv.compileSerializer(schema: object): (data: any) => string` <Badge text="NEW" />
+### ajv.compileSerializer(schema: object): (data: any) => string <Badge text="NEW" />
 
 Generate serializing function based on the [JTD schema](./json-type-definition.md) (caches the schema) - only in JTD instance of Ajv (see example below).
 
@@ -92,7 +90,7 @@ Compiled serializers do NOT validate passed data, it is assumed that the data is
 
 <a name="jtd-parse"></a>
 
-### `ajv.compileParser(schema: object): (json: string) => any` <Badge text="NEW" />
+### ajv.compileParser(schema: object): (json: string) => any <Badge text="NEW" />
 
 Generate parsing function based on the [JTD schema](./json-type-definition.md) (caches the schema) - only in JTD instance of Ajv (see example below).
 
@@ -123,7 +121,7 @@ Generated parsers is a NEW Ajv functionality (as of March 2021), there can be so
 
 <a name="api-compileAsync"></a>
 
-### `ajv.compileAsync(schema: object, meta?: boolean): Promise<Function>`
+### ajv.compileAsync(schema: object, meta?: boolean): Promise < Function >
 
 Asynchronous version of `compile` method that loads missing remote schemas using asynchronous function in `options.loadSchema`. This function returns a Promise that resolves to a validation function. An optional callback passed to `compileAsync` will be called with 2 parameters: error (or null) and validating function. The returned promise will reject (and the callback will be called with an error) when:
 
@@ -139,7 +137,7 @@ Similarly to `compile`, it can return type guard in typescript.
 
 See example in [Asynchronous compilation](./validation.md#asynchronous-schema-compilation).
 
-### `ajv.validate(schemaOrRef: object | string, data: any): boolean`
+### ajv.validate(schemaOrRef: object | string, data: any): boolean
 
 Validate data using passed schema (it will be compiled and cached).
 
@@ -157,7 +155,7 @@ If the schema is asynchronous (has `$async` keyword on the top level) this metho
 
 <a name="add-schema"></a>
 
-### `ajv.addSchema(schema: object | object[], key?: string): Ajv`
+### ajv.addSchema(schema: object | object[], key?: string): Ajv
 
 Add schema(s) to validator instance. This method does not compile schemas (but it still validates them). Because of that dependencies can be added in any order and circular dependencies are supported. It also prevents unnecessary compilation of schemas that are containers for other schemas but not used as a whole.
 
@@ -180,7 +178,7 @@ const validate = new Ajv().addSchema(schema).addFormat(name, regex).getSchema(ur
 
 :::
 
-### `ajv.addMetaSchema(schema: object | object[], key?: string): Ajv`
+### ajv.addMetaSchema(schema: object | object[], key?: string): Ajv
 
 Adds meta schema(s) that can be used to validate other schemas. That function should be used instead of `addSchema` because there may be instance options that would compile a meta schema incorrectly (at the moment it is `removeAdditional` option).
 
@@ -188,7 +186,7 @@ There is no need to explicitly add draft-07 meta schema (http://json-schema.org/
 
 <a name="api-validateschema"></a>
 
-### `ajv.validateSchema(schema: object): boolean`
+### ajv.validateSchema(schema: object): boolean
 
 Validates schema. This method should be used to validate schemas rather than `validate` due to the inconsistency of `uri` format in JSON Schema standard.
 
@@ -200,11 +198,11 @@ If schema has `$schema` property, then the schema with this id (that should be p
 
 Errors will be available at `ajv.errors`.
 
-### `ajv.getSchema(key: string): undefined | ((data: any) => boolean | Promise<any>)`
+### ajv.getSchema(key: string): undefined | ((data: any) => boolean | Promise < any >)
 
 Retrieve compiled schema previously added with `addSchema` by the key passed to `addSchema` or by its full reference (id). The returned validating function has `schema` property with the reference to the original schema.
 
-### `ajv.removeSchema(schemaOrRef: object | string | RegExp): Ajv`
+### ajv.removeSchema(schemaOrRef: object | string | RegExp): Ajv
 
 Remove added/cached schema. Even if schema is referenced by other schemas it can be safely removed as dependent schemas have local references.
 
@@ -219,7 +217,7 @@ If no parameter is passed all schemas but meta-schemas will be removed and the c
 
 <a name="api-addformat"></a>
 
-### `ajv.addFormat(name: string, format: Format): Ajv`
+### ajv.addFormat(name: string, format: Format): Ajv
 
 ```typescript
 type Format =
@@ -252,7 +250,7 @@ Formats can be also added via `formats` option.
 
 <a name="api-addkeyword"></a>
 
-### `ajv.addKeyword(definition: object): Ajv`
+### ajv.addKeyword(definition: object): Ajv
 
 Add validation keyword to Ajv instance.
 
@@ -288,7 +286,7 @@ interface KeywordDefinition {
   modifying?: true // MUST be passed if keyword modifies data
   valid?: boolean // to pre-define validation result, validation function result will be ignored -
   // this option MUST NOT be used with `macro` keywords.
-  $data?: true // to support [\$data reference](./validation.md#data-reference) as the value of keyword.
+  $data?: true // to support [\$data reference](./guide/combining-schemas.md#data-reference) as the value of keyword.
   // The reference will be resolved at validation time. If the keyword has meta-schema,
   // it would be extended to allow $data and it will be used to validate the resolved value.
   // Supporting $data reference requires that keyword has `code` or `validate` function
@@ -304,7 +302,7 @@ interface KeywordDefinition {
 }
 ```
 
-`compile`, `macro` and `code` are mutually exclusive, only one should be used at a time. `validate` can be used separately or in addition to `compile` or `macro` to support [\$data reference](./validation.md#data-reference).
+`compile`, `macro` and `code` are mutually exclusive, only one should be used at a time. `validate` can be used separately or in addition to `compile` or `macro` to support [\$data reference](./guide/combining-schemas.md#data-reference).
 
 ::: tip Please note
 If the keyword is validating data type that is different from the type(s) in its definition, the validation function will not be called (and expanded macro will not be used), so there is no need to check for data type inside validation function or inside schema returned by macro function (unless you want to enforce a specific type and for some reason do not want to use a separate `type` keyword for that). In the same way as standard keywords work, if the keyword does not apply to the data type being validated, the validation of this keyword will succeed.
@@ -312,11 +310,11 @@ If the keyword is validating data type that is different from the type(s) in its
 
 See [User defined keywords](./keywords.md) for more details.
 
-### `ajv.getKeyword(keyword: string): object | boolean`
+### ajv.getKeyword(keyword: string): object | boolean
 
 Returns keyword definition, `false` if the keyword is unknown.
 
-### `ajv.removeKeyword(keyword: string): Ajv`
+### ajv.removeKeyword(keyword: string): Ajv
 
 Removes added or pre-defined keyword so you can redefine them.
 
@@ -326,165 +324,11 @@ While this method can be used to extend pre-defined keywords, it can also be use
 The schemas compiled before the keyword is removed will continue to work without changes. To recompile schemas use `removeSchema` method and compile them again.
 :::
 
-### `ajv.errorsText(errors?: object[], options?: object): string`
+### ajv.errorsText(errors?: object[], options?: object): string
 
 Returns the text with all errors in a String.
 
 Options can have properties `separator` (string used to separate errors, ", " by default) and `dataVar` (the variable name that dataPaths are prefixed with, "data" by default).
-
-## Options
-
-Option defaults:
-
-```javascript
-// see types/index.ts for actual types
-const defaultOptions = {
-  // strict mode options (NEW)
-  strict: true,
-  strictTypes: "log", // *
-  strictTuples: "log", // *
-  strictRequired: false, // *
-  allowUnionTypes: false, // *
-  allowMatchingProperties: false, // *
-  validateFormats: true, // *
-  // validation and reporting options:
-  $data: false, // *
-  allErrors: false,
-  verbose: false, // *
-  $comment: false, // *
-  formats: {},
-  keywords: {},
-  schemas: {},
-  logger: undefined,
-  loadSchema: undefined, // *, function(uri: string): Promise {}
-  // options to modify validated data:
-  removeAdditional: false,
-  useDefaults: false, // *
-  coerceTypes: false, // *
-  // advanced options:
-  meta: true,
-  validateSchema: true,
-  addUsedSchema: true,
-  inlineRefs: true,
-  passContext: false,
-  loopRequired: Infinity, // *
-  loopEnum: Infinity, // NEW
-  ownProperties: false,
-  multipleOfPrecision: undefined, // *
-  messages: true, // false with JTD
-  ajvErrors: false // only with JTD
-  code: {
-    // NEW
-    es5: false,
-    lines: false,
-    source: false,
-    process: undefined, // (code: string) => string
-    optimize: true,
-  },
-}
-```
-
-<sup>\*</sup> these options are not supported with JSON Type Definition schemas
-
-### Strict mode options (NEW in v7)
-
-- _strict_: By default Ajv executes in strict mode, that is designed to prevent any unexpected behaviours or silently ignored mistakes in schemas (see [Strict Mode](./strict-mode.md) for more details). It does not change any validation results, but it makes some schemas invalid that would be otherwise valid according to JSON Schema specification. Option values:
-  - `true` (default) - use strict mode and throw an exception when any strict mode restriction is violated.
-  - `"log"` - log warning when any strict mode restriction is violated.
-  - `false` - ignore all strict mode restrictions. Also ignores `strictTypes` restrictions unless it is explicitly passed.
-- _strictTypes_: By default Ajv logs warning when "type" keyword is used in a way that may be incorrect or confusing to other people - see [Strict types](./strict-mode.md#strict-types) for more details. This option does not change validation results. Option values:
-  - `true` - throw exception when any strictTypes restriction is violated.
-  - `"log"` (default, unless option strict is `false`) - log warning when any strictTypes restriction is violated.
-  - `false` - ignore all strictTypes restrictions violations.
-- _strictTuples_: By default Ajv logs warning when "items" is array and "minItems" and "maxItems"/"additionalItems" not present or different from the number of items. See [Strict mode](./strict-mode.md) for more details. This option does not change validation results. Option values:
-  - `true` - throw exception.
-  - `"log"` (default, unless option strict is `false`) - log warning.
-  - `false` - ignore strictTuples restriction violations.
-- _strictRequired_: Ajv can log warning or throw exception when the property used in "required" keyword is not defined in "properties" keyword. See [Strict mode](./strict-mode.md) for more details. This option does not change validation results. Option values:
-  - `true` - throw exception.
-  - `"log"` - log warning.
-  - `false` (default) - ignore strictRequired restriction violations.
-- _allowUnionTypes_: pass true to allow using multiple non-null types in "type" keyword (one of `strictTypes` restrictions). see [Strict types](./strict-mode.md#strict-types)
-- _allowMatchingProperties_: pass true to allow overlap between "properties" and "patternProperties". Does not affect other strict mode restrictions. See [Strict Mode](./strict-mode.md).
-- _validateFormats_: format validation. Option values:
-  - `true` (default) - validate formats (see [Formats](./validation.md#formats)). In [strict mode](./strict-mode.md) unknown formats will throw exception during schema compilation (and fail validation in case format keyword value is [\$data reference](./validation.md#data-reference)).
-  - `false` - do not validate any format keywords (TODO they will still collect annotations once supported).
-
-### Validation and reporting options
-
-- _\$data_: support [\$data references](./validation.md#data-reference). Draft 6 meta-schema that is added by default will be extended to allow them. If you want to use another meta-schema you need to use $dataMetaSchema method to add support for $data reference. See [API](#ajv-constructor-and-methods).
-- _allErrors_: check all rules collecting all errors. Default is to return after the first error.
-- _verbose_: include the reference to the part of the schema (`schema` and `parentSchema`) and validated data in errors (false by default).
-- _\$comment_: log or pass the value of `$comment` keyword to a function. Option values:
-  - `false` (default): ignore \$comment keyword.
-  - `true`: log the keyword value to console.
-  - function: pass the keyword value, its schema path and root schema to the specified function
-- _formats_: an object with format definitions. Keys and values will be passed to `addFormat` method. Pass `true` as format definition to ignore some formats.
-- _keywords_: an array of keyword definitions or strings. Values will be passed to `addKeyword` method.
-- _schemas_: an array or object of schemas that will be added to the instance. In case you pass the array the schemas must have IDs in them. When the object is passed the method `addSchema(value, key)` will be called for each schema in this object.
-- _logger_: sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. See [Error logging](#error-logging). Option values:
-  - logger instance - it should have methods `log`, `warn` and `error`. If any of these methods is missing an exception will be thrown.
-  - `false` - logging is disabled.
-- _loadSchema_: asynchronous function that will be used to load remote schemas when `compileAsync` [method](#api-compileAsync) is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept remote schema uri as a parameter and return a Promise that resolves to a schema. See example in [Asynchronous compilation](./validation.md#asynchronous-schema-compilation).
-
-### Options to modify validated data
-
-- _removeAdditional_: remove additional properties - see example in [Removing additional properties](./validation.md#removing-additional-properties). This option is not used if schema is added with `addMetaSchema` method. Option values:
-  - `false` (default) - not to remove additional properties
-  - `"all"` - all additional properties are removed, regardless of `additionalProperties` keyword in schema (and no validation is made for them).
-  - `true` - only additional properties with `additionalProperties` keyword equal to `false` are removed.
-  - `"failing"` - additional properties that fail schema validation will be removed (where `additionalProperties` keyword is `false` or schema).
-- _useDefaults_: replace missing or undefined properties and items with the values from corresponding `default` keywords. Default behaviour is to ignore `default` keywords. This option is not used if schema is added with `addMetaSchema` method. See examples in [Assigning defaults](./validation.md#assigning-defaults). Option values:
-  - `false` (default) - do not use defaults
-  - `true` - insert defaults by value (object literal is used).
-  - `"empty"` - in addition to missing or undefined, use defaults for properties and items that are equal to `null` or `""` (an empty string).
-- _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](./validation.md#coercing-data-types) and [coercion rules](./coercion.md). Option values:
-  - `false` (default) - no type coercion.
-  - `true` - coerce scalar data types.
-  - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
-
-### Advanced options
-
-- _meta_: add [meta-schema](http://json-schema.org/documentation.html) so it can be used by other schemas (true by default). If an object is passed, it will be used as the default meta-schema for schemas that have no `$schema` keyword. This default meta-schema MUST have `$schema` keyword.
-- _validateSchema_: validate added/compiled schemas against meta-schema (true by default). `$schema` property in the schema can be http://json-schema.org/draft-07/schema or absent (draft-07 meta-schema will be used) or can be a reference to the schema previously added with `addMetaSchema` method. Option values:
-  - `true` (default) - if the validation fails, throw the exception.
-  - `"log"` - if the validation fails, log error.
-  - `false` - skip schema validation.
-- _addUsedSchema_: by default methods `compile` and `validate` add schemas to the instance if they have `$id` (or `id`) property that doesn't start with "#". If `$id` is present and it is not unique the exception will be thrown. Set this option to `false` to skip adding schemas to the instance and the `$id` uniqueness check when these methods are used. This option does not affect `addSchema` method.
-- _inlineRefs_: Affects compilation of referenced schemas. Option values:
-  - `true` (default) - the referenced schemas that don't have refs in them are inlined, regardless of their size - it improves performance.
-  - `false` - to not inline referenced schemas (they will always be compiled as separate functions).
-  - integer number - to limit the maximum number of keywords of the schema that will be inlined (to balance the total size of compiled functions and performance).
-- _passContext_: pass validation context to _compile_ and _validate_ keyword functions. If this option is `true` and you pass some context to the compiled validation function with `validate.call(context, data)`, the `context` will be available as `this` in your keywords. By default `this` is Ajv instance.
-- _loopRequired_: by default `required` keyword is compiled into a single expression (or a sequence of statements in `allErrors` mode). In case of a very large number of properties in this keyword it may result in a very big validation function. Pass integer to set the number of properties above which `required` keyword will be validated in a loop - smaller validation function size but also worse performance.
-- _loopEnum_ (NEW in v7): by default `enum` keyword is compiled into a single expression. In case of a very large number of allowed values it may result in a large validation function. Pass integer to set the number of values above which `enum` keyword will be validated in a loop.
-- _ownProperties_: by default Ajv iterates over all enumerable object properties; when this option is `true` only own enumerable object properties (i.e. found directly on the object rather than on its prototype) are iterated. Contributed by @mbroadst.
-- _multipleOfPrecision_: by default `multipleOf` keyword is validated by comparing the result of division with parseInt() of that result. It works for dividers that are bigger than 1. For small dividers such as 0.01 the result of the division is usually not integer (even when it should be integer, see issue [#84](https://github.com/ajv-validator/ajv/issues/84)). If you need to use fractional dividers set this option to some positive integer N to have `multipleOf` validated using this formula: `Math.abs(Math.round(division) - division) < 1e-N` (it is slower but allows for float arithmetic deviations).
-- _messages_: Include human-readable messages in errors. `true` by default. `false` can be passed when messages are generated outside of Ajv code (e.g. with [ajv-i18n](https://github.com/ajv-validator/ajv-i18n)).
-- _ajvErrors_: this option is only supported with JTD schemas to generate error objects with the properties described in the first part of [Validation errors](#validation-errors) section, otherwise JTD errors are generated when JTD schemas are used (see the second part of [the same section](#validation-errors)).
-- _code_ (new in v7): code generation options:
-
-```typescript
-type CodeOptions = {
-  es5?: boolean // to generate es5 code - by default code is es6, with "for-of" loops, "let" and "const"
-  lines?: boolean // add line-breaks to code - to simplify debugging of generated functions
-  source?: boolean // add `source` property (see Source below) to validating function.
-  process?: (code: string, schema?: SchemaEnv) => string // an optional function to process generated code
-  // before it is passed to Function constructor.
-  // It can be used to either beautify or to transpile code.
-  optimize?: boolean | number // code optimization flag or number of passes, 1 pass by default,
-  // code optimizations reduce the size of the generated code (bytes, based on the tests) by over 10%,
-  // the number of code tree nodes by nearly 17%.
-  // You would almost never need more than one optimization pass, unless you have some really complex schemas -
-  // the second pass in the tests (it has quite complex schemas) only improves optimization by less than 0.1%.
-  // See [Code optimization](./codegen.md#code-optimization) for details.
-}
-
-type Source = {
-  code: string // unlike func.toString() it includes assignments external to function scope
-  scope: Scope // see Code generation (TODO)
-}
-```
 
 ## Validation errors
 
@@ -653,3 +497,7 @@ const ajv = new Ajv({
   },
 })
 ```
+
+## Options
+
+This section is moved to [Initialization options](./options) page

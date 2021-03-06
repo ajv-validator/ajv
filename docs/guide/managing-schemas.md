@@ -7,6 +7,7 @@
 Ajv validation model is optimized for server side execution, when schema compilation happens only once and validation happens multiple times - this has a substantial performance benefit comparing with validators that interpret the schema in the process of validation.
 
 Transition from template-based code generation in Ajv v6 to the tree-based in v7 brought:
+
 - type-level safety against code injection via untrusted schemas
 - more efficient validation code (via [tree optimizations](../codegen.md#code-optimization))
 - smaller memory footprint of compiled functions (schemas are no longer serialized)
@@ -20,6 +21,7 @@ There are several approaches to manage compiled schemas.
 ## Standalone validation code
 
 The motivation to pre-compile schemas:
+
 - faster startup times
 - lower memory footprint/bundle size
 - compatible with strict content security policies
@@ -29,6 +31,7 @@ The motivation to pre-compile schemas:
 See [Standalone validation code](../standalone) for the details.
 
 There are scenarios when it can be not possible or difficult:
+
 - dynamic or user-provided schemas - while you can do caching, it can be either difficult to implement or inefficient.
 - user-defined keywords that use closures that are difficult to serialize as code.
 
@@ -44,20 +47,17 @@ const schema_user = require("./schema_user.json")
 const ajv = new Ajv()
 const validate_user = ajv.compile(schema_user)
 
-
-
-
-
 // this is just some abstract API framework
 app.post("/user", async (cxt) => {
-  if (validate_user(cxt.body)) {
-    // create user
-  } else {
-    // report error
-    cxt.status(400)
-  }
+if (validate_user(cxt.body)) {
+// create user
+} else {
+// report error
+cxt.status(400)
+}
 })
-```
+
+````
 </code-block>
 
 <code-block title="TypeScript">
@@ -80,16 +80,18 @@ app.post("/user", async (cxt) => {
     cxt.status(400)
   }
 })
-```
+````
+
 </code-block>
 </code-group>
 
 ::: warning Please note
 It recommended to use a single Ajv instance for the whole application, so if you use validation in more than one module, you should:
+
 - require Ajv in a separate module responsible for validation
 - compile all validators there
 - export them to be used in multiple modules of your application
-:::
+  :::
 
 ## Using Ajv instance cache
 
@@ -130,21 +132,18 @@ And then you can import Ajv instance and access any schema in any application mo
 ```javascript
 const {ajv} = require("./validation")
 
-
-
-
-
 // this is just some abstract API framework
 app.post("/user", async (cxt) => {
-  const validate = ajv.getSchema("user")
-  if (validate(cxt.body)) {
-    // create user
-  } else {
-    // report error
-    cxt.status(400)
-  }
+const validate = ajv.getSchema("user")
+if (validate(cxt.body)) {
+// create user
+} else {
+// report error
+cxt.status(400)
+}
 })
-```
+
+````
 </code-block>
 
 <code-block title="TypeScript">
@@ -165,7 +164,8 @@ app.post("/user", async (cxt) => {
     cxt.status(400)
   }
 })
-```
+````
+
 </code-block>
 </code-group>
 
@@ -176,6 +176,7 @@ In the example above, schema compilation happens only once, on the first API cal
 ### Cache key: schema vs key vs $id
 
 In the example above, the key passed to the `addSchema` method was used to retrieve schemas from the cache. Other options are:
+
 - use schema root $id attribute. While it usually looks like URI, it does not mean Ajv downloads it from this URI - this is simply $id used to identify and access the schema. You can though configure Ajv to download schemas on demand - see [Asynchronous schema loading](#asynchronous-schema-loading)
 - use schema object itself as a key to the cache (it is possible, because Ajv uses Map). This approach is not recommended, because it would only work if you pass the same instance of the schema object that was passed to `addSchema` method - it is easy to make a mistake that would result in schema being compiled every time it is used.
 
@@ -213,8 +214,7 @@ then the above logic can be simpler:
 
 ```javascript
 const schema_user = require("./schema_user.json")
-const validate = ajv.getSchema("https://example.com/user.json")
-              || ajv.compile(schema_user)
+const validate = ajv.getSchema("https://example.com/user.json") || ajv.compile(schema_user)
 ```
 
 The above is possible because when the schema has `$id` attribute `compile` method both compiles the schema (returning the validation function) and adds it to the Ajv instance cache at the same time.
@@ -249,6 +249,7 @@ async function loadSchema(uri) {
 ## Caching schemas in your code
 
 You can maintain cache of compiled schemas in your application independently from Ajv. It can be helpful in cases when you have multiple Ajv instances because, for example:
+
 - you need to compile different schemas with different options
 - you use both JSON Schema and JSON Type Definition schemas in one application
 - you have $id conflicts between different third party schemas you do not control
