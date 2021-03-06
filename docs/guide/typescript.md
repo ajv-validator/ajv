@@ -106,6 +106,8 @@ See [this test](https://github.com/ajv-validator/ajv/tree/master/spec/types/json
 
 You can use JTD schema to construct the type of data using utility type `JTDDataType`
 
+<code-group>
+<code-block title="JSON Type Definition">
 ```typescript
 import Ajv, {JTDDataType} from "ajv/dist/jtd"
 const ajv = new Ajv()
@@ -136,6 +138,8 @@ if (validate(data)) {
   console.log(validate.errors)
 }
 ```
+</code-block>
+</code-group>
 
 ## Type-safe error handling
 
