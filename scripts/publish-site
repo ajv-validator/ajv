@@ -5,7 +5,7 @@ set -e
 echo "About to publish $GITHUB_REF to gh-pages..."
 
 function copyReplace {
-  sed "s/](.\/docs\//](.\//" $1 > $2
+  sed "s/](.\/docs\//](.\//g" $1 > $2
 }
 
 copyReplace README.md docs/README.md
