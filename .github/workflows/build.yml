@@ -21,13 +21,13 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      # - run: git submodule update --init
-      # - run: npm run build
-      # - run: npm run test-ci
-      # - name: coveralls
-      #   uses: coverallsapp/github-action@master
-      #   with:
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: git submodule update --init
+      - run: npm run build
+      - run: npm run test-ci
+      - name: coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: update website
         if: ${{ github.event_name == 'push' && matrix.node-version == '14.x' }}
         run: ./scripts/publish-site
