@@ -6,4 +6,4 @@ echo "About to publish $GITHUB_REF to gh-pages..."
 
 cp CODE_OF_CONDUCT.md docs
 cp CONTRIBUTING.md docs
-cp LICENSE docs
+cp LICENSE docs/LICENSE.md
