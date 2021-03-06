@@ -1,18 +1,8 @@
 # User defined keywords
 
-## Contents
+[[toc]]
 
-- Define keyword with:
-  - [code generation function](#define-keyword-with-code-generation-function) - used by all pre-defined keywords
-  - [validation function](#define-keyword-with-validation-function)
-  - [compilation function](#define-keyword-with-compilation-function)
-  - [macro function](#define-keyword-with-macro-function)
-- [Schema compilation context](#schema-compilation-context)
-- [Validation time variables](#validation-time-variables)
-- [Ajv utilities](#ajv-utilities)
-- [Defining keyword errors](#defining-keyword-errors)
-
-### Common attributes of keyword definitions
+## Common attributes of keyword definitions
 
 The usual interface to define all keywords has these properties:
 
@@ -29,11 +19,11 @@ interface _KeywordDef {
 }
 ```
 
-Keyword definitions may have additional optional properties - see [types](../lib/types/index.ts) and [KeywordCxt](../lib/compile/context.ts).
+Keyword definitions may have additional optional properties - see [types](https://github.com/ajv-validator/ajv/blob/master/lib/types/index.ts) and [KeywordCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/context.ts).
 
-### Define keyword with code generation function
+### Define keyword with code generation function <Badge text="recommended" />
 
-Starting from v7 Ajv uses [CodeGen module](../lib/compile/codegen/index.ts) for all pre-defined keywords - see [codegen.md](./codegen.md) for details.
+Starting from v7 Ajv uses [CodeGen module](https://github.com/ajv-validator/ajv/blob/master/lib/compile/codegen/index.ts) for all pre-defined keywords - see [codegen.md](./codegen.md) for details.
 
 This is the best approach for user defined keywords:
 
@@ -61,7 +51,7 @@ ajv.addKeyword({
   keyword: "even",
   type: "number",
   schemaType: "boolean",
-  // $data: true // to support [$data reference](./validation.md#data-reference), ...
+  // $data: true // to support [$data reference](./guide/combining-schemas.md#data-reference), ...
   code(cxt: KeywordCxt) {
     const {data, schema} = cxt
     const op = schema ? _`!==` : _`===`
@@ -98,9 +88,9 @@ ajv.addKeyword({
 })
 ```
 
-You can review pre-defined Ajv keywords in [validation](../lib/validation) folder for more advanced examples - it is much easier to define code generation keywords than it was in the previous version of Ajv.
+You can review pre-defined Ajv keywords in [validation](https://github.com/ajv-validator/ajv/blob/master/lib/validation) folder for more advanced examples - it is much easier to define code generation keywords than it was in the previous version of Ajv.
 
-See [KeywordCxt](../lib/compile/context.ts) and [SchemaCxt](../lib/compile/index.ts) type definitions for more information about properties you can use in your keywords.
+See [KeywordCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/context.ts) and [SchemaCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/index.ts) type definitions for more information about properties you can use in your keywords.
 
 ### Define keyword with "validate" function
 
@@ -136,7 +126,7 @@ The function should return validation result as boolean. It can return an array 
 - testing your keywords before converting them to compiled/code keywords
 - defining keywords that do not depend on the schema value (e.g., when the value is always `true`). In this case you can add option `schema: false` to the keyword definition and the schemas won't be passed to the validation function, it will only receive the same parameters as compiled validation function.
 - defining keywords where the schema is a value used in some expression.
-- defining keywords that support [\$data reference](./validation.md#data-reference) - in this case `validate` or `code` function is required, either as the only option or in addition to `compile` or `macro`.
+- defining keywords that support [\$data reference](./guide/combining-schemas.md#data-reference) - in this case `validate` or `code` function is required, either as the only option or in addition to `compile` or `macro`.
 
 Example: `constant` keyword (a synonym for draft-06 keyword `const`, it is equivalent to `enum` keyword with one item):
 
@@ -165,7 +155,9 @@ console.log(validate({foo: "baz"})) // false
 
 `const` keyword is already available in Ajv.
 
-**Please note:** If the keyword does not define errors (see [Reporting errors](./api.md#reporting-errors)) pass `errors: false` in its definition; it will make generated code more efficient.
+::: tip Please note
+If the keyword does not define errors (see [Reporting errors](./api.md#reporting-errors)) pass `errors: false` in its definition; it will make generated code more efficient.
+:::
 
 To add asynchronous keyword pass `async: true` in its definition.
 
@@ -251,11 +243,11 @@ Macro keywords an be recursive - i.e. return schemas containing the same keyword
 
 ## Schema compilation context
 
-Schema compilation context [SchemaCxt](../lib/compile/index.ts) is available in property `it` of [KeywordCxt](../lib/compile/context.ts) (and it is also the 3rd parameter of `compile` and `macro` keyword functions). See types in the source code on the properties you can use in this object.
+Schema compilation context [SchemaCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/index.ts) is available in property `it` of [KeywordCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/context.ts) (and it is also the 3rd parameter of `compile` and `macro` keyword functions). See types in the source code on the properties you can use in this object.
 
 ## Validation time variables
 
-All function scoped variables available during validation are defined in [names](../lib/compile/names.ts).
+All function scoped variables available during validation are defined in [names](https://github.com/ajv-validator/ajv/blob/master/lib/compile/names.ts).
 
 ## Reporting errors
 

@@ -13,6 +13,7 @@ for (const testName in jtdValidationTests) {
   const valid = errors.length === 0
   if (!valid) continue
   tests.push({
+    validate: ajv.compile(schema),
     serialize: ajv.compileSerializer(schema),
     parse: ajv.compileParser(schema),
     data: instance,
@@ -77,6 +78,12 @@ suite.add("JTD test suite: JSON.parse", () => {
   }
 })
 
+suite.add("JTD test suite: JSON.parse + validate", () => {
+  for (const test of tests) {
+    JSON.parse(test.json)
+  }
+})
+
 const validTestData = JSON.stringify(testData)
 
 const invalidTestData = JSON.stringify({
@@ -91,11 +98,14 @@ const invalidTestData = JSON.stringify({
 })
 
 const parse = ajv.compileParser(testSchema)
+const validate = ajv.compile(testSchema)
 
 suite.add("valid test data: compiled JTD parser", () => parse(validTestData))
 suite.add("valid test data: JSON.parse", () => JSON.parse(validTestData))
+suite.add("valid test data: JSON.parse + validate", () => validate(JSON.parse(validTestData)))
 suite.add("invalid test data: compiled JTD parser", () => parse(invalidTestData))
 suite.add("invalid test data: JSON.parse", () => JSON.parse(invalidTestData))
+suite.add("invalid test data: JSON.parse + validate", () => validate(JSON.parse(invalidTestData)))
 
 console.log()
 

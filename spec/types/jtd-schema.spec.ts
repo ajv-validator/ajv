@@ -35,14 +35,14 @@ const mySchema: JTDSchemaType<MyData> = {
 describe("JTDSchemaType", () => {
   it("validation should prove the data type", () => {
     const ajv = new _Ajv()
-    const validate = ajv.compile<MyData>(mySchema)
+    const validate = ajv.compile(mySchema)
     const validData: unknown = {type: "a", a: 1}
     if (validate(validData) && validData.type === "a") {
       validData.a.should.equal(1)
     }
     should.not.exist(validate.errors)
 
-    if (ajv.validate<MyData>(mySchema, validData) && validData.type === "a") {
+    if (ajv.validate(mySchema, validData) && validData.type === "a") {
       validData.a.should.equal(1)
     }
     should.not.exist(ajv.errors)
@@ -57,8 +57,10 @@ describe("JTDSchemaType", () => {
     // @ts-expect-error
     const nums: JTDSchemaType<1 | 2 | 3> = {type: "int32"}
     const numNull: JTDSchemaType<number | null> = {type: "int32", nullable: true}
+    // @ts-expect-error
+    const numNotNull: JTDSchemaType<number | null> = {type: "float32"}
 
-    void [numf, numi, numl, nums, numNull]
+    void [numf, numi, numl, nums, numNull, numNotNull]
   })
 
   it("should typecheck boolean schemas", () => {
@@ -180,17 +182,7 @@ describe("JTDSchemaType", () => {
       nullable: true,
     }
 
-    // can't use properties for any object (e.g. keyof = never)
-    const noProperties: TypeEquality<JTDSchemaType<unknown>, never> = true
-
-    void [
-      properties,
-      optionalProperties,
-      mixedProperties,
-      fewerProperties,
-      propertiesNull,
-      noProperties,
-    ]
+    void [properties, optionalProperties, mixedProperties, fewerProperties, propertiesNull]
   })
 
   it("should typecheck discriminator schemas", () => {
@@ -263,14 +255,20 @@ describe("JTDSchemaType", () => {
   })
 
   it("should typecheck empty schemas", () => {
-    const empty: JTDSchemaType<Record<string, never>> = {}
+    const empty: JTDSchemaType<unknown> = {}
+    // unknown can be null
+    const emptyUnknown: JTDSchemaType<unknown> = {nullable: true}
+    // somewhat unintuitively, it can still have nullable: false even though it can be null
+    const falseUnknown: JTDSchemaType<unknown> = {nullable: false}
     // can only use empty for empty and null
     // @ts-expect-error
     const emptyButFull: JTDSchemaType<{a: string}> = {}
-    const emptyNull: JTDSchemaType<null> = {nullable: true}
-    const emptyMeta: JTDSchemaType<Record<string, never>> = {metadata: {}}
+    const emptyMeta: JTDSchemaType<unknown> = {metadata: {}}
 
-    void [empty, emptyButFull, emptyNull, emptyMeta]
+    // constant null not representable
+    const emptyNull: TypeEquality<JTDSchemaType<null>, never> = true
+
+    void [empty, emptyUnknown, falseUnknown, emptyButFull, emptyMeta, emptyNull]
   })
 
   it("should typecheck ref schemas", () => {
@@ -316,18 +314,10 @@ describe("JTDSchemaType", () => {
 
   it("should typecheck metadata schemas", () => {
     const meta: JTDSchemaType<number> = {type: "float32", metadata: {key: "val"}}
-    const emptyMeta: JTDSchemaType<Record<string, never>> = {metadata: {key: "val"}}
-    const nullMeta: JTDSchemaType<null> = {nullable: true, metadata: {key: "val"}}
+    const emptyMeta: JTDSchemaType<unknown> = {metadata: {key: "val"}}
+    const unknownMeta: JTDSchemaType<unknown> = {nullable: true, metadata: {key: "val"}}
 
-    void [meta, emptyMeta, nullMeta]
-  })
-
-  it("should typecheck nullable schemas", () => {
-    const isNull: JTDSchemaType<null> = {nullable: true}
-    // @ts-expect-error
-    const numNotNull: JTDSchemaType<number | null> = {type: "float32"}
-
-    void [isNull, numNotNull]
+    void [meta, emptyMeta, unknownMeta]
   })
 })
 
