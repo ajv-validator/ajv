@@ -14,7 +14,7 @@ const addFormats = require("ajv-formats")
 
 const ajv = new Ajv()
 addFormats(ajv)
-````
+```
 </code-block>
 
 <code-block title="TypeScript">
@@ -24,8 +24,7 @@ import addFormats from "ajv-formats"
 
 const ajv = new Ajv()
 addFormats(ajv)
-````
-
+```
 </code-block>
 </code-group>
 

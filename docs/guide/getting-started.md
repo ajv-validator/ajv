@@ -56,7 +56,7 @@ const validData = {
 
 const valid = validate(data)
 if (!valid) console.log(validate.errors)
-````
+```
 </code-block>
 
 <code-block title="JSON Type Definition">
@@ -83,8 +83,7 @@ const validData = {
 
 const valid = validate(data)
 if (!valid) console.log(validate.errors)
-````
-
+```
 </code-block>
 </code-group>
 

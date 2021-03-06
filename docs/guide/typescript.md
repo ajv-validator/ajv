@@ -7,6 +7,7 @@
 Ajv takes advantage of TypeScript type system to provide additional functionality that is not possible in JavaScript:
 
 - utility types `JSONSchemaType` and `JTDSchemaType` to convert data type into the schema type to simplify writing schemas, both for [JSON Schema](../json-schema.md) (but without union support) and for [JSON Type Definition](../json-type-definition) (with tagged unions support).
+- utility type `JTDDataType` to covert JSON Type Definition schema into the type of data that it defines.
 - compiled validation functions are type guards that narrow the type after successful validation.
 - validation errors for JSON Schema are defined as tagged unions, for type-safe error handling.
 - when utility type is used, compiled JTD serializers only accept data of correct type (as they do not validate that the data is valid) and compiled parsers return correct data type.
@@ -19,7 +20,7 @@ For the same example as in [Getting started](./getting-started):
 <code-block title="JSON Schema">
 ```typescript
 import Ajv, {JSONSchemaType} from "ajv"
-const ajv = new Ajv() // options can be passed, e.g. {allErrors: true}
+const ajv = new Ajv()
 
 interface MyData {
   foo: number
@@ -54,13 +55,13 @@ if (validate(data)) {
 } else {
   console.log(validate.errors)
 }
-````
+```
 </code-block>
 
 <code-block title="JSON Type Definition">
 ```typescript
 import Ajv, {JTDSchemaType} from "ajv/dist/jtd"
-const ajv = new Ajv() // options can be passed, e.g. {allErrors: true}
+const ajv = new Ajv()
 
 interface MyData {
   foo: number
@@ -95,12 +96,46 @@ if (validate(data)) {
 } else {
   console.log(validate.errors)
 }
-````
-
+```
 </code-block>
 </code-group>
 
 See [this test](https://github.com/ajv-validator/ajv/tree/master/spec/types/json-schema.spec.ts) for an advanced example.
+
+## Utility type for JTD data type
+
+You can use JTD schema to construct the type of data using utility type `JTDDataType`
+
+```typescript
+import Ajv, {JTDDataType} from "ajv/dist/jtd"
+const ajv = new Ajv()
+
+const schema = {
+  properties: {
+    foo: {type: "int32"}
+  },
+  optionalProperties: {
+    bar: {type: "string"}
+  }
+} as const
+
+type MyData = JTDDataType<typeof schema>
+
+// validate is a type guard for MyData - type is inferred from schema type
+const validate = ajv.compile(schema)
+
+const validData = {
+  foo: 1,
+  bar: "abc"
+}
+
+if (validate(data)) {
+  // data is MyData here
+  console.log(data.foo)
+} else {
+  console.log(validate.errors)
+}
+```
 
 ## Type-safe error handling
 
@@ -133,7 +168,7 @@ if (validate(data)) {
     }
   }
 }
-````
+```
 </code-block>
 </code-group>
 
@@ -147,7 +182,7 @@ This example uses the same data and schema types as above:
 <code-block title="JSON Type Definition">
 ```typescript
 import Ajv, {JTDSchemaType} from "ajv/dist/jtd"
-const ajv = new Ajv() // options can be passed, e.g. {allErrors: true}
+const ajv = new Ajv()
 
 interface MyData {
   foo: number
@@ -201,7 +236,6 @@ function parseAndLogFoo(json: string): void {
     console.log(data.foo)
   }
 }
-````
-
+```
 </code-block>
 </code-group>

@@ -60,7 +60,7 @@ app.post("/user", async (cxt) => {
     cxt.status(400)
   }
 })
-````
+```
 </code-block>
 
 <code-block title="TypeScript">
@@ -83,7 +83,7 @@ app.post("/user", async (cxt) => {
     cxt.status(400)
   }
 })
-````
+```
 </code-block>
 </code-group>
 
@@ -148,7 +148,7 @@ app.post("/user", async (cxt) => {
     cxt.status(400)
   }
 })
-````
+```
 </code-block>
 
 <code-block title="users.ts">
@@ -169,7 +169,7 @@ app.post("/user", async (cxt) => {
     cxt.status(400)
   }
 })
-````
+```
 </code-block>
 </code-group>
 
