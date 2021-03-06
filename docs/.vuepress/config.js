@@ -45,10 +45,10 @@ module.exports = {
           {
             text: "Contributors",
             items: [
-              {link: "/CONTRIBUTING", text: "Contributing guide"},
+              {link: "/contributing", text: "Contributing guide"},
               {link: "/codegen", text: "Code generation design"},
               {link: "/components", text: "Code components"},
-              {link: "/CODE_OF_CONDUCT", text: "Code of Conduct"},
+              {link: "/code_of_conduct", text: "Code of Conduct"},
             ],
           },
           {
@@ -56,7 +56,7 @@ module.exports = {
             items: [
               {link: "/security", text: "Security"},
               {link: "/faq", text: "FAQ"},
-              {link: "/LICENSE", text: "License"},
+              {link: "/license", text: "License"},
             ],
           },
         ],
@@ -97,16 +97,16 @@ module.exports = {
         title: "Contributors",
         collapsable: false,
         children: [
-          "/CONTRIBUTING",
+          "/contributing",
           "/codegen",
           "/components",
-          ["/CODE_OF_CONDUCT", "Code of conduct"],
+          ["/code_of_conduct", "Code of conduct"],
         ],
       },
       {
         title: "Information",
         collapsable: false,
-        children: ["/faq", "/security", ["/LICENSE", "License"]],
+        children: ["/faq", "/security", ["/license", "License"]],
       },
     ],
     repo: "ajv-validator/ajv",

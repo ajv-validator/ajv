@@ -43,6 +43,6 @@ package-lock.json
 spec/_json/*.js
 
 docs/README.md
-docs/CODE_OF_CONDUCT.md
-docs/CONTRIBUTING.md
-docs/LICENSE.md
+docs/code_of_conduct.md
+docs/contributing.md
+docs/license.md

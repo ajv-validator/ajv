@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [master]
+    branches: [master, vuepress]
   pull_request:
     branches: ["*"]
 
@@ -30,7 +30,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: update website
         if: ${{ github.event_name == 'push' && matrix.node-version == '14.x' }}
-        run: ./scripts/publish-gh-pages
+        run: ./scripts/publish-site
         env:
           GH_TOKEN_PUBLIC: ${{ secrets.GH_TOKEN_PUBLIC }}
           GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
