@@ -9,7 +9,7 @@ The purpose of this document is to help find answers quicker. I am happy to cont
 Ajv implements JSON schema specification. Before submitting the issue about the behaviour of any validation keywords please review them in:
 
 - [JSON Schema specification](https://tools.ietf.org/html/draft-handrews-json-schema-validation-00) (draft-07)
-- [Validation keywords](./json-schema.md) in Ajv documentation
+- [JSON Schema reference](./json-schema.md) in Ajv documentation
 - [JSON Schema tutorial](https://spacetelescope.github.io/understanding-json-schema/) (for draft-04)
 
 #### Why Ajv validates empty object as valid?

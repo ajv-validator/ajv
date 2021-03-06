@@ -4,7 +4,7 @@ permalink: /contributing
 
 # Contributing guide
 
-Thank you for your help making Ajv better! Every contribution is appreciated. There are many areas where you can contribute. 
+Thank you for your help making Ajv better! Every contribution is appreciated. There are many areas where you can contribute.
 
 ::: tip Please note
 If you plan to implement a new feature or some other change please create an issue first, to make sure that your work is not lost.
@@ -21,9 +21,10 @@ There is a link in the bottom of each website page to quickly edit it.
 ## Issues
 
 Before submitting the issue:
+
 - Search the existing issues
 - Review [Frequently Asked Questions](./docs/faq.md).
-- Provide all the relevant information, reducing both your schema and data to the smallest possible size when they still have the issue. 
+- Provide all the relevant information, reducing both your schema and data to the smallest possible size when they still have the issue.
 
 We value simplicity - simplifying the example that shows the issue makes it more valuable for other users. This process helps us reduce situations where an error is occurring due to incorrect usage rather than a bug.
 

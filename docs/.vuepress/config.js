@@ -106,11 +106,7 @@ module.exports = {
       {
         title: "Information",
         collapsable: false,
-        children: [
-          "/faq",
-          "/security",
-          ["/LICENSE", "License"],
-        ]
+        children: ["/faq", "/security", ["/LICENSE", "License"]],
       },
     ],
     repo: "ajv-validator/ajv",

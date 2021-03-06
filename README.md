@@ -54,16 +54,18 @@ More than 100 people contributed to Ajv, and we would love to have you join the 
 
 At Ajv, we are committed to creating more equitable and inclusive spaces for our community and team members to contribute to discussions that affect both this project and our ongoing work in the open source ecosystem.
 
-We strive to create an environment of respect and healthy discourse by setting standards for our interactions and we expect it from all members of our community  - from long term project member to first time visitor. For more information, review our [code of conduct](./CODE_OF_CONDUCT.md) and values.
+We strive to create an environment of respect and healthy discourse by setting standards for our interactions and we expect it from all members of our community - from long term project member to first time visitor. For more information, review our [code of conduct](./CODE_OF_CONDUCT.md) and values.
 
 ### How we make decisions
 
 We value conscious curation of our library size, and balancing performance and functionality. To that end, we cannot accept every suggestion. When evaluating pull requests we consider:
+
 - Will this benefit many users or a niche use case?
 - How will this impact the performance of Ajv?
 - How will this expand our library size?
 
 To help us evaluate and understand, when you submit an issue and pull request:
+
 - Explain why this feature is important to the user base
 - Include documentation
 - Include test coverage with any new feature implementations

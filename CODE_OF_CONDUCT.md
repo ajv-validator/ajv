@@ -37,9 +37,10 @@ Project maintainers have the right and responsibility to remove, edit, or reject
 
 ### Scope
 
-The goal of this Code of Conduct is to set standards and expectations around how we interact within this community. It’s scope applies to all project participants and covers all interactions within the community associated with this project including, but not limited to, email communication, issue trackers, source code repositories, forums, and social media. 
+The goal of this Code of Conduct is to set standards and expectations around how we interact within this community. It’s scope applies to all project participants and covers all interactions within the community associated with this project including, but not limited to, email communication, issue trackers, source code repositories, forums, and social media.
 
 Examples of representing a project or community include:
+
 - Using an official project e-mail address
 - Posting via an official social media account
 - Acting as an appointed representative at an online or offline event
@@ -50,7 +51,7 @@ Representation of a project may be further defined and clarified by project main
 
 We will not tolerate abuse, harassment, or any other unacceptable behaviour made against community members, project maintainers, or members of our project team, either online or offline.
 
-Violations of our Code of Conduct may be reported by contacting the project team at ajv.validator@gmail.com. The project team will review and investigate all complaints, to the best of our ability, and will respond in a way that it deems appropriate to the circumstances.
+Violations of our Code of Conduct may be reported by contacting the project team at [ajv.validator@gmail.com](mailto:ajv.validator@gmail.com). The project team will review and investigate all complaints, to the best of our ability, and will respond in a way that it deems appropriate to the circumstances.
 
 Reports of violations will be investigated in a respectful, professional manner as promptly and confidentially as possible. We will have zero tolerance for intimidation or retaliation against anyone who raises a concern, makes a report or cooperates in an investigation around a violation of our code of conduct. Further details of specific enforcement policies may be posted separately.
 
@@ -58,8 +59,8 @@ Project maintainers who do not follow or enforce the Code of Conduct in good fai
 
 ### Attribution
 
-This Code of Conduct is adapted from the [Contributor Covenant][https://www.contributor-covenant.org], version 1.4,
-available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html
+This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org), version 1.4,
+available at [https://www.contributor-covenant.org/version/1/4/code-of-conduct.html](https://www.contributor-covenant.org/version/1/4/code-of-conduct.html)
 
 For answers to common questions about this code of conduct, see
-https://www.contributor-covenant.org/faq
+[https://www.contributor-covenant.org/faq](https://www.contributor-covenant.org/faq)
