@@ -23,7 +23,6 @@ module.exports = {
           {link: "/guide/modifying-data", text: "Modifying data"},
           {link: "/guide/user-keywords", text: "User-defined keywords"},
           {link: "/guide/async-validation", text: "Asynchronous validation"},
-          {link: "/guide/standalone", text: "Standalone validation code"},
           {link: "/guide/environments", text: "Execution environments"},
         ],
       },
@@ -38,6 +37,7 @@ module.exports = {
               {link: "/json-schema", text: "JSON Schema"},
               {link: "/json-type-definition", text: "JSON Type Definition"},
               {link: "/strict-mode", text: "Strict mode"},
+              {link: "/standalone", text: "Standalone validation code"},
               {link: "/keywords", text: "User defined keywords"},
               {link: "/coercion", text: "Type coercion rules"},
             ],
@@ -45,7 +45,7 @@ module.exports = {
           {
             text: "Contributors",
             items: [
-              {link: "/CONTRIBUTING", text: "Contributing"},
+              {link: "/CONTRIBUTING", text: "Contributing guide"},
               {link: "/codegen", text: "Code generation design"},
               {link: "/components", text: "Code components"},
               {link: "/CODE_OF_CONDUCT", text: "Code of Conduct"},
@@ -63,7 +63,6 @@ module.exports = {
       },
     ],
     sidebar: [
-      "/",
       {
         title: "Guide",
         collapsable: false,
@@ -89,6 +88,7 @@ module.exports = {
           "/json-schema",
           "/json-type-definition",
           "/strict-mode",
+          "/standalone",
           "/keywords",
           "/coercion",
         ],

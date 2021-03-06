@@ -12,18 +12,20 @@ Ajv supports most widely used drafts of JSON Schema specification. Please see th
 
 ### draft-04
 
-Draft-04 is not included in Ajv v7, because of substantial differences it has with the following drafts:
+Draft-04 is not included in Ajv v7, because of some differences it has with the following drafts:
 
 - different schema member for schema identifier (`id` in draft-04 instead of `$id`)
-- different syntax of exclusiveMaximum/Minimum, that is difficult to support in one codebase, particularly with [$data reference](combining-schemas.md#data-reference)
+- different syntax of exclusiveMaximum/Minimum
 
-You can still use draft-04 schemas with Ajv v6 - while this is no longer actively developed, any security related issues would still be supported at least until 30/06/2021. To install:
+You can still use draft-04 schemas with Ajv v6 - while this is no longer actively developed, any security related issues would still be supported at least until 30/06/2021.
+
+To install v6:
 
 ```bash
 npm install ajv@6
 ```
 
-Migrating schemas from draft-04 to draft-07 is very easy with [ajv-cli](https://github.com/ajv-validator/ajv-cli)
+You can migrate schemas from draft-04 to draft-07 using [ajv-cli](https://github.com/ajv-validator/ajv-cli).
 
 ### draft-07 (and draft-06)
 
