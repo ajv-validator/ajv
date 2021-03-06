@@ -1,5 +1,7 @@
 <img align="right" alt="Ajv logo" width="160" src="https://ajv.js.org/images/ajv_logo.png">
 
+&nbsp;
+
 # Ajv: Another JSON schema validator
 
 Super fast JSON schema validator for Node.js and browser.
