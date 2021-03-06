@@ -4,7 +4,11 @@ permalink: /contributing
 
 # Contributing guide
 
-Thank you for your help making Ajv better! Every contribution is appreciated. If you plan to implement a new feature or some other change please create an issue first, to make sure that your work is not lost.
+Thank you for your help making Ajv better! Every contribution is appreciated. There are many areas where you can contribute. 
+
+::: tip Please note
+If you plan to implement a new feature or some other change please create an issue first, to make sure that your work is not lost.
+:::
 
 - [Documentation](#documentation)
 - [Issues](#issues)
@@ -22,26 +26,30 @@ Thank you for your help making Ajv better! Every contribution is appreciated. If
 
 ## Documentation
 
-Ajv has a lot of features and maintaining documentation takes time. I appreciate the time you spend correcting or clarifying the documentation.
+Ajv has a lot of features and maintaining documentation takes time. If anything is unclear, or could be explained better, we appreciate the time you spend correcting or clarifying it.
 
 ## Issues
 
-Before submitting the issue please search the existing issues and also review [Frequently Asked Questions](./docs/faq.md).
+Before submitting the issue:
+- Search the existing issues
+- Review [Frequently Asked Questions](./docs/faq.md).
+- Provide all the relevant information, reducing both your schema and data to the smallest possible size when they still have the issue. 
 
-It is really important that you spend time to provide all the relevant information and to reduce both your schema and data to the smallest possible size when they still have the issue. Simplifying the issue also makes it more valuable for other users (in cases it turns out to be an incorrect usage rather than a bug).
+We value simplicity - simplifying the example that shows the issue makes it more valuable for other users. This process helps us reduce situations where an error is occurring due to incorrect usage rather than a bug.
 
 #### Bug reports
 
 Please make sure to include the following information in the issue:
 
-1. What version of Ajv are you using? Does the issue happen if you use the latest version?
-2. Ajv options object (see https://github.com/ajv-validator/ajv/api.md#options).
-3. JSON Schema and the data you are validating (please make it as small as possible to reproduce the issue).
-4. Your code sample (please use `options`, `schema` and `data` as variables).
-5. Validation result, data AFTER validation, error messages.
-6. What results did you expect?
+1. What version of Ajv are you using?
+2. Does the issue happen if you use the latest version?
+3. Ajv [options object](./docs/options)
+4. Schema and the data you are validating (please make it as small as possible to reproduce the issue).
+5. Your code sample (please use `options`, `schema` and `data` as variables).
+6. Validation result, data AFTER validation, error messages.
+7. What results did you expect?
 
-Please include the link to the working code sample at Runkit.com (please clone https://runkit.com/esp/ajv-issue) - it will speed up investigation and fixing.
+To speed up investigation and fixes, please include the link to the working code sample at runkit.com (please clone https://runkit.com/esp/ajv-issue).
 
 [Create bug report](https://github.com/ajv-validator/ajv/issues/new?template=bug-or-error-report.md).
 
@@ -61,16 +69,16 @@ Please include this information:
 
 1. The version of Ajv you are using.
 2. The problem you want to solve.
-3. What do you think is the correct solution to problem?
-4. Will you be able to implement it?
+3. Your solution to the problem.
+4. Would you like to implement it?
 
 If you’re requesting a change, it would be helpful to include this as well:
 
 1. What you did.
-2. What you would like to happen.
-3. What actually happened.
+2. What happened.
+3. What you would like to happen.
 
-Please include as much details as possible.
+Please include as much details as possible - the more information, the better.
 
 #### <a name="compatibility"></a>Browser and compatibility issues
 
