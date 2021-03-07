@@ -159,6 +159,12 @@ function parseAndLog(json) {
 You would have smaller performance benefits in case your schema contains some properties or other parts that are empty schemas (`{}`) - parser would call `JSON.parse` in this case.
 :::
 
+::: warning JTD discriminator schema
+When parser is compiled from the discriminated union schema, the best performance is achieved if the discriminator tag is the first property (this is how compiled serializer constructs JSON string, but other serializers, e.g. JSON.stringify, can serialize properties in any order).
+
+Also, if discriminator tag were to be repeated in JSON, the second value would be ignored and the object still validated according to the first tag.
+:::
+
 ::: warning Please note
 Compiled parsers, unlike JSON.parse, do not throw the exception in case JSON string is not a valid JSON or in case data is invalid according to the schema. As soon as the parser determines that either JSON or data is invalid, it returns `undefined` and reports error and position via parsers properties `message` and `position`.
 :::
