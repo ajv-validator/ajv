@@ -4,7 +4,7 @@ You can define formats and keywords that perform validation asynchronously by ac
 
 If your schema uses asynchronous formats/keywords or refers to some schema that contains them it should have `"$async": true` keyword so that Ajv can compile it correctly. If asynchronous format/keyword or reference to asynchronous schema is used in the schema without `$async` keyword Ajv will throw an exception during schema compilation.
 
-::: warning Please note
+::: warning Use $async: true in referenced schemas
 All asynchronous subschemas that are referenced from the current or other schemas should have `"$async": true` keyword as well, otherwise the schema compilation will fail.
 :::
 

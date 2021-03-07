@@ -74,7 +74,7 @@ With this import Ajv supports the following features:
 - dynamic recursive references with [`recursiveAnchor`/`recursiveReference`] - see [Extending recursive schemas](./combining-schemas.md#extending-recursive-schemas)
 - draft-2019-09 meta-schema is the default.
 
-::: warning Please note
+::: warning Draft-2019-09 features performance cost (even when not used)
 Supporting dynamic recursive references and `unevaluatedProperties`/`unevaluatedItems` keywords adds additional generated code even to the validation functions where these features are not used (when possible, Ajv determines which properties/items are "unevaluated" at compilation time, but support for dynamic references always adds additional generated code). If you are not using these features in your schemas it is recommended to use default Ajv export with JSON-Schema draft-07 support.
 :::
 

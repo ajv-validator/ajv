@@ -73,7 +73,7 @@ This bundle can be used with different module systems; it creates global `ajv`/`
 
 The browser bundles are available on [cdnjs](https://cdnjs.com/libraries/ajv).
 
-::: warning Please note
+::: warning Some frameworks re-define require
 Some frameworks, e.g. Dojo, may redefine global require in a way that is not compatible with CommonJS module format. In this case Ajv bundle has to be loaded before the framework and then you can use global `ajv` (see issue [#234](https://github.com/ajv-validator/ajv/issues/234)).
 :::
 

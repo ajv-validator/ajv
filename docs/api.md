@@ -84,8 +84,8 @@ const serializeMyData = ajv.compileSerializer(mySchema)
 // it prevents you from accidentally passing the wrong type
 ```
 
-::: warning Please note
-Compiled serializers do NOT validate passed data, it is assumed that the data is valid according to the schema. In the future there may be an option added that would make serializers also validate the data.
+::: warning Compiled serializers do NOT validate data!
+It is assumed that the data is valid according to the schema.
 :::
 
 <a name="jtd-parse"></a>
@@ -112,10 +112,6 @@ const invalidData = parseMyData('{"x":1}') // undefined - failure
 console.log(parseMyData.position) // 4
 console.log(parseMyData.message) // property x not allowed
 ```
-
-::: warning Please note
-Generated parsers is a NEW Ajv functionality (as of March 2021), there can be some edge cases that are not handled correctly - please report any issues/submit fixes.
-:::
 
 <sup>\*</sup> As long as empty schema `{}` is not used - there is a possibility to improve performance in this case. Also, the performance of parsing `discriminator` schemas depends on the position of discriminator tag in the schema - the best parsing performance will be achieved if the tag is the first property - this is how compiled JTD serializers generate JSON in case of discriminator schemas.
 
@@ -147,7 +143,7 @@ Validation errors will be available in the `errors` property of Ajv instance (`n
 
 In typescript this method can act as a type guard (similarly to function returned by `compile` method - see example there).
 
-::: warning Please note
+::: warning Save errors property
 Every time this method is called the errors are overwritten so you need to copy them to another variable if you want to use them later.
 :::
 
@@ -169,13 +165,12 @@ Although `addSchema` does not compile schemas, explicit compilation is not requi
 
 By default the schema is validated against meta-schema before it is added, and if the schema does not pass validation the exception is thrown. This behaviour is controlled by `validateSchema` option.
 
-::: tip Please note
-Ajv return it instance for method chaining from all methods with the prefix `add*` and `remove*`:
+::: tip Method chaining
+Ajv returns its instance for chaining from all methods prefixed `add*` and `remove*`:
 
 ```javascript
 const validate = new Ajv().addSchema(schema).addFormat(name, regex).getSchema(uri)
 ```
-
 :::
 
 ### ajv.addMetaSchema(schema: object | object[], key?: string): Ajv
@@ -304,7 +299,7 @@ interface KeywordDefinition {
 
 `compile`, `macro` and `code` are mutually exclusive, only one should be used at a time. `validate` can be used separately or in addition to `compile` or `macro` to support [\$data reference](./guide/combining-schemas.md#data-reference).
 
-::: tip Please note
+::: tip Keyword is validated only for applicable data types
 If the keyword is validating data type that is different from the type(s) in its definition, the validation function will not be called (and expanded macro will not be used), so there is no need to check for data type inside validation function or inside schema returned by macro function (unless you want to enforce a specific type and for some reason do not want to use a separate `type` keyword for that). In the same way as standard keywords work, if the keyword does not apply to the data type being validated, the validation of this keyword will succeed.
 :::
 
@@ -320,7 +315,7 @@ Removes added or pre-defined keyword so you can redefine them.
 
 While this method can be used to extend pre-defined keywords, it can also be used to completely change their meaning - it may lead to unexpected results.
 
-::: warning Please note
+::: warning Compiled schemas and removed keywords
 The schemas compiled before the keyword is removed will continue to work without changes. To recompile schemas use `removeSchema` method and compile them again.
 :::
 
@@ -367,7 +362,7 @@ interface JTDErrorObject {
 
 This error format is used when using JTD schemas. To simplify usage, you may still generate Ajv error objects using `ajvErrors` option. You can also add a human-readable error message to error objects using option `messages`.
 
-::: warning Please note
+::: warning JTD errors are not fully spec-compliant
 Ajv is not fully consistent with JTD regarding the error objects in some scenarios - it will be consistent by the time Ajv version 8 is released. Therefore it is not recommended yet to use error objects for any advanced application logic.
 :::
 

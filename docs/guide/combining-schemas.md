@@ -43,8 +43,7 @@ const validate = ajv.addSchema(defsSchema).compile(schema)
 
 See [Options](./api.md#options) and [addSchema](./api.md#add-schema) method.
 
-::: tip Please note
-
+::: tip Reference resolution
 - `$ref` is resolved as the uri-reference using schema \$id as the base URI (see the example).
 - References can be recursive (and mutually recursive) to implement the schemas for different data structures (such as linked lists, trees, graphs, etc.).
 - You don't have to host your schema files at the URIs that you use as schema \$id. These URIs are only used to identify the schemas, and according to JSON Schema specification validators should not expect to be able to download the schemas from these URIs.
@@ -52,7 +51,7 @@ See [Options](./api.md#options) and [addSchema](./api.md#add-schema) method.
 - You can pass the identifier of the schema as the second parameter of `addSchema` method or as a property name in `schemas` option. This identifier can be used instead of (or in addition to) schema \$id.
 - You cannot have the same \$id (or the schema identifier) used for more than one schema - the exception will be thrown.
 - You can implement dynamic resolution of the referenced schemas using `compileAsync` method. In this way you can store schemas in any system (files, web, database, etc.) and reference them without explicitly adding to Ajv instance. See [Asynchronous schema compilation](./managing-schemas.md#asynchronous-schema-compilation).
-  :::
+:::
 
 ## Extending recursive schemas
 

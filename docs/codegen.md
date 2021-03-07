@@ -68,7 +68,7 @@ CodeGen class generates code trees and performs several optimizations before the
 2. removes unused variable declarations.
 3. replaces variables that are used only once and assigned expressions that are explicitly marked as "constant" (i.e. having referential transparency) with the expressions themselves.
 
-::: warning Please note
+::: warning Optimizations assume no side effects
 These optimizations assume that the expressions in `if` conditions, `for` statement headers and assigned expressions are free of any side effects - this is the case for all pre-defined validation keywords.
 :::
 
@@ -87,6 +87,6 @@ While tagged template literals wrap passed strings based on their run-time value
 
 It is strongly recommended to define additional keywords only with Typescript - using plain JavaScript would still allow passing unsafe strings to code generation methods.
 
-::: warning Please note
+::: warning Optimization and side-effects
 If your user-defined keywords need to have side-effects that are removed by optimization (see above), you may need to disable it.
 :::

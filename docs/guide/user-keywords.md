@@ -12,14 +12,14 @@ The advantages of defining keywords are:
 
 If a keyword is used only for side-effects and its validation result is pre-defined, use option `valid: true/false` in keyword definition to simplify both generated code (no error handling in case of `valid: true`) and your keyword functions (no need to return any validation result).
 
-::: warning Please note
+::: warning User-defined keywords make schemas non-portable
 When extending JSON Schema standard with additional keywords, you have several potential concerns to be aware of:
 
 - portability of your schemas - they would only work with JavaScript or TypeScript applications where you can use Ajv.
 - additional documentation required to maintain your schemas.
-  :::
+:::
 
-::: danger Please note
+::: danger Avoid using non-standard keywords with JTD schemas
 While it is possible to define additional keywords for JSON Type Definition schemas (these keywords can only be used in `metadata` member of the schema), it is strongly recommended not to do it - JTD is specifically designed for cross-platform APIs.
 :::
 

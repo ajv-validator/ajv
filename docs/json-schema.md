@@ -59,8 +59,8 @@ The value of keyword `maximum` (`minimum`) should be a number. This value is the
 
 The value of keyword `exclusiveMaximum` (`exclusiveMinimum`) should be a number. This value is the exclusive maximum (minimum) allowed value for the data to be valid (the data equal to this keyword value is invalid).
 
-::: warning Please note
-Boolean value for keywords `exclusiveMaximum` (`exclusiveMinimum`) is no longer supported.
+::: warning NO support for boolean keyword values
+Boolean values for keywords `exclusiveMaximum` (`exclusiveMinimum`) are not supported.
 :::
 
 **Examples**
@@ -377,7 +377,7 @@ _invalid_: `{}`, `{a: 1}`, `{c: 3, d: 4}`
 
 The value of the keyword should be a map with keys equal to data object properties. Each value in the map should be a JSON Schema. For data object to be valid the corresponding values in data object properties should be valid according to these schemas.
 
-::: warning Please note
+::: warning Properties are not required
 `properties` keyword does not require that the properties mentioned in it are present in the object (see examples).
 :::
 
@@ -408,11 +408,10 @@ The value of this keyword should be a map where keys should be regular expressio
 
 When the value in data object property matches multiple regular expressions it should be valid according to all the schemas for all matched regular expressions.
 
-::: warning Please note
-
+::: warning Unexpected validation results
 1. `patternProperties` keyword does not require that properties matching patterns are present in the object (see examples).
 2. By default, Ajv does not allow schemas where patterns in `patternProperties` match any property name in `properties` keyword - that leads to unexpected validation results. It can be allowed with option `allowMatchingProperties`. See [Strict mode](./strict-mode.md)
-   :::
+:::
 
 **Example**
 
@@ -864,6 +863,6 @@ JSON Schema specification defines several metadata keywords that describe the sc
 - `contentEncoding`: [RFC 2045](https://tools.ietf.org/html/rfc2045#section-6.1), e.g., "base64".
 - `contentMediaType`: [RFC 2046](https://datatracker.ietf.org/doc/rfc2046/), e.g., "image/png".
 
-::: warning Please note
+::: warning Ignored keywords
 Ajv does not implement validation of the keywords `examples`, `contentEncoding` and `contentMediaType` but it reserves them. If you want to create a plugin that implements any of them, it should remove these keywords from the instance.
 :::

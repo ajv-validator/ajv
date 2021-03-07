@@ -32,7 +32,7 @@ See [ajv-formats](https://github.com/ajv-validator/ajv-formats) documentation fo
 
 It is recommended NOT to use "format" keyword implementations with untrusted data, as they may use potentially unsafe regular expressions (even though known issues are fixed) - see [ReDoS attack](./security.md#redos-attack).
 
-::: danger Please note
+::: danger Format validation of untrusted data
 If you need to use "format" keyword to validate untrusted data, you MUST assess their suitability and safety for your validation scenarios.
 :::
 
@@ -55,7 +55,7 @@ The following formats are defined in [ajv-formats](https://github.com/ajv-valida
 - _json-pointer_: JSON-pointer according to [RFC6901](https://datatracker.ietf.org/doc/rfc6901/).
 - _relative-json-pointer_: relative JSON-pointer according to [this draft](http://tools.ietf.org/html/draft-luff-relative-json-pointer-00).
 
-::: warning Please note
+::: warning Additional formats in ajv-formats-draft2019
 JSON Schema draft-07 also defines formats `iri`, `iri-reference`, `idn-hostname` and `idn-email` for URLs, hostnames and emails with international characters. These formats are available in [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) plugin.
 :::
 
@@ -80,7 +80,7 @@ ajv.addFormat("byte", {
 
 If you use formats from [ajv-formats](https://github.com/ajv-validator/ajv-formats) package, [standalone validation code](../standalone) will be supported out of the box.
 
-::: warning Please note
+::: warning Standalone code and Ajv versions
 You need to make sure that ajv-formats imports the same version and the same code of ajv as the one you use in your application for standalone validation code to work (because of `instanceof` check that is currently used).
 
 `npm` and other package managers may not update the version of ajv dependency of ajv-formats when you update version of ajv in your application - the workaround is to use clean npm installation.

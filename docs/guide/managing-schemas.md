@@ -87,13 +87,13 @@ app.post("/user", async (cxt) => {
 </code-block>
 </code-group>
 
-::: warning Please note
+::: warning Use single Ajv instance
 It recommended to use a single Ajv instance for the whole application, so if you use validation in more than one module, you should:
 
 - require Ajv in a separate module responsible for validation
 - compile all validators there
 - export them to be used in multiple modules of your application
-  :::
+:::
 
 ## Using Ajv instance cache
 
@@ -173,7 +173,7 @@ app.post("/user", async (cxt) => {
 </code-block>
 </code-group>
 
-::: tip Please note
+::: tip On-demand vs preliminary compilation
 In the example above, schema compilation happens only once, on the first API call, not at the application start-up time. It means that the application would start a bit faster, but the first API call would be a bit slower. If this is undesirable, you could, for example, call `getSchema` for all added schemas after they are added, then when `getSchema` is called inside route handler it would simply get compiled validation function from the instance cache.
 :::
 
@@ -246,10 +246,6 @@ async function loadSchema(uri) {
   return res.body
 }
 ```
-
-::: warning Please note
-[Option](./api.md#options) `missingRefs` should NOT be set to `"ignore"` or `"fail"` for asynchronous compilation to work.
-:::
 
 ## Caching schemas in your code
 

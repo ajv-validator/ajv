@@ -38,7 +38,7 @@ Some keywords in JSON Schemas can lead to very slow validation for certain data.
 - `patternProperties` for large property names - use `propertyNames` to mitigate, but some regular expressions can have exponential evaluation time as well.
 - `uniqueItems` for large non-scalar arrays - use `maxItems` to mitigate
 
-::: danger Please note
+::: danger Do NOT use allErrors in production
 The suggestions above to prevent slow validation would only work if you do NOT use `allErrors: true` in production code (using it would continue validation after validation errors).
 :::
 
@@ -55,7 +55,7 @@ const schema2 = {format: "email", maxLength: MAX_LENGTH}
 isSchemaSecure(schema2) // true
 ```
 
-::: danger Please note
+::: danger Untrusted data
 Following all these recommendation is not a guarantee that validation using of untrusted data is safe - it can still lead to some undesirable results.
 :::
 
@@ -65,7 +65,7 @@ Certain regular expressions can lead to the exponential evaluation time even wit
 
 Please assess the regular expressions you use in the schemas on their vulnerability to this attack - see [safe-regex](https://github.com/substack/safe-regex), for example.
 
-::: warning Please note
+::: warning ReDoS attack
 Some formats that [ajv-formats](https://github.com/ajv-validator/ajv-formats) package implements use [regular expressions](https://github.com/ajv-validator/ajv-formats/blob/master/src/formats.ts) that can be vulnerable to ReDoS attack.
 :::
 
@@ -82,7 +82,7 @@ Whatever mitigation you choose, please assume all formats provided by ajv-format
 
 When using Ajv in a browser page with enabled Content Security Policy (CSP), `script-src` directive must include `'unsafe-eval'`.
 
-::: warning Please note
+::: danger Cross-site scripting attacks
 `unsafe-eval` is NOT recommended in a secure CSP[[1]](https://developer.chrome.com/extensions/contentSecurityPolicy#relaxing-eval), as it has the potential to open the document to cross-site scripting (XSS) attacks.
 :::
 

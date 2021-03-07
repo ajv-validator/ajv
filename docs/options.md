@@ -14,7 +14,7 @@ const ajv = new Ajv({allErrors: true})
 
 ## Option defaults
 
-::: tip Please note
+::: tip Do NOT pass default options
 Passing the value below for some of the options is equivalent to not passing this option at all. There is no need to pass default option values - it is recommended to only pass option values that are different from defaults.
 :::
 

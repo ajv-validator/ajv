@@ -12,15 +12,15 @@ Ajv has several options that allow to modify data during validation:
 
 You can also define keywords that modify data.
 
-::: tip Please note
+::: tip NOT possible to modify root data
 It is not possible to modify the root data instance passed to the validation function, only data properties can be modified. This is related to how JavaScript passes parameters, and not a limitation of Ajv.
 :::
 
-::: warning Please note
+::: warning Non-portable functionality
 This functionality is non-standard - this is likely to be unsupported in other JSON Schema validator implementations.
 :::
 
-::: danger Please note
+::: danger Unexpected results when modifying data
 While pure schema validation produces the results independent of the keywords and subschema order, enabling any feature that may modify the data makes validation impure and its results are likely to depend on the order of evaluation of keywords and subschemas.
 
 The order of evaluation of subschemas in keywords like `allOf` is always the same as the order of subschemas in the array.
@@ -72,7 +72,7 @@ If `removeAdditional` option in the example above were `"all"` then both `additi
 
 If the option were `"failing"` then property `additional1` would have been removed regardless of its value and property `additional2` would have been removed only if its value were failing the schema in the inner `additionalProperties` (so in the example above it would have stayed because it passes the schema, but any non-number would have been removed).
 
-::: warning Please note
+::: warning Unexpected results when using removeAdditional with anyOf/oneOf
 If you use `removeAdditional` option with `additionalProperties` keyword inside `anyOf`/`oneOf` keywords your validation can fail with this schema
 :::
 
@@ -128,7 +128,7 @@ With the option value `"empty"` properties and items equal to `null` or `""` (em
 
 This option modifies original data.
 
-::: warning Please note
+::: warning Defaults are deep-cloned
 The default value is inserted in the generated validation code as a literal, so the value inserted in the data will be the deep clone of the default in the schema.
 :::
 
@@ -186,7 +186,7 @@ When you are validating user inputs all your data properties are usually strings
 
 This option modifies original data.
 
-::: warning Please note
+::: warning Type coercion with scalar values
 If you pass a scalar value to the validating function its type will be coerced and it will pass the validation, but the value of the variable you pass won't be updated because scalars are passed by value.
 :::
 

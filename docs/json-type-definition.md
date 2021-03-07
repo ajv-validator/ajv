@@ -380,7 +380,7 @@ Each schema form may have an optional member `metadata` that JTD reserves for im
 - any user-defined keywords, for example keywords defined in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package
 - JSON Schema keywords, as long as their names are different from standard JTD keywords. It can be used to enable a gradual migration from JSON Schema to JTD, should it be required.
 
-::: warning Please note
+::: warning Extensions are non-portable
 Ajv-specific extension to JTD are likely to be unsupported by other tools, so while it may simplify adoption, it undermines the cross-platform objective of using JTD. While it is ok to put some human readable information in `metadata` member, it is recommended not to add any validation logic there (even if it is supported by Ajv).
 :::
 
@@ -395,7 +395,7 @@ Ajv defines `union` keyword that is used in the schema that validates JTD schema
 
 This keyword can be used only inside `metadata` schema member.
 
-::: warning Please note
+::: warning Union keyword is non-portable
 This keyword is non-standard and it is not supported in other JTD tools, so it is recommended NOT to use this keyword in schemas for your data if you want them to be cross-platform.
 :::
 
@@ -403,7 +403,7 @@ This keyword is non-standard and it is not supported in other JTD tools, so it i
 
 Any user-defined keywords that can be used in JSON Schema schemas can also be used in JTD schemas, including the keywords in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package.
 
-::: warning Please note
+::: warning User-defined keywords are non-portable
 It is strongly recommended to only use it to simplify migration from JSON Schema to JTD and not to use non-standard keywords in the new schemas, as these keywords are not supported by any other tools.
 :::
 

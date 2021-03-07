@@ -89,7 +89,7 @@ if (!valid) console.log(validate.errors)
 
 Ajv compiles schemas to functions and caches them in all cases (using schema itself as a key for Map), so that the next time the same schema object is used it won't be compiled again.
 
-::: tip Please note
+::: tip Best performance: compile and getSchema methods
 The best performance is achieved when using compiled functions returned by `compile` or `getSchema` methods.
 
 While execution of the compiled validation function is very fast, its compilation is
@@ -97,7 +97,7 @@ relatively slow, so you need to make sure that you compile schemas only once and
 re-use compiled validation functions. See [Managing multiple schemas](./managing-schemas).
 :::
 
-::: warning Please note
+::: warning Save errors property
 Every time a validation function (or `ajv.validate`) is called `errors` property is overwritten. You need to copy `errors` array reference to another variable if you want to use it later (e.g., in the callback). See [Validation errors](../api.md#validation-errors)
 :::
 
@@ -155,16 +155,16 @@ function parseAndLog(json) {
 </code-block>
 </code-group>
 
-::: tip Please note
+::: tip Lower parsing performance of empty schemas
 You would have smaller performance benefits in case your schema contains some properties or other parts that are empty schemas (`{}`) - parser would call `JSON.parse` in this case.
 :::
 
 ::: warning JTD discriminator schema
-When parser is compiled from the discriminated union schema, the best performance is achieved if the discriminator tag is the first property (this is how compiled serializer constructs JSON string, but other serializers, e.g. JSON.stringify, can serialize properties in any order).
+The performance of parsing discriminator schemas depends on the position of discriminator tag in the schema - the best parsing performance will be achieved if the tag is the first property - this is how compiled JTD serializers generate JSON in case of discriminator schemas.
 
 Also, if discriminator tag were to be repeated in JSON, the second value would be ignored and the object still validated according to the first tag.
 :::
 
-::: warning Please note
+::: warning Compiled parsers do NOT throw exceptions
 Compiled parsers, unlike JSON.parse, do not throw the exception in case JSON string is not a valid JSON or in case data is invalid according to the schema. As soon as the parser determines that either JSON or data is invalid, it returns `undefined` and reports error and position via parsers properties `message` and `position`.
 :::
