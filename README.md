@@ -4,7 +4,7 @@
 
 # Ajv: Another JSON schema validator
 
-Super fast JSON schema validator for Node.js and browser.
+Super fast JSON validator for Node.js and browser.
 
 Supports JSON Schema draft-06/07/2019-09 (draft-04 is supported in [version 6](https://github.com/ajv-validator/ajv/tree/v6)) and JSON Type Definition [RFC8927](https://datatracker.ietf.org/doc/rfc8927/).
 
