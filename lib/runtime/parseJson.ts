@@ -17,12 +17,13 @@ export function parseJson(s: string, pos: number): unknown {
       return undefined
     }
     endPos = +matches[1]
+    const c = s[endPos]
     s = s.slice(0, endPos)
     parseJson.position = pos + endPos
     try {
       return JSON.parse(s)
     } catch (e1) {
-      parseJson.message = `unexpected token ${s[endPos]}`
+      parseJson.message = `unexpected token ${c}`
       return undefined
     }
   }
@@ -87,7 +88,8 @@ export function parseJsonNumber(s: string, pos: number, maxDigits?: number): num
   }
 
   function errorMessage(): void {
-    parseJson.message = pos < s.length ? `unexpected token ${s[pos]}` : "unexpected end"
+    parseJsonNumber.position = pos
+    parseJsonNumber.message = pos < s.length ? `unexpected token ${s[pos]}` : "unexpected end"
   }
 }
 
@@ -106,7 +108,8 @@ const escapedChars: {[X in string]?: string} = {
   "\\": "\\",
 }
 
-const A_CODE: number = "a".charCodeAt(0)
+const CODE_A: number = "a".charCodeAt(0)
+const CODE_0: number = "0".charCodeAt(0)
 
 export function parseJsonString(s: string, pos: number): string | undefined {
   let str = ""
@@ -114,43 +117,48 @@ export function parseJsonString(s: string, pos: number): string | undefined {
   parseJsonString.message = undefined
   // eslint-disable-next-line no-constant-condition, @typescript-eslint/no-unnecessary-condition
   while (true) {
-    c = s[pos]
-    pos++
+    c = s[pos++]
     if (c === '"') break
     if (c === "\\") {
       c = s[pos]
       if (c in escapedChars) {
         str += escapedChars[c]
+        pos++
       } else if (c === "u") {
+        pos++
         let count = 4
         let code = 0
         while (count--) {
           code <<= 4
           c = s[pos].toLowerCase()
           if (c >= "a" && c <= "f") {
-            c += c.charCodeAt(0) - A_CODE + 10
+            code += c.charCodeAt(0) - CODE_A + 10
           } else if (c >= "0" && c <= "9") {
-            code += +c
+            code += c.charCodeAt(0) - CODE_0
           } else if (c === undefined) {
             errorMessage("unexpected end")
             return undefined
           } else {
-            errorMessage(`unexpected token ${s[pos]}`)
+            errorMessage(`unexpected token ${c}`)
             return undefined
           }
           pos++
         }
         str += String.fromCharCode(code)
       } else {
-        errorMessage(`unexpected token ${s[pos]}`)
+        errorMessage(`unexpected token ${c}`)
         return undefined
       }
-      pos++
     } else if (c === undefined) {
       errorMessage("unexpected end")
       return undefined
     } else {
-      str += c
+      if (c.charCodeAt(0) >= 0x20) {
+        str += c
+      } else {
+        errorMessage(`unexpected token ${c}`)
+        return undefined
+      }
     }
   }
   parseJsonString.position = pos

@@ -1022,8 +1022,8 @@
       {
         "name": "string space",
         "valid": true,
-        "json": "\" \"",
-        "data": " "
+        "json": "[\" \"]",
+        "data": [" "]
       },
       {
         "name": "string start escape unclosed",

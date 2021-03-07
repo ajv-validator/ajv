@@ -5,6 +5,7 @@ import getAjvInstances from "./ajv_instances"
 import {withStandalone} from "./ajv_standalone"
 import jtdValidationTests = require("./json-typedef-spec/tests/validation.json")
 import jtdInvalidSchemasTests = require("./json-typedef-spec/tests/invalid_schemas.json")
+// tests from https://github.com/nst/JSONTestSuite
 import jsonParseTests = require("./json_parse_tests.json")
 import assert = require("assert")
 // import AjvPack from "../dist/standalone/instance"
@@ -25,6 +26,8 @@ interface JSONParseTest {
   valid: boolean | null
   json: string
   data?: unknown
+  only?: boolean
+  skip?: boolean
 }
 
 interface JSONParseTestSuite {
@@ -154,26 +157,29 @@ describe("JSON Type Definition", () => {
     const ajv = new _AjvJTD()
     const parseJson: JTDParser = ajv.compileParser({})
     const parse: {[K in "string" | "number" | "array" | "object"]: JTDParser} = {
-      string: ajv.compileParser({type: "string"}),
-      number: ajv.compileParser({type: "float64"}),
+      string: ajv.compileParser({elements: {type: "string"}}),
+      number: ajv.compileParser({elements: {type: "float64"}}),
       array: ajv.compileParser({elements: {}}),
       object: ajv.compileParser({values: {}}),
     }
 
     for (const {suite, tests} of jsonParseTests as JSONParseTestSuite[]) {
       describe(suite, () => {
-        for (const {valid, name, json, data} of tests) {
+        for (const test of tests) {
+          const {valid, name, json, data} = test
           if (valid) {
             it(`should parse ${name}`, () => shouldParse(parseJson, json, data))
             if (suite in parse) {
-              it.skip(`should parse as ${suite}: ${name}`, () =>
-                shouldParse(parse[suite], json, data))
+              _it(test)(`should parse as ${suite}: ${name}`, () =>
+                shouldParse(parse[suite], json, data)
+              )
             }
           } else if (valid === false) {
             it(`should fail parsing ${name}`, () => shouldFail(parseJson, json))
             if (suite in parse) {
-              it.skip(`should fail parsing as ${suite}: ${name}`, () =>
-                shouldFail(parse[suite], json))
+              _it(test)(`should fail parsing as ${suite}: ${name}`, () =>
+                shouldFail(parse[suite], json)
+              )
             }
           }
         }
@@ -181,6 +187,12 @@ describe("JSON Type Definition", () => {
     }
   })
 })
+
+type TestFunc = typeof it | typeof it.only | typeof it.skip
+
+function _it({only, skip}: JSONParseTest): TestFunc {
+  return skip ? it.skip : only ? it.only : it
+}
 
 function shouldParse(parse: JTDParser, str: string, res: unknown): void {
   assert.deepStrictEqual(parse(str), res)

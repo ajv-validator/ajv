@@ -5,7 +5,7 @@ import {SchemaEnv, getCompilingSchema} from ".."
 import {_, str, and, nil, not, CodeGen, Code, Name, SafeExpr} from "../codegen"
 import {MissingRefError} from "../error_classes"
 import N from "../names"
-import {isOwnProperty, hasPropFunc} from "../../vocabularies/code"
+import {hasPropFunc} from "../../vocabularies/code"
 import {hasRef} from "../../vocabularies/jtd/ref"
 import {intRange, IntType} from "../../vocabularies/jtd/type"
 import {parseJson, parseJsonNumber, parseJsonString} from "../../runtime/parseJson"
@@ -117,26 +117,6 @@ function parseCode(cxt: ParseCxt): void {
 
 const parseBoolean = parseBooleanToken(true, parseBooleanToken(false, jsonSyntaxError))
 
-// function parseEmptyCode(cxt: ParseCxt): void {
-//   const {gen, data, char: c} = cxt
-//   skipWhitespace(cxt)
-//   gen.assign(c, _`${N.json}[${N.jsonPos}]`)
-//   gen.if(_`${c} === "t" || ${c} === "f"`)
-//   parseBoolean(cxt)
-//   gen.elseIf(_`${c} === "n"`)
-//   tryParseToken(cxt, "null", jsonSyntaxError, () => gen.assign(data, null))
-//   gen.elseIf(_`${c} === '"'`)
-//   parseString(cxt)
-//   gen.elseIf(_`${c} === "["`)
-//   parseElements({...cxt, schema: {elements: {}}})
-//   gen.elseIf(_`${c} === "{"`)
-//   parseValues({...cxt, schema: {values: {}}})
-//   gen.else()
-//   parseNumber(cxt)
-//   gen.endIf()
-//   skipWhitespace(cxt)
-// }
-
 function parseNullable(cxt: ParseCxt, parseForm: GenParse): void {
   const {gen, schema, data} = cxt
   if (!schema.nullable) return parseForm(cxt)
@@ -171,15 +151,18 @@ function tryParseItems(cxt: ParseCxt, endToken: string, block: () => void): void
   const {gen} = cxt
   gen.for(_`;${N.jsonPos}<${N.jsonLen} && ${jsonSlice(1)}!==${endToken};`, () => {
     block()
-    tryParseToken(cxt, ",", () => gen.break())
+    tryParseToken(cxt, ",", () => gen.break(), hasItem)
   })
+
+  function hasItem(): void {
+    tryParseToken(cxt, endToken, () => {}, jsonSyntaxError)
+  }
 }
 
 function parseKeyValue(cxt: ParseCxt, schema: SchemaObject): void {
   const {gen} = cxt
   const key = gen.let("key")
   parseString({...cxt, data: key})
-  checkDuplicateProperty(cxt, key)
   parseToken(cxt, ":")
   parsePropertyValue(cxt, key, schema)
 }
@@ -231,11 +214,6 @@ function parseSchemaProperties(cxt: ParseCxt, discriminator?: string): void {
   parseItems(cxt, "}", () => {
     const key = gen.let("key")
     parseString({...cxt, data: key})
-    if (discriminator) {
-      gen.if(_`${key} !== ${discriminator}`, () => checkDuplicateProperty(cxt, key))
-    } else {
-      checkDuplicateProperty(cxt, key)
-    }
     parseToken(cxt, ":")
     gen.if(false)
     parseDefinedProperty(cxt, key, properties)
@@ -268,12 +246,6 @@ function parseDefinedProperty(cxt: ParseCxt, key: Name, schemas: SchemaObjectMap
     gen.elseIf(_`${key} === ${prop}`)
     parsePropertyValue(cxt, key, schemas[prop] as SchemaObject)
   }
-}
-
-function checkDuplicateProperty({gen, data}: ParseCxt, key: Name): void {
-  gen.if(isOwnProperty(gen, data, key), () =>
-    gen.throw(_`new Error("JSON: duplicate property " + ${key})`)
-  )
 }
 
 function parsePropertyValue(cxt: ParseCxt, key: Name, schema: SchemaObject): void {
