@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Type coercion rules | Ajv: Another JSON validator</title>
+    <meta name="generator" content="VuePress 1.8.2">
+    
+    <meta name="description" content="Just playing around">
+    
+    <link rel="preload" href="/assets/css/0.styles.8b297a81.css" as="style"><link rel="preload" href="/assets/js/app.eb7ef2dd.js" as="script"><link rel="preload" href="/assets/js/2.c39c7893.js" as="script"><link rel="preload" href="/assets/js/3.52058d6e.js" as="script"><link rel="preload" href="/assets/js/13.5cbf9c64.js" as="script"><link rel="prefetch" href="/assets/js/10.d6acb461.js"><link rel="prefetch" href="/assets/js/11.231638bd.js"><link rel="prefetch" href="/assets/js/12.7cb56b5a.js"><link rel="prefetch" href="/assets/js/14.6af0e427.js"><link rel="prefetch" href="/assets/js/15.306bbc40.js"><link rel="prefetch" href="/assets/js/16.f1f0fc53.js"><link rel="prefetch" href="/assets/js/17.e7f14f36.js"><link rel="prefetch" href="/assets/js/18.0c2f5039.js"><link rel="prefetch" href="/assets/js/19.eb2d2c44.js"><link rel="prefetch" href="/assets/js/20.73a06ecd.js"><link rel="prefetch" href="/assets/js/21.21b900e4.js"><link rel="prefetch" href="/assets/js/22.d535564f.js"><link rel="prefetch" href="/assets/js/23.daacf022.js"><link rel="prefetch" href="/assets/js/24.6e1979a8.js"><link rel="prefetch" href="/assets/js/25.05b5c445.js"><link rel="prefetch" href="/assets/js/26.a9f101a9.js"><link rel="prefetch" href="/assets/js/27.41000e45.js"><link rel="prefetch" href="/assets/js/28.fa98308e.js"><link rel="prefetch" href="/assets/js/29.dedaeff1.js"><link rel="prefetch" href="/assets/js/30.fbda5289.js"><link rel="prefetch" href="/assets/js/31.957c8b96.js"><link rel="prefetch" href="/assets/js/32.8b12729d.js"><link rel="prefetch" href="/assets/js/33.c1d40d2d.js"><link rel="prefetch" href="/assets/js/34.339232a2.js"><link rel="prefetch" href="/assets/js/4.f5c01cd3.js"><link rel="prefetch" href="/assets/js/5.09986f3b.js"><link rel="prefetch" href="/assets/js/6.c7b6ae79.js"><link rel="prefetch" href="/assets/js/7.b97164a1.js"><link rel="prefetch" href="/assets/js/8.574fc119.js"><link rel="prefetch" href="/assets/js/9.dca2258f.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.8b297a81.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><img src="/img/ajv.svg" alt="Ajv: Another JSON validator" class="logo"> <span class="site-name can-hide">Ajv: Another JSON validator</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Guide" class="dropdown-title"><span class="title">Guide</span> <span class="arrow down"></span></button> <button type="button" aria-label="Guide" class="mobile-dropdown-title"><span class="title">Guide</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/guide/getting-started.html" class="nav-link">
+  Getting started
+</a></li><li class="dropdown-item"><!----> <a href="/guide/typescript.html" class="nav-link">
+  Using with TypeScript
+</a></li><li class="dropdown-item"><!----> <a href="/guide/schema-language.html" class="nav-link">
+  Choosing schema language
+</a></li><li class="dropdown-item"><!----> <a href="/guide/managing-schemas.html" class="nav-link">
+  Managing schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/combining-schemas.html" class="nav-link">
+  Combining schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/formats.html" class="nav-link">
+  Format validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/modifying-data.html" class="nav-link">
+  Modifying data
+</a></li><li class="dropdown-item"><!----> <a href="/guide/user-keywords.html" class="nav-link">
+  User-defined keywords
+</a></li><li class="dropdown-item"><!----> <a href="/guide/async-validation.html" class="nav-link">
+  Asynchronous validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/environments.html" class="nav-link">
+  Execution environments
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Learn more" class="dropdown-title"><span class="title">Learn more</span> <span class="arrow down"></span></button> <button type="button" aria-label="Learn more" class="mobile-dropdown-title"><span class="title">Learn more</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><h4>
+          Reference
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/api.html" class="nav-link">
+  API Reference
+</a></li><li class="dropdown-subitem"><a href="/options.html" class="nav-link">
+  Ajv options
+</a></li><li class="dropdown-subitem"><a href="/json-schema.html" class="nav-link">
+  JSON Schema
+</a></li><li class="dropdown-subitem"><a href="/json-type-definition.html" class="nav-link">
+  JSON Type Definition
+</a></li><li class="dropdown-subitem"><a href="/strict-mode.html" class="nav-link">
+  Strict mode
+</a></li><li class="dropdown-subitem"><a href="/standalone.html" class="nav-link">
+  Standalone validation code
+</a></li><li class="dropdown-subitem"><a href="/keywords.html" class="nav-link">
+  User defined keywords
+</a></li><li class="dropdown-subitem"><a href="/coercion.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  Type coercion rules
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Contributors
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/contributing.html" class="nav-link">
+  Contributing guide
+</a></li><li class="dropdown-subitem"><a href="/codegen.html" class="nav-link">
+  Code generation design
+</a></li><li class="dropdown-subitem"><a href="/components.html" class="nav-link">
+  Code components
+</a></li><li class="dropdown-subitem"><a href="/code_of_conduct.html" class="nav-link">
+  Code of Conduct
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Information
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/security.html" class="nav-link">
+  Security
+</a></li><li class="dropdown-subitem"><a href="/faq.html" class="nav-link">
+  FAQ
+</a></li><li class="dropdown-subitem"><a href="/license.html" class="nav-link">
+  License
+</a></li></ul></li></ul></div></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Guide" class="dropdown-title"><span class="title">Guide</span> <span class="arrow down"></span></button> <button type="button" aria-label="Guide" class="mobile-dropdown-title"><span class="title">Guide</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/guide/getting-started.html" class="nav-link">
+  Getting started
+</a></li><li class="dropdown-item"><!----> <a href="/guide/typescript.html" class="nav-link">
+  Using with TypeScript
+</a></li><li class="dropdown-item"><!----> <a href="/guide/schema-language.html" class="nav-link">
+  Choosing schema language
+</a></li><li class="dropdown-item"><!----> <a href="/guide/managing-schemas.html" class="nav-link">
+  Managing schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/combining-schemas.html" class="nav-link">
+  Combining schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/formats.html" class="nav-link">
+  Format validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/modifying-data.html" class="nav-link">
+  Modifying data
+</a></li><li class="dropdown-item"><!----> <a href="/guide/user-keywords.html" class="nav-link">
+  User-defined keywords
+</a></li><li class="dropdown-item"><!----> <a href="/guide/async-validation.html" class="nav-link">
+  Asynchronous validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/environments.html" class="nav-link">
+  Execution environments
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Learn more" class="dropdown-title"><span class="title">Learn more</span> <span class="arrow down"></span></button> <button type="button" aria-label="Learn more" class="mobile-dropdown-title"><span class="title">Learn more</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><h4>
+          Reference
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/api.html" class="nav-link">
+  API Reference
+</a></li><li class="dropdown-subitem"><a href="/options.html" class="nav-link">
+  Ajv options
+</a></li><li class="dropdown-subitem"><a href="/json-schema.html" class="nav-link">
+  JSON Schema
+</a></li><li class="dropdown-subitem"><a href="/json-type-definition.html" class="nav-link">
+  JSON Type Definition
+</a></li><li class="dropdown-subitem"><a href="/strict-mode.html" class="nav-link">
+  Strict mode
+</a></li><li class="dropdown-subitem"><a href="/standalone.html" class="nav-link">
+  Standalone validation code
+</a></li><li class="dropdown-subitem"><a href="/keywords.html" class="nav-link">
+  User defined keywords
+</a></li><li class="dropdown-subitem"><a href="/coercion.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  Type coercion rules
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Contributors
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/contributing.html" class="nav-link">
+  Contributing guide
+</a></li><li class="dropdown-subitem"><a href="/codegen.html" class="nav-link">
+  Code generation design
+</a></li><li class="dropdown-subitem"><a href="/components.html" class="nav-link">
+  Code components
+</a></li><li class="dropdown-subitem"><a href="/code_of_conduct.html" class="nav-link">
+  Code of Conduct
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Information
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/security.html" class="nav-link">
+  Security
+</a></li><li class="dropdown-subitem"><a href="/faq.html" class="nav-link">
+  FAQ
+</a></li><li class="dropdown-subitem"><a href="/license.html" class="nav-link">
+  License
+</a></li></ul></li></ul></div></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Guide</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading open"><span>Reference</span> <span class="arrow down"></span></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/api.html" class="sidebar-link">API Reference</a></li><li><a href="/options.html" class="sidebar-link">Ajv options</a></li><li><a href="/json-schema.html" class="sidebar-link">JSON Schema</a></li><li><a href="/json-type-definition.html" class="sidebar-link">JSON Type Definition</a></li><li><a href="/strict-mode.html" class="sidebar-link">Strict mode</a></li><li><a href="/standalone.html" class="sidebar-link">Standalone validation code</a></li><li><a href="/keywords.html" class="sidebar-link">User defined keywords</a></li><li><a href="/coercion.html" aria-current="page" class="active sidebar-link">Type coercion rules</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/coercion.html#coercion-from-string-values" class="sidebar-link">Coercion from string values</a></li><li class="sidebar-sub-header"><a href="/coercion.html#coercion-from-number-values" class="sidebar-link">Coercion from number values</a></li><li class="sidebar-sub-header"><a href="/coercion.html#coercion-from-boolean-values" class="sidebar-link">Coercion from boolean values</a></li><li class="sidebar-sub-header"><a href="/coercion.html#coercion-from-null" class="sidebar-link">Coercion from null</a></li><li class="sidebar-sub-header"><a href="/coercion.html#coercion-to-and-from-array" class="sidebar-link">Coercion to and from array</a></li></ul></li></ul></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Contributors</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Information</span> <span class="arrow right"></span></p> <!----></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="type-coercion-rules"><a href="#type-coercion-rules" class="header-anchor">#</a> Type coercion rules</h1> <p>To enable type coercion pass option <code>coerceTypes</code> to Ajv with <code>true</code> or <code>array</code> (it is <code>false</code> by default). See <a href="/guide/modifying-data.html#coercing-data-types">example</a>.</p> <p>The coercion rules are different from JavaScript:</p> <ul><li>to validate user input as expected</li> <li>to have the coercion reversible</li> <li>to correctly validate cases where different types are required in subschemas (e.g., in <code>anyOf</code>).</li></ul> <p>Type coercion only happens if there is <code>type</code> keyword and if without coercion the validation would have failed. If coercion to the required type succeeds then the validation continues to other keywords, otherwise the validation fails.</p> <p>If there are multiple types allowed in <code>type</code> keyword the coercion will only happen if none of the types match the data and some of the scalar types are present (coercion to/from <code>object</code>/<code>array</code> is not possible). In this case the validating function will try coercing the data to each type in order until some of them succeeds.</p> <p>Application of these rules can have some unexpected consequences. Ajv may coerce the same value multiple times (this is why coercion reversibility is required) as needed at different points in the schema. This is particularly evident when using <code>oneOf</code>, which must test all of the subschemas. Ajv will coerce the type for each subschema, possibly resulting in unexpected failure if it can coerce to match more than one of the subschemas. Even if it succeeds, Ajv will not backtrack, so you'll get the type of the final coercion even if that's not the one that allowed the data to pass validation. If possible, structure your schema with <code>anyOf</code>, which won't validate subsequent subschemas as soon as it encounters one subschema that matches.</p> <p>Possible type coercions:</p> <table><thead><tr><th>from type →<br>to type ↓</th> <th style="text-align:center;">string</th> <th style="text-align:center;">number</th> <th style="text-align:center;">boolean</th> <th style="text-align:center;">null</th> <th style="text-align:center;">array*</th></tr></thead> <tbody><tr><td>string</td> <td style="text-align:center;">-</td> <td style="text-align:center;"><code>x</code>→<code>&quot;&quot;+x</code></td> <td style="text-align:center;"><code>false</code>→<code>&quot;false&quot;</code><br><code>true</code>→<code>&quot;true&quot;</code></td> <td style="text-align:center;"><code>null</code>→<code>&quot;&quot;</code></td> <td style="text-align:center;"><code>[x]</code>→<code>x</code></td></tr> <tr><td>number /<br>integer</td> <td style="text-align:center;">Valid number /<br>integer: <code>x</code>→<code>+x</code><br></td> <td style="text-align:center;">-</td> <td style="text-align:center;"><code>false</code>→<code>0</code><br><code>true</code>→<code>1</code></td> <td style="text-align:center;"><code>null</code>→<code>0</code></td> <td style="text-align:center;"><code>[x]</code>→<code>x</code></td></tr> <tr><td>boolean</td> <td style="text-align:center;"><code>&quot;false&quot;</code>→<code>false</code><br><code>&quot;true&quot;</code>→<code>true</code><br><code>&quot;abc&quot;</code>⇸<br><code>&quot;&quot;</code>⇸</td> <td style="text-align:center;"><code>0</code>→<code>false</code><br><code>1</code>→<code>true</code><br><code>x</code>⇸</td> <td style="text-align:center;">-</td> <td style="text-align:center;"><code>null</code>→<code>false</code></td> <td style="text-align:center;"><code>[false]</code>→<code>false</code><br><code>[true]</code>→<code>true</code></td></tr> <tr><td>null</td> <td style="text-align:center;"><code>&quot;&quot;</code>→<code>null</code><br><code>&quot;null&quot;</code>⇸<br><code>&quot;abc&quot;</code>⇸</td> <td style="text-align:center;"><code>0</code>→<code>null</code><br><code>x</code>⇸</td> <td style="text-align:center;"><code>false</code>→<code>null</code><br><code>true</code>⇸</td> <td style="text-align:center;">-</td> <td style="text-align:center;"><code>[null]</code>→<code>null</code></td></tr> <tr><td>array*</td> <td style="text-align:center;"><code>x</code>→<code>[x]</code></td> <td style="text-align:center;"><code>x</code>→<code>[x]</code></td> <td style="text-align:center;"><code>false</code>→<code>[false]</code><br><code>true</code>→<code>[true]</code></td> <td style="text-align:center;"><code>null</code>→<code>[null]</code></td> <td style="text-align:center;">-</td></tr></tbody></table> <p>* Requires option <code>{coerceTypes: &quot;array&quot;}</code></p> <h2 id="coercion-from-string-values"><a href="#coercion-from-string-values" class="header-anchor">#</a> Coercion from string values</h2> <h4 id="to-number-type"><a href="#to-number-type" class="header-anchor">#</a> To number type</h4> <p>Coercion to <code>number</code> is possible if the string is a valid number, <code>+data</code> is used.</p> <h4 id="to-integer-type"><a href="#to-integer-type" class="header-anchor">#</a> To integer type</h4> <p>Coercion to <code>integer</code> is possible if the string is a valid number without fractional part (<code>data % 1 === 0</code>).</p> <h4 id="to-boolean-type"><a href="#to-boolean-type" class="header-anchor">#</a> To boolean type</h4> <p>Unlike JavaScript, only these strings can be coerced to <code>boolean</code>:</p> <ul><li><code>&quot;true&quot;</code> -&gt; <code>true</code></li> <li><code>&quot;false&quot;</code> -&gt; <code>false</code></li></ul> <h4 id="to-null-type"><a href="#to-null-type" class="header-anchor">#</a> To null type</h4> <p>Empty string is coerced to <code>null</code>, other strings can't be coerced.</p> <h2 id="coercion-from-number-values"><a href="#coercion-from-number-values" class="header-anchor">#</a> Coercion from number values</h2> <h4 id="to-string-type"><a href="#to-string-type" class="header-anchor">#</a> To string type</h4> <p>Always possible, <code>'' + data</code> is used</p> <h4 id="to-boolean-type-2"><a href="#to-boolean-type-2" class="header-anchor">#</a> To boolean type</h4> <p>Unlike JavaScript, only these numbers can be coerced to <code>boolean</code>:</p> <ul><li><code>1</code> -&gt; <code>true</code></li> <li><code>0</code> -&gt; <code>false</code></li></ul> <h4 id="to-null-type-2"><a href="#to-null-type-2" class="header-anchor">#</a> To null type</h4> <p><code>0</code> coerces to <code>null</code>, other numbers can't be coerced.</p> <h2 id="coercion-from-boolean-values"><a href="#coercion-from-boolean-values" class="header-anchor">#</a> Coercion from boolean values</h2> <h4 id="to-string-type-2"><a href="#to-string-type-2" class="header-anchor">#</a> To string type</h4> <ul><li><code>true</code> -&gt; <code>&quot;true&quot;</code></li> <li><code>false</code> -&gt; <code>&quot;false&quot;</code></li></ul> <h4 id="to-number-integer-types"><a href="#to-number-integer-types" class="header-anchor">#</a> To number/integer types</h4> <ul><li><code>true</code> -&gt; <code>1</code></li> <li><code>false</code> -&gt; <code>0</code></li></ul> <h4 id="to-null-type-3"><a href="#to-null-type-3" class="header-anchor">#</a> To null type</h4> <p><code>false</code> coerces to <code>null</code>, <code>true</code> can't be coerced.</p> <h2 id="coercion-from-null"><a href="#coercion-from-null" class="header-anchor">#</a> Coercion from null</h2> <h4 id="to-string-type-3"><a href="#to-string-type-3" class="header-anchor">#</a> To string type</h4> <p><code>null</code> coerces to the empty string.</p> <h4 id="to-number-integer-types-2"><a href="#to-number-integer-types-2" class="header-anchor">#</a> To number/integer types</h4> <p><code>null</code> coerces to <code>0</code></p> <h4 id="to-boolean-type-3"><a href="#to-boolean-type-3" class="header-anchor">#</a> To boolean type</h4> <p><code>null</code> coerces to <code>false</code></p> <h2 id="coercion-to-and-from-array"><a href="#coercion-to-and-from-array" class="header-anchor">#</a> Coercion to and from array</h2> <p>These coercions require that the option <code>coerceTypes</code> is <code>&quot;array&quot;</code>.</p> <p>If a scalar data is present and array is required, Ajv wraps scalar data in an array.</p> <p>If an array with one item is present and a scalar is required, Ajv coerces array into its item.</p> <ul><li><code>&quot;foo&quot;</code> -&gt; <code>[ &quot;foo&quot; ]</code></li> <li><code>[ &quot;foo&quot; ]</code> -&gt; <code>&quot;foo&quot;</code></li></ul></div> <footer class="page-edit"><div class="edit-link"><a href="https://github.com/ajv-validator/ajv/edit/master/docs/coercion.md" target="_blank" rel="noopener noreferrer">Edit this page</a> <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></div> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/keywords.html" class="prev">
+        User defined keywords
+      </a></span> <span class="next"><a href="/contributing/">
+        Contributing guide
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.eb7ef2dd.js" defer></script><script src="/assets/js/2.c39c7893.js" defer></script><script src="/assets/js/3.52058d6e.js" defer></script><script src="/assets/js/13.5cbf9c64.js" defer></script>
+  </body>
+</html>

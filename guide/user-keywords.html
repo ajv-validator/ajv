@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>User-defined keywords | Ajv: Another JSON validator</title>
+    <meta name="generator" content="VuePress 1.8.2">
+    
+    <meta name="description" content="Just playing around">
+    
+    <link rel="preload" href="/assets/css/0.styles.8b297a81.css" as="style"><link rel="preload" href="/assets/js/app.eb7ef2dd.js" as="script"><link rel="preload" href="/assets/js/2.c39c7893.js" as="script"><link rel="preload" href="/assets/js/3.52058d6e.js" as="script"><link rel="preload" href="/assets/js/26.a9f101a9.js" as="script"><link rel="prefetch" href="/assets/js/10.d6acb461.js"><link rel="prefetch" href="/assets/js/11.231638bd.js"><link rel="prefetch" href="/assets/js/12.7cb56b5a.js"><link rel="prefetch" href="/assets/js/13.5cbf9c64.js"><link rel="prefetch" href="/assets/js/14.6af0e427.js"><link rel="prefetch" href="/assets/js/15.306bbc40.js"><link rel="prefetch" href="/assets/js/16.f1f0fc53.js"><link rel="prefetch" href="/assets/js/17.e7f14f36.js"><link rel="prefetch" href="/assets/js/18.0c2f5039.js"><link rel="prefetch" href="/assets/js/19.eb2d2c44.js"><link rel="prefetch" href="/assets/js/20.73a06ecd.js"><link rel="prefetch" href="/assets/js/21.21b900e4.js"><link rel="prefetch" href="/assets/js/22.d535564f.js"><link rel="prefetch" href="/assets/js/23.daacf022.js"><link rel="prefetch" href="/assets/js/24.6e1979a8.js"><link rel="prefetch" href="/assets/js/25.05b5c445.js"><link rel="prefetch" href="/assets/js/27.41000e45.js"><link rel="prefetch" href="/assets/js/28.fa98308e.js"><link rel="prefetch" href="/assets/js/29.dedaeff1.js"><link rel="prefetch" href="/assets/js/30.fbda5289.js"><link rel="prefetch" href="/assets/js/31.957c8b96.js"><link rel="prefetch" href="/assets/js/32.8b12729d.js"><link rel="prefetch" href="/assets/js/33.c1d40d2d.js"><link rel="prefetch" href="/assets/js/34.339232a2.js"><link rel="prefetch" href="/assets/js/4.f5c01cd3.js"><link rel="prefetch" href="/assets/js/5.09986f3b.js"><link rel="prefetch" href="/assets/js/6.c7b6ae79.js"><link rel="prefetch" href="/assets/js/7.b97164a1.js"><link rel="prefetch" href="/assets/js/8.574fc119.js"><link rel="prefetch" href="/assets/js/9.dca2258f.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.8b297a81.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><img src="/img/ajv.svg" alt="Ajv: Another JSON validator" class="logo"> <span class="site-name can-hide">Ajv: Another JSON validator</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Guide" class="dropdown-title"><span class="title">Guide</span> <span class="arrow down"></span></button> <button type="button" aria-label="Guide" class="mobile-dropdown-title"><span class="title">Guide</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/guide/getting-started.html" class="nav-link">
+  Getting started
+</a></li><li class="dropdown-item"><!----> <a href="/guide/typescript.html" class="nav-link">
+  Using with TypeScript
+</a></li><li class="dropdown-item"><!----> <a href="/guide/schema-language.html" class="nav-link">
+  Choosing schema language
+</a></li><li class="dropdown-item"><!----> <a href="/guide/managing-schemas.html" class="nav-link">
+  Managing schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/combining-schemas.html" class="nav-link">
+  Combining schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/formats.html" class="nav-link">
+  Format validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/modifying-data.html" class="nav-link">
+  Modifying data
+</a></li><li class="dropdown-item"><!----> <a href="/guide/user-keywords.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  User-defined keywords
+</a></li><li class="dropdown-item"><!----> <a href="/guide/async-validation.html" class="nav-link">
+  Asynchronous validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/environments.html" class="nav-link">
+  Execution environments
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Learn more" class="dropdown-title"><span class="title">Learn more</span> <span class="arrow down"></span></button> <button type="button" aria-label="Learn more" class="mobile-dropdown-title"><span class="title">Learn more</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><h4>
+          Reference
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/api.html" class="nav-link">
+  API Reference
+</a></li><li class="dropdown-subitem"><a href="/options.html" class="nav-link">
+  Ajv options
+</a></li><li class="dropdown-subitem"><a href="/json-schema.html" class="nav-link">
+  JSON Schema
+</a></li><li class="dropdown-subitem"><a href="/json-type-definition.html" class="nav-link">
+  JSON Type Definition
+</a></li><li class="dropdown-subitem"><a href="/strict-mode.html" class="nav-link">
+  Strict mode
+</a></li><li class="dropdown-subitem"><a href="/standalone.html" class="nav-link">
+  Standalone validation code
+</a></li><li class="dropdown-subitem"><a href="/keywords.html" class="nav-link">
+  User defined keywords
+</a></li><li class="dropdown-subitem"><a href="/coercion.html" class="nav-link">
+  Type coercion rules
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Contributors
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/contributing.html" class="nav-link">
+  Contributing guide
+</a></li><li class="dropdown-subitem"><a href="/codegen.html" class="nav-link">
+  Code generation design
+</a></li><li class="dropdown-subitem"><a href="/components.html" class="nav-link">
+  Code components
+</a></li><li class="dropdown-subitem"><a href="/code_of_conduct.html" class="nav-link">
+  Code of Conduct
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Information
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/security.html" class="nav-link">
+  Security
+</a></li><li class="dropdown-subitem"><a href="/faq.html" class="nav-link">
+  FAQ
+</a></li><li class="dropdown-subitem"><a href="/license.html" class="nav-link">
+  License
+</a></li></ul></li></ul></div></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Guide" class="dropdown-title"><span class="title">Guide</span> <span class="arrow down"></span></button> <button type="button" aria-label="Guide" class="mobile-dropdown-title"><span class="title">Guide</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/guide/getting-started.html" class="nav-link">
+  Getting started
+</a></li><li class="dropdown-item"><!----> <a href="/guide/typescript.html" class="nav-link">
+  Using with TypeScript
+</a></li><li class="dropdown-item"><!----> <a href="/guide/schema-language.html" class="nav-link">
+  Choosing schema language
+</a></li><li class="dropdown-item"><!----> <a href="/guide/managing-schemas.html" class="nav-link">
+  Managing schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/combining-schemas.html" class="nav-link">
+  Combining schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/formats.html" class="nav-link">
+  Format validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/modifying-data.html" class="nav-link">
+  Modifying data
+</a></li><li class="dropdown-item"><!----> <a href="/guide/user-keywords.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  User-defined keywords
+</a></li><li class="dropdown-item"><!----> <a href="/guide/async-validation.html" class="nav-link">
+  Asynchronous validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/environments.html" class="nav-link">
+  Execution environments
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Learn more" class="dropdown-title"><span class="title">Learn more</span> <span class="arrow down"></span></button> <button type="button" aria-label="Learn more" class="mobile-dropdown-title"><span class="title">Learn more</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><h4>
+          Reference
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/api.html" class="nav-link">
+  API Reference
+</a></li><li class="dropdown-subitem"><a href="/options.html" class="nav-link">
+  Ajv options
+</a></li><li class="dropdown-subitem"><a href="/json-schema.html" class="nav-link">
+  JSON Schema
+</a></li><li class="dropdown-subitem"><a href="/json-type-definition.html" class="nav-link">
+  JSON Type Definition
+</a></li><li class="dropdown-subitem"><a href="/strict-mode.html" class="nav-link">
+  Strict mode
+</a></li><li class="dropdown-subitem"><a href="/standalone.html" class="nav-link">
+  Standalone validation code
+</a></li><li class="dropdown-subitem"><a href="/keywords.html" class="nav-link">
+  User defined keywords
+</a></li><li class="dropdown-subitem"><a href="/coercion.html" class="nav-link">
+  Type coercion rules
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Contributors
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/contributing.html" class="nav-link">
+  Contributing guide
+</a></li><li class="dropdown-subitem"><a href="/codegen.html" class="nav-link">
+  Code generation design
+</a></li><li class="dropdown-subitem"><a href="/components.html" class="nav-link">
+  Code components
+</a></li><li class="dropdown-subitem"><a href="/code_of_conduct.html" class="nav-link">
+  Code of Conduct
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Information
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/security.html" class="nav-link">
+  Security
+</a></li><li class="dropdown-subitem"><a href="/faq.html" class="nav-link">
+  FAQ
+</a></li><li class="dropdown-subitem"><a href="/license.html" class="nav-link">
+  License
+</a></li></ul></li></ul></div></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading open"><span>Guide</span> <span class="arrow down"></span></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/getting-started.html" class="sidebar-link">Getting started</a></li><li><a href="/guide/typescript.html" class="sidebar-link">Using with TypeScript</a></li><li><a href="/guide/schema-language.html" class="sidebar-link">Choosing schema language</a></li><li><a href="/guide/managing-schemas.html" class="sidebar-link">Managing schemas</a></li><li><a href="/guide/combining-schemas.html" class="sidebar-link">Combining schemas</a></li><li><a href="/guide/formats.html" class="sidebar-link">Format validation</a></li><li><a href="/guide/modifying-data.html" class="sidebar-link">Modifying data during validation</a></li><li><a href="/guide/user-keywords.html" aria-current="page" class="active sidebar-link">User-defined keywords</a></li><li><a href="/guide/async-validation.html" class="sidebar-link">Asynchronous validation</a></li><li><a href="/guide/environments.html" class="sidebar-link">Execution environments</a></li></ul></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Reference</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Contributors</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Information</span> <span class="arrow right"></span></p> <!----></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="user-defined-keywords"><a href="#user-defined-keywords" class="header-anchor">#</a> User-defined keywords</h1> <p>You can extend keyword available in Ajv by defining your own keywords.</p> <p>The advantages of defining keywords are:</p> <ul><li>allow creating validation scenarios that cannot be expressed using pre-defined keywords</li> <li>simplify your schemas</li> <li>help bringing a bigger part of the validation logic to your schemas</li> <li>make your schemas more expressive, less verbose and closer to your application domain</li> <li>implement data processors that modify your data (<code>modifying</code> option MUST be used in keyword definition) and/or create side effects while the data is being validated</li></ul> <p>If a keyword is used only for side-effects and its validation result is pre-defined, use option <code>valid: true/false</code> in keyword definition to simplify both generated code (no error handling in case of <code>valid: true</code>) and your keyword functions (no need to return any validation result).</p> <div class="custom-block warning"><p class="custom-block-title">Please note</p> <p>When extending JSON Schema standard with additional keywords, you have several potential concerns to be aware of:</p> <ul><li>portability of your schemas - they would only work with JavaScript or TypeScript applications where you can use Ajv.</li> <li>additional documentation required to maintain your schemas.</li></ul></div> <div class="custom-block danger"><p class="custom-block-title">Please note</p> <p>While it is possible to define additional keywords for JSON Type Definition schemas (these keywords can only be used in <code>metadata</code> member of the schema), it is strongly recommended not to do it - JTD is specifically designed for cross-platform APIs.</p></div> <p>You can define keywords with <a href="/guide/api.html#api-addkeyword">addKeyword</a> method. Keywords are defined on the <code>ajv</code> instance level - new instances will not have previously defined keywords.</p> <p>Ajv allows defining keywords with:</p> <ul><li>code generation function (used by all pre-defined keywords)</li> <li>validation function</li> <li>compilation function</li> <li>macro function</li></ul> <p>Example. <code>range</code> and <code>exclusiveRange</code> keywords using compiled schema:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>ajv<span class="token punctuation">.</span><span class="token function">addKeyword</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  keyword<span class="token operator">:</span> <span class="token string">&quot;range&quot;</span><span class="token punctuation">,</span>
+  type<span class="token operator">:</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">,</span>
+  schemaType<span class="token operator">:</span> <span class="token string">&quot;array&quot;</span><span class="token punctuation">,</span>
+  <span class="token keyword">implements</span><span class="token operator">:</span> <span class="token string">&quot;exclusiveRange&quot;</span><span class="token punctuation">,</span>
+  <span class="token function-variable function">compile</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">[</span>min<span class="token punctuation">,</span> max<span class="token punctuation">]</span><span class="token punctuation">,</span> parentSchema</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
+    parentSchema<span class="token punctuation">.</span>exclusiveRange <span class="token operator">===</span> <span class="token boolean">true</span>
+      <span class="token operator">?</span> <span class="token punctuation">(</span><span class="token parameter">data</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> data <span class="token operator">&gt;</span> min <span class="token operator">&amp;&amp;</span> data <span class="token operator">&lt;</span> <span class="token function-variable function">max</span>
+      <span class="token operator">:</span> <span class="token punctuation">(</span><span class="token parameter">data</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> data <span class="token operator">&gt;=</span> min <span class="token operator">&amp;&amp;</span> data <span class="token operator">&lt;=</span> max<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> schema <span class="token operator">=</span> <span class="token punctuation">{</span>range<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">,</span> exclusiveRange<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span>
+<span class="token keyword">const</span> validate <span class="token operator">=</span> ajv<span class="token punctuation">.</span><span class="token function">compile</span><span class="token punctuation">(</span>schema<span class="token punctuation">)</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">validate</span><span class="token punctuation">(</span><span class="token number">2.01</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">validate</span><span class="token punctuation">(</span><span class="token number">3.99</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">validate</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// false</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">validate</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// false</span>
+</code></pre></div><p>Several keywords (typeof, instanceof, range and propertyNames) are defined in <a href="https://github.com/ajv-validator/ajv-keywords" target="_blank" rel="noopener noreferrer">ajv-keywords<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> package - they can be used for your schemas and as a starting point for your own keywords.</p> <p>See <a href="/guide/keywords.html">User-defined keywords</a> reference for more details.</p></div> <footer class="page-edit"><div class="edit-link"><a href="https://github.com/ajv-validator/ajv/edit/master/docs/guide/user-keywords.md" target="_blank" rel="noopener noreferrer">Edit this page</a> <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></div> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/guide/modifying-data.html" class="prev">
+        Modifying data during validation
+      </a></span> <span class="next"><a href="/guide/async-validation.html">
+        Asynchronous validation
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.eb7ef2dd.js" defer></script><script src="/assets/js/2.c39c7893.js" defer></script><script src="/assets/js/3.52058d6e.js" defer></script><script src="/assets/js/26.a9f101a9.js" defer></script>
+  </body>
+</html>

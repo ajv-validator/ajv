@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Strict mode | Ajv: Another JSON validator</title>
+    <meta name="generator" content="VuePress 1.8.2">
+    
+    <meta name="description" content="Just playing around">
+    
+    <link rel="preload" href="/assets/css/0.styles.8b297a81.css" as="style"><link rel="preload" href="/assets/js/app.eb7ef2dd.js" as="script"><link rel="preload" href="/assets/js/2.c39c7893.js" as="script"><link rel="preload" href="/assets/js/3.52058d6e.js" as="script"><link rel="preload" href="/assets/js/34.339232a2.js" as="script"><link rel="preload" href="/assets/js/4.f5c01cd3.js" as="script"><link rel="prefetch" href="/assets/js/10.d6acb461.js"><link rel="prefetch" href="/assets/js/11.231638bd.js"><link rel="prefetch" href="/assets/js/12.7cb56b5a.js"><link rel="prefetch" href="/assets/js/13.5cbf9c64.js"><link rel="prefetch" href="/assets/js/14.6af0e427.js"><link rel="prefetch" href="/assets/js/15.306bbc40.js"><link rel="prefetch" href="/assets/js/16.f1f0fc53.js"><link rel="prefetch" href="/assets/js/17.e7f14f36.js"><link rel="prefetch" href="/assets/js/18.0c2f5039.js"><link rel="prefetch" href="/assets/js/19.eb2d2c44.js"><link rel="prefetch" href="/assets/js/20.73a06ecd.js"><link rel="prefetch" href="/assets/js/21.21b900e4.js"><link rel="prefetch" href="/assets/js/22.d535564f.js"><link rel="prefetch" href="/assets/js/23.daacf022.js"><link rel="prefetch" href="/assets/js/24.6e1979a8.js"><link rel="prefetch" href="/assets/js/25.05b5c445.js"><link rel="prefetch" href="/assets/js/26.a9f101a9.js"><link rel="prefetch" href="/assets/js/27.41000e45.js"><link rel="prefetch" href="/assets/js/28.fa98308e.js"><link rel="prefetch" href="/assets/js/29.dedaeff1.js"><link rel="prefetch" href="/assets/js/30.fbda5289.js"><link rel="prefetch" href="/assets/js/31.957c8b96.js"><link rel="prefetch" href="/assets/js/32.8b12729d.js"><link rel="prefetch" href="/assets/js/33.c1d40d2d.js"><link rel="prefetch" href="/assets/js/5.09986f3b.js"><link rel="prefetch" href="/assets/js/6.c7b6ae79.js"><link rel="prefetch" href="/assets/js/7.b97164a1.js"><link rel="prefetch" href="/assets/js/8.574fc119.js"><link rel="prefetch" href="/assets/js/9.dca2258f.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.8b297a81.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><img src="/img/ajv.svg" alt="Ajv: Another JSON validator" class="logo"> <span class="site-name can-hide">Ajv: Another JSON validator</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Guide" class="dropdown-title"><span class="title">Guide</span> <span class="arrow down"></span></button> <button type="button" aria-label="Guide" class="mobile-dropdown-title"><span class="title">Guide</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/guide/getting-started.html" class="nav-link">
+  Getting started
+</a></li><li class="dropdown-item"><!----> <a href="/guide/typescript.html" class="nav-link">
+  Using with TypeScript
+</a></li><li class="dropdown-item"><!----> <a href="/guide/schema-language.html" class="nav-link">
+  Choosing schema language
+</a></li><li class="dropdown-item"><!----> <a href="/guide/managing-schemas.html" class="nav-link">
+  Managing schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/combining-schemas.html" class="nav-link">
+  Combining schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/formats.html" class="nav-link">
+  Format validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/modifying-data.html" class="nav-link">
+  Modifying data
+</a></li><li class="dropdown-item"><!----> <a href="/guide/user-keywords.html" class="nav-link">
+  User-defined keywords
+</a></li><li class="dropdown-item"><!----> <a href="/guide/async-validation.html" class="nav-link">
+  Asynchronous validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/environments.html" class="nav-link">
+  Execution environments
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Learn more" class="dropdown-title"><span class="title">Learn more</span> <span class="arrow down"></span></button> <button type="button" aria-label="Learn more" class="mobile-dropdown-title"><span class="title">Learn more</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><h4>
+          Reference
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/api.html" class="nav-link">
+  API Reference
+</a></li><li class="dropdown-subitem"><a href="/options.html" class="nav-link">
+  Ajv options
+</a></li><li class="dropdown-subitem"><a href="/json-schema.html" class="nav-link">
+  JSON Schema
+</a></li><li class="dropdown-subitem"><a href="/json-type-definition.html" class="nav-link">
+  JSON Type Definition
+</a></li><li class="dropdown-subitem"><a href="/strict-mode.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  Strict mode
+</a></li><li class="dropdown-subitem"><a href="/standalone.html" class="nav-link">
+  Standalone validation code
+</a></li><li class="dropdown-subitem"><a href="/keywords.html" class="nav-link">
+  User defined keywords
+</a></li><li class="dropdown-subitem"><a href="/coercion.html" class="nav-link">
+  Type coercion rules
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Contributors
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/contributing.html" class="nav-link">
+  Contributing guide
+</a></li><li class="dropdown-subitem"><a href="/codegen.html" class="nav-link">
+  Code generation design
+</a></li><li class="dropdown-subitem"><a href="/components.html" class="nav-link">
+  Code components
+</a></li><li class="dropdown-subitem"><a href="/code_of_conduct.html" class="nav-link">
+  Code of Conduct
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Information
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/security.html" class="nav-link">
+  Security
+</a></li><li class="dropdown-subitem"><a href="/faq.html" class="nav-link">
+  FAQ
+</a></li><li class="dropdown-subitem"><a href="/license.html" class="nav-link">
+  License
+</a></li></ul></li></ul></div></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Guide" class="dropdown-title"><span class="title">Guide</span> <span class="arrow down"></span></button> <button type="button" aria-label="Guide" class="mobile-dropdown-title"><span class="title">Guide</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/guide/getting-started.html" class="nav-link">
+  Getting started
+</a></li><li class="dropdown-item"><!----> <a href="/guide/typescript.html" class="nav-link">
+  Using with TypeScript
+</a></li><li class="dropdown-item"><!----> <a href="/guide/schema-language.html" class="nav-link">
+  Choosing schema language
+</a></li><li class="dropdown-item"><!----> <a href="/guide/managing-schemas.html" class="nav-link">
+  Managing schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/combining-schemas.html" class="nav-link">
+  Combining schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/formats.html" class="nav-link">
+  Format validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/modifying-data.html" class="nav-link">
+  Modifying data
+</a></li><li class="dropdown-item"><!----> <a href="/guide/user-keywords.html" class="nav-link">
+  User-defined keywords
+</a></li><li class="dropdown-item"><!----> <a href="/guide/async-validation.html" class="nav-link">
+  Asynchronous validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/environments.html" class="nav-link">
+  Execution environments
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Learn more" class="dropdown-title"><span class="title">Learn more</span> <span class="arrow down"></span></button> <button type="button" aria-label="Learn more" class="mobile-dropdown-title"><span class="title">Learn more</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><h4>
+          Reference
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/api.html" class="nav-link">
+  API Reference
+</a></li><li class="dropdown-subitem"><a href="/options.html" class="nav-link">
+  Ajv options
+</a></li><li class="dropdown-subitem"><a href="/json-schema.html" class="nav-link">
+  JSON Schema
+</a></li><li class="dropdown-subitem"><a href="/json-type-definition.html" class="nav-link">
+  JSON Type Definition
+</a></li><li class="dropdown-subitem"><a href="/strict-mode.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  Strict mode
+</a></li><li class="dropdown-subitem"><a href="/standalone.html" class="nav-link">
+  Standalone validation code
+</a></li><li class="dropdown-subitem"><a href="/keywords.html" class="nav-link">
+  User defined keywords
+</a></li><li class="dropdown-subitem"><a href="/coercion.html" class="nav-link">
+  Type coercion rules
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Contributors
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/contributing.html" class="nav-link">
+  Contributing guide
+</a></li><li class="dropdown-subitem"><a href="/codegen.html" class="nav-link">
+  Code generation design
+</a></li><li class="dropdown-subitem"><a href="/components.html" class="nav-link">
+  Code components
+</a></li><li class="dropdown-subitem"><a href="/code_of_conduct.html" class="nav-link">
+  Code of Conduct
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Information
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/security.html" class="nav-link">
+  Security
+</a></li><li class="dropdown-subitem"><a href="/faq.html" class="nav-link">
+  FAQ
+</a></li><li class="dropdown-subitem"><a href="/license.html" class="nav-link">
+  License
+</a></li></ul></li></ul></div></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Guide</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading open"><span>Reference</span> <span class="arrow down"></span></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/api.html" class="sidebar-link">API Reference</a></li><li><a href="/options.html" class="sidebar-link">Ajv options</a></li><li><a href="/json-schema.html" class="sidebar-link">JSON Schema</a></li><li><a href="/json-type-definition.html" class="sidebar-link">JSON Type Definition</a></li><li><a href="/strict-mode.html" aria-current="page" class="active sidebar-link">Strict mode</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/strict-mode.html#json-type-definition-schemas" class="sidebar-link">JSON Type Definition schemas</a></li><li class="sidebar-sub-header"><a href="/strict-mode.html#json-schema-schemas" class="sidebar-link">JSON Schema schemas</a></li></ul></li><li><a href="/standalone.html" class="sidebar-link">Standalone validation code</a></li><li><a href="/keywords.html" class="sidebar-link">User defined keywords</a></li><li><a href="/coercion.html" class="sidebar-link">Type coercion rules</a></li></ul></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Contributors</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Information</span> <span class="arrow right"></span></p> <!----></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="strict-mode"><a href="#strict-mode" class="header-anchor">#</a> Strict mode</h1> <p>Strict mode intends to prevent any unexpected behaviours or silently ignored mistakes in user schemas. It does not change any validation results compared with the specification, but it makes some schemas invalid and throws exception or logs warning (with <code>strict: &quot;log&quot;</code> option) in case any restriction is violated.</p> <p>To disable all strict mode restrictions use option <code>strict: false</code>. Some of the restrictions can be changed with their own options</p> <p></p><div class="table-of-contents"><ul><li><a href="#json-type-definition-schemas">JSON Type Definition schemas</a></li><li><a href="#json-schema-schemas">JSON Schema schemas</a><ul><li><a href="#prohibit-ignored-keywords">Prohibit ignored keywords</a><ul><li><a href="#unknown-keywords">Unknown keywords</a></li><li><a href="#ignored-additionalitems-keyword">Ignored &quot;additionalItems&quot; keyword</a></li><li><a href="#ignored-if-then-else-keywords">Ignored &quot;if&quot;, &quot;then&quot;, &quot;else&quot; keywords</a></li><li><a href="#ignored-contains-maxcontains-and-mincontains-keywords">Ignored &quot;contains&quot;, &quot;maxContains&quot; and &quot;minContains&quot; keywords</a></li><li><a href="#unknown-formats">Unknown formats</a></li><li><a href="#ignored-defaults">Ignored defaults</a></li></ul></li><li><a href="#prevent-unexpected-validation">Prevent unexpected validation</a><ul><li><a href="#overlap-between-properties-and-patternproperties-keywords">Overlap between &quot;properties&quot; and &quot;patternProperties&quot; keywords <span class="badge tip" style="vertical-align:top;" data-v-6eb0829b>allowMatchingProperties option</span></a></li><li><a href="#defined-required-properties">Defined required properties <span class="badge tip" style="vertical-align:top;" data-v-6eb0829b>strictRequired option</span></a></li><li><a href="#unconstrained-tuples">Unconstrained tuples <span class="badge tip" style="vertical-align:top;" data-v-6eb0829b>strictTuples option</span></a></li></ul></li><li><a href="#strict-types">Strict types <span class="badge tip" style="vertical-align:top;" data-v-6eb0829b>strictTypes option</span></a><ul><li><a href="#union-types">Union types <span class="badge tip" style="vertical-align:top;" data-v-6eb0829b>allowUnionTypes option</span></a></li><li><a href="#contradictory-types">Contradictory types</a></li><li><a href="#require-applicable-types">Require applicable types</a></li></ul></li><li><a href="#strict-number-validation">Strict number validation</a></li></ul></li></ul></div><p></p> <h2 id="json-type-definition-schemas"><a href="#json-type-definition-schemas" class="header-anchor">#</a> JSON Type Definition schemas</h2> <p>JTD specification is strict - whether Ajv strict mode is enabled or not it will not allow schemas with ignored or ambiguous elements, including:</p> <ul><li>unknown schema keywords</li> <li>combining multiple schema forms in one schema</li> <li>defining the same property as both required and optional</li> <li>re-defining discriminator tag inside properties, even if the definition is non-contradictory</li></ul> <p>See <a href="/json-type-definition.html">JSON Type Definition</a> for informal and <a href="https://datatracker.ietf.org/doc/rfc8927/" target="_blank" rel="noopener noreferrer">RFC8927<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> for formal specification descriptions.</p> <p>The only change that strict mode introduces to JTD schemas, without changing their syntax or semantics, is the requirement that all members that are present in optional <code>metadata</code> members are defined as Ajv keywords. This restriction can be disabled with <code>strict: false</code> option, without any impact to other JTD features.</p> <h2 id="json-schema-schemas"><a href="#json-schema-schemas" class="header-anchor">#</a> JSON Schema schemas</h2> <p>JSON Schema specification is very permissive and allows many elements in the schema to be quietly ignored or be ambiguous. It is recommended to use JSON Schema with strict mode.</p> <h3 id="prohibit-ignored-keywords"><a href="#prohibit-ignored-keywords" class="header-anchor">#</a> Prohibit ignored keywords</h3> <h4 id="unknown-keywords"><a href="#unknown-keywords" class="header-anchor">#</a> Unknown keywords</h4> <p>JSON Schema <a href="https://tools.ietf.org/html/draft-handrews-json-schema-02#section-6.5" target="_blank" rel="noopener noreferrer">section 6.5<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> requires to ignore unknown keywords. The motivation is to increase cross-platform portability of schemas, so that implementations that do not support certain keywords can still do partial validation.</p> <p>The problems with this approach are:</p> <ul><li>Different validation results with the same schema and data, leading to bugs and inconsistent behaviours.</li> <li>Typos in keywords resulting in keywords being quietly ignored, requiring extensive test coverage of schemas to avoid these mistakes.</li></ul> <p>By default Ajv fails schema compilation when unknown keywords are used. Users can explicitly define the keywords that should be allowed and ignored:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>ajv<span class="token punctuation">.</span><span class="token function">addKeyword</span><span class="token punctuation">(</span><span class="token string">&quot;allowedKeyword&quot;</span><span class="token punctuation">)</span>
+</code></pre></div><p>or</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>ajv<span class="token punctuation">.</span><span class="token function">addVocabulary</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">&quot;allowed1&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;allowed2&quot;</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre></div><h4 id="ignored-additionalitems-keyword"><a href="#ignored-additionalitems-keyword" class="header-anchor">#</a> Ignored &quot;additionalItems&quot; keyword</h4> <p>JSON Schema section <a href="https://tools.ietf.org/html/draft-handrews-json-schema-02#section-9.3.1.2" target="_blank" rel="noopener noreferrer">9.3.1.2<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> requires to ignore &quot;additionalItems&quot; keyword if &quot;items&quot; keyword is absent or if it is not an array of items. This is inconsistent with the interaction of &quot;additionalProperties&quot; and &quot;properties&quot;, and may cause unexpected results.</p> <p>By default Ajv fails schema compilation when &quot;additionalItems&quot; is used without &quot;items&quot; (or if &quot;items&quot; is not an array).</p> <h4 id="ignored-if-then-else-keywords"><a href="#ignored-if-then-else-keywords" class="header-anchor">#</a> Ignored &quot;if&quot;, &quot;then&quot;, &quot;else&quot; keywords</h4> <p>JSON Schema section <a href="https://tools.ietf.org/html/draft-handrews-json-schema-02#section-9.2.2" target="_blank" rel="noopener noreferrer">9.2.2<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> requires to ignore &quot;if&quot; (only annotations are collected) if both &quot;then&quot; and &quot;else&quot; are absent, and ignore &quot;then&quot;/&quot;else&quot; if &quot;if&quot; is absent.</p> <p>By default Ajv fails schema compilation in these cases.</p> <h4 id="ignored-contains-maxcontains-and-mincontains-keywords"><a href="#ignored-contains-maxcontains-and-mincontains-keywords" class="header-anchor">#</a> Ignored &quot;contains&quot;, &quot;maxContains&quot; and &quot;minContains&quot; keywords</h4> <p>JSON Schema sections <a href="https://json-schema.org/draft/2019-09/json-schema-validation.html#rfc.section.6.4.4" target="_blank" rel="noopener noreferrer">6.4.4, 6.4.5<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> require to ignore keywords &quot;maxContains&quot; and &quot;minContains&quot; if &quot;contains&quot; keyword is absent.</p> <p>It is also implied that when &quot;minContains&quot; is 0 and &quot;maxContains&quot; is absent, &quot;contains&quot; keyword is always valid.</p> <p>By default Ajv fails schema compilation in these cases.</p> <h4 id="unknown-formats"><a href="#unknown-formats" class="header-anchor">#</a> Unknown formats</h4> <p>By default unknown formats throw exception during schema compilation (and fail validation in case format keyword value is <a href="/guide/combining-schemas.html#data-reference">$data reference</a>). It is possible to opt out of format validation completely with options <code>validateFormats: false</code>. You can define all known formats with <code>addFormat</code> method or <code>formats</code> option - to have some format ignored pass <code>true</code> as its definition:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> ajv <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Ajv</span><span class="token punctuation">(</span><span class="token punctuation">{</span>formats<span class="token operator">:</span> <span class="token punctuation">{</span>
+  reserved<span class="token operator">:</span> <span class="token boolean">true</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>Standard JSON Schema formats are provided in <a href="https://github.com/ajv-validator/ajv-formats" target="_blank" rel="noopener noreferrer">ajv-formats<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> package - see <a href="./guide/formats">Formats</a> section.</p> <h4 id="ignored-defaults"><a href="#ignored-defaults" class="header-anchor">#</a> Ignored defaults</h4> <p>With <code>useDefaults</code> option Ajv modifies validated data by assigning defaults from the schema, but there are different limitations when the defaults can be ignored (see <a href="/guide/modifying-data.html#assigning-defaults">Assigning defaults</a>). In strict mode Ajv fails schema compilation if such defaults are used in the schema.</p> <h3 id="prevent-unexpected-validation"><a href="#prevent-unexpected-validation" class="header-anchor">#</a> Prevent unexpected validation</h3> <h4 id="overlap-between-properties-and-patternproperties-keywords"><a href="#overlap-between-properties-and-patternproperties-keywords" class="header-anchor">#</a> Overlap between &quot;properties&quot; and &quot;patternProperties&quot; keywords <span class="badge tip" style="vertical-align:top;" data-v-6eb0829b>allowMatchingProperties option</span></h4> <p>The expectation of users (see #196, #286) is that &quot;patternProperties&quot; only apply to properties not already defined in &quot;properties&quot; keyword, but JSON Schema section <a href="https://tools.ietf.org/html/draft-handrews-json-schema-02#section-9.3.2" target="_blank" rel="noopener noreferrer">9.3.2<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> defines these two keywords as independent. It means that to some properties two subschemas can be applied - one defined in &quot;properties&quot; keyword and another defined in &quot;patternProperties&quot; for the pattern matching this property.</p> <p>By default Ajv fails schema compilation if a pattern in &quot;patternProperties&quot; matches a property in &quot;properties&quot; in the same schema.</p> <p>In addition to allowing such patterns by using option <code>strict: false</code>, there is an option <code>allowMatchingProperties: true</code> to only allow this case without disabling other strict mode restrictions - there are some rare cases when this is necessary.</p> <p>To reiterate, neither this nor other strict mode restrictions change the validation results - they only restrict which schemas are valid.</p> <h4 id="defined-required-properties"><a href="#defined-required-properties" class="header-anchor">#</a> Defined required properties <span class="badge tip" style="vertical-align:top;" data-v-6eb0829b>strictRequired option</span></h4> <p>With option <code>strictRequired</code> set to <code>&quot;log&quot;</code> or <code>true</code> Ajv logs warning or throws exception if the property used in &quot;required&quot; keyword is not defined in &quot;properties&quot; keyword in the same or some parent schema relating to the same object (data instance).</p> <p>By default this option is disabled.</p> <div class="custom-block warning"><p class="custom-block-title">Please note</p> <p>there are certain scenarios when property defined in the parent schema will not be taken into account.</p></div> <h4 id="unconstrained-tuples"><a href="#unconstrained-tuples" class="header-anchor">#</a> Unconstrained tuples <span class="badge tip" style="vertical-align:top;" data-v-6eb0829b>strictTuples option</span></h4> <p>Ajv also logs a warning if &quot;items&quot; is an array (for schema that defines a tuple) but neither &quot;minItems&quot; nor &quot;additionalItems&quot;/&quot;maxItems&quot; keyword is present (or have a wrong value):</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  type<span class="token operator">:</span> <span class="token string">&quot;array&quot;</span><span class="token punctuation">,</span>
+  items<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;boolean&quot;</span><span class="token punctuation">}</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>The above schema may have a mistake, as tuples usually are expected to have a fixed size. To &quot;fix&quot; it:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  type<span class="token operator">:</span> <span class="token string">&quot;array&quot;</span><span class="token punctuation">,</span>
+  items<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;boolean&quot;</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  minItems<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+  additionalItems<span class="token operator">:</span> <span class="token boolean">false</span>
+  <span class="token comment">// or</span>
+  <span class="token comment">// maxItems: 2</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Sometimes users accidentally create schema for unit (a tuple with one item) that only validates the first item, this restriction prevents this mistake as well.</p> <p>Use <code>strictTuples</code> option to suppress this warning (<code>false</code>) or turn it into exception (<code>true</code>).</p> <p>If you use <code>JSONSchemaType&lt;T&gt;</code> this mistake will also be prevented on a type level.</p> <h3 id="strict-types"><a href="#strict-types" class="header-anchor">#</a> Strict types <span class="badge tip" style="vertical-align:top;" data-v-6eb0829b>strictTypes option</span></h3> <p>An additional option <code>strictTypes</code> (&quot;log&quot; by default) imposes additional restrictions on how type keyword is used:</p> <h4 id="union-types"><a href="#union-types" class="header-anchor">#</a> Union types <span class="badge tip" style="vertical-align:top;" data-v-6eb0829b>allowUnionTypes option</span></h4> <p>With <code>strictTypes</code> option &quot;type&quot; keywords with multiple types (other than with &quot;null&quot;) are prohibited.</p> <p>Invalid:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  type<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&quot;string&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Valid:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  type<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&quot;object&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;null&quot;</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>and</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  type<span class="token operator">:</span> <span class="token string">&quot;object&quot;</span><span class="token punctuation">,</span>
+  nullable<span class="token operator">:</span> <span class="token boolean">true</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Unions can still be defined with <code>anyOf</code> keyword.</p> <p>The motivation for this restriction is that &quot;type&quot; is usually not the only keyword in the schema, and mixing other keywords that apply to different types is confusing. It is also consistent with wider range of versions of OpenAPI specification and has better tooling support. E.g., this example violating <code>strictTypes</code>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  type<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&quot;number&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;array&quot;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  minimum<span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+  items<span class="token operator">:</span> <span class="token punctuation">{</span>
+    type<span class="token operator">:</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">,</span>
+    minimum<span class="token operator">:</span> <span class="token number">0</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>is equivalent to this complying example, that is more verbose but also easier to maintain:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  anyOf<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      type<span class="token operator">:</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">,</span>
+      minimum<span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      type<span class="token operator">:</span> <span class="token string">&quot;array&quot;</span><span class="token punctuation">,</span>
+      items<span class="token operator">:</span> <span class="token punctuation">{</span>
+        type<span class="token operator">:</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">,</span>
+        minimum<span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>It also can be refactored:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  $defs<span class="token operator">:</span> <span class="token punctuation">{</span>
+    item<span class="token operator">:</span> <span class="token punctuation">{</span>
+      type<span class="token operator">:</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">,</span>
+      minimum<span class="token operator">:</span> <span class="token number">0</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  anyOf<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>$ref<span class="token operator">:</span> <span class="token string">&quot;#/$defs/item&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      type<span class="token operator">:</span> <span class="token string">&quot;array&quot;</span><span class="token punctuation">,</span>
+      items<span class="token operator">:</span> <span class="token punctuation">{</span>$ref<span class="token operator">:</span> <span class="token string">&quot;#/$defs/item&quot;</span><span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>This restriction can be lifted separately from other <code>strictTypes</code> restrictions with <code>allowUnionTypes: true</code> option.</p> <h4 id="contradictory-types"><a href="#contradictory-types" class="header-anchor">#</a> Contradictory types</h4> <p>Subschemas can apply to the same data instance, and it is possible to have contradictory type keywords - it usually indicate some mistake. For example:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  type<span class="token operator">:</span> <span class="token string">&quot;object&quot;</span><span class="token punctuation">,</span>
+  anyOf<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;array&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;object&quot;</span><span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>The schema above violates <code>strictTypes</code> as &quot;array&quot; type is not compatible with object. If you used <code>allowUnionTypes: true</code> option, the above schema can be fixed in this way:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  type<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&quot;array&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;object&quot;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  anyOf<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;array&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;object&quot;</span><span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="custom-block warning"><p class="custom-block-title">Please note</p> <p>Type &quot;number&quot; can be narrowed to &quot;integer&quot;, the opposite would violate <code>strictTypes</code>.</p></div> <h4 id="require-applicable-types"><a href="#require-applicable-types" class="header-anchor">#</a> Require applicable types</h4> <p>This simple JSON Schema is valid, but it violates <code>strictTypes</code>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  properties<span class="token operator">:</span> <span class="token punctuation">{</span>
+    foo<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    bar<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;string&quot;</span><span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+  required<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&quot;foo&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;bar&quot;</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>This is a very common mistake that even people experienced with JSON Schema often make - the problem here is that any value that is not an object would be valid against this schema - this is rarely intentional.</p> <p>To fix it, &quot;type&quot; keyword has to be added:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  type<span class="token operator">:</span> <span class="token string">&quot;object&quot;</span><span class="token punctuation">,</span>
+  properties<span class="token operator">:</span> <span class="token punctuation">{</span>
+    foo<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    bar<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;string&quot;</span><span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  required<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&quot;foo&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;bar&quot;</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>You do not necessarily have to have &quot;type&quot; keyword in the same schema object; as long as there is &quot;type&quot; keyword applying to the same part of data instance in the same schema document, not via &quot;$ref&quot;, it will be ok:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  type<span class="token operator">:</span> <span class="token string">&quot;object&quot;</span><span class="token punctuation">,</span>
+  anyOf<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      properties<span class="token operator">:</span> <span class="token punctuation">{</span>foo<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;number&quot;</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
+      required<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&quot;foo&quot;</span><span class="token punctuation">]</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      properties<span class="token operator">:</span> <span class="token punctuation">{</span>bar<span class="token operator">:</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&quot;string&quot;</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
+      required<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&quot;bar&quot;</span><span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Both &quot;properties&quot; and &quot;required&quot; need <code>type: &quot;object&quot;</code> to satisfy <code>strictTypes</code> - it is sufficient to have it once in the parent schema, without repeating it in each schema.</p> <h3 id="strict-number-validation"><a href="#strict-number-validation" class="header-anchor">#</a> Strict number validation</h3> <p>Strict mode also affects number validation. By default Ajv fails <code>{&quot;type&quot;: &quot;number&quot;}</code> (or <code>&quot;integer&quot;</code>) validation for <code>Infinity</code> and <code>NaN</code>.</p></div> <footer class="page-edit"><div class="edit-link"><a href="https://github.com/ajv-validator/ajv/edit/master/docs/strict-mode.md" target="_blank" rel="noopener noreferrer">Edit this page</a> <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></div> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/json-type-definition.html" class="prev">
+        JSON Type Definition
+      </a></span> <span class="next"><a href="/standalone.html">
+        Standalone validation code
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.eb7ef2dd.js" defer></script><script src="/assets/js/2.c39c7893.js" defer></script><script src="/assets/js/3.52058d6e.js" defer></script><script src="/assets/js/34.339232a2.js" defer></script><script src="/assets/js/4.f5c01cd3.js" defer></script>
+  </body>
+</html>
