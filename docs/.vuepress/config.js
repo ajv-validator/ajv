@@ -33,7 +33,7 @@ module.exports = {
             text: "Reference",
             items: [
               {link: "/api", text: "API Reference"},
-              {link: "/options", text: "Initialization options"},
+              {link: "/options", text: "Ajv options"},
               {link: "/json-schema", text: "JSON Schema"},
               {link: "/json-type-definition", text: "JSON Type Definition"},
               {link: "/strict-mode", text: "Strict mode"},
@@ -65,7 +65,6 @@ module.exports = {
     sidebar: [
       {
         title: "Guide",
-        collapsable: false,
         children: [
           "/guide/getting-started",
           "/guide/typescript",
@@ -81,7 +80,6 @@ module.exports = {
       },
       {
         title: "Reference",
-        collapsable: false,
         children: [
           "/api",
           "/options",
@@ -95,7 +93,6 @@ module.exports = {
       },
       {
         title: "Contributors",
-        collapsable: false,
         children: [
           "/contributing",
           "/codegen",
@@ -105,7 +102,6 @@ module.exports = {
       },
       {
         title: "Information",
-        collapsable: false,
         children: ["/faq", "/security", ["/license", "License"]],
       },
     ],

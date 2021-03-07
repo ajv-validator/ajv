@@ -1,4 +1,4 @@
-# Initialization options
+# Ajv options
 
 [[toc]]
 

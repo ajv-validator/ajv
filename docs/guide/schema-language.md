@@ -1,3 +1,7 @@
+---
+tags:
+  - JTD
+---
 # Choosing schema language
 
 [[toc]]
