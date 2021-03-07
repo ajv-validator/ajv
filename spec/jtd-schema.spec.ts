@@ -5,6 +5,7 @@ import getAjvInstances from "./ajv_instances"
 import {withStandalone} from "./ajv_standalone"
 import jtdValidationTests = require("./json-typedef-spec/tests/validation.json")
 import jtdInvalidSchemasTests = require("./json-typedef-spec/tests/invalid_schemas.json")
+import jsonParseTests = require("./json_parse_tests.json")
 import assert = require("assert")
 // import AjvPack from "../dist/standalone/instance"
 
@@ -17,6 +18,18 @@ interface TestCase {
 interface TestCaseError {
   instancePath: string[]
   schemaPath: string[]
+}
+
+interface JSONParseTest {
+  name: string
+  valid: boolean | null
+  json: string
+  data?: unknown
+}
+
+interface JSONParseTestSuite {
+  suite: string
+  tests: JSONParseTest[]
 }
 
 // interface JTDError {
@@ -83,7 +96,6 @@ describe("JSON Type Definition", () => {
 
   describe("invalid schemas", () => {
     let ajv: AjvJTD
-
     before(() => (ajv = new _AjvJTD()))
 
     for (const testName in jtdInvalidSchemasTests) {
@@ -112,7 +124,8 @@ describe("JSON Type Definition", () => {
   })
 
   describe("parse", () => {
-    const ajv = new _AjvJTD()
+    let ajv: AjvJTD
+    before(() => (ajv = new _AjvJTD()))
 
     for (const testName in jtdValidationTests) {
       const {schema, instance, errors} = jtdValidationTests[testName] as TestCase
@@ -135,20 +148,51 @@ describe("JSON Type Definition", () => {
         }
       })
     }
+  })
 
-    function shouldParse(parse: JTDParser, str: string, res: unknown): void {
-      assert.deepStrictEqual(parse(str), res)
-      assert.strictEqual(parse.message, undefined)
-      assert.strictEqual(parse.position, undefined)
+  describe("parse tests nst/JSONTestSuite", () => {
+    const ajv = new _AjvJTD()
+    const parseJson: JTDParser = ajv.compileParser({})
+    const parse: {[K in "string" | "number" | "array" | "object"]: JTDParser} = {
+      string: ajv.compileParser({type: "string"}),
+      number: ajv.compileParser({type: "float64"}),
+      array: ajv.compileParser({elements: {}}),
+      object: ajv.compileParser({values: {}}),
     }
 
-    function shouldFail(parse: JTDParser, str: string): void {
-      assert.strictEqual(parse(str), undefined)
-      assert.strictEqual(typeof parse.message, "string")
-      assert.strictEqual(typeof parse.position, "number")
+    for (const {suite, tests} of jsonParseTests as JSONParseTestSuite[]) {
+      describe(suite, () => {
+        for (const {valid, name, json, data} of tests) {
+          if (valid) {
+            it(`should parse ${name}`, () => shouldParse(parseJson, json, data))
+            if (suite in parse) {
+              it.skip(`should parse as ${suite}: ${name}`, () =>
+                shouldParse(parse[suite], json, data))
+            }
+          } else if (valid === false) {
+            it(`should fail parsing ${name}`, () => shouldFail(parseJson, json))
+            if (suite in parse) {
+              it.skip(`should fail parsing as ${suite}: ${name}`, () =>
+                shouldFail(parse[suite], json))
+            }
+          }
+        }
+      })
     }
   })
 })
+
+function shouldParse(parse: JTDParser, str: string, res: unknown): void {
+  assert.deepStrictEqual(parse(str), res)
+  assert.strictEqual(parse.message, undefined)
+  assert.strictEqual(parse.position, undefined)
+}
+
+function shouldFail(parse: JTDParser, str: string): void {
+  assert.strictEqual(parse(str), undefined)
+  assert.strictEqual(typeof parse.message, "string")
+  assert.strictEqual(typeof parse.position, "number")
+}
 
 function describeOnly(name: string, func: () => void) {
   if (ONLY.length === 0 || ONLY.some((p) => p.test(name))) {
