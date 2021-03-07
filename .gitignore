@@ -1,14 +1,1 @@
 .DS_Store
-node_modules/
-dist/
-lib/
-
-_site/
-_source/
-.jekyll-cache
-
-.browser/
-.nyc_output/
-coverage/
-package-lock.json
-spec/
