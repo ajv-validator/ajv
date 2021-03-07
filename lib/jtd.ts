@@ -94,12 +94,20 @@ export default class Ajv extends AjvCore {
       super.defaultMeta() || (this.getSchema(META_SCHEMA_ID) ? META_SCHEMA_ID : undefined))
   }
 
-  compileSerializer<T = unknown>(schema: SchemaObject | JTDSchemaType<T>): (data: T) => string {
+  compileSerializer<T = unknown>(schema: SchemaObject): (data: T) => string
+  // Separated for type inference to work
+  // eslint-disable-next-line @typescript-eslint/unified-signatures
+  compileSerializer<T = unknown>(schema: JTDSchemaType<T>): (data: T) => string
+  compileSerializer<T = unknown>(schema: SchemaObject): (data: T) => string {
     const sch = this._addSchema(schema)
     return sch.serialize || this._compileSerializer(sch)
   }
 
-  compileParser<T = unknown>(schema: SchemaObject | JTDSchemaType<T>): JTDParser<T> {
+  compileParser<T = unknown>(schema: SchemaObject): JTDParser<T>
+  // Separated for type inference to work
+  // eslint-disable-next-line @typescript-eslint/unified-signatures
+  compileParser<T = unknown>(schema: JTDSchemaType<T>): JTDParser<T>
+  compileParser<T = unknown>(schema: SchemaObject): JTDParser<T> {
     const sch = this._addSchema(schema)
     return (sch.parse || this._compileParser(sch)) as JTDParser<T>
   }

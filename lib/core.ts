@@ -299,7 +299,7 @@ export default class Ajv {
   validate(schema: Schema | string, data: unknown): boolean
   validate(schemaKeyRef: AnySchema | string, data: unknown): boolean | Promise<unknown>
   validate<T>(schema: Schema | JSONSchemaType<T> | string, data: unknown): data is T
-  // This is separated to help typescript with inference
+  // Separated for type inference to work
   // eslint-disable-next-line @typescript-eslint/unified-signatures
   validate<T>(schema: JTDSchemaType<T>, data: unknown): data is T
   validate<T>(schema: AsyncSchema, data: unknown | T): Promise<T>
@@ -324,7 +324,7 @@ export default class Ajv {
   // Create validation function for passed schema
   // _meta: true if schema is a meta-schema. Used internally to compile meta schemas of user-defined keywords.
   compile<T = unknown>(schema: Schema | JSONSchemaType<T>, _meta?: boolean): ValidateFunction<T>
-  // This is separated to help typescript with inference
+  // Separated for type inference to work
   // eslint-disable-next-line @typescript-eslint/unified-signatures
   compile<T = unknown>(schema: JTDSchemaType<T>, _meta?: boolean): ValidateFunction<T>
   compile<T = unknown>(schema: AsyncSchema, _meta?: boolean): AsyncValidateFunction<T>
@@ -342,6 +342,9 @@ export default class Ajv {
     schema: SchemaObject | JSONSchemaType<T>,
     _meta?: boolean
   ): Promise<ValidateFunction<T>>
+  // Separated for type inference to work
+  // eslint-disable-next-line @typescript-eslint/unified-signatures
+  compileAsync<T = unknown>(schema: JTDSchemaType<T>, _meta?: boolean): Promise<ValidateFunction<T>>
   compileAsync<T = unknown>(schema: AsyncSchema, meta?: boolean): Promise<AsyncValidateFunction<T>>
   // eslint-disable-next-line @typescript-eslint/unified-signatures
   compileAsync<T = unknown>(

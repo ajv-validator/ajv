@@ -123,8 +123,8 @@ const schema = {
 
 type MyData = JTDDataType<typeof schema>
 
-// validate is a type guard for MyData - type is inferred from schema type
-const validate = ajv.compile(schema)
+// type inference is not supported for JTDDataType yet
+const validate = ajv.compile<MyData>(schema)
 
 const validData = {
   foo: 1,

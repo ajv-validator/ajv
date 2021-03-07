@@ -48,6 +48,27 @@ describe("JTDSchemaType", () => {
     should.not.exist(ajv.errors)
   })
 
+  it("parser should return correct data type", () => {
+    const ajv = new _Ajv()
+    const parse = ajv.compileParser(mySchema)
+    const validJson = '{"type": "a", "a": 1}'
+    const data = parse(validJson)
+    if (data !== undefined && data.type === "a") {
+      data.a.should.equal(1)
+    }
+    should.not.exist(parse.message)
+  })
+
+  it("serializer should only accept correct data type", () => {
+    const ajv = new _Ajv()
+    const serialize = ajv.compileSerializer(mySchema)
+    const validData = {type: "a" as const, a: 1}
+    serialize(validData).should.equal('{"type":"a","a":1}')
+    const invalidData = {type: "a" as const, b: "test"}
+    // @ts-expect-error
+    serialize(invalidData)
+  })
+
   it("should typecheck number schemas", () => {
     const numf: JTDSchemaType<number> = {type: "float64"}
     const numi: JTDSchemaType<number> = {type: "int32"}
@@ -322,6 +343,31 @@ describe("JTDSchemaType", () => {
 })
 
 describe("JTDDataType", () => {
+  it("validation should prove the data type", () => {
+    const ajv = new _Ajv()
+    const mySchema1 = {
+      discriminator: "type",
+      mapping: {
+        a: {properties: {a: {type: "float64"}}},
+        b: {optionalProperties: {b: {type: "string"}}},
+      },
+    } as const
+
+    type MyData1 = JTDDataType<typeof mySchema1>
+
+    const validate = ajv.compile<MyData1>(mySchema1)
+    const validData: unknown = {type: "a", a: 1}
+    if (validate(validData) && validData.type === "a") {
+      validData.a.should.equal(1)
+    }
+    should.not.exist(validate.errors)
+
+    if (ajv.validate<MyData1>(mySchema1, validData) && validData.type === "a") {
+      validData.a.should.equal(1)
+    }
+    should.not.exist(ajv.errors)
+  })
+
   it("should typecheck number schemas", () => {
     const numSchema = {type: "float64"} as const
     const num: TypeEquality<JTDDataType<typeof numSchema>, number> = true
