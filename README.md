@@ -242,7 +242,7 @@ const valid = validate(data)
 if (!valid) console.log(validate.errors)
 ```
 
-See more examples in [Guide: getting started](./docs/guide/getting-started)
+See more examples in [Guide: getting started](./docs/guide/getting-started.md)
 
 ## Extending Ajv
 
