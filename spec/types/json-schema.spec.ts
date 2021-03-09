@@ -97,6 +97,43 @@ const mySchema: JSONSchemaType<MyData> & {
   required: ["foo", "baz", "arr", "map"], // any other property added here won't typecheck
 }
 
+type MyUnionData = {a: number} | string
+
+const myUnionSchema: JSONSchemaType<MyUnionData> = {
+  anyOf: [
+    {
+      type: "object",
+      properties: {
+        a: {type: "number"},
+      },
+      required: ["a"],
+    },
+    {
+      type: "string",
+    },
+  ],
+}
+
+// because of the current definition, you can do this nested recusion
+const myNestedUnionSchema: JSONSchemaType<MyUnionData> = {
+  anyOf: [
+    {
+      oneOf: [
+        {
+          type: "object",
+          properties: {
+            a: {type: "number"},
+          },
+          required: ["a"],
+        },
+        {
+          type: "string",
+        },
+      ],
+    },
+  ],
+}
+
 describe("JSONSchemaType type and validation as a type guard", () => {
   const ajv = new _Ajv()
 
@@ -127,6 +164,62 @@ describe("JSONSchemaType type and validation as a type guard", () => {
 
       if (ajv.validate(mySchema, validData)) {
         validData.foo.should.equal("foo")
+      }
+      should.not.exist(ajv.errors)
+    })
+  })
+
+  const validUnionData: unknown = {
+    a: 5,
+  }
+
+  describe("schema has type JSONSchemaType<MyUnionData>", () => {
+    it("should prove the type of validated data", () => {
+      const validate = ajv.compile(myUnionSchema)
+      if (validate(validUnionData)) {
+        if (typeof validUnionData === "string") {
+          should.fail("not a string")
+        } else {
+          validUnionData.a.should.equal(5)
+        }
+      } else {
+        should.fail("is valid")
+      }
+      should.not.exist(validate.errors)
+
+      if (ajv.validate(myUnionSchema, validUnionData)) {
+        if (typeof validUnionData === "string") {
+          should.fail("not a string")
+        } else {
+          validUnionData.a.should.equal(5)
+        }
+      } else {
+        should.fail("is valid")
+      }
+      should.not.exist(ajv.errors)
+    })
+
+    it("should prove the type of validated nested data", () => {
+      const validate = ajv.compile(myNestedUnionSchema)
+      if (validate(validUnionData)) {
+        if (typeof validUnionData === "string") {
+          should.fail("not a string")
+        } else {
+          validUnionData.a.should.equal(5)
+        }
+      } else {
+        should.fail("is valid")
+      }
+      should.not.exist(validate.errors)
+
+      if (ajv.validate(myNestedUnionSchema, validUnionData)) {
+        if (typeof validUnionData === "string") {
+          should.fail("not a string")
+        } else {
+          validUnionData.a.should.equal(5)
+        }
+      } else {
+        should.fail("is valid")
       }
       should.not.exist(ajv.errors)
     })
