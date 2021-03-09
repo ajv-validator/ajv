@@ -29,8 +29,8 @@
     "test-ci": "AJV_FULL_TEST=true npm test",
     "prepublish": "npm run build",
     "benchmark": "npm i && npm run build && npm link && cd ./benchmark && npm link ajv && npm i && node ./jtd",
-    "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
+    "docs:dev": "./scripts/prepare-site && vuepress dev docs",
+    "docs:build": "./scripts/prepare-site && vuepress build docs"
   },
   "nyc": {
     "exclude": [

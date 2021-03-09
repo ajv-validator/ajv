@@ -5,15 +5,6 @@ set -ex
 echo "About to publish $GITHUB_REF to gh-pages..."
 rm -rf ../gh-pages
 
-function copyReplace {
-  sed "s/](.\/docs\//](.\//g" $1 > $2
-}
-
-copyReplace README.md docs/README.md
-copyReplace CODE_OF_CONDUCT.md docs/code_of_conduct.md
-copyReplace CONTRIBUTING.md docs/contributing.md
-copyReplace LICENSE docs/license.md
-
 npm run docs:build
 
 git config --global user.name "$GIT_USER_NAME"
