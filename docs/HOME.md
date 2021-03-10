@@ -2,6 +2,8 @@
 
 Safety, security and reliability for JavaScript applications
 
+<RecFeatures/>
+
 ## Ajv News
 
 This section will include the last update and the headlines of several previous updates, e.g. these sections:
