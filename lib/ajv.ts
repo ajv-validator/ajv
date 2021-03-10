@@ -26,7 +26,7 @@ import KeywordCxt from "./compile/context"
 export {KeywordCxt}
 export {DefinedError} from "./vocabularies/errors"
 export {JSONType} from "./compile/rules"
-export {JSONSchemaType} from "./types/json-schema"
+export {JSONSchemaType, PropertiesSchema, RequiredMembers} from "./types/json-schema"
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
 import type {AnySchemaObject} from "./types"
