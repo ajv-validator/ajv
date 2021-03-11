@@ -124,70 +124,61 @@ function errorObjectCode(
   error: KeywordErrorDefinition,
   errorPaths?: ErrorPaths
 ): Code {
-  const {createErrors, opts} = cxt.it
+  const {createErrors} = cxt.it
   if (createErrors === false) return _`{}`
-  return (opts.jtd && !opts.ajvErrors ? jtdErrorObject : ajvErrorObject)(cxt, error, errorPaths)
+  return errorObject(cxt, error, errorPaths)
 }
 
-function jtdErrorObject(
+function errorObject(
   cxt: KeywordErrorCxt,
-  {message}: KeywordErrorDefinition,
+  {params, message}: KeywordErrorDefinition,
   errorPaths: ErrorPaths = {}
 ): Code {
-  const {gen, it} = cxt
-  const {opts} = it
-  const keyValues: [Name, SafeExpr | string][] = [
-    [E.instancePath, errorDataPath(it, errorPaths)],
-    [E.schemaPath, errorSchemaPath(cxt, errorPaths)],
-  ]
-  if (opts.messages) {
-    keyValues.push([E.message, typeof message == "function" ? message(cxt) : message])
-  }
-  return gen.object(...keyValues)
-}
-
-function ajvErrorObject(
-  cxt: KeywordErrorCxt,
-  error: KeywordErrorDefinition,
-  errorPaths: ErrorPaths = {}
-): Code {
-  const {gen, keyword, data, schemaValue, it} = cxt
-  const {topSchemaRef, schemaPath, propertyName, opts} = it
-  const {params, message} = error
+  const {gen, keyword, it} = cxt
+  const {propertyName, opts} = it
   const keyValues: [Name, SafeExpr | string][] = [
     [E.keyword, keyword],
-    [N.dataPath, errorDataPath(it, errorPaths)],
-    [E.schemaPath, errorSchemaPath(cxt, errorPaths)],
-    [E.params, typeof params == "function" ? params(cxt) : params || _`{}`],
+    errorDataPath(it, errorPaths),
+    errorSchemaPath(cxt, errorPaths),
+    errorParams(cxt, params),
   ]
-  if (propertyName) keyValues.push([E.propertyName, propertyName])
   if (opts.messages) {
     keyValues.push([E.message, typeof message == "function" ? message(cxt) : message])
   }
-  if (opts.verbose) {
-    keyValues.push(
-      [E.schema, schemaValue],
-      [E.parentSchema, _`${topSchemaRef}${schemaPath}`],
-      [N.data, data]
-    )
-  }
+  if (opts.verbose) verboseError(cxt, keyValues)
+  if (propertyName) keyValues.push([E.propertyName, propertyName])
   return gen.object(...keyValues)
 }
 
-function errorDataPath({errorPath}: SchemaCxt, {instancePath}: ErrorPaths): Code {
+function errorDataPath({errorPath, opts}: SchemaCxt, {instancePath}: ErrorPaths): [Name, Code] {
+  const dataPathProp = opts.jtd && !opts.ajvErrors ? E.instancePath : N.dataPath
   const dataPath = instancePath
     ? str`${errorPath}${getErrorPath(instancePath, Type.Str)}`
     : errorPath
-  return strConcat(N.dataPath, dataPath)
+  return [dataPathProp, strConcat(N.dataPath, dataPath)]
 }
 
 function errorSchemaPath(
   {keyword, it: {errSchemaPath}}: KeywordErrorCxt,
   {schemaPath, parentSchema}: ErrorPaths
-): string | Code {
-  let schemaPath_ = parentSchema ? errSchemaPath : str`${errSchemaPath}/${keyword}`
+): [Name, string | Code] {
+  let schPath = parentSchema ? errSchemaPath : str`${errSchemaPath}/${keyword}`
   if (schemaPath) {
-    schemaPath_ = str`${schemaPath_}${getErrorPath(schemaPath, Type.Str)}`
+    schPath = str`${schPath}${getErrorPath(schemaPath, Type.Str)}`
   }
-  return schemaPath_
+  return [E.schemaPath, schPath]
+}
+
+function errorParams(cxt: KeywordErrorCxt, params: KeywordErrorDefinition["params"]): [Name, Code] {
+  return [E.params, typeof params == "function" ? params(cxt) : params || _`{}`]
+}
+
+function verboseError(cxt: KeywordErrorCxt, keyValues: [Name, SafeExpr | string][]): void {
+  const {data, schemaValue, it} = cxt
+  const {topSchemaRef, schemaPath} = it
+  keyValues.push(
+    [E.schema, schemaValue],
+    [E.parentSchema, _`${topSchemaRef}${schemaPath}`],
+    [N.data, data]
+  )
 }

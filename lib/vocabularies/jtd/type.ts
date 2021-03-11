@@ -1,6 +1,6 @@
-import type {CodeKeywordDefinition} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {_, or, Code} from "../../compile/codegen"
+import {_, str, or, Code} from "../../compile/codegen"
 import validTimestamp from "../../compile/timestamp"
 import {func} from "../../compile/util"
 import {checkMetadata} from "./metadata"
@@ -16,9 +16,16 @@ export const intRange: {[T in IntType]: [number, number, number]} = {
   uint32: [0, 4294967295, 10],
 }
 
+const error: KeywordErrorDefinition = {
+  message: ({schema, parentSchema}) =>
+    parentSchema?.nullable ? str`must be ${schema} or null` : str`must be ${schema}`,
+  params: ({schema, parentSchema}) => _`{type: ${schema}, nullable: ${!!parentSchema?.nullable}}`,
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "type",
   schemaType: "string",
+  error,
   code(cxt: KeywordCxt) {
     checkMetadata(cxt)
     const {gen, data, schema, parentSchema} = cxt

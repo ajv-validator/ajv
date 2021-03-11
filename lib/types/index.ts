@@ -168,7 +168,7 @@ export type AddedKeywordDefinition = KeywordDefinition & {
 }
 
 export interface KeywordErrorDefinition {
-  message: string | Code | ((cxt: KeywordErrorCxt) => Code)
+  message: string | Code | ((cxt: KeywordErrorCxt) => string | Code)
   params?: Code | ((cxt: KeywordErrorCxt) => Code)
 }
 

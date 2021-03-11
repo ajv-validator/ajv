@@ -79,10 +79,17 @@ describe("JSON Type Definition", () => {
             assert.strictEqual(ajv.validate(schema, instance), valid)
             const opts = ajv instanceof AjvPack ? ajv.ajv.opts : ajv.opts
             if (opts.allErrors) {
-              assert.deepStrictEqual(sortErrors(ajv.errors), valid ? null : convertErrors(errors))
+              assert.deepStrictEqual(cleanErrors(ajv.errors), valid ? null : convertErrors(errors))
             }
           }))
       )
+    }
+
+    function cleanErrors(errors?: JTDError[] | null): JTDError[] | null | undefined {
+      if (errors) {
+        return sortErrors(errors.map(({instancePath, schemaPath}) => ({instancePath, schemaPath})))
+      }
+      return errors
     }
 
     function convertErrors(errors: TestCaseError[]): JTDError[] | null | undefined {

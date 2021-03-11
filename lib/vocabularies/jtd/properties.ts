@@ -1,16 +1,50 @@
-import type {CodeKeywordDefinition} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {propertyInData, allSchemaProperties, isOwnProperty} from "../code"
 import {alwaysValidSchema, schemaRefOrVal} from "../../compile/util"
-import {_, and, Code, Name} from "../../compile/codegen"
+import {_, str, and, Code, Name} from "../../compile/codegen"
 import {checkMetadata} from "./metadata"
 import {checkNullableObject} from "./nullable"
+
+enum PropError {
+  Additional,
+  Missing,
+}
+
+export const error: KeywordErrorDefinition = {
+  message: ({parentSchema, params}) => {
+    switch (params.propError) {
+      case PropError.Additional:
+        return "must NOT have additional properties"
+      case PropError.Missing:
+        return str`must have property '${params.missingProperty}'`
+      default:
+        return parentSchema?.nullable ? "must be object or null" : "must be object"
+    }
+  },
+  params: ({parentSchema, params}) => {
+    switch (params.propError) {
+      case PropError.Additional:
+        return _`{error: ${params.propError}, additionalProperty: ${params.additionalProperty}}`
+      case PropError.Missing:
+        return _`{error: ${params.propError}, missingProperty: ${params.missingProperty}}`
+      default:
+        return _`{nullable: ${!!parentSchema?.nullable}}`
+    }
+  },
+}
 
 const def: CodeKeywordDefinition = {
   keyword: "properties",
   schemaType: "object",
+  error,
   code: validateProperties,
 }
+
+// const error: KeywordErrorDefinition = {
+//   message: "should NOT have additional properties",
+//   params: ({params}) => _`{additionalProperty: ${params.additionalProperty}}`,
+// }
 
 export function validateProperties(cxt: KeywordCxt): void {
   checkMetadata(cxt)
@@ -73,7 +107,7 @@ export function validateProperties(cxt: KeywordCxt): void {
     function missingProperty(prop: string): void {
       if (required) {
         gen.assign(_valid, false)
-        cxt.error(false, {schemaPath: prop})
+        cxt.error(false, {propError: PropError.Missing, missingProperty: prop}, {schemaPath: prop})
       } else {
         gen.assign(_valid, true)
       }
@@ -103,8 +137,11 @@ export function validateProperties(cxt: KeywordCxt): void {
         if (it.opts.removeAdditional) {
           gen.code(_`delete ${data}[${key}]`)
         } else {
-          // cxt.setParams({additionalProperty: key})
-          cxt.error(false, {instancePath: key, parentSchema: true})
+          cxt.error(
+            false,
+            {propError: PropError.Additional, additionalProperty: key},
+            {instancePath: key, parentSchema: true}
+          )
           if (!it.opts.allErrors) gen.break()
         }
       })

@@ -50,7 +50,7 @@ export type JTDOptions = CurrentOptions & {
   validateFormats?: never
   // validation and reporting options not supported with JTD:
   $data?: never
-  verbose?: never
+  verbose?: boolean
   $comment?: never
   formats?: never
   loadSchema?: never
@@ -74,7 +74,6 @@ export default class Ajv extends AjvCore {
     super({
       ...opts,
       jtd: true,
-      messages: opts.messages ?? false,
     })
   }
 

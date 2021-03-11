@@ -32,7 +32,7 @@ const defaultOptions = {
   // validation and reporting options:
   $data: false, // *
   allErrors: false,
-  verbose: false, // *
+  verbose: false,
   $comment: false, // *
   formats: {},
   keywords: {},

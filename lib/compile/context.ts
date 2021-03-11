@@ -101,7 +101,17 @@ export default class KeywordCxt implements KeywordErrorCxt {
     this.fail(_`${schemaCode} !== undefined && (${or(this.invalid$data(), condition)})`)
   }
 
-  error(append?: boolean, errorPaths?: ErrorPaths): void {
+  error(append?: boolean, errorParams?: KeywordCxtParams, errorPaths?: ErrorPaths): void {
+    if (errorParams) {
+      this.setParams(errorParams)
+      this._error(append, errorPaths)
+      this.setParams({})
+      return
+    }
+    this._error(append, errorPaths)
+  }
+
+  private _error(append?: boolean, errorPaths?: ErrorPaths): void {
     ;(append ? reportExtraError : reportError)(this, this.def.error, errorPaths)
   }
 

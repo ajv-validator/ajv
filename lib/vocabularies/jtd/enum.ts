@@ -1,11 +1,17 @@
-import type {CodeKeywordDefinition} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, or, not, Code} from "../../compile/codegen"
 import {checkMetadata} from "./metadata"
 
+const error: KeywordErrorDefinition = {
+  message: "must be equal to one of the allowed values",
+  params: ({schemaCode}) => _`{allowedValues: ${schemaCode}}`,
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "enum",
   schemaType: "array",
+  error,
   code(cxt: KeywordCxt) {
     checkMetadata(cxt)
     const {gen, data, schema, schemaValue, parentSchema, it} = cxt

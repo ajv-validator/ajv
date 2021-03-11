@@ -1,8 +1,41 @@
-import type {CodeKeywordDefinition} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {_, not, getProperty, Name} from "../../compile/codegen"
+import {_, str, not, getProperty, Name} from "../../compile/codegen"
 import {checkMetadata} from "./metadata"
 import {checkNullableObject} from "./nullable"
+
+enum DiscrError {
+  NoTag,
+  TagType,
+  NoMapping,
+}
+
+export const error: KeywordErrorDefinition = {
+  message: ({schema, parentSchema, params}) => {
+    switch (params.discrError) {
+      case DiscrError.NoTag:
+        return str`tag "${schema}" is missing`
+      case DiscrError.TagType:
+        return str`value of tag "${schema}" must be string`
+      case DiscrError.NoMapping:
+        return "tag value must be in schema mapping"
+      default:
+        return parentSchema?.nullable ? "must be object or null" : "must be object"
+    }
+  },
+  params: ({schema, parentSchema, params}) => {
+    const err = _`{error: ${params.discrError}, tag: ${schema}`
+    switch (params.discrError) {
+      case DiscrError.NoTag:
+        return _`${err}}`
+      case DiscrError.TagType:
+      case DiscrError.NoMapping:
+        return _`${err}, tagValue: ${params.tag}}`
+      default:
+        return _`{nullable: ${!!parentSchema?.nullable}}`
+    }
+  },
+}
 
 const def: CodeKeywordDefinition = {
   keyword: "discriminator",
@@ -23,11 +56,11 @@ const def: CodeKeywordDefinition = {
     function validateDiscriminator(): void {
       const tag = gen.const("tag", _`${data}${getProperty(schema)}`)
       gen.if(_`${tag} === undefined`)
-      cxt.error()
+      cxt.error(false, {discrError: DiscrError.NoTag})
       gen.elseIf(_`typeof ${tag} == "string"`)
       validateMapping(tag)
       gen.else()
-      cxt.error(false, {instancePath: schema})
+      cxt.error(false, {discrError: DiscrError.TagType, tag}, {instancePath: schema})
       gen.endIf()
     }
 
@@ -38,7 +71,11 @@ const def: CodeKeywordDefinition = {
         gen.assign(valid, applyTagSchema(tagValue))
       }
       gen.else()
-      cxt.error(false, {instancePath: schema, schemaPath: "mapping", parentSchema: true})
+      cxt.error(
+        false,
+        {discrError: DiscrError.NoMapping, tag},
+        {instancePath: schema, schemaPath: "mapping", parentSchema: true}
+      )
       gen.endIf()
     }
 

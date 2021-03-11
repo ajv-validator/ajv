@@ -1,14 +1,21 @@
-import type {CodeKeywordDefinition} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {Type} from "../../compile/subschema"
 import {alwaysValidSchema} from "../../compile/util"
-import {not, Name} from "../../compile/codegen"
+import {_, not, Name} from "../../compile/codegen"
 import {checkMetadata} from "./metadata"
 import {checkNullableObject} from "./nullable"
+
+const error: KeywordErrorDefinition = {
+  message: ({parentSchema}) =>
+    parentSchema?.nullable ? "must be object or null" : "must be object",
+  params: ({parentSchema}) => _`{nullable: ${!!parentSchema?.nullable}}`,
+}
 
 const def: CodeKeywordDefinition = {
   keyword: "values",
   schemaType: "object",
+  error,
   code(cxt: KeywordCxt) {
     checkMetadata(cxt)
     const {gen, data, schema, it} = cxt
