@@ -65,15 +65,15 @@ export function validateProperties(cxt: KeywordCxt): void {
       gen.if(
         propertyInData(gen, data, prop, it.opts.ownProperties),
         () => applyPropertySchema(prop, keyword, _valid),
-        missingProperty
+        () => missingProperty(prop)
       )
       cxt.ok(_valid)
     }
 
-    function missingProperty(): void {
+    function missingProperty(prop: string): void {
       if (required) {
         gen.assign(_valid, false)
-        cxt.error()
+        cxt.error(false, {schemaPath: prop})
       } else {
         gen.assign(_valid, true)
       }
@@ -104,7 +104,7 @@ export function validateProperties(cxt: KeywordCxt): void {
           gen.code(_`delete ${data}[${key}]`)
         } else {
           // cxt.setParams({additionalProperty: key})
-          cxt.error()
+          cxt.error(false, {instancePath: key, parentSchema: true})
           if (!it.opts.allErrors) gen.break()
         }
       })

@@ -14,8 +14,12 @@ const def: CodeKeywordDefinition = {
     const {gen, data, schema, it} = cxt
     if (alwaysValidSchema(it, schema)) return
     const [valid, cond] = checkNullableObject(cxt, data)
-    gen.if(cond, () => gen.assign(valid, validateMap()))
-    cxt.pass(valid)
+    gen.if(cond)
+    gen.assign(valid, validateMap())
+    gen.elseIf(not(valid))
+    cxt.error()
+    gen.endIf()
+    cxt.ok(valid)
 
     function validateMap(): Name | boolean {
       const _valid = gen.name("valid")

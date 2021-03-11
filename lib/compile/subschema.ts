@@ -149,7 +149,7 @@ function extendSubschemaMode(
   subschema.jtdMetadata = jtdMetadata // not inherited
 }
 
-function getErrorPath(
+export function getErrorPath(
   dataProp: Name | string | number,
   dataPropType?: Type,
   jsPropertySyntax?: boolean
