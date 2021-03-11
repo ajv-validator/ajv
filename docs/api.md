@@ -360,7 +360,7 @@ interface JTDErrorObject {
 }
 ```
 
-This error format is used when using JTD schemas. To simplify usage, you may still generate Ajv error objects using `ajvErrors` option. You can also add a human-readable error message to error objects using option `messages`.
+This error format will be used with JTD schemas when [`strictJtdErrors` option](./options.md#strictjtderrors) is used.
 
 ### Error parameters
 
@@ -466,6 +466,14 @@ type ErrorParams = {propertyName: string} // invalid property name
 ```
 
 User-defined keywords can define other keyword parameters.
+
+### Errors i18n
+
+You can use [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) package to generate errors in other languages.
+
+::: warning Do NOT use option strictJtdErrors
+This package is not compatible with the option [strictJtdErrors](./options.md#strictjtderrors).
+:::
 
 ### Error logging
 

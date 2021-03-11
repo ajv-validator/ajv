@@ -129,26 +129,20 @@ function errorObjectCode(
 
 function errorObject(
   cxt: KeywordErrorCxt,
-  {params, message}: KeywordErrorDefinition,
+  error: KeywordErrorDefinition,
   errorPaths: ErrorPaths = {}
 ): Code {
-  const {gen, keyword, it} = cxt
-  const {propertyName, opts} = it
+  const {gen, it} = cxt
+  const {opts} = it
   const keyValues: [Name, SafeExpr | string][] = [
-    [E.keyword, keyword],
-    errorDataPath(it, errorPaths),
+    errorInstancePath(it, errorPaths),
     errorSchemaPath(cxt, errorPaths),
-    errorParams(cxt, params),
   ]
-  if (opts.messages) {
-    keyValues.push([E.message, typeof message == "function" ? message(cxt) : message])
-  }
-  if (opts.verbose) verboseError(cxt, keyValues)
-  if (propertyName) keyValues.push([E.propertyName, propertyName])
+  if (!(opts.jtd && opts.strictJtdErrors)) extraErrorProps(cxt, error, keyValues)
   return gen.object(...keyValues)
 }
 
-function errorDataPath({errorPath}: SchemaCxt, {instancePath}: ErrorPaths): [Name, Code] {
+function errorInstancePath({errorPath}: SchemaCxt, {instancePath}: ErrorPaths): [Name, Code] {
   const instPath = instancePath
     ? str`${errorPath}${getErrorPath(instancePath, Type.Str)}`
     : errorPath
@@ -166,16 +160,26 @@ function errorSchemaPath(
   return [E.schemaPath, schPath]
 }
 
-function errorParams(cxt: KeywordErrorCxt, params: KeywordErrorDefinition["params"]): [Name, Code] {
-  return [E.params, typeof params == "function" ? params(cxt) : params || _`{}`]
-}
-
-function verboseError(cxt: KeywordErrorCxt, keyValues: [Name, SafeExpr | string][]): void {
-  const {data, schemaValue, it} = cxt
-  const {topSchemaRef, schemaPath} = it
+function extraErrorProps(
+  cxt: KeywordErrorCxt,
+  {params, message}: KeywordErrorDefinition,
+  keyValues: [Name, SafeExpr | string][]
+): void {
+  const {keyword, data, schemaValue, it} = cxt
+  const {opts, propertyName, topSchemaRef, schemaPath} = it
   keyValues.push(
-    [E.schema, schemaValue],
-    [E.parentSchema, _`${topSchemaRef}${schemaPath}`],
-    [N.data, data]
+    [E.keyword, keyword],
+    [E.params, typeof params == "function" ? params(cxt) : params || _`{}`]
   )
+  if (opts.messages) {
+    keyValues.push([E.message, typeof message == "function" ? message(cxt) : message])
+  }
+  if (opts.verbose) {
+    keyValues.push(
+      [E.schema, schemaValue],
+      [E.parentSchema, _`${topSchemaRef}${schemaPath}`],
+      [N.data, data]
+    )
+  }
+  if (propertyName) keyValues.push([E.propertyName, propertyName])
 }

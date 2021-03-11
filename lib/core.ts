@@ -123,7 +123,6 @@ export interface CurrentOptions {
   multipleOfPrecision?: number
   messages?: boolean
   code?: CodeOptions // NEW
-  ajvErrors?: boolean
 }
 
 export interface CodeOptions {
@@ -165,6 +164,7 @@ interface RemovedOptions {
   unknownFormats?: true | string[] | "ignore"
   cache?: any
   serialize?: (schema: AnySchema) => unknown
+  ajvErrors?: boolean
 }
 
 type OptionsInfo<T extends RemovedOptions | DeprecatedOptions> = {
@@ -188,6 +188,7 @@ const removedOptions: OptionsInfo<RemovedOptions> = {
   unknownFormats: "Disable strict mode or pass `true` to `ajv.addFormat` (or `formats` option).",
   cache: "Map is used as cache, schema object as key.",
   serialize: "Map is used as cache, schema object as key.",
+  ajvErrors: "It is default now, see option `strict`.",
 }
 
 const deprecatedOptions: OptionsInfo<DeprecatedOptions> = {
@@ -211,7 +212,7 @@ type RequiredInstanceOptions = {
     | "validateFormats"]: NonNullable<Options[K]>
 } & {code: InstanceCodeOptions}
 
-export type InstanceOptions = Options & RequiredInstanceOptions
+export type InstanceOptions = Options & RequiredInstanceOptions & {strictJtdErrors?: boolean}
 
 function requiredOptions(o: Options): RequiredInstanceOptions {
   const strict = o.strict ?? true

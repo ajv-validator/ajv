@@ -1006,7 +1006,14 @@ describe("User-defined keywords", () => {
     })
   }
 
-  function shouldBeRangeError(error, instancePath, schemaPath, comparison, limit, exclusive?: boolean) {
+  function shouldBeRangeError(
+    error,
+    instancePath,
+    schemaPath,
+    comparison,
+    limit,
+    exclusive?: boolean
+  ) {
     delete error.schema
     delete error.data
     error.should.eql({

@@ -54,7 +54,7 @@ const defaultOptions = {
   ownProperties: false,
   multipleOfPrecision: undefined, // *
   messages: true, // false with JTD
-  ajvErrors: false // only with JTD
+  strictJtdErrors: false // only with JTD
   code: {
     // NEW
     es5: false,
@@ -267,9 +267,13 @@ By default `multipleOf` keyword is validated by comparing the result of division
 
 Include human-readable messages in errors. `true` by default. `false` can be passed when messages are generated outside of Ajv code (e.g. with [ajv-i18n](https://github.com/ajv-validator/ajv-i18n)).
 
-### ajvErrors <Badge text="JTD only" />
+### strictJtdErrors <Badge text="JTD only" />
 
-This option is only supported with JTD schemas to generate error objects with the properties described in the first part of [Validation errors](#validation-errors) section, otherwise JTD errors are generated when JTD schemas are used (see the second part of [the same section](#validation-errors)).
+This option is only supported with JTD schemas to generate error objects that have only the properties defined in JSON Type Definition specification - `instancePath` and `schemaPath`. By default, JTD errors will have all properties described in [Validation errors](./api.md#validation-errors)).
+
+::: warning Using ajv-i18n
+When this option is enabled you will NOT be able to use [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) package - it requires extended error properties to generate error messages.
+:::
 
 ### code <Badge text="v7" />
 

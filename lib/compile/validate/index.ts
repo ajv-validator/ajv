@@ -39,9 +39,9 @@ function validateFunction(
 }
 
 function destructureValCxt(opts: InstanceOptions): Code {
-  return _`{${N.instancePath}="", ${N.parentData}, ${N.parentDataProperty}, ${N.rootData}=${N.data}${
-    opts.dynamicRef ? _`, ${N.dynamicAnchors}={}` : nil
-  }}={}`
+  return _`{${N.instancePath}="", ${N.parentData}, ${N.parentDataProperty}, ${N.rootData}=${
+    N.data
+  }${opts.dynamicRef ? _`, ${N.dynamicAnchors}={}` : nil}}={}`
 }
 
 function destructureValCxtES5(gen: CodeGen, opts: InstanceOptions): void {
