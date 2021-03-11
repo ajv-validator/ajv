@@ -34,7 +34,10 @@ const def: CodeKeywordDefinition = {
     }
 
     function callValidate(schema: AnySchemaObject): void {
-      const sch = compileSchema.call(it.self, new SchemaEnv({schema, root}))
+      const sch = compileSchema.call(
+        it.self,
+        new SchemaEnv({schema, root, schemaPath: `/definitions/${ref}`})
+      )
       const v = getValidate(cxt, sch)
       const errsCount = gen.const("_errs", N.errors)
       callRef(cxt, v, sch, sch.$async)

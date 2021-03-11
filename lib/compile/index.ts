@@ -65,6 +65,7 @@ interface SchemaEnvArgs {
   readonly schema: AnySchema
   readonly root?: SchemaEnv
   readonly baseId?: string
+  readonly schemaPath?: string
   readonly localRefs?: LocalRefs
   readonly meta?: boolean
 }
@@ -73,6 +74,7 @@ export class SchemaEnv implements SchemaEnvArgs {
   readonly schema: AnySchema
   readonly root: SchemaEnv
   baseId: string // TODO possibly, it should be readonly
+  schemaPath?: string
   localRefs?: LocalRefs
   readonly meta?: boolean
   readonly $async?: boolean // true if the current schema is asynchronous.
@@ -91,6 +93,7 @@ export class SchemaEnv implements SchemaEnvArgs {
     this.schema = env.schema
     this.root = env.root || this
     this.baseId = env.baseId ?? normalizeId(schema?.$id)
+    this.schemaPath = env.schemaPath
     this.localRefs = env.localRefs
     this.meta = env.meta
     this.$async = schema?.$async
@@ -145,7 +148,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     rootId,
     baseId: sch.baseId || rootId,
     schemaPath: nil,
-    errSchemaPath: this.opts.jtd ? "" : "#",
+    errSchemaPath: sch.schemaPath || (this.opts.jtd ? "" : "#"),
     errorPath: _`""`,
     opts: this.opts,
     self: this,

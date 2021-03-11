@@ -42,7 +42,7 @@ interface JTDError {
 
 // const ONLY: RegExp[] = [
 //   "empty",
-//   // "ref",
+//   "ref",
 //   "type",
 //   "enum",
 //   "elements",
@@ -78,7 +78,6 @@ describe("JSON Type Definition", () => {
             // console.log(ajv.validate(schema, instance), ajv.errors)
             assert.strictEqual(ajv.validate(schema, instance), valid)
             const opts = ajv instanceof AjvPack ? ajv.ajv.opts : ajv.opts
-            return
             if (opts.allErrors) {
               assert.deepStrictEqual(sortErrors(ajv.errors), valid ? null : convertErrors(errors))
             }
