@@ -25,12 +25,13 @@ const def: CodeKeywordDefinition = {
   keyword: "required",
   type: "object",
   schemaType: "array",
+  allowUndefined: true,
   $data: true,
   error,
   code(cxt: KeywordCxt) {
     const {gen, schema, schemaCode, data, $data, it} = cxt
     const {opts} = it
-    if (!$data && schema.length === 0) return
+    if (typeof schema === 'undefined' || (!$data && schema.length === 0)) return
     const useLoop = schema.length >= opts.loopRequired
     if (it.allErrors) allErrorsMode()
     else exitOnErrorMode()
