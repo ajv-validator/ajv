@@ -132,20 +132,13 @@ function errorObjectCode(
 function jtdErrorObject(
   cxt: KeywordErrorCxt,
   {message}: KeywordErrorDefinition,
-  {schemaPath, instancePath, parentSchema}: ErrorPaths = {}
+  errorPaths: ErrorPaths = {}
 ): Code {
-  const {gen, keyword, it} = cxt
-  const {errorPath, errSchemaPath, opts} = it
-  let schemaPath_ = parentSchema ? errSchemaPath : str`${errSchemaPath}/${keyword}`
-  if (schemaPath) {
-    schemaPath_ = str`${schemaPath_}${getErrorPath(schemaPath, Type.Str)}`
-  }
-  const dataPath = instancePath
-    ? str`${errorPath}${getErrorPath(instancePath, Type.Str)}`
-    : errorPath
+  const {gen, it} = cxt
+  const {opts} = it
   const keyValues: [Name, SafeExpr | string][] = [
-    [E.instancePath, strConcat(N.dataPath, dataPath)],
-    [E.schemaPath, schemaPath_],
+    [E.instancePath, errorDataPath(it, errorPaths)],
+    [E.schemaPath, errorSchemaPath(cxt, errorPaths)],
   ]
   if (opts.messages) {
     keyValues.push([E.message, typeof message == "function" ? message(cxt) : message])
@@ -156,15 +149,15 @@ function jtdErrorObject(
 function ajvErrorObject(
   cxt: KeywordErrorCxt,
   error: KeywordErrorDefinition,
-  _errorPaths?: ErrorPaths
+  errorPaths: ErrorPaths = {}
 ): Code {
   const {gen, keyword, data, schemaValue, it} = cxt
-  const {topSchemaRef, schemaPath, errorPath, errSchemaPath, propertyName, opts} = it
+  const {topSchemaRef, schemaPath, propertyName, opts} = it
   const {params, message} = error
   const keyValues: [Name, SafeExpr | string][] = [
     [E.keyword, keyword],
-    [N.dataPath, strConcat(N.dataPath, errorPath)],
-    [E.schemaPath, str`${errSchemaPath}/${keyword}`],
+    [N.dataPath, errorDataPath(it, errorPaths)],
+    [E.schemaPath, errorSchemaPath(cxt, errorPaths)],
     [E.params, typeof params == "function" ? params(cxt) : params || _`{}`],
   ]
   if (propertyName) keyValues.push([E.propertyName, propertyName])
@@ -179,4 +172,22 @@ function ajvErrorObject(
     )
   }
   return gen.object(...keyValues)
+}
+
+function errorDataPath({errorPath}: SchemaCxt, {instancePath}: ErrorPaths): Code {
+  const dataPath = instancePath
+    ? str`${errorPath}${getErrorPath(instancePath, Type.Str)}`
+    : errorPath
+  return strConcat(N.dataPath, dataPath)
+}
+
+function errorSchemaPath(
+  {keyword, it: {errSchemaPath}}: KeywordErrorCxt,
+  {schemaPath, parentSchema}: ErrorPaths
+): string | Code {
+  let schemaPath_ = parentSchema ? errSchemaPath : str`${errSchemaPath}/${keyword}`
+  if (schemaPath) {
+    schemaPath_ = str`${schemaPath_}${getErrorPath(schemaPath, Type.Str)}`
+  }
+  return schemaPath_
 }
