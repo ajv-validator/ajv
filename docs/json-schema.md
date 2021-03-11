@@ -363,7 +363,11 @@ _invalid_: `{a: 1, b: 2, c: 3}`
 
 ### `required`
 
-The value of the keyword should be an array of unique strings. The data object to be valid should contain all properties with names equal to the elements in the keyword value.
+The value of this keyword MUST be an array. Elements of this array, if any, MUST be strings, and MUST be unique.
+
+An object instance is valid against this keyword if every item in the array is the name of a property in the instance.
+
+Omitting this keyword has the same behavior as an empty array.
 
 **Example**
 

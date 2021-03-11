@@ -53,7 +53,6 @@ export type JSONSchemaType<T, _partial extends boolean = false> = (T extends num
   : T extends Record<string, any>
   ? {
       // JSON AnySchema for records and dictionaries
-      // "required" is not optional because it is often forgotten
       // "properties" are optional for more concise dictionary schemas
       // "patternProperties" and can be only used with interfaces that have string index
       type: JSONType<"object", _partial>
