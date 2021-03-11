@@ -45,3 +45,5 @@ Try in the playground (TBC)
 ## Contributors
 
 Ajv is free to use and open-source that many developers contributed to. Join us!
+
+<Contributors/>
