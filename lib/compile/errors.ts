@@ -76,8 +76,8 @@ export function extendErrors({
   const err = gen.name("err")
   gen.forRange("i", errsCount, N.errors, (i) => {
     gen.const(err, _`${N.vErrors}[${i}]`)
-    gen.if(_`${err}.dataPath === undefined`, () =>
-      gen.assign(_`${err}.dataPath`, strConcat(N.dataPath, it.errorPath))
+    gen.if(_`${err}.instancePath === undefined`, () =>
+      gen.assign(_`${err}.instancePath`, strConcat(N.instancePath, it.errorPath))
     )
     gen.assign(_`${err}.schemaPath`, str`${it.errSchemaPath}/${keyword}`)
     if (it.opts.verbose) {
@@ -115,8 +115,6 @@ const E = {
   message: new Name("message"),
   schema: new Name("schema"),
   parentSchema: new Name("parentSchema"),
-  // JTD error properties
-  instancePath: new Name("instancePath"),
 }
 
 function errorObjectCode(
@@ -150,12 +148,11 @@ function errorObject(
   return gen.object(...keyValues)
 }
 
-function errorDataPath({errorPath, opts}: SchemaCxt, {instancePath}: ErrorPaths): [Name, Code] {
-  const dataPathProp = opts.jtd && !opts.ajvErrors ? E.instancePath : N.dataPath
-  const dataPath = instancePath
+function errorDataPath({errorPath}: SchemaCxt, {instancePath}: ErrorPaths): [Name, Code] {
+  const instPath = instancePath
     ? str`${errorPath}${getErrorPath(instancePath, Type.Str)}`
     : errorPath
-  return [dataPathProp, strConcat(N.dataPath, dataPath)]
+  return [N.instancePath, strConcat(N.instancePath, instPath)]
 }
 
 function errorSchemaPath(

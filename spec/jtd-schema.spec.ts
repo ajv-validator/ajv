@@ -36,7 +36,7 @@ interface JSONParseTestSuite {
 }
 
 interface JTDError {
-  instancePath?: string
+  instancePath: string
   schemaPath: string
 }
 
@@ -106,7 +106,7 @@ describe("JSON Type Definition", () => {
         errors.sort(
           (e1: JTDError, e2: JTDError) =>
             e1.schemaPath.localeCompare(e2.schemaPath) ||
-            (e1.instancePath || "").localeCompare(e2.instancePath || "")
+            e1.instancePath.localeCompare(e2.instancePath)
         )
       }
       return errors

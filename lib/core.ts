@@ -598,7 +598,7 @@ export default class Ajv {
   ): string {
     if (!errors || errors.length === 0) return "No errors"
     return errors
-      .map((e) => `${dataVar}${e.dataPath} ${e.message}`)
+      .map((e) => `${dataVar}${e.instancePath} ${e.message}`)
       .reduce((text, msg) => text + separator + msg)
   }
 

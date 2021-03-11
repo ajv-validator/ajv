@@ -5,7 +5,7 @@ const names = {
   data: new Name("data"), // data passed to validation function
   // args passed from referencing schema
   valCxt: new Name("valCxt"), // validation/data context - should not be used directly, it is destructured to the names below
-  dataPath: new Name("dataPath"),
+  instancePath: new Name("instancePath"),
   parentData: new Name("parentData"),
   parentDataProperty: new Name("parentDataProperty"),
   rootData: new Name("rootData"), // root data - same as the data passed to the first/top validation function

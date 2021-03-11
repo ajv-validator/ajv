@@ -28,7 +28,7 @@ describe("Validation errors", () => {
     })
   }
 
-  it("error should include dataPath", () => {
+  it("error should include instancePath", () => {
     const schema = {
       properties: {
         foo: {type: "number"},
@@ -38,7 +38,7 @@ describe("Validation errors", () => {
     testSchema1(schema)
   })
 
-  it('"refs" error should include dataPath', () => {
+  it('"refs" error should include instancePath', () => {
     const schema = {
       definitions: {
         num: {type: "number"},
@@ -52,7 +52,7 @@ describe("Validation errors", () => {
   })
 
   describe('"additionalProperties" errors', () => {
-    it("should NOT include property in dataPath", () => {
+    it("should NOT include property in instancePath", () => {
       testAdditional()
     })
 
@@ -119,7 +119,7 @@ describe("Validation errors", () => {
   })
 
   describe('errors when "additionalProperties" is schema', () => {
-    it("should NOT include property in dataPath", () => {
+    it("should NOT include property in instancePath", () => {
       testAdditionalIsSchema()
     })
 
@@ -169,7 +169,7 @@ describe("Validation errors", () => {
   })
 
   describe('"required" errors', () => {
-    it("should NOT include missing property in dataPath", () => {
+    it("should NOT include missing property in instancePath", () => {
       testRequired()
     })
 
@@ -351,7 +351,7 @@ describe("Validation errors", () => {
   })
 
   describe('"dependencies" errors', () => {
-    it("should NOT include missing property in dataPath", () => {
+    it("should NOT include missing property in instancePath", () => {
       testDependencies()
     })
 
@@ -485,7 +485,7 @@ describe("Validation errors", () => {
     return `should have required property '${prop}'`
   }
 
-  it('"items" errors should include item index without quotes in dataPath (#48)', () => {
+  it('"items" errors should include item index without quotes in instancePath (#48)', () => {
     const schema1 = {
       $id: "schema1",
       type: "array",
@@ -960,9 +960,9 @@ describe("Validation errors", () => {
         testTypeError(0, _ajv.opts.jsPropertySyntax ? "[1]" : "/1")
         if (expectedErrors === 2) testTypeError(1, _ajv.opts.jsPropertySyntax ? "[2]" : "/2")
 
-        function testTypeError(i, dataPath) {
+        function testTypeError(i, instancePath) {
           const err = validate.errors?.[i]
-          shouldBeError(err, "type", "#/items/type", dataPath, "should be number")
+          shouldBeError(err, "type", "#/items/type", instancePath, "should be number")
         }
       })
     })
@@ -1005,13 +1005,13 @@ describe("Validation errors", () => {
     error,
     keyword,
     schemaPath,
-    dataPath,
+    instancePath,
     message?: string,
     params?: Record<string, any>
   ) {
     error.keyword.should.equal(keyword)
     error.schemaPath.should.equal(schemaPath)
-    error.dataPath.should.equal(dataPath)
+    error.instancePath.should.equal(instancePath)
     error.message.should.be.a("string")
     if (message !== undefined) error.message.should.equal(message)
     if (params !== undefined) error.params.should.eql(params)

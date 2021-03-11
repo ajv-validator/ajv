@@ -323,7 +323,7 @@ The schemas compiled before the keyword is removed will continue to work without
 
 Returns the text with all errors in a String.
 
-Options can have properties `separator` (string used to separate errors, ", " by default) and `dataVar` (the variable name that dataPaths are prefixed with, "data" by default).
+Options can have properties `separator` (string used to separate errors, ", " by default) and `dataVar` (the variable name that instancePath is prefixed with, "data" by default).
 
 ## Validation errors
 
@@ -336,14 +336,14 @@ Each error reported when validating against JSON Schema (also when validating ag
 ```typescript
 interface ErrorObject {
   keyword: string // validation keyword.
-  dataPath: string // JSON pointer to the part of the data that was validated (e.g., `"/prop/1/subProp"`).
+  instancePath: string // JSON pointer to the part of the data that was validated (e.g., `"/prop/1/subProp"`).
   schemaPath: string // the path (JSON-pointer as a URI fragment) to the schema of the failing keyword.
   // the object with the additional information about error that can be used to generate error messages
   // (e.g., using [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) package).
   // See below for parameters set by all keywords.
   params: object // type is defined by keyword value, see below
   propertyName?: string // set for errors in `propertyNames` keyword schema.
-  // `dataPath` still points to the object in this case.
+  // `instancePath` still points to the object in this case.
   message?: string // the standard error message (can be excluded with option `messages` set to false).
   schema?: any // the schema of the keyword (added with `verbose` option).
   parentSchema?: object // the schema containing the keyword (added with `verbose` option)

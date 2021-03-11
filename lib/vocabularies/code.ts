@@ -82,7 +82,7 @@ export function callValidateCode(
 ): Code {
   const dataAndSchema = passSchema ? _`${schemaCode}, ${data}, ${topSchemaRef}${schemaPath}` : data
   const valCxt: [Name, Code | number][] = [
-    [N.dataPath, strConcat(N.dataPath, errorPath)],
+    [N.instancePath, strConcat(N.instancePath, errorPath)],
     [N.parentData, it.parentData],
     [N.parentDataProperty, it.parentDataProperty],
     [N.rootData, N.rootData],
