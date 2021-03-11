@@ -59,7 +59,7 @@ export type JSONSchemaType<T, _partial extends boolean = false> = (T extends num
       type: JSONType<"object", _partial>
       // "required" type does not guarantee that all required properties are listed
       // it only asserts that optional cannot be listed
-      required: _partial extends true ? Readonly<(keyof T)[]> : Readonly<RequiredMembers<T>[]>
+      required?: _partial extends true ? Readonly<(keyof T)[]> : Readonly<RequiredMembers<T>[]>
       additionalProperties?: boolean | JSONSchemaType<T[string]>
       unevaluatedProperties?: boolean | JSONSchemaType<T[string]>
       properties?: _partial extends true ? Partial<PropertiesSchema<T>> : PropertiesSchema<T>
