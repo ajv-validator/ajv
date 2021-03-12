@@ -24,6 +24,7 @@ async function main() {
 	}
 
 	const authors = contributors
+		.filter(a => !['greenkeeper[bot]', 'greenkeeperio-bot'].includes(a.login))
 		.sort((a, b) => b.contributions - a.contributions);
 
 	const sprite = new Jimp(SIZE * authors.length, SIZE);
