@@ -23,8 +23,10 @@ async function main() {
 		contributors.push(...list);
 	}
 
+	const bots = ['dependabot-preview[bot]', 'greenkeeper[bot]', 'greenkeeperio-bot']
+
 	const authors = contributors
-		.filter(a => !['greenkeeper[bot]', 'greenkeeperio-bot'].includes(a.login))
+		.filter(a => !bots.includes(a.login))
 		.sort((a, b) => b.contributions - a.contributions);
 
 	const sprite = new Jimp(SIZE * authors.length, SIZE);
@@ -42,13 +44,13 @@ async function main() {
 		sprite.composite(image, i * SIZE, 0);
 	}
 
-	await sprite.quality(80).write(`../docs/.vuepress/contributors.jpg`);
-	// TODO: Optimizing the static/contributors.jpg image should probably get automated as well
+	await sprite.quality(80).write(`../docs/contributors/contributors.jpg`);
+	// TODO: Optimizing the contributors.jpg image should probably get automated as well
 	console.log('remember to additionally optimize the resulting /static/contributors.jpg image file via e.g. https://squoosh.app ');
 
 	const str = `[\n\t${authors.map(a => `'${a.login}'`).join(',\n\t')}\n]`;
 
-	fs.writeFileSync(`../docs/.vuepress/_contributors.js`, `export default ${str};`);
+	fs.writeFileSync(`../docs/contributors/_contributors.js`, `export default ${str};`);
 }
 
 main();
