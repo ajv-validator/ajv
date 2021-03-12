@@ -66,7 +66,6 @@ export type JTDOptions = CurrentOptions & {
   inlineRefs?: boolean
   loopRequired?: never
   multipleOfPrecision?: never
-  baseJtdErrors?: boolean
 }
 
 export default class Ajv extends AjvCore {

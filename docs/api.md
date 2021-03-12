@@ -336,31 +336,24 @@ Each error reported when validating against JSON Schema (also when validating ag
 ```typescript
 interface ErrorObject {
   keyword: string // validation keyword.
-  instancePath: string // JSON pointer to the part of the data that was validated (e.g., `"/prop/1/subProp"`).
-  schemaPath: string // the path (JSON-pointer as a URI fragment) to the schema of the failing keyword.
-  // the object with the additional information about error that can be used to generate error messages
-  // (e.g., using [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) package).
-  // See below for parameters set by all keywords.
+  instancePath: string // JSON Pointer to the location in the data instance (e.g., `"/prop/1/subProp"`).
+  schemaPath: string // JSON Pointer to the location of the failing keyword in the schema
   params: object // type is defined by keyword value, see below
+                 // params property is the object with the additional information about error
+                 // it can be used to generate error messages
+                 // (e.g., using [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) package).
+                 // See below for parameters set by all keywords.
   propertyName?: string // set for errors in `propertyNames` keyword schema.
-  // `instancePath` still points to the object in this case.
-  message?: string // the standard error message (can be excluded with option `messages` set to false).
-  schema?: any // the schema of the keyword (added with `verbose` option).
-  parentSchema?: object // the schema containing the keyword (added with `verbose` option)
-  data?: any // the data validated by the keyword (added with `verbose` option).
+                        // `instancePath` still points to the object in this case.
+  message?: string // the error message (can be excluded with option `messages: false`).
+  // Options below are added with `verbose` option:
+  schema?: any // the value of the failing keyword in the schema.
+  parentSchema?: object // the schema containing the keyword.
+  data?: any // the data validated by the keyword.
 }
 ```
 
-[JTD specification](./json-type-definition.md) defines strict format for validation errors, where each error is an object with the following properties:
-
-```typescript
-interface JTDErrorObject {
-  instancePath: string // JSON Pointer to the location in the data instance
-  schemaPath: string // JSON Pointer to the location in the schema
-}
-```
-
-This error format will be used with JTD schemas when [`strictJtdErrors` option](./options.md#strictjtderrors) is used.
+For [JTD](./json-type-definition.md) schemas `instancePath` and `schemaPath` depend on the nature of the failure - the errors are consistent with [RFC8927](https://datatracker.ietf.org/doc/rfc8927/).
 
 ### Error parameters
 
@@ -470,10 +463,6 @@ User-defined keywords can define other keyword parameters.
 ### Errors i18n
 
 You can use [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) package to generate errors in other languages.
-
-::: warning Do NOT use option strictJtdErrors
-This package is not compatible with the option [strictJtdErrors](./options.md#strictjtderrors).
-:::
 
 ### Error logging
 

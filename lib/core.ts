@@ -212,7 +212,7 @@ type RequiredInstanceOptions = {
     | "validateFormats"]: NonNullable<Options[K]>
 } & {code: InstanceCodeOptions}
 
-export type InstanceOptions = Options & RequiredInstanceOptions & {strictJtdErrors?: boolean}
+export type InstanceOptions = Options & RequiredInstanceOptions
 
 function requiredOptions(o: Options): RequiredInstanceOptions {
   const strict = o.strict ?? true

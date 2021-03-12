@@ -133,12 +133,11 @@ function errorObject(
   errorPaths: ErrorPaths = {}
 ): Code {
   const {gen, it} = cxt
-  const {opts} = it
   const keyValues: [Name, SafeExpr | string][] = [
     errorInstancePath(it, errorPaths),
     errorSchemaPath(cxt, errorPaths),
   ]
-  if (!(opts.jtd && opts.strictJtdErrors)) extraErrorProps(cxt, error, keyValues)
+  extraErrorProps(cxt, error, keyValues)
   return gen.object(...keyValues)
 }
 
