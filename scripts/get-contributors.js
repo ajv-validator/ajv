@@ -46,7 +46,7 @@ async function main() {
 
 	await sprite.quality(80).write(`../docs/contributors/contributors.jpg`);
 	// TODO: Optimizing the contributors.jpg image should probably get automated as well
-	console.log('remember to additionally optimize the resulting /static/contributors.jpg image file via e.g. https://squoosh.app ');
+	console.log('remember to additionally optimize the resulting contributors.jpg image file via e.g. https://squoosh.app ');
 
 	const str = `[\n\t${authors.map(a => `'${a.login}'`).join(',\n\t')}\n]`;
 
