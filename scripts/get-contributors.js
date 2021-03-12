@@ -1,3 +1,6 @@
+// Credit for the script goes to svelte:
+// https://github.com/sveltejs/svelte/blob/ce3a5791258ec6ecf8c1ea022cb871afe805a45c/site/scripts/get-contributors.js
+
 require('dotenv/config');
 const fs = require('fs');
 const fetch = require('node-fetch');
