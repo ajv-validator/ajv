@@ -1,7 +1,10 @@
-import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition, ErrorObject} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {_, or, not, Code} from "../../compile/codegen"
+import {_, or, and, Code} from "../../compile/codegen"
 import {checkMetadata} from "./metadata"
+import {checkNullable} from "./nullable"
+
+export type JTDEnumError = ErrorObject<"enum", {allowedValues: string[]}, string[]>
 
 const error: KeywordErrorDefinition = {
   message: "must be equal to one of the allowed values",
@@ -18,18 +21,15 @@ const def: CodeKeywordDefinition = {
     if (schema.length === 0) throw new Error("enum must have non-empty array")
     if (schema.length !== new Set(schema).size) throw new Error("enum items must be unique")
     let valid: Code
+    const isString = _`typeof ${data} == "string"`
     if (schema.length >= it.opts.loopEnum) {
-      if (parentSchema.nullable) {
-        valid = gen.let("valid", _`${data} === null`)
-        gen.if(not(valid), loopEnum)
-      } else {
-        valid = gen.let("valid", false)
-        loopEnum()
-      }
+      let cond: Code
+      ;[valid, cond] = checkNullable(cxt, isString)
+      gen.if(cond, loopEnum)
     } else {
       /* istanbul ignore if */
       if (!Array.isArray(schema)) throw new Error("ajv implementation error")
-      valid = or(...schema.map((value: string) => _`${data} === ${value}`))
+      valid = and(isString, or(...schema.map((value: string) => _`${data} === ${value}`)))
       if (parentSchema.nullable) valid = or(_`${data} === null`, valid)
     }
     cxt.pass(valid)

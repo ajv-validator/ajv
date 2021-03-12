@@ -1,35 +1,52 @@
-import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import type {
+  CodeKeywordDefinition,
+  ErrorObject,
+  KeywordErrorDefinition,
+  SchemaObject,
+} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {propertyInData, allSchemaProperties, isOwnProperty} from "../code"
 import {alwaysValidSchema, schemaRefOrVal} from "../../compile/util"
 import {_, str, and, Code, Name} from "../../compile/codegen"
 import {checkMetadata} from "./metadata"
 import {checkNullableObject} from "./nullable"
+import {typeErrorMessage, typeErrorParams, _JTDTypeError} from "./error"
 
 enum PropError {
   Additional,
   Missing,
 }
 
+type PropKeyword = "properties" | "optionalProperties"
+
+type PropSchema = {[P in string]?: SchemaObject}
+
+export type JTDPropertiesError =
+  | _JTDTypeError<PropKeyword, "object", PropSchema>
+  | ErrorObject<PropKeyword, {error: PropError.Additional; additionalProperty: string}, PropSchema>
+  | ErrorObject<PropKeyword, {error: PropError.Missing; missingProperty: string}, PropSchema>
+
 export const error: KeywordErrorDefinition = {
-  message: ({parentSchema, params}) => {
+  message: (cxt) => {
+    const {params} = cxt
     switch (params.propError) {
       case PropError.Additional:
         return "must NOT have additional properties"
       case PropError.Missing:
         return str`must have property '${params.missingProperty}'`
       default:
-        return parentSchema?.nullable ? "must be object or null" : "must be object"
+        return typeErrorMessage(cxt, "object")
     }
   },
-  params: ({parentSchema, params}) => {
+  params: (cxt) => {
+    const {params} = cxt
     switch (params.propError) {
       case PropError.Additional:
         return _`{error: ${params.propError}, additionalProperty: ${params.additionalProperty}}`
       case PropError.Missing:
         return _`{error: ${params.propError}, missingProperty: ${params.missingProperty}}`
       default:
-        return _`{nullable: ${!!parentSchema?.nullable}}`
+        return typeErrorParams(cxt, "object")
     }
   },
 }

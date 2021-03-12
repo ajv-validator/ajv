@@ -1,8 +1,9 @@
-import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition, ErrorObject} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, str, not, getProperty, Name} from "../../compile/codegen"
 import {checkMetadata} from "./metadata"
 import {checkNullableObject} from "./nullable"
+import {typeErrorMessage, typeErrorParams, _JTDTypeError} from "./error"
 
 enum DiscrError {
   NoTag,
@@ -10,8 +11,21 @@ enum DiscrError {
   NoMapping,
 }
 
+type DiscrErrorObj<E extends DiscrError, T = any> = ErrorObject<
+  "discriminator",
+  {error: E; tag: string; tagValue: T},
+  string
+>
+
+export type JTDDiscriminatorError =
+  | _JTDTypeError<"discriminator", "object", string>
+  | DiscrErrorObj<DiscrError.NoTag, never>
+  | DiscrErrorObj<DiscrError.TagType>
+  | DiscrErrorObj<DiscrError.NoMapping>
+
 export const error: KeywordErrorDefinition = {
-  message: ({schema, parentSchema, params}) => {
+  message: (cxt) => {
+    const {schema, params} = cxt
     switch (params.discrError) {
       case DiscrError.NoTag:
         return str`tag "${schema}" is missing`
@@ -20,10 +34,11 @@ export const error: KeywordErrorDefinition = {
       case DiscrError.NoMapping:
         return "tag value must be in schema mapping"
       default:
-        return parentSchema?.nullable ? "must be object or null" : "must be object"
+        return typeErrorMessage(cxt, "object")
     }
   },
-  params: ({schema, parentSchema, params}) => {
+  params: (cxt) => {
+    const {schema, params} = cxt
     const err = _`{error: ${params.discrError}, tag: ${schema}`
     switch (params.discrError) {
       case DiscrError.NoTag:
@@ -32,7 +47,7 @@ export const error: KeywordErrorDefinition = {
       case DiscrError.NoMapping:
         return _`${err}, tagValue: ${params.tag}}`
       default:
-        return _`{nullable: ${!!parentSchema?.nullable}}`
+        return typeErrorParams(cxt, "object")
     }
   },
 }

@@ -24,7 +24,7 @@ export {Plugin, Options, CodeOptions, InstanceOptions, Logger, ErrorsTextOptions
 export {SchemaCxt, SchemaObjCxt} from "./compile"
 import KeywordCxt from "./compile/context"
 export {KeywordCxt}
-// export {DefinedError} from "./vocabularies/errors"
+export {JTDErrorObject} from "./vocabularies/jtd"
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
 import type {AnySchemaObject, SchemaObject, JTDParser} from "./types"

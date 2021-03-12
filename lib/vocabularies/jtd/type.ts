@@ -1,9 +1,12 @@
 import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {_, str, or, Code} from "../../compile/codegen"
+import {_, or, Code} from "../../compile/codegen"
 import validTimestamp from "../../compile/timestamp"
 import {func} from "../../compile/util"
 import {checkMetadata} from "./metadata"
+import {typeErrorMessage, typeErrorParams, _JTDTypeError} from "./error"
+
+export type JTDTypeError = _JTDTypeError<"type", JTDType, JTDType>
 
 export type IntType = "int8" | "uint8" | "int16" | "uint16" | "int32" | "uint32"
 
@@ -16,10 +19,11 @@ export const intRange: {[T in IntType]: [number, number, number]} = {
   uint32: [0, 4294967295, 10],
 }
 
+export type JTDType = "boolean" | "string" | "timestamp" | "float32" | "float64" | IntType
+
 const error: KeywordErrorDefinition = {
-  message: ({schema, parentSchema}) =>
-    parentSchema?.nullable ? str`must be ${schema} or null` : str`must be ${schema}`,
-  params: ({schema, parentSchema}) => _`{type: ${schema}, nullable: ${!!parentSchema?.nullable}}`,
+  message: (cxt) => typeErrorMessage(cxt, cxt.schema),
+  params: (cxt) => typeErrorParams(cxt, cxt.schema),
 }
 
 const def: CodeKeywordDefinition = {

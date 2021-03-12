@@ -143,9 +143,7 @@ if (validate(data)) {
 
 ## Type-safe error handling
 
-With [JSON Schema](../json-schema), the validation error type is an open union, but it can be cast to a tagged union (using validation keyword as tag) for easier error handling.
-
-This is not useful with [JSON Type Definition](../json-type-definition), as it defines errors for schema forms, not for keywords.
+With both [JSON Schema](../json-schema.md) and [JSON Type Definition](../json-type-definition.md), the validation error type is an open union, but it can be cast to tagged unions (using validation keyword as tag) for easier error handling.
 
 Continuing the example above:
 
@@ -163,6 +161,31 @@ if (validate(data)) {
   // The type cast is needed, as Ajv uses a wider type to allow extension
   // You can extend this type to include your error types as needed.
   for (const err of validate.errors as DefinedError[]) {
+    switch (err.keyword) {
+      case "type":
+        // err type is narrowed here to have "type" error params properties
+        console.log(err.params.type)
+      break
+        // ...
+    }
+  }
+}
+```
+</code-block>
+
+<code-block title="JSON Type Definition">
+```typescript
+import {JTDErrorObject} from "ajv/dist/jtd"
+
+// ...
+
+if (validate(data)) {
+  // data is MyData here
+  console.log(data.foo)
+} else {
+  // The type cast is needed, as Ajv uses a wider type to allow extension
+  // You can extend this type to include your error types as needed.
+  for (const err of validate.errors as JTDErrorObject[]) {
     switch (err.keyword) {
       case "type":
         // err type is narrowed here to have "type" error params properties
