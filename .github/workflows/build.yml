@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [master]
+    branches: [master, docs-home]
   pull_request:
     branches: ["*"]
 
