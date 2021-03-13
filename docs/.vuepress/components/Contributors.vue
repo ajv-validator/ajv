@@ -11,7 +11,7 @@
 </template>
 
 <script>
-	import contributors from "../../contributors/_contributors.js";
+	import contributors from "../public/assets/_contributors.js";
   export default {
     data() {
       return {
@@ -28,7 +28,7 @@
     border-radius: 50%;
     text-indent: -9999px;
     display: inline-block;
-    background: no-repeat url(../../contributors/contributors.jpg);
+    background: no-repeat url(/assets/contributors.jpg);
     background-size: auto 102%;
     margin: 0 0.5em 0.5em 0;
     border: 2px solid var(--second);

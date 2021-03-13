@@ -47,13 +47,11 @@ async function main() {
     sprite.composite(image, i * SIZE, 0);
   }
 
-  await sprite.quality(80).write(`../docs/contributors/contributors.jpg`);
-  // TODO: Optimizing the contributors.jpg image should probably get automated as well
-  console.log('remember to additionally optimize the resulting contributors.jpg image file via e.g. https://squoosh.app ');
+  await sprite.quality(80).write(`../docs/.vuepress/public/assets/contributors.jpg`);
 
   const str = `[\n\t${authors.map(a => `'${a.login}'`).join(',\n\t')}\n]`;
 
-  fs.writeFileSync(`../docs/contributors/_contributors.js`, `export default ${str};`);
+  fs.writeFileSync(`../docs/.vuepress/public/assets/_contributors.js`, `export default ${str};`);
 }
 
 main();
