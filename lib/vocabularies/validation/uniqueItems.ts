@@ -12,7 +12,7 @@ export type UniqueItemsError = ErrorObject<
 
 const error: KeywordErrorDefinition = {
   message: ({params: {i, j}}) =>
-    str`should NOT have duplicate items (items ## ${j} and ${i} are identical)`,
+    str`must NOT have duplicate items (items ## ${j} and ${i} are identical)`,
   params: ({params: {i, j}}) => _`{i: ${i}, j: ${j}}`,
 }
 

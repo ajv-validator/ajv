@@ -13,7 +13,7 @@ import {checkStrictMode} from "../../compile/validate"
 export type AdditionalItemsError = ErrorObject<"additionalItems", {limit: number}, AnySchema>
 
 const error: KeywordErrorDefinition = {
-  message: ({params: {len}}) => str`should NOT have more than ${len} items`,
+  message: ({params: {len}}) => str`must NOT have more than ${len} items`,
   params: ({params: {len}}) => _`{limit: ${len}}`,
 }
 

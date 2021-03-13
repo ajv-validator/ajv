@@ -6,7 +6,7 @@ import ucs2length from "../../compile/ucs2length"
 const error: KeywordErrorDefinition = {
   message({keyword, schemaCode}) {
     const comp = keyword === "maxLength" ? "more" : "fewer"
-    return str`should NOT have ${comp} than ${schemaCode} characters`
+    return str`must NOT have ${comp} than ${schemaCode} characters`
   },
   params: ({schemaCode}) => _`{limit: ${schemaCode}}`,
 }

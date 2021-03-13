@@ -21,7 +21,7 @@ type FormatValidate =
 export type FormatError = ErrorObject<"format", {format: string}, string | {$data: string}>
 
 const error: KeywordErrorDefinition = {
-  message: ({schemaCode}) => str`should match format "${schemaCode}"`,
+  message: ({schemaCode}) => str`must match format "${schemaCode}"`,
   params: ({schemaCode}) => _`{format: ${schemaCode}}`,
 }
 

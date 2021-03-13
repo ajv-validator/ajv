@@ -68,7 +68,7 @@ describe("Validation errors", () => {
       const data = {foo: 1, bar: 2},
         invalidData = {foo: 1, bar: 2, baz: 3, quux: 4}
 
-      const msg = "should NOT have additional properties"
+      const msg = "must NOT have additional properties"
 
       const validate = ajv.compile(schema)
       shouldBeValid(validate, data)
@@ -145,24 +145,24 @@ describe("Validation errors", () => {
       const validate = ajv.compile(schema)
       shouldBeValid(validate, data)
       shouldBeInvalid(validate, invalidData)
-      shouldBeError(validate.errors?.[0], "type", schPath, "/baz/quux", "should be string", {
+      shouldBeError(validate.errors?.[0], "type", schPath, "/baz/quux", "must be string", {
         type: "string",
       })
 
       const validateJP = ajvJP.compile(schema)
       shouldBeValid(validateJP, data)
       shouldBeInvalid(validateJP, invalidData)
-      shouldBeError(validateJP.errors?.[0], "type", schPath, "/baz/quux", "should be string", {
+      shouldBeError(validateJP.errors?.[0], "type", schPath, "/baz/quux", "must be string", {
         type: "string",
       })
 
       const fullValidate = fullAjv.compile(schema)
       shouldBeValid(fullValidate, data)
       shouldBeInvalid(fullValidate, invalidData, 2)
-      shouldBeError(fullValidate.errors?.[0], "type", schPath, "['baz'].quux", "should be string", {
+      shouldBeError(fullValidate.errors?.[0], "type", schPath, "['baz'].quux", "must be string", {
         type: "string",
       })
-      shouldBeError(fullValidate.errors?.[1], "type", schPath, "['boo'].quux", "should be string", {
+      shouldBeError(fullValidate.errors?.[1], "type", schPath, "['boo'].quux", "must be string", {
         type: "string",
       })
     }
@@ -333,7 +333,7 @@ describe("Validation errors", () => {
           "required",
           "#/required",
           "",
-          "should have required property 'bar'",
+          "must have required property 'bar'",
           {missingProperty: "bar"}
         )
 
@@ -366,7 +366,7 @@ describe("Validation errors", () => {
         invalidData1 = {a: 0, foo: 1, baz: 3},
         invalidData2 = {a: 0, bar: 2}
 
-      const msg = "should have properties foo, bar, baz when property a is present"
+      const msg = "must have properties foo, bar, baz when property a is present"
 
       const validate = ajv.compile(schema)
       shouldBeValid(validate, data)
@@ -482,7 +482,7 @@ describe("Validation errors", () => {
   }
 
   function requiredMsg(prop: string) {
-    return `should have required property '${prop}'`
+    return `must have required property '${prop}'`
   }
 
   it('"items" errors should include item index without quotes in instancePath (#48)', () => {
@@ -502,24 +502,24 @@ describe("Validation errors", () => {
     let validate = ajv.compile(schema1)
     shouldBeValid(validate, data)
     shouldBeInvalid(validate, invalidData1)
-    shouldBeError(validate.errors?.[0], "minimum", "#/items/minimum", "/0", "should be >= 10")
+    shouldBeError(validate.errors?.[0], "minimum", "#/items/minimum", "/0", "must be >= 10")
     shouldBeInvalid(validate, invalidData2)
-    shouldBeError(validate.errors?.[0], "minimum", "#/items/minimum", "/1", "should be >= 10")
+    shouldBeError(validate.errors?.[0], "minimum", "#/items/minimum", "/1", "must be >= 10")
 
     const validateJP = ajvJP.compile(schema1)
     shouldBeValid(validateJP, data)
     shouldBeInvalid(validateJP, invalidData1)
-    shouldBeError(validateJP.errors?.[0], "minimum", "#/items/minimum", "/0", "should be >= 10")
+    shouldBeError(validateJP.errors?.[0], "minimum", "#/items/minimum", "/0", "must be >= 10")
     shouldBeInvalid(validateJP, invalidData2)
-    shouldBeError(validateJP.errors?.[0], "minimum", "#/items/minimum", "/1", "should be >= 10")
+    shouldBeError(validateJP.errors?.[0], "minimum", "#/items/minimum", "/1", "must be >= 10")
 
     const fullValidate = fullAjv.compile(schema1)
     shouldBeValid(fullValidate, data)
     shouldBeInvalid(fullValidate, invalidData1)
-    shouldBeError(fullValidate.errors?.[0], "minimum", "#/items/minimum", "[0]", "should be >= 10")
+    shouldBeError(fullValidate.errors?.[0], "minimum", "#/items/minimum", "[0]", "must be >= 10")
     shouldBeInvalid(fullValidate, invalidData2, 2)
-    shouldBeError(fullValidate.errors?.[0], "minimum", "#/items/minimum", "[1]", "should be >= 10")
-    shouldBeError(fullValidate.errors?.[1], "minimum", "#/items/minimum", "[3]", "should be >= 10")
+    shouldBeError(fullValidate.errors?.[0], "minimum", "#/items/minimum", "[1]", "must be >= 10")
+    shouldBeError(fullValidate.errors?.[1], "minimum", "#/items/minimum", "[3]", "must be >= 10")
 
     const schema2 = {
       $id: "schema2",
@@ -530,9 +530,9 @@ describe("Validation errors", () => {
     validate = ajv.compile(schema2)
     shouldBeValid(validate, data)
     shouldBeInvalid(validate, invalidData1)
-    shouldBeError(validate.errors?.[0], "minimum", "#/items/0/minimum", "/0", "should be >= 10")
+    shouldBeError(validate.errors?.[0], "minimum", "#/items/0/minimum", "/0", "must be >= 10")
     shouldBeInvalid(validate, invalidData2)
-    shouldBeError(validate.errors?.[0], "minimum", "#/items/2/minimum", "/2", "should be >= 12")
+    shouldBeError(validate.errors?.[0], "minimum", "#/items/2/minimum", "/2", "must be >= 12")
   })
 
   it("should have correct schema path for additionalItems", () => {
@@ -559,7 +559,7 @@ describe("Validation errors", () => {
         "additionalItems",
         "#/additionalItems",
         "",
-        "should NOT have more than 2 items"
+        "must NOT have more than 2 items"
       )
     }
   })
@@ -596,14 +596,14 @@ describe("Validation errors", () => {
           "pattern",
           "#/propertyNames/pattern",
           "",
-          'should match pattern "bar"'
+          'must match pattern "bar"'
         )
         shouldBeError(
           validate.errors?.[1],
           "propertyNames",
           "#/propertyNames",
           "",
-          "property name 'foo' is invalid"
+          "property name must be valid"
         )
         if (numErrors === 4) {
           shouldBeError(
@@ -611,14 +611,14 @@ describe("Validation errors", () => {
             "pattern",
             "#/propertyNames/pattern",
             "",
-            'should match pattern "bar"'
+            'must match pattern "bar"'
           )
           shouldBeError(
             validate.errors?.[3],
             "propertyNames",
             "#/propertyNames",
             "",
-            "property name 'quux' is invalid"
+            "property name must be valid"
           )
         }
       }
@@ -784,13 +784,13 @@ describe("Validation errors", () => {
         shouldBeValid(validate, 4)
 
         shouldBeInvalid(validate, 2)
-        testError("exclusiveMinimum", "should be > 2", {
+        testError("exclusiveMinimum", "must be > 2", {
           comparison: ">",
           limit: 2,
         })
 
         shouldBeInvalid(validate, 5)
-        testError("exclusiveMaximum", "should be < 5", {
+        testError("exclusiveMaximum", "must be < 5", {
           comparison: "<",
           limit: 5,
         })
@@ -840,7 +840,7 @@ describe("Validation errors", () => {
             "exclusiveMaximum",
             "#/properties/smaller/exclusiveMaximum",
             _ajv.opts.jsPropertySyntax ? ".smaller" : "/smaller",
-            "should be < 4",
+            "must be < 4",
             {comparison: "<", limit: 4}
           )
         }
@@ -920,13 +920,13 @@ describe("Validation errors", () => {
         "multipleOf",
         "#/" + ifClause + "/multipleOf",
         "",
-        "should be multiple of " + multipleOf,
+        "must be multiple of " + multipleOf,
         {multipleOf: multipleOf}
       )
 
       if (numErrors === 2) {
         err = validate.errors?.[1]
-        shouldBeError(err, "if", "#/if", "", 'should match "' + ifClause + '" schema', {
+        shouldBeError(err, "if", "#/if", "", 'must match "' + ifClause + '" schema', {
           failingKeyword: ifClause,
         })
       }
@@ -951,7 +951,7 @@ describe("Validation errors", () => {
           "uniqueItems",
           "#/uniqueItems",
           "",
-          "should NOT have duplicate items (items ## 2 and 1 are identical)",
+          "must NOT have duplicate items (items ## 2 and 1 are identical)",
           {i: 1, j: 2}
         )
 
@@ -962,7 +962,7 @@ describe("Validation errors", () => {
 
         function testTypeError(i, instancePath) {
           const err = validate.errors?.[i]
-          shouldBeError(err, "type", "#/items/type", instancePath, "should be number")
+          shouldBeError(err, "type", "#/items/type", instancePath, "must be number")
         }
       })
     })

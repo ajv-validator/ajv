@@ -22,7 +22,7 @@ export type LimitNumberError = ErrorObject<
 >
 
 const error: KeywordErrorDefinition = {
-  message: ({keyword, schemaCode}) => str`should be ${KWDs[keyword as Kwd].okStr} ${schemaCode}`,
+  message: ({keyword, schemaCode}) => str`must be ${KWDs[keyword as Kwd].okStr} ${schemaCode}`,
   params: ({keyword, schemaCode}) =>
     _`{comparison: ${KWDs[keyword as Kwd].okStr}, limit: ${schemaCode}}`,
 }

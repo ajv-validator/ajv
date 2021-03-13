@@ -19,8 +19,8 @@ export type ContainsError = ErrorObject<
 const error: KeywordErrorDefinition = {
   message: ({params: {min, max}}) =>
     max === undefined
-      ? str`should contain at least ${min} valid item(s)`
-      : str`should contain at least ${min} and no more than ${max} valid item(s)`,
+      ? str`must contain at least ${min} valid item(s)`
+      : str`must contain at least ${min} and no more than ${max} valid item(s)`,
   params: ({params: {min, max}}) =>
     max === undefined ? _`{minContains: ${min}}` : _`{minContains: ${min}, maxContains: ${max}}`,
 }

@@ -9,7 +9,7 @@ export type MultipleOfError = ErrorObject<
 >
 
 const error: KeywordErrorDefinition = {
-  message: ({schemaCode}) => str`should be multiple of ${schemaCode}`,
+  message: ({schemaCode}) => str`must be multiple of ${schemaCode}`,
   params: ({schemaCode}) => _`{multipleOf: ${schemaCode}}`,
 }
 

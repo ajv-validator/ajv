@@ -32,9 +32,7 @@ const def: CodeKeywordDefinition = {
       () => cxt.reset()
     )
   },
-  error: {
-    message: "should NOT be valid",
-  },
+  error: {message: "must NOT be valid"},
 }
 
 export default def

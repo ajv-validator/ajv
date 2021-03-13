@@ -13,7 +13,7 @@ import {checkStrictMode} from "../../compile/validate"
 export type IfKeywordError = ErrorObject<"if", {failingKeyword: string}, AnySchema>
 
 const error: KeywordErrorDefinition = {
-  message: ({params}) => str`should match "${params.ifClause}" schema`,
+  message: ({params}) => str`must match "${params.ifClause}" schema`,
   params: ({params}) => _`{failingKeyword: ${params.ifClause}}`,
 }
 

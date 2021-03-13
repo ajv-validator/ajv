@@ -6,7 +6,7 @@ import {_, str} from "../../compile/codegen"
 export type PatternError = ErrorObject<"pattern", {pattern: string}, string | {$data: string}>
 
 const error: KeywordErrorDefinition = {
-  message: ({schemaCode}) => str`should match pattern "${schemaCode}"`,
+  message: ({schemaCode}) => str`must match pattern "${schemaCode}"`,
   params: ({schemaCode}) => _`{pattern: ${schemaCode}}`,
 }
 

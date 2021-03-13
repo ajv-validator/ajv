@@ -18,7 +18,7 @@ export type AdditionalPropertiesError = ErrorObject<
 >
 
 const error: KeywordErrorDefinition = {
-  message: "should NOT have additional properties",
+  message: "must NOT have additional properties",
   params: ({params}) => _`{additionalProperty: ${params.additionalProperty}}`,
 }
 

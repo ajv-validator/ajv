@@ -6,7 +6,7 @@ import * as equal from "fast-deep-equal"
 export type ConstError = ErrorObject<"const", {allowedValue: any}>
 
 const error: KeywordErrorDefinition = {
-  message: "should be equal to constant",
+  message: "must be equal to constant",
   params: ({schemaCode}) => _`{allowedValue: ${schemaCode}}`,
 }
 

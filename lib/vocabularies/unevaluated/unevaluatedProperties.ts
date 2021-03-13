@@ -16,7 +16,7 @@ export type UnevaluatedPropertiesError = ErrorObject<
 >
 
 const error: KeywordErrorDefinition = {
-  message: "should NOT have unevaluated properties",
+  message: "must NOT have unevaluated properties",
   params: ({params}) => _`{unevaluatedProperty: ${params.unevaluatedProperty}}`,
 }
 
