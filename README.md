@@ -54,6 +54,8 @@ At Ajv, we are committed to creating more equitable and inclusive spaces for our
 
 We strive to create an environment of respect and healthy discourse by setting standards for our interactions and we expect it from all members of our community - from long term project member to first time visitor. For more information, review our [code of conduct](./CODE_OF_CONDUCT.md) and values.
 
+<Contributors/>
+
 ### How we make decisions
 
 We value conscious curation of our library size, and balancing performance and functionality. To that end, we cannot accept every suggestion. When evaluating pull requests we consider:
