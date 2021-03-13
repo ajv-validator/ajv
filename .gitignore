@@ -47,5 +47,4 @@ docs/README.md
 docs/code_of_conduct.md
 docs/contributing.md
 docs/license.md
-docs/.vuepress/public/assets/contributors.jpg
-docs/.vuepress/public/assets/_contributors.js
+docs/.vuepress/components/Contributors/

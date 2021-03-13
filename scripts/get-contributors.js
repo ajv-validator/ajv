@@ -47,11 +47,11 @@ async function main() {
     sprite.composite(image, i * SIZE, 0);
   }
 
-  await sprite.quality(80).write(`../docs/.vuepress/public/assets/contributors.jpg`);
+  await sprite.quality(80).write(`../docs/.vuepress/components/Contributors/contributors.jpg`);
 
   const str = `[\n\t${authors.map(a => `'${a.login}'`).join(',\n\t')}\n]`;
 
-  fs.writeFileSync(`../docs/.vuepress/public/assets/_contributors.js`, `export default ${str};`);
+  fs.writeFileSync(`../docs/.vuepress/components/Contributors/_contributors.js`, `export default ${str};`);
 }
 
 main();
