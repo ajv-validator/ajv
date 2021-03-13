@@ -97,19 +97,22 @@ const mySchema: JSONSchemaType<MyData> & {
   required: ["foo", "baz", "arr", "map"], // any other property added here won't typecheck
 }
 
-type MyUnionData = {a: number} | string
+type MyUnionData = {a: boolean} | string | number
 
 const myUnionSchema: JSONSchemaType<MyUnionData> = {
   anyOf: [
     {
       type: "object",
       properties: {
-        a: {type: "number"},
+        a: {type: "boolean"},
       },
       required: ["a"],
     },
     {
-      type: "string",
+      type: ["string", "number"],
+      // can specify properties for either type
+      minimum: 0,
+      minLength: 1,
     },
   ],
 }
@@ -122,7 +125,7 @@ const myNestedUnionSchema: JSONSchemaType<MyUnionData> = {
         {
           type: "object",
           properties: {
-            a: {type: "number"},
+            a: {type: "boolean"},
           },
           required: ["a"],
         },
@@ -131,11 +134,19 @@ const myNestedUnionSchema: JSONSchemaType<MyUnionData> = {
         },
       ],
     },
+    {
+      type: "number",
+    },
   ],
 }
 
+// @ts-expect-error can't use empty array for invalid type
+const invalidSchema: JSONSchemaType<MyData> = {
+  type: [],
+}
+
 describe("JSONSchemaType type and validation as a type guard", () => {
-  const ajv = new _Ajv()
+  const ajv = new _Ajv({allowUnionTypes: true})
 
   const validData: unknown = {
     foo: "foo",
@@ -170,7 +181,7 @@ describe("JSONSchemaType type and validation as a type guard", () => {
   })
 
   const validUnionData: unknown = {
-    a: 5,
+    a: true,
   }
 
   describe("schema has type JSONSchemaType<MyUnionData>", () => {
@@ -179,8 +190,10 @@ describe("JSONSchemaType type and validation as a type guard", () => {
       if (validate(validUnionData)) {
         if (typeof validUnionData === "string") {
           should.fail("not a string")
+        } else if (typeof validUnionData === "number") {
+          should.fail("not a number")
         } else {
-          validUnionData.a.should.equal(5)
+          validUnionData.a.should.equal(true)
         }
       } else {
         should.fail("is valid")
@@ -190,8 +203,10 @@ describe("JSONSchemaType type and validation as a type guard", () => {
       if (ajv.validate(myUnionSchema, validUnionData)) {
         if (typeof validUnionData === "string") {
           should.fail("not a string")
+        } else if (typeof validUnionData === "number") {
+          should.fail("not a number")
         } else {
-          validUnionData.a.should.equal(5)
+          validUnionData.a.should.equal(true)
         }
       } else {
         should.fail("is valid")
@@ -204,8 +219,10 @@ describe("JSONSchemaType type and validation as a type guard", () => {
       if (validate(validUnionData)) {
         if (typeof validUnionData === "string") {
           should.fail("not a string")
+        } else if (typeof validUnionData === "number") {
+          should.fail("not a number")
         } else {
-          validUnionData.a.should.equal(5)
+          validUnionData.a.should.equal(true)
         }
       } else {
         should.fail("is valid")
@@ -215,8 +232,10 @@ describe("JSONSchemaType type and validation as a type guard", () => {
       if (ajv.validate(myNestedUnionSchema, validUnionData)) {
         if (typeof validUnionData === "string") {
           should.fail("not a string")
+        } else if (typeof validUnionData === "number") {
+          should.fail("not a number")
         } else {
-          validUnionData.a.should.equal(5)
+          validUnionData.a.should.equal(true)
         }
       } else {
         should.fail("is valid")
@@ -241,3 +260,6 @@ describe("JSONSchemaType type and validation as a type guard", () => {
     })
   })
 })
+
+// eslint-disable-next-line no-void
+void invalidSchema

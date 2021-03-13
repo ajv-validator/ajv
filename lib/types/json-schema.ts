@@ -85,12 +85,42 @@ export type JSONSchemaType<T, _partial extends boolean = false> = (
       else?: PartialSchema<T>
       not?: PartialSchema<T>
     })
+  // these two unions allow arbitrary unions of types
   | {
       anyOf: readonly JSONSchemaType<T, _partial>[]
     }
   | {
       oneOf: readonly JSONSchemaType<T, _partial>[]
     }
+  // this union allows for { type: (primitive)[] } style schemas
+  | ({
+      type: (T extends number
+        ? JSONType<"number" | "integer", _partial>
+        : T extends string
+        ? JSONType<"string", _partial>
+        : T extends boolean
+        ? JSONType<"boolean", _partial>
+        : never)[]
+    } & (T extends number
+      ? {
+          minimum?: number
+          maximum?: number
+          exclusiveMinimum?: number
+          exclusiveMaximum?: number
+          multipleOf?: number
+          format?: string
+        }
+      : T extends string
+      ? {
+          type: JSONType<"string", _partial>
+          minLength?: number
+          maxLength?: number
+          pattern?: string
+          format?: string
+        }
+      : T extends boolean
+      ? unknown
+      : never))
 ) & {
   [keyword: string]: any
   $id?: string
