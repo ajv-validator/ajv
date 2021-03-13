@@ -7,14 +7,14 @@ import type {
 import type KeywordCxt from "../../compile/context"
 import {propertyInData, allSchemaProperties, isOwnProperty} from "../code"
 import {alwaysValidSchema, schemaRefOrVal} from "../../compile/util"
-import {_, str, and, Code, Name} from "../../compile/codegen"
+import {_, and, Code, Name} from "../../compile/codegen"
 import {checkMetadata} from "./metadata"
 import {checkNullableObject} from "./nullable"
 import {typeErrorMessage, typeErrorParams, _JTDTypeError} from "./error"
 
 enum PropError {
-  Additional,
-  Missing,
+  Additional = "additional",
+  Missing = "missing",
 }
 
 type PropKeyword = "properties" | "optionalProperties"
@@ -29,25 +29,19 @@ export type JTDPropertiesError =
 export const error: KeywordErrorDefinition = {
   message: (cxt) => {
     const {params} = cxt
-    switch (params.propError) {
-      case PropError.Additional:
-        return "must NOT have additional properties"
-      case PropError.Missing:
-        return str`must have property '${params.missingProperty}'`
-      default:
-        return typeErrorMessage(cxt, "object")
-    }
+    return params.propError
+      ? params.propError === PropError.Additional
+        ? "must NOT have additional properties"
+        : `must have property '${params.missingProperty}'`
+      : typeErrorMessage(cxt, "object")
   },
   params: (cxt) => {
     const {params} = cxt
-    switch (params.propError) {
-      case PropError.Additional:
-        return _`{error: ${params.propError}, additionalProperty: ${params.additionalProperty}}`
-      case PropError.Missing:
-        return _`{error: ${params.propError}, missingProperty: ${params.missingProperty}}`
-      default:
-        return typeErrorParams(cxt, "object")
-    }
+    return params.propError
+      ? params.propError === PropError.Additional
+        ? _`{error: ${params.propError}, additionalProperty: ${params.additionalProperty}}`
+        : _`{error: ${params.propError}, missingProperty: ${params.missingProperty}}`
+      : typeErrorParams(cxt, "object")
   },
 }
 

@@ -6,7 +6,7 @@ import * as equal from "fast-deep-equal"
 export type EnumError = ErrorObject<"enum", {allowedValues: any[]}, any[] | {$data: string}>
 
 const error: KeywordErrorDefinition = {
-  message: "should be equal to one of the allowed values",
+  message: "must be equal to one of the allowed values",
   params: ({schemaCode}) => _`{allowedValues: ${schemaCode}}`,
 }
 

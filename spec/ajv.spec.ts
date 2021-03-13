@@ -47,7 +47,7 @@ describe("Ajv", () => {
     it("should throw if invalid schema is compiled", () => {
       should.throw(() => {
         ajv.compile({type: null})
-      }, /should be equal to one of the allowed values/)
+      }, /must be equal to one of the allowed values/)
     })
 
     it("should throw if compiled schema has an invalid JavaScript code", () => {

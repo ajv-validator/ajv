@@ -1,54 +1,40 @@
 import type {CodeKeywordDefinition, KeywordErrorDefinition, ErrorObject} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {_, str, not, getProperty, Name} from "../../compile/codegen"
+import {_, not, getProperty, Name} from "../../compile/codegen"
 import {checkMetadata} from "./metadata"
 import {checkNullableObject} from "./nullable"
 import {typeErrorMessage, typeErrorParams, _JTDTypeError} from "./error"
 
 enum DiscrError {
-  NoTag,
-  TagType,
-  NoMapping,
+  Tag = "tag",
+  Mapping = "mapping",
 }
 
-type DiscrErrorObj<E extends DiscrError, T = any> = ErrorObject<
+type DiscrErrorObj<E extends DiscrError> = ErrorObject<
   "discriminator",
-  {error: E; tag: string; tagValue: T},
+  {error: E; tag: string; tagValue: unknown},
   string
 >
 
 export type JTDDiscriminatorError =
   | _JTDTypeError<"discriminator", "object", string>
-  | DiscrErrorObj<DiscrError.NoTag, never>
-  | DiscrErrorObj<DiscrError.TagType>
-  | DiscrErrorObj<DiscrError.NoMapping>
+  | DiscrErrorObj<DiscrError.Tag>
+  | DiscrErrorObj<DiscrError.Mapping>
 
-export const error: KeywordErrorDefinition = {
+const error: KeywordErrorDefinition = {
   message: (cxt) => {
     const {schema, params} = cxt
-    switch (params.discrError) {
-      case DiscrError.NoTag:
-        return str`tag "${schema}" is missing`
-      case DiscrError.TagType:
-        return str`value of tag "${schema}" must be string`
-      case DiscrError.NoMapping:
-        return "tag value must be in schema mapping"
-      default:
-        return typeErrorMessage(cxt, "object")
-    }
+    return params.discrError
+      ? params.discrError === DiscrError.Tag
+        ? `tag "${schema}" must be string`
+        : `value of tag "${schema}" must be in mapping`
+      : typeErrorMessage(cxt, "object")
   },
   params: (cxt) => {
     const {schema, params} = cxt
-    const err = _`{error: ${params.discrError}, tag: ${schema}`
-    switch (params.discrError) {
-      case DiscrError.NoTag:
-        return _`${err}}`
-      case DiscrError.TagType:
-      case DiscrError.NoMapping:
-        return _`${err}, tagValue: ${params.tag}}`
-      default:
-        return typeErrorParams(cxt, "object")
-    }
+    return params.discrError
+      ? _`{error: ${params.discrError}, tag: ${schema}, tagValue: ${params.tag}}`
+      : typeErrorParams(cxt, "object")
   },
 }
 
@@ -56,6 +42,7 @@ const def: CodeKeywordDefinition = {
   keyword: "discriminator",
   schemaType: "string",
   implements: ["mapping"],
+  error,
   code(cxt: KeywordCxt) {
     checkMetadata(cxt)
     const {gen, data, schema, parentSchema} = cxt
@@ -71,11 +58,11 @@ const def: CodeKeywordDefinition = {
     function validateDiscriminator(): void {
       const tag = gen.const("tag", _`${data}${getProperty(schema)}`)
       gen.if(_`${tag} === undefined`)
-      cxt.error(false, {discrError: DiscrError.NoTag})
+      cxt.error(false, {discrError: DiscrError.Tag, tag})
       gen.elseIf(_`typeof ${tag} == "string"`)
       validateMapping(tag)
       gen.else()
-      cxt.error(false, {discrError: DiscrError.TagType, tag}, {instancePath: schema})
+      cxt.error(false, {discrError: DiscrError.Tag, tag}, {instancePath: schema})
       gen.endIf()
     }
 
@@ -88,7 +75,7 @@ const def: CodeKeywordDefinition = {
       gen.else()
       cxt.error(
         false,
-        {discrError: DiscrError.NoMapping, tag},
+        {discrError: DiscrError.Mapping, tag},
         {instancePath: schema, schemaPath: "mapping", parentSchema: true}
       )
       gen.endIf()

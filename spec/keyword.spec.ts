@@ -532,7 +532,7 @@ describe("User-defined keywords", () => {
 
       should.throw(() => {
         ajv.compile(schema)
-      }, /type should be equal to one of the allowed values/)
+      }, /type must be equal to one of the allowed values/)
 
       function macroInvalid(/* schema */) {
         return {type: "invalid"}
