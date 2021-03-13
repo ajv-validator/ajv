@@ -11,7 +11,7 @@
 </template>
 
 <script>
-	import contributors from "./Contributors/_contributors.js";
+  import contributors from "./Contributors/_contributors.js";
   export default {
     data() {
       return {
