@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-interface,no-void */
 import _Ajv from "../ajv_jtd"
-import type {JTDSchemaType, JTDDataType} from "../../dist/jtd"
+import type {JTDSchemaType, SomeJTDSchemaType, JTDDataType} from "../../dist/jtd"
 import chai from "../chai"
 const should = chai.should()
 
@@ -353,16 +353,14 @@ describe("JTDDataType", () => {
       },
     } as const
 
-    type MyData1 = JTDDataType<typeof mySchema1>
-
-    const validate = ajv.compile<MyData1>(mySchema1)
+    const validate = ajv.compile(mySchema1)
     const validData: unknown = {type: "a", a: 1}
     if (validate(validData) && validData.type === "a") {
       validData.a.should.equal(1)
     }
     should.not.exist(validate.errors)
 
-    if (ajv.validate<MyData1>(mySchema1, validData) && validData.type === "a") {
+    if (ajv.validate(mySchema1, validData) && validData.type === "a") {
       validData.a.should.equal(1)
     }
     should.not.exist(ajv.errors)
@@ -490,5 +488,15 @@ describe("JTDDataType", () => {
     const empty: TypeEquality<JTDDataType<typeof emptySchema>, unknown> = true
 
     void [empty]
+  })
+})
+
+describe("SomeJTDSchemaType", () => {
+  it("should allow setting unknowns", () => {
+    // This test is basically here to assert that we should be using `{}` in
+    // SomeJTDSchemaType
+    const schema: SomeJTDSchemaType = {}
+
+    void [schema]
   })
 })

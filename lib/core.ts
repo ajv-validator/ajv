@@ -30,7 +30,7 @@ export {KeywordCxt} from "./compile/validate"
 export {DefinedError} from "./vocabularies/errors"
 export {JSONType} from "./compile/rules"
 export {JSONSchemaType} from "./types/json-schema"
-export {JTDSchemaType} from "./types/jtd-schema"
+export {JTDSchemaType, SomeJTDSchemaType, JTDDataType} from "./types/jtd-schema"
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
 import type {
@@ -50,7 +50,7 @@ import type {
   AddedFormat,
 } from "./types"
 import type {JSONSchemaType} from "./types/json-schema"
-import type {JTDSchemaType} from "./types/jtd-schema"
+import type {JTDSchemaType, SomeJTDSchemaType, JTDDataType} from "./types/jtd-schema"
 import ValidationError from "./runtime/validation_error"
 import MissingRefError from "./compile/ref_error"
 import {getRules, ValidationRules, Rule, RuleGroup, JSONType} from "./compile/rules"
@@ -313,6 +313,12 @@ export default class Ajv {
   // Separated for type inference to work
   // eslint-disable-next-line @typescript-eslint/unified-signatures
   validate<T>(schema: JTDSchemaType<T>, data: unknown): data is T
+  // This overload is only intended for typescript inference, the first
+  // argument prevents manual type annotation from matching this overload
+  validate<N extends never, T extends SomeJTDSchemaType>(
+    schema: T,
+    data: unknown
+  ): data is JTDDataType<T>
   validate<T>(schema: AsyncSchema, data: unknown | T): Promise<T>
   validate<T>(schemaKeyRef: AnySchema | string, data: unknown): data is T | Promise<T>
   validate<T>(
@@ -338,6 +344,12 @@ export default class Ajv {
   // Separated for type inference to work
   // eslint-disable-next-line @typescript-eslint/unified-signatures
   compile<T = unknown>(schema: JTDSchemaType<T>, _meta?: boolean): ValidateFunction<T>
+  // This overload is only intended for typescript inference, the first
+  // argument prevents manual type annotation from matching this overload
+  compile<N extends never, T extends SomeJTDSchemaType>(
+    schema: T,
+    _meta?: boolean
+  ): ValidateFunction<JTDDataType<T>>
   compile<T = unknown>(schema: AsyncSchema, _meta?: boolean): AsyncValidateFunction<T>
   compile<T = unknown>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T>
   compile<T = unknown>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T> {

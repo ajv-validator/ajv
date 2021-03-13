@@ -1,5 +1,5 @@
 import type {AnySchemaObject, SchemaObject, JTDParser} from "./types"
-import type {JTDSchemaType, JTDDataType} from "./types/jtd-schema"
+import type {JTDSchemaType, SomeJTDSchemaType, JTDDataType} from "./types/jtd-schema"
 import AjvCore, {CurrentOptions} from "./core"
 import jtdVocabulary from "./vocabularies/jtd"
 import jtdMetaSchema from "./refs/jtd-schema"
@@ -125,5 +125,5 @@ export {KeywordCxt} from "./compile/validate"
 export {JTDErrorObject} from "./vocabularies/jtd"
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
-export {JTDSchemaType, JTDDataType}
+export {JTDSchemaType, SomeJTDSchemaType, JTDDataType}
 export {JTDOptions}
