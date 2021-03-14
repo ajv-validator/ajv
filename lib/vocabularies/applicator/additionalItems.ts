@@ -4,11 +4,9 @@ import type {
   KeywordErrorDefinition,
   AnySchema,
 } from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, str, not, Name} from "../../compile/codegen"
-import {Type} from "../../compile/subschema"
-import {alwaysValidSchema} from "../../compile/util"
-import {checkStrictMode} from "../../compile/validate"
+import {alwaysValidSchema, checkStrictMode, Type} from "../../compile/util"
 
 export type AdditionalItemsError = ErrorObject<"additionalItems", {limit: number}, AnySchema>
 

@@ -4,7 +4,7 @@ import type {
   KeywordErrorDefinition,
   SchemaObject,
 } from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {propertyInData, allSchemaProperties, isOwnProperty} from "../code"
 import {alwaysValidSchema, schemaRefOrVal} from "../../compile/util"
 import {_, and, Code, Name} from "../../compile/codegen"

@@ -1,5 +1,5 @@
 import type {CodeKeywordDefinition, AnySchemaObject} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {compileSchema, SchemaEnv} from "../../compile"
 import {_, not, nil, stringify} from "../../compile/codegen"
 import {MissingRefError} from "../../runtime/error_classes"

@@ -1,8 +1,7 @@
 import type {CodeKeywordDefinition, AnySchema} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_} from "../../compile/codegen"
-import {alwaysValidSchema, mergeEvaluated} from "../../compile/util"
-import {checkStrictMode} from "../../compile/validate"
+import {alwaysValidSchema, mergeEvaluated, checkStrictMode} from "../../compile/util"
 import {validateArray} from "../code"
 
 const def: CodeKeywordDefinition = {

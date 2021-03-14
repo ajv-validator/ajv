@@ -26,8 +26,7 @@ export interface Plugin<Opts> {
   [prop: string]: any
 }
 
-import KeywordCxt from "./compile/context"
-export {KeywordCxt}
+export {KeywordCxt} from "./compile/validate"
 export {DefinedError} from "./vocabularies/errors"
 export {JSONType} from "./compile/rules"
 export {JSONSchemaType} from "./types/json-schema"

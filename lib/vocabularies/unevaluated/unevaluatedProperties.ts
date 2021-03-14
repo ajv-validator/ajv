@@ -5,9 +5,8 @@ import type {
   AnySchema,
 } from "../../types"
 import {_, not, and, Name, Code} from "../../compile/codegen"
-import {alwaysValidSchema} from "../../compile/util"
+import {alwaysValidSchema, Type} from "../../compile/util"
 import N from "../../compile/names"
-import {Type} from "../../compile/subschema"
 
 export type UnevaluatedPropertiesError = ErrorObject<
   "unevaluatedProperties",

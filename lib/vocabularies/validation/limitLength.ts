@@ -1,5 +1,5 @@
 import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, str, operators} from "../../compile/codegen"
 import {useFunc} from "../../compile/util"
 import ucs2length from "../../runtime/ucs2length"

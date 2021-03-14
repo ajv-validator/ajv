@@ -1,7 +1,7 @@
 import type {CodeGen, Code, Name, ScopeValueSets, ValueScopeName} from "../compile/codegen"
 import type {SchemaEnv, SchemaCxt, SchemaObjCxt} from "../compile"
 import type {JSONType} from "../compile/rules"
-import type KeywordCxt from "../compile/context"
+import type {KeywordCxt} from "../compile/validate"
 import type Ajv from "../core"
 
 interface _SchemaObject {

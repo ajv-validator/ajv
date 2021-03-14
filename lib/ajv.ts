@@ -58,8 +58,7 @@ export {
 
 export {Plugin, Options, CodeOptions, InstanceOptions, Logger, ErrorsTextOptions} from "./core"
 export {SchemaCxt, SchemaObjCxt} from "./compile"
-import KeywordCxt from "./compile/context"
-export {KeywordCxt}
+export {KeywordCxt} from "./compile/validate"
 export {DefinedError} from "./vocabularies/errors"
 export {JSONType} from "./compile/rules"
 export {JSONSchemaType} from "./types/json-schema"

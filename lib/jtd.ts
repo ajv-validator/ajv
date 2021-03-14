@@ -122,8 +122,7 @@ export {
 
 export {Plugin, Options, CodeOptions, InstanceOptions, Logger, ErrorsTextOptions} from "./core"
 export {SchemaCxt, SchemaObjCxt} from "./compile"
-import KeywordCxt from "./compile/context"
-export {KeywordCxt}
+export {KeywordCxt} from "./compile/validate"
 export {JTDErrorObject} from "./vocabularies/jtd"
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 

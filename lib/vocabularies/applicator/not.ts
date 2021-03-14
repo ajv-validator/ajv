@@ -1,5 +1,5 @@
 import type {CodeKeywordDefinition, ErrorNoParams, AnySchema} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {alwaysValidSchema} from "../../compile/util"
 
 export type NotKeywordError = ErrorNoParams<"not", AnySchema>

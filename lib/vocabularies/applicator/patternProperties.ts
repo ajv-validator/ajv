@@ -1,10 +1,9 @@
 import type {CodeKeywordDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {schemaProperties, usePattern} from "../code"
 import {_, not, Name} from "../../compile/codegen"
-import {Type} from "../../compile/subschema"
-import {checkStrictMode} from "../../compile/validate"
-import {evaluatedPropsToName} from "../../compile/util"
+import {checkStrictMode} from "../../compile/util"
+import {evaluatedPropsToName, Type} from "../../compile/util"
 
 const def: CodeKeywordDefinition = {
   keyword: "patternProperties",

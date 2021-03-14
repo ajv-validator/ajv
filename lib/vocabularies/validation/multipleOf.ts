@@ -1,5 +1,5 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, str} from "../../compile/codegen"
 
 export type MultipleOfError = ErrorObject<

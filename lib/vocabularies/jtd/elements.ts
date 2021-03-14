@@ -1,5 +1,5 @@
 import type {CodeKeywordDefinition, SchemaObject} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {alwaysValidSchema} from "../../compile/util"
 import {validateArray} from "../code"
 import {_, not} from "../../compile/codegen"

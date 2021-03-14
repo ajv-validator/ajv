@@ -1,5 +1,5 @@
 import type {CodeKeywordDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {validateProperties, error} from "./properties"
 
 const def: CodeKeywordDefinition = {

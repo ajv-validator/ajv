@@ -1,5 +1,5 @@
 import type {CodeKeywordDefinition, KeywordErrorDefinition, ErrorObject} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, or, and, Code} from "../../compile/codegen"
 import {checkMetadata} from "./metadata"
 import {checkNullable} from "./nullable"

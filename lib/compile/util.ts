@@ -2,7 +2,6 @@ import type {AnySchema, EvaluatedProperties, EvaluatedItems} from "../types"
 import type {SchemaCxt, SchemaObjCxt} from "."
 import {_, getProperty, Code, Name, CodeGen} from "./codegen"
 import type {Rule, ValidationRules} from "./rules"
-import {checkStrictMode} from "./validate"
 
 // TODO refactor to use Set
 export function toHash<T extends string = string>(arr: T[]): {[K in T]?: true} {
@@ -173,4 +172,35 @@ export function useFunc(gen: CodeGen, f: {code: Code}): Name {
     ref: f,
     code: f.code,
   })
+}
+
+export enum Type {
+  Num,
+  Str,
+}
+
+export function getErrorPath(
+  dataProp: Name | string | number,
+  dataPropType?: Type,
+  jsPropertySyntax?: boolean
+): Code | string {
+  // let path
+  if (dataProp instanceof Name) {
+    const isNumber = dataPropType === Type.Num
+    return jsPropertySyntax
+      ? isNumber
+        ? _`"[" + ${dataProp} + "]"`
+        : _`"['" + ${dataProp} + "']"`
+      : isNumber
+      ? _`"/" + ${dataProp}`
+      : _`"/" + ${dataProp}.replace(/~/g, "~0").replace(/\\//g, "~1")` // TODO maybe use global escapePointer
+  }
+  return jsPropertySyntax ? getProperty(dataProp).toString() : "/" + escapeJsonPointer(dataProp)
+}
+
+export function checkStrictMode(it: SchemaCxt, msg: string, mode = it.opts.strict): void {
+  if (!mode) return
+  msg = `strict mode: ${msg}`
+  if (mode === true) throw new Error(msg)
+  it.self.logger.warn(msg)
 }

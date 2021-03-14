@@ -6,7 +6,7 @@ import type {
   KeywordErrorDefinition,
   ErrorObject,
 } from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, str, nil, or, Code, getProperty} from "../../compile/codegen"
 
 type FormatValidate =

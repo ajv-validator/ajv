@@ -1,5 +1,5 @@
 import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, or, Code} from "../../compile/codegen"
 import validTimestamp from "../../runtime/timestamp"
 import {useFunc} from "../../compile/util"

@@ -1,5 +1,5 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {
   checkReportMissingProp,
   checkMissingProp,
@@ -8,7 +8,7 @@ import {
   noPropertyInData,
 } from "../code"
 import {_, str, nil, not, Name, Code} from "../../compile/codegen"
-import {checkStrictMode} from "../../compile/validate"
+import {checkStrictMode} from "../../compile/util"
 
 export type RequiredError = ErrorObject<
   "required",

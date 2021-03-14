@@ -1,5 +1,5 @@
 import type {CodeKeywordDefinition} from "../../types"
-import KeywordCxt from "../../compile/context"
+import {KeywordCxt} from "../../compile/validate"
 import {propertyInData, allSchemaProperties} from "../code"
 import {alwaysValidSchema, toHash, mergeEvaluated} from "../../compile/util"
 import apDef from "./additionalProperties"

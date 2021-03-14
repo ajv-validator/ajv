@@ -5,7 +5,7 @@ import type {
   SchemaMap,
   AnySchema,
 } from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, str} from "../../compile/codegen"
 import {alwaysValidSchema} from "../../compile/util"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp, propertyInData} from "../code"

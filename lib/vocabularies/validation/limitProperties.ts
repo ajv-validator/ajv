@@ -1,5 +1,5 @@
 import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, str, operators} from "../../compile/codegen"
 
 const error: KeywordErrorDefinition = {

@@ -1,11 +1,10 @@
-import type {AnySchema} from "../types"
-import type {SchemaObjCxt, SchemaCxt} from "./index"
-import {subschemaCode} from "./validate"
-import {escapeFragment, escapeJsonPointer} from "./util"
-import {_, str, Code, Name, getProperty} from "./codegen"
-import {JSONType} from "./rules"
+import type {AnySchema} from "../../types"
+import type {SchemaObjCxt} from ".."
+import {_, str, getProperty, Code, Name} from "../codegen"
+import {escapeFragment, getErrorPath, Type} from "../util"
+import type {JSONType} from "../rules"
 
-interface SubschemaContext {
+export interface SubschemaContext {
   // TODO use Optional? align with SchemCxt property types
   schema: AnySchema
   schemaPath: Code
@@ -25,11 +24,6 @@ interface SubschemaContext {
   compositeRule?: true
   createErrors?: boolean
   allErrors?: boolean
-}
-
-export enum Type {
-  Num,
-  Str,
 }
 
 export type SubschemaArgs = Partial<{
@@ -52,16 +46,7 @@ export type SubschemaArgs = Partial<{
   allErrors: boolean
 }>
 
-export function applySubschema(it: SchemaObjCxt, appl: SubschemaArgs, valid: Name): SchemaCxt {
-  const subschema = getSubschema(it, appl)
-  extendSubschemaData(subschema, it, appl)
-  extendSubschemaMode(subschema, appl)
-  const nextContext = {...it, ...subschema, items: undefined, props: undefined}
-  subschemaCode(nextContext, valid)
-  return nextContext
-}
-
-function getSubschema(
+export function getSubschema(
   it: SchemaObjCxt,
   {keyword, schemaProp, schema, schemaPath, errSchemaPath, topSchemaRef}: SubschemaArgs
 ): SubschemaContext {
@@ -99,7 +84,7 @@ function getSubschema(
   throw new Error('either "keyword" or "schema" must be passed')
 }
 
-function extendSubschemaData(
+export function extendSubschemaData(
   subschema: SubschemaContext,
   it: SchemaObjCxt,
   {dataProp, dataPropType: dpType, data, dataTypes, propertyName}: SubschemaArgs
@@ -138,7 +123,7 @@ function extendSubschemaData(
   }
 }
 
-function extendSubschemaMode(
+export function extendSubschemaMode(
   subschema: SubschemaContext,
   {jtdDiscriminator, jtdMetadata, compositeRule, createErrors, allErrors}: SubschemaArgs
 ): void {
@@ -147,23 +132,4 @@ function extendSubschemaMode(
   if (allErrors !== undefined) subschema.allErrors = allErrors
   subschema.jtdDiscriminator = jtdDiscriminator // not inherited
   subschema.jtdMetadata = jtdMetadata // not inherited
-}
-
-export function getErrorPath(
-  dataProp: Name | string | number,
-  dataPropType?: Type,
-  jsPropertySyntax?: boolean
-): Code | string {
-  // let path
-  if (dataProp instanceof Name) {
-    const isNumber = dataPropType === Type.Num
-    return jsPropertySyntax
-      ? isNumber
-        ? _`"[" + ${dataProp} + "]"`
-        : _`"['" + ${dataProp} + "']"`
-      : isNumber
-      ? _`"/" + ${dataProp}`
-      : _`"/" + ${dataProp}.replace(/~/g, "~0").replace(/\\//g, "~1")` // TODO maybe use global escapePointer
-  }
-  return jsPropertySyntax ? getProperty(dataProp).toString() : "/" + escapeJsonPointer(dataProp)
 }

@@ -1,9 +1,8 @@
 import type {AnySchema, SchemaMap} from "../types"
 import type {SchemaCxt} from "../compile"
-import type KeywordCxt from "../compile/context"
+import type {KeywordCxt} from "../compile/validate"
 import {CodeGen, _, or, not, nil, strConcat, getProperty, Code, Name} from "../compile/codegen"
-import {alwaysValidSchema} from "../compile/util"
-import {Type} from "../compile/subschema"
+import {alwaysValidSchema, Type} from "../compile/util"
 import N from "../compile/names"
 
 export function checkReportMissingProp(cxt: KeywordCxt, prop: string): void {

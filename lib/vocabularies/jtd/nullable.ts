@@ -1,4 +1,4 @@
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, not, nil, Code, Name} from "../../compile/codegen"
 
 export function checkNullable(
