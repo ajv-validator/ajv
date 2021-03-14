@@ -36,7 +36,7 @@ type JTDOptions = CurrentOptions & {
   multipleOfPrecision?: never
 }
 
-export default class Ajv extends AjvCore {
+class Ajv extends AjvCore {
   constructor(opts: JTDOptions = {}) {
     super({
       ...opts,
@@ -93,8 +93,10 @@ export default class Ajv extends AjvCore {
   }
 }
 
-module.exports = Ajv
-module.exports.default = Ajv
+module.exports = exports = Ajv
+Object.defineProperty(exports, "__esModule", {value: true})
+
+export default Ajv
 
 export {
   Format,

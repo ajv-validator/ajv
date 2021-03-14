@@ -7,7 +7,7 @@ const META_SUPPORT_DATA = ["/properties"]
 
 const META_SCHEMA_ID = "http://json-schema.org/draft-07/schema"
 
-export default class Ajv extends AjvCore {
+class Ajv extends AjvCore {
   _addVocabularies(): void {
     super._addVocabularies()
     draft7Vocabularies.forEach((v) => this.addVocabulary(v))
@@ -29,8 +29,10 @@ export default class Ajv extends AjvCore {
   }
 }
 
-module.exports = Ajv
-module.exports.default = Ajv
+module.exports = exports = Ajv
+Object.defineProperty(exports, "__esModule", {value: true})
+
+export default Ajv
 
 export {
   Format,
