@@ -8,7 +8,7 @@ import chai from "./chai"
 
 const instances = getAjvInstances(_Ajv, options, {
   schemas: [require("../dist/refs/json-schema-secure.json")],
-  strictTypes: false,
+  strict: {types: false},
 })
 
 instances.forEach((ajv) => (ajv.opts.code.source = true))

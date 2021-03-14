@@ -204,7 +204,7 @@ If the keyword value is an array, then items with indices less than the number o
 
     _invalid_: `["abc", 1]`, `["abc"]`
 
-The schema in example 2 will log warning by default (see `strictTuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use `minItems` and `additionalItems` keywords (see example 1 in `additionalItems`).
+The schema in example 2 will log warning by default (see `strict.tuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use `minItems` and `additionalItems` keywords (see example 1 in `additionalItems`).
 
 ### `additionalItems`
 
@@ -220,7 +220,7 @@ If the length of data array is bigger than the length of "items" keyword value t
 - `true`: data is valid
 - an object: data is valid if all additional items (i.e. items with indices greater or equal than "items" keyword value length) are valid according to the schema in "additionalItems" keyword.
 
-The schemas in examples 2-3 log warning by default, use option `strictTuples: false` to allow)
+The schemas in examples 2-3 log warning by default, use option `strict: {tuples: false}` to allow)
 
 **Examples**
 

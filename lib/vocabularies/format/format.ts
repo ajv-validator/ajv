@@ -56,7 +56,7 @@ const def: CodeKeywordDefinition = {
       cxt.fail$data(or(unknownFmt(), invalidFmt()))
 
       function unknownFmt(): Code {
-        if (opts.strict === false) return nil
+        if (opts.strict.schema === false) return nil
         return _`${schemaCode} && !${format}`
       }
 
@@ -80,7 +80,7 @@ const def: CodeKeywordDefinition = {
       if (fmtType === ruleType) cxt.pass(validCondition())
 
       function unknownFormat(): void {
-        if (opts.strict === false) {
+        if (opts.strict.schema === false) {
           self.logger.warn(unknownMsg())
           return
         }

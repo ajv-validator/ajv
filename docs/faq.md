@@ -20,7 +20,7 @@ Ajv implements JSON schema specification. Before submitting the issue about the 
 
 "items" keyword support [two syntaxes](./json-schema.md#items) - 1) when the schema applies to all items; 2) when there is a different schema for each item in the beginning of the array. This problem means you are using the second syntax.
 
-In v7 with option `strictTuples` (`"log"` by default) this problem is less likely to happen, as Ajv would log warning about missing "minItems" and other keywords that are required to constrain tuple size.
+In v7 with option `strict.tuples` (`"log"` by default) this problem is less likely to happen, as Ajv would log warning about missing "minItems" and other keywords that are required to constrain tuple size.
 
 ## Ajv API for returning validation errors
 

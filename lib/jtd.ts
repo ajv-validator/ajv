@@ -11,8 +11,7 @@ const META_SCHEMA_ID = "JTD-meta-schema"
 
 type JTDOptions = CurrentOptions & {
   // strict mode options not supported with JTD:
-  strictTypes?: never
-  strictTuples?: never
+  strict?: never
   allowMatchingProperties?: never
   allowUnionTypes?: never
   validateFormats?: never

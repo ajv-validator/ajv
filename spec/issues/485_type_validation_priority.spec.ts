@@ -4,7 +4,7 @@ chai.should()
 
 describe("issue #485, order of type validation", () => {
   it("should validate types before keywords", () => {
-    const ajv = new _Ajv({allErrors: true, strictTypes: false})
+    const ajv = new _Ajv({allErrors: true, strict: {types: false}})
     const validate: any = ajv.compile({
       type: ["integer", "string"],
       required: ["foo"],

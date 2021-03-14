@@ -35,7 +35,6 @@ runTest(
   getAjvInstances(_Ajv, options, {
     meta: false,
     strict: false,
-    strictTypes: false,
     ignoreKeywordsWithRef: true,
   }),
   6,
@@ -45,7 +44,6 @@ runTest(
 runTest(
   getAjvInstances(_Ajv, options, {
     strict: false,
-    strictTypes: false,
     ignoreKeywordsWithRef: true,
     formats: toHash(SKIP_FORMATS),
   }),
@@ -56,7 +54,6 @@ runTest(
 runTest(
   getAjvInstances(_Ajv2019, options, {
     strict: false,
-    strictTypes: false,
     formats: toHash(SKIP_FORMATS),
   }),
   2019,

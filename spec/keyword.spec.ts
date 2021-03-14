@@ -980,7 +980,7 @@ describe("User-defined keywords", () => {
 
   function testMultipleRangeKeyword(definition, numErrors?: number) {
     instances.forEach((_ajv) => {
-      _ajv.opts.strictTypes = false
+      _ajv.opts.strict.types = false
       _ajv.addKeyword(definition)
       _ajv.addKeyword({keyword: "exclusiveRange", schemaType: "boolean"})
 

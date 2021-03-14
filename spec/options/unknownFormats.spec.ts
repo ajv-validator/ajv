@@ -17,11 +17,12 @@ describe("specifying allowed unknown formats with `formats` option", () => {
     })
 
     it("should fail validation if unknown format is used via $data", () => {
-      test(new _Ajv({$data: true, strictTypes: false}))
+      test(new _Ajv({$data: true}))
 
       function test(ajv) {
         ajv.addFormat("date", DATE_FORMAT)
         const validate = ajv.compile({
+          type: "object",
           properties: {
             foo: {format: {$data: "1/bar"}},
             bar: {type: "string"},

@@ -15,7 +15,8 @@ const def: CodeKeywordDefinition = {
     const patterns = schemaProperties(it, schema)
     // TODO mark properties matching patterns with always valid schemas as evaluated
     if (patterns.length === 0) return
-    const checkProperties = opts.strict && !opts.allowMatchingProperties && parentSchema.properties
+    const checkProperties =
+      opts.strict.schema && !opts.allowMatchingProperties && parentSchema.properties
     const valid = gen.name("valid")
     if (it.props !== true && !(it.props instanceof Name)) {
       it.props = evaluatedPropsToName(gen, it.props)

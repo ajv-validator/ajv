@@ -94,9 +94,9 @@ In addition to allowing such patterns by using option `strict: false`, there is 
 
 To reiterate, neither this nor other strict mode restrictions change the validation results - they only restrict which schemas are valid.
 
-#### Defined required properties <Badge text="strictRequired option" />
+#### Defined required properties <Badge text="strict.required option" />
 
-With option `strictRequired` set to `"log"` or `true` Ajv logs warning or throws exception if the property used in "required" keyword is not defined in "properties" keyword in the same or some parent schema relating to the same object (data instance).
+With option `strict.required` set to `"log"` or `true` Ajv logs warning or throws exception if the property used in "required" keyword is not defined in "properties" keyword in the same or some parent schema relating to the same object (data instance).
 
 By default this option is disabled.
 
@@ -104,7 +104,7 @@ By default this option is disabled.
 There are cases when property defined in the parent schema will not be taken into account.
 :::
 
-#### Unconstrained tuples <Badge text="strictTuples option" />
+#### Unconstrained tuples <Badge text="strict.tuples option" />
 
 Ajv also logs a warning if "items" is an array (for schema that defines a tuple) but neither "minItems" nor "additionalItems"/"maxItems" keyword is present (or have a wrong value):
 
@@ -130,17 +130,17 @@ The above schema may have a mistake, as tuples usually are expected to have a fi
 
 Sometimes users accidentally create schema for unit (a tuple with one item) that only validates the first item, this restriction prevents this mistake as well.
 
-Use `strictTuples` option to suppress this warning (`false`) or turn it into exception (`true`).
+Use `strict.tuples` option to suppress this warning (`false`) or turn it into exception (`true`).
 
 If you use `JSONSchemaType<T>` this mistake will also be prevented on a type level.
 
-### Strict types <Badge text="strictTypes option" />
+### Strict types <Badge text="strict.types option" />
 
-An additional option `strictTypes` ("log" by default) imposes additional restrictions on how type keyword is used:
+An additional option `strict.types` ("log" by default) imposes additional restrictions on how type keyword is used:
 
 #### Union types <Badge text="allowUnionTypes option" />
 
-With `strictTypes` option "type" keywords with multiple types (other than with "null") are prohibited.
+With `strict.types` option "type" keywords with multiple types (other than with "null") are prohibited.
 
 Invalid:
 
@@ -169,7 +169,7 @@ and
 
 Unions can still be defined with `anyOf` keyword.
 
-The motivation for this restriction is that "type" is usually not the only keyword in the schema, and mixing other keywords that apply to different types is confusing. It is also consistent with wider range of versions of OpenAPI specification and has better tooling support. E.g., this example violating `strictTypes`:
+The motivation for this restriction is that "type" is usually not the only keyword in the schema, and mixing other keywords that apply to different types is confusing. It is also consistent with wider range of versions of OpenAPI specification and has better tooling support. E.g., this example violating `strict.types`:
 
 ```javascript
 {
@@ -222,7 +222,7 @@ It also can be refactored:
 }
 ```
 
-This restriction can be lifted separately from other `strictTypes` restrictions with `allowUnionTypes: true` option.
+This restriction can be lifted separately from other `strict.types` restrictions with `allowUnionTypes: true` option.
 
 #### Contradictory types
 
@@ -238,7 +238,7 @@ Subschemas can apply to the same data instance, and it is possible to have contr
 }
 ```
 
-The schema above violates `strictTypes` as "array" type is not compatible with object. If you used `allowUnionTypes: true` option, the above schema can be fixed in this way:
+The schema above violates `strict.types` as "array" type is not compatible with object. If you used `allowUnionTypes: true` option, the above schema can be fixed in this way:
 
 ```javascript
 {
@@ -251,12 +251,12 @@ The schema above violates `strictTypes` as "array" type is not compatible with o
 ```
 
 ::: tip "number" vs "integer"
-Type "number" can be narrowed to "integer", the opposite would violate `strictTypes`.
+Type "number" can be narrowed to "integer", the opposite would violate `strict.types`.
 :::
 
 #### Require applicable types
 
-This simple JSON Schema is valid, but it violates `strictTypes`:
+This simple JSON Schema is valid, but it violates `strict.types`:
 
 ```javascript
 {
@@ -301,8 +301,8 @@ You do not necessarily have to have "type" keyword in the same schema object; as
 }
 ```
 
-Both "properties" and "required" need `type: "object"` to satisfy `strictTypes` - it is sufficient to have it once in the parent schema, without repeating it in each schema.
+Both "properties" and "required" need `type: "object"` to satisfy `strict.types` - it is sufficient to have it once in the parent schema, without repeating it in each schema.
 
-### Strict number validation
+### Strict number validation <Badge text="strict.number option" />
 
 Strict mode also affects number validation. By default Ajv fails `{"type": "number"}` (or `"integer"`) validation for `Infinity` and `NaN`.

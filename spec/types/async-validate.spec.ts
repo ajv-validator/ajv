@@ -8,7 +8,7 @@ interface Foo {
 }
 
 describe("$async validation and type guards", () => {
-  const ajv = new _Ajv({strictTypes: false})
+  const ajv = new _Ajv({strict: {types: false}})
 
   describe("$async: undefined", () => {
     it("should have result type boolean 1", () => {

@@ -3,7 +3,7 @@ import chai from "../chai"
 chai.should()
 
 describe("issue #182, NaN validation", () => {
-  const ajv = new _Ajv({strictTypes: false})
+  const ajv = new _Ajv({strict: {types: false}})
 
   it("should pass minimum/maximum validation without type", () => {
     testNaN(ajv, {minimum: 1}, true)

@@ -43,7 +43,7 @@ export function coerceAndCheckDataType(it: SchemaObjCxt, types: JSONType[]): boo
     types.length > 0 &&
     !(coerceTo.length === 0 && types.length === 1 && schemaHasRulesForType(it, types[0]))
   if (checkTypes) {
-    const wrongType = checkDataTypes(types, data, opts.strict, DataType.Wrong)
+    const wrongType = checkDataTypes(types, data, opts.strict.number, DataType.Wrong)
     gen.if(wrongType, () => {
       if (coerceTo.length) coerceData(it, types, coerceTo)
       else reportTypeError(it)
@@ -68,7 +68,7 @@ function coerceData(it: SchemaObjCxt, types: JSONType[], coerceTo: JSONType[]): 
       gen
         .assign(data, _`${data}[0]`)
         .assign(dataType, _`typeof ${data}`)
-        .if(checkDataTypes(types, data, opts.strict), () => gen.assign(coerced, data))
+        .if(checkDataTypes(types, data, opts.strict.number), () => gen.assign(coerced, data))
     )
   }
   gen.if(_`${coerced} !== undefined`)

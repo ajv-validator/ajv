@@ -171,7 +171,7 @@ function checkRefsAndKeywords(it: SchemaObjCxt): void {
 
 function checkNoDefault(it: SchemaObjCxt): void {
   const {schema, opts} = it
-  if (schema.default !== undefined && opts.useDefaults && opts.strict) {
+  if (schema.default !== undefined && opts.useDefaults && opts.strict.schema) {
     checkStrictMode(it, "default is ignored in the schema root")
   }
 }
@@ -237,7 +237,7 @@ function schemaKeywords(
   function groupKeywords(group: RuleGroup): void {
     if (!shouldUseGroup(schema, group)) return
     if (group.type) {
-      gen.if(checkDataType(group.type, data, opts.strict))
+      gen.if(checkDataType(group.type, data, opts.strict.number))
       iterateKeywords(it, group)
       if (types.length === 1 && types[0] === group.type && typeErrors) {
         gen.else()
@@ -269,7 +269,7 @@ function iterateKeywords(it: SchemaObjCxt, group: RuleGroup): void {
 }
 
 function checkStrictTypes(it: SchemaObjCxt, types: JSONType[]): void {
-  if (it.schemaEnv.meta || !it.opts.strictTypes) return
+  if (it.schemaEnv.meta || !it.opts.strict.types) return
   checkContextTypes(it, types)
   if (!it.opts.allowUnionTypes) checkMultipleTypes(it, types)
   checkKeywordTypes(it, it.dataTypes)
@@ -318,8 +318,8 @@ function includesType(ts: JSONType[], t: JSONType): boolean {
 
 function strictTypesError(it: SchemaObjCxt, msg: string): void {
   const schemaPath = it.schemaEnv.baseId + it.errSchemaPath
-  msg += ` at "${schemaPath}" (strictTypes)`
-  checkStrictMode(it, msg, it.opts.strictTypes)
+  msg += ` at "${schemaPath}" (strict.types)`
+  checkStrictMode(it, msg, it.opts.strict.types)
 }
 
 export class KeywordCxt implements KeywordErrorCxt {
@@ -465,7 +465,7 @@ export class KeywordCxt implements KeywordErrorCxt {
         /* istanbul ignore if */
         if (!(schemaCode instanceof Name)) throw new Error("ajv implementation error")
         const st = Array.isArray(schemaType) ? schemaType : [schemaType]
-        return _`${checkDataTypes(st, schemaCode, it.opts.strict, DataType.Wrong)}`
+        return _`${checkDataTypes(st, schemaCode, it.opts.strict.number, DataType.Wrong)}`
       }
       return nil
     }

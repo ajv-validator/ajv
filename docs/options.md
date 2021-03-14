@@ -22,10 +22,15 @@ Passing the value below for some of the options is equivalent to not passing thi
 // see types/index.ts for actual types
 const defaultOptions = {
   // strict mode options (NEW)
-  strict: true,
-  strictTypes: "log", // *
-  strictTuples: "log", // *
-  strictRequired: false, // *
+  // strict option can be boolean, "log" or object below,
+  // with passed members overriding defaults
+  strict: { // *
+    schema: true,
+    number: true,
+    types: "log",
+    tuples: "log",
+    required: false
+  },
   allowUnionTypes: false, // *
   allowMatchingProperties: false, // *
   validateFormats: true, // *
@@ -49,8 +54,8 @@ const defaultOptions = {
   addUsedSchema: true,
   inlineRefs: true,
   passContext: false,
-  loopRequired: Infinity, // *
-  loopEnum: Infinity, // NEW
+  loopRequired: 200, // *
+  loopEnum: 200, // NEW
   ownProperties: false,
   multipleOfPrecision: undefined, // *
   messages: true, // false with JTD
@@ -75,43 +80,21 @@ By default Ajv executes in strict mode, that is designed to prevent any unexpect
 
 Option values:
 
-- `true` (default) - use strict mode and throw an exception when any strict mode restriction is violated.
+- `true` - throw an exception when any strict mode restriction is violated.
 - `"log"` - log warning when any strict mode restriction is violated.
-- `false` - ignore all strict mode restrictions. Also ignores `strictTypes` restrictions unless it is explicitly passed.
+- `false` - ignore all strict mode restrictions.
+- object with these optional members, each can be `boolean` or `"log"` (default is in the parentheses):
+  - schema (`true`) - prevent unknown keywords, formats etc. (see [Strict mode](./strict-mode.md))
+  - number (`true`) - do not accept `NaN` and `Infinity` as numbers
+  - types (`"log"`) - see [Strict types](./strict-mode.md#strict-types)
+  - tuples (`"log"`) - see [Unconstrained tuples](./strict-mode.md#unconstrained-tuples)
+  - required (`false`) - see [Defined required properties](./strict-mode.md#defined-required-properties)
 
-### strictTypes
-
-By default Ajv logs warning when "type" keyword is used in a way that may be incorrect or confusing to other people - see [Strict types](./strict-mode.md#strict-types) for more details. This option does not change validation results.
-
-Option values:
-
-- `true` - throw exception when any strictTypes restriction is violated.
-- `"log"` (default, unless option strict is `false`) - log warning when any strictTypes restriction is violated.
-- `false` - ignore all strictTypes restrictions violations.
-
-### strictTuples
-
-By default Ajv logs warning when "items" is array and "minItems" and "maxItems"/"additionalItems" not present or different from the number of items. See [Strict mode](./strict-mode.md) for more details. This option does not change validation results.
-
-Option values:
-
-- `true` - throw exception.
-- `"log"` (default, unless option strict is `false`) - log warning.
-- `false` - ignore strictTuples restriction violations.
-
-### strictRequired
-
-Ajv can log warning or throw exception when the property used in "required" keyword is not defined in "properties" keyword. See [Strict mode](./strict-mode.md) for more details. This option does not change validation results.
-
-Option values:
-
-- `true` - throw exception.
-- `"log"` - log warning.
-- `false` (default) - ignore strictRequired restriction violations.
+When `strict` option is not passed (or some object members are not passed) the defaults in the object apply.
 
 ### allowUnionTypes
 
-Pass true to allow using multiple non-null types in "type" keyword (one of `strictTypes` restrictions). see [Strict types](./strict-mode.md#strict-types)
+Pass true to allow using multiple non-null types in "type" keyword (one of `strict.types` restrictions). see [Strict types](./strict-mode.md#strict-types)
 
 ### allowMatchingProperties
 
@@ -248,11 +231,11 @@ Pass validation context to _compile_ and _validate_ keyword functions. If this o
 
 ### loopRequired
 
-By default `required` keyword is compiled into a single expression (or a sequence of statements in `allErrors` mode). In case of a very large number of properties in this keyword it may result in a very big validation function. Pass integer to set the number of properties above which `required` keyword will be validated in a loop - smaller validation function size but also worse performance.
+By default `required` keyword is compiled into a single expression (or a sequence of statements in `allErrors` mode) up to 200 required properties. Pass integer to set a different number of properties above which `required` keyword will be validated in a loop (with a smaller validation function size and worse performance).
 
 ### loopEnum <Badge text="v7" />
 
-By default `enum` keyword is compiled into a single expression. In case of a very large number of allowed values it may result in a large validation function. Pass integer to set the number of values above which `enum` keyword will be validated in a loop.
+By default `enum` keyword is compiled into a single expression with up to 200 allowed values. Pass integer to set the number of values above which `enum` keyword will be validated in a loop (with a smaller validation function size and worse performance).
 
 ### ownProperties
 
