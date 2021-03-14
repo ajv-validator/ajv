@@ -87,7 +87,7 @@
     "glob": "^7.0.0",
     "husky": "^5.0.9",
     "if-node-version": "^1.0.0",
-    "jimp": "^0.8.0",
+    "jimp": "^0.16.1",
     "js-beautify": "^1.7.3",
     "json-schema-test": "^2.0.0",
     "karma": "^5.0.0",
