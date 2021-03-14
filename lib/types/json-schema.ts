@@ -7,25 +7,31 @@ type JSONType<T extends string, _partial extends boolean> = _partial extends tru
   ? T | undefined
   : T
 
+interface NumberKeywords {
+  minimum?: number
+  maximum?: number
+  exclusiveMinimum?: number
+  exclusiveMaximum?: number
+  multipleOf?: number
+  format?: string
+}
+
+interface StringKeywords {
+  minLength?: number
+  maxLength?: number
+  pattern?: string
+  format?: string
+}
+
 export type JSONSchemaType<T, _partial extends boolean = false> = (
   | ((T extends number
       ? {
           type: JSONType<"number" | "integer", _partial>
-          minimum?: number
-          maximum?: number
-          exclusiveMinimum?: number
-          exclusiveMaximum?: number
-          multipleOf?: number
-          format?: string
-        }
+        } & NumberKeywords
       : T extends string
       ? {
           type: JSONType<"string", _partial>
-          minLength?: number
-          maxLength?: number
-          pattern?: string
-          format?: string
-        }
+        } & StringKeywords
       : T extends boolean
       ? {
           type: "boolean"
@@ -102,22 +108,9 @@ export type JSONSchemaType<T, _partial extends boolean = false> = (
         ? JSONType<"boolean", _partial>
         : never)[]
     } & (T extends number
-      ? {
-          minimum?: number
-          maximum?: number
-          exclusiveMinimum?: number
-          exclusiveMaximum?: number
-          multipleOf?: number
-          format?: string
-        }
+      ? NumberKeywords
       : T extends string
-      ? {
-          type: JSONType<"string", _partial>
-          minLength?: number
-          maxLength?: number
-          pattern?: string
-          format?: string
-        }
+      ? StringKeywords
       : T extends boolean
       ? unknown
       : never))
