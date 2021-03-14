@@ -1,6 +1,6 @@
 /* eslint-disable no-empty */
 /* eslint-disable no-console */
-const Ajv = require("ajv/dist/jtd").default
+const Ajv = require("ajv/dist/jtd")
 const Benchmark = require("benchmark")
 const jtdValidationTests = require("../spec/json-typedef-spec/tests/validation.json")
 

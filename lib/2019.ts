@@ -1,33 +1,3 @@
-export {
-  Format,
-  FormatDefinition,
-  AsyncFormatDefinition,
-  KeywordDefinition,
-  KeywordErrorDefinition,
-  CodeKeywordDefinition,
-  MacroKeywordDefinition,
-  FuncKeywordDefinition,
-  Vocabulary,
-  Schema,
-  SchemaObject,
-  AnySchemaObject,
-  AsyncSchema,
-  AnySchema,
-  ValidateFunction,
-  AsyncValidateFunction,
-  ErrorObject,
-  ErrorNoParams,
-} from "./types"
-
-export {Plugin, Options, CodeOptions, InstanceOptions, Logger, ErrorsTextOptions} from "./core"
-export {SchemaCxt, SchemaObjCxt} from "./compile"
-import KeywordCxt from "./compile/context"
-export {KeywordCxt}
-export {DefinedError} from "./vocabularies/errors"
-export {JSONType} from "./compile/rules"
-export {JSONSchemaType} from "./types/json-schema"
-export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
-
 import type {AnySchemaObject} from "./types"
 import AjvCore, {Options} from "./core"
 
@@ -70,3 +40,36 @@ export default class Ajv2019 extends AjvCore {
       super.defaultMeta() || (this.getSchema(META_SCHEMA_ID) ? META_SCHEMA_ID : undefined))
   }
 }
+
+module.exports = Ajv2019
+module.exports.default = Ajv2019
+
+export {
+  Format,
+  FormatDefinition,
+  AsyncFormatDefinition,
+  KeywordDefinition,
+  KeywordErrorDefinition,
+  CodeKeywordDefinition,
+  MacroKeywordDefinition,
+  FuncKeywordDefinition,
+  Vocabulary,
+  Schema,
+  SchemaObject,
+  AnySchemaObject,
+  AsyncSchema,
+  AnySchema,
+  ValidateFunction,
+  AsyncValidateFunction,
+  ErrorObject,
+  ErrorNoParams,
+} from "./types"
+
+export {Plugin, Options, CodeOptions, InstanceOptions, Logger, ErrorsTextOptions} from "./core"
+export {SchemaCxt, SchemaObjCxt} from "./compile"
+import KeywordCxt from "./compile/context"
+export {KeywordCxt}
+export {DefinedError} from "./vocabularies/errors"
+export {JSONType} from "./compile/rules"
+export {JSONSchemaType} from "./types/json-schema"
+export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"

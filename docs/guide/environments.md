@@ -37,7 +37,7 @@ In this case you need to load Ajv using the correct bundle, depending on which s
 <script src="bundle/ajv7.min.js"></script>
 <script>
   ;(function () {
-    const Ajv = window.ajv7.default
+    const Ajv = window.ajv7
     const ajv = new Ajv()
   })()
 </script>
@@ -49,7 +49,7 @@ In this case you need to load Ajv using the correct bundle, depending on which s
 <script src="bundle/ajv2019.min.js"></script>
 <script>
   ;(function () {
-    const Ajv = window.ajv2019.default
+    const Ajv = window.ajv2019
     const ajv = new Ajv()
   })()
 </script>
@@ -61,7 +61,7 @@ In this case you need to load Ajv using the correct bundle, depending on which s
 <script src="bundle/ajvJTD.min.js"></script>
 <script>
   ;(function () {
-    const Ajv = window.ajvJTD.default
+    const Ajv = window.ajvJTD
     const ajv = new Ajv()
   })()
 </script>

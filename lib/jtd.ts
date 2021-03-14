@@ -1,35 +1,5 @@
-export {
-  Format,
-  FormatDefinition,
-  AsyncFormatDefinition,
-  KeywordDefinition,
-  KeywordErrorDefinition,
-  CodeKeywordDefinition,
-  MacroKeywordDefinition,
-  FuncKeywordDefinition,
-  Vocabulary,
-  Schema,
-  SchemaObject,
-  AnySchemaObject,
-  AsyncSchema,
-  AnySchema,
-  ValidateFunction,
-  AsyncValidateFunction,
-  ErrorObject,
-  ErrorNoParams,
-  JTDParser,
-} from "./types"
-
-export {Plugin, Options, CodeOptions, InstanceOptions, Logger, ErrorsTextOptions} from "./core"
-export {SchemaCxt, SchemaObjCxt} from "./compile"
-import KeywordCxt from "./compile/context"
-export {KeywordCxt}
-export {JTDErrorObject} from "./vocabularies/jtd"
-export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
-
 import type {AnySchemaObject, SchemaObject, JTDParser} from "./types"
 import type {JTDSchemaType, JTDDataType} from "./types/jtd-schema"
-export {JTDSchemaType, JTDDataType}
 import AjvCore, {CurrentOptions} from "./core"
 import jtdVocabulary from "./vocabularies/jtd"
 import jtdMetaSchema from "./refs/jtd-schema"
@@ -37,11 +7,9 @@ import compileSerializer from "./compile/jtd/serialize"
 import compileParser from "./compile/jtd/parse"
 import {SchemaEnv} from "./compile"
 
-// const META_SUPPORT_DATA = ["/properties"]
-
 const META_SCHEMA_ID = "JTD-meta-schema"
 
-export type JTDOptions = CurrentOptions & {
+type JTDOptions = CurrentOptions & {
   // strict mode options not supported with JTD:
   strictTypes?: never
   strictTuples?: never
@@ -124,3 +92,38 @@ export default class Ajv extends AjvCore {
     return sch.parse
   }
 }
+
+module.exports = Ajv
+module.exports.default = Ajv
+
+export {
+  Format,
+  FormatDefinition,
+  AsyncFormatDefinition,
+  KeywordDefinition,
+  KeywordErrorDefinition,
+  CodeKeywordDefinition,
+  MacroKeywordDefinition,
+  FuncKeywordDefinition,
+  Vocabulary,
+  Schema,
+  SchemaObject,
+  AnySchemaObject,
+  AsyncSchema,
+  AnySchema,
+  ValidateFunction,
+  AsyncValidateFunction,
+  ErrorObject,
+  ErrorNoParams,
+  JTDParser,
+} from "./types"
+
+export {Plugin, Options, CodeOptions, InstanceOptions, Logger, ErrorsTextOptions} from "./core"
+export {SchemaCxt, SchemaObjCxt} from "./compile"
+import KeywordCxt from "./compile/context"
+export {KeywordCxt}
+export {JTDErrorObject} from "./vocabularies/jtd"
+export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
+
+export {JTDSchemaType, JTDDataType}
+export {JTDOptions}

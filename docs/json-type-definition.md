@@ -5,7 +5,7 @@ This document informally describes JSON Type Definition (JTD) specification to h
 To use JTD schemas you need to import a different Ajv class:
 
 ```javascript
-const AjvJTD = require("ajv/dist/jtd").default
+const AjvJTD = require("ajv/dist/jtd")
 // or in TypeScript:
 // import Ajv from "ajv/dist/jtd"
 const ajv = new AjvJTD()

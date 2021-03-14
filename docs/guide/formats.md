@@ -9,7 +9,7 @@ To add all formats from this plugin:
 <code-group>
 <code-block title="JavaScript">
 ```javascript
-const Ajv = require("ajv").default
+const Ajv = require("ajv")
 const addFormats = require("ajv-formats")
 
 const ajv = new Ajv()

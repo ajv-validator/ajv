@@ -1,4 +1,4 @@
-const Ajv = require("ajv").default
+const Ajv = require("ajv")
 const ajv = new Ajv({allErrors: true})
 
 const schema = {

@@ -236,7 +236,7 @@ In JavaScript:
 // or ESM/TypeScript import
 import Ajv from "ajv"
 // Node.js require:
-const Ajv = require("ajv").default
+const Ajv = require("ajv")
 
 const ajv = new Ajv() // options can be passed, e.g. {allErrors: true}
 const validate = ajv.compile(schema)
