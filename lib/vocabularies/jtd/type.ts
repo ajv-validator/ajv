@@ -1,8 +1,8 @@
 import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type KeywordCxt from "../../compile/context"
 import {_, or, Code} from "../../compile/codegen"
-import validTimestamp from "../../compile/timestamp"
-import {func} from "../../compile/util"
+import validTimestamp from "../../runtime/timestamp"
+import {useFunc} from "../../compile/util"
 import {checkMetadata} from "./metadata"
 import {typeErrorMessage, typeErrorParams, _JTDTypeError} from "./error"
 
@@ -40,7 +40,7 @@ const def: CodeKeywordDefinition = {
         cond = _`typeof ${data} == ${schema}`
         break
       case "timestamp": {
-        const vts = func(gen, validTimestamp)
+        const vts = useFunc(gen, validTimestamp)
         cond = _`${data} instanceof Date || (typeof ${data} == "string" && ${vts}(${data}))`
         break
       }

@@ -52,7 +52,7 @@ import type {
 } from "./types"
 import type {JSONSchemaType} from "./types/json-schema"
 import type {JTDSchemaType} from "./types/jtd-schema"
-import {ValidationError, MissingRefError} from "./compile/error_classes"
+import {ValidationError, MissingRefError} from "./runtime/error_classes"
 import {getRules, ValidationRules, Rule, RuleGroup, JSONType} from "./compile/rules"
 import {SchemaEnv, compileSchema, resolveSchema} from "./compile"
 import {Code, ValueScope} from "./compile/codegen"

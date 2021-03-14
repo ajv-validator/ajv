@@ -2,7 +2,8 @@ import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from ".
 import type KeywordCxt from "../../compile/context"
 import {checkDataTypes, getSchemaTypes, DataType} from "../../compile/validate/dataType"
 import {_, str, Name} from "../../compile/codegen"
-import * as equal from "fast-deep-equal"
+import {useFunc} from "../../compile/util"
+import equal from "../../runtime/equal"
 
 export type UniqueItemsError = ErrorObject<
   "uniqueItems",
@@ -61,10 +62,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function loopN2(i: Name, j: Name): void {
-      const eql = cxt.gen.scopeValue("func", {
-        ref: equal,
-        code: _`require("ajv/dist/compile/equal")`,
-      })
+      const eql = useFunc(gen, equal)
       const outer = gen.name("outer")
       gen.label(outer).for(_`;${i}--;`, () =>
         gen.for(_`${j} = ${i}; ${j}--;`, () =>

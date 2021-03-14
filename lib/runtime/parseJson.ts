@@ -1,4 +1,4 @@
-import {_} from "../compile/codegen"
+import {_} from "../compile/codegen/code"
 
 const rxParseJson = /position\s(\d+)$/
 

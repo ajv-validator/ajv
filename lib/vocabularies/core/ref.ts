@@ -1,6 +1,6 @@
 import type {CodeKeywordDefinition, AnySchema} from "../../types"
 import type KeywordCxt from "../../compile/context"
-import {MissingRefError} from "../../compile/error_classes"
+import {MissingRefError} from "../../runtime/error_classes"
 import {callValidateCode} from "../code"
 import {_, nil, stringify, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"

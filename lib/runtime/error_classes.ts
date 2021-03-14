@@ -1,5 +1,5 @@
 import type {ErrorObject} from "../types"
-import {resolveUrl, normalizeId, getFullPath} from "./resolve"
+import {resolveUrl, normalizeId, getFullPath} from "../compile/resolve"
 
 export class ValidationError extends Error {
   readonly errors: Partial<ErrorObject>[]

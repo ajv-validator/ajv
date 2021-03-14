@@ -4,11 +4,10 @@ import type AjvCore from "../dist/core"
 import {_, nil} from "../dist/compile/codegen/code"
 import getAjvAllInstances from "./ajv_all_instances"
 import _Ajv from "./ajv"
+import equal from "../dist/runtime/equal"
 import assert = require("assert")
-
 import chai from "./chai"
-const should = chai.should(),
-  equal = require("../dist/compile/equal")
+const should = chai.should()
 
 describe("User-defined keywords", () => {
   let ajv: AjvCore, instances: AjvCore[]
