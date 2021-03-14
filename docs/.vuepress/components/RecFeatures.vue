@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <div class="rec" id="less-code">
       <p class="header">Write less code</p>
       <p class="text">Ensure your data is valid once it's received</p>
@@ -16,12 +15,14 @@
       <p class="text">Choose your JSON schema standard</p>
     </div>
 
+    <br class="clearBoth"/>
   </div>
 </template>
 
 <style scoped>
   .rec {
     display: inline-block;
+    float: left;
     margin: 10px;
     width: 430px;
     height: 300px;
@@ -71,4 +72,6 @@
 
     color: #FFFFFF;
   }
+
+  .clearBoth { clear: both; }
 </style>

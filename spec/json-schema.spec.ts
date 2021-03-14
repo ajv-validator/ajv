@@ -28,8 +28,7 @@ const SKIP_DRAFT7 = ["optional/content", "optional/float-overflow", ...SKIP_FORM
 const SKIP = {
   6: ["optional/float-overflow"],
   7: SKIP_DRAFT7,
-  // TODO: 2 (of 32) tests in recursiveRef fail
-  2019: ["recursiveRef", ...SKIP_DRAFT7],
+  2019: SKIP_DRAFT7, // TODO: 2 of 32 tests in recursiveRef fail
 }
 
 runTest(
