@@ -50,15 +50,8 @@ type IsValues<T> = false extends IsUnion<Exclude<T, null>>
   ? TypeEquality<keyof Exclude<T, null>, string>
   : false
 
-/** true if the type is a properties type */
-type IsProperties<T> = false extends IsUnion<Exclude<T, null>>
-  ? null extends EnumString<keyof Exclude<T, null>>
-    ? false
-    : true
-  : false
-
-/** true if type is discriminator type */
-type IsDiscriminator<T> = true extends IsUnion<Exclude<T, null>>
+/** true if type is a proeprties type and Union is false, or type is a discriminator type and Union is true */
+type IsRecord<T, Union extends boolean> = Union extends IsUnion<Exclude<T, null>>
   ? null extends EnumString<keyof Exclude<T, null>>
     ? false
     : true
@@ -120,7 +113,7 @@ export type JTDSchemaType<T, D extends Record<string, unknown> = Record<string, 
           }
         : never
       : // properties
-      true extends IsProperties<T>
+      true extends IsRecord<T, false>
       ? ([RequiredKeys<Exclude<T, null>>] extends [never]
           ? {
               properties?: Record<string, never>
@@ -140,7 +133,7 @@ export type JTDSchemaType<T, D extends Record<string, unknown> = Record<string, 
             additionalProperties?: boolean
           }
       : // discriminator
-      true extends IsDiscriminator<T>
+      true extends IsRecord<T, true>
       ? {
           [K in keyof Exclude<T, null>]-?: Exclude<T, null>[K] extends string
             ? {
