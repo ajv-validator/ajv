@@ -10,7 +10,6 @@ module.exports = {
   themeConfig: {
     logo: "/img/ajv.svg",
     nav: [
-      {text: "New Home", link: "/HOME"},
       {text: "Home", link: "/"},
       {
         text: "Guide",
