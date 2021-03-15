@@ -10,6 +10,7 @@ Supports JSON Schema draft-06/07/2019-09 (draft-04 is supported in [version 6](h
 
 [![build](https://github.com/ajv-validator/ajv/workflows/build/badge.svg)](https://github.com/ajv-validator/ajv/actions?query=workflow%3Abuild)
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
+[![npm (beta)](https://img.shields.io/npm/v/ajv/beta)](https://www.npmjs.com/package/ajv)
 [![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![Coverage Status](https://coveralls.io/repos/github/ajv-validator/ajv/badge.svg?branch=master)](https://coveralls.io/github/ajv-validator/ajv?branch=master)
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
@@ -53,6 +54,8 @@ More than 100 people contributed to Ajv, and we would love to have you join the 
 At Ajv, we are committed to creating more equitable and inclusive spaces for our community and team members to contribute to discussions that affect both this project and our ongoing work in the open source ecosystem.
 
 We strive to create an environment of respect and healthy discourse by setting standards for our interactions and we expect it from all members of our community - from long term project member to first time visitor. For more information, review our [code of conduct](./CODE_OF_CONDUCT.md) and values.
+
+<Contributors/>
 
 ### How we make decisions
 
@@ -242,7 +245,7 @@ const valid = validate(data)
 if (!valid) console.log(validate.errors)
 ```
 
-See more examples in [Guide: getting started](./docs/guide/getting-started)
+See more examples in [Guide: getting started](./docs/guide/getting-started.md)
 
 ## Extending Ajv
 

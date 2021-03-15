@@ -15,7 +15,7 @@
     "eslint": "eslint \"lib/**/*.ts\" \"spec/**/*.*s\" scripts --ignore-pattern spec/JSON-Schema-Test-Suite",
     "prettier:write": "prettier --write \"./**/*.{json,yaml,js,ts}\"",
     "prettier:check": "prettier --list-different \"./**/*.{json,yaml,js,ts}\"",
-    "test-spec": "cross-env TS_NODE_PROJECT=spec/tsconfig.json mocha -r ts-node/register \"spec/**/*.spec.{ts,js}\" -R dot",
+    "test-spec": "cross-env TS_NODE_PROJECT=spec/tsconfig.json mocha -r ts-node/register \"spec/**/*.spec.{ts,js}\" -R dot -f \"\\$recursiveRef with no \\$recursiveAnchor in the initial target schema resource\" -i",
     "test-codegen": "nyc cross-env TS_NODE_PROJECT=spec/tsconfig.json mocha -r ts-node/register 'spec/codegen.spec.ts' -R spec",
     "test-debug": "npm run test-spec -- --inspect-brk",
     "test-cov": "nyc npm run test-spec",
@@ -29,8 +29,8 @@
     "test-ci": "AJV_FULL_TEST=true npm test",
     "prepublish": "npm run build",
     "benchmark": "npm i && npm run build && npm link && cd ./benchmark && npm link ajv && npm i && node ./jtd",
-    "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
+    "docs:dev": "./scripts/prepare-site && vuepress dev docs",
+    "docs:build": "./scripts/prepare-site && vuepress build docs"
   },
   "nyc": {
     "exclude": [
@@ -87,6 +87,7 @@
     "glob": "^7.0.0",
     "husky": "^5.0.9",
     "if-node-version": "^1.0.0",
+    "jimp": "^0.16.1",
     "js-beautify": "^1.7.3",
     "json-schema-test": "^2.0.0",
     "karma": "^5.0.0",
@@ -94,6 +95,7 @@
     "karma-mocha": "^2.0.0",
     "lint-staged": "^10.2.11",
     "mocha": "^8.0.1",
+    "node-fetch": "^2.6.1",
     "nyc": "^15.0.0",
     "prettier": "^2.0.5",
     "terser": "^5.2.1",
