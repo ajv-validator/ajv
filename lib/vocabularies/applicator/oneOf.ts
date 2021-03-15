@@ -26,9 +26,10 @@ const def: CodeKeywordDefinition = {
   trackErrors: true,
   error,
   code(cxt: KeywordCxt) {
-    const {gen, schema, it} = cxt
+    const {gen, schema, parentSchema, it} = cxt
     /* istanbul ignore if */
     if (!Array.isArray(schema)) throw new Error("ajv implementation error")
+    if (it.opts.discriminator && parentSchema.discriminator) return
     const schArr: AnySchema[] = schema
     const valid = gen.let("valid", false)
     const passing = gen.let("passing", null)

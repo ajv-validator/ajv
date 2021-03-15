@@ -1,6 +1,7 @@
 import type {AnySchemaObject} from "./types"
 import AjvCore from "./core"
 import draft7Vocabularies from "./vocabularies/draft7"
+import discriminator from "./vocabularies/discriminator"
 import * as draft7MetaSchema from "./refs/json-schema-draft-07.json"
 
 const META_SUPPORT_DATA = ["/properties"]
@@ -11,6 +12,7 @@ class Ajv extends AjvCore {
   _addVocabularies(): void {
     super._addVocabularies()
     draft7Vocabularies.forEach((v) => this.addVocabulary(v))
+    if (this.opts.discriminator) this.addKeyword(discriminator)
   }
 
   _addDefaultMetaSchema(): void {
