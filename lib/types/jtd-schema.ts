@@ -19,6 +19,9 @@ type IsUnion<T> = IsUnion_<T>
 /** type is true if T is identically E */
 type TypeEquality<T, E> = [T] extends [E] ? ([E] extends [T] ? true : false) : false
 
+/** type is true if T or null is identically E or null*/
+type NullTypeEquality<T, E> = TypeEquality<T | null, E | null>
+
 /** gets only the string literals of a type or null if a type isn't a string literal */
 type EnumString<T> = [T] extends [never]
   ? null
@@ -28,11 +31,28 @@ type EnumString<T> = [T] extends [never]
     : T
   : null
 
+/** true if type is a union of string literals */
+type IsEnum<T> = null extends EnumString<Exclude<T, null>> ? false : true
+
 /** true only if all types are array types (not tuples) */
 // NOTE relies on the fact that tuples don't have an index at 0.5, but arrays
 // have an index at every number
-type IsElements<T> = [T] extends [readonly unknown[]]
-  ? undefined extends T[0.5]
+type IsElements<T> = false extends IsUnion<T>
+  ? [T] extends [readonly unknown[]]
+    ? undefined extends T[0.5]
+      ? false
+      : true
+    : false
+  : false
+
+/** true if the the type is a values type */
+type IsValues<T> = false extends IsUnion<Exclude<T, null>>
+  ? TypeEquality<keyof Exclude<T, null>, string>
+  : false
+
+/** true if type is a proeprties type and Union is false, or type is a discriminator type and Union is true */
+type IsRecord<T, Union extends boolean> = Union extends IsUnion<Exclude<T, null>>
+  ? null extends EnumString<keyof Exclude<T, null>>
     ? false
     : true
   : false
@@ -48,94 +68,87 @@ export type JTDSchemaType<T, D extends Record<string, unknown> = Record<string, 
   | // refs - where null wasn't specified, must match exactly
   (null extends EnumString<keyof D>
       ? never
-      : {[K in keyof D]: [T] extends [D[K]] ? {ref: K} : never}[keyof D] & {nullable?: false})
-  // nulled refs - if ref is nullable and nullable is specified, then it can
-  // match either null or non-null definitions
-  | (null extends EnumString<keyof D>
-      ? never
-      : null extends T
-      ? {
-          [K in keyof D]: [Exclude<T, null>] extends [Exclude<D[K], null>] ? {ref: K} : never
-        }[keyof D] & {nullable: true}
-      : never)
+      :
+          | ({[K in keyof D]: [T] extends [D[K]] ? {ref: K} : never}[keyof D] & {nullable?: false})
+          // nulled refs - if ref is nullable and nullable is specified, then it can
+          // match either null or non-null definitions
+          | (null extends T
+              ? {
+                  [K in keyof D]: [Exclude<T, null>] extends [Exclude<D[K], null>]
+                    ? {ref: K}
+                    : never
+                }[keyof D] & {nullable: true}
+              : never))
   // empty - empty schemas also treat nullable differently in that it's now fully ignored
   | (unknown extends T ? {nullable?: boolean} : never)
   // all other types
-  | ((
-      | // numbers - only accepts the type number
-      (true extends TypeEquality<Exclude<T, null>, number> ? {type: NumberType} : never)
-      // booleans - accepts the type boolean
-      | (true extends TypeEquality<Exclude<T, null>, boolean> ? {type: "boolean"} : never)
-      // strings - only accepts the type string
-      | (true extends TypeEquality<Exclude<T, null>, string> ? {type: StringType} : never)
-      // strings - only accepts the type Date
-      | (true extends TypeEquality<Exclude<T, null>, Date> ? {type: "timestamp"} : never)
-      // enums - only accepts union of string literals
+  | ((// numbers - only accepts the type number
+    true extends NullTypeEquality<T, number>
+      ? {type: NumberType}
+      : // booleans - accepts the type boolean
+      true extends NullTypeEquality<T, boolean>
+      ? {type: "boolean"}
+      : // strings - only accepts the type string
+      true extends NullTypeEquality<T, string>
+      ? {type: StringType}
+      : // strings - only accepts the type Date
+      true extends NullTypeEquality<T, Date>
+      ? {type: "timestamp"}
+      : // enums - only accepts union of string literals
       // TODO we can't actually check that everything in the union was specified
-      | (null extends EnumString<Exclude<T, null>> ? never : {enum: EnumString<Exclude<T, null>>[]})
-      // arrays - only accepts arrays, could be array of unions to be resolved later
-      | (false extends IsUnion<Exclude<T, null>>
-          ? true extends IsElements<Exclude<T, null>>
-            ? T extends readonly (infer E)[]
-              ? {
-                  elements: JTDSchemaType<E, D>
-                }
-              : never
-            : never
-          : never)
-      // values
-      | (false extends IsUnion<Exclude<T, null>>
-          ? true extends TypeEquality<keyof Exclude<T, null>, string>
-            ? T extends Record<string, infer V>
-              ? {
-                  values: JTDSchemaType<V>
-                }
-              : never
-            : never
-          : never)
-      // properties
-      | (false extends IsUnion<Exclude<T, null>>
-          ? null extends EnumString<keyof Exclude<T, null>>
-            ? never
-            : ([RequiredKeys<Exclude<T, null>>] extends [never]
-                ? {
-                    properties?: Record<string, never>
-                  }
-                : {
-                    properties: {[K in RequiredKeys<T>]: JTDSchemaType<T[K], D>}
-                  }) &
-                ([OptionalKeys<Exclude<T, null>>] extends [never]
-                  ? {
-                      optionalProperties?: Record<string, never>
-                    }
-                  : {
-                      optionalProperties: {
-                        [K in OptionalKeys<T>]: JTDSchemaType<Exclude<T[K], undefined>, D>
-                      }
-                    }) & {
-                  additionalProperties?: boolean
-                }
-          : never)
-      // discriminator
-      | (true extends IsUnion<Exclude<T, null>>
-          ? null extends EnumString<keyof Exclude<T, null>>
-            ? never
+      true extends IsEnum<T>
+      ? {enum: EnumString<Exclude<T, null>>[]}
+      : // arrays - only accepts arrays, could be array of unions to be resolved later
+      true extends IsElements<Exclude<T, null>>
+      ? T extends readonly (infer E)[]
+        ? {
+            elements: JTDSchemaType<E, D>
+          }
+        : never
+      : // values
+      true extends IsValues<T>
+      ? T extends Record<string, infer V>
+        ? {
+            values: JTDSchemaType<V>
+          }
+        : never
+      : // properties
+      true extends IsRecord<T, false>
+      ? ([RequiredKeys<Exclude<T, null>>] extends [never]
+          ? {
+              properties?: Record<string, never>
+            }
+          : {
+              properties: {[K in RequiredKeys<T>]: JTDSchemaType<T[K], D>}
+            }) &
+          ([OptionalKeys<Exclude<T, null>>] extends [never]
+            ? {
+                optionalProperties?: Record<string, never>
+              }
             : {
-                [K in keyof Exclude<T, null>]-?: Exclude<T, null>[K] extends string
-                  ? {
-                      discriminator: K
-                      mapping: {
-                        // TODO currently allows descriminator to be present in schema
-                        [M in Exclude<T, null>[K]]: JTDSchemaType<
-                          Omit<T extends {[C in K]: M} ? T : never, K>,
-                          D
-                        >
-                      }
-                    }
-                  : never
-              }[keyof Exclude<T, null>]
-          : never)
-    ) &
+                optionalProperties: {
+                  [K in OptionalKeys<T>]: JTDSchemaType<Exclude<T[K], undefined>, D>
+                }
+              }) & {
+            additionalProperties?: boolean
+          }
+      : // discriminator
+      true extends IsRecord<T, true>
+      ? {
+          [K in keyof Exclude<T, null>]-?: Exclude<T, null>[K] extends string
+            ? {
+                discriminator: K
+                mapping: {
+                  // TODO currently allows descriminator to be present in schema
+                  [M in Exclude<T, null>[K]]: JTDSchemaType<
+                    Omit<T extends {[C in K]: M} ? T : never, K>,
+                    D
+                  >
+                }
+              }
+            : never
+        }[keyof Exclude<T, null>]
+      : never) &
       (null extends T
         ? {
             nullable: true
