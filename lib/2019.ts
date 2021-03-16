@@ -5,6 +5,7 @@ import draft7Vocabularies from "./vocabularies/draft7"
 import dynamicVocabulary from "./vocabularies/dynamic"
 import nextVocabulary from "./vocabularies/next"
 import unevaluatedVocabulary from "./vocabularies/unevaluated"
+import discriminator from "./vocabularies/discriminator"
 import addMetaSchema2019 from "./refs/json-schema-2019-09"
 
 const META_SCHEMA_ID = "https://json-schema.org/draft/2019-09/schema"
@@ -25,6 +26,7 @@ class Ajv2019 extends AjvCore {
     draft7Vocabularies.forEach((v) => this.addVocabulary(v))
     this.addVocabulary(nextVocabulary)
     this.addVocabulary(unevaluatedVocabulary)
+    if (this.opts.discriminator) this.addKeyword(discriminator)
   }
 
   _addDefaultMetaSchema(): void {

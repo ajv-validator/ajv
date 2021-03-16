@@ -38,6 +38,7 @@ const defaultOptions = {
   $data: false, // *
   allErrors: false,
   verbose: false,
+  discriminator: false, // *
   $comment: false, // *
   formats: {},
   keywords: {},
@@ -122,6 +123,10 @@ Check all rules collecting all errors. Default is to return after the first erro
 ### verbose
 
 Include the reference to the part of the schema (`schema` and `parentSchema`) and validated data in errors (false by default).
+
+### discriminator
+
+Support [discriminator keyword](./json-schema.md#discriminator) from [OpenAPI specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.1.0.md).
 
 ### $comment
 

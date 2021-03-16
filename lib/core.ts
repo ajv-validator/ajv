@@ -90,6 +90,7 @@ export interface CurrentOptions {
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
+  discriminator?: boolean
   $comment?:
     | true
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
@@ -174,6 +175,9 @@ interface RemovedOptions {
   strictDefaults?: boolean
   strictKeywords?: boolean
   strictNumbers?: boolean
+  strictTypes?: boolean
+  strictTuples?: boolean
+  strictRequired?: boolean
   uniqueItems?: boolean
   unknownFormats?: true | string[] | "ignore"
   cache?: any
@@ -194,10 +198,13 @@ const removedOptions: OptionsInfo<RemovedOptions> = {
   missingRefs: "Pass empty schema with $id that should be ignored to ajv.addSchema.",
   processCode: "Use option `code: {process: (code, schemaEnv: object) => string}`",
   sourceCode: "Use option `code: {source: true}`",
-  schemaId: "JSON Schema draft-04 is not supported in Ajv v7.",
+  schemaId: "JSON Schema draft-04 is not supported in Ajv v7/8.",
   strictDefaults: "It is default now, see option `strict`.",
   strictKeywords: "It is default now, see option `strict`.",
   strictNumbers: "It is default now, see option `strict`.",
+  strictTypes: "Use option `strict.types`.",
+  strictTuples: "Use option `strict.tuples`.",
+  strictRequired: "Use option `strict.required`.",
   uniqueItems: '"uniqueItems" keyword is always validated.',
   unknownFormats: "Disable strict mode or pass `true` to `ajv.addFormat` (or `formats` option).",
   cache: "Map is used as cache, schema object as key.",
