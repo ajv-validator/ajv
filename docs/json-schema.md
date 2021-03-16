@@ -19,7 +19,15 @@ v7 added support for all new keywords in draft-2019-09:
 
 There is also support for [$dynamicAnchor/$dynamicRef](./guide/combining-schemas.md#extending-recursive-schemas) from the next version of JSON Schema draft that will replace `$recursiveAnchor`/`$recursiveRef`.
 
-## `type`
+## OpenAPI support
+
+Ajv supports these additional [OpenAPI specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.1.0.md) keywords:
+- [nullable](#nullable) - to avoid using `type` keyword with array of types.
+- [discriminator](#discriminator) -  to optimize validation and error reporting of tagged unions
+
+## JSON data type
+
+### `type`
 
 `type` keyword requires that the data is of certain type (or some of types). Its value can be a string (the allowed type) or an array of strings (multiple allowed types).
 
@@ -50,6 +58,33 @@ All examples above are JSON Schemas that only require data to be of certain type
 Most other keywords apply only to a particular type of data. If the data is of different type, the keyword will not apply and the data will be considered valid.
 
 In v7 Ajv introduced [Strict types](./strict-mode.md#strict-types) mode that makes these mistakes less likely by requiring that types are constrained with type keyword whenever another keyword that applies to specific type is used.
+
+### nullable <Badge text="OpenAPI" />
+
+This keyword can be used to allow `null` value in addition to the defined `type`.
+
+Ajv supports it by default, without additional options. These two schemas are equivalent, but the first one is better supported by some tools and is also compatible with `strict.types` option (see [Strict types](./strict-mode.md#strict-types))
+
+```json
+{
+  "type": "string",
+  "nullable": true
+}
+```
+
+and
+
+```json
+{
+  "type": ["string", "null"]
+}
+```
+
+::: warning nullable does not extend enum and const
+If you use [enum](#enum) or [const](#const) keywords, `"nullable": true` would not extend the list of allowed values - `null` value has to be explicitly added to `enum` (and `const` would fail, unless it is `"const": null`)
+
+This is different from how `nullable` is defined in [JSON Type Definition](./json-type-definition.md), where `"nullable": true` allows `null` value in addition to any data defined by the schema.
+:::
 
 ## Keywords for numbers
 
@@ -673,6 +708,65 @@ _invalid_:
 - `{foo: 1, bar: 2, baz: "3"}` - not valid against the 2nd subschema, so `baz` is "unevaluated".
 
 See [tests](https://github.com/json-schema-org/JSON-Schema-Test-Suite/blob/master/tests/draft2019-09/unevaluatedProperties.json) for `unevaluatedProperties` keyword for other examples.
+
+### discriminator <Badge text="NEW: OpenAPI" />
+
+Ajv has a limited support for `discriminator` keyword: to optimize validation, error handling, and [modifying data](./guide/modifying-data.md) with [oneOf](#oneof) keyword.
+
+Its value should be an object with a property `propertyName` - the name of the property used to discriminate between union members.
+
+When using discriminator keyword only one subschema in `oneOf` will be used, determined by the value of discriminator property.
+
+::: warning Use option discriminator
+To use `discriminator` keyword you have to use option `discriminator: true` with Ajv constructor - it is not enabled by default.
+:::
+
+**Example**
+
+_schema_:
+
+```javascript
+{
+  type: "object",
+  discriminator: {propertyName: "foo"},
+  required: ["foo"],
+  oneOf: [
+    {
+      properties: {
+        foo: {const: "x"},
+        a: {type: "string"},
+      },
+      required: ["a"],
+    },
+    {
+      properties: {
+        foo: {enum: ["y", "z"]},
+        b: {type: "string"},
+      },
+      required: ["b"],
+    },
+  ],
+}
+```
+
+_valid_: `{foo: "x", a: "any"}`, `{foo: "y", b: "any"}`, `{foo: "z", b: "any"}`
+
+_invalid_:
+
+- `{}`, `{foo: 1}` - discriminator tag must be string
+- `{foo: "bar"}` - discriminator tag value must be in oneOf subschema
+- `{foo: "x", b: "b"}`, `{foo: "y", a: "a"}` - invalid object
+
+From the perspective of validation result `discriminator` is defined as no-op (that is, removing discriminator will not change the validity of the data), but errors reported in case of invalid data will be different.
+
+There are following requirements and limitations of using `discriminator` keyword:
+- `mapping` in discriminator object is not supported.
+- [oneOf](#oneof) keyword must be present in the same schema.
+- discriminator property should be [requried](#required) either on the top level, as in the example, or in all `oneOf` subschemas.
+- each `oneOf` subschema must have [properties](#properties) keyword with discriminator property.
+- schema for discriminator property in each `oneOf` subschema must be [const](#const) or [enum](#enum), with unique values across all subschemas.
+
+Not meeting any of these requirements would fail schema compilation.
 
 ## Keywords for all types
 
