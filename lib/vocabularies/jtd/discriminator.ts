@@ -1,20 +1,10 @@
-import type {CodeKeywordDefinition, KeywordErrorDefinition, ErrorObject} from "../../types"
+import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
 import {_, not, getProperty, Name} from "../../compile/codegen"
 import {checkMetadata} from "./metadata"
 import {checkNullableObject} from "./nullable"
 import {typeErrorMessage, typeErrorParams, _JTDTypeError} from "./error"
-
-enum DiscrError {
-  Tag = "tag",
-  Mapping = "mapping",
-}
-
-type DiscrErrorObj<E extends DiscrError> = ErrorObject<
-  "discriminator",
-  {error: E; tag: string; tagValue: unknown},
-  string
->
+import {DiscrError, DiscrErrorObj} from "../discriminator/types"
 
 export type JTDDiscriminatorError =
   | _JTDTypeError<"discriminator", "object", string>
