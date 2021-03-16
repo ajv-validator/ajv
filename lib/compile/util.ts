@@ -1,6 +1,7 @@
 import type {AnySchema, EvaluatedProperties, EvaluatedItems} from "../types"
 import type {SchemaCxt, SchemaObjCxt} from "."
 import {_, getProperty, Code, Name, CodeGen} from "./codegen"
+import {_Code} from "./codegen/code"
 import type {Rule, ValidationRules} from "./rules"
 
 // TODO refactor to use Set
@@ -167,10 +168,12 @@ export function setEvaluated(gen: CodeGen, props: Name, ps: {[K in string]?: tru
   Object.keys(ps).forEach((p) => gen.assign(_`${props}${getProperty(p)}`, true))
 }
 
-export function useFunc(gen: CodeGen, f: {code: Code}): Name {
+const snippets: {[S in string]?: _Code} = {}
+
+export function useFunc(gen: CodeGen, f: {code: string}): Name {
   return gen.scopeValue("func", {
     ref: f,
-    code: f.code,
+    code: snippets[f.code] || (snippets[f.code] = new _Code(f.code)),
   })
 }
 

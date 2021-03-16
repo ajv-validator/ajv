@@ -3,7 +3,7 @@ import type {SchemaObject} from "../../types"
 import {jtdForms, JTDForm, SchemaObjectMap} from "./types"
 import {SchemaEnv, getCompilingSchema} from ".."
 import {_, str, and, nil, not, CodeGen, Code, Name, SafeExpr} from "../codegen"
-import {MissingRefError} from "../../runtime/error_classes"
+import MissingRefError from "../ref_error"
 import N from "../names"
 import {hasPropFunc} from "../../vocabularies/code"
 import {hasRef} from "../../vocabularies/jtd/ref"
@@ -347,7 +347,7 @@ function parseEmpty(cxt: ParseCxt): void {
   parseWith(cxt, parseJson)
 }
 
-function parseWith(cxt: ParseCxt, parseFunc: {code: Code}, args?: SafeExpr): void {
+function parseWith(cxt: ParseCxt, parseFunc: {code: string}, args?: SafeExpr): void {
   partialParse(cxt, useFunc(cxt.gen, parseFunc), args)
 }
 

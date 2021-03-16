@@ -9,7 +9,7 @@ import type {
 import type Ajv from "../core"
 import type {InstanceOptions} from "../core"
 import {CodeGen, _, nil, stringify, Name, Code, ValueScopeName} from "./codegen"
-import {ValidationError} from "../runtime/error_classes"
+import ValidationError from "../runtime/validation_error"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
 import {schemaHasRulesButRef, unescapeFragment} from "./util"
@@ -117,7 +117,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
   if (sch.$async) {
     _ValidationError = gen.scopeValue("Error", {
       ref: ValidationError,
-      code: _`require("ajv/dist/runtime/error_classes").ValidationError`,
+      code: _`require("ajv/dist/runtime/validation_error").default`,
     })
   }
 
