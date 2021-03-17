@@ -7,7 +7,7 @@ description:
 
 # {{ $frontmatter.title }}
 
-{{ $frontmatter.date }}
+<BlogPostMeta :date="$frontmatter.date"/>
 
 Here goes the content of the first AJV post.
 

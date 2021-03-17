@@ -5,6 +5,8 @@
         <router-link :to="post.path">{{ post.frontmatter.title }}</router-link>
       </h2>
 
+      <BlogPostMeta :date="post.frontmatter.date" />
+
       <p>{{ post.frontmatter.description }}</p>
 
       <p><router-link :to="post.path">Read more</router-link></p>
