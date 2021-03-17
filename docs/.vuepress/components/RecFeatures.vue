@@ -15,63 +15,65 @@
       <p class="text">Choose your JSON schema standard</p>
     </div>
 
-    <br class="clearBoth"/>
+    <br class="clearBoth" />
   </div>
 </template>
 
 <style scoped>
-  .rec {
-    display: inline-block;
-    float: left;
-    margin: 10px;
-    width: 430px;
-    height: 300px;
-    border-radius: 8px;
-  }
+.rec {
+  display: inline-block;
+  float: left;
+  margin: 10px;
+  width: 430px;
+  height: 300px;
+  border-radius: 8px;
+}
 
-  .rec#less-code {
-    background: #007BFF;
-  }
+.rec#less-code {
+  background: #007bff;
+}
 
-  .rec#fast-and-secure {
-    background: #00A3AA;
-  }
+.rec#fast-and-secure {
+  background: #00a3aa;
+}
 
-  .rec#multi-spec {
-    background: #F5775B;
-  }
+.rec#multi-spec {
+  background: #f5775b;
+}
 
-  .header {
-    position: relative;
-    width: 359px;
-    height: 39px;
-    left: 30px;
-    top: 30px;
+.header {
+  position: relative;
+  width: 359px;
+  height: 39px;
+  left: 30px;
+  top: 30px;
 
-    font-family: Heebo;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 36px;
-    line-height: 39px;
+  font-family: Heebo;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 36px;
+  line-height: 39px;
 
-    color: #FFFFFF;
-  }
+  color: #ffffff;
+}
 
-  .text {
-    position: relative;
-    width: 359px;
-    height: 78px;
-    left: 30px;
-    top: 30px;
+.text {
+  position: relative;
+  width: 359px;
+  height: 78px;
+  left: 30px;
+  top: 30px;
 
-    font-family: Heebo;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 24px;
-    line-height: 39px;
+  font-family: Heebo;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 24px;
+  line-height: 39px;
 
-    color: #FFFFFF;
-  }
+  color: #ffffff;
+}
 
-  .clearBoth { clear: both; }
+.clearBoth {
+  clear: both;
+}
 </style>

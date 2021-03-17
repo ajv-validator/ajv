@@ -2,7 +2,7 @@
 
 Safety, security and reliability for JavaScript applications
 
-<RecFeatures/>
+<RecFeatures />
 
 ## Ajv News
 
@@ -46,4 +46,4 @@ Try in the playground (TBC)
 
 Ajv is free to use and open-source that many developers contributed to. Join us!
 
-<Contributors/>
+<Contributors />
