@@ -70,7 +70,7 @@ const requireFromString = require("require-from-string")
 const standaloneValidate = requireFromString(moduleCode) // for a single default export
 ```
 
-Ajv package should still be a run-time dependency for most schemas, but generated modules can only depend on small parts of it, so the whole Ajv will not be included in the bundle (or executed) if you require the modules with standalone validation code from your application code.
+Ajv package should still be a run-time dependency for most schemas, but generated modules can only depend on code in [runtime](https://github.com/ajv-validator/ajv/tree/master/lib/runtime) folder, so the whole Ajv will not be included in the bundle (or executed) if you require the modules with standalone validation code from your application code.
 
 ## Configuration and limitations
 
