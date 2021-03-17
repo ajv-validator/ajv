@@ -1,5 +1,6 @@
 import _Ajv from "./ajv"
 import _Ajv2019 from "./ajv2019"
+import _Ajv2020 from "./ajv2020"
 import getAjvInstances from "./ajv_instances"
 import {withStandalone} from "./ajv_standalone"
 import jsonSchemaTest = require("json-schema-test")
@@ -29,6 +30,7 @@ const SKIP = {
   6: ["optional/float-overflow"],
   7: SKIP_DRAFT7,
   2019: SKIP_DRAFT7, // TODO: 2 of 32 tests in recursiveRef fail
+  2020: [...SKIP_DRAFT7, "dynamicRef"], // TODO: 2 of 32 tests in dynamicRef fail
 }
 
 runTest(
@@ -58,6 +60,15 @@ runTest(
   }),
   2019,
   require("./_json/draft2019")
+)
+
+runTest(
+  getAjvInstances(_Ajv2020, options, {
+    strict: false,
+    formats: toHash(SKIP_FORMATS),
+  }),
+  2020,
+  require("./_json/draft2020")
 )
 
 function runTest(instances, draft: number, tests) {

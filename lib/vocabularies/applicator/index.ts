@@ -1,6 +1,8 @@
 import type {ErrorNoParams, Vocabulary} from "../../types"
 import additionalItems, {AdditionalItemsError} from "./additionalItems"
+import prefixItems from "./prefixItems"
 import items from "./items"
+import items2020 from "./items2020"
 import contains, {ContainsError} from "./contains"
 import dependencies, {DependenciesError} from "./dependencies"
 import propertyNames, {PropertyNamesError} from "./propertyNames"
@@ -14,27 +16,33 @@ import allOf from "./allOf"
 import ifKeyword, {IfKeywordError} from "./if"
 import thenElse from "./thenElse"
 
-const applicator: Vocabulary = [
-  // any
-  notKeyword,
-  anyOf,
-  oneOf,
-  allOf,
-  ifKeyword,
-  thenElse,
+export default function getApplicator(draft2020 = false): Vocabulary {
+  const applicator = [
+    // any
+    notKeyword,
+    anyOf,
+    oneOf,
+    allOf,
+    ifKeyword,
+    thenElse,
+    // array
+    // additionalItems,
+    // prefixItems,
+    // items,
+    // contains,
+    // object
+    propertyNames,
+    additionalProperties,
+    dependencies,
+    properties,
+    patternProperties,
+  ]
   // array
-  additionalItems,
-  items,
-  contains,
-  // object
-  propertyNames,
-  additionalProperties,
-  dependencies,
-  properties,
-  patternProperties,
-]
-
-export default applicator
+  if (draft2020) applicator.push(prefixItems, items2020)
+  else applicator.push(additionalItems, items)
+  applicator.push(contains)
+  return applicator
+}
 
 export type ApplicatorKeywordError =
   | ErrorNoParams<"false schema">

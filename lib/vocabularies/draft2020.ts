@@ -2,16 +2,22 @@ import type {Vocabulary} from "../types"
 import coreVocabulary from "./core"
 import validationVocabulary from "./validation"
 import getApplicatorVocabulary from "./applicator"
+import dynamicVocabulary from "./dynamic"
+import nextVocabulary from "./next"
+import unevaluatedVocabulary from "./unevaluated"
 import formatVocabulary from "./format"
 import {metadataVocabulary, contentVocabulary} from "./metadata"
 
-const draft7Vocabularies: Vocabulary[] = [
+const draft2020Vocabularies: Vocabulary[] = [
+  dynamicVocabulary,
   coreVocabulary,
   validationVocabulary,
-  getApplicatorVocabulary(),
+  getApplicatorVocabulary(true),
   formatVocabulary,
   metadataVocabulary,
   contentVocabulary,
+  nextVocabulary,
+  unevaluatedVocabulary,
 ]
 
-export default draft7Vocabularies
+export default draft2020Vocabularies
