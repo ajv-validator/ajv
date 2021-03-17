@@ -225,7 +225,7 @@ describe("Ajv", () => {
         ajv.addSchema({$id: 1, type: "integer"})
         throw new Error("should have throw exception")
       } catch (e) {
-        e.message.should.equal("schema id must be string")
+        e.message.should.equal("schema $id must be string")
       }
     })
 
