@@ -12,6 +12,8 @@ https://github.com/ajv-validator/ajv#using-version-7
 
 https://github.com/ajv-validator/ajv#mozilla-moss-grant-and-openjs-foundation
 
+<BlogHome/>
+
 ### Write less code
 
 **Ensure your data is valid once it's received**

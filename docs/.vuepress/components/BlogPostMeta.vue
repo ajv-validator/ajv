@@ -38,10 +38,10 @@ export default {
   margin-right: 5px;
   width: 14px;
   height: 14px;
-  color: #999999;
+  color: #808080;
 }
 
 .pub-date {
-  color: #999999;
+  color: #808080;
 }
 </style>
