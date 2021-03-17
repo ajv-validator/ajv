@@ -452,11 +452,11 @@ export default class Ajv {
     let id: string | undefined
     if (typeof schema === "object") {
       id = schema.$id
-      if (id !== undefined && typeof id != "string") throw new Error("schema id must be string")
+      if (id !== undefined && typeof id != "string") throw new Error("schema $id must be string")
     }
     key = normalizeId(key || id)
     this._checkUnique(key)
-    this.schemas[key] = this._addSchema(schema, _meta, _validateSchema, true)
+    this.schemas[key] = this._addSchema(schema, _meta, key, _validateSchema, true)
     return this
   }
 
@@ -666,10 +666,14 @@ export default class Ajv {
   _addSchema(
     schema: AnySchema,
     meta?: boolean,
+    baseId?: string,
     validateSchema = this.opts.validateSchema,
     addSchema = this.opts.addUsedSchema
   ): SchemaEnv {
-    if (typeof schema != "object") {
+    let id: string | undefined
+    if (typeof schema == "object") {
+      id = schema.$id
+    } else {
       if (this.opts.jtd) throw new Error("schema must be object")
       else if (typeof schema != "boolean") throw new Error("schema must be object or boolean")
     }
@@ -677,13 +681,13 @@ export default class Ajv {
     if (sch !== undefined) return sch
 
     const localRefs = getSchemaRefs.call(this, schema)
-    sch = new SchemaEnv({schema, meta, localRefs})
+    baseId = normalizeId(id || baseId)
+    sch = new SchemaEnv({schema, meta, baseId, localRefs})
     this._cache.set(sch.schema, sch)
-    const id = sch.baseId
-    if (addSchema && !id.startsWith("#")) {
+    if (addSchema && !baseId.startsWith("#")) {
       // TODO atm it is allowed to overwrite schemas without id (instead of not adding them)
-      if (id) this._checkUnique(id)
-      this.refs[id] = sch
+      if (baseId) this._checkUnique(baseId)
+      this.refs[baseId] = sch
     }
     if (validateSchema) this.validateSchema(schema, true)
     return sch

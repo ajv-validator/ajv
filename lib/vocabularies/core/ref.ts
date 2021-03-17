@@ -11,20 +11,19 @@ const def: CodeKeywordDefinition = {
   keyword: "$ref",
   schemaType: "string",
   code(cxt: KeywordCxt): void {
-    const {gen, schema, it} = cxt
+    const {gen, schema: $ref, it} = cxt
     const {baseId, schemaEnv: env, validateName, opts, self} = it
-    // TODO See comment in dynamicRef.ts
-    // This has to be improved to resolve #815.
-    if (schema === "#" || schema === "#/") return callRootRef()
-    const schOrEnv = resolveRef.call(self, env.root, baseId, schema)
-    if (schOrEnv === undefined) throw new MissingRefError(baseId, schema)
+    const {root} = env
+    if (($ref === "#" || $ref === "#/") && baseId === root.baseId) return callRootRef()
+    const schOrEnv = resolveRef.call(self, root, baseId, $ref)
+    if (schOrEnv === undefined) throw new MissingRefError(baseId, $ref)
     if (schOrEnv instanceof SchemaEnv) return callValidate(schOrEnv)
     return inlineRefSchema(schOrEnv)
 
     function callRootRef(): void {
-      if (env === env.root) return callRef(cxt, validateName, env, env.$async)
-      const rootName = gen.scopeValue("root", {ref: env.root})
-      return callRef(cxt, _`${rootName}.validate`, env.root, env.root.$async)
+      if (env === root) return callRef(cxt, validateName, env, env.$async)
+      const rootName = gen.scopeValue("root", {ref: root})
+      return callRef(cxt, _`${rootName}.validate`, root, root.$async)
     }
 
     function callValidate(sch: SchemaEnv): void {
@@ -44,7 +43,7 @@ const def: CodeKeywordDefinition = {
           dataTypes: [],
           schemaPath: nil,
           topSchemaRef: schName,
-          errSchemaPath: schema,
+          errSchemaPath: $ref,
         },
         valid
       )
