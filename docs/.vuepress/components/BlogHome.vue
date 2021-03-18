@@ -1,17 +1,18 @@
-// practically duplicate of BlogIndex, but will probably have different style
-
 <template>
   <div>
-    <div v-for="post in posts">
-      <h3>
-        <router-link :to="post.path">{{ post.frontmatter.title }}</router-link>
-      </h3>
+    <div v-for="(post, i) in posts">
+      <div class="row">
+        <div class="column left">
+          <h3>{{ post.frontmatter.title }}</h3>
+        </div>
 
-      <BlogPostMeta :date="post.frontmatter.date" />
+        <div class="column right">
+          <div v-html="post.excerpt"></div>
+          <p><router-link :to="post.path">Read more</router-link></p>
+        </div>
+      </div>
 
-      <div v-html="post.excerpt"></div>
-
-      <p><router-link :to="post.path">Read more</router-link></p>
+      <hr v-if="i < posts.length - 1" />
     </div>
   </div>
 </template>
@@ -28,3 +29,27 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.column {
+  box-sizing: border-box;
+  /* background-color: rgba(0, 0, 0, 0); */
+  float: left;
+  padding: 10px;
+}
+
+.left {
+  width: 35%;
+}
+
+.right {
+  width: 65%;
+}
+
+.row:after {
+  box-sizing: border-box;
+  content: "";
+  display: table;
+  clear: both;
+}
+</style>

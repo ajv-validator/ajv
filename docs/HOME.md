@@ -6,13 +6,15 @@ Safety, security and reliability for JavaScript applications
 
 ## Ajv News
 
-This section will include the last update and the headlines of several previous updates, e.g. these sections:
+<!-- This section will include the last update and the headlines of several previous updates, e.g. these sections:
 
 https://github.com/ajv-validator/ajv#using-version-7
 
-https://github.com/ajv-validator/ajv#mozilla-moss-grant-and-openjs-foundation
+https://github.com/ajv-validator/ajv#mozilla-moss-grant-and-openjs-foundation -->
 
 <BlogHome/>
+
+## Why use AJV
 
 ### Write less code
 
