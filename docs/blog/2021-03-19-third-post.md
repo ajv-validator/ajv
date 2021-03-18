@@ -1,15 +1,12 @@
 ---
+layout: BlogPost
 title: Third AJV blog post
 date: 2021-03-19
-description:
-    Curabitur posuere tellus sit amet facilisis ullamcorper. Mauris ullamcorper dui sed nisi fermentum, id cursus nisl sollicitudin. Class aptent taciti.
 ---
 
-# {{ $frontmatter.title }}
+Here goes the excerpt of the third AJV post.
 
-<BlogPostMeta :date="$frontmatter.date"/>
-
-Here goes the content of the third AJV post.
+<!-- more -->
 
 Nullam nec odio suscipit odio efficitur pretium ut eget dolor. Suspendisse faucibus metus iaculis libero porttitor efficitur. Sed lorem nibh, ornare in vehicula quis, semper vitae ipsum. Sed rutrum elementum nisi, sit amet aliquet nisl euismod nec. Pellentesque ipsum tortor, maximus id blandit sit amet, imperdiet eu ipsum. Aenean consectetur sapien a purus elementum scelerisque. Morbi sit amet ullamcorper massa, ut finibus sem. Fusce blandit neque vitae felis porttitor, a imperdiet quam congue. Donec scelerisque tortor nunc, nec ullamcorper dui fermentum eu.
 

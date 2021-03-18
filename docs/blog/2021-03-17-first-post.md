@@ -1,15 +1,12 @@
 ---
+layout: BlogPost
 title: First AJV blog post
 date: 2021-03-17
-description:
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et interdum enim, vitae dictum tortor. Etiam et lacus nec augue.
 ---
 
-# {{ $frontmatter.title }}
+Here goes the excerpt of the first AJV post.
 
-<BlogPostMeta :date="$frontmatter.date"/>
-
-Here goes the content of the first AJV post.
+<!-- more -->
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur in quam lorem. Phasellus orci nisl, ornare quis justo eget, bibendum pharetra neque. Morbi malesuada posuere massa malesuada sagittis. Integer euismod nulla accumsan dolor mollis mollis. Donec pretium molestie lacus, nec scelerisque nulla tempus non. Fusce laoreet vel libero eu rhoncus. Maecenas elit nisl, convallis non nibh vel, luctus finibus odio. Sed condimentum leo sit amet ipsum consectetur ullamcorper. Nunc quis eleifend odio.
 

@@ -7,7 +7,7 @@
 
       <BlogPostMeta :date="post.frontmatter.date" />
 
-      <p>{{ post.frontmatter.description }}</p>
+      <div v-html="post.excerpt"></div>
 
       <p><router-link :to="post.path">Read more</router-link></p>
     </div>

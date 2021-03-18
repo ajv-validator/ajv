@@ -1,15 +1,20 @@
 ---
+layout: BlogPost
 title: Fourth AJV blog post
 date: 2021-03-20
-description:
-    Suspendisse convallis mauris egestas, vulputate tellus ac, lacinia felis. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed at sodales felis. Integer risus libero, aliquam non.
 ---
 
-# {{ $frontmatter.title }}
+Here goes the excerpt of the fourth AJV post.
 
-<BlogPostMeta :date="$frontmatter.date"/>
+This excerpt has **style**.
 
-Here goes the content of the fourth AJV post.
+It also has a list:
+
+- yes
+- it
+- does
+
+<!-- more -->
 
 Mauris euismod urna a felis molestie, quis facilisis ligula iaculis. Ut orci velit, tempus vel blandit vel, venenatis ut urna. Proin quis cursus erat, ut venenatis ex. Cras at fringilla ex. Nulla facilisi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec condimentum tempus odio ac varius. Proin ligula purus, varius ultrices tincidunt in, pharetra vel nisi. Praesent consectetur molestie mattis. Maecenas mi justo, lobortis ut nunc quis, facilisis porttitor eros. Nam orci justo, volutpat a ante a, facilisis vestibulum nibh. Maecenas ultrices eleifend eros, et sollicitudin nisi. Integer quis lorem sit amet erat laoreet suscipit. Suspendisse pharetra metus quis libero elementum, eleifend pharetra arcu gravida.
 
