@@ -30,7 +30,7 @@ const SKIP = {
   6: ["optional/float-overflow"],
   7: SKIP_DRAFT7,
   2019: SKIP_DRAFT7, // TODO: 2 of 32 tests in recursiveRef fail
-  2020: [...SKIP_DRAFT7, "dynamicRef"], // TODO: 2 of 32 tests in dynamicRef fail
+  2020: SKIP_DRAFT7, // TODO: 2 of 32 tests in dynamicRef fail
 }
 
 runTest(
