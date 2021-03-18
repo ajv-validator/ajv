@@ -6,7 +6,33 @@ The keywords and their values define what rules the data should satisfy to be va
 
 [[toc]]
 
-## JSON Schema draft-2019-09
+## JSON Schema versions
+
+### draft-07 <Badge text="default" />
+
+This version is provided as default export:
+
+<code-group>
+<code-block title="JavaScript">
+```javascript
+const Ajv = require("ajv")
+const ajv = new Ajv()
+```
+</code-block>
+
+<code-block title="TypeScript">
+```typescript
+import Ajv from "ajv"
+const ajv = new Ajv()
+```
+</code-block>
+</code-group>
+
+::: tip draft-07 has better performance
+Unless you need the new features of later versions, you would have more efficient generated code with this draft.
+:::
+
+### draft-2019-09 <Badge text="NEW" />
 
 Ajv supports all new keywords of JSON Schema draft-2019-09:
 
@@ -19,14 +45,45 @@ Ajv supports all new keywords of JSON Schema draft-2019-09:
 
 To use draft-2019-09 schemas you need to import a different Ajv class:
 
+<code-group>
+<code-block title="JavaScript">
 ```javascript
 const Ajv2019 = require("ajv/dist/2019")
-// or in TypeScript:
-// import Ajv from "ajv/dist/2019"
 const ajv = new Ajv2019()
 ```
+</code-block>
 
-## JSON Schema draft-2020-12
+<code-block title="TypeScript">
+```typescript
+import Ajv2019 from "ajv/dist/2019"
+const ajv = new Ajv2019()
+```
+</code-block>
+</code-group>
+
+You can use draft-07 schemas with this Ajv instance as well, draft-2019-09 is backwards compatible. If your schemas use `$schema` keyword, you need to add draft-07 meta-schema to Ajv instance:
+
+<code-group>
+<code-block title="JavaScript">
+```javascript
+const draft7MetaSchema = require("ajv/dist/refs/json-schema-draft-07.json")
+ajv.addMetaSchema(draft7MetaSchema)
+```
+</code-block>
+
+<code-block title="TypeScript">
+```typescript
+import * as draft7MetaSchema from "ajv/dist/refs/json-schema-draft-07.json"
+ajv.addMetaSchema(draft7MetaSchema)
+```
+</code-block>
+</code-group>
+
+### draft-2020-12 <Badge text="BREAKING" type="warning" />
+
+::: warning draft-2020-12 is not backwards compatible
+You cannot use draft-2020-12 and previous JSON Schema versions in the same Ajv instance.
+:::
 
 Ajv supports all keywords of JSON Schema draft-2020-12:
 
@@ -36,12 +93,82 @@ Ajv supports all keywords of JSON Schema draft-2020-12:
 
 To use draft-2019-09 schemas you need to import a different Ajv class:
 
+<code-group>
+<code-block title="JavaScript">
 ```javascript
 const Ajv2020 = require("ajv/dist/2020")
-// or in TypeScript:
-// import Ajv from "ajv/dist/2019"
 const ajv = new Ajv2020()
 ```
+</code-block>
+
+<code-block title="TypeScript">
+```typescript
+import Ajv2020 from "ajv/dist/2020"
+const ajv = new Ajv2020()
+```
+</code-block>
+</code-group>
+
+### draft-06
+
+You can use JSON Schema draft-06 schemas with Ajv v7/8. If your schemas use `$schema` keyword, you need to add draft-06 meta-schema to Ajv instance. This example shows how to support both draft-06 and draft-07 schemas:
+
+<code-group>
+<code-block title="JavaScript">
+```javascript
+const Ajv = require("ajv")
+const draft6MetaSchema = require("ajv/dist/refs/json-schema-draft-06.json")
+
+const ajv = new Ajv()
+ajv.addMetaSchema(draft6MetaSchema)
+```
+</code-block>
+
+<code-block title="TypeScript">
+```typescript
+import Ajv from "ajv"
+import * as draft6MetaSchema from "ajv/dist/refs/json-schema-draft-06.json"
+
+const ajv = new Ajv()
+ajv.addMetaSchema(draft6MetaSchema)
+```
+</code-block>
+</code-group>
+
+### draft-04 <Badge text="v6" />
+
+You can use JSON Schema draft-06 schemas with Ajv v6.
+
+::: warning Only compatible with Ajv v6
+The code example below will not work in the most recent version of Ajv, it requires Ajv v6. While no longer actively developed it continues to receive critical security updates.
+:::
+
+<code-group>
+<code-block title="JavaScript">
+```javascript
+const Ajv = require("ajv")
+const draft4MetaSchema = require("ajv/lib/refs/json-schema-draft-04.json")
+
+const ajv = new Ajv({schemaId: "id"}) // or "auto" if you use both draft-04 and draft-06/07 schemas
+ajv.addMetaSchema(draft4MetaSchema)
+```
+</code-block>
+
+<code-block title="TypeScript">
+```typescript
+import Ajv from "ajv"
+import * as draft4MetaSchema from "ajv/lib/refs/json-schema-draft-04.json"
+
+const ajv = new Ajv({schemaId: "id"}) // or "auto" if you use both draft-04 and draft-06/07 schemas
+ajv.addMetaSchema(draft4MetaSchema)
+```
+</code-block>
+</code-group>
+
+var ajv = new Ajv({schemaId: 'id'});
+// If you want to use both draft-04 and draft-06/07 schemas:
+// var ajv = new Ajv({schemaId: 'auto'});
+ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
 
 ## OpenAPI support
 
