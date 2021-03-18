@@ -49,7 +49,7 @@ const schema = {
 
 const validate = ajv.compile(schema)
 
-const validData = {
+const data = {
   foo: 1,
   bar: "abc"
 }
