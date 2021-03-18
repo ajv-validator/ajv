@@ -6,7 +6,7 @@
 
 Super fast JSON validator for Node.js and browser.
 
-Supports JSON Schema draft-06/07/2019-09 (draft-04 is supported in [version 6](https://github.com/ajv-validator/ajv/tree/v6)) and JSON Type Definition [RFC8927](https://datatracker.ietf.org/doc/rfc8927/).
+Supports JSON Schema draft-06/07/2019-09/2020-12 (draft-04 is supported in [version 6](https://github.com/ajv-validator/ajv/tree/v6)) and JSON Type Definition [RFC8927](https://datatracker.ietf.org/doc/rfc8927/).
 
 [![build](https://github.com/ajv-validator/ajv/workflows/build/badge.svg)](https://github.com/ajv-validator/ajv/actions?query=workflow%3Abuild)
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
@@ -192,13 +192,15 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 
 ## Features
 
-- Ajv implements JSON Schema [draft-06/07/2019-09](http://json-schema.org/) standards (draft-04 is supported in v6):
+- Ajv implements JSON Schema [draft-06/07/2019-09/2020-12](http://json-schema.org/) standards (draft-04 is supported in v6):
   - all validation keywords (see [JSON Schema validation keywords](./docs/json-schema.md))
-  - keyword "nullable" from [Open API 3 specification](https://swagger.io/docs/specification/data-models/data-types/).
-  - full support of remote references (remote schemas have to be added with `addSchema` or compiled to be available)
+  - [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md) extensions:
+    - NEW: keyword [discriminator](./docs/json-schema.md#discriminator).
+    - keyword [nullable](./docs/json-schema.md#nullable).
+  - full support of schema references (remote schemas have to be added with `addSchema` or compiled to be available)
   - support of circular references between schemas
   - correct string lengths for strings with unicode pairs
-  - [formats](#formats) defined by JSON Schema draft-07 standard (with [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin) and additional formats (can be turned off)
+  - [formats](#formats) defined by JSON Schema standard (with [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin) and additional formats (can be turned off)
   - [validates schemas against meta-schema](./docs/api.md#api-validateschema)
 - NEW: supports [JSON Type Definition](https://datatracker.ietf.org/doc/rfc8927/):
   - all forms (see [JSON Type Definition schema forms](./docs/json-type-definition.md))

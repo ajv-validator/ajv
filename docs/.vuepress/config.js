@@ -108,5 +108,6 @@ module.exports = {
     repo: "ajv-validator/ajv",
     docsDir: "docs",
     editLinks: true,
+    activeHeaderLinks: false,
   },
 }

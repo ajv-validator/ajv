@@ -8,7 +8,7 @@ The keywords and their values define what rules the data should satisfy to be va
 
 ## JSON Schema draft-2019-09
 
-v7 added support for all new keywords in draft-2019-09:
+Ajv supports all new keywords of JSON Schema draft-2019-09:
 
 - [unevaluatedProperties](#unevaluatedproperties)
 - [unevaluatedItems](#unevaluateditems)
@@ -17,7 +17,31 @@ v7 added support for all new keywords in draft-2019-09:
 - [maxContains/minContains](#maxcontains--mincontains)
 - [$recursiveAnchor/$recursiveRef](./guide/combining-schemas.md#extending-recursive-schemas)
 
-There is also support for [$dynamicAnchor/$dynamicRef](./guide/combining-schemas.md#extending-recursive-schemas) from the next version of JSON Schema draft that will replace `$recursiveAnchor`/`$recursiveRef`.
+To use draft-2019-09 schemas you need to import a different Ajv class:
+
+```javascript
+const Ajv2019 = require("ajv/dist/2019")
+// or in TypeScript:
+// import Ajv from "ajv/dist/2019"
+const ajv = new Ajv2019()
+```
+
+## JSON Schema draft-2020-12
+
+Ajv supports all keywords of JSON Schema draft-2020-12:
+
+- [prefixItems](#prefixItems) that replaced array form of items keyword
+- changed [items](#items-in-draft-2020-12) keyword that combined parts of functionality of items and additionalItems
+- [$dynamicAnchor/$dynamicRef](./guide/combining-schemas.md#extending-recursive-schemas)
+
+To use draft-2019-09 schemas you need to import a different Ajv class:
+
+```javascript
+const Ajv2020 = require("ajv/dist/2020")
+// or in TypeScript:
+// import Ajv from "ajv/dist/2019"
+const ajv = new Ajv2020()
+```
 
 ## OpenAPI support
 
@@ -212,9 +236,15 @@ _invalid_: `[1, 2, 1]`, `[{a: 1, b: 2}, {b: 2, a: 1}]`
 
 ### `items`
 
-The value of the keyword should be an object or an array of objects.
+#### `items` in draft-04, -06, -07 and -2019-09 
 
-If the keyword value is an object, then for the data array to be valid each item of the array should be valid according to the schema in this value. In this case the `additionalItems` keyword is ignored.
+::: warning items keyword changed in JSON Schema draft-2020-12
+This section describes `items` keyword in all JSON Schema versions prior to draft-2020-12.
+:::
+
+The value of the keyword should be a schema or an array of schemas.
+
+If the keyword value is a schema, then for the data array to be valid each item of the array should be valid according to the schema. In this case the `additionalItems` keyword is ignored.
 
 If the keyword value is an array, then items with indices less than the number of items in the keyword should be valid according to the schemas with the same indices. Whether additional items are valid will depend on `additionalItems` keyword.
 
@@ -226,7 +256,7 @@ If the keyword value is an array, then items with indices less than the number o
 
     _invalid_: `[1,"abc"]`
 
-2)  _schema_:
+2.  _schema_:
 
     ```javascript
     {
@@ -241,7 +271,96 @@ If the keyword value is an array, then items with indices less than the number o
 
 The schema in example 2 will log warning by default (see `strict.tuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use `minItems` and `additionalItems` keywords (see example 1 in `additionalItems`).
 
+#### `items` in draft-2020-12 <Badge text="NEW" />
+
+::: warning items keyword changed in JSON Schema draft-2020-12
+This section describes `items` keyword in JSON draft-2020-12.
+:::
+
+The value of the keyword must be a schema.
+
+For the data array to be valid:
+- if [prefixItems](#prefixItems) keyword is not used in the schema, then each item of the array must be valid according to the schema in `items`.
+- if [prefixItems](#prefixItems) keyword is used in the schema, then each item with the index starting from the size of `prefixItems` schema must be valid according to the schema in `items`
+
+**Examples**
+
+1.  _schema_: `{type: "array", items: {type: "integer"}}`
+
+    _valid_: `[1,2,3]`, `[]`
+
+    _invalid_: `[1,"abc"]`
+
+2.  _schema_:
+
+    ```javascript
+    {
+      type: "array",
+      prefixItems: [{type: "integer"}, {type: "integer"}],
+      minItems: 2
+      items: false
+    }
+    ```
+
+    _valid_: `[1, 2]`
+
+    _invalid_: `[]`, `[1]`, `[1, 2, 3]`, `[1, "abc"]` (any wrong number of items or wrong type)
+
+3.  _schema_:
+
+    ```javascript
+    {
+      type: "array",
+      prefixItems: [{type: "integer"}, {type: "integer"}],
+      items: {type: "string"}
+    }
+    ```
+
+    _valid_: `[]`, `[1, 2]`, `[1, 2, "abc"]`
+
+    _invalid_: `["abc"]`, `[1, 2, 3]`
+    ```
+
+    _valid_: `[1]`, `[1, "abc"]`, `[1, "abc", 2]`, `[]`
+
+    _invalid_: `["abc", 1]`, `["abc"]`
+
+The schema in example 3 will log warning by default (see `strict.tuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use `minItems` and `items` keywords (see example 2).
+
+### `prefixItems` <Badge text="NEW: draft 2020-12" />
+
+The value of the keyword must be an array of schemas.
+
+For the data array to be valid, the items with indices less than the number of schemas in this keyword must be valid according to the schemas with the same indices. Whether additional items are valid will depend on `items` keyword.
+
+**Examples**
+
+1.  _schema_: `{type: "array", prefixItems: {type: "integer"}}`
+
+    _valid_: `[1,2,3]`, `[]`
+
+    _invalid_: `[1,"abc"]`
+
+2.  _schema_:
+
+    ```javascript
+    {
+      type: "array",
+      prefixItems: [{type: "integer"}, {type: "string"}]
+    }
+    ```
+
+    _valid_: `[1]`, `[1, "abc"]`, `[1, "abc", 2]`, `[]`
+
+    _invalid_: `["abc", 1]`, `["abc"]`
+
+The schema in example 2 will log warning by default (see `strict.tuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use [minItems](#minitems) and [items](#items-in-draft-2020-12) keywords (see example 2 in [items](#items-in-draft-2020-12)).
+
 ### `additionalItems`
+
+::: warning additionalItems is not supported in JSON Schema draft-2020-12
+To create and equivalent schema in draft-2020-12 use keywords [prefixItems](#prefixItems) and the new [items](#items-in-draft-2020-12) keyword
+:::
 
 The value of the keyword should be a boolean or an object.
 
@@ -314,7 +433,7 @@ _valid_: `[1]`, `[1, "foo"]`, any array with at least one integer
 
 _invalid_: `[]`, `["foo", "bar"]`, any array without integers
 
-### `maxContains` / `minContains`
+### `maxContains` / `minContains` <Badge text="NEW: draft 2019-09" />
 
 The value of these keywords should be an integer.
 
