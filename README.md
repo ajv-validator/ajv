@@ -20,32 +20,6 @@ Supports JSON Schema draft-06/07/2019-09 (draft-04 is supported in [version 6](h
 
 [<img src="https://ajv.js.org/img/mozilla.svg" width="45%">](https://www.mozilla.org)<img src="https://ajv.js.org/img/gap.svg" width="8%">[<img src="https://ajv.js.org/img/reserved.svg" width="45%">](https://opencollective.com/ajv)
 
-## Using version 7
-
-Ajv version 7 has these new features:
-
-- NEW: support of JSON Type Definition [RFC8927](https://datatracker.ietf.org/doc/rfc8927/) (from [v7.1.0](https://github.com/ajv-validator/ajv-keywords/releases/tag/v7.1.0)), including generation of [serializers](./docs/api.md#jtd-serialize) and [parsers](./docs/api.md#jtd-parse) from JTD schemas that are more efficient than native JSON serialization/parsing, combining JSON string parsing and validation in one function.
-- support of JSON Schema draft-2019-09 features: [`unevaluatedProperties`](./docs/json-schema.md#unevaluatedproperties) and [`unevaluatedItems`](./docs/json-schema.md#unevaluateditems), [dynamic recursive references](./docs/guide/combining-schemas.md#extending-recursive-schemas) and other [additional keywords](./docs/json-schema.md#json-schema-draft-2019-09).
-- to reduce the mistakes in JSON schemas and unexpected validation results, [strict mode](./docs/strict-mode.md) is added - it prohibits ignored or ambiguous JSON Schema elements.
-- to make code injection from untrusted schemas impossible, [code generation](./docs/codegen.md) is fully re-written to be safe and to allow code optimization (compiled schema code size is reduced by more than 10%).
-- to simplify Ajv extensions, the new keyword API that is used by pre-defined keywords is available to user-defined keywords - it is much easier to define any keywords now, especially with subschemas. [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package was updated to use the new API (in [v4.0.0](https://github.com/ajv-validator/ajv-keywords/releases/tag/v4.0.0))
-- schemas are compiled to ES6 code (ES5 code generation is also supported with an option).
-- to improve reliability and maintainability the code is migrated to TypeScript.
-
-**Please note**:
-
-- the support for JSON-Schema draft-04 is removed - if you have schemas using "id" attributes you have to replace them with "\$id" (or continue using [Ajv v6](https://github.com/ajv-validator/ajv/tree/v6) that will be supported until 02/28/2021).
-- all formats are separated to ajv-formats package - they have to be explicitly added if you use them.
-
-See [release notes](https://github.com/ajv-validator/ajv/releases/tag/v7.0.0) for the details.
-
-To install the new version:
-
-```bash
-npm install ajv
-```
-
-See [Getting started](#usage) for code example.
 
 ## Contributing
 
@@ -134,18 +108,6 @@ Please also review [Contributing guidelines](./CONTRIBUTING.md) and [Code compon
 - [Some packages using Ajv](#some-packages-using-ajv)
 - [Changes history](#changes-history)
 - [Support, Code of conduct, Contacts, License](#open-source-software-support)
-
-## Mozilla MOSS grant and OpenJS Foundation
-
-[<img src="https://ajv.js.org/img/mozilla.svg" width="240" height="68">](https://www.mozilla.org/en-US/moss/)<img src="https://ajv.js.org/img/gap.svg" width="5%">[<img src="https://ajv.js.org/img/openjs.png" width="220" height="68">](https://openjsf.org/blog/2020/08/14/ajv-joins-openjs-foundation-as-an-incubation-project/)
-
-Ajv has been awarded a grant from Mozilla’s [Open Source Support (MOSS) program](https://www.mozilla.org/en-US/moss/) in the “Foundational Technology” track! It will sponsor the development of Ajv support of [JSON Schema version 2019-09](https://tools.ietf.org/html/draft-handrews-json-schema-02) and of [JSON Type Definition (RFC8927)](https://datatracker.ietf.org/doc/rfc8927/).
-
-Ajv also joined [OpenJS Foundation](https://openjsf.org/) – having this support will help ensure the longevity and stability of Ajv for all its users.
-
-This [blog post](https://www.poberezkin.com/posts/2020-08-14-ajv-json-validator-mozilla-open-source-grant-openjs-foundation.html) has more details.
-
-I am looking for the long term maintainers of Ajv – working with [ReadySet](https://www.thereadyset.co/), also sponsored by Mozilla, to establish clear guidelines for the role of a "maintainer" and the contribution standards, and to encourage a wider, more inclusive, contribution from the community.
 
 ## <a name="sponsors"></a>Please [sponsor Ajv development](https://github.com/sponsors/epoberezkin)
 
