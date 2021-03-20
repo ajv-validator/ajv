@@ -45,9 +45,9 @@ div
     font-size 20px
 
   &.less-code
-    background-color $ajvBlueColor
-  &.fast-secure
     background-color $ajvGreenColor
+  &.fast-secure
+    background-color $ajvBlueColor
   &.multi-spec
     background-color $ajvRedColor
 
