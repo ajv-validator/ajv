@@ -22,16 +22,15 @@ export default {
 }
 </script>
 
-<style scoped>
-.contributor {
-  width: 2.4em;
-  height: 2.4em;
-  border-radius: 50%;
-  text-indent: -9999px;
-  display: inline-block;
-  background: no-repeat url(./Contributors/contributors.jpg);
-  background-size: auto 102%;
-  margin: 0 0.5em 0.5em 0;
-  border: 2px solid var(--second);
-}
+<style lang="stylus" scoped>
+.contributor
+  width 3.2em
+  height 3.2em
+  border-radius 50%
+  text-indent -9999px
+  display inline-block
+  background no-repeat url(./Contributors/contributors.jpg)
+  background-size auto 102%
+  margin 0 0.8em 0.8em 0
+  border 2px solid var(--second)
 </style>

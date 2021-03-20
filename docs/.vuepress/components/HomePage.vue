@@ -1,11 +1,11 @@
 <template>
-  <main class="homepage">
-    <slot name="top" />
+<main class="homepage">
+  <slot name="top" />
 
-    <Content />
+  <Content />
 
-    <slot name="bottom" />
-  </main>
+  <slot name="bottom" />
+</main>
 </template>
 
 <style scoped lang="stylus">
