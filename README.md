@@ -239,11 +239,6 @@ If you have published a useful plugin please submit a PR to add it to the next s
 - [ajv-merge-patch](https://github.com/ajv-validator/ajv-merge-patch) - plugin with keywords $merge and $patch
 - [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) - format validators for draft2019 that aren't included in [ajv-formats](https://github.com/ajv-validator/ajv-formats) (ie. `idn-hostname`, `idn-email`, `iri`, `iri-reference` and `duration`)
 
-## Some packages using Ajv
-
-- [jsoneditor](https://github.com/josdejong/jsoneditor) - a web-based tool to view, edit, format, and validate JSON http://jsoneditoronline.org
-- [addons-linter](https://github.com/mozilla/addons-linter) - Mozilla Add-ons Linter
-
 ## Changes history
 
 See [https://github.com/ajv-validator/ajv/releases](https://github.com/ajv-validator/ajv/releases)
