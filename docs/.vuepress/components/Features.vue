@@ -1,17 +1,15 @@
 <template>
-  <div id="features">
+  <div class="features">
     <slot />
   </div>
 </template>
 
 <style lang="stylus" scoped>
-div#features {
-  padding: 90px 55px;
-}
+.features
+  padding 90px 0
 
-div#features:after {
-  content: '';
-  display: table;
-  clear: both;
-}
+  &:after
+    content ''
+    display block
+    clear both
 </style>

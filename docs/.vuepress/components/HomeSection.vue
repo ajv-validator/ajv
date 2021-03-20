@@ -19,7 +19,8 @@ export default {
 <style lang="stylus" scoped>
 .home-section
   width 100%
-  padding 50px
+  padding 50px 0
+  padding-top $navbarHeight
 
   .section-content
     max-width 1000px

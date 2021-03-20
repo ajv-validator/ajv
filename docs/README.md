@@ -1,41 +1,37 @@
 ---
 homepage: true
+editLink: true
 ---
 
-<HeroSection
-  title="AJV JSON Validator"
-  description="Safety, security and reliability for JavaScript applications"
->
+<HeroSection>
+
+# Ajv JSON Validator
+
+## Security and reliability of JavaScript applications
 
 <Features>
 
-<Feature
-  title="Write less code"
-  type="less-code"
-  link="/api.html"
->
+<Feature type="less-code" link="/api.html">
 
-Ensure your data is valid once it's received
+### Write less code
+
+Ensure your data is valid once it is received
 
 </Feature>
 
-<Feature
-  title="Super fast and secure"
-  type="fast-secure"
-  link="/api.html"
->
+<Feature type="fast-secure" link="/api.html">
 
-The fastest and the most secure JSON validator
+### Super fast & secure
+
+Compiles your schemas to optimized JavaScript code
 
 </Feature>
 
-<Feature
-  title="Multi-specification"
-  type="multi-spec"
-  link="/api.html"
->
+<Feature type="multi-spec" link="/api.html">
 
-Choose your JSON schema standard
+### Multi-standard
+
+Use JSON Type Definition or JSON Schema
 
 </Feature>
 
@@ -106,7 +102,6 @@ Try in the playground (TBC)
 [Vega-Lite](https://vega.github.io/vega-lite/)
 [![middy](./projects/middy.png)](https://middy.js.org)
 [JSDoc](https://github.com/jsdoc/jsdoc)
-
 
 </Projects>
 </HomeSection>

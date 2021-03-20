@@ -17,7 +17,7 @@
     height 40px
     line-height 40px
     vertical-align middle
-    margin 0 36px 24px 0
+    margin 0 36px 30px 0
     font-size 28px
     font-weight 500
     color $textColor
