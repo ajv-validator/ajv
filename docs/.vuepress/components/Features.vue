@@ -7,7 +7,6 @@
 <style lang="stylus" scoped>
 div#features {
   padding: 90px 55px;
-  max-width: 100%;
 }
 
 div#features:after {
