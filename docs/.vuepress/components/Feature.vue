@@ -27,8 +27,8 @@ export default {
 div {
   display: inline-block;
   float: left;
-  margin-right: 5%;
-  width: 30%;
+  margin-right: 2%;
+  width: 32%;
   height: 225px;
   border-radius: 8px;
   position: relative;
