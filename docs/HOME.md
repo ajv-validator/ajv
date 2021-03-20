@@ -1,3 +1,7 @@
+---
+homepage: true
+---
+
 <HeroSection>
 # Ajv JSON Validator
 
