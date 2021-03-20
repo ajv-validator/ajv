@@ -1,8 +1,33 @@
+<HeroSection>
 # Ajv JSON Validator
 
 Safety, security and reliability for JavaScript applications
 
-<RecFeatures />
+<Features>
+<Feature type="less-code">
+
+### Write less code
+
+Ensure your data is valid once it's received
+
+</Feature>
+<Feature type="fast-secure">
+
+### Super fast and secure
+
+The fastest and the most secure JSON validator
+
+</Feature>
+<Feature type="multi-spec">
+
+### Multi-specification
+
+Choose your JSON schema standard
+
+</Feature>
+</Features>
+
+</HeroSection>
 
 ## Ajv News
 
@@ -44,7 +69,15 @@ Usage example / or small playground
 
 Try in the playground (TBC)
 
-## Who uses Ajv
+## Packages using Ajv
+
+<DependentPackages>
+
+[<img alt="webpack" src="./dependent/webpack.svg" height="40">](https://github.com/webpack/webpack)
+[<img alt="eslint" src="./dependent/eslint.png" height="40">](https://github.com/eslint/eslint)
+[table](https://github.com/gajus/table)
+
+</DependentPackages>
 
 ## Contributors
 

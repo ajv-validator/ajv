@@ -7,6 +7,7 @@ module.exports = {
     slugify: (str) => slugify(str.replace(/<Badge[^>]*\/>/, "")),
     toc: {includeLevel: [2, 3, 4]},
   },
+  heroText: "hello there",
   themeConfig: {
     logo: "/img/ajv.svg",
     nav: [

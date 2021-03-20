@@ -241,7 +241,6 @@ If you have published a useful plugin please submit a PR to add it to the next s
 
 ## Some packages using Ajv
 
-- [webpack](https://github.com/webpack/webpack) - a module bundler. Its main purpose is to bundle JavaScript files for usage in a browser
 - [jsonscript-js](https://github.com/JSONScript/jsonscript-js) - the interpreter for [JSONScript](http://www.jsonscript.org) - scripted processing of existing endpoints and services
 - [osprey-method-handler](https://github.com/mulesoft-labs/osprey-method-handler) - Express middleware for validating requests and responses based on a RAML method object, used in [osprey](https://github.com/mulesoft/osprey) - validating API proxy generated from a RAML definition
 - [har-validator](https://github.com/ahmadnassri/har-validator) - HTTP Archive (HAR) validator
@@ -261,7 +260,6 @@ If you have published a useful plugin please submit a PR to add it to the next s
 - [electron-builder](https://github.com/electron-userland/electron-builder) - a solution to package and build a ready for distribution Electron app
 - [addons-linter](https://github.com/mozilla/addons-linter) - Mozilla Add-ons Linter
 - [gh-pages-generator](https://github.com/epoberezkin/gh-pages-generator) - multi-page site generator converting markdown files to GitHub pages
-- [ESLint](https://github.com/eslint/eslint) - the pluggable linting utility for JavaScript and JSX
 - [Spectral](https://github.com/stoplightio/spectral) - the customizable linting utility for JSON/YAML, OpenAPI, AsyncAPI, and JSON Schema
 
 ## Changes history
