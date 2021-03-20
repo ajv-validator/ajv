@@ -1,5 +1,5 @@
 ---
-layout: BlogPost
+blog: true
 title: Mozilla MOSS grant and OpenJS Foundation
 date: 2020-08-14
 ---

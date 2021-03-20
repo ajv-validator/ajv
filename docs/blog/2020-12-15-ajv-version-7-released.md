@@ -1,5 +1,5 @@
 ---
-layout: BlogPost
+blog: true
 title: Ajv version 7 is released!
 date: 2020-12-15
 ---

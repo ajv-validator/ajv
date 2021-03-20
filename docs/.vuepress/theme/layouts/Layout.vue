@@ -29,6 +29,18 @@
 
     <Home v-if="$page.frontmatter.home" />
 
+    <BlogPost
+      v-else-if="$page.frontmatter.blog"
+      :sidebar-items="sidebarItems"
+    >
+      <template #top>
+        <slot name="page-top" />
+      </template>
+      <template #bottom>
+        <slot name="page-bottom" />
+      </template>
+    </BlogPost>
+
     <Page
       v-else
       :sidebar-items="sidebarItems"
