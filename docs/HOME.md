@@ -2,46 +2,54 @@
 homepage: true
 ---
 
-<HeroSection>
-# Ajv JSON Validator
-
-Safety, security and reliability for JavaScript applications
+<HeroSection
+  title="AJV JSON Validator"
+  description="Safety, security and reliability for JavaScript applications"
+>
 
 <Features>
-<Feature type="less-code">
 
-### Write less code
+<Feature
+  title="Write less code"
+  type="less-code"
+  link="/api.html"
+>
 
 Ensure your data is valid once it's received
 
 </Feature>
-<Feature type="fast-secure">
 
-### Super fast and secure
+<Feature
+  title="Super fast and secure"
+  type="fast-secure"
+  link="/api.html"
+>
 
 The fastest and the most secure JSON validator
 
 </Feature>
-<Feature type="multi-spec">
 
-### Multi-specification
+<Feature
+  title="Multi-specification"
+  type="multi-spec"
+  link="/api.html"
+>
 
 Choose your JSON schema standard
 
 </Feature>
+
 </Features>
 
 </HeroSection>
 
+<NewsSection>
+
 ## Ajv News
 
-<!-- This section will include the last update and the headlines of several previous updates, e.g. these sections:
-
-https://github.com/ajv-validator/ajv#using-version-7
-
-https://github.com/ajv-validator/ajv#mozilla-moss-grant-and-openjs-foundation -->
-
 <BlogHome/>
+
+</NewsSection>
 
 ## Why use AJV
 

@@ -1,18 +1,17 @@
 <template>
-  <main class="page">
+  <main class="homepage">
     <slot name="top" />
 
-    <Content class="theme-default-content" />
+    <Content />
 
     <slot name="bottom" />
   </main>
 </template>
 
-<style lang="stylus">
-@require '../theme/styles/wrapper.styl'
+<style scoped lang="stylus">
+@require '../theme/styles/wrapper.styl';
 
-.page
-  padding-bottom 2rem
-  display block
-
+.homepage {
+  padding: 0 0 0 $sidebarWidth; // should dynamically change on sidebar toggle
+}
 </style>
