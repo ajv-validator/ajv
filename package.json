@@ -6,7 +6,6 @@
   "types": "dist/ajv.d.ts",
   "files": [
     "lib/",
-    "docs/",
     "dist/",
     "scripts/",
     ".tonic_example.js"
