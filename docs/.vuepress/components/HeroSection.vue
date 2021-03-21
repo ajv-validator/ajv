@@ -28,7 +28,7 @@
   .hero-image
     position absolute
     bottom 250px
-    left 250px
+    left 400px
     z-index 1
 
   background linear-gradient(304.46deg, rgba(198, 225, 255, 0.7) 27.73%, rgba(237, 237, 237, 0.26) 82.77%)
