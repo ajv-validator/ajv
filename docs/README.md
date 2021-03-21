@@ -54,7 +54,13 @@ Platinum sponsors
 
 <Column side="left">
 
-You can use Ajv with schema instead of writing validation code.
+Ajv is used by a large number of JavaScript applications and libraries in all JavaScript environments - Node.js, browser, Electron apps, WeChat mini-apps etc.
+
+It allows implementing complex data validation logic via declarative schemas for your JSON data, without writing code.
+
+Out of the box, Ajv supports [JSON Schema](./json-schema.md) (drafts 04, 06, 07, 2019-09 and 2020-12) and [JSON Type Definition](./json-type-definition.md) ([RFC8927](https://datatracker.ietf.org/doc/rfc8927/)).
+
+<br/>
 
 <Button link="/guide/getting-started.html">Learn Ajv</Button>
 
@@ -67,7 +73,7 @@ You can use Ajv with schema instead of writing validation code.
 <code-block title="JSON Schema">
 
 ```javascript
-const Ajv = require("ajv").default
+const Ajv = require("ajv")
 const ajv = new Ajv()
 
 const schema = {
@@ -80,8 +86,9 @@ const schema = {
   additionalProperties: false
 }
 
-const valid = ajv.validate(schema, {foo: 1, bar: "abc"})
-if (!valid) console.log(validate.errors)
+const data = {foo: 1, bar: "abc"}
+const valid = ajv.validate(schema, data)
+if (!valid) console.log(ajv.errors)
 ```
 
 </code-block>
@@ -89,7 +96,7 @@ if (!valid) console.log(validate.errors)
 <code-block title="JSON Type Definition">
 
 ```javascript
-const Ajv = require("ajv/dist/jtd").default
+const Ajv = require("ajv/dist/jtd")
 const ajv = new Ajv()
 
 const schema = {
@@ -102,8 +109,9 @@ const schema = {
 }
 
 
-const valid = ajv.validate(schema, {foo: 1, bar: "abc"})
-if (!valid) console.log(validate.errors)
+const data = {foo: 1, bar: "abc"}
+const valid = ajv.validate(schema, data)
+if (!valid) console.log(ajv.errors)
 ```
 
 </code-block>
