@@ -29,7 +29,8 @@ div
       width 100px
 
   &.links a
-    color #292828
+    color $textColor
+    font-weight normal
 
   &.sponsors
     img

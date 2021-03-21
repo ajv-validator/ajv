@@ -245,7 +245,7 @@ Ajv is free to use and open-source that many developers contributed to. Join us!
 
 </FooterColumns>
 
-© 2015-2021 Ajv JSON schema validator | [ajv.validator@gmail.com](mailto:ajv.validator@gmail.com)
+[&copy; 2015-2021](./license.md) | Ajv JSON schema validator | [ajv.validator@gmail.com](mailto:ajv.validator@gmail.com)
 
 </Footer>
 
