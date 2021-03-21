@@ -19,16 +19,17 @@
   .section-content
     position relative
     max-width 1000px
+    padding 0 50px
     margin 0 auto
 
     .section-content-wrapper
       position relative
-      z-index 10
+      z-index 2
 
   .hero-image
     position absolute
     bottom 250px
-    left 400px
+    left 425px
     z-index 1
 
   background linear-gradient(304.46deg, rgba(198, 225, 255, 0.7) 27.73%, rgba(237, 237, 237, 0.26) 82.77%)

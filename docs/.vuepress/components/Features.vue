@@ -6,6 +6,8 @@
 
 <style lang="stylus" scoped>
 .features
-  display flex
   padding 60px 0
+
+  @media only screen and (min-width: $MQMobile)
+    display flex
 </style>

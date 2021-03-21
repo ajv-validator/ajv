@@ -24,13 +24,17 @@ export default {
 <style lang="stylus" scoped>
 div
   margin-right 3%
-  width 31.25%
   height 225px
   box-sizing border-box
   padding 28px
   border-radius 8px
   position relative
   color #fff
+  margin-bottom 25px
+
+  @media only screen and (min-width: $MQMobile)
+    width 31.25%
+    margin-bottom 0
 
   h3
     margin 0 0
@@ -51,8 +55,9 @@ div
   &.multi-spec
     background-color $ajvRedColor
 
-div:last-child
-  margin-right 0px
+@media only screen and (min-width: $MQMobile)
+  div:last-child
+    margin-right 0px
 
 a
   position absolute

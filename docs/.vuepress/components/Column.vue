@@ -15,11 +15,12 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.column
-  &.left
-    width 33%
-    margin-right 5%
+@media only screen and (min-width: $MQMobile)
+  .column
+    &.left
+      width 33%
+      margin-right 5%
 
-  &.right
-    width 62%
+    &.right
+      width 62%
 </style>

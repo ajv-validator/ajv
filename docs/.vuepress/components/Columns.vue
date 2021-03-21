@@ -5,6 +5,7 @@
 </template>
 
 <style lang="stylus" scoped>
-.columns
-  display flex
+@media only screen and (min-width: $MQMobile)
+  .columns
+    display flex
 </style>

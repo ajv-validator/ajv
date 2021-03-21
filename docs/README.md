@@ -121,7 +121,6 @@ if (!valid) console.log(ajv.errors)
 ## Who uses Ajv
 
 <Projects>
-
 [![eslint](./projects/eslint.png)](https://eslint.org)
 [![stoplight](./projects/stoplight.png)](https://stoplight.io)
 [![webpack](./projects/webpack.svg)](https://webpack.js.org)

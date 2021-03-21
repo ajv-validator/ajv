@@ -1,15 +1,17 @@
 <template>
   <div>
     <div v-for="(post, i) in posts" class="post">
-      <Column side="left">
-        <h3>{{ post.frontmatter.title }}</h3>
-        <NewsPostMeta :date="post.frontmatter.date" />
-      </Column>
+      <Columns>
+        <Column side="left">
+          <h3>{{ post.frontmatter.title }}</h3>
+          <NewsPostMeta :date="post.frontmatter.date" />
+        </Column>
 
-      <Column side="right">
-        <div v-html="post.excerpt"></div>
-        <Button :link="post.path" cssClass="read-more">Read more</Button>
-      </Column>
+        <Column side="right">
+          <div v-html="post.excerpt"></div>
+          <Button :link="post.path" cssClass="read-more">Read more</Button>
+        </Column>
+      </Columns>
     </div>
     <p><a href="/news/" class="previous">All news</a></p>
   </div>

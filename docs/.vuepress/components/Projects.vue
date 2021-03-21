@@ -6,6 +6,10 @@
 
 <style lang="stylus" scoped>
 .projects
+  p
+    max-width 1100px
+    padding 0
+
   img
     display inline-block
     max-width 240px
