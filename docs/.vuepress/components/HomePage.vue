@@ -21,6 +21,6 @@ export default {
 @require '../theme/styles/wrapper.styl'
 
 .homepage
-  padding 0 0 0 $sidebarWidth
+  padding 0 0 0 0
   box-sizing content-box
 </style>

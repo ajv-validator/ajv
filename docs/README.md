@@ -1,6 +1,7 @@
 ---
 homepage: true
 editLink: true
+sidebar: false
 ---
 
 <HeroSection>
