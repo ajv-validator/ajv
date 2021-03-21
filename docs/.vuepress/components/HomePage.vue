@@ -1,26 +1,26 @@
 <template>
-<main class="homepage">
-  <slot name="top" />
+  <main class="homepage">
+    <slot name="top" />
 
-  <Content />
-  <PageEdit />
+    <Content />
+    <PageEdit />
 
-  <slot name="bottom" />
-</main>
+    <slot name="bottom" />
+  </main>
 </template>
 
 <script>
-import PageEdit from '@theme/components/PageEdit.vue'
+import PageEdit from "@theme/components/PageEdit.vue"
 
 export default {
   components: {PageEdit},
 }
 </script>
 
-<style scoped lang="stylus">
-@require '../theme/styles/wrapper.styl';
+<style lang="stylus" scoped>
+@require '../theme/styles/wrapper.styl'
 
-.homepage 
+.homepage
   padding 0 0 0 $sidebarWidth
   box-sizing content-box
 </style>

@@ -26,19 +26,16 @@ export default {
 }
 </script>
 
-<style scoped>
-.post-meta > div {
-  display: inline-flex;
-}
+<style lang="stylus" scoped>
+.post-meta > div
+  display inline-flex
 
-.post-meta svg {
-  margin-right: 5px;
-  width: 14px;
-  height: 14px;
-  color: #808080;
-}
+.post-meta svg
+  margin-right 5px
+  width 14px
+  height 14px
+  color #808080
 
-.pub-date {
-  color: #808080;
-}
+.pub-date
+  color #808080
 </style>

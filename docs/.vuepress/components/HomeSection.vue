@@ -1,9 +1,9 @@
 <template>
-<div class="home-section" :class="section">
-  <div class="section-content">
-    <slot />
+  <div class="home-section" :class="section">
+    <div class="section-content">
+      <slot />
+    </div>
   </div>
-</div>
 </template>
 
 <script>

@@ -15,18 +15,17 @@
 </template>
 
 <script>
-import PageEdit from '@theme/components/PageEdit.vue'
+import PageEdit from "@theme/components/PageEdit.vue"
 
 export default {
   components: {PageEdit},
 }
 </script>
 
-<style lang="stylus">
-@require '../theme/styles/wrapper.styl';
+<style lang="stylus" scoped>
+@require '../theme/styles/wrapper.styl'
 
-.page {
-  padding-bottom: 2rem;
-  display: block;
-}
+.page
+  padding-bottom 2rem
+  display block
 </style>

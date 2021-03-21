@@ -1,12 +1,12 @@
 <template>
-<div class="hero-section">
-  <div class="section-content">
-    <img src="./HeroSection/hero-desktop.svg" class="hero-image">
-    <div class="section-content-wrapper">
-      <slot />
+  <div class="hero-section">
+    <div class="section-content">
+      <img src="./HeroSection/hero-desktop.svg" class="hero-image" />
+      <div class="section-content-wrapper">
+        <slot />
+      </div>
     </div>
   </div>
-</div>
 </template>
 
 <style lang="stylus" scoped>

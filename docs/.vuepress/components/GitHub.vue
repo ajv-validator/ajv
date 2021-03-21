@@ -24,9 +24,8 @@ export default {
 }
 </script>
 
-<style scoped>
-span {
-  vertical-align: -8px;
-  padding-left: 20px;
-}
+<style lang="stylus" scoped>
+span
+  vertical-align -8px
+  padding-left 20px
 </style>

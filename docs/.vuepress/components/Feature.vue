@@ -1,10 +1,10 @@
 <template>
-<div :class="type">
-  <slot />
-  <a class="read-more" :href="link">
-    <img src="./Feature/arrow.svg">
-  </a>
-</div>
+  <div :class="type">
+    <slot />
+    <a class="read-more" :href="link">
+      <img src="./Feature/arrow.svg" />
+    </a>
+  </div>
 </template>
 
 <script>
@@ -15,14 +15,14 @@ export default {
     },
     link: {
       type: String,
-    }
+    },
   },
 }
 </script>
 
 
 <style lang="stylus" scoped>
-div 
+div
   margin-right 3%
   width 31.25%
   height 225px
@@ -44,8 +44,10 @@ div
 
   &.less-code
     background-color $ajvBlueColor
+
   &.fast-secure
     background-color $ajvGreenColor
+
   &.multi-spec
     background-color $ajvRedColor
 
