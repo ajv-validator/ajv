@@ -50,6 +50,62 @@ Platinum sponsors
 
 <HomeSection>
 
+<Columns>
+<Column side="left">
+
+You can use Ajv with schema instead of writing validation code.
+
+</Column>
+
+<Column side="right">
+
+<code-group>
+<code-block title="JSON Schema">
+```javascript
+const Ajv = require("ajv").default
+const ajv = new Ajv()
+
+const schema = {
+  type: "object",
+  properties: {
+    foo: {type: "integer"},
+    bar: {type: "string"}
+  },
+  required: ["foo"],
+  additionalProperties: false
+}
+
+const valid = ajv.validate(schema, {foo: 1, bar: "abc"})
+if (!valid) console.log(validate.errors)
+```
+</code-block>
+
+<code-block title="JSON Type Definition">
+```javascript
+const Ajv = require("ajv/dist/jtd").default
+const ajv = new Ajv()
+
+const schema = {
+  properties: {
+    foo: {type: "int32"}
+  },
+  optionalProperties: {
+    bar: {type: "string"}
+  }
+}
+
+
+const valid = ajv.validate(schema, {foo: 1, bar: "abc"})
+if (!valid) console.log(validate.errors)
+```
+</code-block>
+</code-group>
+</Column>
+</Columns>
+</HomeSection>
+
+<HomeSection>
+
 ## News
 
 <BlogHome/>

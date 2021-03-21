@@ -1,15 +1,15 @@
 <template>
   <div>
     <div v-for="(post, i) in posts" class="post">
-      <div class="column left">
+      <Column side="left">
         <h3>{{ post.frontmatter.title }}</h3>
         <BlogPostMeta :date="post.frontmatter.date" />
-      </div>
+      </Column>
 
-      <div class="column right">
+      <Column side="right">
         <div v-html="post.excerpt"></div>
-        <a :href="post.path" class="read-more">Read more</a>
-      </div>
+        <Button :link="post.path" class="read-more" text="Read more" />
+      </Column>
     </div>
     <p><a href="/blog/" class="previous">Previous news</a></p>
   </div>
@@ -36,25 +36,18 @@ export default {
   &:last-child
     border-bottom none
 
-  .left
-    width 33%
-    padding-right 5%
-
-  .right
-    width 62%
-
-    a.read-more
-      display block
-      width 114px
-      height 40px
-      line-height 40px
-      background-color $ajvGreenColor
-      border-radius 6px
-      color white
-      text-align center
-      float right
-      margin 28px 0
-      font-weight 600
+  a.read-more
+    display block
+    width 114px
+    height 40px
+    line-height 40px
+    background-color $ajvGreenColor
+    border-radius 6px
+    color white
+    text-align center
+    float right
+    margin 28px 0
+    font-weight 600
 
 a.previous
   display inline-block
