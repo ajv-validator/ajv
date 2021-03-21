@@ -55,6 +55,8 @@ Platinum sponsors
 
 You can use Ajv with schema instead of writing validation code.
 
+<Button link="/guide/getting-started.html">Learn Ajv</Button>
+
 </Column>
 
 <Column side="right">

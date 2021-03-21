@@ -1,5 +1,5 @@
 <template>
-  <a :href="link" :class="class">{{ text }}</a>
+  <a :href="link" :class="cssClass" class="button"><slot /></a>
 </template>
 
 <script>
@@ -8,10 +8,7 @@ export default {
     link: {
       type: String,
     },
-    class: {
-      type: String,
-    },
-    text: {
+    cssClass: {
       type: String,
     },
   },
@@ -19,7 +16,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-a
+a.button
   display block
   width 114px
   height 40px

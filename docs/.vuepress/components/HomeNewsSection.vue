@@ -8,7 +8,7 @@
 
       <Column side="right">
         <div v-html="post.excerpt"></div>
-        <Button :link="post.path" class="read-more" text="Read more" />
+        <Button :link="post.path" cssClass="read-more">Read more</Button>
       </Column>
     </div>
     <p><a href="/news/" class="previous">Previous news</a></p>
@@ -37,17 +37,8 @@ export default {
     border-bottom none
 
   a.read-more
-    display block
-    width 114px
-    height 40px
-    line-height 40px
-    background-color $ajvGreenColor
-    border-radius 6px
-    color white
-    text-align center
     float right
     margin 28px 0
-    font-weight 600
 
 a.previous
   display inline-block
