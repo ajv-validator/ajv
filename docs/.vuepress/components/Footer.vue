@@ -1,7 +1,7 @@
 <template>
   <div>
     <slot />
-    <PageEdit />
+    <PageEdit class="footer-edit" />
   </div>
 </template>
 
@@ -19,8 +19,10 @@ p
   text-align center
   color #292828
 
-.edit-link
-  a
-    padding 0 0 120px
-    margin auto
+.footer-edit
+  display flex
+  padding 20px 0 120px
+
+  div.edit-link
+    margin 0 auto
 </style>
