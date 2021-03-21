@@ -6,10 +6,6 @@
 
 <style lang="stylus" scoped>
 .features
-  padding 90px 0
-
-  &:after
-    content ''
-    display block
-    clear both
+  display flex
+  padding 60px 0
 </style>

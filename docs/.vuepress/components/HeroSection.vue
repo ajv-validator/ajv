@@ -14,6 +14,7 @@
   width 100%
   padding 50px 0
   padding-top $navbarHeight
+  overflow hidden
 
   .section-content
     position relative
@@ -26,7 +27,7 @@
 
   .hero-image
     position absolute
-    bottom 125px
+    bottom 250px
     left 250px
     z-index 1
 
@@ -37,10 +38,11 @@
 
   h1
     font-size 64px
-    margin-top 230px
+    margin-top 200px
 
   h2
     font-size 36px
+    border-bottom none
 
   h1, h2
     margin-left 64px

@@ -1,9 +1,8 @@
 ---
 blog_index: true
+editLink: false
 ---
 
-# Blog
-
-Welcome to AJV blog.
+# Ajv News
 
 <BlogIndex/>

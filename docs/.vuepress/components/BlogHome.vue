@@ -1,19 +1,17 @@
 <template>
   <div>
-    <div v-for="(post, i) in posts">
-      <div class="row">
-        <div class="column left">
-          <h3>{{ post.frontmatter.title }}</h3>
-        </div>
-
-        <div class="column right">
-          <div v-html="post.excerpt"></div>
-          <p><router-link :to="post.path">Read more</router-link></p>
-        </div>
+    <div v-for="(post, i) in posts" class="post">
+      <div class="column left">
+        <h3>{{ post.frontmatter.title }}</h3>
+        <BlogPostMeta :date="post.frontmatter.date" />
       </div>
 
-      <hr v-if="i < posts.length - 1" />
+      <div class="column right">
+        <div v-html="post.excerpt"></div>
+        <a :href="post.path" class="read-more">Read more</a>
+      </div>
     </div>
+    <p><a href="/blog/" class="previous">Previous news</a></p>
   </div>
 </template>
 
@@ -30,26 +28,35 @@ export default {
 }
 </script>
 
-<style scoped>
-.column {
-  box-sizing: border-box;
-  /* background-color: rgba(0, 0, 0, 0); */
-  float: left;
-  padding: 10px;
-}
+<style lang="stylus" scoped>
+.post
+  display flex
+  border-bottom 1px solid #eaecef
 
-.left {
-  width: 35%;
-}
+  &:last-child
+    border-bottom none
 
-.right {
-  width: 65%;
-}
+  .left
+    width 33%
+    padding-right 5%
 
-.row:after {
-  box-sizing: border-box;
-  content: "";
-  display: table;
-  clear: both;
-}
+  .right
+    width 62%
+
+    a.read-more
+      display block
+      width 114px
+      height 40px
+      line-height 40px
+      background-color $ajvGreenColor
+      border-radius 6px
+      color white
+      text-align center
+      float right
+      margin 28px 0
+      font-weight 600
+
+a.previous
+  display inline-block
+  float right
 </style>

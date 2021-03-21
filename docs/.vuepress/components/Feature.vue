@@ -23,8 +23,6 @@ export default {
 
 <style lang="stylus" scoped>
 div 
-  display inline-block
-  float left
   margin-right 3%
   width 31.25%
   height 225px

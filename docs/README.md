@@ -37,15 +37,24 @@ Use JSON Type Definition or JSON Schema
 
 </Features>
 
+<Sponsors>
+
+Platinum sponsors
+
+[![mozilla](/img/mozilla.svg)](https://www.mozilla.org)
+[![reserved](/img/reserved.svg)](https://opencollective.com/ajv)
+
+</Sponsors>
+
 </HeroSection>
 
-<NewsSection>
+<HomeSection>
 
-## Ajv News
+## News
 
 <BlogHome/>
 
-</NewsSection>
+</HomeSection>
 
 <HomeSection>
 

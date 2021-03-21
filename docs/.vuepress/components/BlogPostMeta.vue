@@ -1,6 +1,5 @@
 <template>
   <div class="post-meta">
-    <ClockIcon />
     <time class="pub-date" pubdate itemprop="datePublished" :datetime="date">
       {{ resolvedDate }}
     </time>
@@ -10,12 +9,10 @@
 <script>
 import dayjs from "dayjs"
 import dayjsPluginUTC from "dayjs/plugin/utc"
-import {ClockIcon} from "vue-feather-icons"
 
 dayjs.extend(dayjsPluginUTC)
 
 export default {
-  components: {ClockIcon},
   props: {
     date: {
       type: String,
