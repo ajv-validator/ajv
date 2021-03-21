@@ -369,7 +369,7 @@ describe("Validation errors", () => {
           "required",
           "#/required",
           "",
-          "should have required property 'a'",
+          "must have required property 'a'",
           {missingProperty: "a"}
         )
       }
