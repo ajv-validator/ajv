@@ -2,10 +2,13 @@ const Ajv = require("ajv")
 const ajv = new Ajv({allErrors: true})
 
 const schema = {
+  type: "object",
   properties: {
     foo: {type: "string"},
     bar: {type: "number", maximum: 3},
   },
+  required: ["foo", "bar"],
+  additionalProperties: false,
 }
 
 const validate = ajv.compile(schema)
