@@ -11,7 +11,6 @@ editLink: false
 ## Security and reliability of JavaScript applications
 
 <Features>
-
 <Feature type="less-code" link="/api.html">
 
 ### Write less code
@@ -19,7 +18,6 @@ editLink: false
 Ensure your data is valid once it is received
 
 </Feature>
-
 <Feature type="fast-secure" link="/api.html">
 
 ### Super fast & secure
@@ -35,7 +33,6 @@ Compiles your schemas to optimized JavaScript code
 Use JSON Type Definition or JSON Schema
 
 </Feature>
-
 </Features>
 
 <Sponsors>
@@ -46,13 +43,10 @@ Platinum sponsors
 [![reserved](/img/reserved.svg)](https://opencollective.com/ajv)
 
 </Sponsors>
-
 </HeroSection>
 
 <HomeSection>
-
 <Columns>
-
 <Column side="left">
 
 Ajv is used by a large number of JavaScript applications and libraries in all JavaScript environments - Node.js, browser, Electron apps, WeChat mini-apps etc.
@@ -68,11 +62,8 @@ Out of the box, Ajv supports [JSON Schema](./json-schema.md) (drafts 04, 06, 07,
 </Column>
 
 <Column side="right">
-
 <code-group>
-
 <code-block title="JSON Schema">
-
 ```javascript
 const Ajv = require("ajv")
 const ajv = new Ajv()
@@ -91,11 +82,9 @@ const data = {foo: 1, bar: "abc"}
 const valid = ajv.validate(schema, data)
 if (!valid) console.log(ajv.errors)
 ```
-
 </code-block>
 
 <code-block title="JSON Type Definition">
-
 ```javascript
 const Ajv = require("ajv/dist/jtd")
 const ajv = new Ajv()
@@ -114,34 +103,16 @@ const data = {foo: 1, bar: "abc"}
 const valid = ajv.validate(schema, data)
 if (!valid) console.log(ajv.errors)
 ```
-
 </code-block>
-
 </code-group>
-
 </Column>
-
 </Columns>
-
 </HomeSection>
-
 <HomeSection>
 
 ## News
 
 <NewsHome/>
-
-</HomeSection>
-
-<HomeSection>
-
-Ajv is a widely used library that provides reliability, safety and security to millions of JavaScript applications and other libraries. It can be used in all JavaScript environments - node.js, browsers, Electron apps, etc. If your environment or security policy prohibit run-time function construction you can compile your schemas during build time into a standalone validation code (it may still have dependencies on small parts of Ajv code, but doesn't use the whole library) - since version 7 it is fully supported for all JSON schemas.
-
-Installation
-
-Usage example / or small playground
-
-Try in the playground (TBC)
 
 </HomeSection>
 
@@ -191,7 +162,6 @@ Try in the playground (TBC)
 [JSDoc](https://github.com/jsdoc/jsdoc)
 
 </Projects>
-
 </HomeSection>
 
 <HomeSection section="contributors">
@@ -207,9 +177,7 @@ Ajv is free to use and open-source that many developers contributed to. Join us!
 <HomeSection section="footer">
 
 <Footer>
-
 <FooterColumns>
-
 <FooterColumn type="ajv">
 ![ajv](/img/ajv.svg)
 
@@ -242,11 +210,9 @@ Ajv is free to use and open-source that many developers contributed to. Join us!
 [![openjs](/img/openjs.png)](https://openjsf.org/blog/2020/08/14/ajv-joins-openjs-foundation-as-an-incubation-project/)
 
 </FooterColumn>
-
 </FooterColumns>
 
 [&copy; 2015-2021](./license.md) | Ajv JSON schema validator | [ajv.validator@gmail.com](mailto:ajv.validator@gmail.com)
 
 </Footer>
-
 </HomeSection>

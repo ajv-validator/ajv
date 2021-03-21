@@ -1,15 +1,15 @@
 <template>
   <div>
     <div v-for="post in posts">
-      <h2>
-        <router-link :to="post.path">{{ post.frontmatter.title }}</router-link>
-      </h2>
+      <h2>{{ post.frontmatter.title }}</h2>
 
-      <NewsPostMeta :date="post.frontmatter.date" />
+      <NewsPostMeta :date="post.frontmatter.date" :link="post.path" />
 
       <div v-html="post.excerpt"></div>
 
-      <p><router-link :to="post.path">Read more</router-link></p>
+      <p v-if="post.frontmatter.more !== false">
+        <router-link :to="post.path">Read more</router-link>
+      </p>
     </div>
   </div>
 </template>

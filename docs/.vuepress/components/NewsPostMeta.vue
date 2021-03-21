@@ -1,8 +1,10 @@
 <template>
   <div class="post-meta">
-    <time class="pub-date" pubdate itemprop="datePublished" :datetime="date">
-      {{ resolvedDate }}
-    </time>
+    <a :href="link">
+      <time class="pub-date" pubdate itemprop="datePublished" :datetime="date">
+        {{ resolvedDate }}
+      </time>
+    </a>
   </div>
 </template>
 
@@ -17,6 +19,9 @@ export default {
     date: {
       type: String,
     },
+    link: {
+      type: String,
+    },
   },
   computed: {
     resolvedDate() {
@@ -29,12 +34,6 @@ export default {
 <style lang="stylus" scoped>
 .post-meta > div
   display inline-flex
-
-.post-meta svg
-  margin-right 5px
-  width 14px
-  height 14px
-  color #808080
 
 .pub-date
   color #808080

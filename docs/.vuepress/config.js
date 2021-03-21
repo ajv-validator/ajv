@@ -12,7 +12,6 @@ module.exports = {
     logo: "/img/ajv.svg",
     nav: [
       {text: "Home", link: "/"},
-      {text: "News", link: "/news/"},
       {
         text: "Guide",
         items: [
@@ -56,6 +55,7 @@ module.exports = {
           {
             text: "Information",
             items: [
+              {link: "/news/", text: "News"},
               {link: "/security", text: "Security"},
               {link: "/faq", text: "FAQ"},
               {link: "/license", text: "License"},

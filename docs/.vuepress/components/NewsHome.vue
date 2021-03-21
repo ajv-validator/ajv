@@ -11,7 +11,7 @@
         <Button :link="post.path" cssClass="read-more">Read more</Button>
       </Column>
     </div>
-    <p><a href="/news/" class="previous">Previous news</a></p>
+    <p><a href="/news/" class="previous">All news</a></p>
   </div>
 </template>
 
