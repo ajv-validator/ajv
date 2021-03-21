@@ -1,6 +1,5 @@
 ---
 homepage: true
-editLink: true
 sidebar: false
 ---
 
@@ -52,6 +51,7 @@ Platinum sponsors
 <HomeSection>
 
 <Columns>
+
 <Column side="left">
 
 You can use Ajv with schema instead of writing validation code.
@@ -63,7 +63,9 @@ You can use Ajv with schema instead of writing validation code.
 <Column side="right">
 
 <code-group>
+
 <code-block title="JSON Schema">
+
 ```javascript
 const Ajv = require("ajv").default
 const ajv = new Ajv()
@@ -81,9 +83,11 @@ const schema = {
 const valid = ajv.validate(schema, {foo: 1, bar: "abc"})
 if (!valid) console.log(validate.errors)
 ```
+
 </code-block>
 
 <code-block title="JSON Type Definition">
+
 ```javascript
 const Ajv = require("ajv/dist/jtd").default
 const ajv = new Ajv()
@@ -101,10 +105,15 @@ const schema = {
 const valid = ajv.validate(schema, {foo: 1, bar: "abc"})
 if (!valid) console.log(validate.errors)
 ```
+
 </code-block>
+
 </code-group>
+
 </Column>
+
 </Columns>
+
 </HomeSection>
 
 <HomeSection>
@@ -132,6 +141,7 @@ Try in the playground (TBC)
 ## Who uses Ajv
 
 <Projects>
+
 [![eslint](./projects/eslint.png)](https://eslint.org)
 [![stoplight](./projects/stoplight.png)](https://stoplight.io)
 [![webpack](./projects/webpack.svg)](https://webpack.js.org)
@@ -172,6 +182,7 @@ Try in the playground (TBC)
 [JSDoc](https://github.com/jsdoc/jsdoc)
 
 </Projects>
+
 </HomeSection>
 
 <HomeSection section="contributors">
@@ -181,5 +192,53 @@ Try in the playground (TBC)
 Ajv is free to use and open-source that many developers contributed to. Join us!
 
 <Contributors />
+
+</HomeSection>
+
+<HomeSection section="footer">
+
+<Footer>
+
+<FooterColumns>
+
+<FooterColumn type="ajv">
+
+![ajv](/img/ajv.svg)
+
+</FooterColumn>
+
+<FooterColumn type="links">
+
+[Home](/)
+
+[API](/api.html)
+
+[Validation](/options.html)
+
+</FooterColumn>
+
+<FooterColumn type="links">
+
+[Schema JSON](/json-schema.html)
+
+[Type Definition Security](/json-type-definition.html)
+
+[FAQ](/faq.html)
+
+</FooterColumn>
+
+<FooterColumn type="sponsors">
+
+[![mozilla](/img/mozilla.svg)](https://www.mozilla.org)
+
+[![openjs](/img/openjs.png)](https://openjsf.org/blog/2020/08/14/ajv-joins-openjs-foundation-as-an-incubation-project/)
+
+</FooterColumn>
+
+</FooterColumns>
+
+© 2021 AJV | Open-Source Project | chat@ajv.com
+
+</Footer>
 
 </HomeSection>
