@@ -7,7 +7,7 @@ import type {
 import type {KeywordCxt} from "../../compile/validate"
 import {propertyInData, allSchemaProperties, isOwnProperty} from "../code"
 import {alwaysValidSchema, schemaRefOrVal} from "../../compile/util"
-import {_, and, Code, Name} from "../../compile/codegen"
+import {_, and, not, Code, Name} from "../../compile/codegen"
 import {checkMetadata} from "./metadata"
 import {checkNullableObject} from "./nullable"
 import {typeErrorMessage, typeErrorParams, _JTDTypeError} from "./error"
@@ -164,7 +164,7 @@ export function validateProperties(cxt: KeywordCxt): void {
     if (props.length > 8) {
       // TODO maybe an option instead of hard-coded 8?
       const propsSchema = schemaRefOrVal(it, parentSchema[keyword], keyword)
-      additional = isOwnProperty(gen, propsSchema as Code, key)
+      additional = not(isOwnProperty(gen, propsSchema as Code, key))
     } else if (props.length) {
       additional = and(...props.map((p) => _`${key} !== ${p}`))
     } else {

@@ -312,7 +312,7 @@ describe("Validation errors", () => {
       test(new _Ajv({$data: true}))
       test(new _Ajv({$data: true, allErrors: true}))
 
-      function test(_ajv) {
+      function test(_ajv: Ajv) {
         const schema = {
           type: "object",
           required: {$data: "0/req"},
@@ -344,6 +344,33 @@ describe("Validation errors", () => {
           "",
           '"required" keyword must be array ($data)',
           {}
+        )
+      }
+    })
+
+    it("should include missing property with ownProperties option (issue #1493)", () => {
+      test(new _Ajv())
+      test(new _Ajv({ownProperties: true}))
+
+      function test(_ajv: Ajv): void {
+        const schema = {
+          type: "object",
+          required: ["a"],
+          properties: {
+            a: {type: "string"},
+          },
+        }
+
+        const validate = _ajv.compile(schema)
+        shouldBeValid(validate, {a: "abc"})
+        shouldBeInvalid(validate, {})
+        shouldBeError(
+          validate.errors?.[0],
+          "required",
+          "#/required",
+          "",
+          "should have required property 'a'",
+          {missingProperty: "a"}
         )
       }
     })

@@ -1197,7 +1197,7 @@ JSON Schema specification defines several metadata keywords that describe the sc
 
 - `title` and `description`: information about the data represented by that schema
 - `$comment`: information for developers. With option `$comment` Ajv logs or passes the comment string to the user-supplied function. See [Options](./api.md#options).
-- `default`: a default value of the data instance, see [Assigning defaults](#assigning-defaults).
+- `default`: a default value of the data instance, see [Assigning defaults](./guide/modifying-data.md#assigning-defaults).
 - `examples`: an array of data instances. Ajv does not check the validity of these instances against the schema.
 - `readOnly` and `writeOnly`: marks data-instance as read-only or write-only in relation to the source of the data (database, api, etc.).
 - `contentEncoding`: [RFC 2045](https://tools.ietf.org/html/rfc2045#section-6.1), e.g., "base64".
