@@ -1,8 +1,8 @@
 ---
-blog_index: true
+newsIndex: true
 editLink: false
 ---
 
 # Ajv News
 
-<BlogIndex/>
+<NewsIndex/>

@@ -3,7 +3,7 @@
     <div v-for="(post, i) in posts" class="post">
       <Column side="left">
         <h3>{{ post.frontmatter.title }}</h3>
-        <BlogPostMeta :date="post.frontmatter.date" />
+        <NewsPostMeta :date="post.frontmatter.date" />
       </Column>
 
       <Column side="right">
@@ -11,7 +11,7 @@
         <Button :link="post.path" class="read-more" text="Read more" />
       </Column>
     </div>
-    <p><a href="/blog/" class="previous">Previous news</a></p>
+    <p><a href="/news/" class="previous">Previous news</a></p>
   </div>
 </template>
 
@@ -20,7 +20,7 @@ export default {
   computed: {
     posts() {
       return this.$site.pages
-        .filter((x) => x.path.startsWith("/blog/") && !x.frontmatter.blog_index)
+        .filter((x) => x.path.startsWith("/news/") && !x.frontmatter.newsIndex)
         .sort((a, b) => new Date(b.frontmatter.date) - new Date(a.frontmatter.date))
         .slice(0, 3)
     },

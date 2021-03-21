@@ -38,8 +38,8 @@
       </template>
     </HomePage>
 
-    <BlogPost
-      v-else-if="$page.frontmatter.blog"
+    <NewsPost
+      v-else-if="$page.frontmatter.news"
     >
       <template #top>
         <slot name="page-top" />
@@ -47,7 +47,7 @@
       <template #bottom>
         <slot name="page-bottom" />
       </template>
-    </BlogPost>
+    </NewsPost>
 
     <Page
       v-else

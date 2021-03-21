@@ -12,7 +12,7 @@ module.exports = {
     logo: "/img/ajv.svg",
     nav: [
       {text: "Home", link: "/"},
-      {text: "Blog", link: "/blog/"},
+      {text: "News", link: "/news/"},
       {
         text: "Guide",
         items: [

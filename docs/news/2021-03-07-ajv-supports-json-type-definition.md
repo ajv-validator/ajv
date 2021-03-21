@@ -1,5 +1,5 @@
 ---
-blog: true
+news: true
 title: Ajv supports JSON Type Definition
 date: 2021-03-07
 ---

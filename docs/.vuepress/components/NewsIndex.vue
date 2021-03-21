@@ -5,7 +5,7 @@
         <router-link :to="post.path">{{ post.frontmatter.title }}</router-link>
       </h2>
 
-      <BlogPostMeta :date="post.frontmatter.date" />
+      <NewsPostMeta :date="post.frontmatter.date" />
 
       <div v-html="post.excerpt"></div>
 
@@ -19,7 +19,7 @@ export default {
   computed: {
     posts() {
       return this.$site.pages
-        .filter((x) => x.path.startsWith("/blog/") && !x.frontmatter.blog_index)
+        .filter((x) => x.path.startsWith("/news/") && !x.frontmatter.newsIndex)
         .sort((a, b) => new Date(b.frontmatter.date) - new Date(a.frontmatter.date))
     },
   },

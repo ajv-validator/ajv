@@ -103,7 +103,6 @@
     "ts-node": "^9.0.0",
     "tsify": "^5.0.2",
     "typescript": "^4.2.0",
-    "vue-feather-icons": "^5.1.0",
     "vuepress": "^1.8.2"
   },
   "collective": {

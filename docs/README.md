@@ -108,7 +108,7 @@ if (!valid) console.log(validate.errors)
 
 ## News
 
-<BlogHome/>
+<HomeNewsSection/>
 
 </HomeSection>
 

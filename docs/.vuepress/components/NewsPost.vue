@@ -4,7 +4,7 @@
 
     <div class="theme-default-content" style="padding-bottom: 0px">
       <h1>{{ $page.frontmatter.title }}</h1>
-      <BlogPostMeta :date="$page.frontmatter.date" />
+      <NewsPostMeta :date="$page.frontmatter.date" />
     </div>
 
     <Content class="theme-default-content" style="padding-top: 0px" />
