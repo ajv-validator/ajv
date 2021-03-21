@@ -17,24 +17,28 @@ export default {
 <style lang="stylus" scoped>
 div
   width 25%
-  margin auto
 
 .column
   img
     display block
-    margin-left auto
-    margin-right auto
+    margin 0 auto
 
   &.ajv
     img
-      width 80px
-      filter grayscale(100%)
+      margin 0 0
+      width 100px
 
-  &.links
-    a
-      color #292828
+  &.links a
+    color #292828
 
   &.sponsors
     img
       width 140px
+
+    p:last-child img
+      width 140px
+      display block
+      padding 10px 20px
+      box-sizing border-box
+      background-color white
 </style>

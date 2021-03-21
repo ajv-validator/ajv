@@ -1,6 +1,7 @@
 ---
 homepage: true
 sidebar: false
+editLink: false
 ---
 
 <HeroSection>
@@ -210,28 +211,27 @@ Ajv is free to use and open-source that many developers contributed to. Join us!
 <FooterColumns>
 
 <FooterColumn type="ajv">
-
 ![ajv](/img/ajv.svg)
 
 </FooterColumn>
 
 <FooterColumn type="links">
 
-[Home](/)
+[Learn Ajv](./docs/getting-started.md)
 
-[API](/api.html)
+[Reference](./api.md)
 
-[Validation](/options.html)
+[Security](./security.md)
 
 </FooterColumn>
 
 <FooterColumn type="links">
 
-[Schema JSON](/json-schema.html)
+[JSON Schema](./json-schema.md)
 
-[Type Definition Security](/json-type-definition.html)
+[JSON Type Definition](./json-type-definition.md)
 
-[FAQ](/faq.html)
+[Contributing](./contributing.html)
 
 </FooterColumn>
 
@@ -245,7 +245,7 @@ Ajv is free to use and open-source that many developers contributed to. Join us!
 
 </FooterColumns>
 
-© 2021 AJV | Open-Source Project | chat@ajv.com
+© 2015-2021 Ajv JSON schema validator | [ajv.validator@gmail.com](mailto:ajv.validator@gmail.com)
 
 </Footer>
 
