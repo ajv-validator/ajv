@@ -11,5 +11,8 @@ declare -a packages=(
 for package in "${packages[@]}"
 do
   echo "downloading $package README..."
-  curl -L https://raw.githubusercontent.com/ajv-validator/$package/master/README.md -o ./docs/packages/$package.md
+  echo "---" > docs/packages/$package.md
+  echo "editLink: https://github.com/ajv-validator/$package/edit/master/README.md" >> docs/packages/$package.md
+  echo "---" >> docs/packages/$package.md
+  curl -L https://raw.githubusercontent.com/ajv-validator/$package/master/README.md >> ./docs/packages/$package.md
 done
