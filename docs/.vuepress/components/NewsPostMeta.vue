@@ -1,10 +1,8 @@
 <template>
   <div class="post-meta">
-    <a :href="link">
-      <time class="pub-date" pubdate itemprop="datePublished" :datetime="date">
-        {{ resolvedDate }}
-      </time>
-    </a>
+    <time class="pub-date" pubdate itemprop="datePublished" :datetime="date">
+      {{ resolvedDate }}
+    </time>
   </div>
 </template>
 
@@ -17,9 +15,6 @@ dayjs.extend(dayjsPluginUTC)
 export default {
   props: {
     date: {
-      type: String,
-    },
-    link: {
       type: String,
     },
   },

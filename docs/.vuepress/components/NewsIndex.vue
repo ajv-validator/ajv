@@ -3,7 +3,9 @@
     <div v-for="post in posts">
       <h2>{{ post.frontmatter.title }}</h2>
 
-      <NewsPostMeta :date="post.frontmatter.date" :link="post.path" />
+      <router-link :to="post.path">
+        <NewsPostMeta :date="post.frontmatter.date" />
+      </router-link>
 
       <div v-html="post.excerpt"></div>
 
