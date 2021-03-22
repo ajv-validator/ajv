@@ -12,3 +12,8 @@ copyReplace LICENSE docs/license.md
 
 echo "preparing contributors..."
 node scripts/get-contributors.js
+
+echo "preparing packages..."
+cd scripts
+get-ajv-packages.sh
+cd -

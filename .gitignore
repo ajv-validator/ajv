@@ -47,3 +47,5 @@ docs/code_of_conduct.md
 docs/contributing.md
 docs/license.md
 docs/.vuepress/components/Contributors/
+docs/packages/*
+!docs/packages/.gitkeep

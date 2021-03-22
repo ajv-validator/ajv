@@ -45,6 +45,16 @@ module.exports = {
             ],
           },
           {
+            text: "Packages",
+            items: [
+              {link: "/packages/ajv-cli", text: "ajv-cli"},
+              {link: "/packages/ajv-errors", text: "ajv-errors"},
+              {link: "/packages/ajv-formats", text: "ajv-formats"},
+              {link: "/packages/ajv-i18n", text: "ajv-i18n"},
+              {link: "/packages/ajv-keywords", text: "ajv-keywords"},
+            ],
+          },
+          {
             text: "Contributors",
             items: [
               {link: "/contributing", text: "Contributing guide"},
@@ -93,6 +103,16 @@ module.exports = {
           "/standalone",
           "/keywords",
           "/coercion",
+        ],
+      },
+      {
+        title: "Packages",
+        children: [
+          "/packages/ajv-cli",
+          "/packages/ajv-errors",
+          "/packages/ajv-formats",
+          "/packages/ajv-i18n",
+          "/packages/ajv-keywords",
         ],
       },
       {
