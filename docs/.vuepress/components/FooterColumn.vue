@@ -35,4 +35,5 @@ div
   &.sponsors
     img
       width 140px
+      padding 0 20px 15px
 </style>

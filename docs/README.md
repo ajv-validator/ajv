@@ -205,6 +205,7 @@ Ajv is free to use and open-source that many developers contributed to. Join us!
 <FooterColumn type="sponsors">
 
 [![mozilla](/img/mozilla.svg)](https://www.mozilla.org)
+[![reserved](/img/reserved.svg)](https://opencollective.com/ajv)
 
 </FooterColumn>
 </FooterColumns>
