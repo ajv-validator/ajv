@@ -29,23 +29,23 @@ module.exports = {
         ],
       },
       {
+        text: "Reference",
+        items: [
+          {link: "/api", text: "API Reference"},
+          {link: "/options", text: "Ajv options"},
+          {link: "/json-schema", text: "JSON Schema"},
+          {link: "/json-type-definition", text: "JSON Type Definition"},
+          {link: "/strict-mode", text: "Strict mode"},
+          {link: "/standalone", text: "Standalone validation code"},
+          {link: "/keywords", text: "User defined keywords"},
+          {link: "/coercion", text: "Type coercion rules"},
+        ],
+      },
+      {
         text: "Learn more",
         items: [
           {
-            text: "Reference",
-            items: [
-              {link: "/api", text: "API Reference"},
-              {link: "/options", text: "Ajv options"},
-              {link: "/json-schema", text: "JSON Schema"},
-              {link: "/json-type-definition", text: "JSON Type Definition"},
-              {link: "/strict-mode", text: "Strict mode"},
-              {link: "/standalone", text: "Standalone validation code"},
-              {link: "/keywords", text: "User defined keywords"},
-              {link: "/coercion", text: "Type coercion rules"},
-            ],
-          },
-          {
-            text: "Packages",
+            text: "Related packages",
             items: [
               {link: "/packages/ajv-cli", text: "ajv-cli"},
               {link: "/packages/ajv-errors", text: "ajv-errors"},
@@ -103,16 +103,17 @@ module.exports = {
           "/standalone",
           "/keywords",
           "/coercion",
+          "/packages/",
         ],
       },
       {
-        title: "Packages",
+        title: "Related packages",
         children: [
-          "/packages/ajv-cli",
-          "/packages/ajv-errors",
-          "/packages/ajv-formats",
-          "/packages/ajv-i18n",
-          "/packages/ajv-keywords",
+          ["/packages/ajv-formats", "ajv-formats"],
+          ["/packages/ajv-keywords", "ajv-keywords"],
+          ["/packages/ajv-errors", "ajv-errors"],
+          ["/packages/ajv-i18n", "ajv-i18n"],
+          ["/packages/ajv-cli", "ajv-cli"],
         ],
       },
       {
