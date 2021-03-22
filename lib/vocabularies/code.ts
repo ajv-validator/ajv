@@ -1,7 +1,7 @@
 import type {AnySchema, SchemaMap} from "../types"
 import type {SchemaCxt} from "../compile"
 import type KeywordCxt from "../compile/context"
-import {CodeGen, _, or, not, nil, strConcat, getProperty, Code, Name} from "../compile/codegen"
+import {CodeGen, _, and, or, not, nil, strConcat, getProperty, Code, Name} from "../compile/codegen"
 import {alwaysValidSchema} from "../compile/util"
 import {Type} from "../compile/subschema"
 import N from "../compile/names"
@@ -20,9 +20,8 @@ export function checkMissingProp(
   missing: Name
 ): Code {
   return or(
-    ...properties.map(
-      (prop) =>
-        _`${noPropertyInData(gen, data, prop, opts.ownProperties)} && (${missing} = ${prop})`
+    ...properties.map((prop) =>
+      and(noPropertyInData(gen, data, prop, opts.ownProperties), _`${missing} = ${prop}`)
     )
   )
 }
@@ -61,7 +60,7 @@ export function noPropertyInData(
   ownProperties?: boolean
 ): Code {
   const cond = _`${data}${getProperty(property)} === undefined`
-  return ownProperties ? _`${cond} || !${isOwnProperty(gen, data, property)}` : cond
+  return ownProperties ? or(cond, not(isOwnProperty(gen, data, property))) : cond
 }
 
 export function allSchemaProperties(schemaMap?: SchemaMap): string[] {
