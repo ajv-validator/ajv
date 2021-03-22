@@ -56,6 +56,8 @@ export default {
         docsRepo = repo
       } = this.$site.themeConfig
 
+      if (typeof showEditLink == "string") return showEditLink
+
       if (showEditLink && docsRepo && this.$page.relativePath) {
         return this.createEditLink(
           repo,
