@@ -24,8 +24,8 @@ export default {
 
 <style lang="stylus" scoped>
 .contributor
-  width 3.2em
-  height 3.2em
+  width 3.36em
+  height 3.36em
   border-radius 50%
   text-indent -9999px
   display inline-block

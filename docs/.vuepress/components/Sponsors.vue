@@ -16,8 +16,13 @@
     width 100%
 
   a
-    width 45%
-    display inline-block
+    width 100%
+    display block
+    margin-bottom 10px
+    @media only screen and (min-width: $MQMobileNarrow)
+      width 45%
+      display inline-block
+      margin-bottom 0
 
   a:first-child
     margin-right 8%

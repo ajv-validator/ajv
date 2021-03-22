@@ -6,7 +6,7 @@ editLink: false
 
 <HeroSection>
 
-# Ajv JSON schema validator
+# Ajv JSON validator
 
 ## Security and reliability of JavaScript applications
 
