@@ -15,6 +15,7 @@ module.exports = {
       {
         text: "Guide",
         items: [
+          {link: "/guide/why-ajv", text: "Why use Ajv"},
           {link: "/guide/getting-started", text: "Getting started"},
           {link: "/guide/typescript", text: "Using with TypeScript"},
           {link: "/guide/schema-language", text: "Choosing schema language"},
@@ -68,6 +69,7 @@ module.exports = {
       {
         title: "Guide",
         children: [
+          "/guide/why-ajv",
           "/guide/getting-started",
           "/guide/typescript",
           "/guide/schema-language",

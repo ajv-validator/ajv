@@ -11,14 +11,14 @@ editLink: false
 ## Security and reliability of JavaScript applications
 
 <Features>
-<Feature type="less-code" link="/api.html">
+<Feature type="less-code" link="/guide/why-ajv.html#write-less-code">
 
 ### Write less code
 
 Ensure your data is valid once it is received
 
 </Feature>
-<Feature type="fast-secure" link="/api.html">
+<Feature type="fast-secure" link="/guide/why-ajv.html#super-fast-secure">
 
 ### Super fast & secure
 
@@ -26,7 +26,7 @@ Compiles your schemas to optimized JavaScript code
 
 </Feature>
 
-<Feature type="multi-spec" link="/api.html">
+<Feature type="multi-spec" link="/guide/why-ajv.html#multi-standard">
 
 ### Multi-standard
 
