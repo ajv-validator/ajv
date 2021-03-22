@@ -48,4 +48,4 @@ docs/contributing.md
 docs/license.md
 docs/.vuepress/components/Contributors/
 docs/packages/*
-!docs/packages/.gitkeep
+!docs/packages/README.md
