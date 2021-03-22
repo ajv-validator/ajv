@@ -35,11 +35,4 @@ div
   &.sponsors
     img
       width 140px
-
-    p:last-child img
-      width 140px
-      display block
-      padding 10px 20px
-      box-sizing border-box
-      background-color white
 </style>

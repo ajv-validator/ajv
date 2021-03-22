@@ -206,8 +206,6 @@ Ajv is free to use and open-source that many developers contributed to. Join us!
 
 [![mozilla](/img/mozilla.svg)](https://www.mozilla.org)
 
-[![openjs](/img/openjs.png)](https://openjsf.org/blog/2020/08/14/ajv-joins-openjs-foundation-as-an-incubation-project/)
-
 </FooterColumn>
 </FooterColumns>
 
