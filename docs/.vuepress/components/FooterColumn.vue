@@ -16,7 +16,12 @@ export default {
 
 <style lang="stylus" scoped>
 div
-  width 25%
+  @media only screen and (min-width: $MQMobile)
+    width 25%
+
+  p
+    @media only screen and (max-width: $MQMobile)
+      margin 0
 
 .column
   img
