@@ -22,15 +22,12 @@ Passing the value below for some of the options is equivalent to not passing thi
 // see types/index.ts for actual types
 const defaultOptions = {
   // strict mode options (NEW)
-  // strict option can be boolean, "log" or object below,
-  // with passed members overriding defaults
-  strict: { // *
-    schema: true,
-    number: true,
-    types: "log",
-    tuples: "log",
-    required: false
-  },
+  strict: undefined, // *
+  strictSchema: true, // *
+  strictNumbers: true, // *
+  strictTypes: "log", // *
+  strictTuples: "log", // *
+  strictRequired: false, // *
   allowUnionTypes: false, // *
   allowMatchingProperties: false, // *
   validateFormats: true, // *
@@ -83,19 +80,61 @@ Option values:
 
 - `true` - throw an exception when any strict mode restriction is violated.
 - `"log"` - log warning when any strict mode restriction is violated.
-- `false` - ignore all strict mode restrictions.
-- object with these optional members, each can be `boolean` or `"log"` (default is in the parentheses):
-  - schema (`true`) - prevent unknown keywords, formats etc. (see [Strict mode](./strict-mode.md))
-  - number (`true`) - do not accept `NaN` and `Infinity` as numbers
-  - types (`"log"`) - see [Strict types](./strict-mode.md#strict-types)
-  - tuples (`"log"`) - see [Unconstrained tuples](./strict-mode.md#unconstrained-tuples)
-  - required (`false`) - see [Defined required properties](./strict-mode.md#defined-required-properties)
+- `false` - ignore all strict mode violations.
+- `undefined` (default) - use defaults for options strictSchema, strictNumbers, strictTypes, strictTuples and strictRequired.
 
-When `strict` option is not passed (or some object members are not passed) the defaults in the object apply.
+### strictSchema
+
+Prevent unknown keywords, formats etc. (see [Strict schema](./strict-mode.md#strict-schema))
+
+Option values:
+
+- `true` (default) - throw an exception when any strict schema restriction is violated.
+- `"log"` - log warning when any strict schema restriction is violated.
+- `false` - ignore all strict schema violations.
+
+### strictNumbers
+
+Whether to accept `NaN` and `Infinity` as number types during validation.
+
+Option values:
+
+- `true` (default) - fail validation if `NaN` or `Infinity` is passed where number is expected.
+- `false` - allow `NaN` and `Infinity` as number.
+
+### strictTypes
+
+See [Strict types](./strict-mode.md#strict-types)
+
+Option values:
+
+- `true` - throw an exception when any strict types restriction is violated.
+- `"log"` (default) - log warning when any strict types restriction is violated.
+- `false` - ignore all strict types violations.
+
+### strictTuples
+
+See [Unconstrained tuples](./strict-mode.md#unconstrained-tuples)
+
+Option values:
+
+- `true` - throw an exception when any strict tuples restriction is violated.
+- `"log"` (default) - log warning when any strict tuples restriction is violated.
+- `false` - ignore all strict tuples violations.
+
+### strictRequired
+
+See [Defined required properties](./strict-mode.md#defined-required-properties)
+
+Option values:
+
+- `true` - throw an exception when strict required restriction is violated.
+- `"log"` - log warning when strict required restriction is violated.
+- `false` (default) - ignore strict required violations.
 
 ### allowUnionTypes
 
-Pass true to allow using multiple non-null types in "type" keyword (one of `strict.types` restrictions). see [Strict types](./strict-mode.md#strict-types)
+Pass true to allow using multiple non-null types in "type" keyword (one of `strictTypes` restrictions). see [Strict types](./strict-mode.md#strict-types)
 
 ### allowMatchingProperties
 

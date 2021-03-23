@@ -20,7 +20,7 @@ export function alwaysValidSchema(it: SchemaCxt, schema: AnySchema): boolean | v
 
 export function checkUnknownRules(it: SchemaCxt, schema: AnySchema = it.schema): void {
   const {opts, self} = it
-  if (!opts.strict.schema) return
+  if (!opts.strictSchema) return
   if (typeof schema === "boolean") return
   const rules = self.RULES.keywords
   for (const key in schema) {
@@ -204,7 +204,7 @@ export function getErrorPath(
 export function checkStrictMode(
   it: SchemaCxt,
   msg: string,
-  mode: boolean | "log" = it.opts.strict.schema
+  mode: boolean | "log" = it.opts.strictSchema
 ): void {
   if (!mode) return
   msg = `strict mode: ${msg}`

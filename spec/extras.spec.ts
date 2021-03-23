@@ -9,7 +9,8 @@ import chai from "./chai"
 const instances = getAjvAllInstances(options, {
   $data: true,
   formats: {allowedUnknown: true},
-  strict: {types: false, tuples: false},
+  strictTypes: false,
+  strictTuples: false,
 })
 
 instances.forEach((ajv) => {

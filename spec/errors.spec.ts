@@ -14,7 +14,8 @@ describe("Validation errors", () => {
   function createInstances() {
     const opts = {
       loopRequired: 21,
-      strict: {types: false, tuples: false},
+      strictTypes: false,
+      strictTuples: false,
     }
     ajv = new _Ajv(opts)
     ajvJP = new _Ajv(opts)
@@ -782,7 +783,7 @@ describe("Validation errors", () => {
           type: ["array", "object"],
           minItems: 2,
           minProperties: 2,
-          minimum: 5, // this keyword would log/throw in strict.types mode
+          minimum: 5, // this keyword would log/throw in strictTypes mode
         }
 
         const validate = _ajv.compile(schema)

@@ -214,7 +214,7 @@ In v7 Ajv introduced [Strict types](./strict-mode.md#strict-types) mode that mak
 
 This keyword can be used to allow `null` value in addition to the defined `type`.
 
-Ajv supports it by default, without additional options. These two schemas are equivalent, but the first one is better supported by some tools and is also compatible with `strict.types` option (see [Strict types](./strict-mode.md#strict-types))
+Ajv supports it by default, without additional options. These two schemas are equivalent, but the first one is better supported by some tools and is also compatible with `strictTypes` option (see [Strict types](./strict-mode.md#strict-types))
 
 ```json
 {
@@ -396,7 +396,7 @@ If the keyword value is an array, then items with indices less than the number o
 
     _invalid_: `["abc", 1]`, `["abc"]`
 
-The schema in example 2 will log warning by default (see `strict.tuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use `minItems` and `additionalItems` keywords (see example 1 in `additionalItems`).
+The schema in example 2 will log warning by default (see `strictTuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use `minItems` and `additionalItems` keywords (see example 1 in `additionalItems`).
 
 #### `items` in draft-2020-12 <Badge text="NEW" />
 
@@ -452,7 +452,7 @@ For the data array to be valid:
 
     _invalid_: `["abc", 1]`, `["abc"]`
 
-The schema in example 3 will log warning by default (see `strict.tuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use `minItems` and `items` keywords (see example 2).
+The schema in example 3 will log warning by default (see `strictTuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use `minItems` and `items` keywords (see example 2).
 
 ### `prefixItems` <Badge text="NEW: draft 2020-12" />
 
@@ -481,7 +481,7 @@ For the data array to be valid, the items with indices less than the number of s
 
     _invalid_: `["abc", 1]`, `["abc"]`
 
-The schema in example 2 will log warning by default (see `strict.tuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use [minItems](#minitems) and [items](#items-in-draft-2020-12) keywords (see example 2 in [items](#items-in-draft-2020-12)).
+The schema in example 2 will log warning by default (see `strictTuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use [minItems](#minitems) and [items](#items-in-draft-2020-12) keywords (see example 2 in [items](#items-in-draft-2020-12)).
 
 ### `additionalItems`
 

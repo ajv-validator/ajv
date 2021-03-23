@@ -44,9 +44,9 @@ describe("strict mode", () => {
     })
   })
 
-  describe("strict.types option", () => {
-    const ajv = new _Ajv({strict: {types: true}})
-    const ajvUT = new _Ajv({strict: {types: true}, allowUnionTypes: true})
+  describe("strictTypes option", () => {
+    const ajv = new _Ajv({strictTypes: true})
+    const ajvUT = new _Ajv({strictTypes: true, allowUnionTypes: true})
 
     describe("multiple/union types", () => {
       it("should prohibit multiple types", () => {
@@ -181,8 +181,8 @@ describe("strict mode", () => {
     })
   })
 
-  describe("option strict.tuples", () => {
-    const ajv = new _Ajv({strict: {tuples: true}})
+  describe("option strictTuples", () => {
+    const ajv = new _Ajv({strictTuples: true})
     type MyTuple = [string, number]
 
     it("should prohibit unconstrained tuples", () => {
@@ -239,8 +239,8 @@ describe("strict mode", () => {
     })
   })
 
-  describe("strict.required option", () => {
-    const ajv = new _Ajv({strict: {required: true}})
+  describe("strictRequired option", () => {
+    const ajv = new _Ajv({strictRequired: true})
 
     describe("base case", () => {
       const schema = {
@@ -253,14 +253,14 @@ describe("strict mode", () => {
         required: ["test"],
       }
 
-      it("should prohibit with strict.required: true", () => {
+      it("should prohibit with strictRequired: true", () => {
         should.throw(
           () => ajv.compile(schema),
-          'strict mode: required property "test" is not defined at "#" (strict.required)'
+          'strict mode: required property "test" is not defined at "#" (strictRequired)'
         )
       })
 
-      it("should NOT prohibit when strict.required is not set", () => {
+      it("should NOT prohibit when strictRequired is not set", () => {
         should.not.throw(() => new _Ajv().compile(schema))
       })
     })
@@ -277,7 +277,7 @@ describe("strict mode", () => {
             },
           },
         })
-      }, 'strict mode: required property "keyname" is not defined at "#/properties/test" (strict.required)')
+      }, 'strict mode: required property "keyname" is not defined at "#/properties/test" (strictRequired)')
     })
 
     it.skip("should not throw with a same level if then", () => {

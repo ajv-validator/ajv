@@ -83,7 +83,12 @@ export type Options = CurrentOptions & DeprecatedOptions
 
 export interface CurrentOptions {
   // strict mode options (NEW)
-  strict?: StrictOptions | boolean | "log"
+  strict?: boolean | "log"
+  strictSchema?: boolean | "log"
+  strictNumbers?: boolean | "log"
+  strictTypes?: boolean | "log"
+  strictTuples?: boolean | "log"
+  strictRequired?: boolean | "log"
   allowMatchingProperties?: boolean // disables a strict mode restriction
   allowUnionTypes?: boolean
   validateFormats?: boolean
@@ -136,24 +141,6 @@ interface InstanceCodeOptions extends CodeOptions {
   optimize: number
 }
 
-interface InstanceStrictOptions {
-  schema: boolean | "log"
-  number: boolean | "log"
-  types: boolean | "log"
-  tuples: boolean | "log"
-  required: boolean | "log"
-}
-
-type StrictOptions = Partial<InstanceStrictOptions>
-
-const strictOptionDefault: InstanceStrictOptions = {
-  schema: true,
-  number: true,
-  types: "log",
-  tuples: "log",
-  required: false,
-}
-
 interface DeprecatedOptions {
   /** @deprecated */
   ignoreKeywordsWithRef?: boolean
@@ -175,10 +162,6 @@ interface RemovedOptions {
   schemaId?: string
   strictDefaults?: boolean
   strictKeywords?: boolean
-  strictNumbers?: boolean
-  strictTypes?: boolean
-  strictTuples?: boolean
-  strictRequired?: boolean
   uniqueItems?: boolean
   unknownFormats?: true | string[] | "ignore"
   cache?: any
@@ -202,10 +185,6 @@ const removedOptions: OptionsInfo<RemovedOptions> = {
   schemaId: "JSON Schema draft-04 is not supported in Ajv v7/8.",
   strictDefaults: "It is default now, see option `strict`.",
   strictKeywords: "It is default now, see option `strict`.",
-  strictNumbers: "It is default now, see option `strict`.",
-  strictTypes: "Use option `strict.types`.",
-  strictTuples: "Use option `strict.tuples`.",
-  strictRequired: "Use option `strict.required`.",
   uniqueItems: '"uniqueItems" keyword is always validated.',
   unknownFormats: "Disable strict mode or pass `true` to `ajv.addFormat` (or `formats` option).",
   cache: "Map is used as cache, schema object as key.",
@@ -221,6 +200,11 @@ const deprecatedOptions: OptionsInfo<DeprecatedOptions> = {
 
 type RequiredInstanceOptions = {
   [K in
+    | "strictSchema"
+    | "strictNumbers"
+    | "strictTypes"
+    | "strictTuples"
+    | "strictRequired"
     | "inlineRefs"
     | "loopRequired"
     | "loopEnum"
@@ -229,7 +213,7 @@ type RequiredInstanceOptions = {
     | "addUsedSchema"
     | "validateSchema"
     | "validateFormats"]: NonNullable<Options[K]>
-} & {code: InstanceCodeOptions; strict: InstanceStrictOptions}
+} & {code: InstanceCodeOptions}
 
 export type InstanceOptions = Options & RequiredInstanceOptions
 
@@ -238,17 +222,14 @@ const MAX_EXPRESSION = 200
 // eslint-disable-next-line complexity
 function requiredOptions(o: Options): RequiredInstanceOptions {
   const s = o.strict
-  const strict: InstanceStrictOptions =
-    typeof s == "object"
-      ? {...strictOptionDefault, ...s}
-      : s === undefined
-      ? strictOptionDefault
-      : {schema: s, number: s, types: s, tuples: s, required: s}
-
   const _optz = o.code?.optimize
   const optimize = _optz === true || _optz === undefined ? 1 : _optz || 0
   return {
-    strict,
+    strictSchema: o.strictSchema ?? s ?? true,
+    strictNumbers: o.strictNumbers ?? s ?? true,
+    strictTypes: o.strictTypes ?? s ?? "log",
+    strictTuples: o.strictTuples ?? s ?? "log",
+    strictRequired: o.strictRequired ?? s ?? false,
     code: o.code ? {...o.code, optimize} : {optimize},
     loopRequired: o.loopRequired ?? MAX_EXPRESSION,
     loopEnum: o.loopEnum ?? MAX_EXPRESSION,
