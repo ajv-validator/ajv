@@ -27,6 +27,10 @@ export default {
     padding 0 50px
     margin 0 auto
 
+
+  & >>> .theme-code-block
+    margin-top 12px
+
   &.contributors
     background linear-gradient(295.26deg, rgba(232, 232, 232, 0.8) 26.65%, rgba(255, 255, 255, 0.04) 83.48%)
 
