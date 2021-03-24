@@ -20,6 +20,12 @@ div
     width 25%
 
 p
+  a
+    color $textColor
+    font-weight normal
+    &:hover
+      text-decoration underline
+
   @media only screen and (max-width: $MQMobile)
     margin 0
     line-height 30px

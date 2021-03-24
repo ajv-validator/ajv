@@ -176,7 +176,6 @@ Ajv is free to use and open-source that many developers contributed to. Join us!
 
 <HomeSection section="footer">
 
-<Footer>
 <FooterColumns>
 <FooterColumn type="ajv">
 ![ajv](/img/ajv.svg)
@@ -213,5 +212,4 @@ Ajv is free to use and open-source that many developers contributed to. Join us!
 
 [&copy; 2015-2021](./license.md) | Ajv JSON schema validator | [ajv.validator@gmail.com](mailto:ajv.validator@gmail.com)
 
-</Footer>
 </HomeSection>

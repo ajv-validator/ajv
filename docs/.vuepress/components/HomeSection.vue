@@ -39,4 +39,15 @@ export default {
 
   &.footer
     background linear-gradient(295.26deg, rgba(232, 232, 232, 0.8) 26.65%, rgba(255, 255, 255, 0.04) 83.48%)
+
+    p
+      padding 20px 0 0
+      text-align center
+      color #292828
+
+      a
+        color $textColor
+        font-weight normal
+        &:hover
+          text-decoration underline
 </style>
