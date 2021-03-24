@@ -28,4 +28,6 @@ export default {
 span
   vertical-align -8px
   padding-left 20px
+  @media only screen and (max-width: $MQMobile)
+    vertical-align -21px
 </style>
