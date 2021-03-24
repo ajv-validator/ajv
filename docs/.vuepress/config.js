@@ -103,12 +103,12 @@ module.exports = {
           "/standalone",
           "/keywords",
           "/coercion",
-          "/packages/",
         ],
       },
       {
         title: "Related packages",
         children: [
+          ["/packages/", "Packages"],
           ["/packages/ajv-formats", "ajv-formats"],
           ["/packages/ajv-keywords", "ajv-keywords"],
           ["/packages/ajv-errors", "ajv-errors"],
