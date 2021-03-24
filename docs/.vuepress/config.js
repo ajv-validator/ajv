@@ -1,8 +1,9 @@
 const {slugify} = require("@vuepress/shared-utils")
 
 module.exports = {
-  title: "Ajv JSON schema validator",
-  description: "Just playing around",
+  title: "Ajv JSON validator",
+  description:
+    "The fastest JSON schema Validator. Supports JSON Schema draft-04/06/07/2019-09 and JSON Type Definition (RFC8927)",
   markdown: {
     slugify: (str) => slugify(str.replace(/<Badge[^>]*\/>/, "")),
     toc: {includeLevel: [2, 3, 4]},

@@ -7,7 +7,7 @@ sidebar: false
 
 # Ajv JSON validator
 
-## Security and reliability of JavaScript applications
+## Security and reliability for JavaScript applications
 
 <Features>
 <Feature type="less-code" link="/guide/why-ajv.html#write-less-code">
@@ -57,6 +57,8 @@ Out of the box, Ajv supports [JSON Schema](./json-schema.md) (drafts 04, 06, 07,
 <br/>
 
 <Button link="/guide/getting-started.html">Learn Ajv</Button>
+
+<br/>
 
 </Column>
 

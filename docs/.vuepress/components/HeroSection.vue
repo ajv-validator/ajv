@@ -51,7 +51,7 @@
       top -575px
       left 300px
 
-  background linear-gradient(304.46deg, rgba(198, 225, 255, 0.7) 27.73%, rgba(237, 237, 237, 0.26) 82.77%)
+  background linear-gradient(304.33deg, rgba(237, 237, 237, 0.31) -7.48%, #C6E1FF 30.07%, rgba(237, 237, 237, 0.26) 82.76%)
 
   .header-anchor
     display none
