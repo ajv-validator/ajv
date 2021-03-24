@@ -24,7 +24,7 @@ Supports JSON Schema draft-06/07/2019-09/2020-12 (draft-04 is supported in [vers
 
 More than 100 people contributed to Ajv, and we would love to have you join the development. We welcome implementing new features that will benefit many users and ideas to improve our documentation.
 
-Please review [Contributing guidelines](./CONTRIBUTING.md) and [Code components](./docs/components.md).
+Please review [Contributing guidelines](./CONTRIBUTING.md) and [Code components](https://ajv.js.org/components.html).
 
 ## Documentation
 
@@ -86,29 +86,29 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 ## Features
 
 - Ajv implements JSON Schema [draft-06/07/2019-09/2020-12](http://json-schema.org/) standards (draft-04 is supported in v6):
-  - all validation keywords (see [JSON Schema validation keywords](./docs/json-schema.md))
+  - all validation keywords (see [JSON Schema validation keywords](https://ajv.js.org/json-schema.html))
   - keyword "nullable" from [Open API 3 specification](https://swagger.io/docs/specification/data-models/data-types/).
   - full support of remote references (remote schemas have to be added with `addSchema` or compiled to be available)
   - support of recursive references between schemas
   - correct string lengths for strings with unicode pairs
-  - JSON Schema [formats](#formats) (with [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin).
-  - [validates schemas against meta-schema](./docs/api.md#api-validateschema)
+  - JSON Schema [formats](https://ajv.js.org/guide/formats.html) (with [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin).
+  - [validates schemas against meta-schema](https://ajv.js.org/api.html#api-validateschema)
 - NEW: supports [JSON Type Definition](https://datatracker.ietf.org/doc/rfc8927/):
-  - all forms (see [JSON Type Definition schema forms](./docs/json-type-definition.md))
+  - all keywords (see [JSON Type Definition schema forms](https://ajv.js.org/json-type-definition.html))
   - meta-schema for JTD schemas
   - "union" keyword and user-defined keywords (can be used inside "metadata" member of the schema)
-- supports [browsers](#using-in-browser) and Node.js 0.10-14.x
-- [asynchronous loading](./docs/guide/managing-schemas.md#asynchronous-schema-compilation) of referenced schemas during compilation
-- "All errors" validation mode with [option allErrors](./docs/api.md#options)
-- [error messages with parameters](./docs/api.md#validation-errors) describing error reasons to allow error message generation
+- supports [browsers](https://ajv.js.org/guide/environments.html#browsers) and Node.js 10.x - current
+- [asynchronous loading](https://ajv.js.org/guide/managing-schemas.html#asynchronous-schema-loading) of referenced schemas during compilation
+- "All errors" validation mode with [option allErrors](https://ajv.js.org/options.html#allerrors)
+- [error messages with parameters](https://ajv.js.org/api.html#validation-errors) describing error reasons to allow error message generation
 - i18n error messages support with [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) package
-- [removing-additional-properties](./docs/guide/modifying-data.md#removing-additional-properties)
-- [assigning defaults](./docs/guide/modifying-data.md#assigning-defaults) to missing properties and items
-- [coercing data](./docs/guide/modifying-data.md#coercing-data-types) to the types specified in `type` keywords
-- [user-defined keywords](#user-defined-keywords)
+- [removing-additional-properties](https://ajv.js.org/guide/modifying-data.html#removing-additional-properties)
+- [assigning defaults](https://ajv.js.org/guide/modifying-data.html#assigning-defaults) to missing properties and items
+- [coercing data](https://ajv.js.org/guide/modifying-data.html#coercing-data-types) to the types specified in `type` keywords
+- [user-defined keywords](https://ajv.js.org/guide/user-keywords.html)
 - additional extension keywords with [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package
-- [\$data reference](./docs/guide/combining-schemas.md#data-reference) to use values from the validated data as values for the schema keywords
-- [asynchronous validation](./docs/api.md#asynchronous-validation) of user-defined formats and keywords
+- [\$data reference](https://ajv.js.org/guide/combining-schemas.html#data-reference) to use values from the validated data as values for the schema keywords
+- [asynchronous validation](https://ajv.js.org/guide/async-validation.html) of user-defined formats and keywords
 
 ## Install
 
@@ -146,7 +146,7 @@ const valid = validate(data)
 if (!valid) console.log(validate.errors)
 ```
 
-Learn how to use Ajv and see more examples in the [Guide: getting started](./docs/guide/getting-started.md)
+Learn how to use Ajv and see more examples in the [Guide: getting started](https://ajv.js.org/guide/getting-started.html)
 
 ## Changes history
 
