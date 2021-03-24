@@ -31,14 +31,14 @@ Please review [Contributing guidelines](./CONTRIBUTING.md) and [Code components]
 All documentation is available on the [Ajv website](https://ajv.js.org).
 
 Some useful site links:
-- [Getting started](#usage)
-- [JSON Schema vs JSON Type Definition](./docs/guide/schema-language.md#comparison)
-- [API reference](./docs/api.md)
-- [Strict mode](./docs/strict-mode.md#strict-mode)
-- [Standalone validation code](./docs/standalone.md)
-- [Security considerations](./docs/security.md)
-- [Command line interface](./docs/guide/environments.md#command-line-interface)
-- [Frequently Asked Questions](./docs/faq.md)
+- [Getting started](https://ajv.js.org/guide/getting-started.html)
+- [JSON Schema vs JSON Type Definition](https://ajv.js.org/guide/schema-language.html)
+- [API reference](https://ajv.js.org/api.html)
+- [Strict mode](https://ajv.js.org/strict-mode.html)
+- [Standalone validation code](https://ajv.js.org/standalone.html)
+- [Security considerations](https://ajv.js.org/security.html)
+- [Command line interface](https://ajv.js.org/packages/ajv-cli.html)
+- [Frequently Asked Questions](https://ajv.js.org/faq.html)
 
 ## <a name="sponsors"></a>Please [sponsor Ajv development](https://github.com/sponsors/epoberezkin)
 
