@@ -26,7 +26,10 @@ export default {
     max-width 1000px
     padding 0 50px
     margin 0 auto
-
+    @media only screen and (max-width: $MQMobile)
+      padding 0 40px
+    @media only screen and (max-width: $MQMobileNarrow)
+      padding 0 30px
 
   & >>> .theme-code-block
     margin-top 12px

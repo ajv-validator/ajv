@@ -16,6 +16,10 @@
     height 40px
     line-height 40px
     vertical-align middle
+    @media only screen and (max-width: $MQMobile)
+      max-width 160px
+      height 30px
+      line-height 30px
 
   a
     display inline-block
@@ -26,6 +30,11 @@
     font-size 28px
     font-weight 500
     color $textColor
+    @media only screen and (max-width: $MQMobile)
+      margin 0 24px 20px 0
+      height 30px
+      line-height 30px
+      font-size 20px
 
     &:hover
       text-decoration none
