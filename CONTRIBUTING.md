@@ -6,6 +6,12 @@ permalink: /contributing
 
 Thank you for your help making Ajv better! Every contribution is appreciated. There are many areas where you can contribute.
 
+More than 100 people contributed to Ajv, and we would love to have you join the development. We welcome implementing new features that will benefit many users and ideas to improve our documentation.
+
+At Ajv, we are committed to creating more equitable and inclusive spaces for our community and team members to contribute to discussions that affect both this project and our ongoing work in the open source ecosystem.
+
+We strive to create an environment of respect and healthy discourse by setting standards for our interactions and we expect it from all members of our community - from long term project member to first time visitor. For more information, review our [code of conduct](./CODE_OF_CONDUCT.md) and values.
+
 ::: tip Submit issue first
 If you plan to implement a new feature or some other change please create an issue first, to make sure that your work is not lost.
 :::
@@ -121,7 +127,23 @@ Thanks a lot for considering contributing to Ajv! Our users have created many gr
 
 For help navigating the code, please review the [Code components](./docs/components.md) document.
 
-#### Development
+### How we make decisions
+
+We value conscious curation of our library size, and balancing performance and functionality. To that end, we cannot accept every suggestion. When evaluating pull requests we consider:
+
+- Will this benefit many users or a niche use case?
+- How will this impact the performance of Ajv?
+- How will this expand our library size?
+
+To help us evaluate and understand, when you submit an issue and pull request:
+
+- Explain why this feature is important to the user base
+- Include documentation
+- Include test coverage with any new feature implementations
+
+Please include documentation and test coverage with any new feature implementations.
+
+### Development
 
 Running tests:
 
@@ -135,7 +157,7 @@ npm test
 
 `npm run watch` - automatically compiles typescript when files on lib folder changes.
 
-#### Pull requests
+### Pull requests
 
 We want to iterate on the code efficiently. To speed up the process, please follow these steps:
 
@@ -148,7 +170,7 @@ We want to iterate on the code efficiently. To speed up the process, please foll
 7. Please run the tests before committing your code.
 8. If tests fail in CI build after you make a PR please investigate and fix the issue.
 
-#### Contributions license
+### Contributions license
 
 When contributing the code you confirm that:
 

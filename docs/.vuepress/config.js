@@ -46,8 +46,9 @@ module.exports = {
         text: "Learn more",
         items: [
           {
-            text: "Related packages",
+            text: "Extending Ajv",
             items: [
+              {link: "/packages/", text: "Extending Ajv"},
               {link: "/packages/ajv-cli", text: "ajv-cli"},
               {link: "/packages/ajv-errors", text: "ajv-errors"},
               {link: "/packages/ajv-formats", text: "ajv-formats"},
@@ -107,9 +108,9 @@ module.exports = {
         ],
       },
       {
-        title: "Related packages",
+        title: "Extending Ajv",
         children: [
-          ["/packages/", "Packages"],
+          ["/packages/", "Extending Ajv"],
           ["/packages/ajv-formats", "ajv-formats"],
           ["/packages/ajv-keywords", "ajv-keywords"],
           ["/packages/ajv-errors", "ajv-errors"],

@@ -4,7 +4,7 @@
 
 # Ajv: Another JSON schema validator
 
-Super fast JSON validator for Node.js and browser.
+The fastest JSON validator for Node.js and browser.
 
 Supports JSON Schema draft-06/07/2019-09 (draft-04 is supported in [version 6](https://github.com/ajv-validator/ajv/tree/v6)) and JSON Type Definition [RFC8927](https://datatracker.ietf.org/doc/rfc8927/).
 
@@ -25,39 +25,7 @@ Supports JSON Schema draft-06/07/2019-09 (draft-04 is supported in [version 6](h
 
 More than 100 people contributed to Ajv, and we would love to have you join the development. We welcome implementing new features that will benefit many users and ideas to improve our documentation.
 
-At Ajv, we are committed to creating more equitable and inclusive spaces for our community and team members to contribute to discussions that affect both this project and our ongoing work in the open source ecosystem.
-
-We strive to create an environment of respect and healthy discourse by setting standards for our interactions and we expect it from all members of our community - from long term project member to first time visitor. For more information, review our [code of conduct](./CODE_OF_CONDUCT.md) and values.
-
-<Contributors />
-
-### How we make decisions
-
-We value conscious curation of our library size, and balancing performance and functionality. To that end, we cannot accept every suggestion. When evaluating pull requests we consider:
-
-- Will this benefit many users or a niche use case?
-- How will this impact the performance of Ajv?
-- How will this expand our library size?
-
-To help us evaluate and understand, when you submit an issue and pull request:
-
-- Explain why this feature is important to the user base
-- Include documentation
-- Include test coverage with any new feature implementations
-
-Please include documentation and test coverage with any new feature implementations.
-
-To run tests:
-
-```bash
-npm install
-git submodule update --init
-npm test
-```
-
-`npm run build` - compiles typescript to `dist` folder.
-
-Please also review [Contributing guidelines](./CONTRIBUTING.md) and [Code components](./docs/components.md).
+Please review [Contributing guidelines](./CONTRIBUTING.md) and [Code components](./docs/components.md).
 
 ## Contents
 
@@ -150,7 +118,7 @@ Currently Ajv is the fastest and the most standard compliant validator according
 
 Performance of different validators by [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark):
 
-[![performance](https://chart.googleapis.com/chart?chxt=x,y&cht=bhs&chco=76A4FB&chls=2.0&chbh=32,4,1&chs=600x416&chxl=-1:|djv|ajv|json-schema-validator-generator|jsen|is-my-json-valid|themis|z-schema|jsck|skeemas|json-schema-library|tv4&chd=t:100,98,72.1,66.8,50.1,15.1,6.1,3.8,1.2,0.7,0.2)](https://github.com/ebdrup/json-schema-benchmark/blob/master/README.md#performance)
+[![performance](https://chart.googleapis.com/chart?chxt=x,y&cht=bhs&chco=76A4FB&chls=2.0&chbh=62,4,1&chs=600x416&chxl=-1:|ajv|@exodus&#x2F;schemasafe|is-my-json-valid|djv|@cfworker&#x2F;json-schema|jsonschema&chd=t:100,69.2,51.5,13.1,5.1,1.2)](https://github.com/ebdrup/json-schema-benchmark/blob/master/README.md#performance)
 
 ## Features
 
@@ -200,44 +168,24 @@ In JavaScript:
 import Ajv from "ajv"
 // Node.js require:
 const Ajv = require("ajv").default
-
 const ajv = new Ajv() // options can be passed, e.g. {allErrors: true}
+
+const schema = {
+  type: "object",
+  properties: {
+    foo: {type: "integer"},
+    bar: {type: "string"}
+  },
+  required: ["foo"],
+  additionalProperties: false,
+}
+
 const validate = ajv.compile(schema)
 const valid = validate(data)
 if (!valid) console.log(validate.errors)
 ```
 
 See more examples in [Guide: getting started](./docs/guide/getting-started.md)
-
-## Extending Ajv
-
-### User defined keywords
-
-See section in [data validation](./docs/guide/user-keywords.md) and the [detailed guide](./docs/keywords.md).
-
-### Plugins
-
-Ajv can be extended with plugins that add keywords, formats or functions to process generated code. When such plugin is published as npm package it is recommended that it follows these conventions:
-
-- it exports a function that accepts ajv instance as the first parameter - it allows using plugins with [ajv-cli](#command-line-interface).
-- this function returns the same instance to allow chaining.
-- this function can accept an optional configuration as the second parameter.
-
-You can import `Plugin` interface from ajv if you use Typescript.
-
-If you have published a useful plugin please submit a PR to add it to the next section.
-
-### Related packages
-
-- [ajv-bsontype](https://github.com/BoLaMN/ajv-bsontype) - plugin to validate mongodb's bsonType formats
-- [ajv-cli](https://github.com/jessedc/ajv-cli) - command line interface
-- [ajv-formats](https://github.com/ajv-validator/ajv-formats) - formats defined in JSON Schema specification
-- [ajv-errors](https://github.com/ajv-validator/ajv-errors) - plugin for defining error messages in the schema
-- [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) - internationalised error messages
-- [ajv-istanbul](https://github.com/ajv-validator/ajv-istanbul) - plugin to instrument generated validation code to measure test coverage of your schemas
-- [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) - plugin with additional validation keywords (select, typeof, etc.)
-- [ajv-merge-patch](https://github.com/ajv-validator/ajv-merge-patch) - plugin with keywords $merge and $patch
-- [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) - format validators for draft2019 that aren't included in [ajv-formats](https://github.com/ajv-validator/ajv-formats) (ie. `idn-hostname`, `idn-email`, `iri`, `iri-reference` and `duration`)
 
 ## Changes history
 
