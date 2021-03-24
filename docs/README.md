@@ -174,6 +174,30 @@ Ajv is free to use and open-source that many developers contributed to. Join us!
 
 </HomeSection>
 
+<HomeSection>
+
+## Testimonials
+
+<Testimonials>
+<Testimonial bracketsClr="green">
+
+### AJV are the best
+
+“AJV is a widely used library that provides relia bility, safety and security to millions of JavaScript applications and other libraries. It can be used in all”
+
+</Testimonial>
+
+<Testimonial bracketsClr="blue">
+
+### AJV are the best
+
+“AJV is a widely used library that provides relia bility, safety and security to millions of JavaScript applications and other libraries. It can be used in all”
+
+</Testimonial>
+</Testimonials>
+
+</HomeSection>
+
 <HomeSection section="footer">
 
 <FooterColumns>
