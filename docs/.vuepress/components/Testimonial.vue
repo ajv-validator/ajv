@@ -1,16 +1,13 @@
 <template>
-  <div class="testimonial-content">
-    <img :src="'/img/testimonials-' + bracketsClr + '.svg'" />
-    <div class="testimonial-content-wrapper">
-      <slot />
-    </div>
+  <div class="testimonial-content" :class="color">
+    <slot />
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    bracketsClr: {
+    color: {
       type: String,
     },
   },
@@ -19,19 +16,29 @@ export default {
 
 <style lang="stylus" scoped>
 div.testimonial-content
-  position relative
+  background-position center
+  overflow hidden
+  width 280px
+  background-repeat no-repeat
+  &.blue
+    background-image url(./Testimonial/testimonials-blue.svg)
+  &.green
+    background-image url(./Testimonial/testimonials-green.svg)
 
-  @media only screen and (min-width $MQMobile)
-    width 50%
-
-  img
+  @media only screen and (max-width 500px)
     width 100%
+    font-size 12px
+    background-size 325px 150px
+    padding 0 calc(50% - 92px)
+    box-sizing border-box
 
-div.testimonial-content-wrapper
-  position absolute
-  top 0
-  left 25%
-  width 50%
+  @media only screen and (min-width 500px)
+    height 212px
+    padding 0 75px
+    margin 40px auto 0
+
+  @media only screen and (min-width $MQNarrow)
+    padding 0 calc(25% - 140px)
 
 .header-anchor
   display none

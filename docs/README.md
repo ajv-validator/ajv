@@ -109,6 +109,28 @@ if (!valid) console.log(ajv.errors)
 </Column>
 </Columns>
 </HomeSection>
+
+<HomeSection section="testimonials">
+
+## What users say
+
+<Testimonials>
+<Testimonial color="green">
+
+I always thought that built-in data validation is a key feature of any web framework. We decided to leverage JSON Schema in [Fastify](https://www.fastify.io), and Ajv fits our needs wonderfully: it’s fast, stable and well maintained. [@mcollina](https://github.com/mcollina)
+
+</Testimonial>
+
+<Testimonial color="blue">
+
+### AJV are the best
+
+“AJV is a widely used library that provides relia bility, safety and security to millions of JavaScript applications and other libraries. It can be used in all”
+
+</Testimonial>
+</Testimonials>
+</HomeSection>
+
 <HomeSection>
 
 ## News
@@ -171,30 +193,6 @@ if (!valid) console.log(ajv.errors)
 Ajv is free to use and open-source that many developers contributed to. Join us!
 
 <Contributors />
-
-</HomeSection>
-
-<HomeSection>
-
-## Testimonials
-
-<Testimonials>
-<Testimonial bracketsClr="green">
-
-### AJV are the best
-
-“AJV is a widely used library that provides relia bility, safety and security to millions of JavaScript applications and other libraries. It can be used in all”
-
-</Testimonial>
-
-<Testimonial bracketsClr="blue">
-
-### AJV are the best
-
-“AJV is a widely used library that provides relia bility, safety and security to millions of JavaScript applications and other libraries. It can be used in all”
-
-</Testimonial>
-</Testimonials>
 
 </HomeSection>
 
