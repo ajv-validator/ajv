@@ -6,7 +6,7 @@
 
 The fastest JSON validator for Node.js and browser.
 
-Supports JSON Schema draft-06/07/2019-09 (draft-04 is supported in [version 6](https://github.com/ajv-validator/ajv/tree/v6)) and JSON Type Definition [RFC8927](https://datatracker.ietf.org/doc/rfc8927/).
+Supports JSON Schema draft-06/07/2019-09/2020-12 (draft-04 is supported in [version 6](https://github.com/ajv-validator/ajv/tree/v6)) and JSON Type Definition [RFC8927](https://datatracker.ietf.org/doc/rfc8927/).
 
 [![build](https://github.com/ajv-validator/ajv/workflows/build/badge.svg)](https://github.com/ajv-validator/ajv/actions?query=workflow%3Abuild)
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
@@ -20,62 +20,25 @@ Supports JSON Schema draft-06/07/2019-09 (draft-04 is supported in [version 6](h
 
 [<img src="https://ajv.js.org/img/mozilla.svg" width="45%">](https://www.mozilla.org)<img src="https://ajv.js.org/img/gap.svg" width="8%">[<img src="https://ajv.js.org/img/reserved.svg" width="45%">](https://opencollective.com/ajv)
 
-
 ## Contributing
 
 More than 100 people contributed to Ajv, and we would love to have you join the development. We welcome implementing new features that will benefit many users and ideas to improve our documentation.
 
 Please review [Contributing guidelines](./CONTRIBUTING.md) and [Code components](./docs/components.md).
 
-## Contents
+## Documentation
 
-- [Platinum sponsors](#platinum-sponsors)
-- [Using version 7](#using-version-7)
-- [Contributing](#contributing)
-- [Mozilla MOSS grant and OpenJS Foundation](#mozilla-moss-grant-and-openjs-foundation)
-- [Sponsors](#sponsors)
-- [Performance](#performance)
-- [Features](#features)
+All documentation is available on the [Ajv website](https://ajv.js.org).
+
+Some useful site links:
 - [Getting started](#usage)
-- [Choosing schema language: JSON Schema vs JSON Type Definition](./docs/guide/schema-language.md#comparison)
-- [Frequently Asked Questions](./docs/faq.md)
-- [Using in browser](./docs/guide/environments.md#browsers)
-  - [Content Security Policy](./docs/security.md#content-security-policy)
-- [Using in ES5 environment](./docs/guide/environments.md#es5-environments)
-- [Command line interface](./docs/guide/environments.md#command-line-interface)
+- [JSON Schema vs JSON Type Definition](./docs/guide/schema-language.md#comparison)
 - [API reference](./docs/api.md)
-  - [Methods](./docs/api.md#ajv-constructor-and-methods)
-  - [Options](./docs/api.md#options)
-  - [Validation errors](./docs/api.md#validation-errors)
-- NEW: [Strict mode](./docs/strict-mode.md#strict-mode)
-  - [Prohibit ignored keywords](./docs/strict-mode.md#prohibit-ignored-keywords)
-  - [Prevent unexpected validation](./docs/strict-mode.md#prevent-unexpected-validation)
-  - [Strict types](./docs/strict-mode.md#strict-types)
-  - [Strict number validation](./docs/strict-mode.md#strict-number-validation)
-- [Validation guide](./docs/guide/getting-started.md)
-  - [Getting started](./docs/guide/getting-started.md)
-  - [Validating formats](./docs/guide/formats.md)
-  - [Modular schemas](./docs/guide/combining-schemas.md): [combining with \$ref](./docs/guide/combining-schemas#ref), [\$data reference](./docs/guide/combining-schemas.md#data-reference), [$merge and $patch](./docs/guide/combining-schemas#merge-and-patch-keywords)
-  - [Asynchronous schema compilation](./docs/guide/managing-schemas.md#asynchronous-schema-compilation)
-  - [Standalone validation code](./docs/standalone.md)
-  - [Asynchronous validation](./docs/guide/async-validation.md)
-  - [Modifying data](./docs/guide/modifying-data.md): [additional properties](./docs/guide/modifying-data.md#removing-additional-properties), [defaults](./docs/guide/modifying-data.md#assigning-defaults), [type coercion](./docs/guide/modifying-data.md#coercing-data-types)
-- [Extending Ajv](#extending-ajv)
-  - User-defined keywords:
-    - [basics](./docs/guide/user-keywords.md)
-    - [guide](./docs/keywords.md)
-  - [Plugins](#plugins)
-  - [Related packages](#related-packages)
+- [Strict mode](./docs/strict-mode.md#strict-mode)
+- [Standalone validation code](./docs/standalone.md)
 - [Security considerations](./docs/security.md)
-  - [Security contact](./docs/security.md#security-contact)
-  - [Untrusted schemas](./docs/security.md#untrusted-schemas)
-  - [Circular references in objects](./docs/security.md#circular-references-in-javascript-objects)
-  - [Trusted schemas](./docs/security.md#security-risks-of-trusted-schemas)
-  - [ReDoS attack](./docs/security.md#redos-attack)
-  - [Content Security Policy](./docs/security.md#content-security-policy)
-- [Some packages using Ajv](#some-packages-using-ajv)
-- [Changes history](#changes-history)
-- [Support, Code of conduct, Contacts, License](#open-source-software-support)
+- [Command line interface](./docs/guide/environments.md#command-line-interface)
+- [Frequently Asked Questions](./docs/faq.md)
 
 ## <a name="sponsors"></a>Please [sponsor Ajv development](https://github.com/sponsors/epoberezkin)
 
@@ -122,13 +85,13 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 
 ## Features
 
-- Ajv implements JSON Schema [draft-06/07/2019-09](http://json-schema.org/) standards (draft-04 is supported in v6):
+- Ajv implements JSON Schema [draft-06/07/2019-09/2020-12](http://json-schema.org/) standards (draft-04 is supported in v6):
   - all validation keywords (see [JSON Schema validation keywords](./docs/json-schema.md))
   - keyword "nullable" from [Open API 3 specification](https://swagger.io/docs/specification/data-models/data-types/).
   - full support of remote references (remote schemas have to be added with `addSchema` or compiled to be available)
-  - support of circular references between schemas
+  - support of recursive references between schemas
   - correct string lengths for strings with unicode pairs
-  - [formats](#formats) defined by JSON Schema draft-07 standard (with [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin) and additional formats (can be turned off)
+  - JSON Schema [formats](#formats) (with [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin).
   - [validates schemas against meta-schema](./docs/api.md#api-validateschema)
 - NEW: supports [JSON Type Definition](https://datatracker.ietf.org/doc/rfc8927/):
   - all forms (see [JSON Type Definition schema forms](./docs/json-type-definition.md))
@@ -143,8 +106,6 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 - [assigning defaults](./docs/guide/modifying-data.md#assigning-defaults) to missing properties and items
 - [coercing data](./docs/guide/modifying-data.md#coercing-data-types) to the types specified in `type` keywords
 - [user-defined keywords](#user-defined-keywords)
-- draft-06/07 keywords `const`, `contains`, `propertyNames` and `if/then/else`
-- draft-06 boolean schemas (`true`/`false` as a schema to always pass/fail).
 - additional extension keywords with [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package
 - [\$data reference](./docs/guide/combining-schemas.md#data-reference) to use values from the validated data as values for the schema keywords
 - [asynchronous validation](./docs/api.md#asynchronous-validation) of user-defined formats and keywords
@@ -185,7 +146,7 @@ const valid = validate(data)
 if (!valid) console.log(validate.errors)
 ```
 
-See more examples in [Guide: getting started](./docs/guide/getting-started.md)
+Learn how to use Ajv and see more examples in the [Guide: getting started](./docs/guide/getting-started.md)
 
 ## Changes history
 
