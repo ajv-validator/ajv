@@ -488,4 +488,4 @@ const ajv = new Ajv({
 
 ##### Options
 
-This section is moved to [Initialization options](./options) page
+This section is moved to [Initialization options](./options.md) page
