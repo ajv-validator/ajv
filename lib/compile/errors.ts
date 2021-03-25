@@ -2,6 +2,7 @@ import type {KeywordErrorCxt, KeywordErrorDefinition} from "../types"
 import type {SchemaCxt} from "./index"
 import {CodeGen, _, str, strConcat, Code, Name} from "./codegen"
 import {SafeExpr} from "./codegen/code"
+import {getErrorPath, Type} from "./util"
 import N from "./names"
 
 export const keywordError: KeywordErrorDefinition = {
@@ -15,14 +16,21 @@ export const keyword$DataError: KeywordErrorDefinition = {
       : str`"${keyword}" keyword is invalid ($data)`,
 }
 
+export interface ErrorPaths {
+  instancePath?: Code
+  schemaPath?: string
+  parentSchema?: boolean
+}
+
 export function reportError(
   cxt: KeywordErrorCxt,
   error: KeywordErrorDefinition = keywordError,
+  errorPaths?: ErrorPaths,
   overrideAllErrors?: boolean
 ): void {
   const {it} = cxt
   const {gen, compositeRule, allErrors} = it
-  const errObj = errorObjectCode(cxt, error)
+  const errObj = errorObjectCode(cxt, error, errorPaths)
   if (overrideAllErrors ?? (compositeRule || allErrors)) {
     addError(gen, errObj)
   } else {
@@ -32,11 +40,12 @@ export function reportError(
 
 export function reportExtraError(
   cxt: KeywordErrorCxt,
-  error: KeywordErrorDefinition = keywordError
+  error: KeywordErrorDefinition = keywordError,
+  errorPaths?: ErrorPaths
 ): void {
   const {it} = cxt
   const {gen, compositeRule, allErrors} = it
-  const errObj = errorObjectCode(cxt, error)
+  const errObj = errorObjectCode(cxt, error, errorPaths)
   addError(gen, errObj)
   if (!(compositeRule || allErrors)) {
     returnErrors(it, N.vErrors)
@@ -67,8 +76,8 @@ export function extendErrors({
   const err = gen.name("err")
   gen.forRange("i", errsCount, N.errors, (i) => {
     gen.const(err, _`${N.vErrors}[${i}]`)
-    gen.if(_`${err}.dataPath === undefined`, () =>
-      gen.assign(_`${err}.dataPath`, strConcat(N.dataPath, it.errorPath))
+    gen.if(_`${err}.instancePath === undefined`, () =>
+      gen.assign(_`${err}.instancePath`, strConcat(N.instancePath, it.errorPath))
     )
     gen.assign(_`${err}.schemaPath`, str`${it.errSchemaPath}/${keyword}`)
     if (it.opts.verbose) {
@@ -106,40 +115,61 @@ const E = {
   message: new Name("message"),
   schema: new Name("schema"),
   parentSchema: new Name("parentSchema"),
-  // JTD error properties
-  instancePath: new Name("instancePath"),
 }
 
-function errorObjectCode(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): Code {
-  const {createErrors, opts} = cxt.it
+function errorObjectCode(
+  cxt: KeywordErrorCxt,
+  error: KeywordErrorDefinition,
+  errorPaths?: ErrorPaths
+): Code {
+  const {createErrors} = cxt.it
   if (createErrors === false) return _`{}`
-  return (opts.jtd && !opts.ajvErrors ? jtdErrorObject : ajvErrorObject)(cxt, error)
+  return errorObject(cxt, error, errorPaths)
 }
 
-function jtdErrorObject(cxt: KeywordErrorCxt, {message}: KeywordErrorDefinition): Code {
-  const {gen, keyword, it} = cxt
-  const {errorPath, errSchemaPath, opts} = it
+function errorObject(
+  cxt: KeywordErrorCxt,
+  error: KeywordErrorDefinition,
+  errorPaths: ErrorPaths = {}
+): Code {
+  const {gen, it} = cxt
   const keyValues: [Name, SafeExpr | string][] = [
-    [E.instancePath, strConcat(N.dataPath, errorPath)],
-    [E.schemaPath, str`${errSchemaPath}/${keyword}`],
+    errorInstancePath(it, errorPaths),
+    errorSchemaPath(cxt, errorPaths),
   ]
-  if (opts.messages) {
-    keyValues.push([E.message, typeof message == "function" ? message(cxt) : message])
-  }
+  extraErrorProps(cxt, error, keyValues)
   return gen.object(...keyValues)
 }
 
-function ajvErrorObject(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): Code {
-  const {gen, keyword, data, schemaValue, it} = cxt
-  const {topSchemaRef, schemaPath, errorPath, errSchemaPath, propertyName, opts} = it
-  const {params, message} = error
-  const keyValues: [Name, SafeExpr | string][] = [
+function errorInstancePath({errorPath}: SchemaCxt, {instancePath}: ErrorPaths): [Name, Code] {
+  const instPath = instancePath
+    ? str`${errorPath}${getErrorPath(instancePath, Type.Str)}`
+    : errorPath
+  return [N.instancePath, strConcat(N.instancePath, instPath)]
+}
+
+function errorSchemaPath(
+  {keyword, it: {errSchemaPath}}: KeywordErrorCxt,
+  {schemaPath, parentSchema}: ErrorPaths
+): [Name, string | Code] {
+  let schPath = parentSchema ? errSchemaPath : str`${errSchemaPath}/${keyword}`
+  if (schemaPath) {
+    schPath = str`${schPath}${getErrorPath(schemaPath, Type.Str)}`
+  }
+  return [E.schemaPath, schPath]
+}
+
+function extraErrorProps(
+  cxt: KeywordErrorCxt,
+  {params, message}: KeywordErrorDefinition,
+  keyValues: [Name, SafeExpr | string][]
+): void {
+  const {keyword, data, schemaValue, it} = cxt
+  const {opts, propertyName, topSchemaRef, schemaPath} = it
+  keyValues.push(
     [E.keyword, keyword],
-    [N.dataPath, strConcat(N.dataPath, errorPath)],
-    [E.schemaPath, str`${errSchemaPath}/${keyword}`],
-    [E.params, typeof params == "function" ? params(cxt) : params || _`{}`],
-  ]
-  if (propertyName) keyValues.push([E.propertyName, propertyName])
+    [E.params, typeof params == "function" ? params(cxt) : params || _`{}`]
+  )
   if (opts.messages) {
     keyValues.push([E.message, typeof message == "function" ? message(cxt) : message])
   }
@@ -150,5 +180,5 @@ function ajvErrorObject(cxt: KeywordErrorCxt, error: KeywordErrorDefinition): Co
       [N.data, data]
     )
   }
-  return gen.object(...keyValues)
+  if (propertyName) keyValues.push([E.propertyName, propertyName])
 }

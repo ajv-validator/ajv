@@ -1,8 +1,8 @@
 import type {AnySchema, EvaluatedProperties, EvaluatedItems} from "../types"
 import type {SchemaCxt, SchemaObjCxt} from "."
 import {_, getProperty, Code, Name, CodeGen} from "./codegen"
+import {_Code} from "./codegen/code"
 import type {Rule, ValidationRules} from "./rules"
-import {checkStrictMode} from "./validate"
 
 // TODO refactor to use Set
 export function toHash<T extends string = string>(arr: T[]): {[K in T]?: true} {
@@ -20,7 +20,7 @@ export function alwaysValidSchema(it: SchemaCxt, schema: AnySchema): boolean | v
 
 export function checkUnknownRules(it: SchemaCxt, schema: AnySchema = it.schema): void {
   const {opts, self} = it
-  if (!opts.strict) return
+  if (!opts.strictSchema) return
   if (typeof schema === "boolean") return
   const rules = self.RULES.keywords
   for (const key in schema) {
@@ -168,9 +168,46 @@ export function setEvaluated(gen: CodeGen, props: Name, ps: {[K in string]?: tru
   Object.keys(ps).forEach((p) => gen.assign(_`${props}${getProperty(p)}`, true))
 }
 
-export function func(gen: CodeGen, f: {code: Code}): Name {
+const snippets: {[S in string]?: _Code} = {}
+
+export function useFunc(gen: CodeGen, f: {code: string}): Name {
   return gen.scopeValue("func", {
     ref: f,
-    code: f.code,
+    code: snippets[f.code] || (snippets[f.code] = new _Code(f.code)),
   })
+}
+
+export enum Type {
+  Num,
+  Str,
+}
+
+export function getErrorPath(
+  dataProp: Name | string | number,
+  dataPropType?: Type,
+  jsPropertySyntax?: boolean
+): Code | string {
+  // let path
+  if (dataProp instanceof Name) {
+    const isNumber = dataPropType === Type.Num
+    return jsPropertySyntax
+      ? isNumber
+        ? _`"[" + ${dataProp} + "]"`
+        : _`"['" + ${dataProp} + "']"`
+      : isNumber
+      ? _`"/" + ${dataProp}`
+      : _`"/" + ${dataProp}.replace(/~/g, "~0").replace(/\\//g, "~1")` // TODO maybe use global escapePointer
+  }
+  return jsPropertySyntax ? getProperty(dataProp).toString() : "/" + escapeJsonPointer(dataProp)
+}
+
+export function checkStrictMode(
+  it: SchemaCxt,
+  msg: string,
+  mode: boolean | "log" = it.opts.strictSchema
+): void {
+  if (!mode) return
+  msg = `strict mode: ${msg}`
+  if (mode === true) throw new Error(msg)
+  it.self.logger.warn(msg)
 }

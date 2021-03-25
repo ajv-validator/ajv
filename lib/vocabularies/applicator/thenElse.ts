@@ -1,6 +1,6 @@
 import type {CodeKeywordDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
-import {checkStrictMode} from "../../compile/validate"
+import type {KeywordCxt} from "../../compile/validate"
+import {checkStrictMode} from "../../compile/util"
 
 const def: CodeKeywordDefinition = {
   keyword: ["then", "else"],

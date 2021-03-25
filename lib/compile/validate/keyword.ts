@@ -1,40 +1,22 @@
+import type {KeywordCxt} from "."
 import type {
-  AddedKeywordDefinition,
-  MacroKeywordDefinition,
-  FuncKeywordDefinition,
   AnySchema,
   SchemaValidateFunction,
   AnyValidateFunction,
+  AddedKeywordDefinition,
+  MacroKeywordDefinition,
+  FuncKeywordDefinition,
 } from "../../types"
 import type {SchemaObjCxt} from ".."
-import type {JSONType} from "../rules"
-import KeywordCxt from "../context"
-import {extendErrors} from "../errors"
-import {callValidateCode} from "../../vocabularies/code"
-import {CodeGen, _, nil, not, stringify, Code, Name} from "../codegen"
+import {_, nil, not, stringify, Code, Name, CodeGen} from "../codegen"
 import N from "../names"
+import type {JSONType} from "../rules"
+import {callValidateCode} from "../../vocabularies/code"
+import {extendErrors} from "../errors"
 
 type KeywordCompilationResult = AnySchema | SchemaValidateFunction | AnyValidateFunction
 
-export function keywordCode(
-  it: SchemaObjCxt,
-  keyword: string,
-  def: AddedKeywordDefinition,
-  ruleType?: JSONType
-): void {
-  const cxt = new KeywordCxt(it, def, keyword)
-  if ("code" in def) {
-    def.code(cxt, ruleType)
-  } else if (cxt.$data && def.validate) {
-    funcKeywordCode(cxt, def)
-  } else if ("macro" in def) {
-    macroKeywordCode(cxt, def)
-  } else if (def.compile || def.validate) {
-    funcKeywordCode(cxt, def)
-  }
-}
-
-function macroKeywordCode(cxt: KeywordCxt, def: MacroKeywordDefinition): void {
+export function macroKeywordCode(cxt: KeywordCxt, def: MacroKeywordDefinition): void {
   const {gen, keyword, schema, parentSchema, it} = cxt
   const macroSchema = def.macro.call(it.self, schema, parentSchema, it)
   const schemaRef = useKeyword(gen, keyword, macroSchema)
@@ -54,9 +36,9 @@ function macroKeywordCode(cxt: KeywordCxt, def: MacroKeywordDefinition): void {
   cxt.pass(valid, () => cxt.error(true))
 }
 
-function funcKeywordCode(cxt: KeywordCxt, def: FuncKeywordDefinition): void {
+export function funcKeywordCode(cxt: KeywordCxt, def: FuncKeywordDefinition): void {
   const {gen, keyword, schema, parentSchema, $data, it} = cxt
-  checkAsync(it, def)
+  checkAsyncKeyword(it, def)
   const validate =
     !$data && def.compile ? def.compile.call(it.self, schema, parentSchema, it) : def.validate
   const validateRef = useKeyword(gen, keyword, validate)
@@ -131,7 +113,7 @@ function addErrs(cxt: KeywordCxt, errs: Code): void {
   )
 }
 
-function checkAsync({schemaEnv}: SchemaObjCxt, def: FuncKeywordDefinition): void {
+function checkAsyncKeyword({schemaEnv}: SchemaObjCxt, def: FuncKeywordDefinition): void {
   if (def.async && !schemaEnv.$async) throw new Error("async keyword in sync schema")
 }
 
@@ -141,4 +123,47 @@ function useKeyword(gen: CodeGen, keyword: string, result?: KeywordCompilationRe
     "keyword",
     typeof result == "function" ? {ref: result} : {ref: result, code: stringify(result)}
   )
+}
+
+export function validSchemaType(
+  schema: unknown,
+  schemaType: JSONType[],
+  allowUndefined = false
+): boolean {
+  // TODO add tests
+  return (
+    !schemaType.length ||
+    schemaType.some((st) =>
+      st === "array"
+        ? Array.isArray(schema)
+        : st === "object"
+        ? schema && typeof schema == "object" && !Array.isArray(schema)
+        : typeof schema == st || (allowUndefined && typeof schema == "undefined")
+    )
+  )
+}
+
+export function validateKeywordUsage(
+  {schema, opts, self}: SchemaObjCxt,
+  def: AddedKeywordDefinition,
+  keyword: string
+): void {
+  /* istanbul ignore if */
+  if (Array.isArray(def.keyword) ? !def.keyword.includes(keyword) : def.keyword !== keyword) {
+    throw new Error("ajv implementation error")
+  }
+
+  const deps = def.dependencies
+  if (deps?.some((kwd) => !Object.prototype.hasOwnProperty.call(schema, kwd))) {
+    throw new Error(`parent schema must have dependencies of ${keyword}: ${deps.join(",")}`)
+  }
+
+  if (def.validateSchema) {
+    const valid = def.validateSchema(schema[keyword])
+    if (!valid) {
+      const msg = "keyword value is invalid: " + self.errorsText(def.validateSchema.errors)
+      if (opts.validateSchema === "log") self.logger.error(msg)
+      else throw new Error(msg)
+    }
+  }
 }

@@ -8,8 +8,8 @@ import type {
 import {allSchemaProperties, usePattern, isOwnProperty} from "../code"
 import {_, nil, or, not, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
-import {SubschemaArgs, Type} from "../../compile/subschema"
-import {alwaysValidSchema, schemaRefOrVal} from "../../compile/util"
+import type {SubschemaArgs} from "../../compile/validate/subschema"
+import {alwaysValidSchema, schemaRefOrVal, Type} from "../../compile/util"
 
 export type AdditionalPropertiesError = ErrorObject<
   "additionalProperties",
@@ -18,7 +18,7 @@ export type AdditionalPropertiesError = ErrorObject<
 >
 
 const error: KeywordErrorDefinition = {
-  message: "should NOT have additional properties",
+  message: "must NOT have additional properties",
   params: ({params}) => _`{additionalProperty: ${params.additionalProperty}}`,
 }
 

@@ -70,7 +70,7 @@ const requireFromString = require("require-from-string")
 const standaloneValidate = requireFromString(moduleCode) // for a single default export
 ```
 
-Ajv package should still be a run-time dependency for most schemas, but generated modules can only depend on small parts of it, so the whole Ajv will not be included in the bundle (or executed) if you require the modules with standalone validation code from your application code.
+Ajv package should still be a run-time dependency for most schemas, but generated modules can only depend on code in [runtime](https://github.com/ajv-validator/ajv/tree/master/lib/runtime) folder, so the whole Ajv will not be included in the bundle (or executed) if you require the modules with standalone validation code from your application code.
 
 ## Configuration and limitations
 
@@ -79,7 +79,7 @@ To support standalone code generation:
 - Ajv option `source.code` must be set to `true`
 - only `code` and `macro` user-defined keywords are supported (see [User defined keywords](./keywords.md)).
 - when `code` keywords define variables in shared scope using `gen.scopeValue`, they must provide `code` property with the code snippet. See source code of pre-defined keywords for examples in [vocabularies folder](https://github.com/ajv-validator/ajv/blob/master/lib/vocabularies).
-- if formats are used in standalone code, ajv option `code.formats` should contain the code snippet that will evaluate to an object with all used formats definition - it can be a call to `require("...")` with the correct path (relative to the location of saved module):
+- if formats are used in standalone code, ajv option `code.formats` should contain the code snippet that will evaluate to an object with all used format definitions - it can be a call to `require("...")` with the correct path (relative to the location of saved module):
 
 ```javascript
 import myFormats from "./my-formats"

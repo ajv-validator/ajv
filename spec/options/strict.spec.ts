@@ -240,7 +240,7 @@ describe("strict mode", () => {
   })
 
   describe("strictRequired option", () => {
-    const ajv = new _Ajv({strictRequired: true, strict: true})
+    const ajv = new _Ajv({strictRequired: true})
 
     describe("base case", () => {
       const schema = {

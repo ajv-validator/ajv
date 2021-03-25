@@ -1,8 +1,9 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {checkDataTypes, getSchemaTypes, DataType} from "../../compile/validate/dataType"
 import {_, str, Name} from "../../compile/codegen"
-import * as equal from "fast-deep-equal"
+import {useFunc} from "../../compile/util"
+import equal from "../../runtime/equal"
 
 export type UniqueItemsError = ErrorObject<
   "uniqueItems",
@@ -12,7 +13,7 @@ export type UniqueItemsError = ErrorObject<
 
 const error: KeywordErrorDefinition = {
   message: ({params: {i, j}}) =>
-    str`should NOT have duplicate items (items ## ${j} and ${i} are identical)`,
+    str`must NOT have duplicate items (items ## ${j} and ${i} are identical)`,
   params: ({params: {i, j}}) => _`{i: ${i}, j: ${j}}`,
 }
 
@@ -44,7 +45,7 @@ const def: CodeKeywordDefinition = {
 
     function loopN(i: Name, j: Name): void {
       const item = gen.name("item")
-      const wrongType = checkDataTypes(itemTypes, item, it.opts.strict, DataType.Wrong)
+      const wrongType = checkDataTypes(itemTypes, item, it.opts.strictNumbers, DataType.Wrong)
       const indices = gen.const("indices", _`{}`)
       gen.for(_`;${i}--;`, () => {
         gen.let(item, _`${data}[${i}]`)
@@ -61,10 +62,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function loopN2(i: Name, j: Name): void {
-      const eql = cxt.gen.scopeValue("func", {
-        ref: equal,
-        code: _`require("ajv/dist/compile/equal")`,
-      })
+      const eql = useFunc(gen, equal)
       const outer = gen.name("outer")
       gen.label(outer).for(_`;${i}--;`, () =>
         gen.for(_`${j} = ${i}; ${j}--;`, () =>

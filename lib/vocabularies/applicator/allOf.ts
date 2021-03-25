@@ -1,5 +1,5 @@
 import type {CodeKeywordDefinition, AnySchema} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {alwaysValidSchema} from "../../compile/util"
 
 const def: CodeKeywordDefinition = {

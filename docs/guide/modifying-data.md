@@ -73,10 +73,10 @@ If `removeAdditional` option in the example above were `"all"` then both `additi
 If the option were `"failing"` then property `additional1` would have been removed regardless of its value and property `additional2` would have been removed only if its value were failing the schema in the inner `additionalProperties` (so in the example above it would have stayed because it passes the schema, but any non-number would have been removed).
 
 ::: warning Unexpected results when using removeAdditional with anyOf/oneOf
-If you use `removeAdditional` option with `additionalProperties` keyword inside `anyOf`/`oneOf` keywords your validation can fail with this schema
+If you use `removeAdditional` option with `additionalProperties` keyword inside `anyOf`/`oneOf` keywords your validation can fail with this schema. To make it work as you expect, you have to use discriminated union with [discriminator](../json-schema.md#discriminator) keyword (requires `discriminator` option).
 :::
 
-For example:
+For example, with this non-discriminated union you will have unexpected results:
 
 ```javascript
 {
@@ -119,6 +119,38 @@ While this behaviour is unexpected (issues [#129](https://github.com/ajv-validat
 ```
 
 The schema above is also more efficient - it will compile into a faster function.
+
+For discriminated unions you could schemas with [discriminator](../json-schema.md#discriminator) keyword (it requires `discriminator: true` option):
+
+```javascript
+{
+  type: "object",
+  discriminator: {propertyName: "tag"},
+  required: ["tag"],
+  oneOf: [
+    {
+      properties: {
+        tag: {const: "foo"},
+        foo: {type: "string"}
+      },
+      required: ["foo"],
+      additionalProperties: false
+    },
+    {
+      properties: {
+        tag: {const: "bar"},
+        bar: {type: "integer"}
+      },
+      required: ["bar"],
+      additionalProperties: false
+    }
+  ]
+}
+```
+
+With this schema, only one subschema in `oneOf` will be evaluated, so `removeAdditional` option will work as expected.
+
+See [discriminator](../json-schema.md#discriminator) keyword.
 
 ## Assigning defaults
 
@@ -179,6 +211,10 @@ With `useDefaults` option `default` keywords throws exception during schema comp
 The strict mode option can change the behaviour for these unsupported defaults (`strict: false` to ignore them, `"log"` to log a warning).
 
 See [Strict mode](./strict-mode.md).
+
+::: tip Default with discriminator keyword
+Defaults will be assigned in schemas inside `oneOf` in case [discriminator](../json-schema.md#discriminator) keyword is used.
+:::
 
 ## Coercing data types
 

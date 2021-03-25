@@ -11,7 +11,7 @@ describe("boolean schemas", () => {
       new _Ajv({strictTuples: false}),
       new _Ajv({allErrors: true, strictTuples: false}),
       new _Ajv({inlineRefs: false, strictTuples: false}),
-      new _Ajv({strict: false, strictTuples: false}),
+      new _Ajv({strict: false}),
     ]
   })
 

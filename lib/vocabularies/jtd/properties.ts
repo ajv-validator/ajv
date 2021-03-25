@@ -1,16 +1,61 @@
-import type {CodeKeywordDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {
+  CodeKeywordDefinition,
+  ErrorObject,
+  KeywordErrorDefinition,
+  SchemaObject,
+} from "../../types"
+import type {KeywordCxt} from "../../compile/validate"
 import {propertyInData, allSchemaProperties, isOwnProperty} from "../code"
 import {alwaysValidSchema, schemaRefOrVal} from "../../compile/util"
 import {_, and, not, Code, Name} from "../../compile/codegen"
 import {checkMetadata} from "./metadata"
 import {checkNullableObject} from "./nullable"
+import {typeErrorMessage, typeErrorParams, _JTDTypeError} from "./error"
+
+enum PropError {
+  Additional = "additional",
+  Missing = "missing",
+}
+
+type PropKeyword = "properties" | "optionalProperties"
+
+type PropSchema = {[P in string]?: SchemaObject}
+
+export type JTDPropertiesError =
+  | _JTDTypeError<PropKeyword, "object", PropSchema>
+  | ErrorObject<PropKeyword, {error: PropError.Additional; additionalProperty: string}, PropSchema>
+  | ErrorObject<PropKeyword, {error: PropError.Missing; missingProperty: string}, PropSchema>
+
+export const error: KeywordErrorDefinition = {
+  message: (cxt) => {
+    const {params} = cxt
+    return params.propError
+      ? params.propError === PropError.Additional
+        ? "must NOT have additional properties"
+        : `must have property '${params.missingProperty}'`
+      : typeErrorMessage(cxt, "object")
+  },
+  params: (cxt) => {
+    const {params} = cxt
+    return params.propError
+      ? params.propError === PropError.Additional
+        ? _`{error: ${params.propError}, additionalProperty: ${params.additionalProperty}}`
+        : _`{error: ${params.propError}, missingProperty: ${params.missingProperty}}`
+      : typeErrorParams(cxt, "object")
+  },
+}
 
 const def: CodeKeywordDefinition = {
   keyword: "properties",
   schemaType: "object",
+  error,
   code: validateProperties,
 }
+
+// const error: KeywordErrorDefinition = {
+//   message: "should NOT have additional properties",
+//   params: ({params}) => _`{additionalProperty: ${params.additionalProperty}}`,
+// }
 
 export function validateProperties(cxt: KeywordCxt): void {
   checkMetadata(cxt)
@@ -65,15 +110,15 @@ export function validateProperties(cxt: KeywordCxt): void {
       gen.if(
         propertyInData(gen, data, prop, it.opts.ownProperties),
         () => applyPropertySchema(prop, keyword, _valid),
-        missingProperty
+        () => missingProperty(prop)
       )
       cxt.ok(_valid)
     }
 
-    function missingProperty(): void {
+    function missingProperty(prop: string): void {
       if (required) {
         gen.assign(_valid, false)
-        cxt.error()
+        cxt.error(false, {propError: PropError.Missing, missingProperty: prop}, {schemaPath: prop})
       } else {
         gen.assign(_valid, true)
       }
@@ -103,8 +148,11 @@ export function validateProperties(cxt: KeywordCxt): void {
         if (it.opts.removeAdditional) {
           gen.code(_`delete ${data}[${key}]`)
         } else {
-          // cxt.setParams({additionalProperty: key})
-          cxt.error()
+          cxt.error(
+            false,
+            {propError: PropError.Additional, additionalProperty: key},
+            {instancePath: key, parentSchema: true}
+          )
           if (!it.opts.allErrors) gen.break()
         }
       })

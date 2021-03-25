@@ -8,9 +8,7 @@ const def: CodeKeywordDefinition = {
   schemaType: "array",
   trackErrors: true,
   code: validateUnion,
-  error: {
-    message: "should match some schema in anyOf",
-  },
+  error: {message: "must match a schema in anyOf"},
 }
 
 export default def

@@ -8,7 +8,7 @@ import type {SchemaObjCxt} from ".."
 import {isJSONType, JSONType} from "../rules"
 import {schemaHasRulesForType} from "./applicability"
 import {reportError} from "../errors"
-import {_, str, nil, and, not, operators, Code, Name} from "../codegen"
+import {_, nil, and, not, operators, Code, Name} from "../codegen"
 import {toHash, schemaRefOrVal} from "../util"
 
 export enum DataType {
@@ -43,7 +43,7 @@ export function coerceAndCheckDataType(it: SchemaObjCxt, types: JSONType[]): boo
     types.length > 0 &&
     !(coerceTo.length === 0 && types.length === 1 && schemaHasRulesForType(it, types[0]))
   if (checkTypes) {
-    const wrongType = checkDataTypes(types, data, opts.strict, DataType.Wrong)
+    const wrongType = checkDataTypes(types, data, opts.strictNumbers, DataType.Wrong)
     gen.if(wrongType, () => {
       if (coerceTo.length) coerceData(it, types, coerceTo)
       else reportTypeError(it)
@@ -68,7 +68,7 @@ function coerceData(it: SchemaObjCxt, types: JSONType[], coerceTo: JSONType[]): 
       gen
         .assign(data, _`${data}[0]`)
         .assign(dataType, _`typeof ${data}`)
-        .if(checkDataTypes(types, data, opts.strict), () => gen.assign(coerced, data))
+        .if(checkDataTypes(types, data, opts.strictNumbers), () => gen.assign(coerced, data))
     )
   }
   gen.if(_`${coerced} !== undefined`)
@@ -202,7 +202,7 @@ export function checkDataTypes(
 export type TypeError = ErrorObject<"type", {type: string}>
 
 const typeError: KeywordErrorDefinition = {
-  message: ({schema}) => str`should be ${schema}`,
+  message: ({schema}) => `must be ${schema}`,
   params: ({schema, schemaValue}) =>
     typeof schema == "string" ? _`{type: ${schema}}` : _`{type: ${schemaValue}}`,
 }

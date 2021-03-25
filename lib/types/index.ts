@@ -1,7 +1,7 @@
 import type {CodeGen, Code, Name, ScopeValueSets, ValueScopeName} from "../compile/codegen"
 import type {SchemaEnv, SchemaCxt, SchemaObjCxt} from "../compile"
 import type {JSONType} from "../compile/rules"
-import type KeywordCxt from "../compile/context"
+import type {KeywordCxt} from "../compile/validate"
 import type Ajv from "../core"
 
 interface _SchemaObject {
@@ -37,7 +37,7 @@ export interface SourceCode {
 }
 
 export interface DataValidationCxt<T extends string | number = string | number> {
-  dataPath: string
+  instancePath: string
   parentData: {[K in T]: any} // object or array
   parentDataProperty: T // string or number
   rootData: Record<string, any> | any[]
@@ -81,8 +81,7 @@ export type AnyValidateFunction<T = any> = ValidateFunction<T> | AsyncValidateFu
 
 export interface ErrorObject<K extends string = string, P = Record<string, any>, S = unknown> {
   keyword: K
-  dataPath: string
-  instancePath?: string
+  instancePath: string
   schemaPath: string
   params: P
   // Added to validation errors of "propertyNames" keyword schema
@@ -168,7 +167,7 @@ export type AddedKeywordDefinition = KeywordDefinition & {
 }
 
 export interface KeywordErrorDefinition {
-  message: string | Code | ((cxt: KeywordErrorCxt) => Code)
+  message: string | Code | ((cxt: KeywordErrorCxt) => string | Code)
   params?: Code | ((cxt: KeywordErrorCxt) => Code)
 }
 

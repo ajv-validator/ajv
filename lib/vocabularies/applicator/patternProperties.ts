@@ -1,10 +1,9 @@
 import type {CodeKeywordDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {schemaProperties, usePattern} from "../code"
 import {_, not, Name} from "../../compile/codegen"
-import {Type} from "../../compile/subschema"
-import {checkStrictMode} from "../../compile/validate"
-import {evaluatedPropsToName} from "../../compile/util"
+import {checkStrictMode} from "../../compile/util"
+import {evaluatedPropsToName, Type} from "../../compile/util"
 
 const def: CodeKeywordDefinition = {
   keyword: "patternProperties",
@@ -16,7 +15,8 @@ const def: CodeKeywordDefinition = {
     const patterns = schemaProperties(it, schema)
     // TODO mark properties matching patterns with always valid schemas as evaluated
     if (patterns.length === 0) return
-    const checkProperties = opts.strict && !opts.allowMatchingProperties && parentSchema.properties
+    const checkProperties =
+      opts.strictSchema && !opts.allowMatchingProperties && parentSchema.properties
     const valid = gen.name("valid")
     if (it.props !== true && !(it.props instanceof Name)) {
       it.props = evaluatedPropsToName(gen, it.props)

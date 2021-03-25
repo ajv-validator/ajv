@@ -5,7 +5,7 @@ import type {
   SchemaMap,
   AnySchema,
 } from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, str} from "../../compile/codegen"
 import {alwaysValidSchema} from "../../compile/util"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp, propertyInData} from "../code"
@@ -30,7 +30,7 @@ export type DependenciesError = ErrorObject<
 export const error: KeywordErrorDefinition = {
   message: ({params: {property, depsCount, deps}}) => {
     const property_ies = depsCount === 1 ? "property" : "properties"
-    return str`should have ${property_ies} ${deps} when property ${property} is present`
+    return str`must have ${property_ies} ${deps} when property ${property} is present`
   },
   params: ({params: {property, depsCount, deps, missingProperty}}) =>
     _`{property: ${property},

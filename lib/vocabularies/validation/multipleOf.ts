@@ -1,5 +1,5 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, str} from "../../compile/codegen"
 
 export type MultipleOfError = ErrorObject<
@@ -9,7 +9,7 @@ export type MultipleOfError = ErrorObject<
 >
 
 const error: KeywordErrorDefinition = {
-  message: ({schemaCode}) => str`should be multiple of ${schemaCode}`,
+  message: ({schemaCode}) => str`must be multiple of ${schemaCode}`,
   params: ({schemaCode}) => _`{multipleOf: ${schemaCode}}`,
 }
 

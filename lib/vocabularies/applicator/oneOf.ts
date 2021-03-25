@@ -4,7 +4,7 @@ import type {
   KeywordErrorDefinition,
   AnySchema,
 } from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, Name} from "../../compile/codegen"
 import {alwaysValidSchema} from "../../compile/util"
 import {SchemaCxt} from "../../compile"
@@ -16,7 +16,7 @@ export type OneOfError = ErrorObject<
 >
 
 const error: KeywordErrorDefinition = {
-  message: "should match exactly one schema in oneOf",
+  message: "must match exactly one schema in oneOf",
   params: ({params}) => _`{passingSchemas: ${params.passing}}`,
 }
 
@@ -26,9 +26,10 @@ const def: CodeKeywordDefinition = {
   trackErrors: true,
   error,
   code(cxt: KeywordCxt) {
-    const {gen, schema, it} = cxt
+    const {gen, schema, parentSchema, it} = cxt
     /* istanbul ignore if */
     if (!Array.isArray(schema)) throw new Error("ajv implementation error")
+    if (it.opts.discriminator && parentSchema.discriminator) return
     const schArr: AnySchema[] = schema
     const valid = gen.let("valid", false)
     const passing = gen.let("passing", null)

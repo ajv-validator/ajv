@@ -92,10 +92,10 @@ describe("strict option with defaults (replaced strictDefaults)", () => {
         const ajv = new _Ajv({
           useDefaults: true,
           strict: "log",
-          strictTypes: false,
           logger: getLogger(output),
         })
         const schema = {
+          type: "object",
           default: 5,
           properties: {},
         }

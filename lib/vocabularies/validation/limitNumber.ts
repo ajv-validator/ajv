@@ -1,5 +1,5 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, str, operators, Code} from "../../compile/codegen"
 
 const ops = operators
@@ -22,7 +22,7 @@ export type LimitNumberError = ErrorObject<
 >
 
 const error: KeywordErrorDefinition = {
-  message: ({keyword, schemaCode}) => str`should be ${KWDs[keyword as Kwd].okStr} ${schemaCode}`,
+  message: ({keyword, schemaCode}) => str`must be ${KWDs[keyword as Kwd].okStr} ${schemaCode}`,
   params: ({keyword, schemaCode}) =>
     _`{comparison: ${KWDs[keyword as Kwd].okStr}, limit: ${schemaCode}}`,
 }
