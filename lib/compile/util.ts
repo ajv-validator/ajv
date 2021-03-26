@@ -128,7 +128,7 @@ export const mergeEvaluated: MergeEvaluated = {
         gen.if(
           _`${from} === true`,
           () => gen.assign(to, true),
-          () => gen.code(_`Object.assign(${to}, ${from})`)
+          () => gen.assign(to, _`${to} || {}`).code(_`Object.assign(${to}, ${from})`)
         )
       }),
     mergeToName: (gen, from, to) =>
