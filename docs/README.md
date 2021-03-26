@@ -123,9 +123,7 @@ I always thought that built-in data validation is a key feature of any web frame
 
 <Testimonial color="blue">
 
-### AJV are the best
-
-“AJV is a widely used library that provides relia bility, safety and security to millions of JavaScript applications and other libraries. It can be used in all”
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eleifend aliquet urna at euismod. Sed placerat malesuada felis vel rutrum. Nullam egestas tincidunt nulla, nec malesuada lorem laoreet ut. Integer.
 
 </Testimonial>
 </Testimonials>
