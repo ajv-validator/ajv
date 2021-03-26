@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
@@ -29,8 +29,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: update website
-        if: ${{ matrix.node-version == '14.x' }}
-        run: ./scripts/publish-gh-pages
+        if: ${{ github.event_name == 'push' && matrix.node-version == '14.x' }}
+        run: ./scripts/publish-site
         env:
           GH_TOKEN_PUBLIC: ${{ secrets.GH_TOKEN_PUBLIC }}
           GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}

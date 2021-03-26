@@ -8,6 +8,7 @@ import {
   noPropertyInData,
 } from "../code"
 import {_, str, nil, not, Name, Code} from "../../compile/codegen"
+import {checkStrictMode} from "../../compile/validate"
 
 export type RequiredError = ErrorObject<
   "required",
@@ -33,6 +34,18 @@ const def: CodeKeywordDefinition = {
     const useLoop = schema.length >= opts.loopRequired
     if (it.allErrors) allErrorsMode()
     else exitOnErrorMode()
+
+    if (opts.strictRequired) {
+      const props = cxt.parentSchema.properties
+      const {definedProperties} = cxt.it
+      for (const requiredKey of schema) {
+        if (props?.[requiredKey] === undefined && !definedProperties.has(requiredKey)) {
+          const schemaPath = it.schemaEnv.baseId + it.errSchemaPath
+          const msg = `required property "${requiredKey}" is not defined at "${schemaPath}" (strictRequired)`
+          checkStrictMode(it, msg, it.opts.strictRequired)
+        }
+      }
+    }
 
     function allErrorsMode(): void {
       if (useLoop || $data) {
@@ -60,7 +73,7 @@ const def: CodeKeywordDefinition = {
     function loopAllRequired(): void {
       gen.forOf("prop", schemaCode as Code, (prop) => {
         cxt.setParams({missingProperty: prop})
-        gen.if(noPropertyInData(data, prop, opts.ownProperties), () => cxt.error())
+        gen.if(noPropertyInData(gen, data, prop, opts.ownProperties), () => cxt.error())
       })
     }
 
@@ -70,7 +83,7 @@ const def: CodeKeywordDefinition = {
         missing,
         schemaCode as Code,
         () => {
-          gen.assign(valid, propertyInData(data, missing, opts.ownProperties))
+          gen.assign(valid, propertyInData(gen, data, missing, opts.ownProperties))
           gen.if(not(valid), () => {
             cxt.error()
             gen.break()

@@ -1,4 +1,5 @@
 spec/JSON-Schema-Test-Suite
+spec/json-typedef-spec
 .browser
 coverage
 dist

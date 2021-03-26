@@ -34,7 +34,6 @@ const def: CodeKeywordDefinition = {
           dataTypes: ["string"],
           propertyName: key,
           compositeRule: true,
-          strictSchema: it.strictSchema,
         },
         valid
       )

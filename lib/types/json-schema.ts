@@ -34,11 +34,11 @@ export type JSONSchemaType<T, _partial extends boolean = false> = (T extends num
       // JSON AnySchema for tuple
       type: JSONType<"array", _partial>
       items: {
-        [K in keyof T]-?: JSONSchemaType<T[K]> & Nullable<T[K]>
+        readonly [K in keyof T]-?: JSONSchemaType<T[K]> & Nullable<T[K]>
       } & {length: T["length"]}
       minItems: T["length"]
     } & ({maxItems: T["length"]} | {additionalItems: false})
-  : T extends any[]
+  : T extends readonly any[]
   ? {
       type: JSONType<"array", _partial>
       items: JSONSchemaType<T[0]>
@@ -59,14 +59,14 @@ export type JSONSchemaType<T, _partial extends boolean = false> = (T extends num
       type: JSONType<"object", _partial>
       // "required" type does not guarantee that all required properties are listed
       // it only asserts that optional cannot be listed
-      required: _partial extends true ? (keyof T)[] : RequiredMembers<T>[]
+      required: _partial extends true ? Readonly<(keyof T)[]> : Readonly<RequiredMembers<T>[]>
       additionalProperties?: boolean | JSONSchemaType<T[string]>
       unevaluatedProperties?: boolean | JSONSchemaType<T[string]>
       properties?: _partial extends true ? Partial<PropertiesSchema<T>> : PropertiesSchema<T>
       patternProperties?: {[Pattern in string]?: JSONSchemaType<T[string]>}
       propertyNames?: JSONSchemaType<string>
-      dependencies?: {[K in keyof T]?: (keyof T)[] | PartialSchema<T>}
-      dependentRequired?: {[K in keyof T]?: (keyof T)[]}
+      dependencies?: {[K in keyof T]?: Readonly<(keyof T)[]> | PartialSchema<T>}
+      dependentRequired?: {[K in keyof T]?: Readonly<(keyof T)[]>}
       dependentSchemas?: {[K in keyof T]?: PartialSchema<T>}
       minProperties?: number
       maxProperties?: number
@@ -85,9 +85,9 @@ export type JSONSchemaType<T, _partial extends boolean = false> = (T extends num
   definitions?: {
     [Key in string]?: JSONSchemaType<Known, true>
   }
-  allOf?: PartialSchema<T>[]
-  anyOf?: PartialSchema<T>[]
-  oneOf?: PartialSchema<T>[]
+  allOf?: Readonly<PartialSchema<T>[]>
+  anyOf?: Readonly<PartialSchema<T>[]>
+  oneOf?: Readonly<PartialSchema<T>[]>
   if?: PartialSchema<T>
   then?: PartialSchema<T>
   else?: PartialSchema<T>
@@ -98,11 +98,11 @@ type Known = KnownRecord | [Known, ...Known[]] | Known[] | number | string | boo
 
 interface KnownRecord extends Record<string, Known> {}
 
-type PropertiesSchema<T> = {
+export type PropertiesSchema<T> = {
   [K in keyof T]-?: (JSONSchemaType<T[K]> & Nullable<T[K]>) | {$ref: string}
 }
 
-type RequiredMembers<T> = {
+export type RequiredMembers<T> = {
   [K in keyof T]-?: undefined extends T[K] ? never : K
 }[keyof T]
 
@@ -110,11 +110,11 @@ type Nullable<T> = undefined extends T
   ? {
       nullable: true
       const?: never // any non-null value would fail `const: null`, `null` would fail any other value in const
-      enum?: (T | null)[] // `null` must be explicitly included in "enum" for `null` to pass
+      enum?: Readonly<(T | null)[]> // `null` must be explicitly included in "enum" for `null` to pass
       default?: T | null
     }
   : {
       const?: T
-      enum?: T[]
+      enum?: Readonly<T[]>
       default?: T
     }

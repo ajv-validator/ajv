@@ -31,6 +31,7 @@ export {KeywordCxt}
 export {DefinedError} from "./vocabularies/errors"
 export {JSONType} from "./compile/rules"
 export {JSONSchemaType} from "./types/json-schema"
+export {JTDSchemaType} from "./types/jtd-schema"
 export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
 
 import type {
@@ -50,6 +51,7 @@ import type {
   AddedFormat,
 } from "./types"
 import type {JSONSchemaType} from "./types/json-schema"
+import type {JTDSchemaType} from "./types/jtd-schema"
 import {ValidationError, MissingRefError} from "./compile/error_classes"
 import {getRules, ValidationRules, Rule, RuleGroup, JSONType} from "./compile/rules"
 import {SchemaEnv, compileSchema, resolveSchema} from "./compile"
@@ -58,11 +60,13 @@ import {normalizeId, getSchemaRefs} from "./compile/resolve"
 import {getJSONTypes} from "./compile/validate/dataType"
 import {eachItem} from "./compile/util"
 
-import $dataRefSchema = require("./refs/data.json")
+import * as $dataRefSchema from "./refs/data.json"
 
 const META_IGNORE_OPTIONS: (keyof Options)[] = ["removeAdditional", "useDefaults", "coerceTypes"]
 const EXT_SCOPE_NAMES = new Set([
   "validate",
+  "serialize",
+  "parse",
   "wrapper",
   "root",
   "schema",
@@ -77,11 +81,12 @@ const EXT_SCOPE_NAMES = new Set([
 
 export type Options = CurrentOptions & DeprecatedOptions
 
-interface CurrentOptions {
+export interface CurrentOptions {
   // strict mode options (NEW)
   strict?: boolean | "log"
   strictTypes?: boolean | "log"
   strictTuples?: boolean | "log"
+  strictRequired?: boolean | "log"
   allowMatchingProperties?: boolean // disables a strict mode restriction
   allowUnionTypes?: boolean
   validateFormats?: boolean
@@ -105,6 +110,7 @@ interface CurrentOptions {
   next?: boolean // NEW
   unevaluated?: boolean // NEW
   dynamicRef?: boolean // NEW
+  jtd?: boolean // NEW
   meta?: SchemaObject | boolean
   defaultMeta?: string | AnySchemaObject
   validateSchema?: boolean | "log"
@@ -117,6 +123,7 @@ interface CurrentOptions {
   multipleOfPrecision?: number
   messages?: boolean
   code?: CodeOptions // NEW
+  ajvErrors?: boolean
 }
 
 export interface CodeOptions {
@@ -292,6 +299,9 @@ export default class Ajv {
   validate(schema: Schema | string, data: unknown): boolean
   validate(schemaKeyRef: AnySchema | string, data: unknown): boolean | Promise<unknown>
   validate<T>(schema: Schema | JSONSchemaType<T> | string, data: unknown): data is T
+  // Separated for type inference to work
+  // eslint-disable-next-line @typescript-eslint/unified-signatures
+  validate<T>(schema: JTDSchemaType<T>, data: unknown): data is T
   validate<T>(schema: AsyncSchema, data: unknown | T): Promise<T>
   validate<T>(schemaKeyRef: AnySchema | string, data: unknown): data is T | Promise<T>
   validate<T>(
@@ -314,6 +324,9 @@ export default class Ajv {
   // Create validation function for passed schema
   // _meta: true if schema is a meta-schema. Used internally to compile meta schemas of user-defined keywords.
   compile<T = unknown>(schema: Schema | JSONSchemaType<T>, _meta?: boolean): ValidateFunction<T>
+  // Separated for type inference to work
+  // eslint-disable-next-line @typescript-eslint/unified-signatures
+  compile<T = unknown>(schema: JTDSchemaType<T>, _meta?: boolean): ValidateFunction<T>
   compile<T = unknown>(schema: AsyncSchema, _meta?: boolean): AsyncValidateFunction<T>
   compile<T = unknown>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T>
   compile<T = unknown>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T> {
@@ -329,6 +342,9 @@ export default class Ajv {
     schema: SchemaObject | JSONSchemaType<T>,
     _meta?: boolean
   ): Promise<ValidateFunction<T>>
+  // Separated for type inference to work
+  // eslint-disable-next-line @typescript-eslint/unified-signatures
+  compileAsync<T = unknown>(schema: JTDSchemaType<T>, _meta?: boolean): Promise<ValidateFunction<T>>
   compileAsync<T = unknown>(schema: AsyncSchema, meta?: boolean): Promise<AsyncValidateFunction<T>>
   // eslint-disable-next-line @typescript-eslint/unified-signatures
   compileAsync<T = unknown>(
@@ -620,14 +636,15 @@ export default class Ajv {
     }
   }
 
-  private _addSchema(
+  _addSchema(
     schema: AnySchema,
     meta?: boolean,
     validateSchema = this.opts.validateSchema,
     addSchema = this.opts.addUsedSchema
   ): SchemaEnv {
-    if (typeof schema != "object" && typeof schema != "boolean") {
-      throw new Error("schema must be object or boolean")
+    if (typeof schema != "object") {
+      if (this.opts.jtd) throw new Error("schema must be object")
+      else if (typeof schema != "boolean") throw new Error("schema must be object or boolean")
     }
     let sch = this._cache.get(schema)
     if (sch !== undefined) return sch
@@ -739,7 +756,7 @@ function getLogger(logger?: Partial<Logger> | false): Logger {
   throw new Error("logger must implement log, warn and error methods")
 }
 
-const KEYWORD_NAME = /^[a-z_$][a-z0-9_$-]*$/i
+const KEYWORD_NAME = /^[a-z_$][a-z0-9_$:-]*$/i
 
 function checkKeyword(this: Ajv, keyword: string | string[], def?: KeywordDefinition): void {
   const {RULES} = this

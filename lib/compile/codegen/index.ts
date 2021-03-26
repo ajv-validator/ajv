@@ -3,7 +3,7 @@ import {_, nil, _Code, Code, Name, UsedNames, CodeItem, addCodeArg, _CodeOrName}
 import {Scope, varKinds} from "./scope"
 
 export {_, str, strConcat, nil, getProperty, stringify, Name, Code} from "./code"
-export {Scope, ScopeStore, ValueScope, ScopeValueSets, varKinds} from "./scope"
+export {Scope, ScopeStore, ValueScope, ValueScopeName, ScopeValueSets, varKinds} from "./scope"
 
 // type for expressions that can be safely inserted in code without quotes
 export type SafeExpr = Code | number | boolean | null
@@ -21,6 +21,7 @@ export const operators = {
   NOT: new _Code("!"),
   OR: new _Code("||"),
   AND: new _Code("&&"),
+  ADD: new _Code("+"),
 }
 
 abstract class Node {
@@ -62,11 +63,7 @@ class Def extends Node {
 }
 
 class Assign extends Node {
-  constructor(
-    private readonly lhs: Code,
-    private rhs: SafeExpr,
-    private readonly sideEffects?: boolean
-  ) {
+  constructor(readonly lhs: Code, public rhs: SafeExpr, private readonly sideEffects?: boolean) {
     super()
   }
 
@@ -83,6 +80,16 @@ class Assign extends Node {
   get names(): UsedNames {
     const names = this.lhs instanceof Name ? {} : {...this.lhs.names}
     return addExprNames(names, this.rhs)
+  }
+}
+
+class AssignOp extends Assign {
+  constructor(lhs: Code, private readonly op: Code, rhs: SafeExpr, sideEffects?: boolean) {
+    super(lhs, rhs, sideEffects)
+  }
+
+  render({_n}: CGOptions): string {
+    return `${this.lhs} ${this.op}= ${this.rhs};` + _n
   }
 }
 
@@ -506,6 +513,11 @@ export class CodeGen {
   // assignment code
   assign(lhs: Code, rhs: SafeExpr, sideEffects?: boolean): CodeGen {
     return this._leafNode(new Assign(lhs, rhs, sideEffects))
+  }
+
+  // `+=` code
+  add(lhs: Code, rhs: SafeExpr): CodeGen {
+    return this._leafNode(new AssignOp(lhs, operators.ADD, rhs))
   }
 
   // appends passed SafeExpr to code or executes Block

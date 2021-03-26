@@ -5,7 +5,7 @@ import type {
   KeywordErrorDefinition,
   AnySchema,
 } from "../../types"
-import {allSchemaProperties, usePattern} from "../code"
+import {allSchemaProperties, usePattern, isOwnProperty} from "../code"
 import {_, nil, or, not, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 import {SubschemaArgs, Type} from "../../compile/subschema"
@@ -53,7 +53,7 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
       if (props.length > 8) {
         // TODO maybe an option instead of hard-coded 8?
         const propsSchema = schemaRefOrVal(it, parentSchema.properties, "properties")
-        definedProp = _`${propsSchema}.hasOwnProperty(${key})`
+        definedProp = isOwnProperty(gen, propsSchema as Code, key)
       } else if (props.length) {
         definedProp = or(...props.map((p) => _`${key} === ${p}`))
       } else {
@@ -62,7 +62,7 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
       if (patProps.length) {
         definedProp = or(definedProp, ...patProps.map((p) => _`${usePattern(gen, p)}.test(${key})`))
       }
-      return _`!(${definedProp})`
+      return not(definedProp)
     }
 
     function deleteAdditional(key: Name): void {
@@ -102,7 +102,6 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
         keyword: "additionalProperties",
         dataProp: key,
         dataPropType: Type.Str,
-        strictSchema: it.strictSchema,
       }
       if (errors === false) {
         Object.assign(subschema, {

@@ -1,11 +1,16 @@
-<img align="right" alt="Ajv logo" width="160" src="https://ajv.js.org/images/ajv_logo.png">
+<img align="right" alt="Ajv logo" width="160" src="https://ajv.js.org/img/ajv.svg">
 
-# Ajv: Another JSON Schema Validator
+&nbsp;
 
-The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07/2019-09 (draft-04 is supported in [version 6](https://github.com/ajv-validator/ajv/tree/v6)).
+# Ajv: Another JSON schema validator
+
+Super fast JSON validator for Node.js and browser.
+
+Supports JSON Schema draft-06/07/2019-09 (draft-04 is supported in [version 6](https://github.com/ajv-validator/ajv/tree/v6)) and JSON Type Definition [RFC8927](https://datatracker.ietf.org/doc/rfc8927/).
 
 [![build](https://github.com/ajv-validator/ajv/workflows/build/badge.svg)](https://github.com/ajv-validator/ajv/actions?query=workflow%3Abuild)
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
+[![npm (beta)](https://img.shields.io/npm/v/ajv/beta)](https://www.npmjs.com/package/ajv)
 [![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![Coverage Status](https://coveralls.io/repos/github/ajv-validator/ajv/badge.svg?branch=master)](https://coveralls.io/github/ajv-validator/ajv?branch=master)
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
@@ -13,13 +18,14 @@ The fastest JSON Schema validator for Node.js and browser. Supports draft-06/07/
 
 ## Platinum sponsors
 
-[<img src="https://www.poberezkin.com/images/mozilla.svg" width="45%">](https://www.mozilla.org)[<img src="https://ajv.js.org/images/gap.svg" width="9%">](https://opencollective.com/ajv)[<img src="https://ajv.js.org/images/reserved.svg" width="45%">](https://opencollective.com/ajv)
+[<img src="https://ajv.js.org/img/mozilla.svg" width="45%">](https://www.mozilla.org)<img src="https://ajv.js.org/img/gap.svg" width="8%">[<img src="https://ajv.js.org/img/reserved.svg" width="45%">](https://opencollective.com/ajv)
 
 ## Using version 7
 
-Ajv version 7 is released with these changes:
+Ajv version 7 has these new features:
 
-- support of JSON Schema draft-2019-09 features: [`unevaluatedProperties`](./json-schema.md#unevaluatedproperties) and [`unevaluatedItems`](./json-schema.md#unevaluateditems), [dynamic recursive references](./validation.md#extending-recursive-schemas) and other [additional keywords](./json-schema.md#json-schema-draft-2019-09).
+- NEW: support of JSON Type Definition [RFC8927](https://datatracker.ietf.org/doc/rfc8927/) (from [v7.1.0](https://github.com/ajv-validator/ajv-keywords/releases/tag/v7.1.0)), including generation of [serializers](./docs/api.md#jtd-serialize) and [parsers](./docs/api.md#jtd-parse) from JTD schemas that are more efficient than native JSON serialization/parsing, combining JSON string parsing and validation in one function.
+- support of JSON Schema draft-2019-09 features: [`unevaluatedProperties`](./docs/json-schema.md#unevaluatedproperties) and [`unevaluatedItems`](./docs/json-schema.md#unevaluateditems), [dynamic recursive references](./docs/guide/combining-schemas.md#extending-recursive-schemas) and other [additional keywords](./docs/json-schema.md#json-schema-draft-2019-09).
 - to reduce the mistakes in JSON schemas and unexpected validation results, [strict mode](./docs/strict-mode.md) is added - it prohibits ignored or ambiguous JSON Schema elements.
 - to make code injection from untrusted schemas impossible, [code generation](./docs/codegen.md) is fully re-written to be safe and to allow code optimization (compiled schema code size is reduced by more than 10%).
 - to simplify Ajv extensions, the new keyword API that is used by pre-defined keywords is available to user-defined keywords - it is much easier to define any keywords now, especially with subschemas. [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package was updated to use the new API (in [v4.0.0](https://github.com/ajv-validator/ajv-keywords/releases/tag/v4.0.0))
@@ -43,9 +49,27 @@ See [Getting started](#usage) for code example.
 
 ## Contributing
 
-100+ people contributed to Ajv. You are very welcome to join by implementing new features that are valuable to many users and by improving documentation.
+More than 100 people contributed to Ajv, and we would love to have you join the development. We welcome implementing new features that will benefit many users and ideas to improve our documentation.
 
-Please do not be disappointed if your suggestion is not accepted - it is important to maintain the balance between the library size, performance and functionality. If it seems that a feature would benefit only a small number of users, its addition may be delayed until there is more support from the users community - so please submit the issue first to explain why this feature is important.
+At Ajv, we are committed to creating more equitable and inclusive spaces for our community and team members to contribute to discussions that affect both this project and our ongoing work in the open source ecosystem.
+
+We strive to create an environment of respect and healthy discourse by setting standards for our interactions and we expect it from all members of our community - from long term project member to first time visitor. For more information, review our [code of conduct](./CODE_OF_CONDUCT.md) and values.
+
+<Contributors />
+
+### How we make decisions
+
+We value conscious curation of our library size, and balancing performance and functionality. To that end, we cannot accept every suggestion. When evaluating pull requests we consider:
+
+- Will this benefit many users or a niche use case?
+- How will this impact the performance of Ajv?
+- How will this expand our library size?
+
+To help us evaluate and understand, when you submit an issue and pull request:
+
+- Explain why this feature is important to the user base
+- Include documentation
+- Include test coverage with any new feature implementations
 
 Please include documentation and test coverage with any new feature implementations.
 
@@ -59,7 +83,7 @@ npm test
 
 `npm run build` - compiles typescript to `dist` folder.
 
-Please review [Contributing guidelines](./CONTRIBUTING.md) and [Code components](./docs/components.md).
+Please also review [Contributing guidelines](./CONTRIBUTING.md) and [Code components](./docs/components.md).
 
 ## Contents
 
@@ -71,10 +95,12 @@ Please review [Contributing guidelines](./CONTRIBUTING.md) and [Code components]
 - [Performance](#performance)
 - [Features](#features)
 - [Getting started](#usage)
+- [Choosing schema language: JSON Schema vs JSON Type Definition](./docs/guide/schema-language.md#comparison)
 - [Frequently Asked Questions](./docs/faq.md)
-- [Using in browser](#using-in-browser)
+- [Using in browser](./docs/guide/environments.md#browsers)
   - [Content Security Policy](./docs/security.md#content-security-policy)
-- [Command line interface](#command-line-interface)
+- [Using in ES5 environment](./docs/guide/environments.md#es5-environments)
+- [Command line interface](./docs/guide/environments.md#command-line-interface)
 - [API reference](./docs/api.md)
   - [Methods](./docs/api.md#ajv-constructor-and-methods)
   - [Options](./docs/api.md#options)
@@ -84,16 +110,17 @@ Please review [Contributing guidelines](./CONTRIBUTING.md) and [Code components]
   - [Prevent unexpected validation](./docs/strict-mode.md#prevent-unexpected-validation)
   - [Strict types](./docs/strict-mode.md#strict-types)
   - [Strict number validation](./docs/strict-mode.md#strict-number-validation)
-- [Data validation](./docs/validation.md)
-  - [Validation basics](./docs/validation.md#validation-basics): [JSON Schema keywords](./docs/validation.md#validation-keywords), [annotations](./docs/validation.md#annotation-keywords), [formats](./docs/validation.md#formats)
-  - [Modular schemas](./docs/validation.md#modular-schemas): [combining with \$ref](./docs/validation.md#ref), [\$data reference](./docs/validation.md#data-reference), [$merge and $patch](./docs/validation.md#merge-and-patch-keywords)
-  - [Asynchronous schema compilation](./docs/validation.md#asynchronous-schema-compilation)
+- [Validation guide](./docs/guide/getting-started.md)
+  - [Getting started](./docs/guide/getting-started.md)
+  - [Validating formats](./docs/guide/formats.md)
+  - [Modular schemas](./docs/guide/combining-schemas.md): [combining with \$ref](./docs/guide/combining-schemas#ref), [\$data reference](./docs/guide/combining-schemas.md#data-reference), [$merge and $patch](./docs/guide/combining-schemas#merge-and-patch-keywords)
+  - [Asynchronous schema compilation](./docs/guide/managing-schemas.md#asynchronous-schema-compilation)
   - [Standalone validation code](./docs/standalone.md)
-  - [Asynchronous validation](./docs/validation.md#asynchronous-validation)
-  - [Modifying data](./docs/validation.md#modifying-data-during-validation): [additional properties](./docs/validation.md#removing-additional-properties), [defaults](./docs/validation.md#assigning-defaults), [type coercion](./docs/validation.md#coercing-data-types)
+  - [Asynchronous validation](./docs/guide/async-validation.md)
+  - [Modifying data](./docs/guide/modifying-data.md): [additional properties](./docs/guide/modifying-data.md#removing-additional-properties), [defaults](./docs/guide/modifying-data.md#assigning-defaults), [type coercion](./docs/guide/modifying-data.md#coercing-data-types)
 - [Extending Ajv](#extending-ajv)
   - User-defined keywords:
-    - [basics](./docs/validation.md#user-defined-keywords)
+    - [basics](./docs/guide/user-keywords.md)
     - [guide](./docs/keywords.md)
   - [Plugins](#plugins)
   - [Related packages](#related-packages)
@@ -110,7 +137,7 @@ Please review [Contributing guidelines](./CONTRIBUTING.md) and [Code components]
 
 ## Mozilla MOSS grant and OpenJS Foundation
 
-[<img src="https://www.poberezkin.com/images/mozilla.png" width="240" height="68">](https://www.mozilla.org/en-US/moss/) &nbsp;&nbsp;&nbsp; [<img src="https://www.poberezkin.com/images/openjs.png" width="220" height="68">](https://openjsf.org/blog/2020/08/14/ajv-joins-openjs-foundation-as-an-incubation-project/)
+[<img src="https://ajv.js.org/img/mozilla.svg" width="240" height="68">](https://www.mozilla.org/en-US/moss/)<img src="https://ajv.js.org/img/gap.svg" width="5%">[<img src="https://ajv.js.org/img/openjs.png" width="220" height="68">](https://openjsf.org/blog/2020/08/14/ajv-joins-openjs-foundation-as-an-incubation-project/)
 
 Ajv has been awarded a grant from Mozilla’s [Open Source Support (MOSS) program](https://www.mozilla.org/en-US/moss/) in the “Foundational Technology” track! It will sponsor the development of Ajv support of [JSON Schema version 2019-09](https://tools.ietf.org/html/draft-handrews-json-schema-02) and of [JSON Type Definition (RFC8927)](https://datatracker.ietf.org/doc/rfc8927/).
 
@@ -165,7 +192,7 @@ Performance of different validators by [json-schema-benchmark](https://github.co
 
 ## Features
 
-- Ajv implements full JSON Schema [draft-06/07](http://json-schema.org/) standards (draft-04 is supported in v6):
+- Ajv implements JSON Schema [draft-06/07/2019-09](http://json-schema.org/) standards (draft-04 is supported in v6):
   - all validation keywords (see [JSON Schema validation keywords](./docs/json-schema.md))
   - keyword "nullable" from [Open API 3 specification](https://swagger.io/docs/specification/data-models/data-types/).
   - full support of remote references (remote schemas have to be added with `addSchema` or compiled to be available)
@@ -173,19 +200,23 @@ Performance of different validators by [json-schema-benchmark](https://github.co
   - correct string lengths for strings with unicode pairs
   - [formats](#formats) defined by JSON Schema draft-07 standard (with [ajv-formats](https://github.com/ajv-validator/ajv-formats) plugin) and additional formats (can be turned off)
   - [validates schemas against meta-schema](./docs/api.md#api-validateschema)
+- NEW: supports [JSON Type Definition](https://datatracker.ietf.org/doc/rfc8927/):
+  - all forms (see [JSON Type Definition schema forms](./docs/json-type-definition.md))
+  - meta-schema for JTD schemas
+  - "union" keyword and user-defined keywords (can be used inside "metadata" member of the schema)
 - supports [browsers](#using-in-browser) and Node.js 0.10-14.x
-- [asynchronous loading](./docs/validation.md#asynchronous-schema-compilation) of referenced schemas during compilation
+- [asynchronous loading](./docs/guide/managing-schemas.md#asynchronous-schema-compilation) of referenced schemas during compilation
 - "All errors" validation mode with [option allErrors](./docs/api.md#options)
 - [error messages with parameters](./docs/api.md#validation-errors) describing error reasons to allow error message generation
 - i18n error messages support with [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) package
-- [removing-additional-properties](./docs/validation.md#removing-additional-properties)
-- [assigning defaults](./docs/validation.md#assigning-defaults) to missing properties and items
-- [coercing data](./docs/validation.md#coercing-data-types) to the types specified in `type` keywords
+- [removing-additional-properties](./docs/guide/modifying-data.md#removing-additional-properties)
+- [assigning defaults](./docs/guide/modifying-data.md#assigning-defaults) to missing properties and items
+- [coercing data](./docs/guide/modifying-data.md#coercing-data-types) to the types specified in `type` keywords
 - [user-defined keywords](#user-defined-keywords)
 - draft-06/07 keywords `const`, `contains`, `propertyNames` and `if/then/else`
 - draft-06 boolean schemas (`true`/`false` as a schema to always pass/fail).
 - additional extension keywords with [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package
-- [\$data reference](./docs/validation.md#data-reference) to use values from the validated data as values for the schema keywords
+- [\$data reference](./docs/guide/combining-schemas.md#data-reference) to use values from the validated data as values for the schema keywords
 - [asynchronous validation](./docs/api.md#asynchronous-validation) of user-defined formats and keywords
 
 ## Install
@@ -214,119 +245,13 @@ const valid = validate(data)
 if (!valid) console.log(validate.errors)
 ```
 
-In TypeScript:
-
-```typescript
-import Ajv, {JSONSchemaType, DefinedError} from "ajv"
-
-const ajv = new Ajv()
-
-type MyData = {foo: number}
-
-// Optional schema type annotation for schema to match MyData type.
-// To use JSONSchemaType set `strictNullChecks: true` in tsconfig `compilerOptions`.
-const schema: JSONSchemaType<MyData> = {
-  type: "object",
-  properties: {
-    foo: {type: "number", minimum: 0},
-  },
-  required: ["foo"],
-  additionalProperties: false,
-}
-
-// validate is a type guard for MyData - type is inferred from schema type
-const validate = ajv.compile(schema)
-
-// or, if you did not use type annotation for the schema,
-// type parameter can be used to make it type guard:
-// const validate = ajv.compile<MyData>(schema)
-
-const data: any = {foo: 1}
-
-if (validate(data)) {
-  // data is MyData here
-  console.log(data.foo)
-} else {
-  // The type cast is needed to allow user-defined keywords and errors
-  // You can extend this type to include your error types as needed.
-  for (const err of validate.errors as DefinedError[]) {
-    switch (err.keyword) {
-      case "minimum":
-        // err type is narrowed here to have "minimum" error params properties
-        console.log(err.params.limit)
-        break
-      // ...
-    }
-  }
-}
-```
-
-See [this test](./spec/types/json-schema.spec.ts) for an advanced example, [API reference](./docs/api.md) and [Options](./docs/api.md#options) for more details.
-
-Ajv compiles schemas to functions and caches them in all cases (using schema itself as a key for Map) or another function passed via options), so that the next time the same schema is used (not necessarily the same object instance) it won't be compiled again.
-
-The best performance is achieved when using compiled functions returned by `compile` or `getSchema` methods (there is no additional function call).
-
-**Please note**: every time a validation function or `ajv.validate` are called `errors` property is overwritten. You need to copy `errors` array reference to another variable if you want to use it later (e.g., in the callback). See [Validation errors](./docs/api.md#validation-errors)
-
-## Using in browser
-
-See [Content Security Policy](./docs/security.md#content-security-policy) to decide the best approach how to use Ajv in the browser.
-
-Whether you use Ajv or compiled schemas, it is recommended that you bundle them together with your code.
-
-If you need to use Ajv in several bundles you can create a separate UMD bundles using `npm run bundle` script.
-
-Then you need to load Ajv with support of JSON Schema draft-07 in the browser:
-
-```html
-<script src="bundle/ajv7.min.js"></script>
-<script>
-  ;(function () {
-    const Ajv = window.ajv7.default
-    const ajv = new Ajv()
-  })()
-</script>
-```
-
-or to load the bundle that supports JSONSchema draft-2019-09:
-
-```html
-<script src="bundle/ajv2019.min.js"></script>
-<script>
-  ;(function () {
-    const Ajv = window.ajv2019.default
-    const ajv = new Ajv()
-  })()
-</script>
-```
-
-This bundle can be used with different module systems; it creates global `ajv` (or `ajv2019`) if no module system is found.
-
-The browser bundle is available on [cdnjs](https://cdnjs.com/libraries/ajv).
-
-**Please note**: some frameworks, e.g. Dojo, may redefine global require in a way that is not compatible with CommonJS module format. In this case Ajv bundle has to be loaded before the framework and then you can use global `ajv` (see issue [#234](https://github.com/ajv-validator/ajv/issues/234)).
-
-## Command line interface
-
-CLI is available as a separate npm package [ajv-cli](https://github.com/ajv-validator/ajv-cli). It supports:
-
-- compiling JSON Schemas to test their validity
-- generating [standalone validation code](./docs/standalone.md) that exports validation function(s) to be used without Ajv
-- migrating schemas to draft-07 and draft-2019-09 (using [json-schema-migrate](https://github.com/epoberezkin/json-schema-migrate))
-- validating data file(s) against JSON Schema
-- testing expected validity of data against JSON Schema
-- referenced schemas
-- user-defined meta-schemas, validation keywords and formats
-- files in JSON, JSON5, YAML, and JavaScript format
-- all Ajv options
-- reporting changes in data after validation in [JSON-patch](https://tools.ietf.org/html/rfc6902) format
+See more examples in [Guide: getting started](./docs/guide/getting-started.md)
 
 ## Extending Ajv
 
 ### User defined keywords
 
-See section in [data validation](./docs/validation.md#user-defined-keywords) and the [detailed guide](./docs/keywords.md).
+See section in [data validation](./docs/guide/user-keywords.md) and the [detailed guide](./docs/keywords.md).
 
 ### Plugins
 
@@ -380,7 +305,7 @@ If you have published a useful plugin please submit a PR to add it to the next s
 
 ## Changes history
 
-See https://github.com/ajv-validator/ajv/releases
+See [https://github.com/ajv-validator/ajv/releases](https://github.com/ajv-validator/ajv/releases)
 
 **Please note**: [Changes in version 7.0.0](https://github.com/ajv-validator/ajv/releases/tag/v7.0.0)
 

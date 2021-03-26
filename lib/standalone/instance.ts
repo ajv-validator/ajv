@@ -1,6 +1,6 @@
 import Ajv, {AnySchema, AnyValidateFunction, ErrorObject} from "../core"
 import standaloneCode from "."
-import requireFromString = require("require-from-string")
+import * as requireFromString from "require-from-string"
 
 export default class AjvPack {
   errors?: ErrorObject[] | null // errors from the last validation

@@ -8,7 +8,6 @@ import {JSONType} from "./rules"
 interface SubschemaContext {
   // TODO use Optional? align with SchemCxt property types
   schema: AnySchema
-  strictSchema?: boolean
   schemaPath: Code
   errSchemaPath: string
   topSchemaRef?: Code
@@ -21,6 +20,8 @@ interface SubschemaContext {
   dataNames?: Name[]
   dataPathArr?: (Code | number)[]
   propertyName?: Name
+  jtdDiscriminator?: string
+  jtdMetadata?: boolean
   compositeRule?: true
   createErrors?: boolean
   allErrors?: boolean
@@ -35,15 +36,17 @@ export type SubschemaArgs = Partial<{
   keyword: string
   schemaProp: string | number
   schema: AnySchema
-  strictSchema: boolean
   schemaPath: Code
   errSchemaPath: string
   topSchemaRef: Code
   data: Name | Code
   dataProp: Code | string | number
   dataTypes: JSONType[]
+  definedProperties: Set<string>
   propertyName: Name
   dataPropType: Type
+  jtdDiscriminator: string
+  jtdMetadata: boolean
   compositeRule: true
   createErrors: boolean
   allErrors: boolean
@@ -60,15 +63,7 @@ export function applySubschema(it: SchemaObjCxt, appl: SubschemaArgs, valid: Nam
 
 function getSubschema(
   it: SchemaObjCxt,
-  {
-    keyword,
-    schemaProp,
-    schema,
-    strictSchema,
-    schemaPath,
-    errSchemaPath,
-    topSchemaRef,
-  }: SubschemaArgs
+  {keyword, schemaProp, schema, schemaPath, errSchemaPath, topSchemaRef}: SubschemaArgs
 ): SubschemaContext {
   if (keyword !== undefined && schema !== undefined) {
     throw new Error('both "keyword" and "schema" passed, only one allowed')
@@ -95,7 +90,6 @@ function getSubschema(
     }
     return {
       schema,
-      strictSchema,
       schemaPath,
       topSchemaRef,
       errSchemaPath,
@@ -138,6 +132,7 @@ function extendSubschemaData(
     subschema.data = _nextData
     subschema.dataLevel = it.dataLevel + 1
     subschema.dataTypes = []
+    it.definedProperties = new Set<string>()
     subschema.parentData = it.data
     subschema.dataNames = [...it.dataNames, _nextData]
   }
@@ -145,12 +140,13 @@ function extendSubschemaData(
 
 function extendSubschemaMode(
   subschema: SubschemaContext,
-  {compositeRule, createErrors, allErrors, strictSchema}: SubschemaArgs
+  {jtdDiscriminator, jtdMetadata, compositeRule, createErrors, allErrors}: SubschemaArgs
 ): void {
   if (compositeRule !== undefined) subschema.compositeRule = compositeRule
   if (createErrors !== undefined) subschema.createErrors = createErrors
   if (allErrors !== undefined) subschema.allErrors = allErrors
-  subschema.strictSchema = strictSchema // not inherited
+  subschema.jtdDiscriminator = jtdDiscriminator // not inherited
+  subschema.jtdMetadata = jtdMetadata // not inherited
 }
 
 function getErrorPath(

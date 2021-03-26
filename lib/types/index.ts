@@ -1,4 +1,4 @@
-import type {CodeGen, Code, Name, ScopeValueSets} from "../compile/codegen"
+import type {CodeGen, Code, Name, ScopeValueSets, ValueScopeName} from "../compile/codegen"
 import type {SchemaEnv, SchemaCxt, SchemaObjCxt} from "../compile"
 import type {JSONType} from "../compile/rules"
 import type KeywordCxt from "../compile/context"
@@ -30,7 +30,7 @@ export type AnySchema = Schema | AsyncSchema
 export type SchemaMap = {[Key in string]?: AnySchema}
 
 export interface SourceCode {
-  validateName: Name
+  validateName: ValueScopeName
   validateCode: string
   scopeValues: ScopeValueSets
   evaluated?: Code
@@ -51,6 +51,12 @@ export interface ValidateFunction<T = unknown> {
   schema: AnySchema
   schemaEnv: SchemaEnv
   source?: SourceCode
+}
+
+export interface JTDParser<T = unknown> {
+  (json: string): T | undefined
+  message?: string
+  position?: number
 }
 
 export type EvaluatedProperties = {[K in string]?: true} | true
@@ -76,6 +82,7 @@ export type AnyValidateFunction<T = any> = ValidateFunction<T> | AsyncValidateFu
 export interface ErrorObject<K extends string = string, P = Record<string, any>, S = unknown> {
   keyword: K
   dataPath: string
+  instancePath?: string
   schemaPath: string
   params: P
   // Added to validation errors of "propertyNames" keyword schema
@@ -95,7 +102,7 @@ interface _KeywordDef {
   type?: JSONType | JSONType[] // data types that keyword applies to
   schemaType?: JSONType | JSONType[] // allowed type(s) of keyword value in the schema
   allowUndefined?: boolean // used for keywords that can be invoked by other keywords, not being present in the schema
-  $data?: boolean // keyword supports [$data reference](../../docs/validation.md#data-reference)
+  $data?: boolean // keyword supports [$data reference](../../docs/guide/combining-schemas.md#data-reference)
   implements?: string[] // other schema keywords that this keyword implements
   before?: string // keyword should be executed before this keyword (should be applicable to the same type)
   post?: boolean // keyword should be executed after other keywords without post flag

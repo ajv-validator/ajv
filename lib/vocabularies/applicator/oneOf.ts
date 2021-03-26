@@ -9,7 +9,11 @@ import {_, Name} from "../../compile/codegen"
 import {alwaysValidSchema} from "../../compile/util"
 import {SchemaCxt} from "../../compile"
 
-export type OneOfError = ErrorObject<"oneOf", {passingSchemas: [number, number]}, AnySchema[]>
+export type OneOfError = ErrorObject<
+  "oneOf",
+  {passingSchemas: [number, number] | null},
+  AnySchema[]
+>
 
 const error: KeywordErrorDefinition = {
   message: "should match exactly one schema in oneOf",

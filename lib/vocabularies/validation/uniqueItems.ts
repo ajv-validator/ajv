@@ -2,7 +2,7 @@ import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from ".
 import type KeywordCxt from "../../compile/context"
 import {checkDataTypes, getSchemaTypes, DataType} from "../../compile/validate/dataType"
 import {_, str, Name} from "../../compile/codegen"
-import equal = require("fast-deep-equal")
+import * as equal from "fast-deep-equal"
 
 export type UniqueItemsError = ErrorObject<
   "uniqueItems",

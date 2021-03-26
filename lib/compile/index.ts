@@ -8,13 +8,13 @@ import type {
 } from "../types"
 import type Ajv from "../core"
 import type {InstanceOptions} from "../core"
-import {CodeGen, _, nil, stringify, Name, Code} from "./codegen"
+import {CodeGen, _, nil, stringify, Name, Code, ValueScopeName} from "./codegen"
 import {ValidationError} from "./error_classes"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
 import {schemaHasRulesButRef, unescapeFragment} from "./util"
 import {validateFunctionCode} from "./validate"
-import URI = require("uri-js")
+import * as URI from "uri-js"
 import {JSONType} from "./rules"
 
 export type SchemaRefs = {
@@ -32,13 +32,13 @@ export interface SchemaCxt {
   readonly dataLevel: number // the level of the currently validated data,
   // it can be used to access both the property names and the data on all levels from the top.
   dataTypes: JSONType[] // data types applied to the current part of data instance
+  definedProperties: Set<string> // set of properties to keep track of for required checks
   readonly topSchemaRef: Code
   readonly validateName: Name
   evaluated?: Name
   readonly ValidationError?: Name
   readonly schema: AnySchema // current schema object - equal to parentSchema passed via KeywordCxt
   readonly schemaEnv: SchemaEnv
-  readonly strictSchema?: boolean
   readonly rootId: string
   baseId: string // the current schema base URI that should be used as the base for resolving URIs in references (\$ref)
   readonly schemaPath: Code // the run-time expression that evaluates to the property name of the current schema
@@ -51,6 +51,8 @@ export interface SchemaCxt {
   // You only need to use it if you have many steps in your keywords and potentially can define multiple errors.
   props?: EvaluatedProperties | Name // properties evaluated by this schema - used by parent schema or assigned to validation function
   items?: EvaluatedItems | Name // last item evaluated by this schema - used by parent schema or assigned to validation function
+  jtdDiscriminator?: string
+  jtdMetadata?: boolean
   readonly createErrors?: boolean
   readonly opts: InstanceOptions // Ajv instance option.
   readonly self: Ajv // current Ajv instance
@@ -77,7 +79,11 @@ export class SchemaEnv implements SchemaEnvArgs {
   readonly refs: SchemaRefs = {}
   readonly dynamicAnchors: {[Ref in string]?: true} = {}
   validate?: AnyValidateFunction
-  validateName?: Name
+  validateName?: ValueScopeName
+  serialize?: (data: unknown) => string
+  serializeName?: ValueScopeName
+  parse?: (data: string) => unknown
+  parseName?: ValueScopeName
 
   constructor(env: SchemaEnvArgs) {
     let schema: AnySchemaObject | undefined
@@ -125,6 +131,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     dataPathArr: [nil], // TODO can its length be used as dataLevel if nil is removed?
     dataLevel: 0,
     dataTypes: [],
+    definedProperties: new Set<string>(),
     topSchemaRef: gen.scopeValue(
       "schema",
       this.opts.code.source === true
@@ -135,11 +142,10 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     ValidationError: _ValidationError,
     schema: sch.schema,
     schemaEnv: sch,
-    strictSchema: true,
     rootId,
     baseId: sch.baseId || rootId,
     schemaPath: nil,
-    errSchemaPath: "#",
+    errSchemaPath: this.opts.jtd ? "" : "#",
     errorPath: _`""`,
     opts: this.opts,
     self: this,
@@ -216,7 +222,7 @@ function inlineOrCompile(this: Ajv, sch: SchemaEnv): AnySchema | SchemaEnv {
 }
 
 // Index of schema compilation in the currently compiled list
-function getCompilingSchema(this: Ajv, schEnv: SchemaEnv): SchemaEnv | void {
+export function getCompilingSchema(this: Ajv, schEnv: SchemaEnv): SchemaEnv | void {
   for (const sch of this._compilations) {
     if (sameSchemaEnv(sch, schEnv)) return sch
   }
@@ -246,7 +252,7 @@ export function resolveSchema(
 ): SchemaEnv | undefined {
   const p = URI.parse(ref)
   const refPath = _getFullPath(p)
-  const baseId = getFullPath(root.baseId)
+  let baseId = getFullPath(root.baseId)
   // TODO `Object.keys(root.schema).length > 0` should not be needed - but removing breaks 2 tests
   if (Object.keys(root.schema).length > 0 && refPath === baseId) {
     return getJsonPointer.call(this, p, root)
@@ -262,7 +268,11 @@ export function resolveSchema(
 
   if (typeof schOrRef?.schema !== "object") return
   if (!schOrRef.validate) compileSchema.call(this, schOrRef)
-  if (id === normalizeId(ref)) return new SchemaEnv({schema: schOrRef.schema, root, baseId})
+  if (id === normalizeId(ref)) {
+    const {schema} = schOrRef
+    if (schema.$id) baseId = resolveUrl(baseId, schema.$id)
+    return new SchemaEnv({schema, root, baseId})
+  }
   return getJsonPointer.call(this, p, schOrRef)
 }
 

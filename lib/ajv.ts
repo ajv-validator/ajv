@@ -15,6 +15,7 @@ export {
   AnySchema,
   ValidateFunction,
   AsyncValidateFunction,
+  SchemaValidateFunction,
   ErrorObject,
   ErrorNoParams,
 } from "./types"
@@ -31,7 +32,7 @@ export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./com
 import type {AnySchemaObject} from "./types"
 import AjvCore from "./core"
 import draft7Vocabularies from "./vocabularies/draft7"
-import draft7MetaSchema = require("./refs/json-schema-draft-07.json")
+import * as draft7MetaSchema from "./refs/json-schema-draft-07.json"
 
 const META_SUPPORT_DATA = ["/properties"]
 
@@ -45,9 +46,8 @@ export default class Ajv extends AjvCore {
 
   _addDefaultMetaSchema(): void {
     super._addDefaultMetaSchema()
-    const {$data, meta} = this.opts
-    if (!meta) return
-    const metaSchema = $data
+    if (!this.opts.meta) return
+    const metaSchema = this.opts.$data
       ? this.$dataMetaSchema(draft7MetaSchema, META_SUPPORT_DATA)
       : draft7MetaSchema
     this.addMetaSchema(metaSchema, META_SCHEMA_ID, false)
