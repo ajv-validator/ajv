@@ -131,7 +131,7 @@ You can asynchronously compile meta-schema by passing `true` as the second param
 
 Similarly to `compile`, it can return type guard in typescript.
 
-See example in [Asynchronous compilation](./guide/managing-schemas.md#asynchronous-schema-compilation).
+See example in [Asynchronous schema loading](./guide/managing-schemas.md#asynchronous-schema-loading).
 
 ### ajv.validate(schemaOrRef: object | string, data: any): boolean
 

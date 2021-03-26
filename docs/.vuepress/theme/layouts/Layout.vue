@@ -29,6 +29,7 @@
 
     <HomePage
       v-if="$page.frontmatter.homepage"
+      :sidebar-items="sidebarItems"
     >
       <template #top>
         <slot name="page-top" />
@@ -40,6 +41,7 @@
 
     <NewsPost
       v-else-if="$page.frontmatter.news"
+      :sidebar-items="sidebarItems"
     >
       <template #top>
         <slot name="page-top" />
