@@ -27,6 +27,8 @@ export default {
 
 <style lang="stylus">
 .sidebar
+  background-color grey
+
   ul
     padding 0
     margin 0

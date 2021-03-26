@@ -27,41 +27,48 @@
       </template>
     </Sidebar>
 
-    <HomePage
-      v-if="$page.frontmatter.homepage"
-      :sidebar-items="sidebarItems"
-    >
-      <template #top>
-        <slot name="page-top" />
-      </template>
-      <template #bottom>
-        <slot name="page-bottom" />
-      </template>
-    </HomePage>
+    <div
+      class="sidebar-toggle-button"
+      @click="toggleSidebar()"
+    />
 
-    <NewsPost
-      v-else-if="$page.frontmatter.news"
-      :sidebar-items="sidebarItems"
-    >
-      <template #top>
-        <slot name="page-top" />
-      </template>
-      <template #bottom>
-        <slot name="page-bottom" />
-      </template>
-    </NewsPost>
+    <div class="variable-page-container">
+      <HomePage
+        v-if="$page.frontmatter.homepage"
+        :sidebar-items="sidebarItems"
+      >
+        <template #top>
+          <slot name="page-top" />
+        </template>
+        <template #bottom>
+          <slot name="page-bottom" />
+        </template>
+      </HomePage>
 
-    <Page
-      v-else
-      :sidebar-items="sidebarItems"
-    >
-      <template #top>
-        <slot name="page-top" />
-      </template>
-      <template #bottom>
-        <slot name="page-bottom" />
-      </template>
-    </Page>
+      <NewsPost
+        v-else-if="$page.frontmatter.news"
+        :sidebar-items="sidebarItems"
+      >
+        <template #top>
+          <slot name="page-top" />
+        </template>
+        <template #bottom>
+          <slot name="page-bottom" />
+        </template>
+      </NewsPost>
+
+      <Page
+        v-else
+        :sidebar-items="sidebarItems"
+      >
+        <template #top>
+          <slot name="page-top" />
+        </template>
+        <template #bottom>
+          <slot name="page-bottom" />
+        </template>
+      </Page>
+    </div>
   </div>
 </template>
 
@@ -171,3 +178,44 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+@keyframes page-container {
+  from {margin-left: 2.8rem;}
+  to {margin-left: $sidebarWidth;}
+}
+
+@keyframes sidebar-toggle {
+  from {left: 1.4rem;}
+  to {left: $sidebarWidth - 1.4rem;}
+}
+
+.theme-container
+  .sidebar-toggle-button
+    width 2.8rem
+    height 2.8rem
+    background-color $ajvBlueColor
+    position fixed
+    left 1.4rem
+    top $navbarHeight - 1.4rem
+    z-index 22
+
+  .variable-page-container
+    position relative
+    background-color white
+    z-index 11
+    margin-left 2.8rem
+
+    main.page
+      padding-left 0
+
+  &.sidebar-open
+    .sidebar-toggle-button
+      animation sidebar-toggle 0.1s
+      animation-fill-mode forwards
+
+    .variable-page-container
+      animation page-container 0.1s
+      animation-fill-mode forwards
+
+</style>

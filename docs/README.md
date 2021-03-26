@@ -1,6 +1,5 @@
 ---
 homepage: true
-sidebar: false
 ---
 
 <HeroSection>
