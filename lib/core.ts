@@ -26,8 +26,7 @@ export interface Plugin<Opts> {
   [prop: string]: any
 }
 
-import KeywordCxt from "./compile/context"
-export {KeywordCxt}
+export {KeywordCxt} from "./compile/validate"
 export {DefinedError} from "./vocabularies/errors"
 export {JSONType} from "./compile/rules"
 export {JSONSchemaType} from "./types/json-schema"
@@ -52,7 +51,8 @@ import type {
 } from "./types"
 import type {JSONSchemaType} from "./types/json-schema"
 import type {JTDSchemaType} from "./types/jtd-schema"
-import {ValidationError, MissingRefError} from "./compile/error_classes"
+import ValidationError from "./runtime/validation_error"
+import MissingRefError from "./compile/ref_error"
 import {getRules, ValidationRules, Rule, RuleGroup, JSONType} from "./compile/rules"
 import {SchemaEnv, compileSchema, resolveSchema} from "./compile"
 import {Code, ValueScope} from "./compile/codegen"
@@ -84,6 +84,8 @@ export type Options = CurrentOptions & DeprecatedOptions
 export interface CurrentOptions {
   // strict mode options (NEW)
   strict?: boolean | "log"
+  strictSchema?: boolean | "log"
+  strictNumbers?: boolean | "log"
   strictTypes?: boolean | "log"
   strictTuples?: boolean | "log"
   strictRequired?: boolean | "log"
@@ -94,6 +96,7 @@ export interface CurrentOptions {
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
+  discriminator?: boolean
   $comment?:
     | true
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
@@ -123,7 +126,6 @@ export interface CurrentOptions {
   multipleOfPrecision?: number
   messages?: boolean
   code?: CodeOptions // NEW
-  ajvErrors?: boolean
 }
 
 export interface CodeOptions {
@@ -160,11 +162,11 @@ interface RemovedOptions {
   schemaId?: string
   strictDefaults?: boolean
   strictKeywords?: boolean
-  strictNumbers?: boolean
   uniqueItems?: boolean
   unknownFormats?: true | string[] | "ignore"
   cache?: any
   serialize?: (schema: AnySchema) => unknown
+  ajvErrors?: boolean
 }
 
 type OptionsInfo<T extends RemovedOptions | DeprecatedOptions> = {
@@ -180,14 +182,14 @@ const removedOptions: OptionsInfo<RemovedOptions> = {
   missingRefs: "Pass empty schema with $id that should be ignored to ajv.addSchema.",
   processCode: "Use option `code: {process: (code, schemaEnv: object) => string}`",
   sourceCode: "Use option `code: {source: true}`",
-  schemaId: "JSON Schema draft-04 is not supported in Ajv v7.",
+  schemaId: "JSON Schema draft-04 is not supported in Ajv v7/8.",
   strictDefaults: "It is default now, see option `strict`.",
   strictKeywords: "It is default now, see option `strict`.",
-  strictNumbers: "It is default now, see option `strict`.",
   uniqueItems: '"uniqueItems" keyword is always validated.',
   unknownFormats: "Disable strict mode or pass `true` to `ajv.addFormat` (or `formats` option).",
   cache: "Map is used as cache, schema object as key.",
   serialize: "Map is used as cache, schema object as key.",
+  ajvErrors: "It is default now, see option `strict`.",
 }
 
 const deprecatedOptions: OptionsInfo<DeprecatedOptions> = {
@@ -198,9 +200,11 @@ const deprecatedOptions: OptionsInfo<DeprecatedOptions> = {
 
 type RequiredInstanceOptions = {
   [K in
-    | "strict"
+    | "strictSchema"
+    | "strictNumbers"
     | "strictTypes"
     | "strictTuples"
+    | "strictRequired"
     | "inlineRefs"
     | "loopRequired"
     | "loopEnum"
@@ -213,18 +217,22 @@ type RequiredInstanceOptions = {
 
 export type InstanceOptions = Options & RequiredInstanceOptions
 
+const MAX_EXPRESSION = 200
+
+// eslint-disable-next-line complexity
 function requiredOptions(o: Options): RequiredInstanceOptions {
-  const strict = o.strict ?? true
-  const strictLog = strict ? "log" : false
+  const s = o.strict
   const _optz = o.code?.optimize
   const optimize = _optz === true || _optz === undefined ? 1 : _optz || 0
   return {
-    strict,
-    strictTypes: o.strictTypes ?? strictLog,
-    strictTuples: o.strictTuples ?? strictLog,
+    strictSchema: o.strictSchema ?? s ?? true,
+    strictNumbers: o.strictNumbers ?? s ?? true,
+    strictTypes: o.strictTypes ?? s ?? "log",
+    strictTuples: o.strictTuples ?? s ?? "log",
+    strictRequired: o.strictRequired ?? s ?? false,
     code: o.code ? {...o.code, optimize} : {optimize},
-    loopRequired: o.loopRequired ?? Infinity,
-    loopEnum: o.loopEnum ?? Infinity,
+    loopRequired: o.loopRequired ?? MAX_EXPRESSION,
+    loopEnum: o.loopEnum ?? MAX_EXPRESSION,
     meta: o.meta ?? true,
     messages: o.messages ?? true,
     inlineRefs: o.inlineRefs ?? true,
@@ -425,11 +433,11 @@ export default class Ajv {
     let id: string | undefined
     if (typeof schema === "object") {
       id = schema.$id
-      if (id !== undefined && typeof id != "string") throw new Error("schema id must be string")
+      if (id !== undefined && typeof id != "string") throw new Error("schema $id must be string")
     }
     key = normalizeId(key || id)
     this._checkUnique(key)
-    this.schemas[key] = this._addSchema(schema, _meta, _validateSchema, true)
+    this.schemas[key] = this._addSchema(schema, _meta, key, _validateSchema, true)
     return this
   }
 
@@ -598,7 +606,7 @@ export default class Ajv {
   ): string {
     if (!errors || errors.length === 0) return "No errors"
     return errors
-      .map((e) => `${dataVar}${e.dataPath} ${e.message}`)
+      .map((e) => `${dataVar}${e.instancePath} ${e.message}`)
       .reduce((text, msg) => text + separator + msg)
   }
 
@@ -639,10 +647,14 @@ export default class Ajv {
   _addSchema(
     schema: AnySchema,
     meta?: boolean,
+    baseId?: string,
     validateSchema = this.opts.validateSchema,
     addSchema = this.opts.addUsedSchema
   ): SchemaEnv {
-    if (typeof schema != "object") {
+    let id: string | undefined
+    if (typeof schema == "object") {
+      id = schema.$id
+    } else {
       if (this.opts.jtd) throw new Error("schema must be object")
       else if (typeof schema != "boolean") throw new Error("schema must be object or boolean")
     }
@@ -650,13 +662,13 @@ export default class Ajv {
     if (sch !== undefined) return sch
 
     const localRefs = getSchemaRefs.call(this, schema)
-    sch = new SchemaEnv({schema, meta, localRefs})
+    baseId = normalizeId(id || baseId)
+    sch = new SchemaEnv({schema, meta, baseId, localRefs})
     this._cache.set(sch.schema, sch)
-    const id = sch.baseId
-    if (addSchema && !id.startsWith("#")) {
+    if (addSchema && !baseId.startsWith("#")) {
       // TODO atm it is allowed to overwrite schemas without id (instead of not adding them)
-      if (id) this._checkUnique(id)
-      this.refs[id] = sch
+      if (baseId) this._checkUnique(baseId)
+      this.refs[baseId] = sch
     }
     if (validateSchema) this.validateSchema(schema, true)
     return sch

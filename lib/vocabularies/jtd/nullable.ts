@@ -1,7 +1,10 @@
-import type KeywordCxt from "../../compile/context"
-import {_, not, Code, Name} from "../../compile/codegen"
+import type {KeywordCxt} from "../../compile/validate"
+import {_, not, nil, Code, Name} from "../../compile/codegen"
 
-export function checkNullable({gen, data, parentSchema}: KeywordCxt, cond: Code): [Name, Code] {
+export function checkNullable(
+  {gen, data, parentSchema}: KeywordCxt,
+  cond: Code = nil
+): [Name, Code] {
   const valid = gen.name("valid")
   if (parentSchema.nullable) {
     gen.let(valid, _`${data} === null`)

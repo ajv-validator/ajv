@@ -1,12 +1,14 @@
 const {slugify} = require("@vuepress/shared-utils")
 
 module.exports = {
-  title: "Ajv: Another JSON validator",
-  description: "Just playing around",
+  title: "Ajv JSON validator",
+  description:
+    "The fastest JSON schema Validator. Supports JSON Schema draft-04/06/07/2019-09 and JSON Type Definition (RFC8927)",
   markdown: {
     slugify: (str) => slugify(str.replace(/<Badge[^>]*\/>/, "")),
     toc: {includeLevel: [2, 3, 4]},
   },
+  heroText: "hello there",
   themeConfig: {
     logo: "/img/ajv.svg",
     nav: [
@@ -14,6 +16,7 @@ module.exports = {
       {
         text: "Guide",
         items: [
+          {link: "/guide/why-ajv", text: "Why use Ajv"},
           {link: "/guide/getting-started", text: "Getting started"},
           {link: "/guide/typescript", text: "Using with TypeScript"},
           {link: "/guide/schema-language", text: "Choosing schema language"},
@@ -27,19 +30,30 @@ module.exports = {
         ],
       },
       {
+        text: "Reference",
+        items: [
+          {link: "/api", text: "API Reference"},
+          {link: "/options", text: "Ajv options"},
+          {link: "/json-schema", text: "JSON Schema"},
+          {link: "/json-type-definition", text: "JSON Type Definition"},
+          {link: "/strict-mode", text: "Strict mode"},
+          {link: "/standalone", text: "Standalone validation code"},
+          {link: "/keywords", text: "User defined keywords"},
+          {link: "/coercion", text: "Type coercion rules"},
+        ],
+      },
+      {
         text: "Learn more",
         items: [
           {
-            text: "Reference",
+            text: "Extending Ajv",
             items: [
-              {link: "/api", text: "API Reference"},
-              {link: "/options", text: "Ajv options"},
-              {link: "/json-schema", text: "JSON Schema"},
-              {link: "/json-type-definition", text: "JSON Type Definition"},
-              {link: "/strict-mode", text: "Strict mode"},
-              {link: "/standalone", text: "Standalone validation code"},
-              {link: "/keywords", text: "User defined keywords"},
-              {link: "/coercion", text: "Type coercion rules"},
+              {link: "/packages/", text: "Extending Ajv"},
+              {link: "/packages/ajv-cli", text: "ajv-cli"},
+              {link: "/packages/ajv-errors", text: "ajv-errors"},
+              {link: "/packages/ajv-formats", text: "ajv-formats"},
+              {link: "/packages/ajv-i18n", text: "ajv-i18n"},
+              {link: "/packages/ajv-keywords", text: "ajv-keywords"},
             ],
           },
           {
@@ -54,6 +68,7 @@ module.exports = {
           {
             text: "Information",
             items: [
+              {link: "/news/", text: "News"},
               {link: "/security", text: "Security"},
               {link: "/faq", text: "FAQ"},
               {link: "/license", text: "License"},
@@ -66,6 +81,7 @@ module.exports = {
       {
         title: "Guide",
         children: [
+          "/guide/why-ajv",
           "/guide/getting-started",
           "/guide/typescript",
           "/guide/schema-language",
@@ -92,6 +108,17 @@ module.exports = {
         ],
       },
       {
+        title: "Extending Ajv",
+        children: [
+          ["/packages/", "Extending Ajv"],
+          ["/packages/ajv-formats", "ajv-formats"],
+          ["/packages/ajv-keywords", "ajv-keywords"],
+          ["/packages/ajv-errors", "ajv-errors"],
+          ["/packages/ajv-i18n", "ajv-i18n"],
+          ["/packages/ajv-cli", "ajv-cli"],
+        ],
+      },
+      {
         title: "Contributors",
         children: [
           "/contributing",
@@ -108,5 +135,6 @@ module.exports = {
     repo: "ajv-validator/ajv",
     docsDir: "docs",
     editLinks: true,
+    activeHeaderLinks: false,
   },
 }

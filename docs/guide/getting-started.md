@@ -34,7 +34,7 @@ For example, to validate an object that has a required property "foo" (an intege
 <code-group>
 <code-block title="JSON Schema">
 ```javascript
-const Ajv = require("ajv").default
+const Ajv = require("ajv")
 const ajv = new Ajv() // options can be passed, e.g. {allErrors: true}
 
 const schema = {
@@ -61,7 +61,7 @@ if (!valid) console.log(validate.errors)
 
 <code-block title="JSON Type Definition">
 ```javascript
-const Ajv = require("ajv/dist/jtd").default
+const Ajv = require("ajv/dist/jtd")
 const ajv = new Ajv() // options can be passed, e.g. {allErrors: true}
 
 const schema = {
@@ -76,7 +76,7 @@ const schema = {
 
 const validate = ajv.compile(schema)
 
-const validData = {
+const data = {
   foo: 1,
   bar: "abc"
 }
@@ -114,7 +114,7 @@ For the same data structure, you can compile parser and serializer in this way:
 <code-group>
 <code-block title="JSON Type Definition">
 ```javascript
-const Ajv = require("ajv/dist/jtd").default
+const Ajv = require("ajv/dist/jtd")
 const ajv = new Ajv() // options can be passed, e.g. {allErrors: true}
 
 const schema = {

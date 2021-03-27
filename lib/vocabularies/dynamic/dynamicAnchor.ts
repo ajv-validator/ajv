@@ -1,5 +1,5 @@
 import type {CodeKeywordDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, getProperty, Code} from "../../compile/codegen"
 import N from "../../compile/names"
 import {SchemaEnv, compileSchema} from "../../compile"

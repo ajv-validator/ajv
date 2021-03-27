@@ -5,6 +5,7 @@ import type {FormatError} from "./format/format"
 import type {UnevaluatedPropertiesError} from "./unevaluated/unevaluatedProperties"
 import type {UnevaluatedItemsError} from "./unevaluated/unevaluatedItems"
 import type {DependentRequiredError} from "./validation/dependentRequired"
+import type {DiscriminatorError} from "./discriminator"
 
 export type DefinedError =
   | TypeError
@@ -14,3 +15,4 @@ export type DefinedError =
   | UnevaluatedPropertiesError
   | UnevaluatedItemsError
   | DependentRequiredError
+  | DiscriminatorError

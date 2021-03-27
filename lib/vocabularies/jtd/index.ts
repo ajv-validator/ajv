@@ -1,13 +1,12 @@
 import type {Vocabulary} from "../../types"
-// import definitions from "./definitions"
 import refKeyword from "./ref"
-import typeKeyword from "./type"
-import enumKeyword from "./enum"
-import elements from "./elements"
-import properties from "./properties"
+import typeKeyword, {JTDTypeError} from "./type"
+import enumKeyword, {JTDEnumError} from "./enum"
+import elements, {JTDElementsError} from "./elements"
+import properties, {JTDPropertiesError} from "./properties"
 import optionalProperties from "./optionalProperties"
-import discriminator from "./discriminator"
-import values from "./values"
+import discriminator, {JTDDiscriminatorError} from "./discriminator"
+import values, {JTDValuesError} from "./values"
 import union from "./union"
 import metadata from "./metadata"
 
@@ -28,3 +27,11 @@ const jtdVocabulary: Vocabulary = [
 ]
 
 export default jtdVocabulary
+
+export type JTDErrorObject =
+  | JTDTypeError
+  | JTDEnumError
+  | JTDElementsError
+  | JTDPropertiesError
+  | JTDDiscriminatorError
+  | JTDValuesError

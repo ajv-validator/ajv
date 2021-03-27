@@ -43,5 +43,5 @@ function falseSchemaError(it: SchemaCxt, overrideAllErrors?: boolean): void {
     params: {},
     it,
   }
-  reportError(cxt, boolError, overrideAllErrors)
+  reportError(cxt, boolError, undefined, overrideAllErrors)
 }

@@ -6,9 +6,35 @@ The keywords and their values define what rules the data should satisfy to be va
 
 [[toc]]
 
-## JSON Schema draft-2019-09
+## JSON Schema versions
 
-v7 added support for all new keywords in draft-2019-09:
+### draft-07 <Badge text="default" />
+
+This version is provided as default export:
+
+<code-group>
+<code-block title="JavaScript">
+```javascript
+const Ajv = require("ajv")
+const ajv = new Ajv()
+```
+</code-block>
+
+<code-block title="TypeScript">
+```typescript
+import Ajv from "ajv"
+const ajv = new Ajv()
+```
+</code-block>
+</code-group>
+
+::: tip draft-07 has better performance
+Unless you need the new features of later versions, you would have more efficient generated code with this draft.
+:::
+
+### draft-2019-09 <Badge text="NEW" />
+
+Ajv supports all new keywords of JSON Schema draft-2019-09:
 
 - [unevaluatedProperties](#unevaluatedproperties)
 - [unevaluatedItems](#unevaluateditems)
@@ -17,9 +43,142 @@ v7 added support for all new keywords in draft-2019-09:
 - [maxContains/minContains](#maxcontains--mincontains)
 - [$recursiveAnchor/$recursiveRef](./guide/combining-schemas.md#extending-recursive-schemas)
 
-There is also support for [$dynamicAnchor/$dynamicRef](./guide/combining-schemas.md#extending-recursive-schemas) from the next version of JSON Schema draft that will replace `$recursiveAnchor`/`$recursiveRef`.
+To use draft-2019-09 schemas you need to import a different Ajv class:
 
-## `type`
+<code-group>
+<code-block title="JavaScript">
+```javascript
+const Ajv2019 = require("ajv/dist/2019")
+const ajv = new Ajv2019()
+```
+</code-block>
+
+<code-block title="TypeScript">
+```typescript
+import Ajv2019 from "ajv/dist/2019"
+const ajv = new Ajv2019()
+```
+</code-block>
+</code-group>
+
+You can use draft-07 schemas with this Ajv instance as well, draft-2019-09 is backwards compatible. If your schemas use `$schema` keyword, you need to add draft-07 meta-schema to Ajv instance:
+
+<code-group>
+<code-block title="JavaScript">
+```javascript
+const draft7MetaSchema = require("ajv/dist/refs/json-schema-draft-07.json")
+ajv.addMetaSchema(draft7MetaSchema)
+```
+</code-block>
+
+<code-block title="TypeScript">
+```typescript
+import * as draft7MetaSchema from "ajv/dist/refs/json-schema-draft-07.json"
+ajv.addMetaSchema(draft7MetaSchema)
+```
+</code-block>
+</code-group>
+
+### draft-2020-12 <Badge text="BREAKING" type="warning" />
+
+::: warning draft-2020-12 is not backwards compatible
+You cannot use draft-2020-12 and previous JSON Schema versions in the same Ajv instance.
+:::
+
+Ajv supports all keywords of JSON Schema draft-2020-12:
+
+- [prefixItems](#prefixItems) that replaced array form of items keyword
+- changed [items](#items-in-draft-2020-12) keyword that combined parts of functionality of items and additionalItems
+- [$dynamicAnchor/$dynamicRef](./guide/combining-schemas.md#extending-recursive-schemas)
+
+To use draft-2019-09 schemas you need to import a different Ajv class:
+
+<code-group>
+<code-block title="JavaScript">
+```javascript
+const Ajv2020 = require("ajv/dist/2020")
+const ajv = new Ajv2020()
+```
+</code-block>
+
+<code-block title="TypeScript">
+```typescript
+import Ajv2020 from "ajv/dist/2020"
+const ajv = new Ajv2020()
+```
+</code-block>
+</code-group>
+
+### draft-06
+
+You can use JSON Schema draft-06 schemas with Ajv v7/8. If your schemas use `$schema` keyword, you need to add draft-06 meta-schema to Ajv instance. This example shows how to support both draft-06 and draft-07 schemas:
+
+<code-group>
+<code-block title="JavaScript">
+```javascript
+const Ajv = require("ajv")
+const draft6MetaSchema = require("ajv/dist/refs/json-schema-draft-06.json")
+
+const ajv = new Ajv()
+ajv.addMetaSchema(draft6MetaSchema)
+```
+</code-block>
+
+<code-block title="TypeScript">
+```typescript
+import Ajv from "ajv"
+import * as draft6MetaSchema from "ajv/dist/refs/json-schema-draft-06.json"
+
+const ajv = new Ajv()
+ajv.addMetaSchema(draft6MetaSchema)
+```
+</code-block>
+</code-group>
+
+### draft-04 <Badge text="v6" />
+
+You can use JSON Schema draft-06 schemas with Ajv v6.
+
+::: warning Only compatible with Ajv v6
+The code example below will not work in the most recent version of Ajv, it requires Ajv v6. While no longer actively developed it continues to receive critical security updates.
+:::
+
+<code-group>
+<code-block title="JavaScript">
+```javascript
+const Ajv = require("ajv")
+const draft4MetaSchema = require("ajv/lib/refs/json-schema-draft-04.json")
+
+const ajv = new Ajv({schemaId: "id"}) // or "auto" if you use both draft-04 and draft-06/07 schemas
+ajv.addMetaSchema(draft4MetaSchema)
+```
+</code-block>
+
+<code-block title="TypeScript">
+```typescript
+import Ajv from "ajv"
+import * as draft4MetaSchema from "ajv/lib/refs/json-schema-draft-04.json"
+
+const ajv = new Ajv({schemaId: "id"}) // or "auto" if you use both draft-04 and draft-06/07 schemas
+ajv.addMetaSchema(draft4MetaSchema)
+```
+</code-block>
+</code-group>
+
+var ajv = new Ajv({schemaId: 'id'});
+// If you want to use both draft-04 and draft-06/07 schemas:
+// var ajv = new Ajv({schemaId: 'auto'});
+ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
+
+## OpenAPI support
+
+Ajv supports these additional [OpenAPI specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.1.0.md) keywords:
+- [nullable](#nullable) - to avoid using `type` keyword with array of types.
+- [discriminator](#discriminator) -  to optimize validation and error reporting of tagged unions
+
+## JSON data type
+
+### `type`
 
 `type` keyword requires that the data is of certain type (or some of types). Its value can be a string (the allowed type) or an array of strings (multiple allowed types).
 
@@ -50,6 +209,33 @@ All examples above are JSON Schemas that only require data to be of certain type
 Most other keywords apply only to a particular type of data. If the data is of different type, the keyword will not apply and the data will be considered valid.
 
 In v7 Ajv introduced [Strict types](./strict-mode.md#strict-types) mode that makes these mistakes less likely by requiring that types are constrained with type keyword whenever another keyword that applies to specific type is used.
+
+### nullable <Badge text="OpenAPI" />
+
+This keyword can be used to allow `null` value in addition to the defined `type`.
+
+Ajv supports it by default, without additional options. These two schemas are equivalent, but the first one is better supported by some tools and is also compatible with `strictTypes` option (see [Strict types](./strict-mode.md#strict-types))
+
+```json
+{
+  "type": "string",
+  "nullable": true
+}
+```
+
+and
+
+```json
+{
+  "type": ["string", "null"]
+}
+```
+
+::: warning nullable does not extend enum and const
+If you use [enum](#enum) or [const](#const) keywords, `"nullable": true` would not extend the list of allowed values - `null` value has to be explicitly added to `enum` (and `const` would fail, unless it is `"const": null`)
+
+This is different from how `nullable` is defined in [JSON Type Definition](./json-type-definition.md), where `"nullable": true` allows `null` value in addition to any data defined by the schema.
+:::
 
 ## Keywords for numbers
 
@@ -177,9 +363,15 @@ _invalid_: `[1, 2, 1]`, `[{a: 1, b: 2}, {b: 2, a: 1}]`
 
 ### `items`
 
-The value of the keyword should be an object or an array of objects.
+#### `items` in draft-04, -06, -07 and -2019-09 
 
-If the keyword value is an object, then for the data array to be valid each item of the array should be valid according to the schema in this value. In this case the `additionalItems` keyword is ignored.
+::: warning items keyword changed in JSON Schema draft-2020-12
+This section describes `items` keyword in all JSON Schema versions prior to draft-2020-12.
+:::
+
+The value of the keyword should be a schema or an array of schemas.
+
+If the keyword value is a schema, then for the data array to be valid each item of the array should be valid according to the schema. In this case the `additionalItems` keyword is ignored.
 
 If the keyword value is an array, then items with indices less than the number of items in the keyword should be valid according to the schemas with the same indices. Whether additional items are valid will depend on `additionalItems` keyword.
 
@@ -191,7 +383,7 @@ If the keyword value is an array, then items with indices less than the number o
 
     _invalid_: `[1,"abc"]`
 
-2)  _schema_:
+2.  _schema_:
 
     ```javascript
     {
@@ -206,7 +398,96 @@ If the keyword value is an array, then items with indices less than the number o
 
 The schema in example 2 will log warning by default (see `strictTuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use `minItems` and `additionalItems` keywords (see example 1 in `additionalItems`).
 
+#### `items` in draft-2020-12 <Badge text="NEW" />
+
+::: warning items keyword changed in JSON Schema draft-2020-12
+This section describes `items` keyword in JSON draft-2020-12.
+:::
+
+The value of the keyword must be a schema.
+
+For the data array to be valid:
+- if [prefixItems](#prefixItems) keyword is not used in the schema, then each item of the array must be valid according to the schema in `items`.
+- if [prefixItems](#prefixItems) keyword is used in the schema, then each item with the index starting from the size of `prefixItems` schema must be valid according to the schema in `items`
+
+**Examples**
+
+1.  _schema_: `{type: "array", items: {type: "integer"}}`
+
+    _valid_: `[1,2,3]`, `[]`
+
+    _invalid_: `[1,"abc"]`
+
+2.  _schema_:
+
+    ```javascript
+    {
+      type: "array",
+      prefixItems: [{type: "integer"}, {type: "integer"}],
+      minItems: 2
+      items: false
+    }
+    ```
+
+    _valid_: `[1, 2]`
+
+    _invalid_: `[]`, `[1]`, `[1, 2, 3]`, `[1, "abc"]` (any wrong number of items or wrong type)
+
+3.  _schema_:
+
+    ```javascript
+    {
+      type: "array",
+      prefixItems: [{type: "integer"}, {type: "integer"}],
+      items: {type: "string"}
+    }
+    ```
+
+    _valid_: `[]`, `[1, 2]`, `[1, 2, "abc"]`
+
+    _invalid_: `["abc"]`, `[1, 2, 3]`
+    ```
+
+    _valid_: `[1]`, `[1, "abc"]`, `[1, "abc", 2]`, `[]`
+
+    _invalid_: `["abc", 1]`, `["abc"]`
+
+The schema in example 3 will log warning by default (see `strictTuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use `minItems` and `items` keywords (see example 2).
+
+### `prefixItems` <Badge text="NEW: draft 2020-12" />
+
+The value of the keyword must be an array of schemas.
+
+For the data array to be valid, the items with indices less than the number of schemas in this keyword must be valid according to the schemas with the same indices. Whether additional items are valid will depend on `items` keyword.
+
+**Examples**
+
+1.  _schema_: `{type: "array", prefixItems: {type: "integer"}}`
+
+    _valid_: `[1,2,3]`, `[]`
+
+    _invalid_: `[1,"abc"]`
+
+2.  _schema_:
+
+    ```javascript
+    {
+      type: "array",
+      prefixItems: [{type: "integer"}, {type: "string"}]
+    }
+    ```
+
+    _valid_: `[1]`, `[1, "abc"]`, `[1, "abc", 2]`, `[]`
+
+    _invalid_: `["abc", 1]`, `["abc"]`
+
+The schema in example 2 will log warning by default (see `strictTuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use [minItems](#minitems) and [items](#items-in-draft-2020-12) keywords (see example 2 in [items](#items-in-draft-2020-12)).
+
 ### `additionalItems`
+
+::: warning additionalItems is not supported in JSON Schema draft-2020-12
+To create and equivalent schema in draft-2020-12 use keywords [prefixItems](#prefixItems) and the new [items](#items-in-draft-2020-12) keyword
+:::
 
 The value of the keyword should be a boolean or an object.
 
@@ -279,7 +560,7 @@ _valid_: `[1]`, `[1, "foo"]`, any array with at least one integer
 
 _invalid_: `[]`, `["foo", "bar"]`, any array without integers
 
-### `maxContains` / `minContains`
+### `maxContains` / `minContains` <Badge text="NEW: draft 2019-09" />
 
 The value of these keywords should be an integer.
 
@@ -673,6 +954,65 @@ _invalid_:
 - `{foo: 1, bar: 2, baz: "3"}` - not valid against the 2nd subschema, so `baz` is "unevaluated".
 
 See [tests](https://github.com/json-schema-org/JSON-Schema-Test-Suite/blob/master/tests/draft2019-09/unevaluatedProperties.json) for `unevaluatedProperties` keyword for other examples.
+
+### discriminator <Badge text="NEW: OpenAPI" />
+
+Ajv has a limited support for `discriminator` keyword: to optimize validation, error handling, and [modifying data](./guide/modifying-data.md) with [oneOf](#oneof) keyword.
+
+Its value should be an object with a property `propertyName` - the name of the property used to discriminate between union members.
+
+When using discriminator keyword only one subschema in `oneOf` will be used, determined by the value of discriminator property.
+
+::: warning Use option discriminator
+To use `discriminator` keyword you have to use option `discriminator: true` with Ajv constructor - it is not enabled by default.
+:::
+
+**Example**
+
+_schema_:
+
+```javascript
+{
+  type: "object",
+  discriminator: {propertyName: "foo"},
+  required: ["foo"],
+  oneOf: [
+    {
+      properties: {
+        foo: {const: "x"},
+        a: {type: "string"},
+      },
+      required: ["a"],
+    },
+    {
+      properties: {
+        foo: {enum: ["y", "z"]},
+        b: {type: "string"},
+      },
+      required: ["b"],
+    },
+  ],
+}
+```
+
+_valid_: `{foo: "x", a: "any"}`, `{foo: "y", b: "any"}`, `{foo: "z", b: "any"}`
+
+_invalid_:
+
+- `{}`, `{foo: 1}` - discriminator tag must be string
+- `{foo: "bar"}` - discriminator tag value must be in oneOf subschema
+- `{foo: "x", b: "b"}`, `{foo: "y", a: "a"}` - invalid object
+
+From the perspective of validation result `discriminator` is defined as no-op (that is, removing discriminator will not change the validity of the data), but errors reported in case of invalid data will be different.
+
+There are following requirements and limitations of using `discriminator` keyword:
+- `mapping` in discriminator object is not supported.
+- [oneOf](#oneof) keyword must be present in the same schema.
+- discriminator property should be [requried](#required) either on the top level, as in the example, or in all `oneOf` subschemas.
+- each `oneOf` subschema must have [properties](#properties) keyword with discriminator property.
+- schema for discriminator property in each `oneOf` subschema must be [const](#const) or [enum](#enum), with unique values across all subschemas.
+
+Not meeting any of these requirements would fail schema compilation.
 
 ## Keywords for all types
 

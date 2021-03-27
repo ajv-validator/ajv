@@ -1,8 +1,7 @@
-import type {CodeKeywordDefinition, AnySchema} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {CodeKeywordDefinition, AnySchema, AnySchemaObject} from "../../types"
+import type {KeywordCxt} from "../../compile/validate"
 import {_} from "../../compile/codegen"
-import {alwaysValidSchema, mergeEvaluated} from "../../compile/util"
-import {checkStrictMode} from "../../compile/validate"
+import {alwaysValidSchema, mergeEvaluated, checkStrictMode} from "../../compile/util"
 import {validateArray} from "../code"
 
 const def: CodeKeywordDefinition = {
@@ -11,46 +10,49 @@ const def: CodeKeywordDefinition = {
   schemaType: ["object", "array", "boolean"],
   before: "uniqueItems",
   code(cxt: KeywordCxt) {
-    const {gen, schema, it} = cxt
-    if (Array.isArray(schema)) {
-      if (it.opts.unevaluated && schema.length && it.items !== true) {
-        it.items = mergeEvaluated.items(gen, schema.length, it.items)
-      }
-      validateTuple(schema)
-    } else {
-      it.items = true
-      if (alwaysValidSchema(it, schema)) return
-      cxt.ok(validateArray(cxt))
-    }
-
-    function validateTuple(schArr: AnySchema[]): void {
-      const {parentSchema, data} = cxt
-      if (it.opts.strictTuples && !fullTupleSchema(schArr.length, parentSchema)) {
-        const msg = `"items" is ${schArr.length}-tuple, but minItems or maxItems/additionalItems are not specified or different`
-        checkStrictMode(it, msg, it.opts.strictTuples)
-      }
-      const valid = gen.name("valid")
-      const len = gen.const("len", _`${data}.length`)
-      schArr.forEach((sch: AnySchema, i: number) => {
-        if (alwaysValidSchema(it, sch)) return
-        gen.if(_`${len} > ${i}`, () =>
-          cxt.subschema(
-            {
-              keyword: "items",
-              schemaProp: i,
-              dataProp: i,
-            },
-            valid
-          )
-        )
-        cxt.ok(valid)
-      })
-    }
+    const {schema, it} = cxt
+    if (Array.isArray(schema)) return validateTuple(cxt, "additionalItems", schema)
+    it.items = true
+    if (alwaysValidSchema(it, schema)) return
+    cxt.ok(validateArray(cxt))
   },
 }
 
-function fullTupleSchema(len: number, sch: any): boolean {
-  return len === sch.minItems && (len === sch.maxItems || sch.additionalItems === false)
+export function validateTuple(
+  cxt: KeywordCxt,
+  extraItems: string,
+  schArr: AnySchema[] = cxt.schema
+): void {
+  const {gen, parentSchema, data, keyword, it} = cxt
+  checkStrictTuple(parentSchema)
+  if (it.opts.unevaluated && schArr.length && it.items !== true) {
+    it.items = mergeEvaluated.items(gen, schArr.length, it.items)
+  }
+  const valid = gen.name("valid")
+  const len = gen.const("len", _`${data}.length`)
+  schArr.forEach((sch: AnySchema, i: number) => {
+    if (alwaysValidSchema(it, sch)) return
+    gen.if(_`${len} > ${i}`, () =>
+      cxt.subschema(
+        {
+          keyword,
+          schemaProp: i,
+          dataProp: i,
+        },
+        valid
+      )
+    )
+    cxt.ok(valid)
+  })
+
+  function checkStrictTuple(sch: AnySchemaObject): void {
+    const l = schArr.length
+    const fullTuple = l === sch.minItems && (l === sch.maxItems || sch[extraItems] === false)
+    if (it.opts.strictTuples && !fullTuple) {
+      const msg = `"${keyword}" is ${l}-tuple, but minItems or maxItems/${extraItems} are not specified or different`
+      checkStrictMode(it, msg, it.opts.strictTuples)
+    }
+  }
 }
 
 export default def

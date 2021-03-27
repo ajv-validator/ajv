@@ -1,21 +1,28 @@
-import type {CodeKeywordDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
-import {Type} from "../../compile/subschema"
-import {alwaysValidSchema} from "../../compile/util"
+import type {CodeKeywordDefinition, SchemaObject} from "../../types"
+import type {KeywordCxt} from "../../compile/validate"
+import {alwaysValidSchema, Type} from "../../compile/util"
 import {not, Name} from "../../compile/codegen"
 import {checkMetadata} from "./metadata"
 import {checkNullableObject} from "./nullable"
+import {typeError, _JTDTypeError} from "./error"
+
+export type JTDValuesError = _JTDTypeError<"values", "object", SchemaObject>
 
 const def: CodeKeywordDefinition = {
   keyword: "values",
   schemaType: "object",
+  error: typeError("object"),
   code(cxt: KeywordCxt) {
     checkMetadata(cxt)
     const {gen, data, schema, it} = cxt
     if (alwaysValidSchema(it, schema)) return
     const [valid, cond] = checkNullableObject(cxt, data)
-    gen.if(cond, () => gen.assign(valid, validateMap()))
-    cxt.pass(valid)
+    gen.if(cond)
+    gen.assign(valid, validateMap())
+    gen.elseIf(not(valid))
+    cxt.error()
+    gen.endIf()
+    cxt.ok(valid)
 
     function validateMap(): Name | boolean {
       const _valid = gen.name("valid")

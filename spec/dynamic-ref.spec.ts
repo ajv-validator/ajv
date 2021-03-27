@@ -34,6 +34,7 @@ describe("recursiveRef and dynamicRef", () => {
         $id: "https://example.com/strict-tree",
         $recursiveAnchor: true,
         $ref: "tree",
+        type: "object",
         unevaluatedProperties: false,
       }
 
@@ -63,6 +64,7 @@ describe("recursiveRef and dynamicRef", () => {
         $id: "https://example.com/strict-tree",
         $dynamicAnchor: "node",
         $ref: "tree",
+        type: "object",
         unevaluatedProperties: false,
       }
 

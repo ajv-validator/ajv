@@ -5,15 +5,14 @@ import type {
   AnySchema,
 } from "../../types"
 import type {SchemaObjCxt} from "../../compile"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, str, not, Name} from "../../compile/codegen"
-import {alwaysValidSchema} from "../../compile/util"
-import {checkStrictMode} from "../../compile/validate"
+import {alwaysValidSchema, checkStrictMode} from "../../compile/util"
 
 export type IfKeywordError = ErrorObject<"if", {failingKeyword: string}, AnySchema>
 
 const error: KeywordErrorDefinition = {
-  message: ({params}) => str`should match "${params.ifClause}" schema`,
+  message: ({params}) => str`must match "${params.ifClause}" schema`,
   params: ({params}) => _`{failingKeyword: ${params.ifClause}}`,
 }
 

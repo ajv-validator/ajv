@@ -6,7 +6,7 @@ import type {
   KeywordErrorDefinition,
   ErrorObject,
 } from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, str, nil, or, Code, getProperty} from "../../compile/codegen"
 
 type FormatValidate =
@@ -21,7 +21,7 @@ type FormatValidate =
 export type FormatError = ErrorObject<"format", {format: string}, string | {$data: string}>
 
 const error: KeywordErrorDefinition = {
-  message: ({schemaCode}) => str`should match format "${schemaCode}"`,
+  message: ({schemaCode}) => str`must match format "${schemaCode}"`,
   params: ({schemaCode}) => _`{format: ${schemaCode}}`,
 }
 
@@ -56,7 +56,7 @@ const def: CodeKeywordDefinition = {
       cxt.fail$data(or(unknownFmt(), invalidFmt()))
 
       function unknownFmt(): Code {
-        if (opts.strict === false) return nil
+        if (opts.strictSchema === false) return nil
         return _`${schemaCode} && !${format}`
       }
 
@@ -80,7 +80,7 @@ const def: CodeKeywordDefinition = {
       if (fmtType === ruleType) cxt.pass(validCondition())
 
       function unknownFormat(): void {
-        if (opts.strict === false) {
+        if (opts.strictSchema === false) {
           self.logger.warn(unknownMsg())
           return
         }

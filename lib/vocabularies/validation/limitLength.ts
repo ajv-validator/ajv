@@ -1,12 +1,13 @@
 import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, str, operators} from "../../compile/codegen"
-import ucs2length from "../../compile/ucs2length"
+import {useFunc} from "../../compile/util"
+import ucs2length from "../../runtime/ucs2length"
 
 const error: KeywordErrorDefinition = {
   message({keyword, schemaCode}) {
     const comp = keyword === "maxLength" ? "more" : "fewer"
-    return str`should NOT have ${comp} than ${schemaCode} characters`
+    return str`must NOT have ${comp} than ${schemaCode} characters`
   },
   params: ({schemaCode}) => _`{limit: ${schemaCode}}`,
 }
@@ -20,16 +21,8 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordCxt) {
     const {keyword, data, schemaCode, it} = cxt
     const op = keyword === "maxLength" ? operators.GT : operators.LT
-    let len
-    if (it.opts.unicode === false) {
-      len = _`${data}.length`
-    } else {
-      const u2l = cxt.gen.scopeValue("func", {
-        ref: ucs2length,
-        code: _`require("ajv/dist/compile/ucs2length").default`,
-      })
-      len = _`${u2l}(${data})`
-    }
+    const len =
+      it.opts.unicode === false ? _`${data}.length` : _`${useFunc(cxt.gen, ucs2length)}(${data})`
     cxt.fail$data(_`${len} ${op} ${schemaCode}`)
   },
 }

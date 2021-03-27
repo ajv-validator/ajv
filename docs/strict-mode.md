@@ -23,7 +23,9 @@ The only change that strict mode introduces to JTD schemas, without changing the
 
 JSON Schema specification is very permissive and allows many elements in the schema to be quietly ignored or be ambiguous. It is recommended to use JSON Schema with strict mode.
 
-### Prohibit ignored keywords
+Option `strict` with value `true`/`false`/`"log"` can be used to set all strict mode restriction to be the same, otherwise individual strict mode options can be used. See [Strict mode options](./options.md#strict-mode-options).
+
+### Prohibit ignored keywords <Badge text="strictSchema option" />
 
 #### Unknown keywords
 
@@ -90,7 +92,7 @@ The expectation of users (see #196, #286) is that "patternProperties" only apply
 
 By default Ajv fails schema compilation if a pattern in "patternProperties" matches a property in "properties" in the same schema.
 
-In addition to allowing such patterns by using option `strict: false`, there is an option `allowMatchingProperties: true` to only allow this case without disabling other strict mode restrictions - there are some rare cases when this is necessary.
+In addition to allowing such patterns by using option `strict: false` or `strictSchema: false`, there is an option `allowMatchingProperties: true` to only allow this case without disabling other strict mode restrictions - there are some rare cases when this is necessary.
 
 To reiterate, neither this nor other strict mode restrictions change the validation results - they only restrict which schemas are valid.
 
@@ -303,6 +305,6 @@ You do not necessarily have to have "type" keyword in the same schema object; as
 
 Both "properties" and "required" need `type: "object"` to satisfy `strictTypes` - it is sufficient to have it once in the parent schema, without repeating it in each schema.
 
-### Strict number validation
+### Strict number validation <Badge text="strictNumbers option" />
 
 Strict mode also affects number validation. By default Ajv fails `{"type": "number"}` (or `"integer"`) validation for `Infinity` and `NaN`.

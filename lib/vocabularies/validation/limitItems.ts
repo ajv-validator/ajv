@@ -1,11 +1,11 @@
 import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, str, operators} from "../../compile/codegen"
 
 const error: KeywordErrorDefinition = {
   message({keyword, schemaCode}) {
     const comp = keyword === "maxItems" ? "more" : "fewer"
-    return str`should NOT have ${comp} than ${schemaCode} items`
+    return str`must NOT have ${comp} than ${schemaCode} items`
   },
   params: ({schemaCode}) => _`{limit: ${schemaCode}}`,
 }

@@ -3,14 +3,14 @@ import type {SchemaObject} from "../../types"
 import {jtdForms, JTDForm, SchemaObjectMap} from "./types"
 import {SchemaEnv, getCompilingSchema} from ".."
 import {_, str, and, nil, not, CodeGen, Code, Name, SafeExpr} from "../codegen"
-import {MissingRefError} from "../error_classes"
+import MissingRefError from "../ref_error"
 import N from "../names"
 import {hasPropFunc} from "../../vocabularies/code"
 import {hasRef} from "../../vocabularies/jtd/ref"
 import {intRange, IntType} from "../../vocabularies/jtd/type"
 import {parseJson, parseJsonNumber, parseJsonString} from "../../runtime/parseJson"
-import {func} from "../util"
-import validTimestamp from "../timestamp"
+import {useFunc} from "../util"
+import validTimestamp from "../../runtime/timestamp"
 
 type GenParse = (cxt: ParseCxt) => void
 
@@ -264,7 +264,7 @@ function parseType(cxt: ParseCxt): void {
     case "timestamp": {
       // TODO parse timestamp?
       parseString(cxt)
-      const vts = func(gen, validTimestamp)
+      const vts = useFunc(gen, validTimestamp)
       gen.if(_`!${vts}(${data})`, () => parsingError(cxt, str`invalid timestamp`))
       break
     }
@@ -347,12 +347,8 @@ function parseEmpty(cxt: ParseCxt): void {
   parseWith(cxt, parseJson)
 }
 
-function parseWith(cxt: ParseCxt, parseFunc: {code: Code}, args?: SafeExpr): void {
-  const f = cxt.gen.scopeValue("func", {
-    ref: parseFunc,
-    code: parseFunc.code,
-  })
-  partialParse(cxt, f, args)
+function parseWith(cxt: ParseCxt, parseFunc: {code: string}, args?: SafeExpr): void {
+  partialParse(cxt, useFunc(cxt.gen, parseFunc), args)
 }
 
 function partialParse(cxt: ParseCxt, parseFunc: Name, args?: SafeExpr): void {

@@ -4,11 +4,10 @@ import type AjvCore from "../dist/core"
 import {_, nil} from "../dist/compile/codegen/code"
 import getAjvAllInstances from "./ajv_all_instances"
 import _Ajv from "./ajv"
+import equal from "../dist/runtime/equal"
 import assert = require("assert")
-
 import chai from "./chai"
-const should = chai.should(),
-  equal = require("../dist/compile/equal")
+const should = chai.should()
 
 describe("User-defined keywords", () => {
   let ajv: AjvCore, instances: AjvCore[]
@@ -532,7 +531,7 @@ describe("User-defined keywords", () => {
 
       should.throw(() => {
         ajv.compile(schema)
-      }, /type should be equal to one of the allowed values/)
+      }, /type must be equal to one of the allowed values/)
 
       function macroInvalid(/* schema */) {
         return {type: "invalid"}
@@ -1006,13 +1005,20 @@ describe("User-defined keywords", () => {
     })
   }
 
-  function shouldBeRangeError(error, dataPath, schemaPath, comparison, limit, exclusive?: boolean) {
+  function shouldBeRangeError(
+    error,
+    instancePath,
+    schemaPath,
+    comparison,
+    limit,
+    exclusive?: boolean
+  ) {
     delete error.schema
     delete error.data
     error.should.eql({
       keyword: "x-range",
-      dataPath: dataPath,
-      schemaPath: schemaPath,
+      instancePath,
+      schemaPath,
       message: "should be " + comparison + " " + limit,
       params: {
         comparison: comparison,

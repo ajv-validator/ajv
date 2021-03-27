@@ -26,3 +26,5 @@ export default function quote(s: string): string {
     '"'
   )
 }
+
+quote.code = 'require("ajv/dist/runtime/quote").default'

@@ -143,9 +143,7 @@ if (validate(data)) {
 
 ## Type-safe error handling
 
-With [JSON Schema](../json-schema), the validation error type is an open union, but it can be cast to a tagged union (using validation keyword as tag) for easier error handling.
-
-This is not useful with [JSON Type Definition](../json-type-definition), as it defines errors for schema forms, not for keywords.
+With both [JSON Schema](../json-schema.md) and [JSON Type Definition](../json-type-definition.md), the validation error type is an open union, but it can be cast to tagged unions (using validation keyword as tag) for easier error handling.
 
 Continuing the example above:
 
@@ -163,6 +161,31 @@ if (validate(data)) {
   // The type cast is needed, as Ajv uses a wider type to allow extension
   // You can extend this type to include your error types as needed.
   for (const err of validate.errors as DefinedError[]) {
+    switch (err.keyword) {
+      case "type":
+        // err type is narrowed here to have "type" error params properties
+        console.log(err.params.type)
+      break
+        // ...
+    }
+  }
+}
+```
+</code-block>
+
+<code-block title="JSON Type Definition">
+```typescript
+import {JTDErrorObject} from "ajv/dist/jtd"
+
+// ...
+
+if (validate(data)) {
+  // data is MyData here
+  console.log(data.foo)
+} else {
+  // The type cast is needed, as Ajv uses a wider type to allow extension
+  // You can extend this type to include your error types as needed.
+  for (const err of validate.errors as JTDErrorObject[]) {
     switch (err.keyword) {
       case "type":
         // err type is narrowed here to have "type" error params properties
@@ -239,6 +262,44 @@ function parseAndLogFoo(json: string): void {
     // data is MyData here
     console.log(data.foo)
   }
+}
+```
+</code-block>
+</code-group>
+
+## Type-safe unions
+
+JSON Type Definition only supports tagged unions, so unions in JTD are fully supported for `JTDSchemaType` and `JTDDataType`.
+JSON Schema is more complex and so `JSONSchemaType` has limited support for type safe unions.
+
+`JSONSchemaType` will type check unions where each union element is fully specified as an element of an `anyOf` array or `oneOf` array.
+Additionaly, unions of primitives will type check appropriately if they're combined into an array `type`, e.g. `{type: ["string", "number"]}`.
+
+::: warning TypeScript limitation
+Note that due to current limitation of TypeScript, JSONSchemaType cannot verify that every element of the union is present, and the following example is still valid `const schema: JSONSchemaType<number | string> = {type: "string"}`.
+:::
+
+Here's a more detailed example showing several union types:
+
+<code-group>
+<code-block title="JSON Schema">
+```typescript
+import Ajv, {JSONSchemaType} from "ajv"
+const ajv = new Ajv()
+
+type MyUnion = {prop: boolean} | string | number
+
+const schema: JSONSchemaType<MyUnion> = {
+  anyOf: [
+    {
+      type: "object",
+      properties: { prop: { type: "boolean" } },
+      required: ["prop"],
+    },
+    {
+      type: ["string", "number"]
+    }
+  ]
 }
 ```
 </code-block>

@@ -6,6 +6,7 @@ const def: CodeKeywordDefinition = {
   schemaType: "array",
   trackErrors: true,
   code: validateUnion,
+  error: {message: "must match a schema in union"},
 }
 
 export default def

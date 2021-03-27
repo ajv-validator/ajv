@@ -22,7 +22,9 @@ Passing the value below for some of the options is equivalent to not passing thi
 // see types/index.ts for actual types
 const defaultOptions = {
   // strict mode options (NEW)
-  strict: true,
+  strict: undefined, // *
+  strictSchema: true, // *
+  strictNumbers: true, // *
   strictTypes: "log", // *
   strictTuples: "log", // *
   strictRequired: false, // *
@@ -32,7 +34,8 @@ const defaultOptions = {
   // validation and reporting options:
   $data: false, // *
   allErrors: false,
-  verbose: false, // *
+  verbose: false,
+  discriminator: false, // *
   $comment: false, // *
   formats: {},
   keywords: {},
@@ -49,12 +52,11 @@ const defaultOptions = {
   addUsedSchema: true,
   inlineRefs: true,
   passContext: false,
-  loopRequired: Infinity, // *
-  loopEnum: Infinity, // NEW
+  loopRequired: 200, // *
+  loopEnum: 200, // NEW
   ownProperties: false,
   multipleOfPrecision: undefined, // *
   messages: true, // false with JTD
-  ajvErrors: false // only with JTD
   code: {
     // NEW
     es5: false,
@@ -76,39 +78,59 @@ By default Ajv executes in strict mode, that is designed to prevent any unexpect
 
 Option values:
 
-- `true` (default) - use strict mode and throw an exception when any strict mode restriction is violated.
+- `true` - throw an exception when any strict mode restriction is violated.
 - `"log"` - log warning when any strict mode restriction is violated.
-- `false` - ignore all strict mode restrictions. Also ignores `strictTypes` restrictions unless it is explicitly passed.
+- `false` - ignore all strict mode violations.
+- `undefined` (default) - use defaults for options strictSchema, strictNumbers, strictTypes, strictTuples and strictRequired.
+
+### strictSchema
+
+Prevent unknown keywords, formats etc. (see [Strict schema](./strict-mode.md#strict-schema))
+
+Option values:
+
+- `true` (default) - throw an exception when any strict schema restriction is violated.
+- `"log"` - log warning when any strict schema restriction is violated.
+- `false` - ignore all strict schema violations.
+
+### strictNumbers
+
+Whether to accept `NaN` and `Infinity` as number types during validation.
+
+Option values:
+
+- `true` (default) - fail validation if `NaN` or `Infinity` is passed where number is expected.
+- `false` - allow `NaN` and `Infinity` as number.
 
 ### strictTypes
 
-By default Ajv logs warning when "type" keyword is used in a way that may be incorrect or confusing to other people - see [Strict types](./strict-mode.md#strict-types) for more details. This option does not change validation results.
+See [Strict types](./strict-mode.md#strict-types)
 
 Option values:
 
-- `true` - throw exception when any strictTypes restriction is violated.
-- `"log"` (default, unless option strict is `false`) - log warning when any strictTypes restriction is violated.
-- `false` - ignore all strictTypes restrictions violations.
+- `true` - throw an exception when any strict types restriction is violated.
+- `"log"` (default) - log warning when any strict types restriction is violated.
+- `false` - ignore all strict types violations.
 
 ### strictTuples
 
-By default Ajv logs warning when "items" is array and "minItems" and "maxItems"/"additionalItems" not present or different from the number of items. See [Strict mode](./strict-mode.md) for more details. This option does not change validation results.
+See [Unconstrained tuples](./strict-mode.md#unconstrained-tuples)
 
 Option values:
 
-- `true` - throw exception.
-- `"log"` (default, unless option strict is `false`) - log warning.
-- `false` - ignore strictTuples restriction violations.
+- `true` - throw an exception when any strict tuples restriction is violated.
+- `"log"` (default) - log warning when any strict tuples restriction is violated.
+- `false` - ignore all strict tuples violations.
 
 ### strictRequired
 
-Ajv can log warning or throw exception when the property used in "required" keyword is not defined in "properties" keyword. See [Strict mode](./strict-mode.md) for more details. This option does not change validation results.
+See [Defined required properties](./strict-mode.md#defined-required-properties)
 
 Option values:
 
-- `true` - throw exception.
-- `"log"` - log warning.
-- `false` (default) - ignore strictRequired restriction violations.
+- `true` - throw an exception when strict required restriction is violated.
+- `"log"` - log warning when strict required restriction is violated.
+- `false` (default) - ignore strict required violations.
 
 ### allowUnionTypes
 
@@ -140,6 +162,10 @@ Check all rules collecting all errors. Default is to return after the first erro
 ### verbose
 
 Include the reference to the part of the schema (`schema` and `parentSchema`) and validated data in errors (false by default).
+
+### discriminator
+
+Support [discriminator keyword](./json-schema.md#discriminator) from [OpenAPI specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.1.0.md).
 
 ### $comment
 
@@ -249,11 +275,11 @@ Pass validation context to _compile_ and _validate_ keyword functions. If this o
 
 ### loopRequired
 
-By default `required` keyword is compiled into a single expression (or a sequence of statements in `allErrors` mode). In case of a very large number of properties in this keyword it may result in a very big validation function. Pass integer to set the number of properties above which `required` keyword will be validated in a loop - smaller validation function size but also worse performance.
+By default `required` keyword is compiled into a single expression (or a sequence of statements in `allErrors` mode) up to 200 required properties. Pass integer to set a different number of properties above which `required` keyword will be validated in a loop (with a smaller validation function size and worse performance).
 
 ### loopEnum <Badge text="v7" />
 
-By default `enum` keyword is compiled into a single expression. In case of a very large number of allowed values it may result in a large validation function. Pass integer to set the number of values above which `enum` keyword will be validated in a loop.
+By default `enum` keyword is compiled into a single expression with up to 200 allowed values. Pass integer to set the number of values above which `enum` keyword will be validated in a loop (with a smaller validation function size and worse performance).
 
 ### ownProperties
 
@@ -266,10 +292,6 @@ By default `multipleOf` keyword is validated by comparing the result of division
 ### messages
 
 Include human-readable messages in errors. `true` by default. `false` can be passed when messages are generated outside of Ajv code (e.g. with [ajv-i18n](https://github.com/ajv-validator/ajv-i18n)).
-
-### ajvErrors <Badge text="JTD only" />
-
-This option is only supported with JTD schemas to generate error objects with the properties described in the first part of [Validation errors](#validation-errors) section, otherwise JTD errors are generated when JTD schemas are used (see the second part of [the same section](#validation-errors)).
 
 ### code <Badge text="v7" />
 

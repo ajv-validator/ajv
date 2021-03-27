@@ -8,7 +8,7 @@ import jtdInvalidSchemasTests = require("./json-typedef-spec/tests/invalid_schem
 // tests from https://github.com/nst/JSONTestSuite
 import jsonParseTests = require("./json_parse_tests.json")
 import assert = require("assert")
-// import AjvPack from "../dist/standalone/instance"
+import AjvPack from "../dist/standalone/instance"
 
 interface TestCase {
   schema: SchemaObject
@@ -35,10 +35,10 @@ interface JSONParseTestSuite {
   tests: JSONParseTest[]
 }
 
-// interface JTDError {
-//   instancePath: string
-//   schemaPath: string
-// }
+interface JTDError {
+  instancePath: string
+  schemaPath: string
+}
 
 // const ONLY: RegExp[] = [
 //   "empty",
@@ -71,30 +71,50 @@ describe("JSON Type Definition", () => {
     for (const testName in jtdValidationTests) {
       const {schema, instance, errors} = jtdValidationTests[testName] as TestCase
       const valid = errors.length === 0
-      describe(testName, () =>
+      describeOnly(testName, () =>
         it(`should be ${valid ? "valid" : "invalid"}`, () =>
           withStandalone(ajvs).forEach((ajv) => {
             // console.log(ajv.compile(schema).toString())
             // console.log(ajv.validate(schema, instance), ajv.errors)
             assert.strictEqual(ajv.validate(schema, instance), valid)
-            // const opts = ajv instanceof AjvPack ? ajv.ajv.opts : ajv.opts
-            // if (opts.allErrors) {
-            //   assert.deepStrictEqual(ajv.errors, valid ? null : convertErrors(errors))
-            // }
+            const opts = ajv instanceof AjvPack ? ajv.ajv.opts : ajv.opts
+            if (opts.allErrors) {
+              assert.deepStrictEqual(cleanErrors(ajv.errors), valid ? null : convertErrors(errors))
+            }
           }))
       )
     }
 
-    // function convertErrors(errors: TestCaseError[]): JTDError[] {
-    //   return errors.map((e) => ({
-    //     instancePath: jsonPointer(e.instancePath),
-    //     schemaPath: jsonPointer(e.schemaPath),
-    //   }))
-    // }
+    function cleanErrors(errors?: JTDError[] | null): JTDError[] | null | undefined {
+      if (errors) {
+        return sortErrors(errors.map(({instancePath, schemaPath}) => ({instancePath, schemaPath})))
+      }
+      return errors
+    }
 
-    // function jsonPointer(error: string[]): string {
-    //   return error.map((s) => `/${s}`).join("")
-    // }
+    function convertErrors(errors: TestCaseError[]): JTDError[] | null | undefined {
+      return sortErrors(
+        errors.map((e) => ({
+          instancePath: jsonPointer(e.instancePath),
+          schemaPath: jsonPointer(e.schemaPath),
+        }))
+      )
+    }
+
+    function sortErrors(errors?: JTDError[] | null): JTDError[] | null | undefined {
+      if (errors) {
+        errors.sort(
+          (e1: JTDError, e2: JTDError) =>
+            e1.schemaPath.localeCompare(e2.schemaPath) ||
+            e1.instancePath.localeCompare(e2.instancePath)
+        )
+      }
+      return errors
+    }
+
+    function jsonPointer(error: string[]): string {
+      return error.map((s) => `/${s}`).join("")
+    }
   })
 
   describe("invalid schemas", () => {

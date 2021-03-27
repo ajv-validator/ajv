@@ -1,9 +1,12 @@
-import type {CodeKeywordDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, or, Code} from "../../compile/codegen"
-import validTimestamp from "../../compile/timestamp"
-import {func} from "../../compile/util"
+import validTimestamp from "../../runtime/timestamp"
+import {useFunc} from "../../compile/util"
 import {checkMetadata} from "./metadata"
+import {typeErrorMessage, typeErrorParams, _JTDTypeError} from "./error"
+
+export type JTDTypeError = _JTDTypeError<"type", JTDType, JTDType>
 
 export type IntType = "int8" | "uint8" | "int16" | "uint16" | "int32" | "uint32"
 
@@ -16,9 +19,17 @@ export const intRange: {[T in IntType]: [number, number, number]} = {
   uint32: [0, 4294967295, 10],
 }
 
+export type JTDType = "boolean" | "string" | "timestamp" | "float32" | "float64" | IntType
+
+const error: KeywordErrorDefinition = {
+  message: (cxt) => typeErrorMessage(cxt, cxt.schema),
+  params: (cxt) => typeErrorParams(cxt, cxt.schema),
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "type",
   schemaType: "string",
+  error,
   code(cxt: KeywordCxt) {
     checkMetadata(cxt)
     const {gen, data, schema, parentSchema} = cxt
@@ -29,7 +40,7 @@ const def: CodeKeywordDefinition = {
         cond = _`typeof ${data} == ${schema}`
         break
       case "timestamp": {
-        const vts = func(gen, validTimestamp)
+        const vts = useFunc(gen, validTimestamp)
         cond = _`${data} instanceof Date || (typeof ${data} == "string" && ${vts}(${data}))`
         break
       }

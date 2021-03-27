@@ -4,15 +4,14 @@ import type {
   KeywordErrorDefinition,
   AnySchema,
 } from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, str, not, Name} from "../../compile/codegen"
-import {Type} from "../../compile/subschema"
-import {alwaysValidSchema} from "../../compile/util"
+import {alwaysValidSchema, Type} from "../../compile/util"
 
 export type UnevaluatedItemsError = ErrorObject<"unevaluatedItems", {limit: number}, AnySchema>
 
 const error: KeywordErrorDefinition = {
-  message: ({params: {len}}) => str`should NOT have more than ${len} items`,
+  message: ({params: {len}}) => str`must NOT have more than ${len} items`,
   params: ({params: {len}}) => _`{limit: ${len}}`,
 }
 

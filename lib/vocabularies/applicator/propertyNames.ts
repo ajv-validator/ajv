@@ -4,14 +4,14 @@ import type {
   KeywordErrorDefinition,
   AnySchema,
 } from "../../types"
-import type KeywordCxt from "../../compile/context"
-import {_, str, not} from "../../compile/codegen"
+import type {KeywordCxt} from "../../compile/validate"
+import {_, not} from "../../compile/codegen"
 import {alwaysValidSchema} from "../../compile/util"
 
 export type PropertyNamesError = ErrorObject<"propertyNames", {propertyName: string}, AnySchema>
 
 const error: KeywordErrorDefinition = {
-  message: ({params}) => str`property name '${params.propertyName}' is invalid`, // TODO double quotes?
+  message: "property name must be valid",
   params: ({params}) => _`{propertyName: ${params.propertyName}}`,
 }
 

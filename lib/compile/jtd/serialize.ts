@@ -3,10 +3,11 @@ import type {SchemaObject} from "../../types"
 import {jtdForms, JTDForm, SchemaObjectMap} from "./types"
 import {SchemaEnv, getCompilingSchema} from ".."
 import {_, str, and, getProperty, CodeGen, Code, Name} from "../codegen"
-import {MissingRefError} from "../error_classes"
+import MissingRefError from "../ref_error"
 import N from "../names"
 import {isOwnProperty} from "../../vocabularies/code"
 import {hasRef} from "../../vocabularies/jtd/ref"
+import {useFunc} from "../util"
 import quote from "../../runtime/quote"
 
 const genSerialize: {[F in JTDForm]: (cxt: SerializeCxt) => void} = {
@@ -222,7 +223,7 @@ function serializeType(cxt: SerializeCxt): void {
 }
 
 function serializeString({gen, data}: SerializeCxt): void {
-  gen.add(N.json, _`${quoteFunc(gen)}(${data})`)
+  gen.add(N.json, _`${useFunc(gen, quote)}(${data})`)
 }
 
 function serializeNumber({gen, data}: SerializeCxt): void {
@@ -256,11 +257,4 @@ function addComma({gen}: SerializeCxt, first: Name): void {
     () => gen.assign(first, false),
     () => gen.add(N.json, str`,`)
   )
-}
-
-function quoteFunc(gen: CodeGen): Name {
-  return gen.scopeValue("func", {
-    ref: quote,
-    code: _`require("ajv/dist/runtime/quote").default`,
-  })
 }

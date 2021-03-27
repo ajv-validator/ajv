@@ -1,12 +1,13 @@
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
-import type KeywordCxt from "../../compile/context"
+import type {KeywordCxt} from "../../compile/validate"
 import {_, or, Name, Code} from "../../compile/codegen"
-import * as equal from "fast-deep-equal"
+import {useFunc} from "../../compile/util"
+import equal from "../../runtime/equal"
 
 export type EnumError = ErrorObject<"enum", {allowedValues: any[]}, any[] | {$data: string}>
 
 const error: KeywordErrorDefinition = {
-  message: "should be equal to one of the allowed values",
+  message: "must be equal to one of the allowed values",
   params: ({schemaCode}) => _`{allowedValues: ${schemaCode}}`,
 }
 
@@ -19,10 +20,7 @@ const def: CodeKeywordDefinition = {
     const {gen, data, $data, schema, schemaCode, it} = cxt
     if (!$data && schema.length === 0) throw new Error("enum must have non-empty array")
     const useLoop = schema.length >= it.opts.loopEnum
-    const eql = cxt.gen.scopeValue("func", {
-      ref: equal,
-      code: _`require("ajv/dist/compile/equal")`,
-    })
+    const eql = useFunc(gen, equal)
     let valid: Code
     if (useLoop || $data) {
       valid = gen.let("valid")

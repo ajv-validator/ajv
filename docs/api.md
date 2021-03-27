@@ -131,7 +131,7 @@ You can asynchronously compile meta-schema by passing `true` as the second param
 
 Similarly to `compile`, it can return type guard in typescript.
 
-See example in [Asynchronous compilation](./guide/managing-schemas.md#asynchronous-schema-compilation).
+See example in [Asynchronous schema loading](./guide/managing-schemas.md#asynchronous-schema-loading).
 
 ### ajv.validate(schemaOrRef: object | string, data: any): boolean
 
@@ -323,7 +323,7 @@ The schemas compiled before the keyword is removed will continue to work without
 
 Returns the text with all errors in a String.
 
-Options can have properties `separator` (string used to separate errors, ", " by default) and `dataVar` (the variable name that dataPaths are prefixed with, "data" by default).
+Options can have properties `separator` (string used to separate errors, ", " by default) and `dataVar` (the variable name that instancePath is prefixed with, "data" by default).
 
 ## Validation errors
 
@@ -336,35 +336,24 @@ Each error reported when validating against JSON Schema (also when validating ag
 ```typescript
 interface ErrorObject {
   keyword: string // validation keyword.
-  dataPath: string // JSON pointer to the part of the data that was validated (e.g., `"/prop/1/subProp"`).
-  schemaPath: string // the path (JSON-pointer as a URI fragment) to the schema of the failing keyword.
-  // the object with the additional information about error that can be used to generate error messages
-  // (e.g., using [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) package).
-  // See below for parameters set by all keywords.
+  instancePath: string // JSON Pointer to the location in the data instance (e.g., `"/prop/1/subProp"`).
+  schemaPath: string // JSON Pointer to the location of the failing keyword in the schema
   params: object // type is defined by keyword value, see below
+                 // params property is the object with the additional information about error
+                 // it can be used to generate error messages
+                 // (e.g., using [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) package).
+                 // See below for parameters set by all keywords.
   propertyName?: string // set for errors in `propertyNames` keyword schema.
-  // `dataPath` still points to the object in this case.
-  message?: string // the standard error message (can be excluded with option `messages` set to false).
-  schema?: any // the schema of the keyword (added with `verbose` option).
-  parentSchema?: object // the schema containing the keyword (added with `verbose` option)
-  data?: any // the data validated by the keyword (added with `verbose` option).
+                        // `instancePath` still points to the object in this case.
+  message?: string // the error message (can be excluded with option `messages: false`).
+  // Options below are added with `verbose` option:
+  schema?: any // the value of the failing keyword in the schema.
+  parentSchema?: object // the schema containing the keyword.
+  data?: any // the data validated by the keyword.
 }
 ```
 
-[JTD specification](./json-type-definition.md) defines strict format for validation errors, where each error is an object with the following properties:
-
-```typescript
-interface JTDErrorObject {
-  instancePath: string // JSON Pointer to the location in the data instance
-  schemaPath: string // JSON Pointer to the location in the schema
-}
-```
-
-This error format is used when using JTD schemas. To simplify usage, you may still generate Ajv error objects using `ajvErrors` option. You can also add a human-readable error message to error objects using option `messages`.
-
-::: warning JTD errors are not fully spec-compliant
-Ajv is not fully consistent with JTD regarding the error objects in some scenarios - it will be consistent by the time Ajv version 8 is released. Therefore it is not recommended yet to use error objects for any advanced application logic.
-:::
+For [JTD](./json-type-definition.md) schemas `instancePath` and `schemaPath` depend on the nature of the failure - the errors are consistent with [RFC8927](https://datatracker.ietf.org/doc/rfc8927/).
 
 ### Error parameters
 
@@ -470,6 +459,10 @@ type ErrorParams = {propertyName: string} // invalid property name
 ```
 
 User-defined keywords can define other keyword parameters.
+
+### Errors i18n
+
+You can use [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) package to generate errors in other languages.
 
 ### Error logging
 
