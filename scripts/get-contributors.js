@@ -46,11 +46,11 @@ async function main() {
 
   await sprite.quality(80).write(`../docs/.vuepress/components/Contributors/contributors.jpg`)
 
-  const str = `[\n\t${authors.map((a) => `'${a.login}'`).join(",\n\t")}\n]`
+  const str = `[\n  ${authors.map((a) => `"${a.login}"`).join(",\n  ")},\n]\n`
 
   fs.writeFileSync(
     `../docs/.vuepress/components/Contributors/_contributors.js`,
-    `export default ${str};`
+    `module.exports = ${str}`
   )
 }
 
