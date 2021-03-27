@@ -2,7 +2,7 @@
 
 &nbsp;
 
-# Ajv: Another JSON schema validator
+# Ajv JSON validator
 
 The fastest JSON validator for Node.js and browser.
 
