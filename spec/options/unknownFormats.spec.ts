@@ -24,7 +24,7 @@ describe("specifying allowed unknown formats with `formats` option", () => {
         const validate = ajv.compile({
           type: "object",
           properties: {
-            foo: {format: {$data: "1/bar"}},
+            foo: {type: "string", format: {$data: "1/bar"}},
             bar: {type: "string"},
           },
         })
