@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ajv News | Ajv JSON validator</title>
+    <meta name="generator" content="VuePress 1.8.2">
+    
+    <meta name="description" content="The fastest JSON schema Validator. Supports JSON Schema draft-04/06/07/2019-09 and JSON Type Definition (RFC8927)">
+    
+    <link rel="preload" href="/assets/css/0.styles.a1c37dd3.css" as="style"><link rel="preload" href="/assets/js/app.d02af104.js" as="script"><link rel="preload" href="/assets/js/2.132d547e.js" as="script"><link rel="preload" href="/assets/js/16.0f8909f6.js" as="script"><link rel="preload" href="/assets/js/54.019ca93a.js" as="script"><link rel="preload" href="/assets/js/19.cd549a24.js" as="script"><link rel="preload" href="/assets/js/6.8dc3e550.js" as="script"><link rel="prefetch" href="/assets/js/10.30f04d7a.js"><link rel="prefetch" href="/assets/js/11.94f48be7.js"><link rel="prefetch" href="/assets/js/12.4358a796.js"><link rel="prefetch" href="/assets/js/13.eafab20e.js"><link rel="prefetch" href="/assets/js/14.235544b8.js"><link rel="prefetch" href="/assets/js/15.73c87e46.js"><link rel="prefetch" href="/assets/js/17.49ebbbd6.js"><link rel="prefetch" href="/assets/js/18.bece97c6.js"><link rel="prefetch" href="/assets/js/20.1c8f49a8.js"><link rel="prefetch" href="/assets/js/21.8f0b6521.js"><link rel="prefetch" href="/assets/js/22.7416955e.js"><link rel="prefetch" href="/assets/js/23.2a511912.js"><link rel="prefetch" href="/assets/js/24.fb588f47.js"><link rel="prefetch" href="/assets/js/25.cf5e6352.js"><link rel="prefetch" href="/assets/js/26.f185882b.js"><link rel="prefetch" href="/assets/js/27.dab9cab2.js"><link rel="prefetch" href="/assets/js/28.cf1c74cb.js"><link rel="prefetch" href="/assets/js/29.1e201f3c.js"><link rel="prefetch" href="/assets/js/3.76471e41.js"><link rel="prefetch" href="/assets/js/30.e525a003.js"><link rel="prefetch" href="/assets/js/31.de0dfcdd.js"><link rel="prefetch" href="/assets/js/32.cd9aecf1.js"><link rel="prefetch" href="/assets/js/33.d852a1fb.js"><link rel="prefetch" href="/assets/js/34.3bd4ddc3.js"><link rel="prefetch" href="/assets/js/35.eb4813af.js"><link rel="prefetch" href="/assets/js/36.2156bf6c.js"><link rel="prefetch" href="/assets/js/37.ad60bede.js"><link rel="prefetch" href="/assets/js/38.3e8d74c2.js"><link rel="prefetch" href="/assets/js/39.3ccfa407.js"><link rel="prefetch" href="/assets/js/4.9fe72af0.js"><link rel="prefetch" href="/assets/js/40.a4c63e4a.js"><link rel="prefetch" href="/assets/js/41.ec2a9eb3.js"><link rel="prefetch" href="/assets/js/42.aa890d6b.js"><link rel="prefetch" href="/assets/js/43.91ed4c12.js"><link rel="prefetch" href="/assets/js/44.230f1353.js"><link rel="prefetch" href="/assets/js/45.8355b2b3.js"><link rel="prefetch" href="/assets/js/46.e6ca786c.js"><link rel="prefetch" href="/assets/js/47.41b7f11b.js"><link rel="prefetch" href="/assets/js/48.068fd39d.js"><link rel="prefetch" href="/assets/js/49.514f8506.js"><link rel="prefetch" href="/assets/js/5.292e1b62.js"><link rel="prefetch" href="/assets/js/50.7f64f095.js"><link rel="prefetch" href="/assets/js/51.92d20713.js"><link rel="prefetch" href="/assets/js/52.88e5863a.js"><link rel="prefetch" href="/assets/js/53.1a937523.js"><link rel="prefetch" href="/assets/js/55.3f522dbc.js"><link rel="prefetch" href="/assets/js/56.4b4bc397.js"><link rel="prefetch" href="/assets/js/57.7159d814.js"><link rel="prefetch" href="/assets/js/58.dd183a9d.js"><link rel="prefetch" href="/assets/js/59.a788a710.js"><link rel="prefetch" href="/assets/js/60.a40479cc.js"><link rel="prefetch" href="/assets/js/61.e0894ddb.js"><link rel="prefetch" href="/assets/js/62.d18be4be.js"><link rel="prefetch" href="/assets/js/63.159c18ea.js"><link rel="prefetch" href="/assets/js/64.5aa40946.js"><link rel="prefetch" href="/assets/js/7.c1c085b1.js"><link rel="prefetch" href="/assets/js/8.5e0db56a.js"><link rel="prefetch" href="/assets/js/9.36926312.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.a1c37dd3.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><img src="/img/ajv.svg" alt="Ajv JSON validator" class="logo"> <span class="site-name can-hide">Ajv JSON validator</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Guide" class="dropdown-title"><span class="title">Guide</span> <span class="arrow down"></span></button> <button type="button" aria-label="Guide" class="mobile-dropdown-title"><span class="title">Guide</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/guide/why-ajv.html" class="nav-link">
+  Why use Ajv
+</a></li><li class="dropdown-item"><!----> <a href="/guide/getting-started.html" class="nav-link">
+  Getting started
+</a></li><li class="dropdown-item"><!----> <a href="/guide/typescript.html" class="nav-link">
+  Using with TypeScript
+</a></li><li class="dropdown-item"><!----> <a href="/guide/schema-language.html" class="nav-link">
+  Choosing schema language
+</a></li><li class="dropdown-item"><!----> <a href="/guide/managing-schemas.html" class="nav-link">
+  Managing schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/combining-schemas.html" class="nav-link">
+  Combining schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/formats.html" class="nav-link">
+  Format validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/modifying-data.html" class="nav-link">
+  Modifying data
+</a></li><li class="dropdown-item"><!----> <a href="/guide/user-keywords.html" class="nav-link">
+  User-defined keywords
+</a></li><li class="dropdown-item"><!----> <a href="/guide/async-validation.html" class="nav-link">
+  Asynchronous validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/environments.html" class="nav-link">
+  Execution environments
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Reference" class="dropdown-title"><span class="title">Reference</span> <span class="arrow down"></span></button> <button type="button" aria-label="Reference" class="mobile-dropdown-title"><span class="title">Reference</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/api.html" class="nav-link">
+  API Reference
+</a></li><li class="dropdown-item"><!----> <a href="/options.html" class="nav-link">
+  Ajv options
+</a></li><li class="dropdown-item"><!----> <a href="/json-schema.html" class="nav-link">
+  JSON Schema
+</a></li><li class="dropdown-item"><!----> <a href="/json-type-definition.html" class="nav-link">
+  JSON Type Definition
+</a></li><li class="dropdown-item"><!----> <a href="/strict-mode.html" class="nav-link">
+  Strict mode
+</a></li><li class="dropdown-item"><!----> <a href="/standalone.html" class="nav-link">
+  Standalone validation code
+</a></li><li class="dropdown-item"><!----> <a href="/keywords.html" class="nav-link">
+  User defined keywords
+</a></li><li class="dropdown-item"><!----> <a href="/coercion.html" class="nav-link">
+  Type coercion rules
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Learn more" class="dropdown-title"><span class="title">Learn more</span> <span class="arrow down"></span></button> <button type="button" aria-label="Learn more" class="mobile-dropdown-title"><span class="title">Learn more</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><h4>
+          Extending Ajv
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/packages/" class="nav-link">
+  Extending Ajv
+</a></li><li class="dropdown-subitem"><a href="/packages/ajv-cli.html" class="nav-link">
+  ajv-cli
+</a></li><li class="dropdown-subitem"><a href="/packages/ajv-errors.html" class="nav-link">
+  ajv-errors
+</a></li><li class="dropdown-subitem"><a href="/packages/ajv-formats.html" class="nav-link">
+  ajv-formats
+</a></li><li class="dropdown-subitem"><a href="/packages/ajv-i18n.html" class="nav-link">
+  ajv-i18n
+</a></li><li class="dropdown-subitem"><a href="/packages/ajv-keywords.html" class="nav-link">
+  ajv-keywords
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Contributors
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/contributing.html" class="nav-link">
+  Contributing guide
+</a></li><li class="dropdown-subitem"><a href="/codegen.html" class="nav-link">
+  Code generation design
+</a></li><li class="dropdown-subitem"><a href="/components.html" class="nav-link">
+  Code components
+</a></li><li class="dropdown-subitem"><a href="/code_of_conduct.html" class="nav-link">
+  Code of Conduct
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Information
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/news/" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  News
+</a></li><li class="dropdown-subitem"><a href="/security.html" class="nav-link">
+  Security
+</a></li><li class="dropdown-subitem"><a href="/faq.html" class="nav-link">
+  FAQ
+</a></li><li class="dropdown-subitem"><a href="/license.html" class="nav-link">
+  License
+</a></li></ul></li></ul></div></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Guide" class="dropdown-title"><span class="title">Guide</span> <span class="arrow down"></span></button> <button type="button" aria-label="Guide" class="mobile-dropdown-title"><span class="title">Guide</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/guide/why-ajv.html" class="nav-link">
+  Why use Ajv
+</a></li><li class="dropdown-item"><!----> <a href="/guide/getting-started.html" class="nav-link">
+  Getting started
+</a></li><li class="dropdown-item"><!----> <a href="/guide/typescript.html" class="nav-link">
+  Using with TypeScript
+</a></li><li class="dropdown-item"><!----> <a href="/guide/schema-language.html" class="nav-link">
+  Choosing schema language
+</a></li><li class="dropdown-item"><!----> <a href="/guide/managing-schemas.html" class="nav-link">
+  Managing schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/combining-schemas.html" class="nav-link">
+  Combining schemas
+</a></li><li class="dropdown-item"><!----> <a href="/guide/formats.html" class="nav-link">
+  Format validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/modifying-data.html" class="nav-link">
+  Modifying data
+</a></li><li class="dropdown-item"><!----> <a href="/guide/user-keywords.html" class="nav-link">
+  User-defined keywords
+</a></li><li class="dropdown-item"><!----> <a href="/guide/async-validation.html" class="nav-link">
+  Asynchronous validation
+</a></li><li class="dropdown-item"><!----> <a href="/guide/environments.html" class="nav-link">
+  Execution environments
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Reference" class="dropdown-title"><span class="title">Reference</span> <span class="arrow down"></span></button> <button type="button" aria-label="Reference" class="mobile-dropdown-title"><span class="title">Reference</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/api.html" class="nav-link">
+  API Reference
+</a></li><li class="dropdown-item"><!----> <a href="/options.html" class="nav-link">
+  Ajv options
+</a></li><li class="dropdown-item"><!----> <a href="/json-schema.html" class="nav-link">
+  JSON Schema
+</a></li><li class="dropdown-item"><!----> <a href="/json-type-definition.html" class="nav-link">
+  JSON Type Definition
+</a></li><li class="dropdown-item"><!----> <a href="/strict-mode.html" class="nav-link">
+  Strict mode
+</a></li><li class="dropdown-item"><!----> <a href="/standalone.html" class="nav-link">
+  Standalone validation code
+</a></li><li class="dropdown-item"><!----> <a href="/keywords.html" class="nav-link">
+  User defined keywords
+</a></li><li class="dropdown-item"><!----> <a href="/coercion.html" class="nav-link">
+  Type coercion rules
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Learn more" class="dropdown-title"><span class="title">Learn more</span> <span class="arrow down"></span></button> <button type="button" aria-label="Learn more" class="mobile-dropdown-title"><span class="title">Learn more</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><h4>
+          Extending Ajv
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/packages/" class="nav-link">
+  Extending Ajv
+</a></li><li class="dropdown-subitem"><a href="/packages/ajv-cli.html" class="nav-link">
+  ajv-cli
+</a></li><li class="dropdown-subitem"><a href="/packages/ajv-errors.html" class="nav-link">
+  ajv-errors
+</a></li><li class="dropdown-subitem"><a href="/packages/ajv-formats.html" class="nav-link">
+  ajv-formats
+</a></li><li class="dropdown-subitem"><a href="/packages/ajv-i18n.html" class="nav-link">
+  ajv-i18n
+</a></li><li class="dropdown-subitem"><a href="/packages/ajv-keywords.html" class="nav-link">
+  ajv-keywords
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Contributors
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/contributing.html" class="nav-link">
+  Contributing guide
+</a></li><li class="dropdown-subitem"><a href="/codegen.html" class="nav-link">
+  Code generation design
+</a></li><li class="dropdown-subitem"><a href="/components.html" class="nav-link">
+  Code components
+</a></li><li class="dropdown-subitem"><a href="/code_of_conduct.html" class="nav-link">
+  Code of Conduct
+</a></li></ul></li><li class="dropdown-item"><h4>
+          Information
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="/news/" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  News
+</a></li><li class="dropdown-subitem"><a href="/security.html" class="nav-link">
+  Security
+</a></li><li class="dropdown-subitem"><a href="/faq.html" class="nav-link">
+  FAQ
+</a></li><li class="dropdown-subitem"><a href="/license.html" class="nav-link">
+  License
+</a></li></ul></li></ul></div></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading open"><span>Guide</span> <span class="arrow down"></span></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/why-ajv.html" class="sidebar-link">Why use AJV</a></li><li><a href="/guide/getting-started.html" class="sidebar-link">Getting started</a></li><li><a href="/guide/typescript.html" class="sidebar-link">Using with TypeScript</a></li><li><a href="/guide/schema-language.html" class="sidebar-link">Choosing schema language</a></li><li><a href="/guide/managing-schemas.html" class="sidebar-link">Managing schemas</a></li><li><a href="/guide/combining-schemas.html" class="sidebar-link">Combining schemas</a></li><li><a href="/guide/formats.html" class="sidebar-link">Format validation</a></li><li><a href="/guide/modifying-data.html" class="sidebar-link">Modifying data during validation</a></li><li><a href="/guide/user-keywords.html" class="sidebar-link">User-defined keywords</a></li><li><a href="/guide/async-validation.html" class="sidebar-link">Asynchronous validation</a></li><li><a href="/guide/environments.html" class="sidebar-link">Execution environments</a></li></ul></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Reference</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Extending Ajv</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Contributors</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Information</span> <span class="arrow right"></span></p> <!----></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="ajv-news"><a href="#ajv-news" class="header-anchor">#</a> Ajv News</h1> <div><div><h2>Ajv version 8 is released!</h2> <a href="/news/2021-03-27-ajv-version-8-released.html"><div class="post-meta" data-v-f7ce3066><time pubdate itemprop="datePublished" datetime="2021-03-27T00:00:00.000Z" class="pub-date" data-v-f7ce3066>
+    March 27, 2021
+  </time></div></a> <div><p>Ajv version 8 has these new features:</p>
+<ul>
+<li>support of JSON Schema draft-2020-12: <a href="/json-schema.html#prefixitems">prefixItems</a> keyword and changed semantics of <a href="/json-schema.html#items-in-draft-2020-12">items</a> keyword, <a href="/guide/combining-schemas.html#extending-recursive-schemas">dynamic recursive references</a>.</li>
+<li>OpenAPI <a href="/json-schema.html#discriminator">discriminator</a> keyword.</li>
+<li>improved JSON Type Definition support:</li>
+</ul>
+</div> <p><a href="/news/2021-03-27-ajv-version-8-released.html">Read more</a></p></div><div><h2>Ajv supports JSON Type Definition</h2> <a href="/news/2021-03-07-ajv-supports-json-type-definition.html"><div class="post-meta" data-v-f7ce3066><time pubdate itemprop="datePublished" datetime="2021-03-07T00:00:00.000Z" class="pub-date" data-v-f7ce3066>
+    March 7, 2021
+  </time></div></a> <div><p>JSON Type Definition (JTD) is a new specification for defining JSON structures that is very simple to use, comparing with JSON Schema, less error prone, and it is published as <a href="https://datatracker.ietf.org/doc/rfc8927/" target="_blank" rel="noopener noreferrer">RFC8927<OutboundLink/></a>.</p>
+<p>See <a href="/guide/schema-language.html">Choosing schema language</a> for a detailed comparison between JSON Schema and JSON Type definition and <a href="/json-type-definition.html">informal specification</a>.</p>
+</div> <p><a href="/news/2021-03-07-ajv-supports-json-type-definition.html">Read more</a></p></div><div><h2>Ajv version 7 is released!</h2> <a href="/news/2020-12-15-ajv-version-7-released.html"><div class="post-meta" data-v-f7ce3066><time pubdate itemprop="datePublished" datetime="2020-12-15T00:00:00.000Z" class="pub-date" data-v-f7ce3066>
+    December 15, 2020
+  </time></div></a> <div><p>Ajv version 7 has these new features:</p>
+<ul>
+<li>support of JSON Schema draft-2019-09 features: <a href="/json-schema.html#keywords-for-objects">unevaluatedProperties</a> and <a href="/json-schema.html#unevaluateditems">unevaluatedItems</a>, <a href="/guide/combining-schemas.html#extending-recursive-schemas">dynamic recursive references</a> and other <a href="/json-schema.html#json-schema-draft-2019-09">additional keywords</a>.</li>
+<li>to reduce the mistakes in JSON schemas and unexpected validation results, <a href="/strict-mode.html">strict mode</a> is added - it prohibits ignored or ambiguous JSON Schema elements.</li>
+<li>to make code injection from untrusted schemas impossible, <a href="/codegen.html">code generation</a> is fully re-written to be safe and to allow code optimization (compiled schema code size is reduced by more than 10%).</li>
+</ul>
+</div> <p><a href="/news/2020-12-15-ajv-version-7-released.html">Read more</a></p></div><div><h2>Mozilla MOSS grant and OpenJS Foundation</h2> <a href="/news/2020-08-14-mozilla-grant-openjs-foundation.html"><div class="post-meta" data-v-f7ce3066><time pubdate itemprop="datePublished" datetime="2020-08-14T00:00:00.000Z" class="pub-date" data-v-f7ce3066>
+    August 14, 2020
+  </time></div></a> <div><p><a href="https://www.mozilla.org/en-US/moss/" target="_blank" rel="noopener noreferrer"><img src="/img/mozilla.svg" width="240" height="68"><OutboundLink/></a><img src="/img/gap.svg" width="5%"><a href="https://openjsf.org/blog/2020/08/14/ajv-joins-openjs-foundation-as-an-incubation-project/" target="_blank" rel="noopener noreferrer"><img src="/img/openjs.png" width="220" height="68"><OutboundLink/></a></p>
+<p>Ajv has been awarded a grant from Mozilla’s <a href="https://www.mozilla.org/en-US/moss/" target="_blank" rel="noopener noreferrer">Open Source Support (MOSS) program<OutboundLink/></a> in the “Foundational Technology” track! It will sponsor the development of Ajv support of <a href="https://tools.ietf.org/html/draft-handrews-json-schema-02" target="_blank" rel="noopener noreferrer">JSON Schema version 2019-09<OutboundLink/></a> and of <a href="https://datatracker.ietf.org/doc/rfc8927/" target="_blank" rel="noopener noreferrer">JSON Type Definition (RFC8927)<OutboundLink/></a>.</p>
+<p>Ajv also joined <a href="https://openjsf.org/" target="_blank" rel="noopener noreferrer">OpenJS Foundation<OutboundLink/></a> – having this support will help ensure the longevity and stability of Ajv for all its users.</p>
+</div> <p><a href="/news/2020-08-14-mozilla-grant-openjs-foundation.html">Read more</a></p></div></div></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.d02af104.js" defer></script><script src="/assets/js/2.132d547e.js" defer></script><script src="/assets/js/16.0f8909f6.js" defer></script><script src="/assets/js/54.019ca93a.js" defer></script><script src="/assets/js/19.cd549a24.js" defer></script><script src="/assets/js/6.8dc3e550.js" defer></script>
+  </body>
+</html>
