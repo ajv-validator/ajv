@@ -6,7 +6,7 @@ date: 2020-12-15
 
 Ajv version 7 has these new features:
 
-- support of JSON Schema draft-2019-09 features: <a href="/json-schema.html#keywords-for-objecs">unevaluatedProperties</a> and <a href="/json-schema.html#unevaluateditems">unevaluatedItems</a>, <a href="/guide/combining-schemas.html#extending-recursive-schemas">dynamic recursive references</a> and other <a href="/json-schema.html#json-schema-draft-2019-09">additional keywords</a>.
+- support of JSON Schema draft-2019-09 features: <a href="/json-schema.html#keywords-for-objects">unevaluatedProperties</a> and <a href="/json-schema.html#unevaluateditems">unevaluatedItems</a>, <a href="/guide/combining-schemas.html#extending-recursive-schemas">dynamic recursive references</a> and other <a href="/json-schema.html#json-schema-draft-2019-09">additional keywords</a>.
 - to reduce the mistakes in JSON schemas and unexpected validation results, <a href="/strict-mode.html">strict mode</a> is added - it prohibits ignored or ambiguous JSON Schema elements.
 - to make code injection from untrusted schemas impossible, <a href="/codegen.html">code generation</a> is fully re-written to be safe and to allow code optimization (compiled schema code size is reduced by more than 10%).
 <!-- more -->
