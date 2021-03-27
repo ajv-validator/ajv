@@ -1,9 +1,24 @@
 const {slugify} = require("@vuepress/shared-utils")
 
+const title = "Ajv JSON schema validator"
+const description =
+  "The fastest JSON schema Validator. Supports JSON Schema draft-04/06/07/2019-09/2020-12 and JSON Type Definition (RFC8927)"
+
 module.exports = {
-  title: "Ajv JSON validator",
-  description:
-    "The fastest JSON schema Validator. Supports JSON Schema draft-04/06/07/2019-09 and JSON Type Definition (RFC8927)",
+  title,
+  description,
+  head: [
+    ["link", {rel: "icon", href: `/favicon.ico`}],
+    ["meta", {charset: "utf-8"}],
+    ["meta", {property: "og:title", content: title}],
+    ["meta", {property: "twitter:title", content: title}],
+    ["meta", {property: "og:description", content: description}],
+    ["meta", {property: "og:image", content: "https://ajv.js.org/img/ajv.png"}],
+    ["meta", {itemprop: "image", content: "https://ajv.js.org/img/ajv.png"}],
+    ["meta", {name: "twitter:image:src", content: "https://ajv.js.org/img/ajv.png"}],
+    ["meta", {name: "apple-mobile-web-app-capable", content: "yes"}],
+    ["link", {rel: "apple-touch-icon", href: `/img/apple-touch-icon.png`}],
+  ],
   markdown: {
     slugify: (str) => slugify(str.replace(/<Badge[^>]*\/>/, "")),
     toc: {includeLevel: [2, 3, 4]},
