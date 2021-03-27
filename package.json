@@ -24,7 +24,7 @@
     "test-karma": "karma start",
     "test-browser": "rm -rf .browser && npm run bundle && scripts/prepare-tests && karma start",
     "test-all": "npm run test-cov && if-node-version 12 npm run test-browser",
-    "test": "npm link && npm link ajv && npm run json-tests && npm run prettier:check && npm run eslint && npm run test-cov",
+    "test": "npm run json-tests && npm run prettier:check && npm run eslint && npm link && npm link ajv && npm run test-cov",
     "test-ci": "AJV_FULL_TEST=true npm test",
     "prepublish": "npm run build",
     "benchmark": "npm i && npm run build && npm link && cd ./benchmark && npm link ajv && npm i && node ./jtd",
