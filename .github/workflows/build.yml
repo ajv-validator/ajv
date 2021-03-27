@@ -22,12 +22,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: git submodule update --init
-      - run: npm run build
-      - run: npm run test-ci
-      - name: coveralls
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: update website
         if: ${{ github.event_name == 'push' && matrix.node-version == '14.x' }}
         run: ./scripts/publish-site
@@ -35,3 +29,9 @@ jobs:
           GH_TOKEN_PUBLIC: ${{ secrets.GH_TOKEN_PUBLIC }}
           GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
           GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
+      - run: npm run build
+      - run: npm run test-ci
+      - name: coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
