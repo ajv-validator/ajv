@@ -267,22 +267,27 @@ function parseAndLogFoo(json: string): void {
 </code-block>
 </code-group>
 
-## Type-safe Unions
+## Type-safe unions
 
 JSON Type Definition only supports tagged unions, so unions in JTD are fully supported for `JTDSchemaType` and `JTDDataType`.
 JSON Schema is more complex and so `JSONSchemaType` has limited support for type safe unions.
+
 `JSONSchemaType` will type check unions where each union element is fully specified as an element of an `anyOf` array or `oneOf` array.
-Additionaly, unions of primitives will type check appropriately if they're combined into an array `type`, e.g. `{ type: ["string", "number"] }`.
-Note that due to current restrictions in typescript, these can't verify that every element is typechecked, and the following example is still valid `const schema: JSONSchemaType<number | string> = { type: "string" }`.
+Additionaly, unions of primitives will type check appropriately if they're combined into an array `type`, e.g. `{type: ["string", "number"]}`.
+
+::: warning TypeScript limitation
+Note that due to current limitation of TypeScript, JSONSchemaType cannot verify that every element of the union is present, and the following example is still valid `const schema: JSONSchemaType<number | string> = {type: "string"}`.
+:::
 
 Here's a more detailed example showing several union types:
+
 <code-group>
 <code-block title="JSON Schema">
 ```typescript
 import Ajv, {JSONSchemaType} from "ajv"
 const ajv = new Ajv()
 
-type MyUnion = { prop: boolean } | string | number
+type MyUnion = {prop: boolean} | string | number
 
 const schema: JSONSchemaType<MyUnion> = {
   anyOf: [

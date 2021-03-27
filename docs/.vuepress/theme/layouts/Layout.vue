@@ -27,7 +27,29 @@
       </template>
     </Sidebar>
 
-    <Home v-if="$page.frontmatter.home" />
+    <HomePage
+      v-if="$page.frontmatter.homepage"
+      :sidebar-items="sidebarItems"
+    >
+      <template #top>
+        <slot name="page-top" />
+      </template>
+      <template #bottom>
+        <slot name="page-bottom" />
+      </template>
+    </HomePage>
+
+    <NewsPost
+      v-else-if="$page.frontmatter.news"
+      :sidebar-items="sidebarItems"
+    >
+      <template #top>
+        <slot name="page-top" />
+      </template>
+      <template #bottom>
+        <slot name="page-bottom" />
+      </template>
+    </NewsPost>
 
     <Page
       v-else
