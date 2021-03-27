@@ -43,13 +43,13 @@
       left 50px
 
     @media only screen and (min-width: $MQMobile)
-      top -425px
-      left 250px
+      top -430px
+      left 330px
 
     @media only screen and (min-width: $MQNarrow)
       width 1097px
       top -575px
-      left 300px
+      left 425px
 
   background linear-gradient(304.33deg, rgba(237, 237, 237, 0.31) -7.48%, #C6E1FF 30.07%, rgba(237, 237, 237, 0.26) 82.76%)
 

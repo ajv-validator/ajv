@@ -5,7 +5,7 @@ sidebar: false
 
 <HeroSection>
 
-# Ajv JSON validator
+# Ajv JSON schema validator
 
 ## Security and reliability for JavaScript applications
 
