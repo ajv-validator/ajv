@@ -123,7 +123,9 @@ I always thought that built-in data validation is a key feature of any web frame
 
 <Testimonial color="blue">
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eleifend aliquet urna at euismod. Sed placerat malesuada felis vel rutrum. Nullam egestas tincidunt nulla, nec malesuada lorem laoreet ut. Integer.
+Ajv has become a centerpiece of all data-validation logic in my open-source projects and businesses. It is spec-compliant, extensible, fast and has amazing support.
+
+[@gajus](https://github.com/gajus)
 
 </Testimonial>
 </Testimonials>
