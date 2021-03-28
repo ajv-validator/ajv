@@ -86,6 +86,7 @@ module.exports = {
             items: [
               {link: "/news/", text: "News"},
               {link: "/security", text: "Security"},
+              {link: "/v6-to-v8-migration", text: "Migrate from v6"},
               {link: "/faq", text: "FAQ"},
               {link: "/license", text: "License"},
             ],
@@ -145,7 +146,13 @@ module.exports = {
       },
       {
         title: "Information",
-        children: ["/faq", "/security", ["/license", "License"]],
+        children: [
+          "/news/",
+          "/faq",
+          "/security",
+          ["/v6-to-v8-migration", "Migrate from v6 to v8"],
+          ["/license", "License"],
+        ],
       },
     ],
     repo: "ajv-validator/ajv",
