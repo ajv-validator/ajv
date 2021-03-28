@@ -34,6 +34,7 @@ export default {
   & >>> .theme-code-group
     button
       position relative
+      outline none
       z-index 1
 
   &.testimonials
