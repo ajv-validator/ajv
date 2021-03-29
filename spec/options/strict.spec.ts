@@ -208,34 +208,49 @@ describe("strict mode", () => {
 
       //@ts-expect-error
       const badSchema1: JSONSchemaType<MyTuple> = {
-        type: "array",
-        items: [{type: "string"}, {type: "number"}],
-        additionalItems: false,
+        type: "object",
+        properties: {
+          test: {
+            type: "array",
+            items: [{type: "string"}, {type: "number"}],
+            additionalItems: false,
+          },
+        },
       }
       should.throw(() => {
         ajv.compile(badSchema1)
-      }, / minItems or maxItems\/additionalItems are not specified or different/)
+      }, / minItems or maxItems\/additionalItems are not specified or different at path "#\/properties\/test"/)
 
       //@ts-expect-error
       const badSchema2: JSONSchemaType<MyTuple> = {
-        type: "array",
-        items: [{type: "string"}, {type: "number"}],
-        minItems: 2,
+        type: "object",
+        properties: {
+          test: {
+            type: "array",
+            items: [{type: "string"}, {type: "number"}],
+            minItems: 2,
+          },
+        },
       }
       should.throw(() => {
         ajv.compile(badSchema2)
-      }, / minItems or maxItems\/additionalItems are not specified or different/)
+      }, / minItems or maxItems\/additionalItems are not specified or different at path "#\/properties\/test"/)
 
       //@ts-expect-error
       const badSchema3: JSONSchemaType<MyTuple> = {
-        type: "array",
-        items: [{type: "string"}, {type: "number"}],
-        minItems: 2,
-        maxItems: 3,
+        type: "object",
+        properties: {
+          test: {
+            type: "array",
+            items: [{type: "string"}, {type: "number"}],
+            minItems: 2,
+            maxItems: 3,
+          },
+        },
       }
       should.throw(() => {
         ajv.compile(badSchema3)
-      }, / minItems or maxItems\/additionalItems are not specified or different/)
+      }, / minItems or maxItems\/additionalItems are not specified or different at path "#\/properties\/test"/)
     })
   })
 
