@@ -53,7 +53,7 @@ It has a required member `type` and an optional members `nullable` and `metadata
   - `"uint16"` - unsigned word value (0 .. 65535)
   - `"int32"` - signed 32-bit integer value
   - `"uint32"` - unsigned 32-bit integer value
-    `type` values that define floating point numbers:
+- `type` values that define floating point numbers:
   - `"float32"` - 32-bit real number
   - `"float64"` - 64-bit real number
 
