@@ -154,3 +154,7 @@ export function safeStringify(x: unknown): string {
 export function getProperty(key: Code | string | number): Code {
   return typeof key == "string" && IDENTIFIER.test(key) ? new _Code(`.${key}`) : _`[${key}]`
 }
+
+export function regexpCode(rx: RegExp): Code {
+  return new _Code(rx.toString())
+}

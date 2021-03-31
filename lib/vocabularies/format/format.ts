@@ -7,7 +7,7 @@ import type {
   ErrorObject,
 } from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
-import {_, str, nil, or, Code, getProperty} from "../../compile/codegen"
+import {_, str, nil, or, Code, getProperty, regexpCode} from "../../compile/codegen"
 
 type FormatValidate =
   | FormatValidator<string>
@@ -92,11 +92,13 @@ const def: CodeKeywordDefinition = {
       }
 
       function getFormat(fmtDef: AddedFormat): [string, FormatValidate, Code] {
-        const fmt = gen.scopeValue("formats", {
-          key: schema,
-          ref: fmtDef,
-          code: opts.code.formats ? _`${opts.code.formats}${getProperty(schema)}` : undefined,
-        })
+        const code =
+          fmtDef instanceof RegExp
+            ? regexpCode(fmtDef)
+            : opts.code.formats
+            ? _`${opts.code.formats}${getProperty(schema)}`
+            : undefined
+        const fmt = gen.scopeValue("formats", {key: schema, ref: fmtDef, code})
         if (typeof fmtDef == "object" && !(fmtDef instanceof RegExp)) {
           return [fmtDef.type || "string", fmtDef.validate, _`${fmt}.validate`]
         }

@@ -2,7 +2,7 @@ import type {ScopeValueSets, NameValue, ValueScope, ValueScopeName} from "./scop
 import {_, nil, _Code, Code, Name, UsedNames, CodeItem, addCodeArg, _CodeOrName} from "./code"
 import {Scope, varKinds} from "./scope"
 
-export {_, str, strConcat, nil, getProperty, stringify, Name, Code} from "./code"
+export {_, str, strConcat, nil, getProperty, stringify, regexpCode, Name, Code} from "./code"
 export {Scope, ScopeStore, ValueScope, ValueScopeName, ScopeValueSets, varKinds} from "./scope"
 
 // type for expressions that can be safely inserted in code without quotes

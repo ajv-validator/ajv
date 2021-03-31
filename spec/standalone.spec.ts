@@ -273,4 +273,36 @@ describe("standalone code generation", () => {
       assert.strictEqual(validateUser({email: "foo@bar.com"}), true)
     })
   })
+
+  describe("standalone code with RegExp format", () => {
+    const schema = {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      definitions: {
+        User: {
+          type: "object",
+          properties: {
+            username: {
+              type: "string",
+              format: "username",
+            },
+          },
+          required: ["username"],
+          additionalProperties: false,
+        },
+      },
+    }
+
+    it("should support RegExp format with standalone code", () => {
+      const ajv = new _Ajv({code: {source: true}})
+      ajv.addFormat("username", /[a-z][a-z0-9_]*/i)
+      ajv.addSchema(schema)
+      const moduleCode = standaloneCode(ajv, {validateUser: "#/definitions/User"})
+      const {validateUser} = requireFromString(moduleCode)
+
+      assert(typeof validateUser == "function")
+      assert.strictEqual(validateUser({}), false)
+      assert.strictEqual(validateUser({username: "foo_bar"}), true)
+      assert.strictEqual(validateUser({email: "foo bar"}), false)
+    })
+  })
 })
