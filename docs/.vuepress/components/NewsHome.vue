@@ -13,7 +13,10 @@
         </Column>
       </Columns>
     </div>
-    <p><a href="/news/" class="previous">All news</a></p>
+    <p class="subscribe">
+      <Subscribe />
+      <a href="/news/" class="all-news">All news</a>
+    </p>
   </div>
 </template>
 
@@ -42,7 +45,15 @@ export default {
     float right
     margin 28px 0
 
-a.previous
-  display inline-block
-  float right
+p.subscribe
+  margin-top 2em
+
+  a.all-news
+    display block
+    margin-top 1rem
+
+    @media only screen and (min-width: $MQMobileNarrow)
+      display inline-block
+      float right
+      margin-top 0
 </style>

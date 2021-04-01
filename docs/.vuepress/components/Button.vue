@@ -19,8 +19,8 @@ export default {
 a.button
   display block
   width 114px
-  height 40px
-  line-height 40px
+  height 38px
+  line-height 38px
   background-color $ajvGreenColor
   border-radius 6px
   color white
