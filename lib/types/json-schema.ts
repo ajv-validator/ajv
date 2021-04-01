@@ -24,6 +24,30 @@ interface StringKeywords {
 }
 
 export type JSONSchemaType<T, _partial extends boolean = false> = (
+  | // these two unions allow arbitrary unions of types
+  {
+      anyOf: readonly JSONSchemaType<T, _partial>[]
+    }
+  | {
+      oneOf: readonly JSONSchemaType<T, _partial>[]
+    }
+  // this union allows for { type: (primitive)[] } style schemas
+  | ({
+      type: (T extends number
+        ? JSONType<"number" | "integer", _partial>
+        : T extends string
+        ? JSONType<"string", _partial>
+        : T extends boolean
+        ? JSONType<"boolean", _partial>
+        : never)[]
+    } & (T extends number
+      ? NumberKeywords
+      : T extends string
+      ? StringKeywords
+      : T extends boolean
+      ? unknown
+      : never))
+  // this covers "normal" types; it's last so typescript looks to it first for errors
   | ((T extends number
       ? {
           type: JSONType<"number" | "integer", _partial>
@@ -91,29 +115,6 @@ export type JSONSchemaType<T, _partial extends boolean = false> = (
       else?: PartialSchema<T>
       not?: PartialSchema<T>
     })
-  // these two unions allow arbitrary unions of types
-  | {
-      anyOf: readonly JSONSchemaType<T, _partial>[]
-    }
-  | {
-      oneOf: readonly JSONSchemaType<T, _partial>[]
-    }
-  // this union allows for { type: (primitive)[] } style schemas
-  | ({
-      type: (T extends number
-        ? JSONType<"number" | "integer", _partial>
-        : T extends string
-        ? JSONType<"string", _partial>
-        : T extends boolean
-        ? JSONType<"boolean", _partial>
-        : never)[]
-    } & (T extends number
-      ? NumberKeywords
-      : T extends string
-      ? StringKeywords
-      : T extends boolean
-      ? unknown
-      : never))
 ) & {
   [keyword: string]: any
   $id?: string
