@@ -5,9 +5,8 @@
   "main": "dist/ajv.js",
   "types": "dist/ajv.d.ts",
   "files": [
-    "lib/",
     "dist/",
-    ".tonic_example.js"
+    ".runkit_example.js"
   ],
   "scripts": {
     "eslint": "eslint \"lib/**/*.ts\" \"spec/**/*.*s\" scripts --ignore-pattern spec/JSON-Schema-Test-Suite",
