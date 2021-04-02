@@ -117,18 +117,23 @@ if (!valid) console.log(ajv.errors)
 <Testimonials>
 <Testimonial color="green">
 
-I always thought that built-in data validation is a key feature of any web framework. We decided to leverage JSON Schema in [Fastify](https://www.fastify.io), and Ajv fits our needs wonderfully: it’s fast, stable and well maintained. [@mcollina](https://github.com/mcollina)
+Built-in data validation is a key feature of any web framework. We decided to leverage JSON Schema in [Fastify](https://www.fastify.io), and Ajv fits our needs wonderfully: it’s fast, stable and well maintained.
+
+[Matteo Collina](https://github.com/mcollina), tech director [@nearform](https://github.com/nearform) and TSC member
 
 </Testimonial>
 
 <Testimonial color="blue">
 
-Ajv has become a centerpiece of all data-validation logic in my open-source projects and businesses. It is spec-compliant, extensible, fast and has amazing support.
+[ESLint](https://eslint.org/) has used Ajv for validating our complex configurations. Ajv has proven to be reliable over the years we’ve been using it and ESLint is proud to sponsor Ajv’s continued development.
 
-[@gajus](https://github.com/gajus)
+[Nicholas C. Zakas](https://github.com/nzakas), ESLint creator and TSC member
 
 </Testimonial>
 </Testimonials>
+
+<span style="float:right;">[All testimonials](./testimonials.md)</span>
+
 </HomeSection>
 
 <HomeSection>
