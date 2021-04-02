@@ -41,10 +41,7 @@
       "text-summary"
     ]
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ajv-validator/ajv.git"
-  },
+  "repository": "ajv-validator/ajv",
   "keywords": [
     "JSON",
     "schema",
@@ -57,11 +54,9 @@
   ],
   "author": "Evgeny Poberezkin",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ajv-validator/ajv/issues"
-  },
-  "homepage": "https://github.com/ajv-validator/ajv",
-  "tonicExampleFilename": ".tonic_example.js",
+  "bugs": "https://github.com/ajv-validator/ajv/issues",
+  "homepage": "https://ajv.js.org",
+  "runkitExampleFilename": ".runkit_example.js",
   "dependencies": {
     "fast-deep-equal": "^3.1.1",
     "json-schema-traverse": "^1.0.0",
