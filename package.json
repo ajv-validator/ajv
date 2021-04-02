@@ -5,6 +5,7 @@
   "main": "dist/ajv.js",
   "types": "dist/ajv.d.ts",
   "files": [
+    "lib/",
     "dist/",
     ".runkit_example.js"
   ],
