@@ -268,4 +268,4 @@ console.log(data) // { "foo": [1], "bar": false }
 
 The coercion rules, as you can see from the example, are different from JavaScript both to validate user input as expected and to have the coercion reversible (to correctly validate cases where different types are defined in subschemas of "anyOf" and other compound keywords).
 
-See [Type coercion rules](./coercion.md) for details.
+See [Type coercion rules](../coercion.md) for details.
