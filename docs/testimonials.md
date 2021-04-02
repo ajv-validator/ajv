@@ -5,6 +5,7 @@
 [Nicholas C. Zakas](https://github.com/nzakas), ESLint creator and TSC member
 
 <br>
+
 I always thought that built-in data validation is a key feature of any web framework. We decided to leverage JSON Schema in [Fastify](https://www.fastify.io), and Ajv fits our needs wonderfully: it’s fast, stable and well maintained.
 
 [Matteo Collina](https://github.com/mcollina), technical Director [@nearform](https://github.com/nearform) and TSC member

@@ -9,8 +9,10 @@ import {withStandalone} from "./ajv_standalone"
 import options from "./ajv_options"
 import * as assert from "assert"
 
-describe("discriminator keyword", () => {
+describe("discriminator keyword", function () {
   let ajvs: (Ajv | AjvPack)[]
+
+  this.timeout(10000)
 
   before(() => {
     ajvs = [...getAjvs(_Ajv), ...getAjvs(_Ajv2019)]
