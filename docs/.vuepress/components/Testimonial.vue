@@ -24,17 +24,24 @@ div.testimonial-content
     background-image url(./Testimonial/testimonials-blue.svg)
   &.green
     background-image url(./Testimonial/testimonials-green.svg)
+  p
+    margin 0.9em 0
+    font-size 15px
 
   @media only screen and (max-width 374px)
     &.blue, &.green
       background-image none
+      padding 0 0
+      p
+        font-size 15px
 
   @media only screen and (max-width 500px)
     width 100%
-    font-size 13px
     background-size 350px 156px
     padding 0 calc(50% - 100px)
     box-sizing border-box
+    p
+      font-size 12px
 
   @media only screen and (min-width 500px)
     height 212px
