@@ -17,8 +17,12 @@ const def: CodeKeywordDefinition = {
   $data: true,
   error,
   code(cxt: KeywordCxt) {
-    const {gen, data, $data, schema, schemaCode} = cxt
-    const regExp = $data ? _`(new RegExp(${schemaCode}, "u"))` : usePattern(gen, schema) // TODO regexp should be wrapped in try/catch
+    const {gen, data, $data, schema, schemaCode, it} = cxt
+    const regExpFlags = it.opts.unicodeRegExp ? "u" : ""
+    // TODO regexp should be wrapped in try/catchs
+    const regExp = $data
+      ? _`(new RegExp(${schemaCode}, ${regExpFlags}))`
+      : usePattern(gen, schema, regExpFlags)
     cxt.fail$data(_`!${regExp}.test(${data})`)
   },
 }

@@ -90,11 +90,11 @@ export function callValidateCode(
   return context !== nil ? _`${func}.call(${context}, ${args})` : _`${func}(${args})`
 }
 
-export function usePattern(gen: CodeGen, pattern: string): Name {
+export function usePattern(gen: CodeGen, pattern: string, regExpFlags = "u"): Name {
   return gen.scopeValue("pattern", {
     key: pattern,
-    ref: new RegExp(pattern, "u"),
-    code: _`new RegExp(${pattern}, "u")`,
+    ref: new RegExp(pattern, regExpFlags),
+    code: _`new RegExp(${pattern}, ${regExpFlags})`,
   })
 }
 

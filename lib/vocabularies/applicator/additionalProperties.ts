@@ -60,7 +60,11 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
         definedProp = nil
       }
       if (patProps.length) {
-        definedProp = or(definedProp, ...patProps.map((p) => _`${usePattern(gen, p)}.test(${key})`))
+        const regExpFlags = it.opts.unicodeRegExp ? "u" : ""
+        definedProp = or(
+          definedProp,
+          ...patProps.map((p) => _`${usePattern(gen, p, regExpFlags)}.test(${key})`)
+        )
       }
       return not(definedProp)
     }
