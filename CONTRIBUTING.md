@@ -58,7 +58,9 @@ Tidelift will coordinate the fix and disclosure.
 
 Please do NOT report security vulnerabilities via GitHub issues.
 
-### <a name="changes"></a>Change proposals
+<a name="changes"></a>
+
+### Change proposals
 
 [Create a proposal](https://github.com/ajv-validator/ajv/issues/new?template=change.md) for a new feature, option or some other improvement.
 
@@ -77,7 +79,9 @@ If you’re requesting a change, it would be helpful to include this as well:
 
 Please include as much details as possible - the more information, the better.
 
-### <a name="compatibility"></a>Browser and compatibility issues
+<a name="compatibility"></a>
+
+### Browser and compatibility issues
 
 [Create an issue](https://github.com/ajv-validator/ajv/issues/new?template=compatibility.md) to report a compatibility problem that only happens in a particular environment (when your code works correctly in the latest stable Node.js in linux systems but fails in some other environment).
 
@@ -90,7 +94,9 @@ Please include this information:
 5. Results in the latest stable Node.js.
 6. Results and error messages in your platform.
 
-### <a name="installation"></a>Installation and dependency issues
+<a name="installation"></a>
+
+### Installation and dependency issues
 
 [Create an issue](https://github.com/ajv-validator/ajv/issues/new?template=installation.md) to report problems that happen during Ajv installation or when Ajv is missing some dependency.
 
@@ -109,13 +115,17 @@ If nothing helps, please submit:
 5. Error messages
 6. The output of `npm ls`
 
-### <a name="json-schema"></a>Using JSON Schema standard
+<a name="json-schema"></a>
+
+### Using JSON Schema standard
 
 Ajv implements JSON Schema standard draft-04 and draft-06/07.
 
 If it is a general issue related to using the standard keywords included in JSON Schema specification or implementing some advanced validation logic please ask the question on [Stack Overflow](https://stackoverflow.com/questions/ask?tags=jsonschema,ajv) (my account is [esp](https://stackoverflow.com/users/1816503/esp)) or submit the question to [json-schema.org](https://github.com/json-schema-org/json-schema-spec/issues/new). Please mention @epoberezkin.
 
-### <a name="usage"></a>Ajv usage questions
+<a name="usage"></a>
+
+### Ajv usage questions
 
 The best place to ask a question about using Ajv is [Gitter chat](https://gitter.im/ajv-validator/ajv).
 

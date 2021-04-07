@@ -7,10 +7,10 @@ assignees: ""
 ---
 
 <!--
-Frequently Asked Questions: https://github.com/ajv-validator/ajv/blob/master/docs/faq.md
+Frequently Asked Questions: https://ajv.js.org/faq.html
 
 This template is for issues about missing or incorrect type definition and other typescript-related issues.
-For other issues please see https://github.com/ajv-validator/ajv/blob/master/CONTRIBUTING.md
+For other issues please see https://ajv.js.org/contributing/
 -->
 
 **What version of Ajv are you using? Does the issue happen if you use the latest version?**
@@ -18,7 +18,7 @@ For other issues please see https://github.com/ajv-validator/ajv/blob/master/CON
 **Your typescript code**
 
 <!--
-Please make it as small as posssible to reproduce the issue
+Please make it as small as possible to reproduce the issue
 -->
 
 ```typescript

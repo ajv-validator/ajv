@@ -1,12 +1,12 @@
 <!--
-Frequently Asked Questions: https://github.com/ajv-validator/ajv/blob/master/docs/faq.md
+Frequently Asked Questions: https://ajv.js.org/faq.html
 Please provide all info and reduce your schema and data to the smallest possible size.
 
 This template is for bug or error reports. For other issues please use:
 - security vulnerability: https://tidelift.com/security)
-- a new feature/improvement: https://ajv.js.org/contribute.html#changes
-- browser/compatibility issues: https://ajv.js.org/contribute.html#compatibility
-- JSON-Schema standard: https://ajv.js.org/contribute.html#json-schema
+- a new feature/improvement: https://ajv.js.org/contributing/#changes
+- browser/compatibility issues: https://ajv.js.org/contributing/#compatibility
+- JSON-Schema standard: https://ajv.js.org/contributing/#json-schema
 - Ajv usage questions: https://gitter.im/ajv-validator/ajv
 -->
 
@@ -14,7 +14,7 @@ This template is for bug or error reports. For other issues please use:
 
 **Ajv options object**
 
-<!-- See https://github.com/ajv-validator/ajv/api.md#options -->
+<!-- See https://ajv.js.org/options.html -->
 
 ```javascript
 
@@ -30,7 +30,7 @@ This template is for bug or error reports. For other issues please use:
 
 **Sample data**
 
-<!-- Please make it as small as posssible to reproduce the issue -->
+<!-- Please make it as small as possible to reproduce the issue -->
 
 ```json
 
@@ -40,8 +40,8 @@ This template is for bug or error reports. For other issues please use:
 
 <!--
 Please:
-- make it as small as posssible to reproduce the issue
-- use one of the usage patterns from https://github.com/ajv-validator/ajv#getting-started
+- make it as small as possible to reproduce the issue
+- use one of the usage patterns from https://ajv.js.org/guide/getting-started.html
 - use `options`, `schema` and `data` as variables, do not repeat their values here
 - post a working code sample in RunKit notebook cloned from https://runkit.com/esp/ajv-issue and include the link here.
 

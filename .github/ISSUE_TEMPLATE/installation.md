@@ -7,11 +7,11 @@ assignees: ""
 ---
 
 <!--
-Frequently Asked Questions: https://github.com/ajv-validator/ajv/blob/master/docs/faq.md
+Frequently Asked Questions: https://ajv.js.org/faq.html
 Please provide all info and reduce your schema and data to the smallest possible size.
 
 This template is for installation and dependency issues.
-For other issues please see https://github.com/ajv-validator/ajv/blob/master/CONTRIBUTING.md
+For other issues please see https://ajv.js.org/contributing/
 
 Before submitting the issue, please try the following:
 - use the latest stable Node.js and npm
