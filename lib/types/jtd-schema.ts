@@ -109,7 +109,7 @@ export type JTDSchemaType<T, D extends Record<string, unknown> = Record<string, 
       true extends IsValues<T>
       ? T extends Record<string, infer V>
         ? {
-            values: JTDSchemaType<V>
+            values: JTDSchemaType<V, D>
           }
         : never
       : // properties
