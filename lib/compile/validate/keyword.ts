@@ -144,7 +144,7 @@ export function validSchemaType(
 }
 
 export function validateKeywordUsage(
-  {schema, opts, self}: SchemaObjCxt,
+  {schema, opts, self, errSchemaPath}: SchemaObjCxt,
   def: AddedKeywordDefinition,
   keyword: string
 ): void {
@@ -161,7 +161,9 @@ export function validateKeywordUsage(
   if (def.validateSchema) {
     const valid = def.validateSchema(schema[keyword])
     if (!valid) {
-      const msg = "keyword value is invalid: " + self.errorsText(def.validateSchema.errors)
+      const msg =
+        `keyword "${keyword}" value is invalid at path "${errSchemaPath}": ` +
+        self.errorsText(def.validateSchema.errors)
       if (opts.validateSchema === "log") self.logger.error(msg)
       else throw new Error(msg)
     }
