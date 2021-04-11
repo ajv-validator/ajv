@@ -97,6 +97,7 @@ export interface CurrentOptions {
   allErrors?: boolean
   verbose?: boolean
   discriminator?: boolean
+  unicodeRegExp?: boolean
   $comment?:
     | true
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
@@ -212,7 +213,8 @@ type RequiredInstanceOptions = {
     | "messages"
     | "addUsedSchema"
     | "validateSchema"
-    | "validateFormats"]: NonNullable<Options[K]>
+    | "validateFormats"
+    | "unicodeRegExp"]: NonNullable<Options[K]>
 } & {code: InstanceCodeOptions}
 
 export type InstanceOptions = Options & RequiredInstanceOptions
@@ -239,6 +241,7 @@ function requiredOptions(o: Options): RequiredInstanceOptions {
     addUsedSchema: o.addUsedSchema ?? true,
     validateSchema: o.validateSchema ?? true,
     validateFormats: o.validateFormats ?? true,
+    unicodeRegExp: o.unicodeRegExp ?? true,
   }
 }
 

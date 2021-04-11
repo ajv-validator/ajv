@@ -50,7 +50,7 @@ const def: CodeKeywordDefinition = {
 
     function validateProperties(pat: string): void {
       gen.forIn("key", data, (key) => {
-        gen.if(_`${usePattern(gen, pat)}.test(${key})`, () => {
+        gen.if(_`${usePattern(cxt, pat)}.test(${key})`, () => {
           cxt.subschema(
             {
               keyword: "patternProperties",

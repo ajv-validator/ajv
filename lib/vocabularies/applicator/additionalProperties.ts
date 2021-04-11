@@ -60,7 +60,7 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
         definedProp = nil
       }
       if (patProps.length) {
-        definedProp = or(definedProp, ...patProps.map((p) => _`${usePattern(gen, p)}.test(${key})`))
+        definedProp = or(definedProp, ...patProps.map((p) => _`${usePattern(cxt, p)}.test(${key})`))
       }
       return not(definedProp)
     }

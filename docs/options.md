@@ -36,6 +36,7 @@ const defaultOptions = {
   allErrors: false,
   verbose: false,
   discriminator: false, // *
+  unicodeRegExp: true // *
   $comment: false, // *
   formats: {},
   keywords: {},
@@ -166,6 +167,15 @@ Include the reference to the part of the schema (`schema` and `parentSchema`) an
 ### discriminator
 
 Support [discriminator keyword](./json-schema.md#discriminator) from [OpenAPI specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.1.0.md).
+
+### unicodeRegExp
+
+By default Ajv uses unicode flag "u" with "pattern" and "patternProperties", as per JSON Schema spec. See [RegExp.prototype.unicode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/unicode) .
+
+Option values:
+
+- `true` (default) - use unicode flag "u".
+- `false` - do not use flag "u".
 
 ### $comment
 
