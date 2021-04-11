@@ -162,11 +162,7 @@ export function validateKeywordUsage(
     const valid = def.validateSchema(schema[keyword])
     if (!valid) {
       const msg =
-        "keyword '" +
-        keyword +
-        "' value is invalid at path '" +
-        errSchemaPath +
-        "': " +
+        `keyword "${keyword}" value is invalid at path "${errSchemaPath}": ` +
         self.errorsText(def.validateSchema.errors)
       if (opts.validateSchema === "log") self.logger.error(msg)
       else throw new Error(msg)

@@ -1057,7 +1057,7 @@ describe("User-defined keywords", () => {
 
   function shouldBeInvalidSchema(
     schema,
-    msg: string | RegExp = /keyword '.+' value is invalid at path/
+    msg: string | RegExp = /keyword .+ value is invalid at path/
   ) {
     instances.forEach((_ajv) => {
       should.throw(() => {

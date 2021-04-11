@@ -32,7 +32,7 @@ describe("keyword usage validation error", () => {
 
     should.throw(
       () => ajv.compile(schema),
-      "keyword 'customKeyword' value is invalid at path '#/properties/foo': data must be string"
+      'keyword "customKeyword" value is invalid at path "#/properties/foo": data must be string'
     )
   })
 })
