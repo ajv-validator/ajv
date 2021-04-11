@@ -36,13 +36,13 @@ const defaultOptions = {
   allErrors: false,
   verbose: false,
   discriminator: false, // *
+  unicodeRegExp: true // *
   $comment: false, // *
   formats: {},
   keywords: {},
   schemas: {},
   logger: undefined,
   loadSchema: undefined, // *, function(uri: string): Promise {}
-  unicodeRegExp: true
   // options to modify validated data:
   removeAdditional: false,
   useDefaults: false, // *
@@ -168,6 +168,15 @@ Include the reference to the part of the schema (`schema` and `parentSchema`) an
 
 Support [discriminator keyword](./json-schema.md#discriminator) from [OpenAPI specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.1.0.md).
 
+### unicodeRegExp
+
+By default Ajv uses unicode flag "u" with "pattern" and "patternProperties", as per JSON Schema spec. See [RegExp.prototype.unicode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/unicode) .
+
+Option values:
+
+- `true` (default) - use unicode flag "u".
+- `false` - do not use flag "u".
+
 ### $comment
 
 Log or pass the value of `$comment` keyword to a function.
@@ -239,15 +248,6 @@ Option values:
 - `false` (default) - no type coercion.
 - `true` - coerce scalar data types.
 - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
-
-### unicodeRegExp
-
-By default Ajv passes unicode flag "u" to RegExp function when evaluating "pattern" and "patternProperties". See [RegExp.prototype.unicode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/unicode) .
-
-Option values:
-
-- `true` (default) - add unicode flag "u".
-- `false` - remove unicode flag "u".
 
 ## Advanced options
 

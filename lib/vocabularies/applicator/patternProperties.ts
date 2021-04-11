@@ -50,8 +50,7 @@ const def: CodeKeywordDefinition = {
 
     function validateProperties(pat: string): void {
       gen.forIn("key", data, (key) => {
-        const regExpFlags = it.opts.unicodeRegExp ? "u" : ""
-        gen.if(_`${usePattern(gen, pat, regExpFlags)}.test(${key})`, () => {
+        gen.if(_`${usePattern(cxt, pat)}.test(${key})`, () => {
           cxt.subschema(
             {
               keyword: "patternProperties",

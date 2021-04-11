@@ -93,11 +93,11 @@ export interface CurrentOptions {
   allowUnionTypes?: boolean
   validateFormats?: boolean
   // validation and reporting options:
-  unicodeRegExp?: boolean
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
   discriminator?: boolean
+  unicodeRegExp?: boolean
   $comment?:
     | true
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
