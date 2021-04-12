@@ -15,6 +15,7 @@ Ajv takes advantage of TypeScript type system to provide additional functionalit
 ## Utility types for schemas
 
 For the same example as in [Getting started](./getting-started):
+ - ensure strictNullChecks is true
 
 <code-group>
 <code-block title="JSON Schema">
@@ -31,7 +32,7 @@ const schema: JSONSchemaType<MyData> = {
   type: "object",
   properties: {
     foo: {type: "integer"},
-    bar: {type: "string"}
+    bar: {type: "string", nullable: "true"}
   },
   required: ["foo"],
   additionalProperties: false
