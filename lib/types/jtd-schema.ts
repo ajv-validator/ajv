@@ -1,3 +1,45 @@
+/** numeric strings */
+type NumberType = "float32" | "float64" | "int8" | "uint8" | "int16" | "uint16" | "int32" | "uint32"
+
+/** string strings */
+type StringType = "string" | "timestamp"
+
+/** Generic JTD Schema without inference of the represented type */
+export type SomeJTDSchemaType = (
+  | // ref
+  {ref: string}
+  // primitives
+  | {type: NumberType | StringType | "boolean"}
+  // enum
+  | {enum: string[]}
+  // elements
+  | {elements: SomeJTDSchemaType}
+  // values
+  | {values: SomeJTDSchemaType}
+  // properties
+  | {
+      properties: Record<string, SomeJTDSchemaType>
+      optionalProperties?: Record<string, SomeJTDSchemaType>
+      additionalProperties?: boolean
+    }
+  | {
+      properties?: Record<string, SomeJTDSchemaType>
+      optionalProperties: Record<string, SomeJTDSchemaType>
+      additionalProperties?: boolean
+    }
+  // discriminator
+  | {discriminator: string; mapping: Record<string, SomeJTDSchemaType>}
+  // empty
+  // NOTE see the end of
+  // https://github.com/typescript-eslint/typescript-eslint/issues/2063#issuecomment-675156492
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  | {}
+) & {
+  nullable?: boolean
+  metadata?: Record<string, unknown>
+  definitions?: Record<string, SomeJTDSchemaType>
+}
+
 /** required keys of an object, not undefined */
 type RequiredKeys<T> = {
   [K in keyof T]-?: undefined extends T[K] ? never : K
@@ -56,12 +98,6 @@ type IsRecord<T, Union extends boolean> = Union extends IsUnion<Exclude<T, null>
     ? false
     : true
   : false
-
-/** numeric strings */
-type NumberType = "float32" | "float64" | "int8" | "uint8" | "int16" | "uint16" | "int32" | "uint32"
-
-/** string strings */
-type StringType = "string" | "timestamp"
 
 /** actual schema */
 export type JTDSchemaType<T, D extends Record<string, unknown> = Record<string, never>> = (
@@ -164,7 +200,9 @@ export type JTDSchemaType<T, D extends Record<string, unknown> = Record<string, 
 type JTDDataDef<S, D extends Record<string, unknown>> =
   | (// ref
     S extends {ref: string}
-      ? JTDDataDef<D[S["ref"]], D>
+      ? D extends {[K in S["ref"]]: infer V}
+        ? JTDDataDef<V, D>
+        : never
       : // type
       S extends {type: NumberType}
       ? number
