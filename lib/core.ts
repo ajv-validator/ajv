@@ -81,6 +81,9 @@ const EXT_SCOPE_NAMES = new Set([
 
 export type Options = CurrentOptions & DeprecatedOptions
 
+/** for Ajv2019 and Ajv2020 constructors, excluding JTD-specific options */
+export type AjvOptions = Omit<Options, "timestamp">
+
 export interface CurrentOptions {
   // strict mode options (NEW)
   strict?: boolean | "log"
@@ -115,6 +118,7 @@ export interface CurrentOptions {
   unevaluated?: boolean // NEW
   dynamicRef?: boolean // NEW
   jtd?: boolean // NEW
+  timestamp?: "string" | "date"
   meta?: SchemaObject | boolean
   defaultMeta?: string | AnySchemaObject
   validateSchema?: boolean | "log"

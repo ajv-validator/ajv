@@ -1,5 +1,5 @@
 import type {AnySchemaObject} from "./types"
-import AjvCore, {Options} from "./core"
+import AjvCore, {AjvOptions} from "./core"
 
 import draft7Vocabularies from "./vocabularies/draft7"
 import dynamicVocabulary from "./vocabularies/dynamic"
@@ -11,7 +11,7 @@ import addMetaSchema2019 from "./refs/json-schema-2019-09"
 const META_SCHEMA_ID = "https://json-schema.org/draft/2019-09/schema"
 
 class Ajv2019 extends AjvCore {
-  constructor(opts: Options = {}) {
+  constructor(opts: AjvOptions = {}) {
     super({
       ...opts,
       dynamicRef: true,
