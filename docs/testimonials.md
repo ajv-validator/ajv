@@ -1,4 +1,4 @@
-# Testimonials
+# What users say
 
 In the past 6 years of working on the JSON Schema Specification itself, Ajv stands out as the implementation of choice. It is very well documented and provides a rich API for extending JSON Schema which many thousands of people use in production today. A huge effort was put into testing, with many tests now forming part of the official test suite.
 

@@ -132,7 +132,7 @@ Ajv stands out as the implementation of choice - it provides a rich API which ma
 </Testimonial>
 </Testimonials>
 
-<span style="float:right;">[All testimonials](./testimonials.md)</span>
+<span style="float:right;">[All quotes](./testimonials.md)</span>
 
 </HomeSection>
 
