@@ -1,5 +1,15 @@
 # Testimonials
 
+In the past 6 years of working on the JSON Schema Specification itself, Ajv stands out as the implementation of choice. It is very well documented and provides a rich API for extending JSON Schema which many thousands of people use in production today. A huge effort was put into testing, with many tests now forming part of the official test suite.
+
+I've personally used Ajv in production to validate requests for a federated undiagnosed genetic disease program that has lead to new scientific discoveries and literally changed lives.
+
+Ajv development can inform the future tooling and specification changes. There's no doubt that Ajv is partly responsible for the ubiquity and success of JSON Schema.
+
+[Ben Hutton](https://github.com/relequestual), JSON Schema Specification Lead
+
+<br>
+
 [ESLint](https://eslint.org/) has used Ajv for validating our complex configurations. Ajv has proven to be reliable over the years we’ve been using it and ESLint is proud to sponsor Ajv’s continued development.
 
 [Nicholas C. Zakas](https://github.com/nzakas), ESLint creator and TSC member

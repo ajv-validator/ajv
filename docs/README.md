@@ -117,9 +117,9 @@ if (!valid) console.log(ajv.errors)
 <Testimonials>
 <Testimonial color="green">
 
-Built-in data validation is a key feature of any web framework. We decided to leverage JSON Schema in [Fastify](https://www.fastify.io), and Ajv fits our needs wonderfully: it’s fast, stable and well maintained.
+Ajv stands out as the implementation of choice - it provides a rich API which many thousands of people use in production... Ajv is partly responsible for the success of JSON Schema.
 
-[Matteo Collina](https://github.com/mcollina), tech director [@nearform](https://github.com/nearform) and TSC member
+[Ben Hutton](https://github.com/relequestual), JSON Schema Specification Lead
 
 </Testimonial>
 
