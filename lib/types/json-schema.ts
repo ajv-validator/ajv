@@ -88,20 +88,24 @@ export type JSONSchemaType<T, _partial extends boolean = false> = (
           // "properties" are optional for more concise dictionary schemas
           // "patternProperties" and can be only used with interfaces that have string index
           type: JSONType<"object", _partial>
-          // "required" type does not guarantee that all required properties are listed
-          // it only asserts that optional cannot be listed
-          required: _partial extends true ? Readonly<(keyof T)[]> : Readonly<RequiredMembers<T>[]>
           additionalProperties?: boolean | JSONSchemaType<T[string]>
           unevaluatedProperties?: boolean | JSONSchemaType<T[string]>
           properties?: _partial extends true ? Partial<PropertiesSchema<T>> : PropertiesSchema<T>
           patternProperties?: {[Pattern in string]?: JSONSchemaType<T[string]>}
-          propertyNames?: JSONSchemaType<string>
+          propertyNames?: Omit<JSONSchemaType<string>, "type"> & {type?: "string"}
           dependencies?: {[K in keyof T]?: Readonly<(keyof T)[]> | PartialSchema<T>}
           dependentRequired?: {[K in keyof T]?: Readonly<(keyof T)[]>}
           dependentSchemas?: {[K in keyof T]?: PartialSchema<T>}
           minProperties?: number
           maxProperties?: number
-        }
+        } & (// "required" type does not guarantee that all required properties
+        // are listed it only asserts that optional cannot be listed.
+        // "required" is not necessary if it's a non-partial type with no required keys
+        _partial extends true
+          ? {required: Readonly<(keyof T)[]>}
+          : [RequiredMembers<T>] extends [never]
+          ? {required?: Readonly<RequiredMembers<T>[]>}
+          : {required: Readonly<RequiredMembers<T>[]>})
       : T extends null
       ? {
           nullable: true
