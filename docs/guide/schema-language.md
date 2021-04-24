@@ -47,7 +47,7 @@ const draft6MetaSchema = require("ajv/dist/refs/json-schema-draft-06.json")
 ajv.addMetaSchema(draft6MetaSchema)
 ```
 
-### draft 2019-09 (and draft-2012-12)
+### draft 2019-09 (and draft-2020-12)
 
 The main advantage of this JSON Schema version over draft-07 is the ability to spread the definition of records that do not allow additional properties across multiple schemas. If you do not need it, you might be better off with draft-07.
 
