@@ -145,6 +145,8 @@ const invalidSchema: JSONSchemaType<MyData> = {
   type: [],
 }
 
+type MyEnumRecord = Record<"a" | "b" | "c" | "d", number | undefined>
+
 describe("JSONSchemaType type and validation as a type guard", () => {
   const ajv = new _Ajv({allowUnionTypes: true})
 
@@ -257,6 +259,35 @@ describe("JSONSchemaType type and validation as a type guard", () => {
         validData.foo.should.equal("foo")
       }
       should.not.exist(ajv.errors)
+    })
+  })
+
+  describe("schema should be simple for record types", () => {
+    it("typechecks a valid type without required", () => {
+      const myEnumRecordSchema: JSONSchemaType<MyEnumRecord> = {
+        type: "object",
+        propertyNames: {enum: ["a", "b", "c", "d"]},
+        additionalProperty: {type: "number"},
+      }
+      // eslint-disable-next-line no-void
+      void myEnumRecordSchema
+    })
+
+    it("requires required for non-optional types", () => {
+      // @ts-expect-error missing required
+      const requiredSchema: JSONSchemaType<{a: number}> = {
+        type: "object",
+      }
+      // eslint-disable-next-line no-void
+      void requiredSchema
+    })
+
+    it("doesn't require required for optional types", () => {
+      const optionalSchema: JSONSchemaType<{a?: number}> = {
+        type: "object",
+      }
+      // eslint-disable-next-line no-void
+      void optionalSchema
     })
   })
 })
