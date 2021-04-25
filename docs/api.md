@@ -61,7 +61,7 @@ Properties not defined in the schema will not be included in serialized JSON, un
 If you use JTD with typescript, the type for the schema can be derived from the data type, and generated serializer would only accept correct data type in this case:
 
 ```typescript
-import Ajv from "ajv/dist/jtd"
+import Ajv, {JTDSchemaType} from "ajv/dist/jtd"
 const ajv = new Ajv()
 
 interface MyData {
@@ -69,7 +69,7 @@ interface MyData {
   bar?: string
 }
 
-const mySchema = {
+const mySchema: JTDSchemaType<MyData> = {
   properties: {
     foo: {type: "int32"} // any JTD number type would be accepted here
   },
