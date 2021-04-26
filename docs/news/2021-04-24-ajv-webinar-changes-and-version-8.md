@@ -11,6 +11,7 @@ Speakers:
 - [Mehan Jayasuriya](https://github.com/mehan), Program Officer at Mozilla Foundation, leading the [MOSS](https://www.mozilla.org/en-US/moss/) and other programs investing in the open source and community ecosystems.
 - [Matteo Collina](https://github.com/mcollina), Technical Director at NearForm and Node.js Technical Steering Committee member, creator of Fastify web framework.
 - [Kin Lane](https://github.com/kinlane), Chief Evangelist at Postman. Studying the tech, business & politics of APIs since 2010. Presidential Innovation Fellow during the Obama administration.
+- [Ulysse Carion](https://github.com/ucarion), the creator of JSON Type Definition specification.
 
 [Gajus Kuizinas](https://github.com/gajus) will host the event.
 
