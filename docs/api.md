@@ -64,7 +64,7 @@ If you use JTD with typescript, the type for the schema can be derived from the 
 import Ajv, {JTDSchemaType} from "ajv/dist/jtd"
 const ajv = new Ajv()
 
-interface MyData = {
+interface MyData {
   foo: number
   bar?: string
 }
