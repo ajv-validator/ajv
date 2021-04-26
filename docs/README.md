@@ -211,7 +211,7 @@ Ajv is free to use and open-source that many developers contributed to. Join us!
 
 <FooterColumn type="links">
 
-[Learn Ajv](./docs/getting-started.md)
+[Learn Ajv](./guide/getting-started.md)
 
 [Reference](./api.md)
 
@@ -225,7 +225,7 @@ Ajv is free to use and open-source that many developers contributed to. Join us!
 
 [JSON Type Definition](./json-type-definition.md)
 
-[Contributing](./contributing.html)
+[Contributing](./contributing.md)
 
 </FooterColumn>
 
