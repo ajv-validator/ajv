@@ -225,7 +225,7 @@ Ajv is free to use and open-source that many developers contributed to. Join us!
 
 [JSON Type Definition](./json-type-definition.md)
 
-[Contributing](./contributing)
+[Contributing](./contributing.md)
 
 </FooterColumn>
 
