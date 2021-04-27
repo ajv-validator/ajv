@@ -1,10 +1,13 @@
 ---
 news: true
-title: "May 20, 10am PT / 6pm UK webinar: Ajv changes in 2020/21 and version 8 release"
+title: "Ajv online event - May 20, 10am PT / 6pm UK"
 date: 2021-04-24
 ---
 
-We will talk about the changes in Ajv since it was awarded Mozilla's MOSS grant in July 2020, and all the exciting new things added to it.
+We will talk about:
+- new features in Ajv version 8
+- the improvements sponsored by Mozilla's MOSS grant.
+- talk with Ajv users and sponsors.
 
 Speakers:
 - [Evgeny Poberezkin](https://github.com/epoberezkin), the creator of Ajv.

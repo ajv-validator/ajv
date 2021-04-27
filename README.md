@@ -19,9 +19,12 @@ Supports JSON Schema draft-06/07/2019-09/2020-12 (draft-04 is supported in [vers
 
 [<img src="https://ajv.js.org/img/mozilla.svg" width="45%">](https://www.mozilla.org)<img src="https://ajv.js.org/img/gap.svg" width="8%">[<img src="https://ajv.js.org/img/reserved.svg" width="45%">](https://opencollective.com/ajv)
 
-## Register for May 20, 10am PT / 6pm UK webinar: Ajv changes and version 8 release
+## Ajv online event - May 20, 10am PT / 6pm UK
 
-We will talk about the changes in Ajv since it was awarded Mozilla's MOSS grant in July 2020, and all the exciting new things added to it.
+We will talk about:
+- new features in Ajv version 8
+- the improvements sponsored by Mozilla's MOSS grant.
+- talk with Ajv users and sponsors.
 
 Speakers:
 - [Evgeny Poberezkin](https://github.com/epoberezkin), the creator of Ajv.
