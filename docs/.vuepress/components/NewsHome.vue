@@ -9,7 +9,7 @@
 
         <Column side="right">
           <div v-html="post.excerpt"></div>
-          <Button :link="post.path" cssClass="read-more">Read more</Button>
+          <Button :link="post.path" cssClass="read-more" v-if="post.frontmatter.more !== false">Read more</Button>
         </Column>
       </Columns>
     </div>

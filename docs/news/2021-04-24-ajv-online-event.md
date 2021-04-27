@@ -2,12 +2,13 @@
 news: true
 title: "Ajv online event - May 20, 10am PT / 6pm UK"
 date: 2021-04-24
+more: false
 ---
 
 We will talk about:
-- new features in Ajv version 8
+- new features of Ajv version 8.
 - the improvements sponsored by Mozilla's MOSS grant.
-- talk with Ajv users and sponsors.
+- how Ajv is used in JavaScript applications.
 
 Speakers:
 - [Evgeny Poberezkin](https://github.com/epoberezkin), the creator of Ajv.

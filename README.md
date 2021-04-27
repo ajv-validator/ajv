@@ -22,9 +22,9 @@ Supports JSON Schema draft-06/07/2019-09/2020-12 (draft-04 is supported in [vers
 ## Ajv online event - May 20, 10am PT / 6pm UK
 
 We will talk about:
-- new features in Ajv version 8
+- new features of Ajv version 8.
 - the improvements sponsored by Mozilla's MOSS grant.
-- talk with Ajv users and sponsors.
+- how Ajv is used in JavaScript applications.
 
 Speakers:
 - [Evgeny Poberezkin](https://github.com/epoberezkin), the creator of Ajv.
