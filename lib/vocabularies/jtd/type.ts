@@ -1,10 +1,11 @@
 import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
-import {_, or, Code} from "../../compile/codegen"
+import {_, or, Code, Name} from "../../compile/codegen"
 import validTimestamp from "../../runtime/timestamp"
 import {useFunc} from "../../compile/util"
 import {checkMetadata} from "./metadata"
 import {typeErrorMessage, typeErrorParams, _JTDTypeError} from "./error"
+import {_Code} from "../../compile/codegen/code"
 
 export type JTDTypeError = _JTDTypeError<"type", JTDType, JTDType>
 
@@ -26,6 +27,17 @@ const error: KeywordErrorDefinition = {
   params: (cxt) => typeErrorParams(cxt, cxt.schema),
 }
 
+function timestampCode(data: Name, vts: Name, acceptableTimestampTypes?: "string" | "date"): _Code {
+  switch (acceptableTimestampTypes) {
+    case "string":
+      return _`typeof ${data} == "string" && ${vts}(${data})`
+    case "date":
+      return _`${data} instanceof Date `
+    default:
+      return _`${data} instanceof Date || (typeof ${data} == "string" && ${vts}(${data}))`
+  }
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "type",
   schemaType: "string",
@@ -41,7 +53,7 @@ const def: CodeKeywordDefinition = {
         break
       case "timestamp": {
         const vts = useFunc(gen, validTimestamp)
-        cond = _`${data} instanceof Date || (typeof ${data} == "string" && ${vts}(${data}))`
+        cond = timestampCode(data, vts, cxt.it.opts.timestamp)
         break
       }
       case "float32":
