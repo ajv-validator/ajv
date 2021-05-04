@@ -42,7 +42,7 @@ The simplest approach is to compile all your schemas when the application starts
 <code-group>
 <code-block title="JavaScript">
 ```javascript
-const Ajv = require("ajv").defalt
+const Ajv = require("ajv").default
 const schema_user = require("./schema_user.json")
 const ajv = new Ajv()
 const validate_user = ajv.compile(schema_user)
