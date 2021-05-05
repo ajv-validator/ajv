@@ -2,7 +2,7 @@ import _AjvJTD from "./ajv_jtd"
 import assert = require("assert")
 
 describe("JTD Timestamps", () => {
-  it("Accepts dates or strings by default", () => {
+  it("Should accept dates or strings by default", () => {
     const ajv = new _AjvJTD()
     const schema = {
       type: "timestamp",
@@ -12,7 +12,7 @@ describe("JTD Timestamps", () => {
     assert.strictEqual(ajv.validate(schema, "foo"), false)
   })
 
-  it("Enforces timestamp=string", () => {
+  it("Should enforce timestamp=string", () => {
     const ajv = new _AjvJTD({timestamp: "string"})
     const schema = {
       type: "timestamp",
@@ -22,7 +22,7 @@ describe("JTD Timestamps", () => {
     assert.strictEqual(ajv.validate(schema, "foo"), false)
   })
 
-  it("Enforces timestamp=date", () => {
+  it("Should enforce timestamp=date", () => {
     const ajv = new _AjvJTD({timestamp: "date"})
     const schema = {
       type: "timestamp",
