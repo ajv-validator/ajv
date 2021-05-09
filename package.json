@@ -66,7 +66,7 @@
     "@ajv-validator/config": "^0.3.0",
     "@rollup/plugin-commonjs": "^18.0.0",
     "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "^11.2.1",
+    "@rollup/plugin-node-resolve": "^13.0.0",
     "@rollup/plugin-typescript": "^8.2.1",
     "@types/chai": "^4.2.12",
     "@types/mocha": "^8.0.3",
