@@ -36,7 +36,7 @@ const defaultOptions = {
   allErrors: false,
   verbose: false,
   discriminator: false, // *
-  unicodeRegExp: true // *
+  unicodeRegExp: true, // *
   $comment: false, // *
   formats: {},
   keywords: {},
