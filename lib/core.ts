@@ -115,6 +115,8 @@ export interface CurrentOptions {
   unevaluated?: boolean // NEW
   dynamicRef?: boolean // NEW
   jtd?: boolean // NEW
+  /** (JTD only) Accepted Javascript types for `timestamp` type */
+  timestamp?: "string" | "date"
   meta?: SchemaObject | boolean
   defaultMeta?: string | AnySchemaObject
   validateSchema?: boolean | "log"

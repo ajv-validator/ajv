@@ -91,7 +91,7 @@ Ajv supports all keywords of JSON Schema draft-2020-12:
 - changed [items](#items-in-draft-2020-12) keyword that combined parts of functionality of items and additionalItems
 - [$dynamicAnchor/$dynamicRef](./guide/combining-schemas.md#extending-recursive-schemas)
 
-To use draft-2019-09 schemas you need to import a different Ajv class:
+To use draft-2020-12 schemas you need to import a different Ajv class:
 
 <code-group>
 <code-block title="JavaScript">

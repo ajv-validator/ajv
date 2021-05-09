@@ -206,6 +206,8 @@ type JTDDataDef<S, D extends Record<string, unknown>> =
       : // type
       S extends {type: NumberType}
       ? number
+      : S extends {type: "boolean"}
+      ? boolean
       : S extends {type: "string"}
       ? string
       : S extends {type: "timestamp"}

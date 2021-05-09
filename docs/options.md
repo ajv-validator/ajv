@@ -36,7 +36,7 @@ const defaultOptions = {
   allErrors: false,
   verbose: false,
   discriminator: false, // *
-  unicodeRegExp: true // *
+  unicodeRegExp: true, // *
   $comment: false, // *
   formats: {},
   keywords: {},
@@ -211,6 +211,10 @@ Option values:
 ### loadSchema
 
 Asynchronous function that will be used to load remote schemas when `compileAsync` [method](#api-compileAsync) is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept remote schema uri as a parameter and return a Promise that resolves to a schema. See example in [Asynchronous compilation](./guide/managing-schemas.md#asynchronous-schema-compilation).
+
+### timestamp
+
+(JTD only) This governs what Javascript types will be accepted for the [JTD timestamp type](./json-type-definition#type-form). By default Ajv will accept either Date objects or [RFC3339](https://datatracker.ietf.org/doc/rfc3339/) strings. You can adjust this behavior by specifying `timestamp: "date"` or `timestamp: "string"`.
 
 ## Options to modify validated data
 
