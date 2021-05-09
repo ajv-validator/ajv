@@ -45,7 +45,7 @@ It has a required member `type` and an optional members `nullable` and `metadata
 
 - `"string"` - defines a string
 - `"boolean"` - defines boolean value `true` or `false`
-- `"timestamp"` - defines timestamp (JSON string, Ajv would also allow Date object with this type) according to [RFC3339](https://datatracker.ietf.org/doc/rfc3339/)
+- `"timestamp"` - defines timestamp ( accepting either an [RFC3339](https://datatracker.ietf.org/doc/rfc3339/) JSON string or a Date object, configurable via the `timestamp` Ajv option)
 - `type` values that define integer numbers:
   - `"int8"` - signed byte value (-128 .. 127)
   - `"uint8"` - unsigned byte value (0 .. 255)
