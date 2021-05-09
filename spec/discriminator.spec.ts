@@ -120,6 +120,58 @@ describe("discriminator keyword", function () {
       assertInvalid(schemas, {foo: "x", b: "b"})
     })
   });
+
+  describe("schemas with refs", () => {
+    const schemas = [
+      {
+        $id: "http://x.y.z/rootschema.json#",
+        type: "object",
+        $defs: {
+          schema1: {
+            $id: "first.json",
+            type: "object",
+            properties: {
+              foo: {const: "x"},
+              a: {type: "string"},
+            },
+            required: ["foo", "a"],
+          },
+          schema2: {
+            $id: "second.json",
+            type: "object",
+            properties: {
+              foo: {enum: ["y", "z"]},
+              b: {type: "string"},
+            },
+            required: ["foo", "b"],
+          }
+        },
+        discriminator: {propertyName: "foo"},
+        oneOf: [
+          {
+            allOf: [
+              {
+                $ref: 'first.json',
+              },
+            ]
+          },
+          {
+            allOf: [
+              {
+                $ref: "second.json"
+              }
+            ]
+          },
+        ],
+        required: ["foo"]
+      }
+    ]
+
+    it("should handle refs", ()=> {
+      assertValid(schemas, {foo: "x", a: "a"})
+    })
+  });
+
   describe("valid schemas", () => {
     it("should have oneOf", () => {
       invalidSchema(
