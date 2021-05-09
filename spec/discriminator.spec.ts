@@ -81,6 +81,45 @@ describe("discriminator keyword", function () {
     })
   })
 
+  describe("schemas with allOf", () => {
+    const schemas = [
+      {
+        type: "object",
+        discriminator: {propertyName: "foo"},
+        oneOf: [
+          {
+            allOf: [
+              {
+                properties: {
+                  foo: {const: "x"},
+                  a: {type: "string"},
+                },
+                required: ["foo", "a"],
+              },
+            ]
+          },
+          {
+            allOf: [
+              {
+                properties: {
+                  foo: {enum: ["y", "z"]},
+                  b: {type: "string"},
+                },
+                required: ["foo", "b"],
+              }
+            ]
+          },
+        ],
+        required: ["foo"]
+      }
+    ]
+
+    it("should allow schemas with allOf", ()=> {
+      assertValid(schemas, {foo: "x", a: "a"})
+      assertValid(schemas, {foo: "y", b: "b"})
+      assertInvalid(schemas, {foo: "x", b: "b"})
+    })
+  });
   describe("valid schemas", () => {
     it("should have oneOf", () => {
       invalidSchema(
