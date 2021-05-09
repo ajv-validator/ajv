@@ -1,3 +1,4 @@
+import {resolveRef} from "../../compile"
 import type {CodeKeywordDefinition, AnySchemaObject, KeywordErrorDefinition} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
 import {_, getProperty, Name} from "../../compile/codegen"
@@ -63,18 +64,49 @@ const def: CodeKeywordDefinition = {
       let tagRequired = true
       for (let i = 0; i < oneOf.length; i++) {
         const sch = oneOf[i]
+
+        if (sch.properties) {
+          resolveTagName(sch, i)
+          continue
+        }
+        
+        if (sch.allOf && Array.isArray(sch.allOf)) {
+          const firstMatchingSubSchema = sch.allOf
+            .map((subSchema: AnySchemaObject) => {
+              if (subSchema.$ref === undefined) {
+                return subSchema
+              }
+
+              const {baseId, schemaEnv: env, self} = it
+              const {root} = env
+              return resolveRef.call(self, root, baseId, subSchema.$ref)
+            })
+            .find((subSchema: any) => typeof subSchema.properties?.[tagName] === "object")
+
+          if (firstMatchingSubSchema === undefined) {
+            throw new Error(
+              `discriminator: one of the allOf schemas must define properties/${tagName}`
+            )
+          }
+
+          resolveTagName(firstMatchingSubSchema, i)
+        }
+      }
+
+      if (!tagRequired) throw new Error(`discriminator: "${tagName}" must be required`)
+      return oneOfMapping
+
+      function hasRequired({required}: AnySchemaObject): boolean {
+        return Array.isArray(required) && required.includes(tagName)
+      }
+
+      function resolveTagName(sch: AnySchemaObject, i: number): void {
         const propSch = sch.properties?.[tagName]
         if (typeof propSch != "object") {
           throw new Error(`discriminator: oneOf schemas must have "properties/${tagName}"`)
         }
         tagRequired = tagRequired && (topRequired || hasRequired(sch))
         addMappings(propSch, i)
-      }
-      if (!tagRequired) throw new Error(`discriminator: "${tagName}" must be required`)
-      return oneOfMapping
-
-      function hasRequired({required}: AnySchemaObject): boolean {
-        return Array.isArray(required) && required.includes(tagName)
       }
 
       function addMappings(sch: AnySchemaObject, i: number): void {
