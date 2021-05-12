@@ -126,15 +126,15 @@ const schema = {
   }
 }
 
+const data = {
+  foo: 1,
+  bar: "abc"
+}
 const serialize = ajv.compileSerializer(schema)
 console.log(serialize(data))
 
 const parse = ajv.compileParser(schema)
 
-const data = {
-  foo: 1,
-  bar: "abc"
-}
 
 const json = '{"foo": 1, "bar": "abc"}'
 const invalidJson = '{"unknown": "abc"}'
