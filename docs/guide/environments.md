@@ -77,6 +77,9 @@ The browser bundles are available on [cdnjs](https://cdnjs.com/libraries/ajv).
 Some frameworks, e.g. Dojo, may redefine global require in a way that is not compatible with CommonJS module format. In this case Ajv bundle has to be loaded before the framework and then you can use global `ajv` (see issue [#234](https://github.com/ajv-validator/ajv/issues/234)).
 :::
 
+::: warning Ajv v8 in Internet Explorer 11 (IE11) will not work straight out of the box. To use it either [recompile it](https://ajv.js.org/standalone.html), or set the options [unicodeRegExp](https://ajv.js.org/options.html#unicoderegexp) to `false` and `code: { es5: true }`, and transpile the Ajv node module (see issue [#1585](https://github.com/ajv-validator/ajv/issues/1585#issuecomment-832486204)).
+:::
+
 ## ES5 environments
 
 You need to:
