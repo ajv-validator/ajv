@@ -96,31 +96,3 @@ There are two possible approaches:
 
 1. Traverse schema (e.g. with json-schema-traverse) and replace every `$ref` with the referenced schema.
 2. Use a specially constructed JSON Schema with a [user-defined keyword](./keywords.md) to traverse and modify your schema.
-
-## Using Ajv in Internet Explorer 11
-
-Ajv v8 in Internet Explorer 11 (IE11) will not work straight out of the box. To use it you need to set the following options:
-
-```js
-const options = {
-  unicodeRegExp: false, // this enables 'pattern' RegExp
-  code: { es5: true },  // uses es5 specific code branches within Ajv
-};
-const ajv = new Ajv(options);
-```
-
-and transpile Ajv within the `node_modules` of your project.
-```js
-// webpack.config.js
-module: {
-  rules: [
-    {
-      test: /node\_modules\/.*(ajv)\/.*\.js$/
-      use: {
-        loader: 'babel-loader',
-        options: { presets: '@babel/preset-env' }
-      }
-    }
-  ]
-}
-```
