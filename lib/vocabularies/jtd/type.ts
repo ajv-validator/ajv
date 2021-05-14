@@ -1,11 +1,10 @@
 import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
-import {_, or, Code} from "../../compile/codegen"
+import {_, nil, or, Code} from "../../compile/codegen"
 import validTimestamp from "../../runtime/timestamp"
 import {useFunc} from "../../compile/util"
 import {checkMetadata} from "./metadata"
 import {typeErrorMessage, typeErrorParams, _JTDTypeError} from "./error"
-import {_Code} from "../../compile/codegen/code"
 
 export type JTDTypeError = _JTDTypeError<"type", JTDType, JTDType>
 
@@ -27,20 +26,14 @@ const error: KeywordErrorDefinition = {
   params: (cxt) => typeErrorParams(cxt, cxt.schema),
 }
 
-function timestampCode(cxt: KeywordCxt): _Code {
-  const {gen, data} = cxt
-  switch (cxt.it.opts.timestamp) {
-    case "date":
-      return _`${data} instanceof Date `
-    case "string": {
-      const vts = useFunc(gen, validTimestamp)
-      return _`typeof ${data} == "string" && ${vts}(${data})`
-    }
-    default: {
-      const vts = useFunc(gen, validTimestamp)
-      return _`${data} instanceof Date || (typeof ${data} == "string" && ${vts}(${data}))`
-    }
-  }
+function timestampCode(cxt: KeywordCxt): Code {
+  const {gen, data, it} = cxt
+  const {timestamp, allowDate} = it.opts
+  if (timestamp === "date") return _`${data} instanceof Date `
+  const vts = useFunc(gen, validTimestamp)
+  const allowDateArg = allowDate ? _`, true` : nil
+  const validString = _`typeof ${data} == "string" && ${vts}(${data}${allowDateArg})`
+  return timestamp === "string" ? validString : or(_`${data} instanceof Date`, validString)
 }
 
 const def: CodeKeywordDefinition = {
