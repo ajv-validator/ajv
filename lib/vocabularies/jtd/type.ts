@@ -1,6 +1,6 @@
 import type {CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
-import {_, or, Code} from "../../compile/codegen"
+import {_, nil, or, Code} from "../../compile/codegen"
 import validTimestamp from "../../runtime/timestamp"
 import {useFunc} from "../../compile/util"
 import {checkMetadata} from "./metadata"
@@ -26,13 +26,23 @@ const error: KeywordErrorDefinition = {
   params: (cxt) => typeErrorParams(cxt, cxt.schema),
 }
 
+function timestampCode(cxt: KeywordCxt): Code {
+  const {gen, data, it} = cxt
+  const {timestamp, allowDate} = it.opts
+  if (timestamp === "date") return _`${data} instanceof Date `
+  const vts = useFunc(gen, validTimestamp)
+  const allowDateArg = allowDate ? _`, true` : nil
+  const validString = _`typeof ${data} == "string" && ${vts}(${data}${allowDateArg})`
+  return timestamp === "string" ? validString : or(_`${data} instanceof Date`, validString)
+}
+
 const def: CodeKeywordDefinition = {
   keyword: "type",
   schemaType: "string",
   error,
   code(cxt: KeywordCxt) {
     checkMetadata(cxt)
-    const {gen, data, schema, parentSchema} = cxt
+    const {data, schema, parentSchema} = cxt
     let cond: Code
     switch (schema) {
       case "boolean":
@@ -40,8 +50,7 @@ const def: CodeKeywordDefinition = {
         cond = _`typeof ${data} == ${schema}`
         break
       case "timestamp": {
-        const vts = useFunc(gen, validTimestamp)
-        cond = _`${data} instanceof Date || (typeof ${data} == "string" && ${vts}(${data}))`
+        cond = timestampCode(cxt)
         break
       }
       case "float32":

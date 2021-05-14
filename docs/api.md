@@ -331,7 +331,7 @@ In case of validation failure, Ajv assigns the array of errors to `errors` prope
 
 ### Error objects
 
-Each error reported when validating against JSON Schema (also when validating against JTD schema with option `ajvErrors`) is an object with the following properties:
+Each reported error is an object with the following properties:
 
 ```typescript
 interface ErrorObject {

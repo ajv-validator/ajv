@@ -36,7 +36,10 @@ const defaultOptions = {
   allErrors: false,
   verbose: false,
   discriminator: false, // *
-  unicodeRegExp: true // *
+  unicodeRegExp: true, // *
+  timestamp: undefined // **
+  parseDate: false // **
+  allowDate: false // **
   $comment: false, // *
   formats: {},
   keywords: {},
@@ -69,7 +72,9 @@ const defaultOptions = {
 }
 ```
 
-<sup>\*</sup> these options are not supported with JSON Type Definition schemas
+<sup>\*</sup> only with JSON Schema
+
+<sup>\**</sup> only with JSON Type Definition
 
 ## Strict mode options <Badge text="v7" />
 
@@ -176,6 +181,24 @@ Option values:
 
 - `true` (default) - use unicode flag "u".
 - `false` - do not use flag "u".
+
+### timestamp <Badge text="JTD only">
+
+Defines which Javascript types will be accepted for the [JTD timestamp type](./json-type-definition#type-form).
+
+By default Ajv will accept both Date objects and [RFC3339](https://datatracker.ietf.org/doc/rfc3339/) strings. You can specify allowed values with the option `timestamp: "date"` or `timestamp: "string"`.
+
+### parseDate <Badge text="JTD only">
+
+Defines how date-time strings are parsed by [JTD parsers](./api.md#jtd-parse). By default Ajv parses date-time strings as string. Use `parseDate: true` to parse them as Date objects.
+
+### allowDate <Badge text="JTD only">
+
+Defines how date-time strings are parsed and validated. By default Ajv only allows full date-time strings, as required by JTD specification. Use `allowDate: true` to allow date strings both for validation and for parsing.
+
+::: warning Option allowDate is not portable
+This option makes JTD validation and parsing more permissive and non-standard. The date strings without time part will be accepted by Ajv, but will be rejected by other JTD validators.
+:::
 
 ### $comment
 

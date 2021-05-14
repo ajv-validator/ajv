@@ -98,6 +98,9 @@ export interface CurrentOptions {
   verbose?: boolean
   discriminator?: boolean
   unicodeRegExp?: boolean
+  timestamp?: "string" | "date" // JTD only
+  parseDate?: boolean // JTD only
+  allowDate?: boolean // JTD only
   $comment?:
     | true
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
@@ -190,7 +193,7 @@ const removedOptions: OptionsInfo<RemovedOptions> = {
   unknownFormats: "Disable strict mode or pass `true` to `ajv.addFormat` (or `formats` option).",
   cache: "Map is used as cache, schema object as key.",
   serialize: "Map is used as cache, schema object as key.",
-  ajvErrors: "It is default now, see option `strict`.",
+  ajvErrors: "It is default now.",
 }
 
 const deprecatedOptions: OptionsInfo<DeprecatedOptions> = {
