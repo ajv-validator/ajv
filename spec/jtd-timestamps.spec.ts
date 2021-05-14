@@ -2,7 +2,9 @@ import _AjvJTD from "./ajv_jtd"
 import assert = require("assert")
 import type {JTDOptions, JTDSchemaType} from "../dist/jtd"
 
-describe("JTD timestamps", () => {
+describe("JTD timestamps", function () {
+  this.timeout(10000)
+
   describe("validation", () => {
     it("should accept dates or strings by default", () => {
       testTimestamp({}, {Date: true, datetime: true, date: false})
