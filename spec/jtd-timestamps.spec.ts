@@ -1,34 +1,68 @@
 import _AjvJTD from "./ajv_jtd"
 import assert = require("assert")
+import type {JTDOptions, JTDSchemaType} from "../dist/jtd"
 
-describe("JTD Timestamps", () => {
-  it("Should accept dates or strings by default", () => {
-    const ajv = new _AjvJTD()
-    const schema = {
-      type: "timestamp",
+describe("JTD timestamps", () => {
+  describe("validation", () => {
+    it("should accept dates or strings by default", () => {
+      testTimestamp({}, {Date: true, datetime: true, date: false})
+    })
+
+    it("timestamp: string should accept only strings", () => {
+      testTimestamp({timestamp: "string"}, {Date: false, datetime: true, date: false})
+    })
+
+    it("timestamp: date should accept only Date objects", () => {
+      testTimestamp({timestamp: "date"}, {Date: true, datetime: false, date: false})
+    })
+
+    it("allowDate: true should accept date without time component", () => {
+      testTimestamp({allowDate: true}, {Date: true, datetime: true, date: true})
+      testTimestamp(
+        {allowDate: true, timestamp: "string"},
+        {Date: false, datetime: true, date: true}
+      )
+      testTimestamp(
+        {allowDate: true, timestamp: "date"},
+        {Date: true, datetime: false, date: false}
+      )
+    })
+
+    function testTimestamp(
+      opts: JTDOptions,
+      valid: {Date: boolean; datetime: boolean; date: boolean}
+    ) {
+      const ajv = new _AjvJTD(opts)
+      const schema = {type: "timestamp"}
+      const validate = ajv.compile(schema)
+      assert.strictEqual(validate(new Date()), valid.Date)
+      assert.strictEqual(validate("2021-05-03T05:24:43.906Z"), valid.datetime)
+      assert.strictEqual(validate("2021-05-03"), valid.date)
+      assert.strictEqual(validate("foo"), false)
     }
-    assert.strictEqual(ajv.validate(schema, new Date()), true)
-    assert.strictEqual(ajv.validate(schema, "2021-05-03T05:24:43.906Z"), true)
-    assert.strictEqual(ajv.validate(schema, "foo"), false)
   })
 
-  it("Should enforce timestamp=string", () => {
-    const ajv = new _AjvJTD({timestamp: "string"})
-    const schema = {
-      type: "timestamp",
-    }
-    assert.strictEqual(ajv.validate(schema, new Date()), false)
-    assert.strictEqual(ajv.validate(schema, "2021-05-03T05:24:43.906Z"), true)
-    assert.strictEqual(ajv.validate(schema, "foo"), false)
-  })
+  describe("parseDate option", () => {
+    it("should parse timestamp as Date object", () => {
+      const schema: JTDSchemaType<Date> = {type: "timestamp"}
+      const ajv = new _AjvJTD({parseDate: true})
+      const parseTS = ajv.compileParser(schema)
+      assert.strictEqual(
+        parseTS('"2021-05-14T17:59:03.851Z"')?.toISOString(),
+        "2021-05-14T17:59:03.851Z"
+      )
+      assert.strictEqual(parseTS('"2021-05-14"')?.toISOString(), undefined)
+    })
 
-  it("Should enforce timestamp=date", () => {
-    const ajv = new _AjvJTD({timestamp: "date"})
-    const schema = {
-      type: "timestamp",
-    }
-    assert.strictEqual(ajv.validate(schema, new Date()), true)
-    assert.strictEqual(ajv.validate(schema, "2021-05-03T05:24:43.906Z"), false)
-    assert.strictEqual(ajv.validate(schema, "foo"), false)
+    it("allowDate: true should parse timestamp and date as Date objects", () => {
+      const schema: JTDSchemaType<Date> = {type: "timestamp"}
+      const ajv = new _AjvJTD({parseDate: true, allowDate: true})
+      const parseTS = ajv.compileParser(schema)
+      assert.strictEqual(
+        parseTS('"2021-05-14T17:59:03.851Z"')?.toISOString(),
+        "2021-05-14T17:59:03.851Z"
+      )
+      assert.strictEqual(parseTS('"2021-05-14"')?.toISOString(), "2021-05-14T00:00:00.000Z")
+    })
   })
 })

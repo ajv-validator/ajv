@@ -37,6 +37,9 @@ const defaultOptions = {
   verbose: false,
   discriminator: false, // *
   unicodeRegExp: true, // *
+  timestamp: undefined // **
+  parseDate: false // **
+  allowDate: false // **
   $comment: false, // *
   formats: {},
   keywords: {},
@@ -69,7 +72,9 @@ const defaultOptions = {
 }
 ```
 
-<sup>\*</sup> these options are not supported with JSON Type Definition schemas
+<sup>\*</sup> only with JSON Schema
+
+<sup>\**</sup> only with JSON Type Definition
 
 ## Strict mode options <Badge text="v7" />
 
@@ -177,6 +182,24 @@ Option values:
 - `true` (default) - use unicode flag "u".
 - `false` - do not use flag "u".
 
+### timestamp <Badge text="JTD only">
+
+Defines which Javascript types will be accepted for the [JTD timestamp type](./json-type-definition#type-form).
+
+By default Ajv will accept both Date objects and [RFC3339](https://datatracker.ietf.org/doc/rfc3339/) strings. You can specify allowed values with the option `timestamp: "date"` or `timestamp: "string"`.
+
+### parseDate <Badge text="JTD only">
+
+Defines how date-time strings are parsed by [JTD parsers](./api.md#jtd-parse). By default Ajv parses date-time strings as string. Use `parseDate: true` to parse them as Date objects.
+
+### allowDate <Badge text="JTD only">
+
+Defines how date-time strings are parsed and validated. By default Ajv only allows full date-time strings, as required by JTD specification. Use `allowDate: true` to allow date strings both for validation and for parsing.
+
+::: warning Option allowDate is not portable
+This option makes JTD validation and parsing more permissive and non-standard. The date strings without time part will be accepted by Ajv, but will be rejected by other JTD validators.
+:::
+
 ### $comment
 
 Log or pass the value of `$comment` keyword to a function.
@@ -211,10 +234,6 @@ Option values:
 ### loadSchema
 
 Asynchronous function that will be used to load remote schemas when `compileAsync` [method](#api-compileAsync) is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept remote schema uri as a parameter and return a Promise that resolves to a schema. See example in [Asynchronous compilation](./guide/managing-schemas.md#asynchronous-schema-compilation).
-
-### timestamp
-
-(JTD only) This governs what Javascript types will be accepted for the [JTD timestamp type](./json-type-definition#type-form). By default Ajv will accept either Date objects or [RFC3339](https://datatracker.ietf.org/doc/rfc3339/) strings. You can adjust this behavior by specifying `timestamp: "date"` or `timestamp: "string"`.
 
 ## Options to modify validated data
 
