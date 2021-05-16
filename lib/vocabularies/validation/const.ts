@@ -17,7 +17,7 @@ const def: CodeKeywordDefinition = {
   error,
   code(cxt: KeywordCxt) {
     const {gen, data, $data, schemaCode, schema} = cxt
-    if($data || (typeof schema === 'object' && schema !== null)){
+    if ($data || (typeof schema === "object" && schema !== null)) {
       cxt.fail$data(_`!${useFunc(gen, equal)}(${data}, ${schemaCode})`)
     } else {
       cxt.fail(_`${schema}!==${data}`)
