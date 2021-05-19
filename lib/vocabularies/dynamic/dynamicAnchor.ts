@@ -22,7 +22,8 @@ export function dynamicAnchor(cxt: KeywordCxt, anchor: string): void {
 function _getValidate(cxt: KeywordCxt): Code {
   const {schemaEnv, schema, self} = cxt.it
   const {root, baseId, localRefs, meta} = schemaEnv.root
-  const sch = new SchemaEnv({schema, root, baseId, localRefs, meta})
+  const {schemaId} = self.opts
+  const sch = new SchemaEnv({schema, schemaId, root, baseId, localRefs, meta})
   compileSchema.call(self, sch)
   return getValidate(cxt, sch)
 }

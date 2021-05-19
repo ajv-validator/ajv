@@ -63,6 +63,7 @@ export interface SchemaObjCxt extends SchemaCxt {
 }
 interface SchemaEnvArgs {
   readonly schema: AnySchema
+  readonly schemaId?: "$id" | "id"
   readonly root?: SchemaEnv
   readonly baseId?: string
   readonly schemaPath?: string
@@ -72,6 +73,7 @@ interface SchemaEnvArgs {
 
 export class SchemaEnv implements SchemaEnvArgs {
   readonly schema: AnySchema
+  readonly schemaId?: "$id" | "id"
   readonly root: SchemaEnv
   baseId: string // TODO possibly, it should be readonly
   schemaPath?: string
@@ -91,8 +93,9 @@ export class SchemaEnv implements SchemaEnvArgs {
     let schema: AnySchemaObject | undefined
     if (typeof env.schema == "object") schema = env.schema
     this.schema = env.schema
+    this.schemaId = env.schemaId
     this.root = env.root || this
-    this.baseId = env.baseId ?? normalizeId(schema?.$id)
+    this.baseId = env.baseId ?? normalizeId(schema?.[env.schemaId || "$id"])
     this.schemaPath = env.schemaPath
     this.localRefs = env.localRefs
     this.meta = env.meta
@@ -212,7 +215,8 @@ export function resolveRef(
   let _sch = resolve.call(this, root, ref)
   if (_sch === undefined) {
     const schema = root.localRefs?.[ref] // TODO maybe localRefs should hold SchemaEnv
-    if (schema) _sch = new SchemaEnv({schema, root, baseId})
+    const {schemaId} = this.opts
+    if (schema) _sch = new SchemaEnv({schema, schemaId, root, baseId})
   }
 
   if (_sch === undefined) return
@@ -273,8 +277,10 @@ export function resolveSchema(
   if (!schOrRef.validate) compileSchema.call(this, schOrRef)
   if (id === normalizeId(ref)) {
     const {schema} = schOrRef
-    if (schema.$id) baseId = resolveUrl(baseId, schema.$id)
-    return new SchemaEnv({schema, root, baseId})
+    const {schemaId} = this.opts
+    const schId = schema[schemaId]
+    if (schId) baseId = resolveUrl(baseId, schId)
+    return new SchemaEnv({schema, schemaId, root, baseId})
   }
   return getJsonPointer.call(this, p, schOrRef)
 }
@@ -298,8 +304,9 @@ function getJsonPointer(
     schema = schema[unescapeFragment(part)]
     if (schema === undefined) return
     // TODO PREVENT_SCOPE_CHANGE could be defined in keyword def?
-    if (!PREVENT_SCOPE_CHANGE.has(part) && typeof schema == "object" && schema.$id) {
-      baseId = resolveUrl(baseId, schema.$id)
+    const schId = typeof schema == "object" && schema[this.opts.schemaId]
+    if (!PREVENT_SCOPE_CHANGE.has(part) && schId) {
+      baseId = resolveUrl(baseId, schId)
     }
   }
   let env: SchemaEnv | undefined
@@ -309,7 +316,8 @@ function getJsonPointer(
   }
   // even though resolution failed we need to return SchemaEnv to throw exception
   // so that compileAsync loads missing schema.
-  env = env || new SchemaEnv({schema, root, baseId})
+  const {schemaId} = this.opts
+  env = env || new SchemaEnv({schema, schemaId, root, baseId})
   if (env.schema !== env.root.schema) return env
   return undefined
 }
