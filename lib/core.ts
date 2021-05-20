@@ -509,7 +509,8 @@ export default class Ajv {
     let sch
     while (typeof (sch = getSchEnv.call(this, keyRef)) == "string") keyRef = sch
     if (sch === undefined) {
-      const root = new SchemaEnv({schema: {}})
+      const {schemaId} = this.opts
+      const root = new SchemaEnv({schema: {}, schemaId})
       sch = resolveSchema.call(this, root, keyRef)
       if (!sch) return
       this.refs[keyRef] = sch
