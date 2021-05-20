@@ -5,12 +5,14 @@ import type {KeywordCxt} from "../compile/validate"
 import type Ajv from "../core"
 
 interface _SchemaObject {
+  id?: string
   $id?: string
   $schema?: string
   [x: string]: any // TODO
 }
 
 export interface SchemaObject extends _SchemaObject {
+  id?: string
   $id?: string
   $schema?: string
   $async?: false
