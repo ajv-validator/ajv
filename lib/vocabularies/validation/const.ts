@@ -16,9 +16,12 @@ const def: CodeKeywordDefinition = {
   $data: true,
   error,
   code(cxt: KeywordCxt) {
-    const {gen, data, schemaCode} = cxt
-    // TODO optimize for scalar values in schema
-    cxt.fail$data(_`!${useFunc(gen, equal)}(${data}, ${schemaCode})`)
+    const {gen, data, $data, schemaCode, schema} = cxt
+    if ($data || (schema && typeof schema == "object")) {
+      cxt.fail$data(_`!${useFunc(gen, equal)}(${data}, ${schemaCode})`)
+    } else {
+      cxt.fail(_`${schema} !== ${data}`)
+    }
   },
 }
 

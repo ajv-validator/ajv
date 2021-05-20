@@ -42,7 +42,7 @@ const def: CodeKeywordDefinition = {
 
     function equalCode(vSchema: Name, i: number): Code {
       const sch = schema[i]
-      return sch && typeof sch === "object"
+      return typeof sch === "object" && sch !== null
         ? _`${eql}(${data}, ${vSchema}[${i}])`
         : _`${data} === ${sch}`
     }
