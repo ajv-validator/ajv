@@ -135,40 +135,29 @@ ajv.addMetaSchema(draft6MetaSchema)
 </code-block>
 </code-group>
 
-### draft-04 <Badge text="v6" />
+### draft-04
 
-You can use JSON Schema draft-06 schemas with Ajv v6.
-
-::: warning Only compatible with Ajv v6
-The code example below will not work in the most recent version of Ajv, it requires Ajv v6. While no longer actively developed it continues to receive critical security updates.
-:::
+You can use JSON Schema draft-04 schemas with Ajv from v8.5.0 and the additional package [ajv-draft-04](https://github.com/ajv-validator/ajv-draft-04) (both ajv and ajv-draft-04 should be installed).
 
 <code-group>
 <code-block title="JavaScript">
 ```javascript
-const Ajv = require("ajv")
-const draft4MetaSchema = require("ajv/lib/refs/json-schema-draft-04.json")
-
-const ajv = new Ajv({schemaId: "id"}) // or "auto" if you use both draft-04 and draft-06/07 schemas
-ajv.addMetaSchema(draft4MetaSchema)
+const Ajv = require("ajv-draft-04")
+const ajv = new Ajv()
 ```
 </code-block>
 
 <code-block title="TypeScript">
 ```typescript
-import Ajv from "ajv"
-import * as draft4MetaSchema from "ajv/lib/refs/json-schema-draft-04.json"
-
-const ajv = new Ajv({schemaId: "id"}) // or "auto" if you use both draft-04 and draft-06/07 schemas
-ajv.addMetaSchema(draft4MetaSchema)
+import Ajv from "ajv-draft-04"
+const ajv = new Ajv()
 ```
 </code-block>
 </code-group>
 
-var ajv = new Ajv({schemaId: 'id'});
-// If you want to use both draft-04 and draft-06/07 schemas:
-// var ajv = new Ajv({schemaId: 'auto'});
-ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
+::: warning Ajv cannot combine multiple JSON Schema versions
+You can only use this import with JSON Schema draft-04, you cannot combine multiple JSON Schema versions in this ajv instance.
+:::
 
 ## OpenAPI support
 
