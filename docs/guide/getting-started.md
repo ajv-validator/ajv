@@ -107,7 +107,7 @@ Ajv can compile efficient parsers and serializers from [JSON Type Definition](..
 
 Serializing the data with a function specialized to your data shape can be more than 10x compared with `JSON.stringify`.
 
-Parsing the data replaces the need for a separate validation after generic parsing with `JSON.parse` (although validation itself is usually much faster than parsing). In case your JSON string is valid specialized parsing is as approximately fast as JSON.parse, but in case your JSON is invalid, specialized parsing would fail much faster - so it can be very efficient in some scenarios.
+Parsing the data replaces the need for a separate validation after generic parsing with `JSON.parse` (although validation itself is usually much faster than parsing). In case your JSON string is valid specialized parsing is approximately as fast as JSON.parse, but in case your JSON is invalid, specialized parsing would fail much faster - so it can be very efficient in some scenarios.
 
 For the same data structure, you can compile parser and serializer in this way:
 
