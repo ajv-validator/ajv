@@ -106,7 +106,7 @@ You can load all schemas and add them to Ajv instance in a single `validation` m
 <code-group>
 <code-block title="validation.js">
 ```javascript
-const Ajv = require("ajv").defalt
+const Ajv = require("ajv").default
 const schema_user = require("./schema_user.json")
 const schema_document = require("./schema_document.json")
 const ajv = exports.ajv = new Ajv()
