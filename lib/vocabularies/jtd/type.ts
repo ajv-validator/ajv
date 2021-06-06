@@ -42,7 +42,7 @@ const def: CodeKeywordDefinition = {
   error,
   code(cxt: KeywordCxt) {
     checkMetadata(cxt)
-    const {data, schema, parentSchema} = cxt
+    const {data, schema, parentSchema, it} = cxt
     let cond: Code
     switch (schema) {
       case "boolean":
@@ -58,8 +58,14 @@ const def: CodeKeywordDefinition = {
         cond = _`typeof ${data} == "number"`
         break
       default: {
-        const [min, max] = intRange[schema as IntType]
-        cond = _`typeof ${data} == "number" && isFinite(${data}) && ${data} >= ${min} && ${data} <= ${max} && !(${data} % 1)`
+        const sch = schema as IntType
+        cond = _`typeof ${data} == "number" && isFinite(${data}) && !(${data} % 1)`
+        if (!it.opts.int32range && (sch === "int32" || sch === "uint32")) {
+          if (sch === "uint32") cond = _`${cond} && ${data} >= 0`
+        } else {
+          const [min, max] = intRange[sch]
+          cond = _`${cond} && ${data} >= ${min} && ${data} <= ${max}`
+        }
       }
     }
     cxt.pass(parentSchema.nullable ? or(_`${data} === null`, cond) : cond)

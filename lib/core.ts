@@ -129,6 +129,7 @@ export interface CurrentOptions {
   loopEnum?: number // NEW
   ownProperties?: boolean
   multipleOfPrecision?: number
+  int32range?: boolean // JTD only
   messages?: boolean
   code?: CodeOptions // NEW
 }
@@ -217,6 +218,7 @@ type RequiredInstanceOptions = {
     | "addUsedSchema"
     | "validateSchema"
     | "validateFormats"
+    | "int32range"
     | "unicodeRegExp"]: NonNullable<Options[K]>
 } & {code: InstanceCodeOptions}
 
@@ -246,6 +248,7 @@ function requiredOptions(o: Options): RequiredInstanceOptions {
     validateSchema: o.validateSchema ?? true,
     validateFormats: o.validateFormats ?? true,
     unicodeRegExp: o.unicodeRegExp ?? true,
+    int32range: o.int32range ?? true,
   }
 }
 
