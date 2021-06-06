@@ -95,7 +95,7 @@
     "mocha": "^8.0.1",
     "node-fetch": "^2.6.1",
     "nyc": "^15.0.0",
-    "prettier": "^2.0.5",
+    "prettier": "^2.3.1",
     "rollup": "^2.44.0",
     "rollup-plugin-terser": "^7.0.2",
     "ts-node": "^9.0.0",

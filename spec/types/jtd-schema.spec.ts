@@ -173,8 +173,10 @@ describe("JTDSchemaType", () => {
     // can typecheck a values of unions
     const unionValues: TypeEquality<JTDSchemaType<Record<string, A | B>>, never> = false
     // can't typecheck a union of values
-    const valuesUnion: TypeEquality<JTDSchemaType<Record<string, A> | Record<string, B>>, never> =
-      true
+    const valuesUnion: TypeEquality<
+      JTDSchemaType<Record<string, A> | Record<string, B>>,
+      never
+    > = true
 
     void [values, readonlyValues, valuesDefined, valuesNull, unionValues, valuesUnion]
   })
@@ -436,8 +438,10 @@ describe("JTDDataType", () => {
       optionalProperties: {b: {type: "string"}},
       additionalProperties: true,
     } as const
-    const add: TypeEquality<JTDDataType<typeof addSchema>, {b?: string; [key: string]: unknown}> =
-      true
+    const add: TypeEquality<
+      JTDDataType<typeof addSchema>,
+      {b?: string; [key: string]: unknown}
+    > = true
     const addVal: JTDDataType<typeof addSchema> = {b: "b", additional: 6}
 
     void [both, req, opt, noAdd, add, addVal]
