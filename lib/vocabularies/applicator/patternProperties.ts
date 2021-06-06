@@ -14,12 +14,15 @@ const def: CodeKeywordDefinition = {
     const {gen, schema, data, parentSchema, it} = cxt
     const {opts} = it
     const patterns = allSchemaProperties(schema)
-    const validPatterns = patterns.filter((p) => !alwaysValidSchema(it, schema[p] as AnySchema))
-    const checkForUnevaluatedProperties =
-      parentSchema.unevaluatedProperties !== true &&
-      parentSchema.unevaluatedProperties !== undefined
+    const alwaysValidPatterns = patterns.filter((p) =>
+      alwaysValidSchema(it, schema[p] as AnySchema)
+    )
 
-    if (patterns.length === 0 && (validPatterns.length === 0 || !checkForUnevaluatedProperties)) {
+    if (
+      patterns.length === 0 ||
+      (alwaysValidPatterns.length === patterns.length &&
+        (!it.opts.unevaluated || it.props === true))
+    ) {
       return
     }
 
@@ -59,7 +62,7 @@ const def: CodeKeywordDefinition = {
     function validateProperties(pat: string): void {
       gen.forIn("key", data, (key) => {
         gen.if(_`${usePattern(cxt, pat)}.test(${key})`, () => {
-          const alwaysValid = !validPatterns.includes(pat)
+          const alwaysValid = alwaysValidPatterns.includes(pat)
           if (!alwaysValid) {
             cxt.subschema(
               {
