@@ -1,0 +1,72 @@
+import _AjvJTD from "../ajv_jtd"
+import assert = require("assert")
+
+describe("JTD int32range option", function () {
+  this.timeout(10000)
+
+  describe("validation", () => {
+    it("should limit range for int32 and uint32 types by default", () => {
+      const ajv = new _AjvJTD()
+      const validateInt32 = ajv.compile({type: "int32"})
+      assert.strictEqual(validateInt32(-2147483648), true)
+      assert.strictEqual(validateInt32(-2147483649), false)
+      assert.strictEqual(validateInt32(2147483647), true)
+      assert.strictEqual(validateInt32(2147483648), false)
+      const validateUint32 = ajv.compile({type: "uint32"})
+      assert.strictEqual(validateUint32(0), true)
+      assert.strictEqual(validateUint32(-1), false)
+      assert.strictEqual(validateUint32(4294967295), true)
+      assert.strictEqual(validateUint32(4294967296), false)
+    })
+
+    it("should NOT limit range for int32 and uint32 types with int32range: false", () => {
+      const ajv = new _AjvJTD({int32range: false})
+      const validateInt32 = ajv.compile({type: "int32"})
+      assert.strictEqual(validateInt32(-2147483648), true)
+      assert.strictEqual(validateInt32(-2147483649), true)
+      assert.strictEqual(validateInt32(Number.MIN_SAFE_INTEGER), true)
+      assert.strictEqual(validateInt32(2147483647), true)
+      assert.strictEqual(validateInt32(2147483648), true)
+      assert.strictEqual(validateInt32(Number.MAX_SAFE_INTEGER), true)
+      const validateUint32 = ajv.compile({type: "uint32"})
+      assert.strictEqual(validateUint32(0), true)
+      assert.strictEqual(validateUint32(-1), false)
+      assert.strictEqual(validateUint32(4294967295), true)
+      assert.strictEqual(validateUint32(4294967296), true)
+      assert.strictEqual(validateUint32(Number.MAX_SAFE_INTEGER), true)
+    })
+  })
+
+  describe("parsing", () => {
+    it("should limit range for int32 and uint32 types by default", () => {
+      const ajv = new _AjvJTD()
+      const parseInt32 = ajv.compileParser({type: "int32"})
+      assert.strictEqual(parseInt32("-2147483648"), -2147483648)
+      assert.strictEqual(parseInt32("-2147483649"), undefined)
+      assert.strictEqual(parseInt32("2147483647"), 2147483647)
+      assert.strictEqual(parseInt32("2147483648"), undefined)
+      const parseUint32 = ajv.compileParser({type: "uint32"})
+      assert.strictEqual(parseUint32("0"), 0)
+      assert.strictEqual(parseUint32("-1"), undefined)
+      assert.strictEqual(parseUint32("4294967295"), 4294967295)
+      assert.strictEqual(parseUint32("4294967296"), undefined)
+    })
+
+    it("should NOT limit range for int32 and uint32 types with int32range: false", () => {
+      const ajv = new _AjvJTD({int32range: false})
+      const parseInt32 = ajv.compileParser({type: "int32"})
+      assert.strictEqual(parseInt32("-2147483648"), -2147483648)
+      assert.strictEqual(parseInt32("-2147483649"), -2147483649)
+      assert.strictEqual(parseInt32("" + Number.MIN_SAFE_INTEGER), Number.MIN_SAFE_INTEGER)
+      assert.strictEqual(parseInt32("2147483647"), 2147483647)
+      assert.strictEqual(parseInt32("2147483648"), 2147483648)
+      assert.strictEqual(parseInt32("" + Number.MAX_SAFE_INTEGER), Number.MAX_SAFE_INTEGER)
+      const parseUint32 = ajv.compileParser({type: "uint32"})
+      assert.strictEqual(parseUint32("0"), 0)
+      assert.strictEqual(parseUint32("-1"), undefined)
+      assert.strictEqual(parseUint32("4294967295"), 4294967295)
+      assert.strictEqual(parseUint32("4294967296"), 4294967296)
+      assert.strictEqual(parseUint32("" + Number.MAX_SAFE_INTEGER), Number.MAX_SAFE_INTEGER)
+    })
+  })
+})
