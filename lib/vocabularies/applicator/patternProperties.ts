@@ -1,9 +1,10 @@
 import type {CodeKeywordDefinition} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
-import {schemaProperties, usePattern} from "../code"
+import {allSchemaProperties, usePattern} from "../code"
 import {_, not, Name} from "../../compile/codegen"
-import {checkStrictMode} from "../../compile/util"
+import {alwaysValidSchema, checkStrictMode} from "../../compile/util"
 import {evaluatedPropsToName, Type} from "../../compile/util"
+import {AnySchema} from "../../types"
 
 const def: CodeKeywordDefinition = {
   keyword: "patternProperties",
@@ -12,9 +13,19 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordCxt) {
     const {gen, schema, data, parentSchema, it} = cxt
     const {opts} = it
-    const patterns = schemaProperties(it, schema)
-    // TODO mark properties matching patterns with always valid schemas as evaluated
-    if (patterns.length === 0) return
+    const patterns = allSchemaProperties(schema)
+    const alwaysValidPatterns = patterns.filter((p) =>
+      alwaysValidSchema(it, schema[p] as AnySchema)
+    )
+
+    if (
+      patterns.length === 0 ||
+      (alwaysValidPatterns.length === patterns.length &&
+        (!it.opts.unevaluated || it.props === true))
+    ) {
+      return
+    }
+
     const checkProperties =
       opts.strictSchema && !opts.allowMatchingProperties && parentSchema.properties
     const valid = gen.name("valid")
@@ -51,18 +62,22 @@ const def: CodeKeywordDefinition = {
     function validateProperties(pat: string): void {
       gen.forIn("key", data, (key) => {
         gen.if(_`${usePattern(cxt, pat)}.test(${key})`, () => {
-          cxt.subschema(
-            {
-              keyword: "patternProperties",
-              schemaProp: pat,
-              dataProp: key,
-              dataPropType: Type.Str,
-            },
-            valid
-          )
+          const alwaysValid = alwaysValidPatterns.includes(pat)
+          if (!alwaysValid) {
+            cxt.subschema(
+              {
+                keyword: "patternProperties",
+                schemaProp: pat,
+                dataProp: key,
+                dataPropType: Type.Str,
+              },
+              valid
+            )
+          }
+
           if (it.opts.unevaluated && props !== true) {
             gen.assign(_`${props}[${key}]`, true)
-          } else if (!it.allErrors) {
+          } else if (!alwaysValid && !it.allErrors) {
             // can short-circuit if `unevaluatedProperties` is not supported (opts.next === false)
             // or if all properties were evaluated (props === true)
             gen.if(not(valid), () => gen.break())
