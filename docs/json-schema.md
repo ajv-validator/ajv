@@ -451,13 +451,7 @@ For the data array to be valid, the items with indices less than the number of s
 
 **Examples**
 
-1.  _schema_: `{type: "array", prefixItems: {type: "integer"}}`
-
-    _valid_: `[1,2,3]`, `[]`
-
-    _invalid_: `[1,"abc"]`
-
-2.  _schema_:
+_schema_:
 
     ```javascript
     {
@@ -470,7 +464,7 @@ For the data array to be valid, the items with indices less than the number of s
 
     _invalid_: `["abc", 1]`, `["abc"]`
 
-The schema in example 2 will log warning by default (see `strictTuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use [minItems](#minitems) and [items](#items-in-draft-2020-12) keywords (see example 2 in [items](#items-in-draft-2020-12)).
+The schema in example will log warning by default (see `strictTuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use [minItems](#minitems) and [items](#items-in-draft-2020-12) keywords (see example 2 in [items](#items-in-draft-2020-12)).
 
 ### `additionalItems`
 
