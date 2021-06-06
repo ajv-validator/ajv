@@ -1,7 +1,7 @@
 import _AjvJTD from "../ajv_jtd"
 import assert = require("assert")
 
-describe.only("JTD int32range option", function () {
+describe("JTD int32range option", function () {
   this.timeout(10000)
 
   describe("validation", () => {
