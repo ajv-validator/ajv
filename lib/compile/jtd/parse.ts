@@ -277,11 +277,19 @@ function parseType(cxt: ParseCxt): void {
       parseNumber(cxt)
       break
     default: {
-      const [min, max, maxDigits] = intRange[schema.type as IntType]
-      parseNumber(cxt, maxDigits)
-      gen.if(_`${data} < ${min} || ${data} > ${max}`, () =>
-        parsingError(cxt, str`integer out of range`)
-      )
+      const t = schema.type as IntType
+      if (!self.opts.int32range && (t === "int32" || t === "uint32")) {
+        parseNumber(cxt, 16) // 2 ** 53 - max safe integer
+        if (t === "uint32") {
+          gen.if(_`${data} < 0`, () => parsingError(cxt, str`integer out of range`))
+        }
+      } else {
+        const [min, max, maxDigits] = intRange[t]
+        parseNumber(cxt, maxDigits)
+        gen.if(_`${data} < ${min} || ${data} > ${max}`, () =>
+          parsingError(cxt, str`integer out of range`)
+        )
+      }
     }
   }
 }
