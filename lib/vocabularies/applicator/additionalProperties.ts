@@ -30,7 +30,8 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
   trackErrors: true,
   error,
   code(cxt) {
-    const {gen, schema, parentSchema, data, errsCount, it} = cxt
+    const {gen, parentSchema, data, errsCount, it} = cxt
+    const {schema = it.opts.defaultAdditionalProperties} = cxt
     /* istanbul ignore if */
     if (!errsCount) throw new Error("ajv implementation error")
     const {allErrors, opts} = it

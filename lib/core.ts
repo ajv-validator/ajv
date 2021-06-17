@@ -118,6 +118,8 @@ export interface CurrentOptions {
   loadSchemaSync?: (base: string, $ref: string, id: string) => AnySchemaObject | boolean
   // options to modify validated data:
   removeAdditional?: boolean | "all" | "failing"
+  defaultAdditionalProperties?: boolean
+
   useDefaults?: boolean | "empty"
   coerceTypes?: boolean | "array"
   // advanced options:
