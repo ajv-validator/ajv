@@ -161,6 +161,11 @@ const schema = {
   additionalProperties: false,
 }
 
+const data = {
+  foo: 1,
+  bar: "abc"
+}
+
 const validate = ajv.compile(schema)
 const valid = validate(data)
 if (!valid) console.log(validate.errors)
