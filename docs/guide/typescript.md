@@ -32,7 +32,7 @@ const schema: JSONSchemaType<MyData> = {
   type: "object",
   properties: {
     foo: {type: "integer"},
-    bar: {type: "string", nullable: "true"}
+    bar: {type: "string", nullable: true}
   },
   required: ["foo"],
   additionalProperties: false
@@ -45,7 +45,7 @@ const validate = ajv.compile(schema)
 // type parameter can be used to make it type guard:
 // const validate = ajv.compile<MyData>(schema)
 
-const validData = {
+const data = {
   foo: 1,
   bar: "abc"
 }
@@ -86,7 +86,7 @@ const validate = ajv.compile(schema)
 // type parameter can be used to make it type guard:
 // const validate = ajv.compile<MyData>(schema)
 
-const validData = {
+const data = {
   foo: 1,
   bar: "abc"
 }
