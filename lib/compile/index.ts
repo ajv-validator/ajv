@@ -116,6 +116,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
   const {es5, lines} = this.opts.code
   const {ownProperties} = this.opts
   const gen = new CodeGen(this.scope, {es5, lines, ownProperties})
+
   let _ValidationError
   if (sch.$async) {
     _ValidationError = gen.scopeValue("Error", {
@@ -164,7 +165,9 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     gen.optimize(this.opts.code.optimize)
     // gen.optimize(1)
     const validateCode = gen.toString()
-    sourceCode = `${gen.scopeRefs(N.scope)}return ${validateCode}`
+    sourceCode = `const visitedNodesForRef = new WeakMap(); ${gen.scopeRefs(
+      N.scope
+    )}return ${validateCode}`
     // console.log((codeSize += sourceCode.length), (nodeCount += gen.nodeCount))
     if (this.opts.code.process) sourceCode = this.opts.code.process(sourceCode, sch)
     // console.log("\n\n\n *** \n", sourceCode)
