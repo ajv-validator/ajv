@@ -56,4 +56,4 @@ console.log(validate(4)) // false
 
 Several keywords (typeof, instanceof, range and propertyNames) are defined in [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) package - they can be used for your schemas and as a starting point for your own keywords.
 
-See [User-defined keywords](./keywords.md) reference for more details.
+See [User-defined keywords](../keywords.md) reference for more details.
