@@ -369,7 +369,11 @@ export class KeywordCxt implements KeywordErrorCxt {
   }
 
   result(condition: Code, successAction?: () => void, failAction?: () => void): void {
-    this.gen.if(not(condition))
+    this.failResult(not(condition), successAction, failAction)
+  }
+
+  failResult(condition: Code, successAction?: () => void, failAction?: () => void): void {
+    this.gen.if(condition)
     if (failAction) failAction()
     else this.error()
     if (successAction) {
@@ -383,7 +387,7 @@ export class KeywordCxt implements KeywordErrorCxt {
   }
 
   pass(condition: Code, failAction?: () => void): void {
-    this.result(condition, undefined, failAction)
+    this.failResult(not(condition), undefined, failAction)
   }
 
   fail(condition?: Code): void {
