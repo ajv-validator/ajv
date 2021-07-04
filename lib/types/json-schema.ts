@@ -148,14 +148,7 @@ export type JSONSchemaType<T> = StrictNullChecksWrapper<
   UncheckedJSONSchemaType<T, false>
 >
 
-type Known =
-  | {[key: string]: Known}
-  | [Known, ...Known[]]
-  | Known[]
-  | number
-  | string
-  | boolean
-  | null
+type Known = {[key: string]: Known} | [Known, ...Known[]] | Known[] | number | string | boolean
 
 type UncheckedPropertiesSchema<T> = {
   [K in keyof T]-?: (UncheckedJSONSchemaType<T[K], false> & Nullable<T[K]>) | {$ref: string}
@@ -175,7 +168,14 @@ export type RequiredMembers<T> = StrictNullChecksWrapper<
   UncheckedRequiredMembers<T>
 >
 
-type Nullable<T> = undefined extends T
+// hacky short circuit where the Nullable<Known> is the union with null
+type Nullable<T> = [Known] extends [T]
+  ? [T] extends [Known]
+    ? BaseNullable<Known> | BaseNullable<null>
+    : BaseNullable<T>
+  : BaseNullable<T>
+
+type BaseNullable<T> = null extends T
   ? {
       nullable: true
       const?: null // any non-null value would fail `const: null`, `null` would fail any other value in const
