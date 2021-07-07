@@ -83,7 +83,7 @@
     "eslint": "^7.8.1",
     "eslint-config-prettier": "^7.0.0",
     "glob": "^7.0.0",
-    "husky": "^6.0.0",
+    "husky": "^7.0.1",
     "if-node-version": "^1.0.0",
     "jimp": "^0.16.1",
     "js-beautify": "^1.7.3",
