@@ -97,11 +97,10 @@ export function usePattern({gen, it: {self, opts}}: KeywordCxt, pattern: string)
   const useRe2 = opts.useRe2
   if (u === "u" && useRe2) {
     try {
-      const s = new Re2(pattern)
-      self.logger.log(s)
+      const engine = new Re2(pattern)
       return gen.scopeValue("pattern", {
         key: pattern,
-        ref: new Re2(pattern),
+        ref: engine,
         code: _`new ${useFunc(gen, re2)}(${pattern})`,
       })
     } catch (e) {
