@@ -95,8 +95,6 @@ export function callValidateCode(
 export function usePattern({gen, it: {self, opts}}: KeywordCxt, pattern: string): Name {
   const u = opts.unicodeRegExp ? "u" : ""
   const useRe2 = opts.useRe2
-  //const {gen, data, $data, schema, schemaCode, it} = cxt
-  //const regExp = $data ? _`(new RegExp(${schemaCode}, ${u}))` : usePattern(cxt, schema)
   if (u === "u" && useRe2) {
     try {
       const s = new Re2(pattern)
