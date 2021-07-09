@@ -98,6 +98,7 @@ export interface CurrentOptions {
   verbose?: boolean
   discriminator?: boolean
   unicodeRegExp?: boolean
+  useRe2?: boolean
   timestamp?: "string" | "date" // JTD only
   parseDate?: boolean // JTD only
   allowDate?: boolean // JTD only
@@ -219,7 +220,8 @@ type RequiredInstanceOptions = {
     | "validateSchema"
     | "validateFormats"
     | "int32range"
-    | "unicodeRegExp"]: NonNullable<Options[K]>
+    | "unicodeRegExp"
+    | "useRe2"]: NonNullable<Options[K]>
 } & {code: InstanceCodeOptions}
 
 export type InstanceOptions = Options & RequiredInstanceOptions
@@ -248,6 +250,7 @@ function requiredOptions(o: Options): RequiredInstanceOptions {
     validateSchema: o.validateSchema ?? true,
     validateFormats: o.validateFormats ?? true,
     unicodeRegExp: o.unicodeRegExp ?? true,
+    useRe2: o.useRe2 ?? false,
     int32range: o.int32range ?? true,
   }
 }
