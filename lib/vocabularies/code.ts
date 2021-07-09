@@ -6,7 +6,7 @@ import {alwaysValidSchema, Type} from "../compile/util"
 import N from "../compile/names"
 import {useFunc} from "../compile/util"
 import re2 from "../runtime/re2"
-import * as Re2 from "re2"
+import * as RE2 from "re2"
 export function checkReportMissingProp(cxt: KeywordCxt, prop: string): void {
   const {gen, data, it} = cxt
   gen.if(noPropertyInData(gen, data, prop, it.opts.ownProperties), () => {
@@ -94,10 +94,10 @@ export function callValidateCode(
 
 export function usePattern({gen, it: {self, opts}}: KeywordCxt, pattern: string): Name {
   const u = opts.unicodeRegExp ? "u" : ""
-  const useRe2 = opts.useRe2
-  if (u === "u" && useRe2) {
+  const {useRE2} = opts
+  if (u === "u" && useRE2) {
     try {
-      const engine = new Re2(pattern)
+      const engine = new RE2(pattern)
       return gen.scopeValue("pattern", {
         key: pattern,
         ref: engine,
@@ -105,7 +105,7 @@ export function usePattern({gen, it: {self, opts}}: KeywordCxt, pattern: string)
       })
     } catch (e) {
       self.logger.log(
-        "Warning: Fallback to default regex engine. Please verify the safeness of your regex"
+        "Warning: One of the regexes in the schema is not supported by RE2. Falling back to the native regex engine"
       )
     }
   }
