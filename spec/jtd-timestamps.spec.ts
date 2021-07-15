@@ -67,4 +67,16 @@ describe("JTD timestamps", function () {
       assert.strictEqual(parseTS('"2021-05-14"')?.toISOString(), "2021-05-14T00:00:00.000Z")
     })
   })
+
+  describe("serializing Date objects", () => {
+    it("should serialize Date as JSON string", () => {
+      const schema: JTDSchemaType<Date> = {type: "timestamp"}
+      const ajv = new _AjvJTD()
+      const serializeTS = ajv.compileSerializer(schema)
+      assert.strictEqual(
+        serializeTS(new Date("2021-05-14T17:59:03.851Z")),
+        '"2021-05-14T17:59:03.851Z"'
+      )
+    })
+  })
 })
