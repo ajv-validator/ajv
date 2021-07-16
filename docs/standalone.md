@@ -32,7 +32,7 @@ npm install ajv
 ```javascript
 const Ajv = require("ajv") // version >= v7.0.0
 const ajv = new Ajv({code: {source: true}}) // this option is required to generate standalone code
-const standaloneCode = require("ajv/dist/standalone")
+const standaloneCode = require("ajv/dist/standalone").default
 
 const schema = {
   $id: "https://example.com/object.json",
