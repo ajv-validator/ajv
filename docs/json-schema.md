@@ -290,7 +290,7 @@ The value of the keywords should be a number. The data to be valid should have l
 
     _invalid_: `"abcdef"`
 
-2)  _schema_: `{type: "string", minLength": 2}`
+2)  _schema_: `{type: "string", minLength: 2}`
 
     _valid_: `"ab"`, `"😀😀"`
 
