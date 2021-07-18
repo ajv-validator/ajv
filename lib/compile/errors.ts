@@ -6,7 +6,7 @@ import {getErrorPath, Type} from "./util"
 import N from "./names"
 
 export const keywordError: KeywordErrorDefinition = {
-  message: ({keyword}) => str`should pass "${keyword}" keyword validation`,
+  message: ({keyword}) => str`must pass "${keyword}" keyword validation`,
 }
 
 export const keyword$DataError: KeywordErrorDefinition = {

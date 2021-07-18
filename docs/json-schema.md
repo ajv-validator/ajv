@@ -290,7 +290,7 @@ The value of the keywords should be a number. The data to be valid should have l
 
     _invalid_: `"abcdef"`
 
-2)  _schema_: `{type: "string", minLength": 2}`
+2)  _schema_: `{type: "string", minLength: 2}`
 
     _valid_: `"ab"`, `"😀😀"`
 
@@ -453,16 +453,16 @@ For the data array to be valid, the items with indices less than the number of s
 
 _schema_:
 
-    ```javascript
-    {
-      type: "array",
-      prefixItems: [{type: "integer"}, {type: "string"}]
-    }
-    ```
+```javascript
+{
+  type: "array",
+  prefixItems: [{type: "integer"}, {type: "string"}]
+}
+```
 
-    _valid_: `[1]`, `[1, "abc"]`, `[1, "abc", 2]`, `[]`
+_valid_: `[1]`, `[1, "abc"]`, `[1, "abc", 2]`, `[]`
 
-    _invalid_: `["abc", 1]`, `["abc"]`
+_invalid_: `["abc", 1]`, `["abc"]`
 
 The schema in example will log warning by default (see `strictTuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use [minItems](#minitems) and [items](#items-in-draft-2020-12) keywords (see example 2 in [items](#items-in-draft-2020-12)).
 
