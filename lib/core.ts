@@ -98,6 +98,9 @@ export interface CurrentOptions {
   verbose?: boolean
   discriminator?: boolean
   unicodeRegExp?: boolean
+  timestamp?: "string" | "date" // JTD only
+  parseDate?: boolean // JTD only
+  allowDate?: boolean // JTD only
   $comment?:
     | true
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
@@ -114,6 +117,7 @@ export interface CurrentOptions {
   next?: boolean // NEW
   unevaluated?: boolean // NEW
   dynamicRef?: boolean // NEW
+  schemaId?: "id" | "$id"
   jtd?: boolean // NEW
   meta?: SchemaObject | boolean
   defaultMeta?: string | AnySchemaObject
@@ -125,6 +129,7 @@ export interface CurrentOptions {
   loopEnum?: number // NEW
   ownProperties?: boolean
   multipleOfPrecision?: number
+  int32range?: boolean // JTD only
   messages?: boolean
   code?: CodeOptions // NEW
 }
@@ -160,7 +165,6 @@ interface RemovedOptions {
   missingRefs?: true | "ignore" | "fail"
   processCode?: (code: string, schema?: SchemaEnv) => string
   sourceCode?: boolean
-  schemaId?: string
   strictDefaults?: boolean
   strictKeywords?: boolean
   uniqueItems?: boolean
@@ -183,14 +187,13 @@ const removedOptions: OptionsInfo<RemovedOptions> = {
   missingRefs: "Pass empty schema with $id that should be ignored to ajv.addSchema.",
   processCode: "Use option `code: {process: (code, schemaEnv: object) => string}`",
   sourceCode: "Use option `code: {source: true}`",
-  schemaId: "JSON Schema draft-04 is not supported in Ajv v7/8.",
   strictDefaults: "It is default now, see option `strict`.",
   strictKeywords: "It is default now, see option `strict`.",
   uniqueItems: '"uniqueItems" keyword is always validated.',
   unknownFormats: "Disable strict mode or pass `true` to `ajv.addFormat` (or `formats` option).",
   cache: "Map is used as cache, schema object as key.",
   serialize: "Map is used as cache, schema object as key.",
-  ajvErrors: "It is default now, see option `strict`.",
+  ajvErrors: "It is default now.",
 }
 
 const deprecatedOptions: OptionsInfo<DeprecatedOptions> = {
@@ -211,9 +214,11 @@ type RequiredInstanceOptions = {
     | "loopEnum"
     | "meta"
     | "messages"
+    | "schemaId"
     | "addUsedSchema"
     | "validateSchema"
     | "validateFormats"
+    | "int32range"
     | "unicodeRegExp"]: NonNullable<Options[K]>
 } & {code: InstanceCodeOptions}
 
@@ -238,10 +243,12 @@ function requiredOptions(o: Options): RequiredInstanceOptions {
     meta: o.meta ?? true,
     messages: o.messages ?? true,
     inlineRefs: o.inlineRefs ?? true,
+    schemaId: o.schemaId ?? "$id",
     addUsedSchema: o.addUsedSchema ?? true,
     validateSchema: o.validateSchema ?? true,
     validateFormats: o.validateFormats ?? true,
     unicodeRegExp: o.unicodeRegExp ?? true,
+    int32range: o.int32range ?? true,
   }
 }
 
@@ -296,13 +303,19 @@ export default class Ajv {
   }
 
   _addDefaultMetaSchema(): void {
-    const {$data, meta} = this.opts
-    if (meta && $data) this.addMetaSchema($dataRefSchema, $dataRefSchema.$id, false)
+    const {$data, meta, schemaId} = this.opts
+    let _dataRefSchema: SchemaObject = $dataRefSchema
+    if (schemaId === "id") {
+      _dataRefSchema = {...$dataRefSchema}
+      _dataRefSchema.id = _dataRefSchema.$id
+      delete _dataRefSchema.$id
+    }
+    if (meta && $data) this.addMetaSchema(_dataRefSchema, _dataRefSchema[schemaId], false)
   }
 
   defaultMeta(): string | AnySchemaObject | undefined {
-    const {meta} = this.opts
-    return (this.opts.defaultMeta = typeof meta == "object" ? meta.$id || meta : undefined)
+    const {meta, schemaId} = this.opts
+    return (this.opts.defaultMeta = typeof meta == "object" ? meta[schemaId] || meta : undefined)
   }
 
   // Validate data using schema
@@ -447,8 +460,11 @@ export default class Ajv {
     }
     let id: string | undefined
     if (typeof schema === "object") {
-      id = schema.$id
-      if (id !== undefined && typeof id != "string") throw new Error("schema $id must be string")
+      const {schemaId} = this.opts
+      id = schema[schemaId]
+      if (id !== undefined && typeof id != "string") {
+        throw new Error(`schema ${schemaId} must be string`)
+      }
     }
     key = normalizeId(key || id)
     this._checkUnique(key)
@@ -496,7 +512,8 @@ export default class Ajv {
     let sch
     while (typeof (sch = getSchEnv.call(this, keyRef)) == "string") keyRef = sch
     if (sch === undefined) {
-      const root = new SchemaEnv({schema: {}})
+      const {schemaId} = this.opts
+      const root = new SchemaEnv({schema: {}, schemaId})
       sch = resolveSchema.call(this, root, keyRef)
       if (!sch) return
       this.refs[keyRef] = sch
@@ -530,7 +547,7 @@ export default class Ajv {
       case "object": {
         const cacheKey = schemaKeyRef
         this._cache.delete(cacheKey)
-        let id = schemaKeyRef.$id
+        let id = schemaKeyRef[this.opts.schemaId]
         if (id) {
           id = normalizeId(id)
           delete this.schemas[id]
@@ -667,8 +684,9 @@ export default class Ajv {
     addSchema = this.opts.addUsedSchema
   ): SchemaEnv {
     let id: string | undefined
+    const {schemaId} = this.opts
     if (typeof schema == "object") {
-      id = schema.$id
+      id = schema[schemaId]
     } else {
       if (this.opts.jtd) throw new Error("schema must be object")
       else if (typeof schema != "boolean") throw new Error("schema must be object or boolean")
@@ -678,7 +696,7 @@ export default class Ajv {
 
     const localRefs = getSchemaRefs.call(this, schema)
     baseId = normalizeId(id || baseId)
-    sch = new SchemaEnv({schema, meta, baseId, localRefs})
+    sch = new SchemaEnv({schema, schemaId, meta, baseId, localRefs})
     this._cache.set(sch.schema, sch)
     if (addSchema && !baseId.startsWith("#")) {
       // TODO atm it is allowed to overwrite schemas without id (instead of not adding them)

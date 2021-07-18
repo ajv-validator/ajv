@@ -373,6 +373,13 @@ describe("JTDDataType", () => {
     void [num]
   })
 
+  it("should typecheck boolean schemas", () => {
+    const booleanSchema = {type: "boolean"} as const
+    const bool: TypeEquality<JTDDataType<typeof booleanSchema>, boolean> = true
+
+    void [bool]
+  })
+
   it("should typecheck string schemas", () => {
     const strSchema = {type: "string"} as const
     const str: TypeEquality<JTDDataType<typeof strSchema>, string> = true

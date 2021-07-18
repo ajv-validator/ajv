@@ -91,7 +91,7 @@ Ajv supports all keywords of JSON Schema draft-2020-12:
 - changed [items](#items-in-draft-2020-12) keyword that combined parts of functionality of items and additionalItems
 - [$dynamicAnchor/$dynamicRef](./guide/combining-schemas.md#extending-recursive-schemas)
 
-To use draft-2019-09 schemas you need to import a different Ajv class:
+To use draft-2020-12 schemas you need to import a different Ajv class:
 
 <code-group>
 <code-block title="JavaScript">
@@ -135,40 +135,29 @@ ajv.addMetaSchema(draft6MetaSchema)
 </code-block>
 </code-group>
 
-### draft-04 <Badge text="v6" />
+### draft-04
 
-You can use JSON Schema draft-06 schemas with Ajv v6.
-
-::: warning Only compatible with Ajv v6
-The code example below will not work in the most recent version of Ajv, it requires Ajv v6. While no longer actively developed it continues to receive critical security updates.
-:::
+You can use JSON Schema draft-04 schemas with Ajv from v8.5.0 and the additional package [ajv-draft-04](https://github.com/ajv-validator/ajv-draft-04) (both ajv and ajv-draft-04 should be installed).
 
 <code-group>
 <code-block title="JavaScript">
 ```javascript
-const Ajv = require("ajv")
-const draft4MetaSchema = require("ajv/lib/refs/json-schema-draft-04.json")
-
-const ajv = new Ajv({schemaId: "id"}) // or "auto" if you use both draft-04 and draft-06/07 schemas
-ajv.addMetaSchema(draft4MetaSchema)
+const Ajv = require("ajv-draft-04")
+const ajv = new Ajv()
 ```
 </code-block>
 
 <code-block title="TypeScript">
 ```typescript
-import Ajv from "ajv"
-import * as draft4MetaSchema from "ajv/lib/refs/json-schema-draft-04.json"
-
-const ajv = new Ajv({schemaId: "id"}) // or "auto" if you use both draft-04 and draft-06/07 schemas
-ajv.addMetaSchema(draft4MetaSchema)
+import Ajv from "ajv-draft-04"
+const ajv = new Ajv()
 ```
 </code-block>
 </code-group>
 
-var ajv = new Ajv({schemaId: 'id'});
-// If you want to use both draft-04 and draft-06/07 schemas:
-// var ajv = new Ajv({schemaId: 'auto'});
-ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
+::: warning Ajv cannot combine multiple JSON Schema versions
+You can only use this import with JSON Schema draft-04, you cannot combine multiple JSON Schema versions in this ajv instance.
+:::
 
 ## OpenAPI support
 
@@ -462,26 +451,20 @@ For the data array to be valid, the items with indices less than the number of s
 
 **Examples**
 
-1.  _schema_: `{type: "array", prefixItems: {type: "integer"}}`
+_schema_:
 
-    _valid_: `[1,2,3]`, `[]`
+```javascript
+{
+  type: "array",
+  prefixItems: [{type: "integer"}, {type: "string"}]
+}
+```
 
-    _invalid_: `[1,"abc"]`
+_valid_: `[1]`, `[1, "abc"]`, `[1, "abc", 2]`, `[]`
 
-2.  _schema_:
+_invalid_: `["abc", 1]`, `["abc"]`
 
-    ```javascript
-    {
-      type: "array",
-      prefixItems: [{type: "integer"}, {type: "string"}]
-    }
-    ```
-
-    _valid_: `[1]`, `[1, "abc"]`, `[1, "abc", 2]`, `[]`
-
-    _invalid_: `["abc", 1]`, `["abc"]`
-
-The schema in example 2 will log warning by default (see `strictTuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use [minItems](#minitems) and [items](#items-in-draft-2020-12) keywords (see example 2 in [items](#items-in-draft-2020-12)).
+The schema in example will log warning by default (see `strictTuples` option), because it defines unconstrained tuple. To define a tuple with exactly 2 elements use [minItems](#minitems) and [items](#items-in-draft-2020-12) keywords (see example 2 in [items](#items-in-draft-2020-12)).
 
 ### `additionalItems`
 

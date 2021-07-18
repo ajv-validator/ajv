@@ -112,9 +112,8 @@ function resetEvaluated(it: SchemaObjCxt): void {
 }
 
 function funcSourceUrl(schema: AnySchema, opts: InstanceOptions): Code {
-  return typeof schema == "object" && schema.$id && (opts.code.source || opts.code.process)
-    ? _`/*# sourceURL=${schema.$id} */`
-    : nil
+  const schId = typeof schema == "object" && schema[opts.schemaId]
+  return schId && (opts.code.source || opts.code.process) ? _`/*# sourceURL=${schId} */` : nil
 }
 
 // schema compilation - this function is used recursively to generate code for sub-schemas
@@ -177,7 +176,8 @@ function checkNoDefault(it: SchemaObjCxt): void {
 }
 
 function updateContext(it: SchemaObjCxt): void {
-  if (it.schema.$id) it.baseId = resolveUrl(it.baseId, it.schema.$id)
+  const schId = it.schema[it.opts.schemaId]
+  if (schId) it.baseId = resolveUrl(it.baseId, schId)
 }
 
 function checkAsyncSchema(it: SchemaObjCxt): void {
@@ -369,7 +369,11 @@ export class KeywordCxt implements KeywordErrorCxt {
   }
 
   result(condition: Code, successAction?: () => void, failAction?: () => void): void {
-    this.gen.if(not(condition))
+    this.failResult(not(condition), successAction, failAction)
+  }
+
+  failResult(condition: Code, successAction?: () => void, failAction?: () => void): void {
+    this.gen.if(condition)
     if (failAction) failAction()
     else this.error()
     if (successAction) {
@@ -383,7 +387,7 @@ export class KeywordCxt implements KeywordErrorCxt {
   }
 
   pass(condition: Code, failAction?: () => void): void {
-    this.result(condition, undefined, failAction)
+    this.failResult(not(condition), undefined, failAction)
   }
 
   fail(condition?: Code): void {

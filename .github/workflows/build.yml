@@ -22,13 +22,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: git submodule update --init
-      - name: update website
-        if: ${{ github.event_name == 'push' && matrix.node-version == '14.x' }}
-        run: ./scripts/publish-site
-        env:
-          GH_TOKEN_PUBLIC: ${{ secrets.GH_TOKEN_PUBLIC }}
-          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
-          GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
+      # - name: update website
+      #   if: ${{ github.event_name == 'push' && matrix.node-version == '14.x' }}
+      #   run: ./scripts/publish-site
+      #   env:
+      #     GH_TOKEN_PUBLIC: ${{ secrets.GH_TOKEN_PUBLIC }}
+      #     GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
+      #     GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
       - run: npm run build
       - run: npm run test-ci
       - name: coveralls

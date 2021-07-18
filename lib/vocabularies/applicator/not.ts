@@ -26,10 +26,10 @@ const def: CodeKeywordDefinition = {
       valid
     )
 
-    cxt.result(
+    cxt.failResult(
       valid,
-      () => cxt.error(),
-      () => cxt.reset()
+      () => cxt.reset(),
+      () => cxt.error()
     )
   },
   error: {message: "must NOT be valid"},

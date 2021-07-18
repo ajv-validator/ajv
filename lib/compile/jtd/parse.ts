@@ -2,7 +2,7 @@ import type Ajv from "../../core"
 import type {SchemaObject} from "../../types"
 import {jtdForms, JTDForm, SchemaObjectMap} from "./types"
 import {SchemaEnv, getCompilingSchema} from ".."
-import {_, str, and, nil, not, CodeGen, Code, Name, SafeExpr} from "../codegen"
+import {_, str, and, or, nil, not, CodeGen, Code, Name, SafeExpr} from "../codegen"
 import MissingRefError from "../ref_error"
 import N from "../names"
 import {hasPropFunc} from "../../vocabularies/code"
@@ -253,7 +253,7 @@ function parsePropertyValue(cxt: ParseCxt, key: Name, schema: SchemaObject): voi
 }
 
 function parseType(cxt: ParseCxt): void {
-  const {gen, schema, data} = cxt
+  const {gen, schema, data, self} = cxt
   switch (schema.type) {
     case "boolean":
       parseBoolean(cxt)
@@ -262,10 +262,14 @@ function parseType(cxt: ParseCxt): void {
       parseString(cxt)
       break
     case "timestamp": {
-      // TODO parse timestamp?
       parseString(cxt)
       const vts = useFunc(gen, validTimestamp)
-      gen.if(_`!${vts}(${data})`, () => parsingError(cxt, str`invalid timestamp`))
+      const {allowDate, parseDate} = self.opts
+      const notValid = allowDate ? _`!${vts}(${data}, true)` : _`!${vts}(${data})`
+      const fail: Code = parseDate
+        ? or(notValid, _`(${data} = new Date(${data}), false)`, _`isNaN(${data}.valueOf())`)
+        : notValid
+      gen.if(fail, () => parsingError(cxt, str`invalid timestamp`))
       break
     }
     case "float32":
@@ -273,11 +277,19 @@ function parseType(cxt: ParseCxt): void {
       parseNumber(cxt)
       break
     default: {
-      const [min, max, maxDigits] = intRange[schema.type as IntType]
-      parseNumber(cxt, maxDigits)
-      gen.if(_`${data} < ${min} || ${data} > ${max}`, () =>
-        parsingError(cxt, str`integer out of range`)
-      )
+      const t = schema.type as IntType
+      if (!self.opts.int32range && (t === "int32" || t === "uint32")) {
+        parseNumber(cxt, 16) // 2 ** 53 - max safe integer
+        if (t === "uint32") {
+          gen.if(_`${data} < 0`, () => parsingError(cxt, str`integer out of range`))
+        }
+      } else {
+        const [min, max, maxDigits] = intRange[t]
+        parseNumber(cxt, maxDigits)
+        gen.if(_`${data} < ${min} || ${data} > ${max}`, () =>
+          parsingError(cxt, str`integer out of range`)
+        )
+      }
     }
   }
 }

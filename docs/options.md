@@ -36,7 +36,11 @@ const defaultOptions = {
   allErrors: false,
   verbose: false,
   discriminator: false, // *
-  unicodeRegExp: true // *
+  unicodeRegExp: true, // *
+  timestamp: undefined // **
+  parseDate: false // **
+  allowDate: false // **
+  int32range: true // **
   $comment: false, // *
   formats: {},
   keywords: {},
@@ -69,7 +73,9 @@ const defaultOptions = {
 }
 ```
 
-<sup>\*</sup> these options are not supported with JSON Type Definition schemas
+<sup>\*</sup> only with JSON Schema
+
+<sup>\**</sup> only with JSON Type Definition
 
 ## Strict mode options <Badge text="v7" />
 
@@ -176,6 +182,36 @@ Option values:
 
 - `true` (default) - use unicode flag "u".
 - `false` - do not use flag "u".
+
+### timestamp <Badge text="JTD only">
+
+Defines which Javascript types will be accepted for the [JTD timestamp type](./json-type-definition#type-form).
+
+By default Ajv will accept both Date objects and [RFC3339](https://datatracker.ietf.org/doc/rfc3339/) strings. You can specify allowed values with the option `timestamp: "date"` or `timestamp: "string"`.
+
+### parseDate <Badge text="JTD only">
+
+Defines how date-time strings are parsed by [JTD parsers](./api.md#jtd-parse). By default Ajv parses date-time strings as string. Use `parseDate: true` to parse them as Date objects.
+
+### allowDate <Badge text="JTD only">
+
+Defines how date-time strings are parsed and validated. By default Ajv only allows full date-time strings, as required by JTD specification. Use `allowDate: true` to allow date strings both for validation and for parsing.
+
+::: warning Option allowDate is not portable
+This option makes JTD validation and parsing more permissive and non-standard. The date strings without time part will be accepted by Ajv, but will be rejected by other JTD validators.
+:::
+
+### int32range <Badge text="JTD only">
+
+Can be used to disable range checking for `int32` and `uint32` types.
+
+By default Ajv limits the range of these types to `[-2**31, 2**31 - 1]` for `int32` and to `[0, 2**32-1]` for `uint32` when validating and parsing.
+
+With option `int32range: false` Ajv only requires that `uint32` is non-negative, otherwise does not check the range. Parser will limit the number size to 16 digits (approx. `2**53` - safe integer range).
+
+::: warning Option int32range is not portable
+This option makes JTD validation and parsing more permissive and non-standard. The integers within a wider range will be accepted by Ajv, but will be rejected by other JTD validators.
+:::
 
 ### $comment
 

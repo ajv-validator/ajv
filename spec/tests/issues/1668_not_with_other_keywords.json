@@ -1,0 +1,104 @@
+[
+  {
+    "description": "not with allOf",
+    "schema": {
+      "allOf": [{"const": 1}],
+      "not": {"const": true}
+    },
+    "tests": [
+      {
+        "description": "valid",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "invalid (const)",
+        "data": 3,
+        "valid": false
+      },
+      {
+        "description": "invalid (not)",
+        "data": true,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "not with anyOf",
+    "schema": {
+      "anyOf": [{"const": 1}],
+      "not": {"const": true}
+    },
+    "tests": [
+      {
+        "description": "valid",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "invalid (const)",
+        "data": 3,
+        "valid": false
+      },
+      {
+        "description": "invalid (not)",
+        "data": true,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "not with oneOf",
+    "schema": {
+      "oneOf": [{"const": 1}],
+      "not": {"const": true}
+    },
+    "tests": [
+      {
+        "description": "valid",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "invalid (const)",
+        "data": 3,
+        "valid": false
+      },
+      {
+        "description": "invalid (not)",
+        "data": true,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "not with properties",
+    "schema": {
+      "not": {
+        "properties": {
+          "foo": {"const": true}
+        }
+      },
+      "properties": {
+        "foo": {"const": 1}
+      }
+    },
+    "tests": [
+      {
+        "description": "valid",
+        "data": {"foo": 1},
+        "valid": true
+      },
+      {
+        "description": "invalid (const)",
+        "data": {"foo": 3},
+        "valid": false
+      },
+      {
+        "description": "invalid (not)",
+        "data": {"foo": true},
+        "valid": false
+      }
+    ]
+  }
+]

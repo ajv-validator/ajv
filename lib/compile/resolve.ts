@@ -91,9 +91,10 @@ const ANCHOR = /^[a-z_][-a-z0-9._]*$/i
 
 export function getSchemaRefs(this: Ajv, schema: AnySchema): LocalRefs {
   if (typeof schema == "boolean") return {}
-  const schemaId = normalizeId(schema.$id)
-  const baseIds: {[JsonPtr in string]?: string} = {"": schemaId}
-  const pathPrefix = getFullPath(schemaId, false)
+  const {schemaId} = this.opts
+  const schId = normalizeId(schema[schemaId])
+  const baseIds: {[JsonPtr in string]?: string} = {"": schId}
+  const pathPrefix = getFullPath(schId, false)
   const localRefs: LocalRefs = {}
   const schemaRefs: Set<string> = new Set()
 
@@ -101,7 +102,7 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema): LocalRefs {
     if (parentJsonPtr === undefined) return
     const fullPath = pathPrefix + jsonPtr
     let baseId = baseIds[parentJsonPtr]
-    if (typeof sch.$id == "string") baseId = addRef.call(this, sch.$id)
+    if (typeof sch[schemaId] == "string") baseId = addRef.call(this, sch[schemaId])
     addAnchor.call(this, sch.$anchor)
     addAnchor.call(this, sch.$dynamicAnchor)
     baseIds[jsonPtr] = baseId
