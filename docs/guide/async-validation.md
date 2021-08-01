@@ -22,7 +22,7 @@ Example:
 const ajv = new Ajv()
 
 ajv.addKeyword({
-  keyword: "idExists"
+  keyword: "idExists",
   async: true,
   type: "number",
   validate: checkIdExists,
