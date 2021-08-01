@@ -89,10 +89,10 @@ export function resolveUrl(baseId: string, id: string): string {
 
 const ANCHOR = /^[a-z_][-a-z0-9._]*$/i
 
-export function getSchemaRefs(this: Ajv, schema: AnySchema): LocalRefs {
+export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): LocalRefs {
   if (typeof schema == "boolean") return {}
   const {schemaId} = this.opts
-  const schId = normalizeId(schema[schemaId])
+  const schId = normalizeId(schema[schemaId] || baseId)
   const baseIds: {[JsonPtr in string]?: string} = {"": schId}
   const pathPrefix = getFullPath(schId, false)
   const localRefs: LocalRefs = {}
