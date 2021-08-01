@@ -12,7 +12,7 @@ interface MyData {
     [x: string]: string
   }
   boo?: true
-  tuple?: [number, string]
+  tuple?: readonly [number, string]
   arr: {id: number}[]
   map: {[K in string]?: number}
   notBoo?: string // should not be present if "boo" is present
@@ -32,7 +32,7 @@ const arrSchema: JSONSchemaType<MyData["arr"]> = {
     required: ["id"],
   },
   uniqueItems: true,
-}
+} as const
 
 const mySchema: JSONSchemaType<MyData> & {
   definitions: {
@@ -95,7 +95,7 @@ const mySchema: JSONSchemaType<MyData> & {
   },
   additionalProperties: false,
   required: ["foo", "baz", "arr", "map"], // any other property added here won't typecheck
-}
+} as const
 
 type MyUnionData = {a: boolean} | string | number
 
@@ -115,7 +115,7 @@ const myUnionSchema: JSONSchemaType<MyUnionData> = {
       minLength: 1,
     },
   ],
-}
+} as const
 
 // because of the current definition, you can do this nested recusion
 const myNestedUnionSchema: JSONSchemaType<MyUnionData> = {
@@ -138,12 +138,12 @@ const myNestedUnionSchema: JSONSchemaType<MyUnionData> = {
       type: "number",
     },
   ],
-}
+} as const
 
-// @ts-expect-error can't use empty array for invalid type
-const invalidSchema: JSONSchemaType<MyData> = {
+// allowing union types necessarily allows this to pass :/
+const emptyType: JSONSchemaType<MyData> = {
   type: [],
-}
+} as const
 
 type MyEnumRecord = Record<"a" | "b" | "c" | "d", number | undefined>
 
@@ -244,6 +244,22 @@ describe("JSONSchemaType type and validation as a type guard", () => {
       }
       should.not.exist(ajv.errors)
     })
+
+    it("should fail for invalid unions", () => {
+      // @ts-expect-error extra type
+      const extraSchema: JSONSchemaType<string | number> = {
+        type: ["string", "number", "boolean"],
+      } as const
+
+      // @ts-expect-error extra properties
+      const extraProps: JSONSchemaType<string, boolean> = {
+        type: ["string", "boolean"],
+        maximum: 5, // number property
+      } as const
+
+      // eslint-disable-next-line no-void
+      void [extraSchema, extraProps]
+    })
   })
 
   describe("schema has type SchemaObject", () => {
@@ -286,11 +302,37 @@ describe("JSONSchemaType type and validation as a type guard", () => {
       const optionalSchema: JSONSchemaType<{a?: number}> = {
         type: "object",
       }
+
       // eslint-disable-next-line no-void
       void optionalSchema
+    })
+  })
+
+  describe("schema works for primitives", () => {
+    it("allows partial boolean sub schemas", () => {
+      // this schema doesn't have much meaning, but it wasn't allowed before
+      const trueSchema: JSONSchemaType<true> = {
+        type: "boolean",
+        not: {const: false},
+      } as const
+
+      // eslint-disable-next-line no-void
+      void trueSchema
+    })
+
+    it("validates simple null", () => {
+      const nullSchema: JSONSchemaType<null> = {
+        type: "null",
+        nullable: true,
+        const: null,
+        enum: [null],
+      } as const
+      const validate = ajv.compile(nullSchema)
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      validate(null).should.be.true
     })
   })
 })
 
 // eslint-disable-next-line no-void
-void invalidSchema
+void emptyType
