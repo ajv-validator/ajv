@@ -23,7 +23,7 @@ describe("discriminator keyword", function () {
   }
 
   describe("validation", () => {
-    const schema1 = {
+    const stringSchema1 = {
       type: "object",
       discriminator: {propertyName: "foo"},
       oneOf: [
@@ -44,7 +44,7 @@ describe("discriminator keyword", function () {
       ],
     }
 
-    const schema2 = {
+    const stringSchema2 = {
       type: "object",
       discriminator: {propertyName: "foo"},
       required: ["foo"],
@@ -66,18 +66,139 @@ describe("discriminator keyword", function () {
       ],
     }
 
-    const schemas = [schema1, schema2]
+    const numberSchema = {
+      type: "object",
+      discriminator: {propertyName: "foo"},
+      required: ["foo"],
+      oneOf: [
+        {
+          properties: {
+            foo: {const: 1},
+            a: {type: "string"},
+          },
+          required: ["a"],
+        },
+        {
+          properties: {
+            foo: {enum: [2, 3]},
+            b: {type: "string"},
+          },
+          required: ["b"],
+        },
+      ],
+    }
 
-    it("should validate data", () => {
-      assertValid(schemas, {foo: "x", a: "a"})
-      assertValid(schemas, {foo: "y", b: "b"})
-      assertValid(schemas, {foo: "z", b: "b"})
-      assertInvalid(schemas, {})
-      assertInvalid(schemas, {foo: 1})
-      assertInvalid(schemas, {foo: "bar"})
-      assertInvalid(schemas, {foo: "x", b: "b"})
-      assertInvalid(schemas, {foo: "y", a: "a"})
-      assertInvalid(schemas, {foo: "z", a: "a"})
+    const boolSchema = {
+      type: "object",
+      discriminator: {propertyName: "foo"},
+      required: ["foo"],
+      oneOf: [
+        {
+          properties: {
+            foo: {const: true},
+            a: {type: "string"},
+          },
+          required: ["a"],
+        },
+        {
+          properties: {
+            foo: {const: false},
+            b: {type: "string"},
+          },
+          required: ["b"],
+        },
+      ],
+    }
+
+    const mixedSchema = {
+      type: "object",
+      discriminator: {propertyName: "foo"},
+      required: ["foo"],
+      oneOf: [
+        {
+          properties: {
+            foo: {const: "x"},
+            a: {type: "string"},
+          },
+          required: ["a"],
+        },
+        {
+          properties: {
+            foo: {enum: [1, 2]},
+            b: {type: "string"},
+          },
+          required: ["b"],
+        },
+        {
+          properties: {
+            foo: {const: true},
+            c: {type: "string"},
+          },
+          required: ["c"],
+        },
+      ],
+    }
+
+    const stringSchemas = [stringSchema1, stringSchema2]
+    const numberSchemas = [numberSchema]
+    const boolSchemas = [boolSchema]
+    const mixedSchemas = [mixedSchema]
+
+    it("should validate data for string discriminator", () => {
+      assertValid(stringSchemas, {foo: "x", a: "a"})
+      assertValid(stringSchemas, {foo: "y", b: "b"})
+      assertValid(stringSchemas, {foo: "z", b: "b"})
+
+      assertInvalid(stringSchemas, {})
+      assertInvalid(stringSchemas, {foo: 1})
+      assertInvalid(stringSchemas, {foo: "bar"})
+      assertInvalid(stringSchemas, {foo: "x", b: "b"})
+      assertInvalid(stringSchemas, {foo: "y", a: "a"})
+      assertInvalid(stringSchemas, {foo: "z", a: "a"})
+    })
+
+    it("should validate data for number discriminator", () => {
+      assertValid(numberSchemas, {foo: 1, a: "a"})
+      assertValid(numberSchemas, {foo: 2, b: "b"})
+      assertValid(numberSchemas, {foo: 3, b: "b"})
+
+      assertInvalid(stringSchemas, {})
+      assertInvalid(stringSchemas, {foo: "1"})
+      assertInvalid(stringSchemas, {foo: "bar"})
+      assertInvalid(numberSchemas, {foo: 1, b: "b"})
+      assertInvalid(numberSchemas, {foo: 2, a: "a"})
+      assertInvalid(numberSchemas, {foo: 3, a: "a"})
+    })
+
+    it("should validate data for boolean discriminator", () => {
+      assertValid(boolSchemas, {foo: true, a: "a"})
+      assertValid(boolSchemas, {foo: false, b: "b"})
+
+      assertInvalid(boolSchemas, {})
+      assertInvalid(boolSchemas, {foo: "1"})
+      assertInvalid(boolSchemas, {foo: true, b: "b"})
+      assertInvalid(boolSchemas, {foo: false, a: "a"})
+    })
+
+    it("should validate data for mixed type discriminator", () => {
+      assertValid(mixedSchemas, {foo: "x", a: "a"})
+      assertValid(mixedSchemas, {foo: 1, b: "b"})
+      assertValid(mixedSchemas, {foo: 2, b: "b"})
+      assertValid(mixedSchemas, {foo: true, c: "c"})
+
+      assertInvalid(mixedSchemas, {})
+      assertInvalid(mixedSchemas, {foo: "x"})
+      assertInvalid(mixedSchemas, {foo: "x", b: "b"})
+      assertInvalid(mixedSchemas, {foo: "x", c: "c"})
+      assertInvalid(mixedSchemas, {foo: 1})
+      assertInvalid(mixedSchemas, {foo: 1, a: "a"})
+      assertInvalid(mixedSchemas, {foo: 1, c: "c"})
+      assertInvalid(mixedSchemas, {foo: 2})
+      assertInvalid(mixedSchemas, {foo: 2, a: "a"})
+      assertInvalid(mixedSchemas, {foo: 2, c: "c"})
+      assertInvalid(mixedSchemas, {foo: true})
+      assertInvalid(mixedSchemas, {foo: true, a: "a"})
+      assertInvalid(mixedSchemas, {foo: true, b: "b"})
     })
   })
 
@@ -113,15 +234,15 @@ describe("discriminator keyword", function () {
       )
     })
 
-    it("tag value should be string", () => {
+    it("tag value should be string, number or boolean", () => {
       invalidSchema(
         {
           type: "object",
           discriminator: {propertyName: "foo"},
           required: ["foo"],
-          oneOf: [{properties: {foo: {const: 1}}}],
+          oneOf: [{properties: {foo: {const: {baz: "bar"}}}}],
         },
-        /discriminator: "foo" values must be unique strings/
+        /discriminator: "foo" values must be unique strings, numbers or booleans/
       )
     })
 
@@ -133,7 +254,27 @@ describe("discriminator keyword", function () {
           required: ["foo"],
           oneOf: [{properties: {foo: {const: "a"}}}, {properties: {foo: {const: "a"}}}],
         },
-        /discriminator: "foo" values must be unique strings/
+        /discriminator: "foo" values must be unique strings, numbers or booleans/
+      )
+
+      invalidSchema(
+        {
+          type: "object",
+          discriminator: {propertyName: "foo"},
+          required: ["foo"],
+          oneOf: [{properties: {foo: {const: 1}}}, {properties: {foo: {const: 1}}}],
+        },
+        /discriminator: "foo" values must be unique/
+      )
+
+      invalidSchema(
+        {
+          type: "object",
+          discriminator: {propertyName: "foo"},
+          required: ["foo"],
+          oneOf: [{properties: {foo: {const: true}}}, {properties: {foo: {const: true}}}],
+        },
+        /discriminator: "foo" values must be unique/
       )
     })
 
@@ -154,7 +295,11 @@ describe("discriminator keyword", function () {
 
   function assertValid(schemas: SchemaObject[], data: unknown): void {
     schemas.forEach((schema) =>
-      ajvs.forEach((ajv) => assert.strictEqual(ajv.validate(schema, data), true))
+      ajvs.forEach((ajv) => {
+        const validate = ajv.compile(schema)
+        const valid = validate(data)
+        assert.strictEqual(valid, true)
+      })
     )
   }
 
