@@ -61,7 +61,7 @@ import {getJSONTypes} from "./compile/validate/dataType"
 import {eachItem} from "./compile/util"
 
 import * as $dataRefSchema from "./refs/data.json"
-
+import DefaultRegExp from "./runtime/regexp"
 const META_IGNORE_OPTIONS: (keyof Options)[] = ["removeAdditional", "useDefaults", "coerceTypes"]
 const EXT_SCOPE_NAMES = new Set([
   "validate",
@@ -98,7 +98,6 @@ export interface CurrentOptions {
   verbose?: boolean
   discriminator?: boolean
   unicodeRegExp?: boolean
-  useRE2?: boolean
   timestamp?: "string" | "date" // JTD only
   parseDate?: boolean // JTD only
   allowDate?: boolean // JTD only
@@ -135,6 +134,12 @@ export interface CurrentOptions {
   code?: CodeOptions // NEW
 }
 
+type RegExpEngine = (pattern: string, u: string) => RegExpLike
+
+export interface RegExpLike {
+  test: (s: string) => boolean
+}
+
 export interface CodeOptions {
   es5?: boolean
   lines?: boolean
@@ -142,9 +147,11 @@ export interface CodeOptions {
   formats?: Code // code to require (or construct) map of available formats - for standalone code
   source?: boolean
   process?: (code: string, schema?: SchemaEnv) => string
+  regExp?: RegExpEngine & {code: string} // add type
 }
 
 interface InstanceCodeOptions extends CodeOptions {
+  regExp: RegExpEngine & {code: string}
   optimize: number
 }
 
@@ -220,8 +227,7 @@ type RequiredInstanceOptions = {
     | "validateSchema"
     | "validateFormats"
     | "int32range"
-    | "unicodeRegExp"
-    | "useRE2"]: NonNullable<Options[K]>
+    | "unicodeRegExp"]: NonNullable<Options[K]>
 } & {code: InstanceCodeOptions}
 
 export type InstanceOptions = Options & RequiredInstanceOptions
@@ -233,13 +239,15 @@ function requiredOptions(o: Options): RequiredInstanceOptions {
   const s = o.strict
   const _optz = o.code?.optimize
   const optimize = _optz === true || _optz === undefined ? 1 : _optz || 0
+  const _regExp = o.code?.regExp
+  const regExp = _regExp ?? DefaultRegExp
   return {
     strictSchema: o.strictSchema ?? s ?? true,
     strictNumbers: o.strictNumbers ?? s ?? true,
     strictTypes: o.strictTypes ?? s ?? "log",
     strictTuples: o.strictTuples ?? s ?? "log",
     strictRequired: o.strictRequired ?? s ?? false,
-    code: o.code ? {...o.code, optimize} : {optimize},
+    code: o.code ? {...o.code, optimize, regExp} : {optimize, regExp},
     loopRequired: o.loopRequired ?? MAX_EXPRESSION,
     loopEnum: o.loopEnum ?? MAX_EXPRESSION,
     meta: o.meta ?? true,
@@ -250,7 +258,6 @@ function requiredOptions(o: Options): RequiredInstanceOptions {
     validateSchema: o.validateSchema ?? true,
     validateFormats: o.validateFormats ?? true,
     unicodeRegExp: o.unicodeRegExp ?? true,
-    useRE2: o.useRE2 ?? false,
     int32range: o.int32range ?? true,
   }
 }
@@ -281,7 +288,9 @@ export default class Ajv {
 
   constructor(opts: Options = {}) {
     opts = this.opts = {...opts, ...requiredOptions(opts)}
-    const {es5, lines} = this.opts.code
+    const {es5, lines, regExp} = this.opts.code
+    this.opts.code.regExp = regExp ?? DefaultRegExp
+
     this.scope = new ValueScope({scope: {}, prefixes: EXT_SCOPE_NAMES, es5, lines})
     this.logger = getLogger(opts.logger)
     const formatOpt = opts.validateFormats

@@ -5,8 +5,6 @@ import {CodeGen, _, and, or, not, nil, strConcat, getProperty, Code, Name} from 
 import {alwaysValidSchema, Type} from "../compile/util"
 import N from "../compile/names"
 import {useFunc} from "../compile/util"
-import re2 from "../runtime/re2"
-import * as RE2 from "re2"
 export function checkReportMissingProp(cxt: KeywordCxt, prop: string): void {
   const {gen, data, it} = cxt
   gen.if(noPropertyInData(gen, data, prop, it.opts.ownProperties), () => {
@@ -92,27 +90,14 @@ export function callValidateCode(
   return context !== nil ? _`${func}.call(${context}, ${args})` : _`${func}(${args})`
 }
 
-export function usePattern({gen, it: {self, opts}}: KeywordCxt, pattern: string): Name {
+export function usePattern({gen, it: {opts}}: KeywordCxt, pattern: string): Name {
   const u = opts.unicodeRegExp ? "u" : ""
-  const {useRE2} = opts
-  if (u === "u" && useRE2) {
-    try {
-      const engine = new RE2(pattern)
-      return gen.scopeValue("pattern", {
-        key: pattern,
-        ref: engine,
-        code: _`new ${useFunc(gen, re2)}(${pattern})`,
-      })
-    } catch (e) {
-      self.logger.log(
-        "Warning: One of the regexes in the schema is not supported by RE2. Falling back to the native regex engine"
-      )
-    }
-  }
+  const {regExp} = opts.code
+
   return gen.scopeValue("pattern", {
     key: pattern,
-    ref: new RegExp(pattern, u),
-    code: _`new RegExp(${pattern}, ${u})`,
+    ref: regExp(pattern, u),
+    code: _`${useFunc(gen, regExp)}(${pattern}, ${u})`,
   })
 }
 
