@@ -300,11 +300,12 @@ function getJsonPointer(
 ): SchemaEnv | undefined {
   if (parsedRef.fragment?.[0] !== "/") return
   for (const part of parsedRef.fragment.slice(1).split("/")) {
-    if (typeof schema == "boolean") return
-    schema = schema[unescapeFragment(part)]
-    if (schema === undefined) return
+    if (typeof schema === "boolean") return
+    const partSchema = schema[unescapeFragment(part)]
+    if (partSchema === undefined) return
+    schema = partSchema
     // TODO PREVENT_SCOPE_CHANGE could be defined in keyword def?
-    const schId = typeof schema == "object" && schema[this.opts.schemaId]
+    const schId = typeof schema === "object" && schema[this.opts.schemaId]
     if (!PREVENT_SCOPE_CHANGE.has(part) && schId) {
       baseId = resolveUrl(baseId, schId)
     }
