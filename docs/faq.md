@@ -76,7 +76,7 @@ There are several ways to implement the described logic that would allow two pro
 
 This problem is related to the problem explained above - properties treated as additional in the sense of `additionalProperties` keyword, based on `properties`/`patternProperties` keyword in the same schema object.
 
-See the example in [Filtering Data](https://github.com/ajv-validator/ajv#filtering-data) section of readme.
+See the example in the [Removing Additional Data](https://ajv.js.org/guide/modifying-data.html#removing-additional-properties) section of the docs.
 
 ## Generating schemas with resolved references ($ref)
 
