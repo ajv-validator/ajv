@@ -336,6 +336,25 @@ describe("JSONSchemaType type and validation as a type guard", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       validate(null).should.be.true
     })
+
+    it("validates top level ref", () => {
+      const refSchema: JSONSchemaType<null> = {
+        $ref: "https://some_other_schema",
+      }
+
+      // eslint-disable-next-line no-void
+      void refSchema
+    })
+
+    it("requires toplevel null", () => {
+      // @ts-expect-error needs nullable
+      const nullNum: JSONSchemaType<number | null> = {
+        type: "number",
+      }
+
+      // eslint-disable-next-line no-void
+      void nullNum
+    })
   })
 
   describe("schema handles optional properties", () => {
