@@ -95,6 +95,70 @@ parseJsonNumber.message = undefined as string | undefined
 parseJsonNumber.position = 0 as number
 parseJsonNumber.code = 'require("ajv/dist/runtime/parseJson").parseJsonNumber'
 
+export function parseJsonBigInt(s: string, pos: number, maxDigits?: number): bigint | undefined {
+  let numStr = ""
+  let c: string
+  parseJsonNumber.message = undefined
+  if (s[pos] === "-") {
+    numStr += "-"
+    pos++
+  }
+  if (s[pos] === "0") {
+    numStr += "0"
+    pos++
+  } else {
+    if (!parseDigits(maxDigits)) {
+      errorMessage()
+      return undefined
+    }
+  }
+  if (maxDigits) {
+    parseJsonNumber.position = pos
+    return BigInt(numStr)
+  }
+  if (s[pos] === ".") {
+    numStr += "."
+    pos++
+    if (!parseDigits()) {
+      errorMessage()
+      return undefined
+    }
+  }
+  if (((c = s[pos]), c === "e" || c === "E")) {
+    numStr += "e"
+    pos++
+    if (((c = s[pos]), c === "+" || c === "-")) {
+      numStr += c
+      pos++
+    }
+    if (!parseDigits()) {
+      errorMessage()
+      return undefined
+    }
+  }
+  parseJsonBigInt.position = pos
+  return BigInt(numStr)
+
+  function parseDigits(maxLen?: number): boolean {
+    let digit = false
+    while (((c = s[pos]), c >= "0" && c <= "9" && (maxLen === undefined || maxLen-- > 0))) {
+      digit = true
+      numStr += c
+      pos++
+    }
+    return digit
+  }
+
+  function errorMessage(): void {
+    parseJsonBigInt.position = pos
+    parseJsonBigInt.message = pos < s.length ? `unexpected token ${s[pos]}` : "unexpected end"
+  }
+}
+
+parseJsonBigInt.message = undefined as string | undefined
+parseJsonBigInt.position = 0 as number
+parseJsonBigInt.code = 'require("ajv/dist/runtime/parseJson").parseJsonBigInt'
+
 const escapedChars: {[X in string]?: string} = {
   b: "\b",
   f: "\f",

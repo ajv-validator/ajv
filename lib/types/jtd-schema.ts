@@ -9,7 +9,7 @@ export type SomeJTDSchemaType = (
   | // ref
   {ref: string}
   // primitives
-  | {type: NumberType | StringType | "boolean"}
+  | {type: NumberType | StringType | "boolean" | "bigint"}
   // enum
   | {enum: string[]}
   // elements

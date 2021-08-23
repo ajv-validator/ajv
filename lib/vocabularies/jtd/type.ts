@@ -19,7 +19,7 @@ export const intRange: {[T in IntType]: [number, number, number]} = {
   uint32: [0, 4294967295, 10],
 }
 
-export type JTDType = "boolean" | "string" | "timestamp" | "float32" | "float64" | IntType
+export type JTDType = "boolean" | "string" | "timestamp" | "float32" | "float64" | IntType | "bigint"
 
 const error: KeywordErrorDefinition = {
   message: (cxt) => typeErrorMessage(cxt, cxt.schema),
@@ -53,6 +53,9 @@ const def: CodeKeywordDefinition = {
         cond = timestampCode(cxt)
         break
       }
+      case "bigint":
+        cond = _`typeof ${data} == "bigint" || typeof ${data} == "string"`
+        break
       case "float32":
       case "float64":
         cond = _`typeof ${data} == "number"`

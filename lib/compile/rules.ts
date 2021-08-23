@@ -1,6 +1,6 @@
 import type {AddedKeywordDefinition} from "../types"
 
-const _jsonTypes = ["string", "number", "integer", "boolean", "null", "object", "array"] as const
+const _jsonTypes = ["string", "number", "integer", "boolean", "null", "object", "array", "bigint"] as const
 
 export type JSONType = typeof _jsonTypes[number]
 
@@ -34,15 +34,16 @@ export interface Rule {
 }
 
 export function getRules(): ValidationRules {
-  const groups: Record<"number" | "string" | "array" | "object", RuleGroup> = {
+  const groups: Record<"number" | "string" | "array" | "object"| "bigint", RuleGroup> = {
     number: {type: "number", rules: []},
     string: {type: "string", rules: []},
     array: {type: "array", rules: []},
     object: {type: "object", rules: []},
+    bigint: {type: "bigint", rules: []}
   }
   return {
-    types: {...groups, integer: true, boolean: true, null: true},
-    rules: [{rules: []}, groups.number, groups.string, groups.array, groups.object],
+    types: {...groups, integer: true, boolean: true, null: true, bigint: true},
+    rules: [{rules: []}, groups.number, groups.string, groups.array, groups.object, groups.bigint],
     post: {rules: []},
     all: {},
     keywords: {},

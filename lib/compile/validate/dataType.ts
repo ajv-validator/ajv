@@ -52,7 +52,7 @@ export function coerceAndCheckDataType(it: SchemaObjCxt, types: JSONType[]): boo
   return checkTypes
 }
 
-const COERCIBLE: Set<JSONType> = new Set(["string", "number", "integer", "boolean", "null"])
+const COERCIBLE: Set<JSONType> = new Set(["string", "number", "integer", "boolean", "null", "bigint"])
 function coerceToTypes(types: JSONType[], coerceTypes?: boolean | "array"): JSONType[] {
   return coerceTypes
     ? types.filter((t) => COERCIBLE.has(t) || (coerceTypes === "array" && t === "array"))
@@ -88,6 +88,14 @@ function coerceData(it: SchemaObjCxt, types: JSONType[], coerceTo: JSONType[]): 
 
   function coerceSpecificType(t: string): void {
     switch (t) {
+      case "bigint":
+        gen
+          .elseIf(
+            _`${dataType} == "boolean" || ${data} === null
+              || (${dataType} == "string" && ${data} && ${data} == BigInt(${data}))`
+          )
+          .assign(coerced, _`BigInt(${data})`)
+        return
       case "string":
         gen
           .elseIf(_`${dataType} == "number" || ${dataType} == "boolean"`)
@@ -163,6 +171,9 @@ export function checkDataType(
       break
     case "number":
       cond = numCond()
+      break
+    case "bigint":
+      cond = _`typeof ${data} == "bigint" && isFinite(${data})`
       break
     default:
       return _`typeof ${data} ${EQ} ${dataType}`

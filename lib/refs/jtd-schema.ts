@@ -42,6 +42,7 @@ const typeForm: MetaSchema = (root) => ({
         "uint16",
         "int32",
         "uint32",
+        "bigint"
       ],
     },
   },

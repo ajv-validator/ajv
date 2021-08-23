@@ -8,7 +8,7 @@ import N from "../names"
 import {hasPropFunc} from "../../vocabularies/code"
 import {hasRef} from "../../vocabularies/jtd/ref"
 import {intRange, IntType} from "../../vocabularies/jtd/type"
-import {parseJson, parseJsonNumber, parseJsonString} from "../../runtime/parseJson"
+import {parseJson, parseJsonBigInt, parseJsonNumber, parseJsonString} from "../../runtime/parseJson"
 import {useFunc} from "../util"
 import validTimestamp from "../../runtime/timestamp"
 
@@ -272,6 +272,9 @@ function parseType(cxt: ParseCxt): void {
       gen.if(fail, () => parsingError(cxt, str`invalid timestamp`))
       break
     }
+    case "bigint":
+      parseBigInt(cxt);
+      break
     case "float32":
     case "float64":
       parseNumber(cxt)
@@ -323,6 +326,16 @@ function parseNumber(cxt: ParseCxt, maxDigits?: number): void {
     _`"-0123456789".indexOf(${jsonSlice(1)}) < 0`,
     () => jsonSyntaxError(cxt),
     () => parseWith(cxt, parseJsonNumber, maxDigits)
+  )
+}
+
+function parseBigInt(cxt: ParseCxt, maxDigits?: number): void {
+  const {gen} = cxt
+  skipWhitespace(cxt)
+  gen.if(
+    _`"-0123456789".indexOf(${jsonSlice(1)}) < 0`,
+    () => jsonSyntaxError(cxt),
+    () => parseWith(cxt, parseJsonBigInt, maxDigits)
   )
 }
 

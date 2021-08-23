@@ -78,7 +78,7 @@
       "default": 0
     },
     "simpleTypes": {
-      "enum": ["array", "boolean", "integer", "null", "number", "object", "string"]
+      "enum": ["array", "boolean", "integer", "null", "number", "object", "string","bigint"]
     },
     "stringArray": {
       "type": "array",

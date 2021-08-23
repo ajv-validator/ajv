@@ -218,7 +218,7 @@ function serializeType(cxt: SerializeCxt): void {
       )
       break
     default:
-      serializeNumber(cxt)
+      serializeNumber(cxt) // will seralize number, bigint and any other type
   }
 }
 
