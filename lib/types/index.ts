@@ -38,7 +38,7 @@ export interface SourceCode {
   evaluated?: Code
 }
 
-export interface DataValidationCxt<T extends string | number = string | number> {
+export interface ValidationCxt<T extends string | number = string | number> {
   instancePath: string
   parentData: {[K in T]: any} // object or array
   parentDataProperty: T // string or number
@@ -47,7 +47,7 @@ export interface DataValidationCxt<T extends string | number = string | number> 
 }
 
 export interface ValidateFunction<T = unknown> {
-  (this: Ajv | any, data: any, dataCxt?: DataValidationCxt): data is T
+  (this: Ajv | any, data: any, valCxt: ValidationCxt): data is T
   errors?: null | ErrorObject[]
   evaluated?: Evaluated
   schema: AnySchema
@@ -137,7 +137,7 @@ export interface DataValidateFunction {
 }
 
 export interface SchemaValidateFunction {
-  (schema: any, data: any, parentSchema?: AnySchemaObject, dataCxt?: DataValidationCxt):
+  (schema: any, data: any, parentSchema?: AnySchemaObject, valCxt: ValidationCxt):
     | boolean
     | Promise<any>
   errors?: Partial<ErrorObject>[]
