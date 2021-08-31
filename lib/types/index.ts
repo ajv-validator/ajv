@@ -137,7 +137,7 @@ export interface DataValidateFunction {
 }
 
 export interface SchemaValidateFunction {
-  (schema: any, data: any, parentSchema?: AnySchemaObject, valCxt: ValidationCxt):
+  (schema: any, data: any, parentSchema: AnySchemaObject | undefined, valCxt: ValidationCxt):
     | boolean
     | Promise<any>
   errors?: Partial<ErrorObject>[]
