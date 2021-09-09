@@ -544,7 +544,7 @@ export interface CodeOptions {
    */
   formats?: Code
   /**
-   * add `source` property (see Source below) to validating function.
+   * add `source` property (seesSource) to validating function.
    */
   source?: boolean
   /**
