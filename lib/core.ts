@@ -356,8 +356,6 @@ export interface CurrentOptions {
    * parameter and return a Promise that resolves to a schema. See example in
    * [Asynchronous
    * compilation](https://ajv.js.org/guide/managing-schemas#asynchronous-schema-compilation).
-   *
-   * ## Options to modify validated data
    **/
   loadSchema?: (uri: string) => Promise<AnySchemaObject>
 
