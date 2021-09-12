@@ -46,7 +46,7 @@ if (validate(data)) {
 }
 ```
 
-See more advanced example in [the test](../spec/types/json-schema.spec.ts).
+See more advanced example in [the test](https://github.com/ajv-validator/ajv/blob/master/spec/types/json-schema.spec.ts).
 
 <a name="jtd-serialize"></a>
 
@@ -385,7 +385,7 @@ if (validate(data)) {
 }
 ```
 
-Also see an example in [this test](../spec/types/error-parameters.spec.ts)
+Also see an example in [this test](https://github.com/ajv-validator/ajv/blob/master/spec/types/error-parameters.spec.ts)
 
 - `maxItems`, `minItems`, `maxLength`, `minLength`, `maxProperties`, `minProperties`:
 

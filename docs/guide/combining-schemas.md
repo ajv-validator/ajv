@@ -112,7 +112,7 @@ const ajv = new Ajv2019({
 const validate = ajv.getSchema("https://example.com/strict-tree")
 ```
 
-See [dynamic-refs](../spec/dynamic-ref.spec.ts) test for the example using `$dynamicAnchor`/`$dynamicRef`.
+See [dynamic-refs](https://github.com/ajv-validator/ajv/blob/master/spec/dynamic-ref.spec.ts) test for the example using `$dynamicAnchor`/`$dynamicRef`.
 
 At the moment Ajv implements the spec for dynamic recursive references with these limitations:
 
