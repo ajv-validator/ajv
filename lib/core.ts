@@ -694,8 +694,8 @@ export default class Ajv {
     let sch = this._cache.get(schema)
     if (sch !== undefined) return sch
 
-    const localRefs = getSchemaRefs.call(this, schema)
     baseId = normalizeId(id || baseId)
+    const localRefs = getSchemaRefs.call(this, schema, baseId)
     sch = new SchemaEnv({schema, schemaId, meta, baseId, localRefs})
     this._cache.set(sch.schema, sch)
     if (addSchema && !baseId.startsWith("#")) {
