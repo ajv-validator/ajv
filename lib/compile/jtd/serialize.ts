@@ -213,7 +213,7 @@ function serializeType(cxt: SerializeCxt): void {
     case "timestamp":
       gen.if(
         _`${data} instanceof Date`,
-        () => gen.add(N.json, _`${data}.toISOString()`),
+        () => gen.add(N.json, _`'"' + ${data}.toISOString() + '"'`),
         () => serializeString(cxt)
       )
       break

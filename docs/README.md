@@ -187,6 +187,7 @@ Ajv stands out as the implementation of choice - it provides a rich API which ma
 [Vega-Lite](https://vega.github.io/vega-lite/)
 [![middy](./projects/middy.png)](https://middy.js.org)
 [JSDoc](https://github.com/jsdoc/jsdoc)
+[![Ts.ED](./projects/tsed.png)](https://tsed.io)
 
 </Projects>
 </HomeSection>
