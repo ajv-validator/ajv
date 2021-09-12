@@ -9,7 +9,7 @@ export function parseJson(s: string, pos: number): unknown {
     parseJson.position = pos + s.length
     return JSON.parse(s)
   } catch (e) {
-    matches = rxParseJson.exec(e.message)
+    matches = rxParseJson.exec((e as Error).message)
     if (!matches) {
       parseJson.message = "unexpected end"
       return undefined
