@@ -1,7 +1,8 @@
 import type AjvCore from "../dist/core"
 import getAjvInstances from "./ajv_instances"
 import _Ajv from "./ajv"
-import {AnyValidateFunction} from "../dist/types"
+import type {AnyValidateFunction} from "../dist/types"
+import type MissingRefError from "../dist/compile/ref_error"
 import chai from "./chai"
 const should = chai.should()
 
@@ -200,7 +201,8 @@ describe("resolve", () => {
             type: "object",
             properties: {a: {$ref: opts.ref}},
           })
-        } catch (e) {
+        } catch (err) {
+          const e = err as MissingRefError
           e.missingRef.should.equal(opts.expectedMissingRef)
           e.missingSchema.should.equal(opts.expectedMissingSchema)
         }
