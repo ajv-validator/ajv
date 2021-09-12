@@ -4,7 +4,7 @@ import type {SchemaEnv} from "../compile"
 import {UsedScopeValues, UsedValueState, ValueScopeName, varKinds} from "../compile/codegen/scope"
 import {_, nil, _Code, Code, getProperty} from "../compile/codegen/code"
 
-export default function standaloneCode(
+function standaloneCode(
   ajv: AjvCore,
   refsOrFunc?: {[K in string]?: string} | AnyValidateFunction
 ): string {
@@ -86,3 +86,8 @@ export default function standaloneCode(
     }
   }
 }
+
+module.exports = exports = standaloneCode
+Object.defineProperty(exports, "__esModule", {value: true})
+
+export default standaloneCode
