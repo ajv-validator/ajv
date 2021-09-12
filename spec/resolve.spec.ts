@@ -70,22 +70,22 @@ describe("resolve", () => {
 
     it("should resolve fragment $id in schema refs when root $id not present", () => {
       const schema = {
-        "$schema": "http://json-schema.org/draft-07/schema#",
-        "definitions": {
-          "SeeAlso": { "$id": "#SeeAlso", "type": "number" },
-          "Engine": {
-            "$id": "#Engine",
-            "type": "object",
-            "properties": {
-              "see_also": { "$ref": "#SeeAlso" }
-            }
-          }
-        }
+        $schema: "http://json-schema.org/draft-07/schema#",
+        definitions: {
+          SeeAlso: {$id: "#SeeAlso", type: "number"},
+          Engine: {
+            $id: "#Engine",
+            type: "object",
+            properties: {
+              see_also: {$ref: "#SeeAlso"},
+            },
+          },
+        },
       }
 
       instances.forEach((ajv) => {
         ajv.addSchema(schema, "yaml.json")
-        const data = { see_also: 1 }
+        const data = {see_also: 1}
         const validate = ajv.validate("yaml.json#/definitions/Engine", data)
         validate.should.equal(true)
       })
