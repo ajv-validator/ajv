@@ -376,7 +376,7 @@ const schema: JTDSchemaType<LinkedList, {node: LinkedList}> = {
 
 ### Notable Omissions
 
-`JTDSchemaType` currently validats that if the schema compiles it will verify an accurate type, but there are a few places with potentially unexpected behavior.
+`JTDSchemaType` currently validates that if the schema compiles it will verify an accurate type, but there are a few places with potentially unexpected behavior.
 `JTDSchemaType` doesn't verify the schema is correct. It won't reject schemas that definitions anywhere by the root, and it won't reject discriminator schemas that still define the descriminator in mapping properties. It also won't verify that enum schemas have every enum member as this isn't generally feasible in typescript yet.
 
 ## Extending JTD

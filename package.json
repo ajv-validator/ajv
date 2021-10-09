@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "8.6.2",
+  "version": "8.6.3",
   "description": "Another JSON Schema Validator",
   "main": "dist/ajv.js",
   "types": "dist/ajv.d.ts",
@@ -23,10 +23,10 @@
     "test-karma": "karma start",
     "test-browser": "rm -rf .browser && npm run bundle && scripts/prepare-tests && karma start",
     "test-all": "npm run test-cov && if-node-version 12 npm run test-browser",
-    "test": "npm run json-tests && npm run prettier:check && npm run eslint && npm link && npm link ajv && npm run test-cov",
+    "test": "npm run json-tests && npm run prettier:check && npm run eslint && npm link && npm link --legacy-peer-deps ajv && npm run test-cov",
     "test-ci": "AJV_FULL_TEST=true npm test",
     "prepublish": "npm run build",
-    "benchmark": "npm i && npm run build && npm link && cd ./benchmark && npm link ajv && npm i && node ./jtd",
+    "benchmark": "npm i && npm run build && npm link && cd ./benchmark && npm link --legacy-peer-deps ajv && npm i && node ./jtd",
     "docs:dev": "./scripts/prepare-site && vuepress dev docs",
     "docs:build": "./scripts/prepare-site && vuepress build docs"
   },
@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@ajv-validator/config": "^0.3.0",
-    "@rollup/plugin-commonjs": "^19.0.0",
+    "@rollup/plugin-commonjs": "^21.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
     "@rollup/plugin-typescript": "^8.2.1",
@@ -93,7 +93,7 @@
     "karma-mocha": "^2.0.0",
     "lint-staged": "^11.0.0",
     "mocha": "^9.0.2",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.0.0",
     "nyc": "^15.0.0",
     "prettier": "^2.3.1",
     "rollup": "^2.44.0",
