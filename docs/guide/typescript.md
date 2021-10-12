@@ -141,10 +141,16 @@ if (validate(data)) {
 ```
 </code-block>
 </code-group>
+ 
+
+::: warning TypeScript limitation
+Note that it's currently not possible for `JTDDataType` to know whether the compiler is inferring timestamps as strings or Dates, and so it conservatively types any timestamp as `string | Date`. This is accurate, but often requires extra validation on the part of the user to confirm they're getting the appropriate data type.
+:::
 
 ## Type-safe error handling
 
-With both [JSON Schema](../json-schema.md) and [JSON Type Definition](../json-type-definition.md), the validation error type is an open union, but it can be cast to tagged unions (using validation keyword as tag) for easier error handling.
+With both [JSON Schema](
+ ../json-schema.md) and [JSON Type Definition](../json-type-definition.md), the validation error type is an open union, but it can be cast to tagged unions (using validation keyword as tag) for easier error handling.
 
 Continuing the example above:
 
