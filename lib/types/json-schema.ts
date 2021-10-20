@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
+
 type StrictNullChecksWrapper<Name extends string, Type> = undefined extends null
   ? `strictNullChecks must be true in tsconfig to use ${Name}`
   : Type
@@ -12,7 +13,6 @@ export type SomeJSONSchema = UncheckedJSONSchemaType<Known, true>
 type UncheckedPartialSchema<T> = Partial<UncheckedJSONSchemaType<T, true>>
 
 export type PartialSchema<T> = StrictNullChecksWrapper<"PartialSchema", UncheckedPartialSchema<T>>
-
 type JSONType<T extends string, IsPartial extends boolean> = IsPartial extends true
   ? T | undefined
   : T
@@ -187,3 +187,54 @@ type Nullable<T> = undefined extends T
       enum?: Readonly<T[]>
       default?: T
     }
+
+type JSONSchemaDataDef<S, D extends Record<string, unknown>> = S extends {ref: string} // ref
+  ? D extends {[K in S["ref"]]: infer V}
+    ? JSONSchemaDataDef<V, D>
+    : never
+  : // type
+  S extends {type: readonly any[]}
+  ? any // could not do better than an any type on mutable type
+  : S extends {type: "number" | "integer"}
+  ? number
+  : S extends {type: "boolean"}
+  ? boolean
+  : S extends {type: "null"}
+  ? null
+  : S extends {type: "string"}
+  ? string
+  : S extends {type: "timestamp"}
+  ? string | Date
+  : // Enum
+  S extends {enum: readonly (infer E)[]}
+  ? any extends E
+    ? never
+    : [E] extends [any]
+    ? E
+    : never
+  : // arrays
+  S extends {type: "array"; items: infer E}
+  ? JSONSchemaDataDef<E, D>[]
+  : // properties
+  S extends {
+      properties: Record<string, unknown>
+      additionalProperties?: boolean
+    }
+  ? {-readonly [K in keyof S["properties"]]-?: JSONSchemaDataDef<S["properties"][K], D>} & ([
+      S["additionalProperties"]
+    ] extends [true]
+      ? Record<string, unknown>
+      : unknown)
+  : S extends {
+      properties?: Record<string, unknown>
+      additionalProperties?: boolean
+    }
+  ? {-readonly [K in keyof S["properties"]]-?: JSONSchemaDataDef<S["properties"][K], D>} & ([
+      S["additionalProperties"]
+    ] extends [true]
+      ? Record<string, unknown>
+      : unknown)
+  : unknown // unmatched case, empty def or something is missing in this DataDef
+export type JSONSchemaDataType<S> = S extends {$defs: Record<string, unknown>}
+  ? JSONSchemaDataDef<S, S["$defs"]>
+  : JSONSchemaDataDef<S, Record<string, never>>
