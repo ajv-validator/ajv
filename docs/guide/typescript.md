@@ -132,9 +132,9 @@ const validData = {
   bar: "abc"
 }
 
-if (validate(data)) {
+if (validate(validData)) {
   // data is MyData here
-  console.log(data.foo)
+  console.log(validData.foo)
 } else {
   console.log(validate.errors)
 }
