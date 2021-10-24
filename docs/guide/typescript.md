@@ -149,8 +149,7 @@ Note that it's currently not possible for `JTDDataType` to know whether the comp
 
 ## Type-safe error handling
 
-With both [JSON Schema](
- ../json-schema.md) and [JSON Type Definition](../json-type-definition.md), the validation error type is an open union, but it can be cast to tagged unions (using validation keyword as tag) for easier error handling.
+With both [JSON Schema](../json-schema.md) and [JSON Type Definition](../json-type-definition.md), the validation error type is an open union, but it can be cast to tagged unions (using validation keyword as tag) for easier error handling.
 
 Continuing the example above:
 
