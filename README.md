@@ -25,7 +25,7 @@ Your logo with the link to your website will be here if you sponsor Ajv developm
 
 ## Bronze sponsors
 
-[<img src="https://raw.githubusercontent.com/ajv-validator/ajv/master/docs/.vuepress/public/img/retool.svg" width="23%">](https://retool.com/?utm_source=sponsor&utm_campaign=ajv)<img src="https://ajv.js.org/img/gap.svg" width="2.5%">[<img src="https://ajv.js.org/img/reserved.svg" width="23%">](https://opencollective.com/ajv)<img src="https://ajv.js.org/img/gap.svg" width="2.5%">[<img src="https://ajv.js.org/img/reserved.svg" width="23%">](https://opencollective.com/ajv)<img src="https://ajv.js.org/img/gap.svg" width="2.5%">[<img src="https://ajv.js.org/img/reserved.svg" width="23%">](https://opencollective.com/ajv)
+[<img src="https://raw.githubusercontent.com/ajv-validator/ajv/master/docs/.vuepress/public/img/retool.jpg" width="27%">](https://retool.com/?utm_source=sponsor&utm_campaign=ajv)<img src="https://ajv.js.org/img/gap.svg" width="3%">[<img src="https://ajv.js.org/img/reserved.svg" width="27%">](https://opencollective.com/ajv)
 
 ## Contributing
 
