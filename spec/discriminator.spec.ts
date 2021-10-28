@@ -241,6 +241,96 @@ describe("discriminator keyword", function () {
     })
   })
 
+  describe("validation with referenced schemas and mapping", () => {
+    const definitions1 = {
+      schema1: {
+        properties: {
+          foo: {type: "string"},
+          a: {type: "string"},
+        },
+        required: ["foo", "a"],
+      },
+      schema2: {
+        properties: {
+          foo: {enum: ["y", "z"]},
+          b: {type: "string"},
+        },
+        required: ["foo", "b"],
+      },
+    }
+    const mainSchema1 = {
+      type: "object",
+      discriminator: {
+        propertyName: "foo",
+        mapping: {
+          x: "#/definitions/schema1",
+        },
+      },
+      oneOf: [
+        {
+          $ref: "#/definitions/schema1",
+        },
+        {
+          $ref: "#/definitions/schema2",
+        },
+      ],
+    }
+
+    const definitions2 = {
+      schema1: {
+        properties: {
+          foo: {type: "string"},
+          a: {type: "string"},
+        },
+        required: ["a"],
+      },
+      schema2: {
+        properties: {
+          foo: {enum: ["y", "z"]},
+          b: {type: "string"},
+        },
+        required: ["b"],
+      },
+    }
+    const mainSchema2 = {
+      type: "object",
+      discriminator: {
+        propertyName: "foo",
+        mapping: {
+          x: "#/definitions/schema1",
+          y: "#/definitions/schema2",
+          z: "#/definitions/schema2",
+        },
+      },
+      required: ["foo"],
+      oneOf: [
+        {
+          $ref: "#/definitions/schema1",
+        },
+        {
+          $ref: "#/definitions/schema2",
+        },
+      ],
+    }
+
+    const schema = [
+      {definitions: definitions1, ...mainSchema1},
+      {definitions: definitions2, ...mainSchema2},
+    ]
+
+    it("should validate data", () => {
+      assertValid(schema, {foo: "x", a: "a"})
+      assertValid(schema, {foo: "y", b: "b"})
+      assertValid(schema, {foo: "z", b: "b"})
+      assertInvalid(schema, {})
+      assertInvalid(schema, {foo: 1})
+      assertInvalid(schema, {foo: "bar"})
+      assertInvalid(schema, {foo: "x", b: "b"})
+      assertInvalid(schema, {foo: "y", a: "a"})
+      assertInvalid(schema, {foo: "z", a: "a"})
+    })
+  })
+
   describe("valid schemas", () => {
     it("should have oneOf", () => {
       invalidSchema(
@@ -257,7 +347,7 @@ describe("discriminator keyword", function () {
           required: ["foo"],
           oneOf: [{properties: {}}],
         },
-        /discriminator: oneOf subschemas \(or referenced schemas\) must have "properties\/foo"/
+        /discriminator: oneOf subschemas \(or referenced schemas\) must have "properties\/foo" or match mapping/
       )
     })
 

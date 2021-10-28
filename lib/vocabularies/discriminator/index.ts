@@ -29,8 +29,8 @@ const def: CodeKeywordDefinition = {
     }
     const tagName = schema.propertyName
     if (typeof tagName != "string") throw new Error("discriminator: requires propertyName")
-    if (schema.mapping) throw new Error("discriminator: mapping is not supported")
-    if (!oneOf) throw new Error("discriminator: requires oneOf keyword")
+    if (!keyword) throw new Error("discriminator: requires oneOf or anyOf composite keyword")
+    const parentSchemaVariants = parentSchema[keyword]
     const valid = gen.let("valid", false)
     const tag = gen.const("tag", _`${data}${getProperty(tagName)}`)
     gen.if(
@@ -63,16 +63,31 @@ const def: CodeKeywordDefinition = {
       const oneOfMapping: {[T in string]?: number} = {}
       const topRequired = hasRequired(parentSchema)
       let tagRequired = true
-      for (let i = 0; i < oneOf.length; i++) {
-        let sch = oneOf[i]
-        if (sch?.$ref && !schemaHasRulesButRef(sch, it.self.RULES)) {
-          sch = resolveRef.call(it.self, it.schemaEnv.root, it.baseId, sch?.$ref)
+      for (let i = 0; i < parentSchemaVariants.length; i++) {
+        let sch = parentSchemaVariants[i]
+        const schRef = sch?.$ref
+
+        if (schRef && schema.mapping) {
+          const {mapping} = schema
+          const matchedKeys = Object.keys(mapping).filter((key) => mapping[key] === sch.$ref)
+
+          if (matchedKeys.length) {
+            for (const key of matchedKeys) {
+              addMapping(key, i)
+            }
+            continue
+          }
+        }
+
+        if (schRef && !schemaHasRulesButRef(sch, it.self.RULES)) {
+          sch = resolveRef.call(it.self, it.schemaEnv.root, it.baseId, schRef)
           if (sch instanceof SchemaEnv) sch = sch.schema
         }
         const propSch = sch?.properties?.[tagName]
+
         if (typeof propSch != "object") {
           throw new Error(
-            `discriminator: oneOf subschemas (or referenced schemas) must have "properties/${tagName}"`
+            `discriminator: ${keyword} subschemas (or referenced schemas) must have "properties/${tagName}" or match mapping`
           )
         }
         tagRequired = tagRequired && (topRequired || hasRequired(sch))
