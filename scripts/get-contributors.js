@@ -2,7 +2,6 @@
 // https://github.com/sveltejs/svelte/blob/ce3a5791258ec6ecf8c1ea022cb871afe805a45c/site/scripts/get-contributors.js
 
 const fs = require("fs")
-const fetch = require("node-fetch")
 const Jimp = require("jimp")
 
 process.chdir(__dirname)
@@ -12,7 +11,11 @@ const {GH_TOKEN_PUBLIC} = process.env
 
 const SIZE = 64
 
+main()
+
 async function main() {
+  const fetch = (await import("node-fetch")).default
+
   const contributors = []
   let page = 1
 
@@ -53,5 +56,3 @@ async function main() {
     `module.exports = ${str}`
   )
 }
-
-main()
