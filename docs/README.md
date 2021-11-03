@@ -45,7 +45,7 @@ Use JSON Type Definition or JSON Schema
 
 <Sponsors level="gold">
 
-[![mozilla](/img/microsoft.png)](https://opensource.microsoft.com)
+[![microsoft](/img/microsoft.png)](https://opensource.microsoft.com)
 [![reserved](/img/reserved.svg)](https://github.com/sponsors/epoberezkin)
 [![reserved](/img/reserved.svg)](https://github.com/sponsors/epoberezkin)
 
@@ -54,7 +54,7 @@ Use JSON Type Definition or JSON Schema
 <Sponsors level="bronze">
 
 [![retool](/img/retool.svg)](https://retool.com/?utm_source=sponsor&utm_campaign=ajv)
-[![reserved](/img/reserved.svg)](https://github.com/sponsors/epoberezkin)
+[![tidelift](/img/tidelift.svg)](https://tidelift.com/subscription/pkg/npm-ajv?utm_source=npm-ajv&utm_medium=referral&utm_campaign=enterprise)
 [![reserved](/img/reserved.svg)](https://github.com/sponsors/epoberezkin)
 [![reserved](/img/reserved.svg)](https://github.com/sponsors/epoberezkin)
 
