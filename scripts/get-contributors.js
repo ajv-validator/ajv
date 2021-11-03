@@ -14,7 +14,7 @@ const SIZE = 64
 main()
 
 async function main() {
-  const fetch = await import("node-fetch")
+  const fetch = (await import("node-fetch")).default
 
   const contributors = []
   let page = 1
