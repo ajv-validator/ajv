@@ -5,9 +5,6 @@ set -ex
 echo "About to publish $GITHUB_REF to gh-pages..."
 rm -rf ../gh-pages
 
-echo "npm version:"
-npm -v
-
 npm run docs:build
 
 git config --global user.name "$GIT_USER_NAME"
