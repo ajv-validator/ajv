@@ -25,7 +25,6 @@ async function main() {
       headers: {Authorization: `token ${GH_TOKEN_PUBLIC}`},
     })
     const list = await res.json()
-    console.log(list)
     if (list.length === 0) break
     contributors.push(...list)
   }

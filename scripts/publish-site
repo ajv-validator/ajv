@@ -5,6 +5,8 @@ set -ex
 echo "About to publish $GITHUB_REF to gh-pages..."
 rm -rf ../gh-pages
 
+npm install vuepress@1
+npm install @vuepress/shared-utils@1
 npm run docs:build
 
 git config --global user.name "$GIT_USER_NAME"
