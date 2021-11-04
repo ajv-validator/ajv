@@ -33,10 +33,9 @@ export default {
     img
       width 100%
     a
-      display block
       margin-bottom 10px
+      display inline-block
       @media only screen and (min-width: $MQMobileNarrow)
-        display inline-block
         margin-bottom 0
     a:last-child
       margin-right 0
@@ -44,7 +43,9 @@ export default {
   &.platinum
     a
       width 100%
+      display block
       @media only screen and (min-width: $MQMobileNarrow)
+        display inline-block
         width 45%
         margin-right 8%
 
