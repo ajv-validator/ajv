@@ -15,17 +15,13 @@ Supports JSON Schema draft-04/06/07/2019-09/2020-12 ([draft-04 support](https://
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 [![GitHub Sponsors](https://img.shields.io/badge/$-sponsors-brightgreen)](https://github.com/sponsors/epoberezkin)
 
-## Platinum sponsors
+## Ajv sponsors
 
-[<img src="https://ajv.js.org/img/mozilla.svg" width="45%">](https://www.mozilla.org)<img src="https://ajv.js.org/img/gap.svg" width="8%">[<img src="https://ajv.js.org/img/reserved.svg" width="45%">](https://opencollective.com/ajv)
+[<img src="https://ajv.js.org/img/mozilla.svg" width="45%" alt="Mozilla">](https://www.mozilla.org)<img src="https://ajv.js.org/img/gap.svg" width="9%">[<img src="https://ajv.js.org/img/reserved.svg" width="45%">](https://opencollective.com/ajv)
 
-## Gold and Silver sponsors
+[<img src="https://ajv.js.org/img/microsoft.png" width="31%" alt="Microsoft">](https://opensource.microsoft.com)<img src="https://ajv.js.org/img/gap.svg" width="3%">[<img src="https://ajv.js.org/img/reserved.svg" width="31%">](https://opencollective.com/ajv)<img src="https://ajv.js.org/img/gap.svg" width="3%">[<img src="https://ajv.js.org/img/reserved.svg" width="31%">](https://opencollective.com/ajv)
 
-Your logo with the link to your website will be here if you sponsor Ajv development via [GitHub sponsors page](https://github.com/sponsors/epoberezkin) or via [OpenCollective](https://opencollective.com/ajv).
-
-## Bronze sponsors
-
-[<img src="https://raw.githubusercontent.com/ajv-validator/ajv/master/docs/.vuepress/public/img/retool.svg" width="27%">](https://retool.com/?utm_source=sponsor&utm_campaign=ajv)<img src="https://ajv.js.org/img/gap.svg" width="3%">[<img src="https://ajv.js.org/img/reserved.svg" width="27%">](https://opencollective.com/ajv)
+[<img src="https://ajv.js.org/img/retool.svg" width="22.5%" alt="Retool">](https://retool.com/?utm_source=sponsor&utm_campaign=ajv)<img src="https://ajv.js.org/img/gap.svg" width="3%">[<img src="https://ajv.js.org/img/tidelift.svg" width="22.5%" alt="Tidelift">](https://tidelift.com/subscription/pkg/npm-ajv?utm_source=npm-ajv&utm_medium=referral&utm_campaign=enterprise)<img src="https://ajv.js.org/img/gap.svg" width="3%">[<img src="https://ajv.js.org/img/reserved.svg" width="22.5%">](https://opencollective.com/ajv)<img src="https://ajv.js.org/img/gap.svg" width="3%">[<img src="https://ajv.js.org/img/reserved.svg" width="22.5%">](https://opencollective.com/ajv)
 
 ## Contributing
 
