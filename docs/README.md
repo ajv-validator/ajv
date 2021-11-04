@@ -34,14 +34,32 @@ Use JSON Type Definition or JSON Schema
 </Feature>
 </Features>
 
-<Sponsors>
+<Sponsors level="platinum">
 
-Platinum sponsors
+## Ajv sponsors
 
 [![mozilla](/img/mozilla.svg)](https://www.mozilla.org)
-[![reserved](/img/reserved.svg)](https://opencollective.com/ajv)
+[![reserved](/img/reserved.svg)](https://github.com/sponsors/epoberezkin)
 
 </Sponsors>
+
+<Sponsors level="gold">
+
+[![microsoft](/img/microsoft.png)](https://opensource.microsoft.com)
+[![reserved](/img/reserved.svg)](https://github.com/sponsors/epoberezkin)
+[![reserved](/img/reserved.svg)](https://github.com/sponsors/epoberezkin)
+
+</Sponsors>
+
+<Sponsors level="bronze">
+
+[![retool](/img/retool.svg)](https://retool.com/?utm_source=sponsor&utm_campaign=ajv)
+[![tidelift](/img/tidelift.svg)](https://tidelift.com/subscription/pkg/npm-ajv?utm_source=npm-ajv&utm_medium=referral&utm_campaign=enterprise)
+[![reserved](/img/reserved.svg)](https://github.com/sponsors/epoberezkin)
+[![reserved](/img/reserved.svg)](https://github.com/sponsors/epoberezkin)
+
+</Sponsors>
+
 </HeroSection>
 
 <HomeSection>
@@ -187,6 +205,7 @@ Ajv stands out as the implementation of choice - it provides a rich API which ma
 [Vega-Lite](https://vega.github.io/vega-lite/)
 [![middy](./projects/middy.png)](https://middy.js.org)
 [JSDoc](https://github.com/jsdoc/jsdoc)
+[![Ts.ED](./projects/tsed.png)](https://tsed.io)
 
 </Projects>
 </HomeSection>

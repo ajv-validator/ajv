@@ -19,23 +19,13 @@ Supports JSON Schema draft-04/06/07/2019-09/2020-12 ([draft-04 support](https://
 
 [<img src="https://ajv.js.org/img/mozilla.svg" width="45%">](https://www.mozilla.org)<img src="https://ajv.js.org/img/gap.svg" width="8%">[<img src="https://ajv.js.org/img/reserved.svg" width="45%">](https://opencollective.com/ajv)
 
-## Ajv online event - May 20, 10am PT / 6pm UK
+## Gold and Silver sponsors
 
-We will talk about:
-- new features of Ajv version 8.
-- the improvements sponsored by Mozilla's MOSS grant.
-- how Ajv is used in JavaScript applications.
+Your logo with the link to your website will be here if you sponsor Ajv development via [GitHub sponsors page](https://github.com/sponsors/epoberezkin) or via [OpenCollective](https://opencollective.com/ajv).
 
-Speakers:
-- [Evgeny Poberezkin](https://github.com/epoberezkin), the creator of Ajv.
-- [Mehan Jayasuriya](https://github.com/mehan), Program Officer at Mozilla Foundation, leading the [MOSS](https://www.mozilla.org/en-US/moss/) and other programs investing in the open source and community ecosystems.
-- [Matteo Collina](https://github.com/mcollina), Technical Director at NearForm and Node.js Technical Steering Committee member, creator of Fastify web framework.
-- [Kin Lane](https://github.com/kinlane), Chief Evangelist at Postman. Studying the tech, business & politics of APIs since 2010. Presidential Innovation Fellow during the Obama administration.
-- [Ulysse Carion](https://github.com/ucarion), the creator of JSON Type Definition specification.
+## Bronze sponsors
 
-[Gajus Kuizinas](https://github.com/gajus) will host the event.
-
-Please [register here](https://us02web.zoom.us/webinar/register/2716192553618/WN_erJ_t4ICTHOnGC1SOybNnw).
+[<img src="https://raw.githubusercontent.com/ajv-validator/ajv/master/docs/.vuepress/public/img/retool.svg" width="27%">](https://retool.com/?utm_source=sponsor&utm_campaign=ajv)<img src="https://ajv.js.org/img/gap.svg" width="3%">[<img src="https://ajv.js.org/img/reserved.svg" width="27%">](https://opencollective.com/ajv)
 
 ## Contributing
 
