@@ -99,9 +99,6 @@ runTest({
         "valid on both fields",
       ],
     },
-    refRemote: {
-      "remote ref with ref to defs": ["valid", "invalid"],
-    },
     unevaluatedProperties: {
       "unevaluatedProperties with if/then/else, then not defined": [
         "when if is false and has unevaluated properties",
@@ -173,9 +170,6 @@ runTest({
         "invalid on outer field",
         "valid on both fields",
       ],
-    },
-    refRemote: {
-      "remote ref with ref to defs": ["valid", "invalid"],
     },
     unevaluatedItems: {
       "unevaluatedItems depends on adjacent contains": [
