@@ -81,9 +81,6 @@ runTest({
   }),
   draft: 2019,
   tests: skipTestCases(require("./_json/draft2019"), {
-    minContains: {
-      "minContains = 0 with maxContains": ["empty data"],
-    },
     recursiveRef: {
       "$recursiveRef with no $recursiveAnchor in the initial target schema resource": [
         "leaf node matches: recursion uses the inner schema",
@@ -165,19 +162,6 @@ runTest({
       "Tests for implementation dynamic anchor and reference link. Reference should be independent of any possible ordering.":
         ["incorrect parent schema", "incorrect extended schema", "correct extended schema"],
     },
-    minContains: {
-      "minContains = 0 with maxContains": ["empty data"],
-    },
-    "optional/format-assertion": {
-      "schema that uses custom metaschema with format-assertion: false": [
-        "format-assertion: false: valid string",
-        "format-assertion: false: invalid string",
-      ],
-      "schema that uses custom metaschema with format-assertion: true": [
-        "format-assertion: true: valid string",
-        "format-assertion: true: invalid string",
-      ],
-    },
     ref: {
       "refs with relative uris and defs": [
         "invalid on inner field",
@@ -219,7 +203,7 @@ runTest({
     "http://localhost:1234/draft2020-12/format-assertion-true.json": require("./JSON-Schema-Test-Suite/remotes/draft2020-12/format-assertion-true.json"),
     "http://localhost:1234/draft2020-12/metaschema-no-validation.json": require("./JSON-Schema-Test-Suite/remotes/draft2020-12/metaschema-no-validation.json"),
   },
-  skip: SKIP_DRAFT7,
+  skip: [...SKIP_DRAFT7, "optional/format-assertion"],
 })
 
 interface TestSuite {
@@ -270,22 +254,26 @@ interface SkippedTestCases {
 function skipTestCases(suites: TestSuite[], skipCases: SkippedTestCases): TestSuite[] {
   for (const suiteName in skipCases) {
     const suite = suites.find(({name}) => name === suiteName)
-    if (!suite) {
-      throw new Error(`test suite ${suiteName} not found`)
-    }
+    if (!suite) throw new Error(`test suite ${suiteName} not found`)
     for (const testName in skipCases[suiteName]) {
-      const tests = suite.test.filter(({description}) => description === testName)
-      if (!tests.length) {
+      const test = suite.test.find(({description}) => description === testName)
+      if (!test) {
         throw new Error(`test ${testName} not found in suite ${suiteName}`)
       }
       const skippedCases = skipCases[suiteName][testName]
-      if (skippedCases === true) {
-        suite.test = suite.test.filter(({description}) => description !== testName)
-      } else {
-        tests.forEach((test) => {
-          test.tests = test.tests.filter(({description}) => !skippedCases.includes(description))
-        })
-      }
+      suite.test.forEach((t) => {
+        if (t.description === testName) {
+          if (skippedCases === true) {
+            t.skip = true
+          } else {
+            t.tests.forEach((testCase: any) => {
+              if (skippedCases.includes(testCase.description)) {
+                testCase.skip = true
+              }
+            })
+          }
+        }
+      })
     }
   }
   return suites
