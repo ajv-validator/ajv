@@ -1,3 +1,4 @@
+import type Ajv from "../dist/core"
 import _Ajv from "./ajv"
 import _Ajv2019 from "./ajv2019"
 import _Ajv2020 from "./ajv2020"
@@ -24,54 +25,217 @@ const remoteRefs = {
 
 const SKIP_FORMATS = ["idn-email", "idn-hostname", "iri", "iri-reference"]
 const SKIP_FORMAT_TESTS = SKIP_FORMATS.map((f) => `optional/format/${f}`)
-const SKIP_DRAFT7 = ["optional/content", "optional/float-overflow", ...SKIP_FORMAT_TESTS]
+const SKIP_DRAFT7 = [
+  "optional/content",
+  "optional/float-overflow",
+  "unknownKeyword",
+  ...SKIP_FORMAT_TESTS,
+]
 
-const SKIP = {
-  6: ["optional/float-overflow"],
-  7: SKIP_DRAFT7,
-  2019: SKIP_DRAFT7, // TODO: 2 of 32 tests in recursiveRef fail
-  2020: SKIP_DRAFT7, // TODO: 2 of 32 tests in dynamicRef fail
-}
-
-runTest(
-  getAjvInstances(_Ajv, options, {
+runTest({
+  instances: getAjvInstances(_Ajv, options, {
     meta: false,
     strict: false,
     ignoreKeywordsWithRef: true,
   }),
-  6,
-  require("./_json/draft6")
-)
+  draft: 6,
+  tests: skipTestCases(require("./_json/draft6"), {
+    ref: {
+      "$ref prevents a sibling $id from changing the base uri": [
+        "$ref resolves to /definitions/base_foo, data does not validate",
+        "$ref resolves to /definitions/base_foo, data validates",
+      ],
+    },
+  }),
+  remotes: {
+    "http://localhost:1234/ref-and-definitions.json": require("./JSON-Schema-Test-Suite/remotes/ref-and-definitions.json"),
+  },
+  skip: ["optional/float-overflow", "unknownKeyword"],
+})
 
-runTest(
-  getAjvInstances(_Ajv, options, {
+runTest({
+  instances: getAjvInstances(_Ajv, options, {
     strict: false,
     ignoreKeywordsWithRef: true,
     formats: toHash(SKIP_FORMATS),
   }),
-  7,
-  require("./_json/draft7")
-)
+  draft: 7,
+  tests: skipTestCases(require("./_json/draft7"), {
+    ref: {
+      "$ref prevents a sibling $id from changing the base uri": [
+        "$ref resolves to /definitions/base_foo, data does not validate",
+        "$ref resolves to /definitions/base_foo, data validates",
+      ],
+    },
+  }),
+  remotes: {
+    "http://localhost:1234/ref-and-definitions.json": require("./JSON-Schema-Test-Suite/remotes/ref-and-definitions.json"),
+  },
+  skip: SKIP_DRAFT7,
+})
 
-runTest(
-  getAjvInstances(_Ajv2019, options, {
+runTest({
+  instances: getAjvInstances(_Ajv2019, options, {
     strict: false,
     formats: toHash(SKIP_FORMATS),
   }),
-  2019,
-  require("./_json/draft2019")
-)
+  draft: 2019,
+  tests: skipTestCases(require("./_json/draft2019"), {
+    minContains: {
+      "minContains = 0 with maxContains": ["empty data"],
+    },
+    recursiveRef: {
+      "$recursiveRef with no $recursiveAnchor in the initial target schema resource": [
+        "leaf node matches: recursion uses the inner schema",
+        "leaf node does not match: recursion uses the inner schema",
+      ],
+    },
+    ref: {
+      "refs with relative uris and defs": [
+        "invalid on inner field",
+        "invalid on outer field",
+        "valid on both fields",
+      ],
+      "relative refs with absolute uris and defs": [
+        "invalid on inner field",
+        "invalid on outer field",
+        "valid on both fields",
+      ],
+    },
+    refRemote: {
+      "remote ref with ref to defs": ["valid", "invalid"],
+    },
+    unevaluatedProperties: {
+      "unevaluatedProperties with if/then/else, then not defined": [
+        "when if is false and has unevaluated properties",
+      ],
+    },
+  }),
+  remotes: {
+    "http://localhost:1234/ref-and-defs.json": require("./JSON-Schema-Test-Suite/remotes/ref-and-defs.json"),
+    "http://localhost:1234/draft2019-09/metaschema-no-validation.json": require("./JSON-Schema-Test-Suite/remotes/draft2019-09/metaschema-no-validation.json"),
+  },
+  skip: SKIP_DRAFT7,
+})
 
-runTest(
-  getAjvInstances(_Ajv2020, options, {
+runTest({
+  instances: getAjvInstances(_Ajv2020, options, {
     strict: false,
     formats: toHash(SKIP_FORMATS),
   }),
-  2020,
-  require("./_json/draft2020")
-)
+  draft: 2020,
+  tests: skipTestCases(require("./_json/draft2020"), {
+    dynamicRef: {
+      "A $dynamicRef to a $dynamicAnchor in the same schema resource should behave like a normal $ref to an $anchor":
+        ["An array of strings is valid"],
+      "A $dynamicRef to an $anchor in the same schema resource should behave like a normal $ref to an $anchor":
+        ["An array of strings is valid"],
+      "A $dynamicRef should resolve to the first $dynamicAnchor still in scope that is encountered when the schema is evaluated":
+        ["An array of strings is valid"],
+      "A $dynamicRef with intermediate scopes that don't include a matching $dynamicAnchor should not affect dynamic scope resolution":
+        ["An array of strings is valid"],
+      "An $anchor with the same name as a $dynamicAnchor should not be used for dynamic scope resolution":
+        ["Any array is valid"],
+      "A $dynamicRef without a matching $dynamicAnchor in the same schema resource should behave like a normal $ref to $anchor":
+        ["Any array is valid"],
+      "A $dynamicRef with a non-matching $dynamicAnchor in the same schema resource should behave like a normal $ref to $anchor":
+        ["Any array is valid"],
+      "A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor should resolve to the first $dynamicAnchor in the dynamic scope":
+        [
+          "The recursive part is valid against the root",
+          "The recursive part is not valid against the root",
+        ],
+      "A $dynamicRef that initially resolves to a schema without a matching $dynamicAnchor should behave like a normal $ref to $anchor":
+        ["The recursive part doesn't need to validate against the root"],
+      "after leaving a dynamic scope, it should not be used by a $dynamicRef": [
+        "string matches /$defs/thingy, but the $dynamicRef does not stop here",
+        "first_scope is not in dynamic scope for the $dynamicRef",
+        "/then/$defs/thingy is the final stop for the $dynamicRef",
+      ],
+      "strict-tree schema, guards against misspelled properties": [
+        "instance with misspelled field",
+        "instance with correct field",
+      ],
+      "tests for implementation dynamic anchor and reference link": [
+        "incorrect parent schema",
+        "incorrect extended schema",
+        "correct extended schema",
+      ],
+      // duplicate
+      "Tests for implementation dynamic anchor and reference link. Reference should be independent of any possible ordering.":
+        ["incorrect parent schema", "incorrect extended schema", "correct extended schema"],
+    },
+    minContains: {
+      "minContains = 0 with maxContains": ["empty data"],
+    },
+    "optional/format-assertion": {
+      "schema that uses custom metaschema with format-assertion: false": [
+        "format-assertion: false: valid string",
+        "format-assertion: false: invalid string",
+      ],
+      "schema that uses custom metaschema with format-assertion: true": [
+        "format-assertion: true: valid string",
+        "format-assertion: true: invalid string",
+      ],
+    },
+    ref: {
+      "refs with relative uris and defs": [
+        "invalid on inner field",
+        "invalid on outer field",
+        "valid on both fields",
+      ],
+      "relative refs with absolute uris and defs": [
+        "invalid on inner field",
+        "invalid on outer field",
+        "valid on both fields",
+      ],
+    },
+    refRemote: {
+      "remote ref with ref to defs": ["valid", "invalid"],
+    },
+    unevaluatedItems: {
+      "unevaluatedItems depends on adjacent contains": [
+        "contains passes, second item is not evaluated",
+      ],
+      "unevaluatedItems depends on multiple nested contains": [
+        "7 not evaluated, fails unevaluatedItems",
+      ],
+      "unevaluatedItems and contains interact to control item dependency relationship": [
+        "only b's are invalid",
+        "only c's are invalid",
+        "only b's and c's are invalid",
+        "only a's and c's are invalid",
+      ],
+    },
+    unevaluatedProperties: {
+      "unevaluatedProperties with if/then/else, then not defined": [
+        "when if is false and has unevaluated properties",
+      ],
+    },
+  }),
+  remotes: {
+    "http://localhost:1234/ref-and-defs.json": require("./JSON-Schema-Test-Suite/remotes/ref-and-defs.json"),
+    "http://localhost:1234/draft2020-12/format-assertion-false.json": require("./JSON-Schema-Test-Suite/remotes/draft2020-12/format-assertion-false.json"),
+    "http://localhost:1234/draft2020-12/format-assertion-true.json": require("./JSON-Schema-Test-Suite/remotes/draft2020-12/format-assertion-true.json"),
+    "http://localhost:1234/draft2020-12/metaschema-no-validation.json": require("./JSON-Schema-Test-Suite/remotes/draft2020-12/metaschema-no-validation.json"),
+  },
+  skip: SKIP_DRAFT7,
+})
 
-function runTest(instances, draft: number, tests) {
+interface TestSuite {
+  name: string
+  test: any[]
+}
+
+interface SchemaTest {
+  instances: Ajv[]
+  draft: number
+  tests: TestSuite[]
+  skip?: string[]
+  remotes?: Record<string, any>
+}
+
+function runTest({instances, draft, tests, skip = [], remotes = {}}: SchemaTest) {
   for (const ajv of instances) {
     ajv.opts.code.source = true
     if (draft === 6) {
@@ -79,6 +243,7 @@ function runTest(instances, draft: number, tests) {
       ajv.opts.defaultMeta = "http://json-schema.org/draft-06/schema#"
     }
     for (const id in remoteRefs) ajv.addSchema(remoteRefs[id], id)
+    for (const id in remotes) ajv.addSchema(remotes[id], id)
     ajvFormats(ajv)
   }
 
@@ -86,7 +251,7 @@ function runTest(instances, draft: number, tests) {
     description: `JSON-Schema Test Suite draft-${draft}: ${instances.length} ajv instances with different options`,
     suites: {tests},
     only: [],
-    skip: SKIP[draft],
+    skip,
     assert: chai.assert,
     afterError,
     afterEach,
@@ -94,4 +259,34 @@ function runTest(instances, draft: number, tests) {
     hideFolder: `draft${draft}/`,
     timeout: 30000,
   })
+}
+
+interface SkippedTestCases {
+  [suite: string]: {
+    [test: string]: string[] | true
+  }
+}
+
+function skipTestCases(suites: TestSuite[], skipCases: SkippedTestCases): TestSuite[] {
+  for (const suiteName in skipCases) {
+    const suite = suites.find(({name}) => name === suiteName)
+    if (!suite) {
+      throw new Error(`test suite ${suiteName} not found`)
+    }
+    for (const testName in skipCases[suiteName]) {
+      const tests = suite.test.filter(({description}) => description === testName)
+      if (!tests.length) {
+        throw new Error(`test ${testName} not found in suite ${suiteName}`)
+      }
+      const skippedCases = skipCases[suiteName][testName]
+      if (skippedCases === true) {
+        suite.test = suite.test.filter(({description}) => description !== testName)
+      } else {
+        tests.forEach((test) => {
+          test.tests = test.tests.filter(({description}) => !skippedCases.includes(description))
+        })
+      }
+    }
+  }
+  return suites
 }
