@@ -69,6 +69,7 @@ const defaultOptions = {
     source: false,
     process: undefined, // (code: string) => string
     optimize: true,
+    regExp: RegExp
   },
 }
 ```
@@ -361,6 +362,11 @@ type CodeOptions = {
   // Code snippet created with `_` tagged template literal that contains all format definitions,
   // it can be the code of actual definitions or `require` call:
   // _`require("./my-formats")`
+  regExp: RegExpEngine
+  // Developers looking for a ReDoS mitigation may wish to use a DFA regex engine,
+  // such as node-re2. During validation of a schema, code.regExp will be 
+  // used to match strings against regexes. The supplied object must support 
+  // the interface: regExp(regex, unicodeFlag).test(string) => boolean
 }
 
 type Source = {
