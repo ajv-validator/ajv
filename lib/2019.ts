@@ -43,8 +43,8 @@ class Ajv2019 extends AjvCore {
   }
 }
 
-module.exports = Ajv2019
-Object.defineProperty(module.exports, "__esModule", {value: true})
+module.exports = exports = Ajv2019
+Object.defineProperty(exports, "__esModule", {value: true})
 
 export default Ajv2019
 
