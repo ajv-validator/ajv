@@ -17,7 +17,7 @@ const instances = getAjvAllInstances(options, {
 instances.forEach((ajv) => {
   ajv.opts.code.source = true
   ajv.opts.code.formats = _`{allowedUnknown: true}`
-  ajv.opts.code.regExp = re2;
+  ajv.opts.code.regExp = re2
 })
 
 jsonSchemaTest(withStandalone(instances), {
