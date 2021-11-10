@@ -132,15 +132,20 @@ const validData = {
   bar: "abc"
 }
 
-if (validate(data)) {
+if (validate(validData)) {
   // data is MyData here
-  console.log(data.foo)
+  console.log(validData.foo)
 } else {
   console.log(validate.errors)
 }
 ```
 </code-block>
 </code-group>
+ 
+
+::: warning TypeScript limitation
+Note that it's currently not possible for `JTDDataType` to know whether the compiler is inferring timestamps as strings or Dates, and so it conservatively types any timestamp as `string | Date`. This is accurate, but often requires extra validation on the part of the user to confirm they're getting the appropriate data type.
+:::
 
 ## Type-safe error handling
 

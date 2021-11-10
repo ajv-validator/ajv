@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "8.6.2",
+  "version": "8.7.1",
   "description": "Another JSON Schema Validator",
   "main": "dist/ajv.js",
   "types": "dist/ajv.d.ts",
@@ -10,10 +10,10 @@
     ".runkit_example.js"
   ],
   "scripts": {
-    "eslint": "eslint \"lib/**/*.ts\" \"spec/**/*.*s\" scripts --ignore-pattern spec/JSON-Schema-Test-Suite",
+    "eslint": "eslint \"lib/**/*.ts\" \"spec/**/*.*s\" --ignore-pattern spec/JSON-Schema-Test-Suite",
     "prettier:write": "prettier --write \"./**/*.{json,yaml,js,ts}\"",
     "prettier:check": "prettier --list-different \"./**/*.{json,yaml,js,ts}\"",
-    "test-spec": "cross-env TS_NODE_PROJECT=spec/tsconfig.json mocha -r ts-node/register \"spec/**/*.spec.{ts,js}\" -R dot -g \\(.recursiveRef.with.no..recursiveAnchor\\|.dynamicRef.with.no..dynamicAnchor\\).in.the.initial.target.schema.resource -i",
+    "test-spec": "cross-env TS_NODE_PROJECT=spec/tsconfig.json mocha -r ts-node/register \"spec/**/*.spec.{ts,js}\" -R dot",
     "test-codegen": "nyc cross-env TS_NODE_PROJECT=spec/tsconfig.json mocha -r ts-node/register 'spec/codegen.spec.ts' -R spec",
     "test-debug": "npm run test-spec -- --inspect-brk",
     "test-cov": "nyc npm run test-spec",
@@ -23,10 +23,10 @@
     "test-karma": "karma start",
     "test-browser": "rm -rf .browser && npm run bundle && scripts/prepare-tests && karma start",
     "test-all": "npm run test-cov && if-node-version 12 npm run test-browser",
-    "test": "npm run json-tests && npm run prettier:check && npm run eslint && npm link && npm link ajv && npm run test-cov",
+    "test": "npm run json-tests && npm run prettier:check && npm run eslint && npm link && npm link --legacy-peer-deps ajv && npm run test-cov",
     "test-ci": "AJV_FULL_TEST=true npm test",
     "prepublish": "npm run build",
-    "benchmark": "npm i && npm run build && npm link && cd ./benchmark && npm link ajv && npm i && node ./jtd",
+    "benchmark": "npm i && npm run build && npm link && cd ./benchmark && npm link --legacy-peer-deps ajv && npm i && node ./jtd",
     "docs:dev": "./scripts/prepare-site && vuepress dev docs",
     "docs:build": "./scripts/prepare-site && vuepress build docs"
   },
@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@ajv-validator/config": "^0.3.0",
-    "@rollup/plugin-commonjs": "^20.0.0",
+    "@rollup/plugin-commonjs": "^21.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
     "@rollup/plugin-typescript": "^8.2.1",
@@ -74,8 +74,7 @@
     "@types/require-from-string": "^1.2.0",
     "@typescript-eslint/eslint-plugin": "^3.8.0",
     "@typescript-eslint/parser": "^3.8.0",
-    "@vuepress/shared-utils": "^1.8.2",
-    "ajv-formats": "^2.0.0",
+    "ajv-formats": "^3.0.0-rc.0",
     "chai": "^4.0.1",
     "cross-env": "^7.0.2",
     "dayjs": "^1.10.4",
@@ -101,8 +100,7 @@
     "rollup-plugin-terser": "^7.0.2",
     "ts-node": "^10.0.0",
     "tsify": "^5.0.2",
-    "typescript": "^4.2.0",
-    "vuepress": "^1.8.2"
+    "typescript": "^4.2.0"
   },
   "collective": {
     "type": "opencollective",
