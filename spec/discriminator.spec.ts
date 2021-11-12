@@ -96,17 +96,17 @@ describe("discriminator keyword", function () {
           b: {type: "string"},
         },
         required: ["foo", "b"],
-      }
+      },
     }
     const mainSchema1 = {
       type: "object",
       discriminator: {propertyName: "foo"},
       oneOf: [
         {
-          "$ref": "#/definitions/schema1"
+          $ref: "#/definitions/schema1",
         },
         {
-          "$ref": "#/definitions/schema2"
+          $ref: "#/definitions/schema2",
         },
       ],
     }
@@ -125,7 +125,7 @@ describe("discriminator keyword", function () {
           b: {type: "string"},
         },
         required: ["b"],
-      }
+      },
     }
     const mainSchema2 = {
       type: "object",
@@ -133,16 +133,18 @@ describe("discriminator keyword", function () {
       required: ["foo"],
       oneOf: [
         {
-          "$ref": "#/definitions/schema1"
+          $ref: "#/definitions/schema1",
         },
         {
-          "$ref": "#/definitions/schema2"
+          $ref: "#/definitions/schema2",
         },
       ],
     }
 
-
-    const schema = [{definitions: definitions1, ...mainSchema1}, {definitions: definitions2, ...mainSchema2}]
+    const schema = [
+      {definitions: definitions1, ...mainSchema1},
+      {definitions: definitions2, ...mainSchema2},
+    ]
 
     it("should validate data", () => {
       assertValid(schema, {foo: "x", a: "a"})
