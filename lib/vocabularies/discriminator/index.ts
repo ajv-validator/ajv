@@ -2,6 +2,7 @@ import type {CodeKeywordDefinition, AnySchemaObject, KeywordErrorDefinition} fro
 import type {KeywordCxt} from "../../compile/validate"
 import {_, getProperty, Name} from "../../compile/codegen"
 import {DiscrError, DiscrErrorObj} from "../discriminator/types"
+import {resolveRef} from "../../compile"
 
 export type DiscriminatorError = DiscrErrorObj<DiscrError.Tag> | DiscrErrorObj<DiscrError.Mapping>
 
@@ -62,8 +63,12 @@ const def: CodeKeywordDefinition = {
       const topRequired = hasRequired(parentSchema)
       let tagRequired = true
       for (let i = 0; i < oneOf.length; i++) {
-        const sch = oneOf[i]
-        const propSch = sch.properties?.[tagName]
+        let sch = oneOf[i]
+        let propSch = sch.properties?.[tagName]
+        if (typeof propSch == "undefined" && sch?.["$ref"]) {
+          sch = resolveRef.call(it.self, it.schemaEnv, "", sch?.["$ref"])
+          propSch = sch?.properties?.[tagName]
+        }
         if (typeof propSch != "object") {
           throw new Error(`discriminator: oneOf schemas must have "properties/${tagName}"`)
         }
