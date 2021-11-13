@@ -365,7 +365,7 @@ type CodeOptions = {
   regExp: RegExpEngine
   // Developers looking for a ReDoS mitigation may wish to use a DFA regex engine,
   // such as node-re2. During validation of a schema, code.regExp will be 
-  // used to match strings against regexes. The supplied object must support 
+  // used to match strings against regexes. The supplied function must support 
   // the interface: regExp(regex, unicodeFlag).test(string) => boolean
 }
 
