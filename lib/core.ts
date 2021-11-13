@@ -48,6 +48,7 @@ import type {
   ErrorObject,
   Format,
   AddedFormat,
+  RegExpEngine,
 } from "./types"
 import type {JSONSchemaType} from "./types/json-schema"
 import type {JTDSchemaType, SomeJTDSchemaType, JTDDataType} from "./types/jtd-schema"
@@ -61,6 +62,9 @@ import {getJSONTypes} from "./compile/validate/dataType"
 import {eachItem} from "./compile/util"
 
 import * as $dataRefSchema from "./refs/data.json"
+
+const defaultRegExp: RegExpEngine = (str, flags) => new RegExp(str, flags)
+defaultRegExp.code = "new RegExp"
 
 const META_IGNORE_OPTIONS: (keyof Options)[] = ["removeAdditional", "useDefaults", "coerceTypes"]
 const EXT_SCOPE_NAMES = new Set([
@@ -141,9 +145,11 @@ export interface CodeOptions {
   formats?: Code // code to require (or construct) map of available formats - for standalone code
   source?: boolean
   process?: (code: string, schema?: SchemaEnv) => string
+  regExp?: RegExpEngine
 }
 
 interface InstanceCodeOptions extends CodeOptions {
+  regExp: RegExpEngine
   optimize: number
 }
 
@@ -231,13 +237,14 @@ function requiredOptions(o: Options): RequiredInstanceOptions {
   const s = o.strict
   const _optz = o.code?.optimize
   const optimize = _optz === true || _optz === undefined ? 1 : _optz || 0
+  const regExp = o.code?.regExp ?? defaultRegExp
   return {
     strictSchema: o.strictSchema ?? s ?? true,
     strictNumbers: o.strictNumbers ?? s ?? true,
     strictTypes: o.strictTypes ?? s ?? "log",
     strictTuples: o.strictTuples ?? s ?? "log",
     strictRequired: o.strictRequired ?? s ?? false,
-    code: o.code ? {...o.code, optimize} : {optimize},
+    code: o.code ? {...o.code, optimize, regExp} : {optimize, regExp},
     loopRequired: o.loopRequired ?? MAX_EXPRESSION,
     loopEnum: o.loopEnum ?? MAX_EXPRESSION,
     meta: o.meta ?? true,
@@ -279,6 +286,7 @@ export default class Ajv {
   constructor(opts: Options = {}) {
     opts = this.opts = {...opts, ...requiredOptions(opts)}
     const {es5, lines} = this.opts.code
+
     this.scope = new ValueScope({scope: {}, prefixes: EXT_SCOPE_NAMES, es5, lines})
     this.logger = getLogger(opts.logger)
     const formatOpt = opts.validateFormats

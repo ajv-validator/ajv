@@ -69,6 +69,7 @@ const defaultOptions = {
     source: false,
     process: undefined, // (code: string) => string
     optimize: true,
+    regExp: RegExp
   },
 }
 ```
@@ -361,6 +362,12 @@ type CodeOptions = {
   // Code snippet created with `_` tagged template literal that contains all format definitions,
   // it can be the code of actual definitions or `require` call:
   // _`require("./my-formats")`
+  regExp: RegExpEngine
+  // Pass non-standard RegExp engine to mitigate ReDoS, e.g. node-re2.
+  // During validation of a schema, code.regExp will be 
+  // used to match strings against regular expressions.
+  // The supplied function must support the interface:
+  // regExp(regex, unicodeFlag).test(string) => boolean
 }
 
 type Source = {
