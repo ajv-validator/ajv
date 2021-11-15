@@ -12,7 +12,7 @@ This functionality in Ajv v7 supersedes deprecated package ajv-pack that can be 
 
 ## Usage with CLI
 
-In most cases you would use this functionality via [ajv-cli](https://github.com/jessedc/ajv-cli) (>= 4.0.0) to generate module that exports validation function.
+In most cases you would use this functionality via [ajv-cli](https://github.com/ajv-validator/ajv-cli) (>= 4.0.0) to generate module that exports validation function.
 
 ```sh
 npm install -g ajv-cli
@@ -21,7 +21,7 @@ ajv compile -s schema.json -o validate_schema.js
 
 `validate_schema.js` will contain the module exporting validation function that can be bundled into your application.
 
-See [ajv-cli](https://github.com/jessedc/ajv-cli) docs for additional information.
+See [ajv-cli](https://github.com/ajv-validator/ajv-cli) docs for additional information.
 
 ## Usage from code
 
