@@ -64,13 +64,20 @@ const def: CodeKeywordDefinition = {
       let tagRequired = true
       for (let i = 0; i < oneOf.length; i++) {
         let sch = oneOf[i]
-        let propSch = sch.properties?.[tagName]
-        if (typeof propSch == "undefined" && sch?.["$ref"]) {
-          sch = resolveRef.call(it.self, it.schemaEnv, "", sch?.["$ref"])
+        let propSch
+        if (sch?.["$ref"] && Object.keys(sch).length === 1) {
+          sch = resolveRef.call(it.self, it.schemaEnv, it.baseId, sch?.["$ref"])
           propSch = sch?.properties?.[tagName]
-        }
-        if (typeof propSch != "object") {
-          throw new Error(`discriminator: oneOf schemas must have "properties/${tagName}"`)
+          if (typeof propSch != "object") {
+            throw new Error(
+              `discriminator: referenced oneOf schemas must have "properties/${tagName}"`
+            )
+          }
+        } else {
+          propSch = sch.properties?.[tagName]
+          if (typeof propSch != "object") {
+            throw new Error(`discriminator: oneOf schemas must have "properties/${tagName}"`)
+          }
         }
         tagRequired = tagRequired && (topRequired || hasRequired(sch))
         addMappings(propSch, i)
