@@ -222,3 +222,12 @@ export type AddedFormat =
   | AsyncFormatDefinition<number>
 
 export type Format = AddedFormat | string
+
+export interface RegExpEngine {
+  (pattern: string, u: string): RegExpLike
+  code: string
+}
+
+export interface RegExpLike {
+  test: (s: string) => boolean
+}
