@@ -63,13 +63,12 @@ const def: CodeKeywordDefinition = {
     const valid = gen.name("valid")
     if (max === undefined && min === 1) {
       validateItems(valid, () => gen.if(valid, () => gen.break()))
+    } else if (min === 0) {
+      gen.let(valid, true)
+      if (max !== undefined) gen.if(_`${data}.length > 0`, validateItemsWithCount)
     } else {
       gen.let(valid, false)
-      if (min === 0) {
-        gen.if(_`${data}.length > 0`, validateItemsWithCount, () => gen.assign(valid, true))
-      } else {
-        validateItemsWithCount()
-      }
+      validateItemsWithCount()
     }
     cxt.result(valid, () => cxt.reset())
 
