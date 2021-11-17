@@ -2,7 +2,7 @@ import type {CodeKeywordDefinition, AnySchemaObject, KeywordErrorDefinition} fro
 import type {KeywordCxt} from "../../compile/validate"
 import {_, getProperty, Name} from "../../compile/codegen"
 import {DiscrError, DiscrErrorObj} from "../discriminator/types"
-import {resolveRef} from "../../compile"
+import {resolveRef, SchemaEnv} from "../../compile"
 
 export type DiscriminatorError = DiscrErrorObj<DiscrError.Tag> | DiscrErrorObj<DiscrError.Mapping>
 
@@ -67,6 +67,9 @@ const def: CodeKeywordDefinition = {
         let propSch
         if (sch?.["$ref"] && Object.keys(sch).length === 1) {
           sch = resolveRef.call(it.self, it.schemaEnv, it.baseId, sch?.["$ref"])
+          if (sch instanceof SchemaEnv) {
+            sch = sch.schema
+          }
           propSch = sch?.properties?.[tagName]
           if (typeof propSch != "object") {
             throw new Error(
