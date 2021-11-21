@@ -95,10 +95,11 @@ const newRegExp = _`new RegExp`
 export function usePattern({gen, it: {opts}}: KeywordCxt, pattern: string): Name {
   const u = opts.unicodeRegExp ? "u" : ""
   const {regExp} = opts.code
+  const rx = regExp(pattern, u)
 
   return gen.scopeValue("pattern", {
-    key: pattern,
-    ref: regExp(pattern, u),
+    key: rx.toString(),
+    ref: rx,
     code: _`${regExp.code === "new RegExp" ? newRegExp : useFunc(gen, regExp)}(${pattern}, ${u})`,
   })
 }

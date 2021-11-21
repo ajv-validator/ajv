@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "8.8.1",
+  "version": "8.8.2",
   "description": "Another JSON Schema Validator",
   "main": "dist/ajv.js",
   "types": "dist/ajv.d.ts",
@@ -92,7 +92,7 @@
     "karma": "^6.0.0",
     "karma-chrome-launcher": "^3.0.0",
     "karma-mocha": "^2.0.0",
-    "lint-staged": "^11.0.0",
+    "lint-staged": "^12.1.1",
     "mocha": "^9.0.2",
     "node-fetch": "^3.0.0",
     "nyc": "^15.0.0",
