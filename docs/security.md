@@ -64,6 +64,33 @@ Following all these recommendation is not a guarantee that validation using of u
 Certain regular expressions can lead to the exponential evaluation time even with relatively short strings.
 
 Please assess the regular expressions you use in the schemas on their vulnerability to this attack - see [safe-regex](https://github.com/substack/safe-regex), for example.
+By default, Ajv uses the regex engine built into Node.js. This engine has exponential worst-case performance. This performance (and ReDoS attacks) can be mitigated by using a linear-time regex engine. Ajv supports the use of a third-party regex engine for this purpose. 
+
+To use a third-party regex engine in Ajv, set the ajv.opts.code.regExp property to that regex engine during instantiation. Here we use Google’s RE2 engine as an example. 
+
+``` 
+
+const Ajv = require(“ajv”) 
+
+var RE2 = require(“re2”) 
+
+const ajv = new Ajv({regExp:RE2}) 
+
+``` 
+
+For details about the interface of the `regexp` option, see options.md under the docs folder. 
+
+Although linear-time regex engines eliminate ReDoS vulnerabilities, changing a regex engine carries some risk, including:  
+
+ - Minor changes in regex syntax. 
+
+ - Minor changes in regex semantics. For example, RE2 always interprets regexes in Unicode, and disagrees with JavaScript in its definition of whitespace. To avoid regressions, develop and test your regexes in the same regex engine that you use in production. 
+
+ - May not support some advanced features, such as lookaheads or backreferences. 
+
+ - May be (minor) common-case performance degradation. 
+
+ - May inflate size of distributable (e.g. RE2 includes a non-trivial C component). 
 
 ::: warning ReDoS attack
 Some formats that [ajv-formats](https://github.com/ajv-validator/ajv-formats) package implements use [regular expressions](https://github.com/ajv-validator/ajv-formats/blob/master/src/formats.ts) that can be vulnerable to ReDoS attack.
