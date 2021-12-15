@@ -69,13 +69,9 @@ By default, Ajv uses the regex engine built into Node.js. This engine has expone
 To use a third-party regex engine in Ajv, set the ajv.opts.code.regExp property to that regex engine during instantiation. Here we use Google’s RE2 engine as an example. 
 
 ``` 
-
-const Ajv = require(“ajv”) 
-
-var RE2 = require(“re2”) 
-
-const ajv = new Ajv({regExp:RE2}) 
-
+const Ajv = require("ajv") 
+const RE2 = require("re2") 
+const ajv = new Ajv({regExp: RE2}) 
 ``` 
 
 For details about the interface of the `regexp` option, see options.md under the docs folder. 
