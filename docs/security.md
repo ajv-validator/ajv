@@ -64,6 +64,7 @@ Following all these recommendation is not a guarantee that validation using of u
 Certain regular expressions can lead to the exponential evaluation time even with relatively short strings.
 
 Please assess the regular expressions you use in the schemas on their vulnerability to this attack - see [safe-regex](https://github.com/substack/safe-regex), for example.
+
 By default, Ajv uses the regex engine built into Node.js. This engine has exponential worst-case performance. This performance (and ReDoS attacks) can be mitigated by using a linear-time regex engine. Ajv supports the use of a third-party regex engine for this purpose. 
 
 To use a third-party regex engine in Ajv, set the ajv.opts.code.regExp property to that regex engine during instantiation. Here we use Google’s RE2 engine as an example. 
