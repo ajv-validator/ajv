@@ -279,7 +279,7 @@ JSON Type Definition only supports tagged unions, so unions in JTD are fully sup
 JSON Schema is more complex and so `JSONSchemaType` has limited support for type safe unions.
 
 `JSONSchemaType` will type check unions where each union element is fully specified as an element of an `anyOf` array or `oneOf` array.
-Additionaly, unions of primitives will type check appropriately if they're combined into an array `type`, e.g. `{type: ["string", "number"]}`.
+Additionally, unions of primitives will type check appropriately if they're combined into an array `type`, e.g. `{type: ["string", "number"]}`.
 
 ::: warning TypeScript limitation
 Note that due to current limitation of TypeScript, JSONSchemaType cannot verify that every element of the union is present, and the following example is still valid `const schema: JSONSchemaType<number | string> = {type: "string"}`.
