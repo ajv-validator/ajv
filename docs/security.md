@@ -80,14 +80,10 @@ For details about the interface of the `regexp` option, see options.md under the
 Although linear-time regex engines eliminate ReDoS vulnerabilities, changing a regex engine carries some risk, including:  
 
  - Minor changes in regex syntax. 
-
  - Minor changes in regex semantics. For example, RE2 always interprets regexes in Unicode, and disagrees with JavaScript in its definition of whitespace. To avoid regressions, develop and test your regexes in the same regex engine that you use in production. 
-
- - May not support some advanced features, such as lookaheads or backreferences. 
-
- - May be (minor) common-case performance degradation. 
-
- - May inflate size of distributable (e.g. RE2 includes a non-trivial C component). 
+ - May not support some advanced features, such as look-aheads or back-references. 
+ - May have (minor) common-case performance degradation. 
+ - Increases size of distributable (e.g. RE2 includes a non-trivial C component). 
 
 ::: warning ReDoS attack
 Some formats that [ajv-formats](https://github.com/ajv-validator/ajv-formats) package implements use [regular expressions](https://github.com/ajv-validator/ajv-formats/blob/master/src/formats.ts) that can be vulnerable to ReDoS attack.
