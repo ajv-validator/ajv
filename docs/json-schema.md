@@ -1160,7 +1160,7 @@ If the data is invalid against the sub-schema in `if` keyword, then the validati
       then: {multipleOf: 100},
       else: {
         if: {minimum: 10},
-        then": {multipleOf: 10}
+        then: {multipleOf: 10}
       }
     }
     ```

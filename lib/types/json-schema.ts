@@ -113,10 +113,7 @@ type UncheckedJSONSchemaType<T, IsPartial extends boolean> = (
           dependentSchemas?: {[K in keyof T]?: UncheckedPartialSchema<T>}
           minProperties?: number
           maxProperties?: number
-        } & (// "required" type does not guarantee that all required properties
-        // are listed it only asserts that optional cannot be listed.
-        // "required" is not necessary if it's a non-partial type with no required keys
-        IsPartial extends true
+        } & (IsPartial extends true // "required" is not necessary if it's a non-partial type with no required keys // are listed it only asserts that optional cannot be listed. // "required" type does not guarantee that all required properties
           ? {required: Readonly<(keyof T)[]>}
           : [UncheckedRequiredMembers<T>] extends [never]
           ? {required?: Readonly<UncheckedRequiredMembers<T>[]>}
