@@ -1,3 +1,4 @@
+/* eslint-disable */
 import type {CodeKeywordDefinition, ErrorObject, KeywordErrorDefinition} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
 import {_, or, Name, Code} from "../../compile/codegen"
@@ -20,7 +21,11 @@ const def: CodeKeywordDefinition = {
     const {gen, data, $data, schema, schemaCode, it} = cxt
     if (!$data && schema.length === 0) throw new Error("enum must have non-empty array")
     const useLoop = schema.length >= it.opts.loopEnum
-    const needsEql = (schema as any[]).some((x: unknown) => x !== null && typeof x === "object")
+    const needsEql =
+      useLoop ||
+      $data ||
+      !Array.isArray(schema) ||
+      schema.some((x: unknown) => x !== null && typeof x === "object")
     const eql = needsEql ? useFunc(gen, equal) : undefined
     let valid: Code
     if (useLoop || $data) {
