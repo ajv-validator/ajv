@@ -20,8 +20,8 @@ const def: CodeKeywordDefinition = {
     const {gen, data, $data, schema, schemaCode, it} = cxt
     if (!$data && schema.length === 0) throw new Error("enum must have non-empty array")
     const useLoop = schema.length >= it.opts.loopEnum
-    const needsEql = schema.some((x: unknown) => typeof x === "object")
-    const eql = (needsEql ? useFunc(gen, equal) : undefined)
+    const needsEql = schema.some((x: unknown) => x !== null && typeof x === "object")
+    const eql = needsEql ? useFunc(gen, equal) : undefined
     let valid: Code
     if (useLoop || $data) {
       valid = gen.let("valid")
