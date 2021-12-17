@@ -19,7 +19,8 @@ export type AdditionalPropertiesError = ErrorObject<
 
 const error: KeywordErrorDefinition = {
   message: "must NOT have additional properties",
-  params: ({params}) => _`{additionalProperty: ${params.additionalProperty}}`,
+  params: ({params, it}) =>
+    _`{additionalProperty: ${params.additionalProperty}, schema: ${it.topSchemaRef}${it.schemaPath}}`,
 }
 
 const def: CodeKeywordDefinition & AddedKeywordDefinition = {

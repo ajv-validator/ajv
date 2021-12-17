@@ -18,6 +18,8 @@ export function typeErrorMessage({parentSchema}: KeywordErrorCxt, t: string): st
   return parentSchema?.nullable ? `must be ${t} or null` : `must be ${t}`
 }
 
-export function typeErrorParams({parentSchema}: KeywordErrorCxt, t: string): Code {
-  return _`{type: ${t}, nullable: ${!!parentSchema?.nullable}}`
+export function typeErrorParams({parentSchema, it}: KeywordErrorCxt, t: string): Code {
+  return _`{type: ${t}, nullable: ${!!parentSchema?.nullable}, schema: ${it.topSchemaRef}${
+    it.schemaPath
+  }}`
 }

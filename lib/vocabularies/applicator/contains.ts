@@ -19,8 +19,10 @@ const error: KeywordErrorDefinition = {
     max === undefined
       ? str`must contain at least ${min} valid item(s)`
       : str`must contain at least ${min} and no more than ${max} valid item(s)`,
-  params: ({params: {min, max}}) =>
-    max === undefined ? _`{minContains: ${min}}` : _`{minContains: ${min}, maxContains: ${max}}`,
+  params: ({params: {min, max}, it}) =>
+    max === undefined
+      ? _`{minContains: ${min}, schema: ${it.topSchemaRef}${it.schemaPath}}`
+      : _`{minContains: ${min}, maxContains: ${max}, schema: ${it.topSchemaRef}${it.schemaPath}}`,
 }
 
 const def: CodeKeywordDefinition = {

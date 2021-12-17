@@ -22,7 +22,8 @@ export type FormatError = ErrorObject<"format", {format: string}, string | {$dat
 
 const error: KeywordErrorDefinition = {
   message: ({schemaCode}) => str`must match format "${schemaCode}"`,
-  params: ({schemaCode}) => _`{format: ${schemaCode}}`,
+  params: ({schemaCode, it}) =>
+    _`{format: ${schemaCode}, schema: ${it.topSchemaRef}${it.schemaPath}}`,
 }
 
 const def: CodeKeywordDefinition = {

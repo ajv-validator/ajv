@@ -12,7 +12,8 @@ export type PropertyNamesError = ErrorObject<"propertyNames", {propertyName: str
 
 const error: KeywordErrorDefinition = {
   message: "property name must be valid",
-  params: ({params}) => _`{propertyName: ${params.propertyName}}`,
+  params: ({params, it}) =>
+    _`{propertyName: ${params.propertyName}, schema: ${it.topSchemaRef}${it.schemaPath}}`,
 }
 
 const def: CodeKeywordDefinition = {

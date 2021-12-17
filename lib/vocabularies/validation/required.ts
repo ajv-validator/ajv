@@ -18,7 +18,8 @@ export type RequiredError = ErrorObject<
 
 const error: KeywordErrorDefinition = {
   message: ({params: {missingProperty}}) => str`must have required property '${missingProperty}'`,
-  params: ({params: {missingProperty}}) => _`{missingProperty: ${missingProperty}}`,
+  params: ({params: {missingProperty}, it}) =>
+    _`{missingProperty: ${missingProperty}, schema: ${it.topSchemaRef}${it.schemaPath}}`,
 }
 
 const def: CodeKeywordDefinition = {

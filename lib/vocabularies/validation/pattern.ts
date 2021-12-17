@@ -7,7 +7,8 @@ export type PatternError = ErrorObject<"pattern", {pattern: string}, string | {$
 
 const error: KeywordErrorDefinition = {
   message: ({schemaCode}) => str`must match pattern "${schemaCode}"`,
-  params: ({schemaCode}) => _`{pattern: ${schemaCode}}`,
+  params: ({schemaCode, it}) =>
+    _`{pattern: ${schemaCode}, schema: ${it.topSchemaRef}${it.schemaPath}}`,
 }
 
 const def: CodeKeywordDefinition = {

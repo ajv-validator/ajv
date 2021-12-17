@@ -21,9 +21,9 @@ const error: KeywordErrorDefinition = {
       : typeErrorMessage(cxt, "object")
   },
   params: (cxt) => {
-    const {schema, params} = cxt
+    const {schema, params, it} = cxt
     return params.discrError
-      ? _`{error: ${params.discrError}, tag: ${schema}, tagValue: ${params.tag}}`
+      ? _`{error: ${params.discrError}, tag: ${schema}, tagValue: ${params.tag}, schema: ${it.topSchemaRef}${it.schemaPath}}`
       : typeErrorParams(cxt, "object")
   },
 }

@@ -10,8 +10,8 @@ const error: KeywordErrorDefinition = {
     discrError === DiscrError.Tag
       ? `tag "${tagName}" must be string`
       : `value of tag "${tagName}" must be in oneOf`,
-  params: ({params: {discrError, tag, tagName}}) =>
-    _`{error: ${discrError}, tag: ${tagName}, tagValue: ${tag}}`,
+  params: ({params: {discrError, tag, tagName}, it}) =>
+    _`{error: ${discrError}, tag: ${tagName}, tagValue: ${tag}, schema: ${it.topSchemaRef}${it.schemaPath}}`,
 }
 
 const def: CodeKeywordDefinition = {

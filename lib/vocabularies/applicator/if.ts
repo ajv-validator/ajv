@@ -13,7 +13,8 @@ export type IfKeywordError = ErrorObject<"if", {failingKeyword: string}, AnySche
 
 const error: KeywordErrorDefinition = {
   message: ({params}) => str`must match "${params.ifClause}" schema`,
-  params: ({params}) => _`{failingKeyword: ${params.ifClause}}`,
+  params: ({params, it}) =>
+    _`{failingKeyword: ${params.ifClause}, schema: ${it.topSchemaRef}${it.schemaPath}}`,
 }
 
 const def: CodeKeywordDefinition = {

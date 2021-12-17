@@ -203,8 +203,10 @@ export type TypeError = ErrorObject<"type", {type: string}>
 
 const typeError: KeywordErrorDefinition = {
   message: ({schema}) => `must be ${schema}`,
-  params: ({schema, schemaValue}) =>
-    typeof schema == "string" ? _`{type: ${schema}}` : _`{type: ${schemaValue}}`,
+  params: ({schema, schemaValue, it}) =>
+    typeof schema == "string"
+      ? _`{type: ${schema}, schema: ${it.topSchemaRef}${it.schemaPath}}`
+      : _`{type: ${schemaValue}, schema: ${it.topSchemaRef}${it.schemaPath}}`,
 }
 
 export function reportTypeError(it: SchemaObjCxt): void {

@@ -12,7 +12,7 @@ export type AdditionalItemsError = ErrorObject<"additionalItems", {limit: number
 
 const error: KeywordErrorDefinition = {
   message: ({params: {len}}) => str`must NOT have more than ${len} items`,
-  params: ({params: {len}}) => _`{limit: ${len}}`,
+  params: ({params: {len}, it}) => _`{limit: ${len}, schema: ${it.topSchemaRef}${it.schemaPath}}`,
 }
 
 const def: CodeKeywordDefinition = {

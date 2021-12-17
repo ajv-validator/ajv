@@ -17,7 +17,8 @@ export type OneOfError = ErrorObject<
 
 const error: KeywordErrorDefinition = {
   message: "must match exactly one schema in oneOf",
-  params: ({params}) => _`{passingSchemas: ${params.passing}}`,
+  params: ({params, it}) =>
+    _`{passingSchemas: ${params.passing}, schema: ${it.topSchemaRef}${it.schemaPath}}`,
 }
 
 const def: CodeKeywordDefinition = {

@@ -8,7 +8,8 @@ export type JTDEnumError = ErrorObject<"enum", {allowedValues: string[]}, string
 
 const error: KeywordErrorDefinition = {
   message: "must be equal to one of the allowed values",
-  params: ({schemaCode}) => _`{allowedValues: ${schemaCode}}`,
+  params: ({schemaCode, it}) =>
+    _`{allowedValues: ${schemaCode}, schema: ${it.topSchemaRef}${it.schemaPath}}`,
 }
 
 const def: CodeKeywordDefinition = {

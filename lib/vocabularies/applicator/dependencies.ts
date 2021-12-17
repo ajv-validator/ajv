@@ -32,11 +32,12 @@ export const error: KeywordErrorDefinition = {
     const property_ies = depsCount === 1 ? "property" : "properties"
     return str`must have ${property_ies} ${deps} when property ${property} is present`
   },
-  params: ({params: {property, depsCount, deps, missingProperty}}) =>
+  params: ({params: {property, depsCount, deps, missingProperty}, it}) =>
     _`{property: ${property},
     missingProperty: ${missingProperty},
     depsCount: ${depsCount},
-    deps: ${deps}}`, // TODO change to reference
+    deps: ${deps},
+    schema: ${it.topSchemaRef}${it.schemaPath}}`, // TODO change to reference
 }
 
 const def: CodeKeywordDefinition = {
