@@ -9,7 +9,8 @@ const error: KeywordErrorDefinition = {
     const comp = keyword === "maxLength" ? "more" : "fewer"
     return str`must NOT have ${comp} than ${schemaCode} characters`
   },
-  params: ({schemaCode}) => _`{limit: ${schemaCode}}`,
+  params: ({schemaCode, it}) =>
+    _`{limit: ${schemaCode}, schema: ${it.topSchemaRef}${it.schemaPath}}`,
 }
 
 const def: CodeKeywordDefinition = {

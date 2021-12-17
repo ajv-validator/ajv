@@ -81,6 +81,7 @@ describe("Validation errors", () => {
         msg,
         {
           additionalProperty: "baz",
+          schema,
         }
       )
 
@@ -93,7 +94,7 @@ describe("Validation errors", () => {
         "#/additionalProperties",
         "",
         msg,
-        {additionalProperty: "baz"}
+        {additionalProperty: "baz", schema}
       )
 
       const fullValidate = fullAjv.compile(schema)
@@ -105,7 +106,7 @@ describe("Validation errors", () => {
         "#/additionalProperties",
         "",
         msg,
-        {additionalProperty: "baz"}
+        {additionalProperty: "baz", schema}
       )
       shouldBeError(
         fullValidate.errors?.[1],
@@ -113,7 +114,7 @@ describe("Validation errors", () => {
         "#/additionalProperties",
         "",
         msg,
-        {additionalProperty: "quux"}
+        {additionalProperty: "quux", schema}
       )
     }
   })
@@ -147,6 +148,7 @@ describe("Validation errors", () => {
       shouldBeInvalid(validate, invalidData)
       shouldBeError(validate.errors?.[0], "type", schPath, "/baz/quux", "must be string", {
         type: "string",
+        schema: schema.additionalProperties.properties.quux,
       })
 
       const validateJP = ajvJP.compile(schema)
@@ -154,6 +156,7 @@ describe("Validation errors", () => {
       shouldBeInvalid(validateJP, invalidData)
       shouldBeError(validateJP.errors?.[0], "type", schPath, "/baz/quux", "must be string", {
         type: "string",
+        schema: schema.additionalProperties.properties.quux,
       })
 
       const fullValidate = fullAjv.compile(schema)
@@ -161,9 +164,11 @@ describe("Validation errors", () => {
       shouldBeInvalid(fullValidate, invalidData, 2)
       shouldBeError(fullValidate.errors?.[0], "type", schPath, "['baz'].quux", "must be string", {
         type: "string",
+        schema: schema.additionalProperties.properties.quux,
       })
       shouldBeError(fullValidate.errors?.[1], "type", schPath, "['boo'].quux", "must be string", {
         type: "string",
+        schema: schema.additionalProperties.properties.quux,
       })
     }
   })
@@ -202,19 +207,21 @@ describe("Validation errors", () => {
       test()
 
       schema = {anyOf: [schema]}
-      test(1, "#/anyOf/0")
+      test(1, "#/anyOf/0", schema.anyOf[0])
 
-      function test(extraErrors = 0, schemaPathPrefix = "#") {
+      function test(extraErrors = 0, schemaPathPrefix = "#", innerSchema = schema) {
         const schPath = schemaPathPrefix + "/required"
         const validate = ajv.compile(schema)
         shouldBeValid(validate, data)
         shouldBeInvalid(validate, invalidData1, 1 + extraErrors)
         shouldBeError(validate.errors?.[0], "required", schPath, "", requiredMsg("1"), {
           missingProperty: "1",
+          schema: innerSchema,
         })
         shouldBeInvalid(validate, invalidData2, 1 + extraErrors)
         shouldBeError(validate.errors?.[0], "required", schPath, "", requiredMsg("2"), {
           missingProperty: "2",
+          schema: innerSchema,
         })
 
         const validateJP = ajvJP.compile(schema)
@@ -222,10 +229,12 @@ describe("Validation errors", () => {
         shouldBeInvalid(validateJP, invalidData1, 1 + extraErrors)
         shouldBeError(validateJP.errors?.[0], "required", schPath, "", requiredMsg("1"), {
           missingProperty: "1",
+          schema: innerSchema,
         })
         shouldBeInvalid(validateJP, invalidData2, 1 + extraErrors)
         shouldBeError(validateJP.errors?.[0], "required", schPath, "", requiredMsg("2"), {
           missingProperty: "2",
+          schema: innerSchema,
         })
 
         const fullValidate = fullAjv.compile(schema)
@@ -233,13 +242,16 @@ describe("Validation errors", () => {
         shouldBeInvalid(fullValidate, invalidData1, 1 + extraErrors)
         shouldBeError(fullValidate.errors?.[0], "required", schPath, "", requiredMsg("1"), {
           missingProperty: "1",
+          schema: innerSchema,
         })
         shouldBeInvalid(fullValidate, invalidData2, 2 + extraErrors)
         shouldBeError(fullValidate.errors?.[0], "required", schPath, "", requiredMsg("2"), {
           missingProperty: "2",
+          schema: innerSchema,
         })
         shouldBeError(fullValidate.errors?.[1], "required", schPath, "", requiredMsg("98"), {
           missingProperty: "98",
+          schema: innerSchema,
         })
       }
     }
@@ -270,7 +282,7 @@ describe("Validation errors", () => {
         anyOf: [{required: ["foo", "bar", "baz"]}],
       }
 
-      _testRequired(schema, "#/anyOf/0", 1)
+      _testRequired(schema, "#/anyOf/0", 1, schema.anyOf[0])
     }
 
     it("should not validate required twice in large schemas with loopRequired option", () => {
@@ -334,7 +346,7 @@ describe("Validation errors", () => {
           "#/required",
           "",
           "must have required property 'bar'",
-          {missingProperty: "bar"}
+          {missingProperty: "bar", schema}
         )
 
         shouldBeInvalid(validate, {req: "invalid"})
@@ -371,7 +383,7 @@ describe("Validation errors", () => {
           "#/required",
           "",
           "must have required property 'a'",
-          {missingProperty: "a"}
+          {missingProperty: "a", schema}
         )
       }
     })
@@ -458,13 +470,14 @@ describe("Validation errors", () => {
           deps: "foo, bar, baz",
           depsCount: 3,
           missingProperty: missing,
+          schema,
         }
         return p
       }
     }
   })
 
-  function _testRequired(schema, schemaPathPrefix = "#", extraErrors = 0) {
+  function _testRequired(schema, schemaPathPrefix = "#", extraErrors = 0, innerSchema = schema) {
     const schPath = schemaPathPrefix + "/required"
 
     const data = {foo: 1, bar: 2, baz: 3},
@@ -476,10 +489,12 @@ describe("Validation errors", () => {
     shouldBeInvalid(validate, invalidData1, 1 + extraErrors)
     shouldBeError(validate.errors?.[0], "required", schPath, "", requiredMsg("bar"), {
       missingProperty: "bar",
+      schema: innerSchema,
     })
     shouldBeInvalid(validate, invalidData2, 1 + extraErrors)
     shouldBeError(validate.errors?.[0], "required", schPath, "", requiredMsg("foo"), {
       missingProperty: "foo",
+      schema: innerSchema,
     })
 
     const validateJP = ajvJP.compile(schema)
@@ -487,10 +502,12 @@ describe("Validation errors", () => {
     shouldBeInvalid(validateJP, invalidData1, 1 + extraErrors)
     shouldBeError(validateJP.errors?.[0], "required", schPath, "", requiredMsg("bar"), {
       missingProperty: "bar",
+      schema: innerSchema,
     })
     shouldBeInvalid(validateJP, invalidData2, 1 + extraErrors)
     shouldBeError(validateJP.errors?.[0], "required", schPath, "", requiredMsg("foo"), {
       missingProperty: "foo",
+      schema: innerSchema,
     })
 
     const fullValidate = fullAjv.compile(schema)
@@ -498,13 +515,16 @@ describe("Validation errors", () => {
     shouldBeInvalid(fullValidate, invalidData1, 1 + extraErrors)
     shouldBeError(fullValidate.errors?.[0], "required", schPath, "", requiredMsg("bar"), {
       missingProperty: "bar",
+      schema: innerSchema,
     })
     shouldBeInvalid(fullValidate, invalidData2, 2 + extraErrors)
     shouldBeError(fullValidate.errors?.[0], "required", schPath, "", requiredMsg("foo"), {
       missingProperty: "foo",
+      schema: innerSchema,
     })
     shouldBeError(fullValidate.errors?.[1], "required", schPath, "", requiredMsg("baz"), {
       missingProperty: "baz",
+      schema: innerSchema,
     })
   }
 
@@ -684,19 +704,19 @@ describe("Validation errors", () => {
         validate(1).should.equal(false)
         let err = validate.errors.pop()
         err.keyword.should.equal("oneOf")
-        err.params.should.eql({passingSchemas: [0, 1]})
+        err.params.should.eql({passingSchemas: [0, 1], schema})
 
         validate(1.5).should.equal(false)
         err = validate.errors.pop()
         err.keyword.should.equal("oneOf")
-        err.params.should.eql({passingSchemas: [0, 2]})
+        err.params.should.eql({passingSchemas: [0, 2], schema})
 
         validate(2.5).should.equal(true)
 
         validate("foo").should.equal(false)
         err = validate.errors.pop()
         err.keyword.should.equal("oneOf")
-        err.params.should.eql({passingSchemas: null})
+        err.params.should.eql({passingSchemas: null, schema})
       }
     })
   })
@@ -814,12 +834,14 @@ describe("Validation errors", () => {
         testError("exclusiveMinimum", "must be > 2", {
           comparison: ">",
           limit: 2,
+          schema,
         })
 
         shouldBeInvalid(validate, 5)
         testError("exclusiveMaximum", "must be < 5", {
           comparison: "<",
           limit: 5,
+          schema,
         })
 
         function testError(keyword, message, params) {
@@ -868,7 +890,7 @@ describe("Validation errors", () => {
             "#/properties/smaller/exclusiveMaximum",
             _ajv.opts.jsPropertySyntax ? ".smaller" : "/smaller",
             "must be < 4",
-            {comparison: "<", limit: 4}
+            {comparison: "<", limit: 4, schema: schema.properties.smaller}
           )
         }
       })
@@ -892,10 +914,10 @@ describe("Validation errors", () => {
         shouldBeValid(validate, 15)
 
         shouldBeInvalid(validate, 7, numErrors)
-        testIfError("then", 2)
+        testIfError("then", 2, schema)
 
         shouldBeInvalid(validate, 17, numErrors)
-        testIfError("else", 5)
+        testIfError("else", 5, schema)
       })
     })
 
@@ -913,7 +935,7 @@ describe("Validation errors", () => {
         shouldBeValid(validate, 12)
 
         shouldBeInvalid(validate, 7, numErrors)
-        testIfError("then", 2)
+        testIfError("then", 2, schema)
       })
     })
 
@@ -931,7 +953,7 @@ describe("Validation errors", () => {
         shouldBeValid(validate, 15)
 
         shouldBeInvalid(validate, 17, numErrors)
-        testIfError("else", 5)
+        testIfError("else", 5, schema)
       })
     })
 
@@ -940,7 +962,7 @@ describe("Validation errors", () => {
       numErrors = _ajv.opts.allErrors ? 2 : 1
     }
 
-    function testIfError(ifClause, multipleOf) {
+    function testIfError(ifClause, multipleOf, schema) {
       let err = validate.errors?.[0]
       shouldBeError(
         err,
@@ -948,13 +970,14 @@ describe("Validation errors", () => {
         "#/" + ifClause + "/multipleOf",
         "",
         "must be multiple of " + multipleOf,
-        {multipleOf: multipleOf}
+        {multipleOf: multipleOf, schema: schema[ifClause]}
       )
 
       if (numErrors === 2) {
         err = validate.errors?.[1]
         shouldBeError(err, "if", "#/if", "", 'must match "' + ifClause + '" schema', {
           failingKeyword: ifClause,
+          schema,
         })
       }
     }
@@ -979,7 +1002,7 @@ describe("Validation errors", () => {
           "#/uniqueItems",
           "",
           "must NOT have duplicate items (items ## 2 and 1 are identical)",
-          {i: 1, j: 2}
+          {i: 1, j: 2, schema}
         )
 
         const expectedErrors = _ajv.opts.allErrors ? 2 : 1

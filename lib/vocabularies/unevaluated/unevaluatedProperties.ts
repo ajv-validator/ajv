@@ -16,7 +16,8 @@ export type UnevaluatedPropertiesError = ErrorObject<
 
 const error: KeywordErrorDefinition = {
   message: "must NOT have unevaluated properties",
-  params: ({params}) => _`{unevaluatedProperty: ${params.unevaluatedProperty}}`,
+  params: ({params, it}) =>
+    _`{unevaluatedProperty: ${params.unevaluatedProperty}, schema: ${it.topSchemaRef}${it.schemaPath}}`,
 }
 
 const def: CodeKeywordDefinition = {

@@ -7,7 +7,8 @@ const error: KeywordErrorDefinition = {
     const comp = keyword === "maxProperties" ? "more" : "fewer"
     return str`must NOT have ${comp} than ${schemaCode} items`
   },
-  params: ({schemaCode}) => _`{limit: ${schemaCode}}`,
+  params: ({schemaCode, it}) =>
+    _`{limit: ${schemaCode}, schema: ${it.topSchemaRef}${it.schemaPath}}`,
 }
 
 const def: CodeKeywordDefinition = {

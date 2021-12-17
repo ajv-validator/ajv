@@ -14,7 +14,8 @@ export type UniqueItemsError = ErrorObject<
 const error: KeywordErrorDefinition = {
   message: ({params: {i, j}}) =>
     str`must NOT have duplicate items (items ## ${j} and ${i} are identical)`,
-  params: ({params: {i, j}}) => _`{i: ${i}, j: ${j}}`,
+  params: ({params: {i, j}, it}) =>
+    _`{i: ${i}, j: ${j}, schema: ${it.topSchemaRef}${it.schemaPath}}`,
 }
 
 const def: CodeKeywordDefinition = {

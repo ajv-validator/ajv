@@ -36,11 +36,11 @@ export const error: KeywordErrorDefinition = {
       : typeErrorMessage(cxt, "object")
   },
   params: (cxt) => {
-    const {params} = cxt
+    const {params, it} = cxt
     return params.propError
       ? params.propError === PropError.Additional
-        ? _`{error: ${params.propError}, additionalProperty: ${params.additionalProperty}}`
-        : _`{error: ${params.propError}, missingProperty: ${params.missingProperty}}`
+        ? _`{error: ${params.propError}, additionalProperty: ${params.additionalProperty}, schema: ${it.topSchemaRef}${it.schemaPath}}`
+        : _`{error: ${params.propError}, missingProperty: ${params.missingProperty}, schema: ${it.topSchemaRef}${it.schemaPath}}`
       : typeErrorParams(cxt, "object")
   },
 }
