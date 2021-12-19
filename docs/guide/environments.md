@@ -94,6 +94,15 @@ const ajv = new Ajv({code: {es5: true}})
 
 See [Advanced options](https://github.com/ajv-validator/ajv/blob/master/docs/api.md#advanced-options).
 
+## CJS vs ESM exports
+
+The default configuration of AJV is to generate code in ES6 with Common JS (CJS) exports. This can be changed by setting 
+the ES Modules(ESM) flag.
+
+```javascript
+const ajv = new Ajv({code: {exportEsm: true}})
+```
+
 ## Other JavaScript environments
 
 Ajv is used in other JavaScript environments, including Electron apps, WeChat mini-apps and many others, where the same considerations apply as above:

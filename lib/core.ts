@@ -140,6 +140,7 @@ export interface CurrentOptions {
 
 export interface CodeOptions {
   es5?: boolean
+  exportEsm?: boolean
   lines?: boolean
   optimize?: boolean | number
   formats?: Code // code to require (or construct) map of available formats - for standalone code

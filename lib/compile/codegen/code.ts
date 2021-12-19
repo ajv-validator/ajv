@@ -155,6 +155,19 @@ export function getProperty(key: Code | string | number): Code {
   return typeof key == "string" && IDENTIFIER.test(key) ? new _Code(`.${key}`) : _`[${key}]`
 }
 
+//Does best effort to format the name properly
+export function getEsmExportName(key: Code | string | number): Code {
+  if (typeof key == "string" && IDENTIFIER.test(key)) {
+    return new _Code(`${key}`)
+  }
+  const name = key.toString()
+  let newName = name.replace(/[^\w$_]|[\s]/gi, "_")
+  if (/^[0-9]/.test(name)) {
+    newName = "_" + newName
+  }
+  return new _Code(`${newName}`)
+}
+
 export function regexpCode(rx: RegExp): Code {
   return new _Code(rx.toString())
 }

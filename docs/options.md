@@ -65,6 +65,7 @@ const defaultOptions = {
   code: {
     // NEW
     es5: false,
+    exportEsm: false,
     lines: false,
     source: false,
     process: undefined, // (code: string) => string
@@ -347,6 +348,9 @@ Code generation options:
 ```typescript
 type CodeOptions = {
   es5?: boolean // to generate es5 code - by default code is es6, with "for-of" loops, "let" and "const"
+  exportEsm?: boolean // how functions should be exported - by default CJS is used, so the validate function(s) 
+  // file can be `required`. Set this value to true to export the validate function(s) as ES Modules, enabling 
+  // bunlers to do their job.
   lines?: boolean // add line-breaks to code - to simplify debugging of generated functions
   source?: boolean // add `source` property (see Source below) to validating function.
   process?: (code: string, schema?: SchemaEnv) => string // an optional function to process generated code
