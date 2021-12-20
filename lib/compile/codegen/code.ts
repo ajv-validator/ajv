@@ -160,12 +160,7 @@ export function getEsmExportName(key: Code | string | number): Code {
   if (typeof key == "string" && IDENTIFIER.test(key)) {
     return new _Code(`${key}`)
   }
-  const name = key.toString()
-  let newName = name.replace(/[^\w$_]|[\s]/gi, "_")
-  if (/^[0-9]/.test(name)) {
-    newName = "_" + newName
-  }
-  return new _Code(`${newName}`)
+  throw new Error(`CodeGen: invalid export name: ${key}, use explicit $id name mapping`)
 }
 
 export function regexpCode(rx: RegExp): Code {

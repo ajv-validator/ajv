@@ -30,7 +30,7 @@ function standaloneCode(
     const usedValues: UsedScopeValues = {}
     const n = source?.validateName
     const vCode = validateCode(usedValues, source)
-    if (ajv.opts.code.exportEsm) {
+    if (ajv.opts.code.esm) {
       // Always do named export as `validate` rather than the variable `n` which is `validateXX` for known export value
       return `"use strict";${_n}export const validate = ${n};${_n}export default ${n};${_n}${vCode}`
     }
@@ -47,15 +47,10 @@ function standaloneCode(
       const v = getValidateFunc(schemas[name] as T)
       if (v) {
         const vCode = validateCode(usedValues, v.source)
-        if (ajv.opts.code.exportEsm) {
-          code = _`${code}${_n}export const ${getEsmExportName(name)} = ${
-            v.source?.validateName
-          };${_n}${vCode}`
-        } else {
-          code = _`${code}${_n}exports${getProperty(name)} = ${
-            v.source?.validateName
-          };${_n}${vCode}`
-        }
+        const exportSyntax = ajv.opts.code.esm
+          ? _`export const ${getEsmExportName(name)}`
+          : _`exports${getProperty(name)}`
+        code = _`${code}${_n}${exportSyntax} = ${v.source?.validateName};${_n}${vCode}`
       }
     }
     return `${code}`

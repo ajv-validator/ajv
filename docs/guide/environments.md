@@ -100,7 +100,7 @@ The default configuration of AJV is to generate code in ES6 with Common JS (CJS)
 the ES Modules(ESM) flag.
 
 ```javascript
-const ajv = new Ajv({code: {exportEsm: true}})
+const ajv = new Ajv({code: {esm: true}})
 ```
 
 ## Other JavaScript environments

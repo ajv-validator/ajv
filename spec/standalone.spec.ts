@@ -57,7 +57,7 @@ describe("standalone code generation", () => {
       })
 
       it("should generate module code with named export - ESM", () => {
-        ajv = new _Ajv({code: {source: true, exportEsm: true}})
+        ajv = new _Ajv({code: {source: true, esm: true}})
         ajv.addSchema(numSchema)
         ajv.addSchema(strSchema)
         const moduleCode = standaloneCode(ajv, {
@@ -85,17 +85,24 @@ describe("standalone code generation", () => {
       })
 
       it("should generate module code with all exports - ESM", () => {
-        ajv = new _Ajv({code: {source: true, exportEsm: true}})
+        ajv = new _Ajv({code: {source: true, esm: true}})
         ajv.addSchema(numSchema)
         ajv.addSchema(strSchema)
-        const moduleCode = standaloneCode(ajv)
-        testExportTypeEsm(moduleCode, false)
-        const m = importFromStringSync(moduleCode)
-        assert.strictEqual(Object.keys(m).length, 2)
-        testExports({
-          validateNumber: m.https___example_com_number_json,
-          validateString: m.https___example_com_string_json,
-        })
+
+        try {
+          standaloneCode(ajv)
+        } catch (err) {
+          if (err instanceof Error) {
+            const isMappingErr =
+              `CodeGen: invalid export name: ${numSchema.$id}, use explicit $id name mapping` ===
+                err.message ||
+              `CodeGen: invalid export name: ${strSchema.$id}, use explicit $id name mapping` ===
+                err.message
+            assert.strictEqual(isMappingErr, true)
+          } else {
+            throw err
+          }
+        }
       })
     })
 
@@ -295,7 +302,7 @@ describe("standalone code generation", () => {
   })
 
   it("should generate module code with a single export - ESM", () => {
-    const ajv = new _Ajv({code: {source: true, exportEsm: true}})
+    const ajv = new _Ajv({code: {source: true, esm: true}})
     const v = ajv.compile({
       type: "number",
       minimum: 0,
