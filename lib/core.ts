@@ -49,6 +49,7 @@ import type {
   Format,
   AddedFormat,
   RegExpEngine,
+  UriResolver,
 } from "./types"
 import type {JSONSchemaType} from "./types/json-schema"
 import type {JTDSchemaType, SomeJTDSchemaType, JTDDataType} from "./types/jtd-schema"
@@ -60,7 +61,6 @@ import {Code, ValueScope} from "./compile/codegen"
 import {normalizeId, getSchemaRefs} from "./compile/resolve"
 import {getJSONTypes} from "./compile/validate/dataType"
 import {eachItem} from "./compile/util"
-
 import * as $dataRefSchema from "./refs/data.json"
 
 const defaultRegExp: RegExpEngine = (str, flags) => new RegExp(str, flags)
@@ -136,6 +136,7 @@ export interface CurrentOptions {
   int32range?: boolean // JTD only
   messages?: boolean
   code?: CodeOptions // NEW
+  uriResolver?: UriResolver
 }
 
 export interface CodeOptions {

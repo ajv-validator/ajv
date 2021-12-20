@@ -257,9 +257,14 @@ export function resolveSchema(
   root: SchemaEnv, // root object with properties schema, refs TODO below SchemaEnv is assigned to it
   ref: string // reference to resolve
 ): SchemaEnv | undefined {
-  const p = URI.parse(ref)
-  const refPath = _getFullPath(p)
-  let baseId = getFullPath(root.baseId)
+  let p: URI.URIComponents
+  if (this.opts.uriResolver) {
+    p = this.opts.uriResolver.parse(ref)
+  } else {
+    p = URI.parse(ref)
+  }
+  const refPath = _getFullPath(p, this.opts.uriResolver)
+  let baseId = getFullPath(root.baseId, undefined, this.opts.uriResolver)
   // TODO `Object.keys(root.schema).length > 0` should not be needed - but removing breaks 2 tests
   if (Object.keys(root.schema).length > 0 && refPath === baseId) {
     return getJsonPointer.call(this, p, root)

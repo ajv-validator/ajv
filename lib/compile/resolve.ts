@@ -1,4 +1,4 @@
-import type {AnySchema, AnySchemaObject} from "../types"
+import type {AnySchema, AnySchemaObject, UriResolver} from "../types"
 import type Ajv from "../ajv"
 import {eachItem} from "./util"
 import * as equal from "fast-deep-equal"
@@ -67,14 +67,25 @@ function countKeys(schema: AnySchemaObject): number {
   return count
 }
 
-export function getFullPath(id = "", normalize?: boolean): string {
+export function getFullPath(id = "", normalize?: boolean, resolver?: UriResolver): string {
   if (normalize !== false) id = normalizeId(id)
-  const p = URI.parse(id)
-  return _getFullPath(p)
+  let p: URI.URIComponents
+  if (resolver !== undefined) {
+    p = resolver.parse(id)
+  } else {
+    p = URI.parse(id)
+  }
+  return _getFullPath(p, resolver)
 }
 
-export function _getFullPath(p: URI.URIComponents): string {
-  return URI.serialize(p).split("#")[0] + "#"
+export function _getFullPath(p: URI.URIComponents, resolver?: UriResolver): string {
+  let serialized: string
+  if (resolver !== undefined) {
+    serialized = resolver.serialize(p)
+  } else {
+    serialized = URI.serialize(p)
+  }
+  return serialized.split("#")[0] + "#"
 }
 
 const TRAILING_SLASH_HASH = /#\/?$/
@@ -108,7 +119,10 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): Loc
     baseIds[jsonPtr] = baseId
 
     function addRef(this: Ajv, ref: string): string {
-      ref = normalizeId(baseId ? URI.resolve(baseId, ref) : ref)
+      const _resolve =
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        this.opts.uriResolver !== undefined ? this.opts.uriResolver?.resolve : URI.resolve
+      ref = normalizeId(baseId ? _resolve(baseId, ref) : ref)
       if (schemaRefs.has(ref)) throw ambiguos(ref)
       schemaRefs.add(ref)
       let schOrRef = this.refs[ref]
