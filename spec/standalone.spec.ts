@@ -4,7 +4,28 @@ import _Ajv from "./ajv"
 import standaloneCode from "../dist/standalone"
 import ajvFormats from "ajv-formats"
 import requireFromString = require("require-from-string")
+import {importFromStringSync} from "module-from-string"
 import assert = require("assert")
+
+function testExportTypeEsm(moduleCode: string, singleExport: boolean) {
+  //Must have
+  assert.strictEqual(moduleCode.includes("export const"), true)
+  if (singleExport) {
+    assert.strictEqual(moduleCode.includes("export default"), true)
+  }
+  //Must not have
+  assert.strictEqual(moduleCode.includes("module.exports"), false)
+}
+function testExportTypeCjs(moduleCode: string, singleExport: boolean) {
+  //Must have
+  if (singleExport) {
+    assert.strictEqual(moduleCode.includes("module.exports"), true)
+  } else {
+    assert.strictEqual(moduleCode.includes("exports.") || moduleCode.includes("exports["), true)
+  }
+  //Must not have
+  assert.strictEqual(moduleCode.includes("export const"), false)
+}
 
 describe("standalone code generation", () => {
   describe("multiple exports", () => {
@@ -21,30 +42,67 @@ describe("standalone code generation", () => {
     }
 
     describe("without schema keys", () => {
-      beforeEach(() => {
+      it("should generate module code with named export - CJS", () => {
         ajv = new _Ajv({code: {source: true}})
         ajv.addSchema(numSchema)
         ajv.addSchema(strSchema)
-      })
-
-      it("should generate module code with named exports", () => {
         const moduleCode = standaloneCode(ajv, {
           validateNumber: "https://example.com/number.json",
           validateString: "https://example.com/string.json",
         })
+        testExportTypeCjs(moduleCode, false)
         const m = requireFromString(moduleCode)
         assert.strictEqual(Object.keys(m).length, 2)
         testExports(m)
       })
 
-      it("should generate module code with all exports", () => {
+      it("should generate module code with named export - ESM", () => {
+        ajv = new _Ajv({code: {source: true, esm: true}})
+        ajv.addSchema(numSchema)
+        ajv.addSchema(strSchema)
+        const moduleCode = standaloneCode(ajv, {
+          validateNumber: "https://example.com/number.json",
+          validateString: "https://example.com/string.json",
+        })
+        testExportTypeEsm(moduleCode, false)
+        const m = importFromStringSync(moduleCode)
+        assert.strictEqual(Object.keys(m).length, 2)
+        testExports(m)
+      })
+
+      it("should generate module code with all exports - CJS", () => {
+        ajv = new _Ajv({code: {source: true}})
+        ajv.addSchema(numSchema)
+        ajv.addSchema(strSchema)
         const moduleCode = standaloneCode(ajv)
+        testExportTypeCjs(moduleCode, false)
         const m = requireFromString(moduleCode)
         assert.strictEqual(Object.keys(m).length, 2)
         testExports({
           validateNumber: m["https://example.com/number.json"],
           validateString: m["https://example.com/string.json"],
         })
+      })
+
+      it("should generate module code with all exports - ESM", () => {
+        ajv = new _Ajv({code: {source: true, esm: true}})
+        ajv.addSchema(numSchema)
+        ajv.addSchema(strSchema)
+
+        try {
+          standaloneCode(ajv)
+        } catch (err) {
+          if (err instanceof Error) {
+            const isMappingErr =
+              `CodeGen: invalid export name: ${numSchema.$id}, use explicit $id name mapping` ===
+                err.message ||
+              `CodeGen: invalid export name: ${strSchema.$id}, use explicit $id name mapping` ===
+                err.message
+            assert.strictEqual(isMappingErr, true)
+          } else {
+            throw err
+          }
+        }
       })
     })
 
@@ -223,15 +281,36 @@ describe("standalone code generation", () => {
     }
   })
 
-  it("should generate module code with a single export (ESM compatible)", () => {
+  it("should generate module code with a single export - CJS", () => {
     const ajv = new _Ajv({code: {source: true}})
     const v = ajv.compile({
       type: "number",
       minimum: 0,
     })
     const moduleCode = standaloneCode(ajv, v)
+    testExportTypeCjs(moduleCode, true)
     const m = requireFromString(moduleCode)
     testExport(m)
+    testExport(m.default)
+
+    function testExport(validate: AnyValidateFunction<unknown>) {
+      assert.strictEqual(validate(1), true)
+      assert.strictEqual(validate(0), true)
+      assert.strictEqual(validate(-1), false)
+      assert.strictEqual(validate("1"), false)
+    }
+  })
+
+  it("should generate module code with a single export - ESM", () => {
+    const ajv = new _Ajv({code: {source: true, esm: true}})
+    const v = ajv.compile({
+      type: "number",
+      minimum: 0,
+    })
+    const moduleCode = standaloneCode(ajv, v)
+    testExportTypeEsm(moduleCode, true)
+    const m = importFromStringSync(moduleCode)
+    testExport(m.validate)
     testExport(m.default)
 
     function testExport(validate: AnyValidateFunction<unknown>) {
