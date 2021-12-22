@@ -23,8 +23,7 @@ const def: CodeKeywordDefinition = {
     const useLoop = schema.length >= it.opts.loopEnum
     const needsEql =
       useLoop ||
-      $data ||
-      !Array.isArray(schema) ||
+      ($data && !Array.isArray(schema)) ||
       schema.some((x: unknown) => x !== null && typeof x === "object")
     const eql = needsEql ? useFunc(gen, equal) : undefined
     let valid: Code
