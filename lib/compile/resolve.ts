@@ -67,15 +67,14 @@ function countKeys(schema: AnySchemaObject): number {
   return count
 }
 
-export function getFullPath(id = "", resolver: UriResolver, normalize?: boolean): string {
+export function getFullPath(resolver: UriResolver, id = "", normalize?: boolean): string {
   if (normalize !== false) id = normalizeId(id)
   const p = resolver.parse(id)
   return _getFullPath(p, resolver)
 }
 
 export function _getFullPath(p: URIComponents, resolver: UriResolver): string {
-  let serialized: string
-  serialized = resolver.serialize(p)
+  const serialized = resolver.serialize(p)
   return serialized.split("#")[0] + "#"
 }
 
@@ -96,7 +95,7 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): Loc
   const {schemaId, uriResolver} = this.opts
   const schId = normalizeId(schema[schemaId] || baseId)
   const baseIds: {[JsonPtr in string]?: string} = {"": schId}
-  const pathPrefix = getFullPath(schId, uriResolver, false)
+  const pathPrefix = getFullPath(uriResolver, schId, false)
   const localRefs: LocalRefs = {}
   const schemaRefs: Set<string> = new Set()
 
@@ -110,7 +109,8 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): Loc
     baseIds[jsonPtr] = baseId
 
     function addRef(this: Ajv, ref: string): string {
-      const _resolve = uriResolver.resolve
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      const _resolve = this.opts.uriResolver.resolve
       ref = normalizeId(baseId ? _resolve(baseId, ref) : ref)
       if (schemaRefs.has(ref)) throw ambiguos(ref)
       schemaRefs.add(ref)
