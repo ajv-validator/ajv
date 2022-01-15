@@ -93,10 +93,10 @@ const ANCHOR = /^[a-z_][-a-z0-9._]*$/i
 
 export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): LocalRefs {
   if (typeof schema == "boolean") return {}
-  const {schemaId,uriResolver} = this.opts
+  const {schemaId, uriResolver} = this.opts
   const schId = normalizeId(schema[schemaId] || baseId)
   const baseIds: {[JsonPtr in string]?: string} = {"": schId}
-  const pathPrefix = getFullPath(schId, uriResolver,false)
+  const pathPrefix = getFullPath(schId, uriResolver, false)
   const localRefs: LocalRefs = {}
   const schemaRefs: Set<string> = new Set()
 

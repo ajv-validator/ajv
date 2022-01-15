@@ -28,7 +28,8 @@ const def: CodeKeywordDefinition = {
 
     function validateJtdRef(): void {
       const refSchema = (root.schema as AnySchemaObject).definitions?.[ref]
-      if (!refSchema) throw new MissingRefError("", ref, it.opts.uriResolver, `No definition ${ref}`)
+      if (!refSchema)
+        throw new MissingRefError("", ref, it.opts.uriResolver, `No definition ${ref}`)
       if (hasRef(refSchema) || !it.opts.inlineRefs) callValidate(refSchema)
       else inlineRefSchema(refSchema)
     }

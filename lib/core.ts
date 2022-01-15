@@ -262,7 +262,7 @@ function requiredOptions(o: Options): RequiredInstanceOptions {
     validateFormats: o.validateFormats ?? true,
     unicodeRegExp: o.unicodeRegExp ?? true,
     int32range: o.int32range ?? true,
-    uriResolver: uriResolver
+    uriResolver: uriResolver,
   }
 }
 
