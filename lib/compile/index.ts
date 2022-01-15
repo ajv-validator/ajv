@@ -112,7 +112,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
   // TODO refactor - remove compilations
   const _sch = getCompilingSchema.call(this, sch)
   if (_sch) return _sch
-  const rootId = getFullPath(sch.root.baseId, this.opts.uriResolver) // TODO if getFullPath removed 1 tests fails
+  const rootId = getFullPath(this.opts.uriResolver, sch.root.baseId) // TODO if getFullPath removed 1 tests fails
   const {es5, lines} = this.opts.code
   const {ownProperties} = this.opts
   const gen = new CodeGen(this.scope, {es5, lines, ownProperties})
@@ -259,7 +259,7 @@ export function resolveSchema(
 ): SchemaEnv | undefined {
   const p = this.opts.uriResolver.parse(ref)
   const refPath = _getFullPath(p, this.opts.uriResolver)
-  let baseId = getFullPath(root.baseId, this.opts.uriResolver, undefined)
+  let baseId = getFullPath(this.opts.uriResolver, root.baseId, undefined)
   // TODO `Object.keys(root.schema).length > 0` should not be needed - but removing breaks 2 tests
   if (Object.keys(root.schema).length > 0 && refPath === baseId) {
     return getJsonPointer.call(this, p, root)
