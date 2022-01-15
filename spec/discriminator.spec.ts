@@ -175,7 +175,7 @@ describe("discriminator keyword", function () {
           required: ["foo"],
           oneOf: [{properties: {}}],
         },
-        /discriminator: oneOf schemas must have "properties\/foo"/
+        /discriminator: oneOf subschemas (or referenced schemas) must have "properties\/foo"/
       )
     })
 
