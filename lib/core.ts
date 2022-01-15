@@ -63,6 +63,8 @@ import {getJSONTypes} from "./compile/validate/dataType"
 import {eachItem} from "./compile/util"
 import * as $dataRefSchema from "./refs/data.json"
 
+import DefaultUriResolver from "./runtime/uri"
+
 const defaultRegExp: RegExpEngine = (str, flags) => new RegExp(str, flags)
 defaultRegExp.code = "new RegExp"
 
@@ -227,7 +229,8 @@ type RequiredInstanceOptions = {
     | "validateSchema"
     | "validateFormats"
     | "int32range"
-    | "unicodeRegExp"]: NonNullable<Options[K]>
+    | "unicodeRegExp"
+    | "uriResolver"]: NonNullable<Options[K]>
 } & {code: InstanceCodeOptions}
 
 export type InstanceOptions = Options & RequiredInstanceOptions
@@ -240,6 +243,7 @@ function requiredOptions(o: Options): RequiredInstanceOptions {
   const _optz = o.code?.optimize
   const optimize = _optz === true || _optz === undefined ? 1 : _optz || 0
   const regExp = o.code?.regExp ?? defaultRegExp
+  const uriResolver = o.uriResolver ?? DefaultUriResolver
   return {
     strictSchema: o.strictSchema ?? s ?? true,
     strictNumbers: o.strictNumbers ?? s ?? true,
@@ -258,6 +262,7 @@ function requiredOptions(o: Options): RequiredInstanceOptions {
     validateFormats: o.validateFormats ?? true,
     unicodeRegExp: o.unicodeRegExp ?? true,
     int32range: o.int32range ?? true,
+    uriResolver: uriResolver
   }
 }
 
