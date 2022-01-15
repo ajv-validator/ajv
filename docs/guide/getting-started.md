@@ -25,7 +25,7 @@ See [Contributing](../CONTRIBUTING.md) on how to run the tests locally
 ## Basic data validation
 
 Ajv takes a schema for your JSON data and converts it into a very efficient JavaScript code
-that validates your data according to the schema. To create schema you can use either
+that validates your data according to the schema. To create a schema you can use either
 [JSON Schema](../json-schema) or [JSON Type Definition](../json-type-definition) - check out [Choosing schema language](./schema-language), they have
 different advantages and disadvantages.
 
@@ -87,7 +87,7 @@ if (!valid) console.log(validate.errors)
 </code-block>
 </code-group>
 
-Ajv compiles schemas to functions and caches them in all cases (using schema itself as a key for Map), so that the next time the same schema object is used it won't be compiled again.
+Ajv compiles schemas to functions and caches them in all cases (using the schema itself as a key in a Map), so that the next time the same schema object is used it won't be compiled again.
 
 ::: tip Best performance: compile and getSchema methods
 The best performance is achieved when using compiled functions returned by `compile` or `getSchema` methods.
@@ -98,7 +98,7 @@ re-use compiled validation functions. See [Managing multiple schemas](./managing
 :::
 
 ::: warning Save errors property
-Every time a validation function (or `ajv.validate`) is called `errors` property is overwritten. You need to copy `errors` array reference to another variable if you want to use it later (e.g., in the callback). See [Validation errors](../api.md#validation-errors)
+Every time a validation function (or `ajv.validate`) is called the `errors` property is overwritten. You need to copy the `errors` array reference to another variable if you want to use it later (e.g. in the callback). See [Validation errors](../api.md#validation-errors).
 :::
 
 ## Parsing and serializing JSON <Badge text="New" />
@@ -107,7 +107,7 @@ Ajv can compile efficient parsers and serializers from [JSON Type Definition](..
 
 Serializing the data with a function specialized to your data shape can be more than 10x compared with `JSON.stringify`.
 
-Parsing the data replaces the need for a separate validation after generic parsing with `JSON.parse` (although validation itself is usually much faster than parsing). In case your JSON string is valid specialized parsing is approximately as fast as JSON.parse, but in case your JSON is invalid, specialized parsing would fail much faster - so it can be very efficient in some scenarios.
+Parsing the data replaces the need for separate validation after generic parsing with `JSON.parse` (although validation itself is usually much faster than parsing). In case your JSON string is valid, the specialized parsing is approximately as fast as JSON.parse, but in case your JSON is invalid, the specialized parsing would fail much faster - so it can be very efficient in some scenarios.
 
 For the same data structure, you can compile parser and serializer in this way:
 

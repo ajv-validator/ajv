@@ -132,15 +132,20 @@ const validData = {
   bar: "abc"
 }
 
-if (validate(data)) {
+if (validate(validData)) {
   // data is MyData here
-  console.log(data.foo)
+  console.log(validData.foo)
 } else {
   console.log(validate.errors)
 }
 ```
 </code-block>
 </code-group>
+ 
+
+::: warning TypeScript limitation
+Note that it's currently not possible for `JTDDataType` to know whether the compiler is inferring timestamps as strings or Dates, and so it conservatively types any timestamp as `string | Date`. This is accurate, but often requires extra validation on the part of the user to confirm they're getting the appropriate data type.
+:::
 
 ## Type-safe error handling
 
@@ -274,7 +279,7 @@ JSON Type Definition only supports tagged unions, so unions in JTD are fully sup
 JSON Schema is more complex and so `JSONSchemaType` has limited support for type safe unions.
 
 `JSONSchemaType` will type check unions where each union element is fully specified as an element of an `anyOf` array or `oneOf` array.
-Additionaly, unions of primitives will type check appropriately if they're combined into an array `type`, e.g. `{type: ["string", "number"]}`.
+Additionally, unions of primitives will type check appropriately if they're combined into an array `type`, e.g. `{type: ["string", "number"]}`.
 
 ::: warning TypeScript limitation
 Note that due to current limitation of TypeScript, JSONSchemaType cannot verify that every element of the union is present, and the following example is still valid `const schema: JSONSchemaType<number | string> = {type: "string"}`.
