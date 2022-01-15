@@ -2,7 +2,7 @@
 
 [[toc]]
 
-Ajv supports generating standalone validation functions from the JSON Schema into functions at compile/build time. These functions can then just be consumed during runtime to do validation checks against JSON. It is useful for several reasons:
+Ajv supports generating standalone validation functions from JSON Schemas at compile/build time. These functions can then be used during runtime to do validation without initialising Ajv. It is useful for several reasons:
 
 - to reduce the browser bundle size - Ajv is not included in the bundle (although if you have a large number of schemas the bundle can become bigger - when the total size of generated validation code is bigger than Ajv code).
 - to reduce the start-up time - the validation and compilation of schemas will happen during build time.
@@ -12,7 +12,7 @@ This functionality in Ajv v7 supersedes the deprecated package ajv-pack that can
 
 ## Two-step process 
 
-The **first step** is to **generate** the standalone validation function code. This is done at compile/build time of your project and the output is a generated JS file. The **second step** is to **consume** the generated JS validation function.
+The **first step** is to **generate** the standalone validation function code. This is done at compile/build time of your project and the output is a generated JS file. The **second step** is to **use** the generated JS validation function.
 
 There are two methods to generate the code, using either the Ajv CLI or the Ajv JS library. There are also a few different options that can be passed when generating code. Below is just a highlight of a few options:
 
@@ -22,14 +22,11 @@ There are two methods to generate the code, using either the Ajv CLI or the Ajv 
 - The standalone code can be generated in either CJS (module.export & require) or ESM (exports & import), it defaults
 to CJS. Set the `code.esm` (JS) value to true or pass the `--code-esm` (CLI) flag if you want ESM exported code.
 
-Note that the way the function is exported, differs if you are exporting a single or multiple schemas. Examples below.
+Note that the way the function is exported, differs if you are exporting a single or multiple schemas. See examples below.
 
 ### Generating function(s) using CLI
 
-In most cases you would use this functionality via [ajv-cli](https://github.com/ajv-validator/ajv-cli) (>= 4.0.0)
-to generate the standalone code that exports the validation function.
-See [ajv-cli](https://github.com/ajv-validator/ajv-cli#compile-schemas) docs and the
-[cli options](https://github.com/ajv-validator/ajv-cli#ajv-options) for additional information.
+In most cases you would use this functionality via [ajv-cli](https://github.com/ajv-validator/ajv-cli) (>= 4.0.0) to generate the standalone code that exports the validation function. See [ajv-cli](https://github.com/ajv-validator/ajv-cli#compile-schemas) docs and the [cli options](https://github.com/ajv-validator/ajv-cli#ajv-options) for additional information.
 
 #### Using the defaults - ES6 and CJS exports
 ```sh
@@ -57,13 +54,9 @@ const schema = {
   $schema: "http://json-schema.org/draft-07/schema#",
   type: "object",
   properties: {
-    bar: {
-      type: "string"
-    },
+    bar: {type: "string"},
   },
-  "required": [
-    "bar",
-  ]
+  "required": ["bar"]
 }
 
 // The generated code will have a default export:
