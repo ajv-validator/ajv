@@ -72,7 +72,7 @@ const def: CodeKeywordDefinition = {
         const propSch = sch?.properties?.[tagName]
         if (typeof propSch != "object") {
           throw new Error(
-            `discriminator: oneOf subschema (or referenced schema) must have "properties/${tagName}"`
+            `discriminator: oneOf subschemas (or referenced schemas) must have "properties/${tagName}"`
           )
         }
         tagRequired = tagRequired && (topRequired || hasRequired(sch))
