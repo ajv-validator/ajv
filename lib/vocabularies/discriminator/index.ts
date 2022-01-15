@@ -65,12 +65,11 @@ const def: CodeKeywordDefinition = {
       let tagRequired = true
       for (let i = 0; i < oneOf.length; i++) {
         let sch = oneOf[i]
-        let propSch
         if (sch?.$ref && !schemaHasRulesButRef(sch, it.self.RULES)) {
           sch = resolveRef.call(it.self, it.schemaEnv, it.baseId, sch?.$ref)
           if (sch instanceof SchemaEnv) sch = sch.schema
         }
-        propSch = sch?.properties?.[tagName]
+        const propSch = sch?.properties?.[tagName]
         if (typeof propSch != "object") {
           throw new Error(
             `discriminator: oneOf subschema (or referenced schema) must have "properties/${tagName}"`
