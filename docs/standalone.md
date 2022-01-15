@@ -82,9 +82,7 @@ const schemaFoo = {
   $schema: "http://json-schema.org/draft-07/schema#",
   type: "object",
   properties: {
-    foo: {
-      "$ref": "#/definitions/Bar"
-    }
+    foo: {"$ref": "#/definitions/Bar"}
   }
 }
 const schemaBar = {
@@ -92,13 +90,9 @@ const schemaBar = {
   $schema: "http://json-schema.org/draft-07/schema#",
   type: "object",
   properties: {
-    bar: {
-      type: "string"
-    },
+    bar: {type: "string"},
   },
-  "required": [
-    "bar",
-  ]
+  "required": ["bar"]
 }
 
 // For CJS, it generates an exports array, will generate
@@ -123,9 +117,7 @@ const schemaFoo = {
   $schema: "http://json-schema.org/draft-07/schema#",
   type: "object",
   properties: {
-    foo: {
-      "$ref": "#/definitions/Bar"
-    }
+    foo: {"$ref": "#/definitions/Bar"}
   }
 }
 const schemaBar = {
@@ -133,13 +125,9 @@ const schemaBar = {
   $schema: "http://json-schema.org/draft-07/schema#",
   type: "object",
   properties: {
-    bar: {
-      type: "string"
-    },
+    bar: {type: "string"},
   },
-  "required": [
-    "bar",
-  ]
+  "required": ["bar"]
 }
 
 // For ESM, the export name needs to be a valid export name, it can not be `export const #/definitions/Foo = ...;` so we
@@ -240,9 +228,9 @@ if (!validateFoo(fooFail))
 
 ### Requirement at runtime
 
-One of the main reason for using the standalone mode is to compile the JSON schema into functions at build time and then just consume them during runtime. This prevents the initial compilation at runtime which saves time at runtime. 
+One of the main reason for using the standalone mode is to start applications faster to avoid runtime schema compilation. 
 
-It is important to understand that the standalone generated functions still has a dependency on the Ajv. Specifically on the code in the [runtime](https://github.com/ajv-validator/ajv/tree/master/lib/runtime) folder of the package. 
+The standalone generated functions still has a dependency on the Ajv. Specifically on the code in the [runtime](https://github.com/ajv-validator/ajv/tree/master/lib/runtime) folder of the package. 
 
 Completely isolated validation functions can be generated if desired (won't be for most use cases). Run the generated code
 through a bundler like ES Build to create completely isolated validation functions that can be imported/required 
@@ -253,9 +241,9 @@ without any dependency on Ajv. This is also not needed if your project is alread
 To support standalone code generation:
 
 - Ajv option `code.source` must be set to `true`
-- Only `code` and `macro` user-defined keywords are supported (see [User defined keywords](./keywords.md)).
-- When `code` keywords define variables in shared scope using `gen.scopeValue`, they must provide `code` property with the code snippet. See source code of pre-defined keywords for examples in [vocabularies folder](https://github.com/ajv-validator/ajv/blob/master/lib/vocabularies).
-- If formats are used in standalone code, ajv option `code.formats` should contain the code snippet that will evaluate to an object with all used format definitions - it can be a call to `require("...")` with the correct path (relative to the location of saved module):
+- only `code` and `macro` user-defined keywords are supported (see [User defined keywords](./keywords.md)).
+- when `code` keywords define variables in shared scope using `gen.scopeValue`, they must provide `code` property with the code snippet. See source code of pre-defined keywords for examples in [vocabularies folder](https://github.com/ajv-validator/ajv/blob/master/lib/vocabularies).
+- if formats are used in standalone code, ajv option `code.formats` should contain the code snippet that will evaluate to an object with all used format definitions - it can be a call to `require("...")` with the correct path (relative to the location of saved module):
 
 ```javascript
 import myFormats from "./my-formats"
