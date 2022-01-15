@@ -17,8 +17,7 @@ The **first step** is to **generate** the standalone validation function code. T
 There are two methods to generate the code, using either the Ajv CLI or the Ajv JS library. There are also a few different options that can be passed when generating code. Below is just a highlight of a few options:
 
 - Set the `code.source` (JS) value to true or use the `compile` (CLI) command to generate standalone code.
-- The standalone code can be generated in either ES5 or ES6, it defaults to ES5. Set the `code.es5` (JS) value to true or
-  pass the `--code-es5` (CLI) flag to true if you want ES5 code.
+- The standalone code can be generated in either ES5 or ES6, it defaults to ES6. Set the `code.es5` (JS) value to true or pass the `--code-es5` (CLI) flag to true if you want ES5 code.
 - The standalone code can be generated in either CJS (module.export & require) or ESM (exports & import), it defaults to CJS. Set the `code.esm` (JS) value to true or pass the `--code-esm` (CLI) flag if you want ESM exported code.
 
 Note that the way the function is exported, differs if you are exporting a single or multiple schemas. See examples below.
