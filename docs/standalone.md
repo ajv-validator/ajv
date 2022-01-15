@@ -4,9 +4,9 @@
 
 Ajv supports generating standalone validation functions from the JSON Schema into functions at compile/build time. These functions can then just be consumed during runtime to do validation checks against JSON. It is useful for several reasons:
 
-- To reduce the browser bundle size - Ajv is not included in the bundle (although if you have a large number of schemas the bundle can become bigger - when the total size of generated validation code is bigger than Ajv code).
-- To reduce the start-up time - the validation and compilation of schemas will happen during build time.
-- To avoid dynamic code evaluation with the function constructor (used for schema compilation) - when it is prohibited by the browser page [Content Security Policy](./security.md#content-security-policy).
+- to reduce the browser bundle size - Ajv is not included in the bundle (although if you have a large number of schemas the bundle can become bigger - when the total size of generated validation code is bigger than Ajv code).
+- to reduce the start-up time - the validation and compilation of schemas will happen during build time.
+- to avoid dynamic code evaluation with Function constructor (used for schema compilation) - when it is prohibited by the browser page [Content Security Policy](./security.md#content-security-policy).
 
 This functionality in Ajv v7 supersedes the deprecated package ajv-pack that can be used with Ajv v6. All schemas, including those with recursive references, formats and user-defined keywords are supported, with few [limitations](#configuration-and-limitations).
 
