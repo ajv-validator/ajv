@@ -3,6 +3,7 @@ import type {KeywordCxt} from "../../compile/validate"
 import {_, getProperty, Name} from "../../compile/codegen"
 import {DiscrError, DiscrErrorObj} from "../discriminator/types"
 import {resolveRef, SchemaEnv} from "../../compile"
+import {schemaHasRulesButRef} from "./util"
 
 export type DiscriminatorError = DiscrErrorObj<DiscrError.Tag> | DiscrErrorObj<DiscrError.Mapping>
 
