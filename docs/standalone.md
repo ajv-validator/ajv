@@ -232,9 +232,7 @@ One of the main reason for using the standalone mode is to start applications fa
 
 The standalone generated functions still has a dependency on the Ajv. Specifically on the code in the [runtime](https://github.com/ajv-validator/ajv/tree/master/lib/runtime) folder of the package. 
 
-Completely isolated validation functions can be generated if desired (won't be for most use cases). Run the generated code
-through a bundler like ES Build to create completely isolated validation functions that can be imported/required 
-without any dependency on Ajv. This is also not needed if your project is already using a bundler.
+Completely isolated validation functions can be generated if desired (won't be for most use cases). Run the generated code through a bundler like ES Build to create completely isolated validation functions that can be imported/required without any dependency on Ajv. This is also not needed if your project is already using a bundler.
 
 ## Configuration and limitations
 
