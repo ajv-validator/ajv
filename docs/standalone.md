@@ -2,28 +2,19 @@
 
 [[toc]]
 
-Ajv supports generating standalone validation functions from the JSON Schema into functions at compile/build
-time. These functions can then just be consumed during runtime to do validation checks against JSON.
-It is useful for several reasons:
+Ajv supports generating standalone validation functions from the JSON Schema into functions at compile/build time. These functions can then just be consumed during runtime to do validation checks against JSON. It is useful for several reasons:
 
-- To reduce the browser bundle size - Ajv is not included in the bundle (although if you have a large number 
-of schemas the bundle can become bigger - when the total size of generated validation code is bigger than Ajv code).
+- To reduce the browser bundle size - Ajv is not included in the bundle (although if you have a large number of schemas the bundle can become bigger - when the total size of generated validation code is bigger than Ajv code).
 - To reduce the start-up time - the validation and compilation of schemas will happen during build time.
-- To avoid dynamic code evaluation with the function constructor (used for schema compilation) - when it is prohibited
-by the browser page [Content Security Policy](./security.md#content-security-policy).
+- To avoid dynamic code evaluation with the function constructor (used for schema compilation) - when it is prohibited by the browser page [Content Security Policy](./security.md#content-security-policy).
 
-This functionality in Ajv v7 supersedes the deprecated package ajv-pack that can be used with Ajv v6. All schemas, 
-including those with recursive references, formats and user-defined keywords are supported, with few
-[limitations](#configuration-and-limitations).
+This functionality in Ajv v7 supersedes the deprecated package ajv-pack that can be used with Ajv v6. All schemas, including those with recursive references, formats and user-defined keywords are supported, with few [limitations](#configuration-and-limitations).
 
 ## Two-step process 
 
-The **first step** is to **generate** the standalone validation function code. This is done at compile/build time 
-of your project and the output is a generated JS file. The **second step** is to **consume** the generated 
-JS validation function.
+The **first step** is to **generate** the standalone validation function code. This is done at compile/build time of your project and the output is a generated JS file. The **second step** is to **consume** the generated JS validation function.
 
-There are two methods to generate the code, using either the Ajv CLI or the Ajv JS library. There are also a few 
-different options that can be passed when generating code. Below is just a highlight of a few options:
+There are two methods to generate the code, using either the Ajv CLI or the Ajv JS library. There are also a few different options that can be passed when generating code. Below is just a highlight of a few options:
 
 - Set the `code.source` (JS) value to true or use the `compile` (CLI) command to generate standalone code.
 - The standalone code can be generated in either ES5 or ES6, it defaults to ES5. Set the `code.es5` (JS) value to true or
@@ -229,6 +220,7 @@ if (!validateFoo(fooFail))
 ```
 
 ### Validating multiple schemas using the JS library - ES6 and ESM
+
 ```javascript
 import {Foo, Bar} from './validate-multiple-esm.mjs';
 
@@ -255,11 +247,9 @@ if (!validateFoo(fooFail))
 
 ### Requirement at runtime
 
-One of the main reason for using the standalone mode is to compile the JSON schema into functions at build 
-time and then just consume them during runtime. This prevents the initial compilation at runtime which saves time at runtime. 
+One of the main reason for using the standalone mode is to compile the JSON schema into functions at build time and then just consume them during runtime. This prevents the initial compilation at runtime which saves time at runtime. 
 
-It is important to understand that the standalone generated functions still has a dependency on the Ajv. Specifically
-on the code in the [runtime](https://github.com/ajv-validator/ajv/tree/master/lib/runtime) folder of the package. 
+It is important to understand that the standalone generated functions still has a dependency on the Ajv. Specifically on the code in the [runtime](https://github.com/ajv-validator/ajv/tree/master/lib/runtime) folder of the package. 
 
 Completely isolated validation functions can be generated if desired (won't be for most use cases). Run the generated code
 through a bundler like ES Build to create completely isolated validation functions that can be imported/required 
@@ -271,23 +261,18 @@ To support standalone code generation:
 
 - Ajv option `code.source` must be set to `true`
 - Only `code` and `macro` user-defined keywords are supported (see [User defined keywords](./keywords.md)).
-- When `code` keywords define variables in shared scope using `gen.scopeValue`, they must provide `code` property with 
-the code snippet. See source code of pre-defined keywords for examples in 
-[vocabularies folder](https://github.com/ajv-validator/ajv/blob/master/lib/vocabularies).
-- If formats are used in standalone code, ajv option `code.formats` should contain the code snippet that will evaluate 
-to an object with all used format definitions - it can be a call to `require("...")` with the correct path 
-(relative to the location of saved module):
+- When `code` keywords define variables in shared scope using `gen.scopeValue`, they must provide `code` property with the code snippet. See source code of pre-defined keywords for examples in [vocabularies folder](https://github.com/ajv-validator/ajv/blob/master/lib/vocabularies).
+- If formats are used in standalone code, ajv option `code.formats` should contain the code snippet that will evaluate to an object with all used format definitions - it can be a call to `require("...")` with the correct path (relative to the location of saved module):
 
-    ```javascript
-    import myFormats from "./my-formats"
-    import Ajv, {_} from "ajv"
-    const ajv = new Ajv({
-      formats: myFormats,
-      code: {
-        source: true,
-        formats: _`require("./my-formats")`,
-      },
-    })
-    ```
+```javascript
+import myFormats from "./my-formats"
+import Ajv, {_} from "ajv"
+const ajv = new Ajv({
+  formats: myFormats,
+  code: {
+    source: true,
+    formats: _`require("./my-formats")`,
+  },
+})
 
 If you only use formats from [ajv-formats](https://github.com/ajv-validator/ajv-formats) this option will be set by this package automatically.
