@@ -5,9 +5,9 @@ export default class MissingRefError extends Error {
   readonly missingRef: string
   readonly missingSchema: string
 
-  constructor(baseId: string, ref: string, resolver: UriResolver, msg?: string) {
+  constructor(resolver: UriResolver, baseId: string, ref: string, msg?: string) {
     super(msg || `can't resolve reference ${ref} from id ${baseId}`)
-    this.missingRef = resolveUrl(baseId, ref, resolver)
+    this.missingRef = resolveUrl(resolver, baseId, ref)
     this.missingSchema = normalizeId(getFullPath(resolver, this.missingRef))
   }
 }

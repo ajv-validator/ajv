@@ -208,7 +208,7 @@ export function resolveRef(
   baseId: string,
   ref: string
 ): AnySchema | SchemaEnv | undefined {
-  ref = resolveUrl(baseId, ref, this.opts.uriResolver)
+  ref = resolveUrl(this.opts.uriResolver, baseId, ref)
   const schOrFunc = root.refs[ref]
   if (schOrFunc) return schOrFunc
 
@@ -258,7 +258,7 @@ export function resolveSchema(
   ref: string // reference to resolve
 ): SchemaEnv | undefined {
   const p = this.opts.uriResolver.parse(ref)
-  const refPath = _getFullPath(p, this.opts.uriResolver)
+  const refPath = _getFullPath(this.opts.uriResolver, p)
   let baseId = getFullPath(this.opts.uriResolver, root.baseId, undefined)
   // TODO `Object.keys(root.schema).length > 0` should not be needed - but removing breaks 2 tests
   if (Object.keys(root.schema).length > 0 && refPath === baseId) {
@@ -279,7 +279,7 @@ export function resolveSchema(
     const {schema} = schOrRef
     const {schemaId} = this.opts
     const schId = schema[schemaId]
-    if (schId) baseId = resolveUrl(baseId, schId, this.opts.uriResolver)
+    if (schId) baseId = resolveUrl(this.opts.uriResolver, baseId, schId)
     return new SchemaEnv({schema, schemaId, root, baseId})
   }
   return getJsonPointer.call(this, p, schOrRef)
@@ -307,12 +307,12 @@ function getJsonPointer(
     // TODO PREVENT_SCOPE_CHANGE could be defined in keyword def?
     const schId = typeof schema === "object" && schema[this.opts.schemaId]
     if (!PREVENT_SCOPE_CHANGE.has(part) && schId) {
-      baseId = resolveUrl(baseId, schId, this.opts.uriResolver)
+      baseId = resolveUrl(this.opts.uriResolver, baseId, schId)
     }
   }
   let env: SchemaEnv | undefined
   if (typeof schema != "boolean" && schema.$ref && !schemaHasRulesButRef(schema, this.RULES)) {
-    const $ref = resolveUrl(baseId, schema.$ref, this.opts.uriResolver)
+    const $ref = resolveUrl(this.opts.uriResolver, baseId, schema.$ref)
     env = resolveSchema.call(this, root, $ref)
   }
   // even though resolution failed we need to return SchemaEnv to throw exception

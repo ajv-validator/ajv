@@ -70,10 +70,10 @@ function countKeys(schema: AnySchemaObject): number {
 export function getFullPath(resolver: UriResolver, id = "", normalize?: boolean): string {
   if (normalize !== false) id = normalizeId(id)
   const p = resolver.parse(id)
-  return _getFullPath(p, resolver)
+  return _getFullPath(resolver, p)
 }
 
-export function _getFullPath(p: URIComponents, resolver: UriResolver): string {
+export function _getFullPath(resolver: UriResolver, p: URIComponents): string {
   const serialized = resolver.serialize(p)
   return serialized.split("#")[0] + "#"
 }
@@ -83,7 +83,7 @@ export function normalizeId(id: string | undefined): string {
   return id ? id.replace(TRAILING_SLASH_HASH, "") : ""
 }
 
-export function resolveUrl(baseId: string, id: string, resolver: UriResolver): string {
+export function resolveUrl(resolver: UriResolver, baseId: string, id: string): string {
   id = normalizeId(id)
   return resolver.resolve(baseId, id)
 }

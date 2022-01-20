@@ -282,7 +282,7 @@ describe("User-defined keywords", () => {
             it.baseId.should.equal("#")
             const ref = schema.$ref
             const validate = _ajv.getSchema(ref)
-            if (!validate) throw new _Ajv.MissingRefError(it.baseId, ref, _ajv.opts.uriResolver)
+            if (!validate) throw new _Ajv.MissingRefError(_ajv.opts.uriResolver, it.baseId, ref)
             return validate.schema
           },
           metaSchema: {
