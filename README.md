@@ -12,20 +12,17 @@ Supports JSON Schema draft-04/06/07/2019-09/2020-12 ([draft-04 support](https://
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![Coverage Status](https://coveralls.io/repos/github/ajv-validator/ajv/badge.svg?branch=master)](https://coveralls.io/github/ajv-validator/ajv?branch=master)
+[![SimpleX](https://img.shields.io/badge/chat-on%20SimpleX-%2307b4b9)](https://simplex.chat/contact#/?v=1&smp=smp%3A%2F%2Fu2dS9sG8nMNURyZwqASV4yROM28Er0luVTx5X1CsMrU%3D%40smp4.simplex.im%2Fap4lMFzfXF8Hzmh-Vz0WNxp_1jKiOa-h%23MCowBQYDK2VuAyEAcdefddRvDfI8iAuBpztm_J3qFucj8MDZoVs_2EcMTzU%3D)
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 [![GitHub Sponsors](https://img.shields.io/badge/$-sponsors-brightgreen)](https://github.com/sponsors/epoberezkin)
 
-## Platinum sponsors
+## Ajv sponsors
 
-[<img src="https://ajv.js.org/img/mozilla.svg" width="45%">](https://www.mozilla.org)<img src="https://ajv.js.org/img/gap.svg" width="8%">[<img src="https://ajv.js.org/img/reserved.svg" width="45%">](https://opencollective.com/ajv)
+[<img src="https://ajv.js.org/img/mozilla.svg" width="45%" alt="Mozilla">](https://www.mozilla.org)<img src="https://ajv.js.org/img/gap.svg" width="9%">[<img src="https://ajv.js.org/img/reserved.svg" width="45%">](https://opencollective.com/ajv)
 
-## Gold and Silver sponsors
+[<img src="https://ajv.js.org/img/microsoft.png" width="31%" alt="Microsoft">](https://opensource.microsoft.com)<img src="https://ajv.js.org/img/gap.svg" width="3%">[<img src="https://ajv.js.org/img/reserved.svg" width="31%">](https://opencollective.com/ajv)<img src="https://ajv.js.org/img/gap.svg" width="3%">[<img src="https://ajv.js.org/img/reserved.svg" width="31%">](https://opencollective.com/ajv)
 
-Your logo with the link to your website will be here if you sponsor Ajv development via [GitHub sponsors page](https://github.com/sponsors/epoberezkin) or via [OpenCollective](https://opencollective.com/ajv).
-
-## Bronze sponsors
-
-[<img src="https://raw.githubusercontent.com/ajv-validator/ajv/master/docs/.vuepress/public/img/retool.svg" width="27%">](https://retool.com/?utm_source=sponsor&utm_campaign=ajv)<img src="https://ajv.js.org/img/gap.svg" width="3%">[<img src="https://ajv.js.org/img/reserved.svg" width="27%">](https://opencollective.com/ajv)
+[<img src="https://ajv.js.org/img/retool.svg" width="22.5%" alt="Retool">](https://retool.com/?utm_source=sponsor&utm_campaign=ajv)<img src="https://ajv.js.org/img/gap.svg" width="3%">[<img src="https://ajv.js.org/img/tidelift.svg" width="22.5%" alt="Tidelift">](https://tidelift.com/subscription/pkg/npm-ajv?utm_source=npm-ajv&utm_medium=referral&utm_campaign=enterprise)<img src="https://ajv.js.org/img/gap.svg" width="3%">[<img src="https://ajv.js.org/img/simplex.svg" width="22.5%" alt="SimpleX">](https://github.com/simplex-chat/simplex-chat)<img src="https://ajv.js.org/img/gap.svg" width="3%">[<img src="https://ajv.js.org/img/reserved.svg" width="22.5%">](https://opencollective.com/ajv)
 
 ## Contributing
 
@@ -74,6 +71,8 @@ Thank you.
 <a href="https://opencollective.com/ajv/organization/7/website"><img src="https://opencollective.com/ajv/organization/7/avatar.svg"></a>
 <a href="https://opencollective.com/ajv/organization/8/website"><img src="https://opencollective.com/ajv/organization/8/avatar.svg"></a>
 <a href="https://opencollective.com/ajv/organization/9/website"><img src="https://opencollective.com/ajv/organization/9/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/10/website"><img src="https://opencollective.com/ajv/organization/10/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/11/website"><img src="https://opencollective.com/ajv/organization/11/avatar.svg"></a>
 
 ## Performance
 
