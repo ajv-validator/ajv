@@ -85,7 +85,7 @@ type UncheckedJSONSchemaType<T, IsPartial extends boolean> = (
       : T extends readonly any[]
       ? {
           type: JSONType<"array", IsPartial>
-          items: UncheckedJSONSchemaType<T[0], false>
+          items?: UncheckedJSONSchemaType<T[0], false>
           contains?: UncheckedPartialSchema<T[0]>
           minItems?: number
           maxItems?: number
