@@ -991,8 +991,8 @@ From the perspective of validation result `discriminator` is defined as no-op (t
 There are following requirements and limitations of using `discriminator` keyword:
 - `mapping` in discriminator object is not supported.
 - [oneOf](#oneof) keyword must be present in the same schema.
-- discriminator property should be [requried](#required) either on the top level, as in the example, or in all `oneOf` subschemas.
-- each `oneOf` subschema must have [properties](#properties) keyword with discriminator property.
+- discriminator property should be [required](#required) either on the top level, as in the example, or in all `oneOf` subschemas.
+- each `oneOf` subschema must have [properties](#properties) keyword with discriminator property. The subschemas should be either inlined or included as direct references (only `$ref` keyword without any extra keywords is allowed). 
 - schema for discriminator property in each `oneOf` subschema must be [const](#const) or [enum](#enum), with unique values across all subschemas.
 
 Not meeting any of these requirements would fail schema compilation.
