@@ -7,7 +7,7 @@
 Ajv takes advantage of TypeScript type system to provide additional functionality that is not possible in JavaScript:
 
 - utility types `JSONSchemaType` and `JTDSchemaType` to convert data type into the schema type to simplify writing schemas, both for [JSON Schema](../json-schema.md) (but without union support) and for [JSON Type Definition](../json-type-definition) (with tagged unions support).
-- utility type `JTDDataType` to covert JSON Type Definition schema into the type of data that it defines.
+- utility type `JTDDataType` to convert JSON Type Definition schema into the type of data that it defines.
 - compiled validation functions are type guards that narrow the type after successful validation.
 - validation errors for JSON Schema are defined as tagged unions, for type-safe error handling.
 - when utility type is used, compiled JTD serializers only accept data of correct type (as they do not validate that the data is valid) and compiled parsers return correct data type.
