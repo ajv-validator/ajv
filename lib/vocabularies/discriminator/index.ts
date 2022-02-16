@@ -66,7 +66,7 @@ const def: CodeKeywordDefinition = {
       for (let i = 0; i < oneOf.length; i++) {
         let sch = oneOf[i]
         if (sch?.$ref && !schemaHasRulesButRef(sch, it.self.RULES)) {
-          sch = resolveRef.call(it.self, it.schemaEnv, it.baseId, sch?.$ref)
+          sch = resolveRef.call(it.self, it.schemaEnv.root, it.baseId, sch?.$ref)
           if (sch instanceof SchemaEnv) sch = sch.schema
         }
         const propSch = sch?.properties?.[tagName]
