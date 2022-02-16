@@ -159,7 +159,7 @@ describe("discriminator keyword", function () {
     })
   })
 
-  describe("validation with referenced schemas", () => {
+  describe("validation with deeply referenced schemas", () => {
     const schema = [
       {
         type: "object",
