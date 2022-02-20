@@ -1,6 +1,6 @@
 # JSON Type Definition
 
-This document informally describes JSON Type Definition (JTD) specification to help Ajv users to start using it. For formal definition please refer to [RFC8927](https://datatracker.ietf.org/doc/rfc8927/). Please report any contradictions in this document with the specification.
+This document informally describes JSON Type Definition (JTD) specification to help Ajv users to start using it. For a formal definition please refer to [RFC8927](https://datatracker.ietf.org/doc/rfc8927/). There is a tutorial at http://jsontypedef.com/.
 
 To use JTD schemas you need to import a different Ajv class:
 
@@ -24,20 +24,20 @@ const ajv = new Ajv()
 
 ## JTD schema forms
 
-JTD specification defines 8 different forms that the schema for JSON can take for one of most widely used data types in JSON messages (API requests and responses).
+The word "form" here refers to the shape JSON can be in, not HTML form. JTD specification defines 8 different forms. The are the most widely used data types in JSON messages (API requests and responses).
 
 All forms require that:
 
 - schema is an object with different members, depending on the form
 - each form can have:
   - an optional member `nullable` with a boolean value that allows data instance to be JSON `null`.
-  - an optional member `metadata` with an object value that allows to pass any additional information or extend the specification (Ajv defines keyword "union" that can be used inside `metadata`)
+  - an optional member `metadata` with an object value that allows to pass any additional information or extend the specification (For example, Ajv adds the keyword `union` that to be used inside `metadata`)
 
 Root schema can have member `definitions` that has a dictionary of schemas that can be references from any other schemas using form `ref`
 
 ### Type form <Badge text="primitive values" />
 
-This form defines a primitive value.
+This is the primitive form.
 
 It has a required member `type` and an optional members `nullable` and `metadata`, no other members are allowed.
 
@@ -46,18 +46,16 @@ It has a required member `type` and an optional members `nullable` and `metadata
 - `"string"` - defines a string
 - `"boolean"` - defines boolean value `true` or `false`
 - `"timestamp"` - defines timestamp ( accepting either an [RFC3339](https://datatracker.ietf.org/doc/rfc3339/) JSON string or a Date object, configurable via the `timestamp` Ajv option)
-- `type` values that define integer numbers:
-  - `"int8"` - signed byte value (-128 .. 127)
-  - `"uint8"` - unsigned byte value (0 .. 255)
-  - `"int16"` - signed word value (-32768 .. 32767),
-  - `"uint16"` - unsigned word value (0 .. 65535)
-  - `"int32"` - signed 32-bit integer value
-  - `"uint32"` - unsigned 32-bit integer value
-- `type` values that define floating point numbers:
-  - `"float32"` - 32-bit real number
-  - `"float64"` - 64-bit real number
+- `"int8"` - signed byte value (-128 .. 127)
+- `"uint8"` - unsigned byte value (0 .. 255)
+- `"int16"` - signed word value (-32768 .. 32767),
+- `"uint16"` - unsigned word value (0 .. 65535)
+- `"int32"` - signed 32-bit integer value
+- `"uint32"` - unsigned 32-bit integer value
+- `"float32"` - 32-bit real number
+- `"float64"` - 64-bit real number
 
-Unlike JSON Schema, JTD does not allow defining values that can take one of several types, but they can be defined as `nullable`.
+Unlike JSON Schema, JTD does not allow the data to be one of several types. But it can be null if `nullable` is true.
 
 **Example**
 
@@ -69,11 +67,11 @@ Unlike JSON Schema, JTD does not allow defining values that can take one of seve
 
 ### Enum form
 
-This form defines a string that can take one of the values from the list (the values in the list must be unique).
+This form defines a string that can take one of the values from the list (the values must be unique).
 
 It has a required member `enum` and optional members `nullable` and `metadata`, no other members are allowed.
 
-Unlike JSON Schema, JTD does not allow defining `enum` with values of any other type than string.
+JTD only allows `enum` string values unlike JSON Schema.
 
 **Example**
 
@@ -85,11 +83,11 @@ Unlike JSON Schema, JTD does not allow defining `enum` with values of any other 
 
 ### Elements form <Badge text="arrays" />
 
-This form defines a homogenous array of any size (possibly empty) with the elements that satisfy a given schema.
+This form defines a *homogenous* array of any size with elements that satisfy a given schema.
 
-It has a required member `elements` (schema that elements should satisfy) and optional members `nullable` and `metadata`, no other members are allowed.
+It has a required member `elements` (schema that elements should satisfy) and optional members `nullable` and `metadata`. No other members are allowed.
 
-Unlike JSON Schema, the data instance must be JSON array (without using additional `type` keyword), and there is no way to enforce the restrictions that cannot be present on type level of most languages, such as array size and uniqueness of items.
+The data instance must be JSON array, and there is no way to enforce the restrictions that cannot be present on type level of most languages, such as array size and uniqueness of items.
 
 **Example**
 
