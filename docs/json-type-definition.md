@@ -24,7 +24,7 @@ const ajv = new Ajv()
 
 ## JTD schema forms
 
-The word "form" here refers to the shape JSON can be in, not HTML form. JTD specification defines 8 different forms. The are the most widely used data types in JSON messages (API requests and responses).
+The word "form" here refers to the shape JSON can be in, not an HTML form. JTD specification defines 8 different forms. These are widely used shapes in JSON API requests and responses.
 
 All forms require that:
 
@@ -71,7 +71,7 @@ This form defines a string that can take one of the values from the list (the va
 
 It has a required member `enum` and optional members `nullable` and `metadata`, no other members are allowed.
 
-JTD only allows `enum` string values unlike JSON Schema.
+JTD only allows string values in `enum`, unlike JSON Schema.
 
 **Example**
 
