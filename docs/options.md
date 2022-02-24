@@ -62,6 +62,7 @@ const defaultOptions = {
   ownProperties: false,
   multipleOfPrecision: undefined, // *
   messages: true, // false with JTD
+  uriResolver: undefined,
   code: {
     // NEW
     es5: false,
@@ -340,6 +341,10 @@ By default `multipleOf` keyword is validated by comparing the result of division
 ### messages
 
 Include human-readable messages in errors. `true` by default. `false` can be passed when messages are generated outside of Ajv code (e.g. with [ajv-i18n](https://github.com/ajv-validator/ajv-i18n)).
+
+### uriResolver
+
+By default `uriResolver` is undefined and relies on the embedded uriResolver [uri-js](https://github.com/garycourt/uri-js). Pass an object that satisfies the interface [UriResolver](https://github.com/ajv-validator/ajv/blob/master/lib/types/index.ts) to be used in replacement. One alternative is [fast-uri](https://github.com/fastify/fast-uri).
 
 ### code <Badge text="v7" />
 
