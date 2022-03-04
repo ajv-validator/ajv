@@ -21,7 +21,7 @@ const def: CodeKeywordDefinition = {
     if (!$data && schema.length === 0) throw new Error("enum must have non-empty array")
     const useLoop = schema.length >= it.opts.loopEnum
     let eql: Name
-    function getEql() {
+    function getEql(): Name {
       eql = eql || useFunc(gen, equal)
       return eql
     }
