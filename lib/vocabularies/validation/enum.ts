@@ -20,7 +20,12 @@ const def: CodeKeywordDefinition = {
     const {gen, data, $data, schema, schemaCode, it} = cxt
     if (!$data && schema.length === 0) throw new Error("enum must have non-empty array")
     const useLoop = schema.length >= it.opts.loopEnum
-    const eql = useFunc(gen, equal)
+    let eql: Name;
+    function getEql() {
+      eql = eql || useFunc(gen, equal);
+      return eql;
+    }
+
     let valid: Code
     if (useLoop || $data) {
       valid = gen.let("valid")
@@ -36,14 +41,14 @@ const def: CodeKeywordDefinition = {
     function loopEnum(): void {
       gen.assign(valid, false)
       gen.forOf("v", schemaCode as Code, (v) =>
-        gen.if(_`${eql}(${data}, ${v})`, () => gen.assign(valid, true).break())
+        gen.if(_`${getEql()}(${data}, ${v})`, () => gen.assign(valid, true).break())
       )
     }
 
     function equalCode(vSchema: Name, i: number): Code {
       const sch = schema[i]
       return typeof sch === "object" && sch !== null
-        ? _`${eql}(${data}, ${vSchema}[${i}])`
+        ? _`${getEql()}(${data}, ${vSchema}[${i}])`
         : _`${data} === ${sch}`
     }
   },
