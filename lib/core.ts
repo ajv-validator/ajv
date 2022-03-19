@@ -48,19 +48,19 @@ import type {
   ErrorObject,
   Format,
   AddedFormat,
-} from "./types"
-import type {JSONSchemaType} from "./types/json-schema"
-import type {JTDSchemaType, SomeJTDSchemaType, JTDDataType} from "./types/jtd-schema"
-import ValidationError from "./runtime/validation_error"
-import MissingRefError from "./compile/ref_error"
-import {getRules, ValidationRules, Rule, RuleGroup, JSONType} from "./compile/rules"
-import {SchemaEnv, compileSchema, resolveSchema} from "./compile"
-import {Code, ValueScope} from "./compile/codegen"
-import {normalizeId, getSchemaRefs} from "./compile/resolve"
-import {getJSONTypes} from "./compile/validate/dataType"
-import {eachItem} from "./compile/util"
+} from ".*/types"
+import type {JSONSchemaType} from ".*/types/json-schema"
+import type {JTDSchemaType, SomeJTDSchemaType, JTDDataType} from ".*/types/jtd-schema"
+import ValidationError from ".*/runtime/validation_error"
+import MissingRefError from ".*/compile/ref_error"
+import {getRules, ValidationRules, Rule, RuleGroup, JSONType} from ".*/compile/rules"
+import {SchemaEnv, compileSchema, resolveSchema} from ".*/compile"
+import {Code, ValueScope} from ".*/compile/codegen"
+import {normalizeId, getSchemaRefs} from ".*/compile/resolve"
+import {getJSONTypes} from ".*/compile/validate/dataType"
+import {eachItem} from ".*/compile/util"
 
-import * as $dataRefSchema from "./refs/data.json"
+import * as $dataRefSchema from ".*/refs/data.json"
 
 const META_IGNORE_OPTIONS: (keyof Options)[] = ["removeAdditional", "useDefaults", "coerceTypes"]
 const EXT_SCOPE_NAMES = new Set([
