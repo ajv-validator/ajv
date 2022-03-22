@@ -30,7 +30,7 @@ addFormats(ajv)
 
 See [ajv-formats](https://github.com/ajv-validator/ajv-formats) documentation for further details.
 
-It is recommended NOT to use "format" keyword implementations with untrusted data, as they may use potentially unsafe regular expressions (even though known issues are fixed) - see [ReDoS attack](./security.md#redos-attack).
+It is recommended NOT to use "format" keyword implementations with untrusted data, as they may use potentially unsafe regular expressions (even though known issues are fixed) - see [ReDoS attack](../security.md#redos-attack).
 
 ::: danger Format validation of untrusted data
 If you need to use "format" keyword to validate untrusted data, you MUST assess their suitability and safety for your validation scenarios.
@@ -61,7 +61,7 @@ JSON Schema draft-07 also defines formats `iri`, `iri-reference`, `idn-hostname`
 
 ## User-defined formats
 
-You can add and replace any formats using [addFormat](./api.md#api-addformat) method:
+You can add and replace any formats using [addFormat](../api.md#ajv-addformat-name-string-format-format-ajv) method:
 
 ```javascript
 ajv.addFormat("identifier", /^a-z\$_[a-zA-Z$_0-9]*$/)
