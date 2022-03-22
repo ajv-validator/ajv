@@ -5,7 +5,7 @@ import {_, str, operators} from "../../compile/codegen"
 const error: KeywordErrorDefinition = {
   message({keyword, schemaCode}) {
     const comp = keyword === "maxProperties" ? "more" : "fewer"
-    return str`must NOT have ${comp} than ${schemaCode} items`
+    return str`must NOT have ${comp} than ${schemaCode} properties`
   },
   params: ({schemaCode}) => _`{limit: ${schemaCode}}`,
 }
