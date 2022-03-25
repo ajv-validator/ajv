@@ -286,7 +286,7 @@ function checkContextTypes(it: SchemaObjCxt, types: JSONType[]): void {
       strictTypesError(it, `type "${t}" not allowed by context "${it.dataTypes.join(",")}"`)
     }
   })
-  it.dataTypes = it.dataTypes.filter((t) => includesType(types, t))
+  it.dataTypes = it.dataTypes.filter((t) => includesType([...types, "number"], t))
 }
 
 function checkMultipleTypes(it: SchemaObjCxt, ts: JSONType[]): void {
