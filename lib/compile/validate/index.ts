@@ -484,10 +484,11 @@ export class KeywordCxt implements KeywordErrorCxt {
   }
 
   subschema(appl: SubschemaArgs, valid: Name): SchemaCxt {
-    const subschema = getSubschema(this.it, appl)
-    extendSubschemaData(subschema, this.it, appl)
+    const itClone = {...this.it}
+    const subschema = getSubschema(itClone, appl)
+    extendSubschemaData(subschema, itClone, appl)
     extendSubschemaMode(subschema, appl)
-    const nextContext = {...this.it, ...subschema, items: undefined, props: undefined}
+    const nextContext = {...itClone, ...subschema, items: undefined, props: undefined}
     subschemaCode(nextContext, valid)
     return nextContext
   }
