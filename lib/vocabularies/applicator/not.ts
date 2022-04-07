@@ -8,6 +8,7 @@ const def: CodeKeywordDefinition = {
   keyword: "not",
   schemaType: ["object", "boolean"],
   trackErrors: true,
+  subschema: true,
   code(cxt: KeywordCxt) {
     const {gen, schema, it} = cxt
     if (alwaysValidSchema(it, schema)) {

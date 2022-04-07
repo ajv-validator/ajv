@@ -25,6 +25,7 @@ const def: CodeKeywordDefinition = {
   schemaType: ["boolean", "object"],
   trackErrors: true,
   error,
+  subschema: true,
   code(cxt) {
     const {gen, schema, data, errsCount, it} = cxt
     /* istanbul ignore if */
