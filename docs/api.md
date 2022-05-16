@@ -329,7 +329,7 @@ Options can have properties `separator` (string used to separate errors, ", " by
 
 In case of validation failure, Ajv assigns the array of errors to `errors` property of validation function (or to `errors` property of Ajv instance when `validate` or `validateSchema` methods were called). In case of [asynchronous validation](./guide/async-validation.md), the returned promise is rejected with exception `Ajv.ValidationError` that has `errors` property.
 
-Note, the `errors` property may not be set if validation fails due to a missing property, even if it is not required in the schema. In these cases, consider using [option `useDefaults`](./options.md#options).
+Note, the `errors` value may not be set if validation fails due to a missing property, even if it is not required in the schema. In these cases, consider using [option `useDefaults`](./options.md#options).
 
 ### Error objects
 
