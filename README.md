@@ -53,7 +53,7 @@ Your continuing support is very important - the funds will be used to develop an
 Please sponsor Ajv via:
 
 - [GitHub sponsors page](https://github.com/sponsors/epoberezkin) (GitHub will match it)
-- [Ajv Open Collective️](https://opencollective.com/ajv)
+- [Ajv Open Collective](https://opencollective.com/ajv)
 
 Thank you.
 
