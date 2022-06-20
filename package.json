@@ -81,7 +81,7 @@
     "cross-env": "^7.0.2",
     "dayjs": "^1.10.4",
     "dayjs-plugin-utc": "^0.1.2",
-    "eslint": "^7.8.1",
+    "eslint": "^8.18.0",
     "eslint-config-prettier": "^7.0.0",
     "fast-uri": "^1.0.0",
     "glob": "^8.0.2",
