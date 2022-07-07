@@ -156,20 +156,20 @@ function serializeSchemaProperties(cxt: SerializeCxt, discriminator?: string): v
   const optProps = keys(optionalProperties)
   const allProps = allProperties(props.concat(optProps))
   let first = !discriminator
+  const firstProp = gen.let("first", props.length === 0)
+
   for (const key of props) {
-    serializeProperty(key, properties[key], keyValue(key))
+    serializeProperty(key, properties[key], keyValue(key), false)
   }
   for (const key of optProps) {
     const value = keyValue(key)
     gen.if(and(_`${value} !== undefined`, isOwnProperty(gen, data, key)), () =>
-      serializeProperty(key, optionalProperties[key], value)
+      serializeProperty(key, optionalProperties[key], value, true)
     )
   }
   if (schema.additionalProperties) {
     gen.forIn("key", data, (key) =>
-      gen.if(isAdditional(key, allProps), () =>
-        serializeKeyValue(cxt, key, {}, gen.let("first", first))
-      )
+      gen.if(isAdditional(key, allProps), () => serializeKeyValue(cxt, key, {}, firstProp))
     )
   }
 
@@ -189,9 +189,24 @@ function serializeSchemaProperties(cxt: SerializeCxt, discriminator?: string): v
     return gen.const("value", _`${data}${getProperty(key)}`)
   }
 
-  function serializeProperty(key: string, propSchema: SchemaObject, value: Name): void {
-    if (first) first = false
-    else gen.add(N.json, str`,`)
+  function serializeProperty(
+    key: string,
+    propSchema: SchemaObject,
+    value: Name,
+    isOptional: boolean
+  ): void {
+    if (first) {
+      first = false
+      if (isOptional) gen.assign(firstProp, false)
+    } else if (isOptional) {
+      gen.if(
+        firstProp,
+        () => gen.assign(firstProp, false),
+        () => gen.add(N.json, str`,`)
+      )
+    } else {
+      gen.add(N.json, str`,`)
+    }
     gen.add(N.json, str`${JSON.stringify(key)}:`)
     serializeCode({...cxt, schema: propSchema, data: value})
   }
