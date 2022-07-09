@@ -190,7 +190,12 @@ function serializeSchemaProperties(cxt: SerializeCxt, discriminator?: string): v
     return gen.const("value", _`${data}${getProperty(key)}`)
   }
 
-  function serializeProperty(key: string, propSchema: SchemaObject, value: Name, isOptional: boolean): void {
+  function serializeProperty(
+    key: string,
+    propSchema: SchemaObject,
+    value: Name,
+    isOptional: boolean
+  ): void {
     if (first) {
       first = false
       if (isOptional) gen.assign(firstProp, false)
