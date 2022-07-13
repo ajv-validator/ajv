@@ -48,10 +48,9 @@ const def: CodeKeywordDefinition = {
 
     function unevaluatedPropCode(key: Name): void {
       if (schema === false) {
-
         if (it.opts.removeUnevaluated) {
           gen.code(_`delete ${data}[${key}]`)
-          return;
+          return
         }
 
         cxt.setParams({unevaluatedProperty: key})
