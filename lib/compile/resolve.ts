@@ -112,15 +112,15 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): Loc
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const _resolve = this.opts.uriResolver.resolve
       ref = normalizeId(baseId ? _resolve(baseId, ref) : ref)
-      if (schemaRefs.has(ref)) throw ambiguos(ref)
+      if (schemaRefs.has(ref)) throw ambiguous(ref)
       schemaRefs.add(ref)
       let schOrRef = this.refs[ref]
       if (typeof schOrRef == "string") schOrRef = this.refs[schOrRef]
       if (typeof schOrRef == "object") {
-        checkAmbiguosRef(sch, schOrRef.schema, ref)
+        checkAmbiguousRef(sch, schOrRef.schema, ref)
       } else if (ref !== normalizeId(fullPath)) {
         if (ref[0] === "#") {
-          checkAmbiguosRef(sch, localRefs[ref], ref)
+          checkAmbiguousRef(sch, localRefs[ref], ref)
           localRefs[ref] = sch
         } else {
           this.refs[ref] = fullPath
@@ -139,11 +139,11 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): Loc
 
   return localRefs
 
-  function checkAmbiguosRef(sch1: AnySchema, sch2: AnySchema | undefined, ref: string): void {
-    if (sch2 !== undefined && !equal(sch1, sch2)) throw ambiguos(ref)
+  function checkAmbiguousRef(sch1: AnySchema, sch2: AnySchema | undefined, ref: string): void {
+    if (sch2 !== undefined && !equal(sch1, sch2)) throw ambiguous(ref)
   }
 
-  function ambiguos(ref: string): Error {
+  function ambiguous(ref: string): Error {
     return new Error(`reference "${ref}" resolves to more than one schema`)
   }
 }
