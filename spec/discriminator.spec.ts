@@ -66,7 +66,29 @@ describe("discriminator keyword", function () {
       ],
     }
 
-    const schemas = [schema1, schema2]
+    const schema3 = {
+      type: "object",
+      discriminator: {propertyName: "foo"},
+      required: ["foo"],
+      anyOf: [
+        {
+          properties: {
+            foo: {const: "x"},
+            a: {type: "string"},
+          },
+          required: ["a"],
+        },
+        {
+          properties: {
+            foo: {enum: ["y", "z"]},
+            b: {type: "string"},
+          },
+          required: ["b"],
+        },
+      ],
+    }
+
+    const schemas = [schema1, schema2, schema3]
 
     it("should validate data", () => {
       assertValid(schemas, {foo: "x", a: "a"})
@@ -245,7 +267,7 @@ describe("discriminator keyword", function () {
     it("should have oneOf", () => {
       invalidSchema(
         {type: "object", discriminator: {propertyName: "foo"}},
-        /discriminator: requires oneOf/
+        /discriminator: requires the oneOf or anyOf composite keyword/
       )
     })
 
