@@ -303,7 +303,7 @@ describe("discriminator keyword", function () {
         },
       },
       required: ["foo"],
-      oneOf: [
+      anyOf: [
         {
           $ref: "#/definitions/schema1",
         },
@@ -335,7 +335,7 @@ describe("discriminator keyword", function () {
     it("should have oneOf", () => {
       invalidSchema(
         {type: "object", discriminator: {propertyName: "foo"}},
-        /discriminator: requires oneOf/
+        /discriminator: requires oneOf or anyOf/
       )
     })
 

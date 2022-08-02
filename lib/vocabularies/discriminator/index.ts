@@ -11,7 +11,7 @@ const error: KeywordErrorDefinition = {
   message: ({params: {discrError, tagName}}) =>
     discrError === DiscrError.Tag
       ? `tag "${tagName}" must be string`
-      : `value of tag "${tagName}" must be in oneOf`,
+      : `value of tag "${tagName}" must be in oneOf or anyOf`,
   params: ({params: {discrError, tag, tagName}}) =>
     _`{error: ${discrError}, tag: ${tagName}, tagValue: ${tag}}`,
 }
@@ -23,7 +23,9 @@ const def: CodeKeywordDefinition = {
   error,
   code(cxt: KeywordCxt) {
     const {gen, data, schema, parentSchema, it} = cxt
-    const {oneOf} = parentSchema
+
+    const keyword = parentSchema.oneOf ? "oneOf" : parentSchema.anyOf ? "anyOf" : undefined
+
     if (!it.opts.discriminator) {
       throw new Error("discriminator: requires discriminator option")
     }
@@ -54,13 +56,13 @@ const def: CodeKeywordDefinition = {
 
     function applyTagSchema(schemaProp?: number): Name {
       const _valid = gen.name("valid")
-      const schCxt = cxt.subschema({keyword: "oneOf", schemaProp}, _valid)
+      const schCxt = cxt.subschema({keyword, schemaProp}, _valid)
       cxt.mergeEvaluated(schCxt, Name)
       return _valid
     }
 
     function getMapping(): {[T in string]?: number} {
-      const oneOfMapping: {[T in string]?: number} = {}
+      const discriminatorMapping: {[T in string]?: number} = {}
       const topRequired = hasRequired(parentSchema)
       let tagRequired = true
       for (let i = 0; i < parentSchemaVariants.length; i++) {
@@ -94,7 +96,7 @@ const def: CodeKeywordDefinition = {
         addMappings(propSch, i)
       }
       if (!tagRequired) throw new Error(`discriminator: "${tagName}" must be required`)
-      return oneOfMapping
+      return discriminatorMapping
 
       function hasRequired({required}: AnySchemaObject): boolean {
         return Array.isArray(required) && required.includes(tagName)
@@ -113,10 +115,10 @@ const def: CodeKeywordDefinition = {
       }
 
       function addMapping(tagValue: unknown, i: number): void {
-        if (typeof tagValue != "string" || tagValue in oneOfMapping) {
+        if (typeof tagValue != "string" || tagValue in discriminatorMapping) {
           throw new Error(`discriminator: "${tagName}" values must be unique strings`)
         }
-        oneOfMapping[tagValue] = i
+        discriminatorMapping[tagValue] = i
       }
     }
   },

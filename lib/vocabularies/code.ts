@@ -133,9 +133,10 @@ export function validateArray(cxt: KeywordCxt): Name {
 }
 
 export function validateUnion(cxt: KeywordCxt): void {
-  const {gen, schema, keyword, it} = cxt
+  const {gen, schema, keyword, parentSchema, it} = cxt
   /* istanbul ignore if */
   if (!Array.isArray(schema)) throw new Error("ajv implementation error")
+  if (it.opts.discriminator && parentSchema.discriminator) return
   const alwaysValid = schema.some((sch: AnySchema) => alwaysValidSchema(it, sch))
   if (alwaysValid && !it.opts.unevaluated) return
 
