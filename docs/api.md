@@ -297,7 +297,7 @@ interface KeywordDefinition {
 }
 ```
 
-If only property `keyword` is provided in the definition object, one can also pass the string value alone to the method as the argument.
+If only the property `keyword` is provided in the definition object, one can also pass the string value alone to the method as the argument.
 
 `compile`, `macro` and `code` are mutually exclusive, only one should be used at a time. `validate` can be used separately or in addition to `compile` or `macro` to support [\$data reference](./guide/combining-schemas.md#data-reference).
 
