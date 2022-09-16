@@ -4,5 +4,8 @@
   "compilerOptions": {
     "types": ["node", "mocha"],
     "noImplicitAny": false
+  },
+  "ts-node": {
+    "transpileOnly": true
   }
 }

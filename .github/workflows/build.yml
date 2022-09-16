@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [16.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -22,16 +22,16 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: git submodule update --init
-      - name: update website
-        if: ${{ github.event_name == 'push' && matrix.node-version == '14.x' }}
-        run: ./scripts/publish-site
-        env:
-          GH_TOKEN_PUBLIC: ${{ secrets.GH_TOKEN_PUBLIC }}
-          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
-          GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
+      # - name: update website
+      #   if: ${{ github.event_name == 'push' && matrix.node-version == '14.x' }}
+      #   run: ./scripts/publish-site
+      #   env:
+      #     GH_TOKEN_PUBLIC: ${{ secrets.GH_TOKEN_PUBLIC }}
+      #     GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
+      #     GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
       - run: npm run build
       - run: npm run test-ci
-      - name: coveralls
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: coveralls
+      #   uses: coverallsapp/github-action@master
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -65,7 +65,9 @@ export default function compileParser(
     parserFunction(cxt)
     gen.optimize(this.opts.code.optimize)
     const parseFuncCode = gen.toString()
-    sourceCode = `${gen.scopeRefs(N.scope)}return ${parseFuncCode}`
+    sourceCode = `const visitedNodesForRef = new WeakMap(); ${gen.scopeRefs(
+      N.scope
+    )}return ${parseFuncCode}`
     const makeParse = new Function(`${N.scope}`, sourceCode)
     const parse: (json: string) => unknown = makeParse(this.scope.get())
     this.scope.value(parseName, {ref: parse})

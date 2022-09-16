@@ -341,6 +341,7 @@ describe("standalone code generation", () => {
 
     it("should support formats with standalone code", () => {
       const ajv = new _Ajv({code: {source: true}})
+      // @ts-ignore
       ajvFormats(ajv)
       ajv.addSchema(schema)
       const moduleCode = standaloneCode(ajv, {validateUser: "#/definitions/User"})

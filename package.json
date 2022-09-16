@@ -29,7 +29,9 @@
     "prepublish": "npm run build",
     "benchmark": "npm i && npm run build && npm link && cd ./benchmark && npm link --legacy-peer-deps ajv && npm i && node ./jtd",
     "docs:dev": "./scripts/prepare-site && vuepress dev docs",
-    "docs:build": "./scripts/prepare-site && vuepress build docs"
+    "docs:build": "./scripts/prepare-site && vuepress build docs",
+    "pretest": "npx npe name ajv",
+    "posttest": "npx npe name @redocly/ajv"
   },
   "nyc": {
     "exclude": [

@@ -87,11 +87,17 @@ export function callRef(cxt: KeywordCxt, v: Code, sch?: SchemaEnv, $async?: bool
 
   function callSyncRef(): void {
     const visitedNodes: Name = gen.name("visitedNodes")
-    gen.code(_`const ${visitedNodes} = visitedNodesForRef.get(${v}) || new Set()`)
+    gen.code(
+      _`const ${visitedNodes} = (typeof visitedNodesForRef !== 'undefined') && visitedNodesForRef.get(${v}) || new Set()`
+    )
     gen.if(_`!${visitedNodes}.has(${cxt.data})`, () => {
-      gen.code(_`visitedNodesForRef.set(${v}, ${visitedNodes})`)
+      gen.code(
+        _`if (typeof visitedNodesForRef !== 'undefined') visitedNodesForRef.set(${v}, ${visitedNodes})`
+      )
       gen.code(_`const dataNode = ${cxt.data}`)
-      gen.code(_`${visitedNodes}.add(dataNode)`)
+      gen.code(
+        _`if (typeof dataNode === "object" && dataNode !== null) ${visitedNodes}.add(dataNode)`
+      )
       const res = cxt.result(
         callValidateCode(cxt, v, passCxt),
         () => addEvaluatedFrom(v),

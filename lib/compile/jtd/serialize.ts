@@ -61,7 +61,9 @@ export default function compileSerializer(
     })
     gen.optimize(this.opts.code.optimize)
     const serializeFuncCode = gen.toString()
-    sourceCode = `${gen.scopeRefs(N.scope)}return ${serializeFuncCode}`
+    sourceCode = `const visitedNodesForRef = new WeakMap(); ${gen.scopeRefs(
+      N.scope
+    )}return ${serializeFuncCode}`
     const makeSerialize = new Function(`${N.scope}`, sourceCode)
     const serialize: (data: unknown) => string = makeSerialize(this.scope.get())
     this.scope.value(serializeName, {ref: serialize})

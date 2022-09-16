@@ -222,6 +222,7 @@ function runTest({instances, draft, tests, skip = [], remotes = {}}: SchemaTest)
     }
     for (const id in remoteRefs) ajv.addSchema(remoteRefs[id], id)
     for (const id in remotes) ajv.addSchema(remotes[id], id)
+    // @ts-ignore
     ajvFormats(ajv)
   }
 
