@@ -20,7 +20,7 @@
 
 [lib/compile/context.ts](https://github.com/ajv-validator/ajv/blob/master/lib/compile/context.ts) - the class for keyword code generation `KeywordCxt`. All pre-defined keywords and user-defined keywords that use `code` function are passed an instance of this class.
 
-[lib/compile/rules.ts](https://github.com/ajv-validator/ajv/blob/master/lib/compile/rules.ts) - data structure to store references to all all keyword definitions that were added to Ajv instance, organised by data type.
+[lib/compile/rules.ts](https://github.com/ajv-validator/ajv/blob/master/lib/compile/rules.ts) - data structure to store references to all keyword definitions that were added to Ajv instance, organised by data type.
 
 [lib/compile/subschema.ts](https://github.com/ajv-validator/ajv/blob/master/lib/compile/subschema.ts) - creates schema context (`SchemaCxt`) to generate code for subschemas - used by all applicator keywords in [lib/vocabularies/applicator](https://github.com/ajv-validator/ajv/blob/master/lib/vocabularies/applicator).
 
