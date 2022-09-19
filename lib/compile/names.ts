@@ -10,6 +10,7 @@ const names = {
   parentDataProperty: new Name("parentDataProperty"),
   rootData: new Name("rootData"), // root data - same as the data passed to the first/top validation function
   dynamicAnchors: new Name("dynamicAnchors"), // used to support recursiveRef and dynamicRef
+  isAllOfVariant: new Name("isAllOfVariant"), // used to check in runtime if the current function (ref) is called from allOf
   // function scoped variables
   vErrors: new Name("vErrors"), // null or array of validation errors
   errors: new Name("errors"), // counter of validation errors

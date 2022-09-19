@@ -12,7 +12,7 @@ const def: CodeKeywordDefinition = {
     const valid = gen.name("valid")
     schema.forEach((sch: AnySchema, i: number) => {
       if (alwaysValidSchema(it, sch)) return
-      const schCxt = cxt.subschema({keyword: "allOf", schemaProp: i}, valid)
+      const schCxt = cxt.subschema({keyword: "allOf", schemaProp: i}, valid, true)
       cxt.ok(valid)
       cxt.mergeEvaluated(schCxt)
     })

@@ -84,6 +84,7 @@ export function callValidateCode(
     [N.parentData, it.parentData],
     [N.parentDataProperty, it.parentDataProperty],
     [N.rootData, N.rootData],
+    [N.isAllOfVariant, it.isAllOfVariant ? 1 : 0],
   ]
   if (it.opts.dynamicRef) valCxt.push([N.dynamicAnchors, N.dynamicAnchors])
   const args = _`${dataAndSchema}, ${gen.object(...valCxt)}`

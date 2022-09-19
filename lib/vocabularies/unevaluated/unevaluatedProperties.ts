@@ -23,10 +23,12 @@ const def: CodeKeywordDefinition = {
   keyword: "unevaluatedProperties",
   type: "object",
   schemaType: ["boolean", "object"],
+  allowUndefined: true,
   trackErrors: true,
   error,
   code(cxt) {
-    const {gen, schema, data, errsCount, it} = cxt
+    const {gen, schema = cxt.it.opts.defaultUnevaluatedProperties, data, errsCount, it} = cxt
+    const isForced = cxt.schema === undefined && cxt.it.opts.defaultUnevaluatedProperties === false
     /* istanbul ignore if */
     if (!errsCount) throw new Error("ajv implementation error")
     const {allErrors, props} = it
@@ -37,13 +39,31 @@ const def: CodeKeywordDefinition = {
         )
       )
     } else if (props !== true) {
-      gen.forIn("key", data, (key: Name) =>
-        props === undefined
-          ? unevaluatedPropCode(key)
-          : gen.if(unevaluatedStatic(props, key), () => unevaluatedPropCode(key))
-      )
+      // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+      const staticCheck = () =>
+        gen.forIn("key", data, (key: Name) =>
+          props === undefined
+            ? unevaluatedPropCode(key)
+            : gen.if(unevaluatedStatic(props, key), () => unevaluatedPropCode(key))
+        )
+
+      if (isForced && it.errorPath.emptyStr()) {
+        // $refs are compiled into functions
+        // We need to check in runtime if function was called from allOf.
+        // We need to check only on the top level of the function:
+        // it is ensured with `it.errorPath.emptyStr()` check
+        gen.if(_`${N.isAllOfVariant} === 0`, staticCheck)
+      } else {
+        staticCheck()
+      }
     }
-    it.props = true
+
+    if (!isForced) {
+      // disable shot-circut for forced unevaluatedProperties=false
+      // we may run or not the check in runtime so we can't short-circuit in compile-time
+      it.props = true
+    }
+
     cxt.ok(_`${errsCount} === ${N.errors}`)
 
     function unevaluatedPropCode(key: Name): void {

@@ -56,6 +56,7 @@ export interface SchemaCxt {
   readonly createErrors?: boolean
   readonly opts: InstanceOptions // Ajv instance option.
   readonly self: Ajv // current Ajv instance
+  readonly isAllOfVariant?: boolean // if the current schema is direct child of allOf
 }
 
 export interface SchemaObjCxt extends SchemaCxt {

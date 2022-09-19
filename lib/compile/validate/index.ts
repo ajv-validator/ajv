@@ -66,7 +66,7 @@ function validateFunction(
 function destructureValCxt(opts: InstanceOptions): Code {
   return _`{${N.instancePath}="", ${N.parentData}, ${N.parentDataProperty}, ${N.rootData}=${
     N.data
-  }${opts.dynamicRef ? _`, ${N.dynamicAnchors}={}` : nil}}={}`
+  }${opts.dynamicRef ? _`, ${N.dynamicAnchors}={}` : nil}, ${N.isAllOfVariant} = 0}={}`
 }
 
 function destructureValCxtES5(gen: CodeGen, opts: InstanceOptions): void {
@@ -77,6 +77,7 @@ function destructureValCxtES5(gen: CodeGen, opts: InstanceOptions): void {
       gen.var(N.parentData, _`${N.valCxt}.${N.parentData}`)
       gen.var(N.parentDataProperty, _`${N.valCxt}.${N.parentDataProperty}`)
       gen.var(N.rootData, _`${N.valCxt}.${N.rootData}`)
+      gen.var(N.isAllOfVariant, _`${N.valCxt}.${N.isAllOfVariant}`)
       if (opts.dynamicRef) gen.var(N.dynamicAnchors, _`${N.valCxt}.${N.dynamicAnchors}`)
     },
     () => {
@@ -84,6 +85,7 @@ function destructureValCxtES5(gen: CodeGen, opts: InstanceOptions): void {
       gen.var(N.parentData, _`undefined`)
       gen.var(N.parentDataProperty, _`undefined`)
       gen.var(N.rootData, N.data)
+      gen.var(N.isAllOfVariant, _`0`)
       if (opts.dynamicRef) gen.var(N.dynamicAnchors, _`{}`)
     }
   )
@@ -261,11 +263,20 @@ function iterateKeywords(it: SchemaObjCxt, group: RuleGroup): void {
   if (useDefaults) assignDefaults(it, group.type)
   gen.block(() => {
     for (const rule of group.rules) {
-      if (shouldUseRule(schema, rule)) {
+      if (shouldUseRule(schema, rule) || shouldForceUnevaluatedProperties(schema, rule)) {
         keywordCode(it, rule.keyword, rule.definition, group.type)
       }
     }
   })
+
+  function shouldForceUnevaluatedProperties(schema: AnySchemaObject, rule: Rule): boolean {
+    return !!(
+      rule.keyword === "unevaluatedProperties" &&
+      (schema.properties || schema.patternProperties) &&
+      !it.isAllOfVariant &&
+      it.opts.defaultUnevaluatedProperties === false
+    )
+  }
 }
 
 function checkStrictTypes(it: SchemaObjCxt, types: JSONType[]): void {
@@ -483,11 +494,17 @@ export class KeywordCxt implements KeywordErrorCxt {
     }
   }
 
-  subschema(appl: SubschemaArgs, valid: Name): SchemaCxt {
+  subschema(appl: SubschemaArgs, valid: Name, isAllOfVariant?: boolean): SchemaCxt {
     const subschema = getSubschema(this.it, appl)
     extendSubschemaData(subschema, this.it, appl)
     extendSubschemaMode(subschema, appl)
-    const nextContext = {...this.it, ...subschema, items: undefined, props: undefined}
+    const nextContext = {
+      ...this.it,
+      ...subschema,
+      items: undefined,
+      props: undefined,
+      isAllOfVariant,
+    }
     subschemaCode(nextContext, valid)
     return nextContext
   }

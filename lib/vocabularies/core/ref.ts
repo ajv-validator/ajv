@@ -45,7 +45,8 @@ const def: CodeKeywordDefinition = {
           topSchemaRef: schName,
           errSchemaPath: $ref,
         },
-        valid
+        valid,
+        it.isAllOfVariant // pass isAllOfVariant into inlined $ref
       )
       cxt.mergeEvaluated(schCxt)
       cxt.ok(valid)

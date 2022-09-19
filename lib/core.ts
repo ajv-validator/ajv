@@ -68,7 +68,13 @@ import DefaultUriResolver from "./runtime/uri"
 const defaultRegExp: RegExpEngine = (str, flags) => new RegExp(str, flags)
 defaultRegExp.code = "new RegExp"
 
-const META_IGNORE_OPTIONS: (keyof Options)[] = ["removeAdditional", "useDefaults", "coerceTypes"]
+const META_IGNORE_OPTIONS: (keyof Options)[] = [
+  "removeAdditional",
+  "useDefaults",
+  "coerceTypes",
+  "defaultUnevaluatedProperties",
+  "defaultAdditionalProperties",
+]
 const EXT_SCOPE_NAMES = new Set([
   "validate",
   "serialize",
@@ -118,7 +124,8 @@ export interface CurrentOptions {
   loadSchemaSync?: (base: string, $ref: string, id: string) => AnySchemaObject | boolean
   // options to modify validated data:
   removeAdditional?: boolean | "all" | "failing"
-  defaultAdditionalProperties?: boolean
+  defaultUnevaluatedProperties?: boolean
+  defaultAdditionalProperties?: boolean // @deprecated
 
   useDefaults?: boolean | "empty"
   coerceTypes?: boolean | "array"
