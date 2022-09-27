@@ -73,6 +73,12 @@ Thank you.
 <a href="https://opencollective.com/ajv/organization/9/website"><img src="https://opencollective.com/ajv/organization/9/avatar.svg"></a>
 <a href="https://opencollective.com/ajv/organization/10/website"><img src="https://opencollective.com/ajv/organization/10/avatar.svg"></a>
 <a href="https://opencollective.com/ajv/organization/11/website"><img src="https://opencollective.com/ajv/organization/11/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/12/website"><img src="https://opencollective.com/ajv/organization/12/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/13/website"><img src="https://opencollective.com/ajv/organization/13/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/14/website"><img src="https://opencollective.com/ajv/organization/14/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/15/website"><img src="https://opencollective.com/ajv/organization/15/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/16/website"><img src="https://opencollective.com/ajv/organization/16/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/17/website"><img src="https://opencollective.com/ajv/organization/17/avatar.svg"></a>
 
 ## Performance
 
