@@ -82,10 +82,10 @@ Thank you.
 <a href="https://opencollective.com/ajv/organization/18/website"><img src="https://opencollective.com/ajv/organization/18/avatar.svg"></a>
 <a href="https://opencollective.com/ajv/organization/19/website"><img src="https://opencollective.com/ajv/organization/19/avatar.svg"></a>
 <a href="https://opencollective.com/ajv/organization/20/website"><img src="https://opencollective.com/ajv/organization/20/avatar.svg"></a>
-<a href="https://opencollective.com/ajv/organization/20/website"><img src="https://opencollective.com/ajv/organization/21/avatar.svg"></a>
-<a href="https://opencollective.com/ajv/organization/20/website"><img src="https://opencollective.com/ajv/organization/22/avatar.svg"></a>
-<a href="https://opencollective.com/ajv/organization/20/website"><img src="https://opencollective.com/ajv/organization/23/avatar.svg"></a>
-<a href="https://opencollective.com/ajv/organization/20/website"><img src="https://opencollective.com/ajv/organization/24/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/21/website"><img src="https://opencollective.com/ajv/organization/21/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/22/website"><img src="https://opencollective.com/ajv/organization/22/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/23/website"><img src="https://opencollective.com/ajv/organization/23/avatar.svg"></a>
+<a href="https://opencollective.com/ajv/organization/24/website"><img src="https://opencollective.com/ajv/organization/24/avatar.svg"></a>
 
 ## Performance
 
