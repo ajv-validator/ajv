@@ -19,7 +19,7 @@ interface _KeywordDef {
 }
 ```
 
-Keyword definitions may have additional optional properties - see [types](https://github.com/ajv-validator/ajv/blob/master/lib/types/index.ts) and [KeywordCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/context.ts).
+Keyword definitions may have additional optional properties - see [types](https://github.com/ajv-validator/ajv/blob/master/lib/types/index.ts) and [KeywordCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/validate/index.ts).
 
 ### Define keyword with code generation function <Badge text="recommended" />
 
@@ -90,7 +90,7 @@ ajv.addKeyword({
 
 You can review pre-defined Ajv keywords in [validation](https://github.com/ajv-validator/ajv/blob/master/lib/validation) folder for more advanced examples - it is much easier to define code generation keywords than it was in the previous version of Ajv.
 
-See [KeywordCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/context.ts) and [SchemaCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/index.ts) type definitions for more information about properties you can use in your keywords.
+See [KeywordCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/validate/index.ts) and [SchemaCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/index.ts) type definitions for more information about properties you can use in your keywords.
 
 ### Define keyword with "validate" function
 
@@ -239,11 +239,11 @@ ajv.addKeyword({
 })
 ```
 
-Macro keywords an be recursive - i.e. return schemas containing the same keyword. See the example of defining a recursive macro keyword `deepProperties` in the [test](../spec/keyword.spec.ts#L316).
+Macro keywords an be recursive - i.e. return schemas containing the same keyword. See the example of defining a recursive macro keyword `deepProperties` in the [test](https://github.com/ajv-validator/ajv/blob/master/spec/keyword.spec.ts#L316).
 
 ## Schema compilation context
 
-Schema compilation context [SchemaCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/index.ts) is available in property `it` of [KeywordCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/context.ts) (and it is also the 3rd parameter of `compile` and `macro` keyword functions). See types in the source code on the properties you can use in this object.
+Schema compilation context [SchemaCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/index.ts) is available in property `it` of [KeywordCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/validate/index.ts) (and it is also the 3rd parameter of `compile` and `macro` keyword functions). See types in the source code on the properties you can use in this object.
 
 ## Validation time variables
 

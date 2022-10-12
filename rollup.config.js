@@ -26,7 +26,8 @@ function createBundleConfig(sourceFile, outFile, globalName) {
 }
 
 export default [
-  createBundleConfig("ajv", "ajv7", "av7"),
+  createBundleConfig("ajv", "ajv7", "ajv7"),
   createBundleConfig("2019", "ajv2019", "ajv2019"),
+  createBundleConfig("2020", "ajv2020", "ajv2020"),
   createBundleConfig("jtd", "ajvJTD", "ajvJTD"),
 ]
