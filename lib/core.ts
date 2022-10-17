@@ -275,25 +275,29 @@ export interface Logger {
 class Cache<K = unknown, V = unknown> {
   // eslint-disable-next-line @typescript-eslint/ban-types
   private readonly objectCache = new WeakMap<K & object, V>()
-  private readonly valueCache = new Map<K, V>()
+  private readonly primitiveCache = new Map<K, V>()
 
-  get(key: K): V | undefined {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  private isObject(key: K): key is K & object {
     return typeof key === "object" && key !== null
+  }
+  get(key: K): V | undefined {
+    return this.isObject(key)
       ? this.objectCache.get(key)
-      : this.valueCache.get(key)
+      : this.primitiveCache.get(key)
   }
   set(key: K, value: V): void {
-    if (typeof key === "object" && key !== null) {
+    if (this.isObject(key)) {
       this.objectCache.set(key, value)
     } else {
-      this.valueCache.set(key, value)
+      this.primitiveCache.set(key, value)
     }
   }
   clear(): void {
-    this.valueCache.clear()
+    this.primitiveCache.clear()
   }
   delete(key: K): boolean {
-    return this.valueCache.delete(key)
+    return this.primitiveCache.delete(key)
   }
 }
 
