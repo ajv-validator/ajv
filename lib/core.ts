@@ -272,6 +272,31 @@ export interface Logger {
   error(...args: unknown[]): unknown
 }
 
+class Cache<K = unknown, V = unknown> {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  private readonly objectCache = new WeakMap<K & object, V>()
+  private readonly valueCache = new Map<K, V>()
+
+  get(key: K): V | undefined {
+    return typeof key === "object" && key !== null
+      ? this.objectCache.get(key)
+      : this.valueCache.get(key)
+  }
+  set(key: K, value: V): void {
+    if (typeof key === "object" && key !== null) {
+      this.objectCache.set(key, value)
+    } else {
+      this.valueCache.set(key, value)
+    }
+  }
+  clear(): void {
+    this.valueCache.clear()
+  }
+  delete(key: K): boolean {
+    return this.valueCache.delete(key)
+  }
+}
+
 export default class Ajv {
   opts: InstanceOptions
   errors?: ErrorObject[] | null // errors from the last validation
@@ -284,7 +309,7 @@ export default class Ajv {
   readonly RULES: ValidationRules
   readonly _compilations: Set<SchemaEnv> = new Set()
   private readonly _loading: {[Ref in string]?: Promise<AnySchemaObject>} = {}
-  private readonly _cache: Map<AnySchema, SchemaEnv> = new Map()
+  private readonly _cache: Cache<AnySchema, SchemaEnv> = new Cache()
   private readonly _metaOpts: InstanceOptions
 
   static ValidationError = ValidationError
@@ -488,7 +513,7 @@ export default class Ajv {
   }
 
   // Add schema that will be used to validate other schemas
-  // options in META_IGNORE_OPTIONS are alway set to false
+  // options in META_IGNORE_OPTIONS are always set to false
   addMetaSchema(
     schema: AnySchemaObject,
     key?: string, // schema key
