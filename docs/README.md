@@ -34,14 +34,32 @@ Use JSON Type Definition or JSON Schema
 </Feature>
 </Features>
 
-<Sponsors>
+<Sponsors level="platinum">
 
-Platinum sponsors
+## Ajv sponsors
 
 [![mozilla](/img/mozilla.svg)](https://www.mozilla.org)
 [![reserved](/img/reserved.svg)](https://opencollective.com/ajv)
 
 </Sponsors>
+
+<Sponsors level="gold">
+
+[![microsoft](/img/microsoft.png)](https://opensource.microsoft.com)
+[![reserved](/img/reserved.svg)](https://opencollective.com/ajv)
+[![reserved](/img/reserved.svg)](https://opencollective.com/ajv)
+
+</Sponsors>
+
+<Sponsors level="bronze">
+
+[![Retool](/img/retool.svg)](https://retool.com/?utm_source=sponsor&utm_campaign=ajv)
+[![Tidelift](/img/tidelift.svg)](https://tidelift.com/subscription/pkg/npm-ajv?utm_source=npm-ajv&utm_medium=referral&utm_campaign=enterprise)
+[![SimpleX](/img/simplex.svg)](https://github.com/simplex-chat/simplex-chat)
+[![reserved](/img/reserved.svg)](https://opencollective.com/ajv)
+
+</Sponsors>
+
 </HeroSection>
 
 <HomeSection>
