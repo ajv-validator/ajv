@@ -136,6 +136,13 @@ describe("discriminator keyword", function () {
           },
           required: ["c"],
         },
+        {
+          properties: {
+            foo: {const: null},
+            d: {type: "number"},
+          },
+          required: ["d"],
+        },
       ],
     }
 
@@ -185,6 +192,7 @@ describe("discriminator keyword", function () {
       assertValid(mixedSchemas, {foo: 1, b: "b"})
       assertValid(mixedSchemas, {foo: 2, b: "b"})
       assertValid(mixedSchemas, {foo: true, c: "c"})
+      assertValid(mixedSchemas, {foo: null, d: 123})
 
       assertInvalid(mixedSchemas, {})
       assertInvalid(mixedSchemas, {foo: "x"})
@@ -199,6 +207,10 @@ describe("discriminator keyword", function () {
       assertInvalid(mixedSchemas, {foo: true})
       assertInvalid(mixedSchemas, {foo: true, a: "a"})
       assertInvalid(mixedSchemas, {foo: true, b: "b"})
+      assertInvalid(mixedSchemas, {foo: null})
+      assertInvalid(mixedSchemas, {foo: null, a: "a"})
+      assertInvalid(mixedSchemas, {foo: null, b: "b"})
+      assertInvalid(mixedSchemas, {foo: null, c: "c"})
     })
   })
 
@@ -394,7 +406,7 @@ describe("discriminator keyword", function () {
       )
     })
 
-    it("tag value should be string, number or boolean", () => {
+    it("tag value should be string, number, boolean or null", () => {
       invalidSchema(
         {
           type: "object",
@@ -402,7 +414,7 @@ describe("discriminator keyword", function () {
           required: ["foo"],
           oneOf: [{properties: {foo: {const: {baz: "bar"}}}}],
         },
-        /discriminator: "foo" values must be unique strings, numbers or booleans/
+        /discriminator: "foo" values must be unique strings, numbers, booleans or nulls/
       )
     })
 
@@ -414,7 +426,7 @@ describe("discriminator keyword", function () {
           required: ["foo"],
           oneOf: [{properties: {foo: {const: "a"}}}, {properties: {foo: {const: "a"}}}],
         },
-        /discriminator: "foo" values must be unique strings, numbers or booleans/
+        /discriminator: "foo" values must be unique strings, numbers, booleans or nulls/
       )
 
       invalidSchema(

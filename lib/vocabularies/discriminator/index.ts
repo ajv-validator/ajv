@@ -1,6 +1,6 @@
 import type {CodeKeywordDefinition, AnySchemaObject, KeywordErrorDefinition} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
-import {_, getProperty, Name} from "../../compile/codegen"
+import {_, or, getProperty, Name} from "../../compile/codegen"
 import {DiscrError, DiscrErrorObj} from "../discriminator/types"
 import {resolveRef, SchemaEnv} from "../../compile"
 import {schemaHasRulesButRef} from "../../compile/util"
@@ -33,8 +33,9 @@ const def: CodeKeywordDefinition = {
     if (!oneOf) throw new Error("discriminator: requires oneOf keyword")
     const valid = gen.let("valid", false)
     const tag = gen.const("tag", _`${data}${getProperty(tagName)}`)
+    const tagTypes = ["string", "number", "boolean"]
     gen.if(
-      _`["string", "number", "boolean"].includes(typeof ${tag})`,
+      or(...tagTypes.map((t) => _`typeof ${tag} == ${t}`), _`${tag} == null`),
       () => validateMapping(),
       () => cxt.error(false, {discrError: DiscrError.Tag, tag, tagName})
     )
@@ -59,7 +60,7 @@ const def: CodeKeywordDefinition = {
       return _valid
     }
 
-    type OneOfMapping = Map<string | number | boolean, number>
+    type OneOfMapping = Map<string | number | boolean | null, number>
 
     function getMapping(): OneOfMapping {
       const oneOfMapping: OneOfMapping = new Map()
@@ -101,11 +102,11 @@ const def: CodeKeywordDefinition = {
 
       function addMapping(tagValue: any, i: number): void {
         if (
-          !["string", "number", "boolean"].includes(typeof tagValue) ||
+          !(["string", "number", "boolean"].includes(typeof tagValue) || tagValue === null) ||
           oneOfMapping.has(tagValue)
         ) {
           throw new Error(
-            `discriminator: "${tagName}" values must be unique strings, numbers or booleans`
+            `discriminator: "${tagName}" values must be unique strings, numbers, booleans or nulls`
           )
         }
         oneOfMapping.set(tagValue, i)
