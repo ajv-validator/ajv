@@ -245,7 +245,7 @@ Formats can be also added via `formats` option.
 
 <a name="api-addkeyword"></a>
 
-### ajv.addKeyword(definition: string | KeywordDefinition): Ajv
+### ajv.addKeyword(definition: string | object): Ajv
 
 Add validation keyword to Ajv instance.
 
@@ -297,7 +297,7 @@ interface KeywordDefinition {
 }
 ```
 
-If only the property `keyword` is provided in the definition object, one can also pass the string value alone to the method as the argument.
+If only the property `keyword` is provided in the definition object, you can also pass the keyword name as the argument.
 
 `compile`, `macro` and `code` are mutually exclusive, only one should be used at a time. `validate` can be used separately or in addition to `compile` or `macro` to support [\$data reference](./guide/combining-schemas.md#data-reference).
 
