@@ -8,7 +8,7 @@
 You can try Ajv without installing it in the Node.js REPL: [https://runkit.com/npm/ajv](https://runkit.com/npm/ajv)
 :::
 
-To install Ajv version 7:
+To install Ajv version 8:
 
 ```bash
 npm install ajv
@@ -140,8 +140,8 @@ const parse = ajv.compileParser(schema)
 const json = '{"foo": 1, "bar": "abc"}'
 const invalidJson = '{"unknown": "abc"}'
 
-console.log(parseAndLog(json)) // logs {foo: 1, bar: "abc"}
-console.log(parseAndLog(invalidJson)) // logs error and position
+parseAndLog(json) // logs {foo: 1, bar: "abc"}
+parseAndLog(invalidJson) // logs error and position
 
 function parseAndLog(json) {
   const data = parse(json)
