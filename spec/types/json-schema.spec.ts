@@ -306,6 +306,23 @@ describe("JSONSchemaType type and validation as a type guard", () => {
       // eslint-disable-next-line no-void
       void optionalSchema
     })
+
+    it("won't accept nullable for non-null types", () => {
+      // @ts-expect-error can't set nullable
+      const nonNullSchema: JSONSchemaType<{a: number}> = {
+        type: "object",
+        properties: {
+          a: {
+            type: "number",
+            nullable: true,
+          },
+        },
+        required: [],
+      }
+
+      // eslint-disable-next-line no-void
+      void nonNullSchema
+    })
   })
 
   describe("schema works for primitives", () => {
