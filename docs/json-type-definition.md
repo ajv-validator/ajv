@@ -416,8 +416,8 @@ Any user-defined keywords that can be used in JSON Schema schemas can also be us
 It is strongly recommended to only use it to simplify migration from JSON Schema to JTD and not to use non-standard keywords in the new schemas, as these keywords are not supported by any other tools.
 :::
 
-::: warning Non-standard JTD keywords
-If you need to use non-standard JTD keywords, you would have to parse using JSON.parse and then validate separately.
+::: warning Parsing with non-standard JTD keywords
+compileParser method does not support non-standard JTD keywords, you will have to use JSON.parse and then validates.
 :::
 
 ## Validation errors
