@@ -180,6 +180,7 @@ type Nullable<T> = undefined extends T
       default?: T | null
     }
   : {
+      nullable?: false
       const?: T
       enum?: Readonly<T[]>
       default?: T
