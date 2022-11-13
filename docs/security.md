@@ -72,7 +72,7 @@ To use a third-party regex engine in Ajv, set the ajv.opts.code.regExp property 
 ``` 
 const Ajv = require("ajv") 
 const RE2 = require("re2") 
-const ajv = new Ajv({regExp: RE2}) 
+const ajv = new Ajv({code: {regExp: RE2}}) 
 ``` 
 
 For details about the interface of the `regexp` option, see options.md under the docs folder. 

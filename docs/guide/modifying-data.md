@@ -154,7 +154,7 @@ See [discriminator](../json-schema.md#discriminator) keyword.
 
 ## Assigning defaults
 
-With [option `useDefaults`](./api.md#options) Ajv will assign values from `default` keyword in the schemas of `properties` and `items` (when it is the array of schemas) to the missing properties and items.
+With [option `useDefaults`](./options.md#options) Ajv will assign values from `default` keyword in the schemas of `properties` and `items` (when it is the array of schemas) to the missing properties and items.
 
 With the option value `"empty"` properties and items equal to `null` or `""` (empty string) will be considered missing and assigned defaults.
 

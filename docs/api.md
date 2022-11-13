@@ -149,7 +149,7 @@ Every time this method is called the errors are overwritten so you need to copy 
 
 If the schema is asynchronous (has `$async` keyword on the top level) this method returns a Promise. See [Asynchronous validation](./guide/async-validation.md).
 
-<a name="add-schema"></a>
+<a id="add-schema"></a>
 
 ### ajv.addSchema(schema: object | object[], key?: string): Ajv
 
