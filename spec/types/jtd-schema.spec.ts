@@ -130,12 +130,12 @@ describe("JTDSchemaType", () => {
     // tuples don't work
     // @ts-expect-error
     const tupleHomo: JTDSchemaType<[number, number]> = {elements: {type: "float64"}}
+    // @ts-expect-error
     const tupleHeteroNum: JTDSchemaType<[number, string]> = {
-      // @ts-expect-error
       elements: {type: "float64"},
     }
+    // @ts-expect-error
     const tupleHeteroString: JTDSchemaType<[number, string]> = {
-      // @ts-expect-error
       elements: {type: "string"},
     }
     const elemNull: JTDSchemaType<number[] | null> = {elements: {type: "float64"}, nullable: true}
