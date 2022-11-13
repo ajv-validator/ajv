@@ -8,7 +8,7 @@
 You can try Ajv without installing it in the Node.js REPL: [https://runkit.com/npm/ajv](https://runkit.com/npm/ajv)
 :::
 
-To install Ajv version 7:
+To install Ajv version 8:
 
 ```bash
 npm install ajv
