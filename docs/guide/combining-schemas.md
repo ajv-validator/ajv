@@ -41,7 +41,7 @@ const ajv = new Ajv()
 const validate = ajv.addSchema(defsSchema).compile(schema)
 ```
 
-See [Options](./api.md#options) and [addSchema](./api.md#add-schema) method.
+See [Options](../options.md) and [addSchema](../api.md#add-schema) method.
 
 ::: tip Reference resolution
 - `$ref` is resolved as the uri-reference using schema \$id as the base URI (see the example).
