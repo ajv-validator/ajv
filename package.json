@@ -83,7 +83,7 @@
     "dayjs-plugin-utc": "^0.1.2",
     "eslint": "^7.8.1",
     "eslint-config-prettier": "^7.0.0",
-    "fast-uri": "^1.0.0",
+    "fast-uri": "^2.1.0",
     "glob": "^8.0.2",
     "husky": "^7.0.1",
     "if-node-version": "^1.0.0",
