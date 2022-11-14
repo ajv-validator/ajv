@@ -66,7 +66,7 @@
   "devDependencies": {
     "@ajv-validator/config": "^0.3.0",
     "@rollup/plugin-commonjs": "^23.0.2",
-    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-json": "^5.0.1",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-typescript": "^8.2.1",
     "@types/chai": "^4.2.12",
