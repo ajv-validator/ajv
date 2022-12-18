@@ -155,7 +155,7 @@ function serializeSchemaProperties(cxt: SerializeCxt, discriminator?: string): v
   const props = keys(properties)
   const optProps = keys(optionalProperties)
   const allProps = allProperties(props.concat(optProps))
-  let first = !discriminator
+  const first = gen.let("first", !discriminator)
   for (const key of props) {
     serializeProperty(key, properties[key], keyValue(key))
   }
@@ -167,9 +167,7 @@ function serializeSchemaProperties(cxt: SerializeCxt, discriminator?: string): v
   }
   if (schema.additionalProperties) {
     gen.forIn("key", data, (key) =>
-      gen.if(isAdditional(key, allProps), () =>
-        serializeKeyValue(cxt, key, {}, gen.let("first", first))
-      )
+      gen.if(isAdditional(key, allProps), () => serializeKeyValue(cxt, key, {}, first))
     )
   }
 
@@ -190,8 +188,7 @@ function serializeSchemaProperties(cxt: SerializeCxt, discriminator?: string): v
   }
 
   function serializeProperty(key: string, propSchema: SchemaObject, value: Name): void {
-    if (first) first = false
-    else gen.add(N.json, str`,`)
+    addComma(cxt, first)
     gen.add(N.json, str`${JSON.stringify(key)}:`)
     serializeCode({...cxt, schema: propSchema, data: value})
   }
