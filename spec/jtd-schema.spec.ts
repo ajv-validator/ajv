@@ -144,6 +144,20 @@ describe("JSON Type Definition", () => {
         })
       )
     }
+
+    it("serializes missing first optionalProperty", () => {
+      const schema = {
+        optionalProperties: {
+          foo: {type: "string"},
+          bar: {type: "string"},
+        },
+      }
+      const instance = {
+        bar: "bar",
+      }
+      const serialize = ajv.compileSerializer(schema)
+      assert.deepStrictEqual(JSON.parse(serialize(instance)), instance)
+    })
   })
 
   describe("parse", () => {
