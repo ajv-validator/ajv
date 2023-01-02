@@ -173,9 +173,7 @@ function serializeSchemaProperties(cxt: SerializeCxt, discriminator?: string): v
   }
   if (schema.additionalProperties) {
     gen.forIn("key", data, (key) =>
-      gen.if(isAdditional(key, allProps), () =>
-        serializeKeyValue(cxt, key, {}, firstProp)
-      )
+      gen.if(isAdditional(key, allProps), () => serializeKeyValue(cxt, key, {}, firstProp))
     )
   }
 
