@@ -117,7 +117,7 @@ function serializeValues(cxt: SerializeCxt): void {
   gen.add(N.json, str`}`)
 }
 
-function serializeKeyValue(cxt: SerializeCxt, key: Name, schema: SchemaObject, first: Name): void {
+function serializeKeyValue(cxt: SerializeCxt, key: Name, schema: SchemaObject, first?: Name): void {
   const {gen, data} = cxt
   addComma(cxt, first)
   serializeString({...cxt, data: key})
@@ -156,16 +156,20 @@ function serializeSchemaProperties(cxt: SerializeCxt, discriminator?: string): v
   const optProps = keys(optionalProperties)
   const allProps = allProperties(props.concat(optProps))
   let first = !discriminator
-  const firstProp = gen.let("first", props.length === 0)
+  let firstProp: Name | undefined
 
   for (const key of props) {
-    serializeProperty(key, properties[key], keyValue(key), false)
+    if (first) first = false
+    else gen.add(N.json, str`,`)
+    serializeProperty(key, properties[key], keyValue(key))
   }
+  if (first) firstProp = gen.let("first", true)
   for (const key of optProps) {
     const value = keyValue(key)
-    gen.if(and(_`${value} !== undefined`, isOwnProperty(gen, data, key)), () =>
-      serializeProperty(key, optionalProperties[key], value, true)
-    )
+    gen.if(and(_`${value} !== undefined`, isOwnProperty(gen, data, key)), () => {
+      addComma(cxt, firstProp)
+      serializeProperty(key, optionalProperties[key], value)
+    })
   }
   if (schema.additionalProperties) {
     gen.forIn("key", data, (key) =>
@@ -189,24 +193,7 @@ function serializeSchemaProperties(cxt: SerializeCxt, discriminator?: string): v
     return gen.const("value", _`${data}${getProperty(key)}`)
   }
 
-  function serializeProperty(
-    key: string,
-    propSchema: SchemaObject,
-    value: Name,
-    isOptional: boolean
-  ): void {
-    if (first) {
-      first = false
-      if (isOptional) gen.assign(firstProp, false)
-    } else if (isOptional) {
-      gen.if(
-        firstProp,
-        () => gen.assign(firstProp, false),
-        () => gen.add(N.json, str`,`)
-      )
-    } else {
-      gen.add(N.json, str`,`)
-    }
+  function serializeProperty(key: string, propSchema: SchemaObject, value: Name): void {
     gen.add(N.json, str`${JSON.stringify(key)}:`)
     serializeCode({...cxt, schema: propSchema, data: value})
   }
@@ -266,10 +253,14 @@ function serializeEmpty({gen, data}: SerializeCxt): void {
   gen.add(N.json, _`JSON.stringify(${data})`)
 }
 
-function addComma({gen}: SerializeCxt, first: Name): void {
-  gen.if(
-    first,
-    () => gen.assign(first, false),
-    () => gen.add(N.json, str`,`)
-  )
+function addComma({gen}: SerializeCxt, first?: Name): void {
+  if (first) {
+    gen.if(
+      first,
+      () => gen.assign(first, false),
+      () => gen.add(N.json, str`,`)
+    )
+  } else {
+    gen.add(N.json, str`,`)
+  }
 }

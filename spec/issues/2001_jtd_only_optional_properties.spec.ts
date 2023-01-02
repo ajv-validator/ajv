@@ -1,28 +1,27 @@
 import _Ajv from "../ajv_jtd"
 import * as assert from "assert"
 
-const PROP_COUNT = 3
+describe("schema with optional/additional properties only", () => {
+  const ajv = new _Ajv()
 
-describe("schema with only optional properties", () => {
-  let ajv: InstanceType<typeof _Ajv>
-  const schema = {optionalProperties: {}}
-  const data = {}
-  const invalidData = {}
-  let serialize
-
-  before(() => {
-    ajv = new _Ajv()
-    for (let i = 0; i < PROP_COUNT; i++) {
-      const prop = `prop${i}`
-      schema.optionalProperties[prop] = {type: "uint16"}
-      data[prop] = i
-      if (i !== 0) invalidData[prop] = i
+  it("should correctly serialize optional properties", () => {
+    const schema = {
+      optionalProperties: {
+        prop0: {type: "uint16"},
+        prop1: {type: "uint16"},
+        prop2: {type: "uint16"},
+      },
+      additionalProperties: true,
     }
-    serialize = ajv.compileSerializer(schema)
-  })
+    const serialize = ajv.compileSerializer(schema)
+    test({prop0: 0, prop1: 1, prop2: 2}, '{"prop0":0,"prop1":1,"prop2":2}')
+    test({prop1: 1, prop2: 2}, '{"prop1":1,"prop2":2}')
+    test({prop0: 0, prop1: 1, prop2: 2, foo: "bar"}, '{"prop0":0,"prop1":1,"prop2":2,"foo":"bar"}')
+    test({prop1: 1, prop2: 2, foo: "bar"}, '{"prop1":1,"prop2":2,"foo":"bar"}')
+    test({foo: "bar"}, '{"foo":"bar"}')
 
-  it("should correctly compile reference to schema", () => {
-    assert.strictEqual(serialize(data), '{"prop0":0,"prop1":1,"prop2":2}')
-    assert.strictEqual(serialize(invalidData), '{"prop1":1,"prop2":2}')
+    function test(data: object, json: string) {
+      assert.strictEqual(serialize(data), json)
+    }
   })
 })
