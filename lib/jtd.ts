@@ -127,3 +127,5 @@ export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./com
 
 export {JTDSchemaType, SomeJTDSchemaType, JTDDataType}
 export {JTDOptions}
+export {default as ValidationError} from "./runtime/validation_error"
+export {default as MissingRefError} from "./compile/ref_error"

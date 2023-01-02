@@ -239,7 +239,7 @@ ajv.addKeyword({
 })
 ```
 
-Macro keywords an be recursive - i.e. return schemas containing the same keyword. See the example of defining a recursive macro keyword `deepProperties` in the [test](https://github.com/ajv-validator/ajv/blob/master/spec/keyword.spec.ts#L316).
+Macro keywords can be recursive - i.e. return schemas containing the same keyword. See the example of defining a recursive macro keyword `deepProperties` in the [test](https://github.com/ajv-validator/ajv/blob/master/spec/keyword.spec.ts#L316).
 
 ## Schema compilation context
 
