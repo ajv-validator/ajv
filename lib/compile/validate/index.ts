@@ -316,11 +316,11 @@ function includesType(ts: JSONType[], t: JSONType): boolean {
   return ts.includes(t) || (t === "integer" && ts.includes("number"))
 }
 
-function narrowSchemaTypes(it: SchemaObjCxt, withTypes: JSONType[]) {
+function narrowSchemaTypes(it: SchemaObjCxt, withTypes: JSONType[]): void {
   const ts: JSONType[] = []
   for (const t of it.dataTypes) {
     if (includesType(withTypes, t)) ts.push(t)
-    else if (withTypes.includes("integer") && t == "number") ts.push("integer")
+    else if (withTypes.includes("integer") && t === "number") ts.push("integer")
   }
   it.dataTypes = ts
 }
