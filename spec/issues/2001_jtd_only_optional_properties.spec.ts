@@ -1,7 +1,7 @@
 import _Ajv from "../ajv_jtd"
 import * as assert from "assert"
 
-describe("schema with optional/additional properties only", () => {
+describe("JTD schema with optional/additional properties only (issue #2001)", () => {
   const ajv = new _Ajv()
 
   it("should correctly serialize optional properties", () => {
