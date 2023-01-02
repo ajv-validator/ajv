@@ -1,7 +1,7 @@
 import type {CodeKeywordDefinition, SchemaObject} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
 import {alwaysValidSchema, Type} from "../../compile/util"
-import {not, Name} from "../../compile/codegen"
+import {not, or, Name} from "../../compile/codegen"
 import {checkMetadata} from "./metadata"
 import {checkNullableObject} from "./nullable"
 import {typeError, _JTDTypeError} from "./error"
@@ -15,13 +15,16 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordCxt) {
     checkMetadata(cxt)
     const {gen, data, schema, it} = cxt
-    if (alwaysValidSchema(it, schema)) return
     const [valid, cond] = checkNullableObject(cxt, data)
-    gen.if(cond)
-    gen.assign(valid, validateMap())
-    gen.elseIf(not(valid))
-    cxt.error()
-    gen.endIf()
+    if (alwaysValidSchema(it, schema)) {
+      gen.if(not(or(cond, valid)), () => cxt.error())
+    } else {
+      gen.if(cond)
+      gen.assign(valid, validateMap())
+      gen.elseIf(not(valid))
+      cxt.error()
+      gen.endIf()
+    }
     cxt.ok(valid)
 
     function validateMap(): Name | boolean {
