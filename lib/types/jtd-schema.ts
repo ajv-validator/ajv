@@ -74,7 +74,7 @@ type EnumString<T> = [T] extends [never]
   : null
 
 /** true if type is a union of string literals */
-type IsEnum<T> = null extends EnumString<Exclude<T, null>> ? false : true
+type IsEnum<T> = null extends EnumString<T> ? false : true
 
 /** true only if all types are array types (not tuples) */
 // NOTE relies on the fact that tuples don't have an index at 0.5, but arrays
@@ -88,13 +88,18 @@ type IsElements<T> = false extends IsUnion<T>
   : false
 
 /** true if the the type is a values type */
-type IsValues<T> = false extends IsUnion<Exclude<T, null>>
-  ? TypeEquality<keyof Exclude<T, null>, string>
+type IsValues<T> = false extends IsUnion<T> ? TypeEquality<keyof T, string> : false
+
+/** true if type is a properties type and Union is false, or type is a discriminator type and Union is true */
+type IsRecord<T, Union extends boolean> = Union extends IsUnion<T>
+  ? null extends EnumString<keyof T>
+    ? false
+    : true
   : false
 
-/** true if type is a proeprties type and Union is false, or type is a discriminator type and Union is true */
-type IsRecord<T, Union extends boolean> = Union extends IsUnion<Exclude<T, null>>
-  ? null extends EnumString<keyof Exclude<T, null>>
+/** true if type represents an empty record */
+type IsEmptyRecord<T> = [T] extends [Record<string, never>]
+  ? [T] extends [never]
     ? false
     : true
   : false
@@ -131,7 +136,7 @@ export type JTDSchemaType<T, D extends Record<string, unknown> = Record<string, 
       ? {type: "timestamp"}
       : // enums - only accepts union of string literals
       // TODO we can't actually check that everything in the union was specified
-      true extends IsEnum<T>
+      true extends IsEnum<Exclude<T, null>>
       ? {enum: EnumString<Exclude<T, null>>[]}
       : // arrays - only accepts arrays, could be array of unions to be resolved later
       true extends IsElements<Exclude<T, null>>
@@ -140,15 +145,20 @@ export type JTDSchemaType<T, D extends Record<string, unknown> = Record<string, 
             elements: JTDSchemaType<E, D>
           }
         : never
+      : // empty properties
+      true extends IsEmptyRecord<Exclude<T, null>>
+      ?
+          | {properties: Record<string, never>; optionalProperties?: Record<string, never>}
+          | {optionalProperties: Record<string, never>}
       : // values
-      true extends IsValues<T>
+      true extends IsValues<Exclude<T, null>>
       ? T extends Record<string, infer V>
         ? {
             values: JTDSchemaType<V, D>
           }
         : never
       : // properties
-      true extends IsRecord<T, false>
+      true extends IsRecord<Exclude<T, null>, false>
       ? ([RequiredKeys<Exclude<T, null>>] extends [never]
           ? {
               properties?: Record<string, never>
@@ -168,7 +178,7 @@ export type JTDSchemaType<T, D extends Record<string, unknown> = Record<string, 
             additionalProperties?: boolean
           }
       : // discriminator
-      true extends IsRecord<T, true>
+      true extends IsRecord<Exclude<T, null>, true>
       ? {
           [K in keyof Exclude<T, null>]-?: Exclude<T, null>[K] extends string
             ? {
@@ -176,7 +186,7 @@ export type JTDSchemaType<T, D extends Record<string, unknown> = Record<string, 
                 mapping: {
                   // TODO currently allows descriminator to be present in schema
                   [M in Exclude<T, null>[K]]: JTDSchemaType<
-                    Omit<T extends {[C in K]: M} ? T : never, K>,
+                    Omit<T extends Record<K, M> ? T : never, K>,
                     D
                   >
                 }
