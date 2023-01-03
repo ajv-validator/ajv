@@ -157,7 +157,12 @@ export function validateProperties(cxt: KeywordCxt): void {
     })
   }
 
-  function isAdditional(key: Name, props: string[], keyword: string, jtdDiscriminator?: string): Code | true {
+  function isAdditional(
+    key: Name,
+    props: string[],
+    keyword: string,
+    jtdDiscriminator?: string
+  ): Code | true {
     let additional: Code | boolean
     if (props.length > 8) {
       // TODO maybe an option instead of hard-coded 8?
