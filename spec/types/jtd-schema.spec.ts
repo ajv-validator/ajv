@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-interface,no-void */
+/* eslint-disable @typescript-eslint/no-empty-interface,no-void,@typescript-eslint/ban-types */
 import _Ajv from "../ajv_jtd"
 import type {JTDSchemaType, SomeJTDSchemaType, JTDDataType} from "../../dist/jtd"
 import chai from "../chai"
@@ -17,7 +17,13 @@ interface B {
   b?: string
 }
 
+interface C {
+  type: "c"
+}
+
 type MyData = A | B
+
+type Missing = A | C
 
 interface LinkedList {
   val: number
@@ -29,6 +35,14 @@ const mySchema: JTDSchemaType<MyData> = {
   mapping: {
     a: {properties: {a: {type: "float64"}}},
     b: {optionalProperties: {b: {type: "string"}}},
+  },
+}
+
+const missingSchema: JTDSchemaType<Missing> = {
+  discriminator: "type",
+  mapping: {
+    a: {properties: {a: {type: "float64"}}},
+    c: {properties: {}},
   },
 }
 
@@ -67,6 +81,22 @@ describe("JTDSchemaType", () => {
     const invalidData = {type: "a" as const, b: "test"}
     // @ts-expect-error
     serialize(invalidData)
+  })
+
+  it("validation should prove the data type for missingSchema", () => {
+    const ajv = new _Ajv()
+    const validate = ajv.compile(missingSchema)
+    const validData: unknown = {type: "c"}
+
+    if (validate(validData)) {
+      validData.type.should.equal("c")
+    }
+    should.not.exist(validate.errors)
+
+    if (ajv.validate(missingSchema, validData)) {
+      validData.type.should.equal("c")
+    }
+    should.not.exist(validate.errors)
   })
 
   it("should typecheck number schemas", () => {
@@ -130,12 +160,12 @@ describe("JTDSchemaType", () => {
     // tuples don't work
     // @ts-expect-error
     const tupleHomo: JTDSchemaType<[number, number]> = {elements: {type: "float64"}}
+    // @ts-expect-error
     const tupleHeteroNum: JTDSchemaType<[number, string]> = {
-      // @ts-expect-error
       elements: {type: "float64"},
     }
+    // @ts-expect-error
     const tupleHeteroString: JTDSchemaType<[number, string]> = {
-      // @ts-expect-error
       elements: {type: "string"},
     }
     const elemNull: JTDSchemaType<number[] | null> = {elements: {type: "float64"}, nullable: true}
@@ -286,10 +316,40 @@ describe("JTDSchemaType", () => {
     const emptyButFull: JTDSchemaType<{a: string}> = {}
     const emptyMeta: JTDSchemaType<unknown> = {metadata: {}}
 
-    // constant null not representable
+    // constant null representable as nullable empty object
     const emptyNull: TypeEquality<JTDSchemaType<null>, never> = true
 
     void [empty, emptyUnknown, falseUnknown, emptyButFull, emptyMeta, emptyNull]
+  })
+
+  it("should typecheck empty records", () => {
+    // empty record variants
+    const emptyPro: JTDSchemaType<{}> = {properties: {}}
+    const emptyOpt: JTDSchemaType<{}> = {optionalProperties: {}}
+    const emptyBoth: JTDSchemaType<{}> = {properties: {}, optionalProperties: {}}
+    const emptyRecord: JTDSchemaType<Record<string, never>> = {properties: {}}
+    const notNullable: JTDSchemaType<{}> = {properties: {}, nullable: false}
+
+    // can't be null
+    // @ts-expect-error
+    const nullable: JTDSchemaType<{}> = {properties: {}, nullable: true}
+
+    const emptyNullUnion: JTDSchemaType<null | {}> = {properties: {}, nullable: true}
+    const emptyNullRecord: JTDSchemaType<null | Record<string, never>> = {
+      properties: {},
+      nullable: true,
+    }
+
+    void [
+      emptyPro,
+      emptyOpt,
+      emptyBoth,
+      emptyRecord,
+      notNullable,
+      nullable,
+      emptyNullUnion,
+      emptyNullRecord,
+    ]
   })
 
   it("should typecheck ref schemas", () => {
