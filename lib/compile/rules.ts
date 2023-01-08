@@ -2,7 +2,7 @@ import type {AddedKeywordDefinition} from "../types"
 
 const _jsonTypes = ["string", "number", "integer", "boolean", "null", "object", "array"] as const
 
-export type JSONType = typeof _jsonTypes[number]
+export type JSONType = (typeof _jsonTypes)[number]
 
 const jsonTypes: Set<string> = new Set(_jsonTypes)
 
