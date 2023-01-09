@@ -13,4 +13,4 @@ export const jtdForms = [
   "ref",
 ] as const
 
-export type JTDForm = typeof jtdForms[number]
+export type JTDForm = (typeof jtdForms)[number]
