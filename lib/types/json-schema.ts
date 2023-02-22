@@ -101,7 +101,7 @@ type UncheckedJSONSchemaType<T, IsPartial extends boolean> = (
           // "properties" are optional for more concise dictionary schemas
           // "patternProperties" and can be only used with interfaces that have string index
           type: JSONType<"object", IsPartial>
-          additionalProperties?: boolean | UncheckedJSONSchemaType<T[string], false>
+          additionalProperties?: boolean | UncheckedJSONSchemaType<T[string], false> | { $ref: string }
           unevaluatedProperties?: boolean | UncheckedJSONSchemaType<T[string], false>
           properties?: IsPartial extends true
             ? Partial<UncheckedPropertiesSchema<T>>
