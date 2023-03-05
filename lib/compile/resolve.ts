@@ -2,7 +2,7 @@ import type {AnySchema, AnySchemaObject, UriResolver} from "../types"
 import type Ajv from "../ajv"
 import type {URIComponents} from "uri-js"
 import {eachItem} from "./util"
-import * as equal from "fast-deep-equal"
+import {deepEqual} from "fast-equals"
 import * as traverse from "json-schema-traverse"
 
 // the hash of local references inside the schema (created by getSchemaRefs), used for inline resolution
@@ -140,7 +140,7 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): Loc
   return localRefs
 
   function checkAmbiguosRef(sch1: AnySchema, sch2: AnySchema | undefined, ref: string): void {
-    if (sch2 !== undefined && !equal(sch1, sch2)) throw ambiguos(ref)
+    if (sch2 !== undefined && !deepEqual(sch1, sch2)) throw ambiguos(ref)
   }
 
   function ambiguos(ref: string): Error {
