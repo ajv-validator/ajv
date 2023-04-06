@@ -138,9 +138,7 @@ export function validateProperties(cxt: KeywordCxt): void {
 
   function validateAdditional(): void {
     gen.forIn("key", data, (key: Name) => {
-      const _allProps =
-        it.jtdDiscriminator === undefined ? allProps : [it.jtdDiscriminator].concat(allProps)
-      const addProp = isAdditional(key, _allProps, "properties")
+      const addProp = isAdditional(key, allProps, "properties", it.jtdDiscriminator)
       const addOptProp = isAdditional(key, allOptProps, "optionalProperties")
       const extra =
         addProp === true ? addOptProp : addOptProp === true ? addProp : and(addProp, addOptProp)
@@ -159,14 +157,23 @@ export function validateProperties(cxt: KeywordCxt): void {
     })
   }
 
-  function isAdditional(key: Name, props: string[], keyword: string): Code | true {
+  function isAdditional(
+    key: Name,
+    props: string[],
+    keyword: string,
+    jtdDiscriminator?: string
+  ): Code | true {
     let additional: Code | boolean
     if (props.length > 8) {
       // TODO maybe an option instead of hard-coded 8?
       const propsSchema = schemaRefOrVal(it, parentSchema[keyword], keyword)
       additional = not(isOwnProperty(gen, propsSchema as Code, key))
-    } else if (props.length) {
-      additional = and(...props.map((p) => _`${key} !== ${p}`))
+      if (jtdDiscriminator !== undefined) {
+        additional = and(additional, _`${key} !== ${jtdDiscriminator}`)
+      }
+    } else if (props.length || jtdDiscriminator !== undefined) {
+      const ps = jtdDiscriminator === undefined ? props : [jtdDiscriminator].concat(props)
+      additional = and(...ps.map((p) => _`${key} !== ${p}`))
     } else {
       additional = true
     }

@@ -12,7 +12,7 @@ Supports JSON Schema draft-04/06/07/2019-09/2020-12 ([draft-04 support](https://
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![Coverage Status](https://coveralls.io/repos/github/ajv-validator/ajv/badge.svg?branch=master)](https://coveralls.io/github/ajv-validator/ajv?branch=master)
-[![SimpleX](https://img.shields.io/badge/chat-on%20SimpleX-%2307b4b9)](https://simplex.chat/contact#/?v=1&smp=smp%3A%2F%2Fu2dS9sG8nMNURyZwqASV4yROM28Er0luVTx5X1CsMrU%3D%40smp4.simplex.im%2Fap4lMFzfXF8Hzmh-Vz0WNxp_1jKiOa-h%23MCowBQYDK2VuAyEAcdefddRvDfI8iAuBpztm_J3qFucj8MDZoVs_2EcMTzU%3D)
+[![SimpleX](https://img.shields.io/badge/chat-on%20SimpleX-%2307b4b9)](https://simplex.chat/contact#/?v=1-2&smp=smp%3A%2F%2Fu2dS9sG8nMNURyZwqASV4yROM28Er0luVTx5X1CsMrU%3D%40smp4.simplex.im%2FV-6t4hoy_SsvKMi9KekdGX-VKQOhDeAe%23%2F%3Fv%3D1-2%26dh%3DMCowBQYDK2VuAyEAm98gjwvrAEiiz_YgBoaQB9dtKTl5Om1pborUyevQwzg%253D%26srv%3Do5vmywmrnaxalvz6wi3zicyftgio6psuvyniis6gco6bp6ekl4cqj4id.onion&data=%7B%22type%22%3A%22group%22%2C%22groupLinkId%22%3A%22wYrTFafovkymjUtc2vUjCQ%3D%3D%22%7D)
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 [![GitHub Sponsors](https://img.shields.io/badge/$-sponsors-brightgreen)](https://github.com/sponsors/epoberezkin)
 
@@ -35,6 +35,7 @@ Please review [Contributing guidelines](./CONTRIBUTING.md) and [Code components]
 All documentation is available on the [Ajv website](https://ajv.js.org).
 
 Some useful site links:
+
 - [Getting started](https://ajv.js.org/guide/getting-started.html)
 - [JSON Schema vs JSON Type Definition](https://ajv.js.org/guide/schema-language.html)
 - [API reference](https://ajv.js.org/api.html)
@@ -100,7 +101,7 @@ Currently Ajv is the fastest and the most standard compliant validator according
 
 Performance of different validators by [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark):
 
-[![performance](https://chart.googleapis.com/chart?chxt=x,y&cht=bhs&chco=76A4FB&chls=2.0&chbh=62,4,1&chs=600x416&chxl=-1:|ajv|@exodus&#x2F;schemasafe|is-my-json-valid|djv|@cfworker&#x2F;json-schema|jsonschema&chd=t:100,69.2,51.5,13.1,5.1,1.2)](https://github.com/ebdrup/json-schema-benchmark/blob/master/README.md#performance)
+[![performance](https://chart.googleapis.com/chart?chxt=x,y&cht=bhs&chco=76A4FB&chls=2.0&chbh=62,4,1&chs=600x416&chxl=-1:|ajv|@exodus/schemasafe|is-my-json-valid|djv|@cfworker/json-schema|jsonschema/=t:100,69.2,51.5,13.1,5.1,1.2)](https://github.com/ebdrup/json-schema-benchmark/blob/master/README.md#performance)
 
 ## Features
 
@@ -157,7 +158,7 @@ const schema = {
   type: "object",
   properties: {
     foo: {type: "integer"},
-    bar: {type: "string"}
+    bar: {type: "string"},
   },
   required: ["foo"],
   additionalProperties: false,
@@ -165,7 +166,7 @@ const schema = {
 
 const data = {
   foo: 1,
-  bar: "abc"
+  bar: "abc",
 }
 
 const validate = ajv.compile(schema)
