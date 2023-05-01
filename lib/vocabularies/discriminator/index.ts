@@ -1,4 +1,4 @@
-import type {CodeKeywordDefinition, AnySchemaObject, KeywordErrorDefinition} from "../../types"
+import type {AnySchemaObject, CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
 import {_, getProperty, Name} from "../../compile/codegen"
 import {DiscrError, DiscrErrorObj} from "./types"
@@ -72,21 +72,9 @@ const def: CodeKeywordDefinition = {
         let propSch = sch?.properties?.[tagName]
         let hasSubSchRequired = false
         if (!propSch && sch?.allOf) {
-          let subSchObj: any = null
-          for (const subSch of sch.allOf) {
-            if (subSch?.properties) {
-              propSch = subSch.properties[tagName]
-              subSchObj = subSch
-            } else if (subSch?.$ref) {
-              subSchObj = resolveRef.call(it.self, it.schemaEnv.root, it.baseId, subSch.$ref)
-              propSch = subSchObj?.properties[tagName]
-            }
-            if (propSch) {
-              //found discriminator mapping in one of the allOf objects, stop searching
-              hasSubSchRequired = hasRequired(subSchObj)
-              break
-            }
-          }
+          const {hasRequired, propertyObject} = mapDiscriminatorFromAllOf(propSch, sch)
+          hasSubSchRequired = hasRequired
+          propSch = propertyObject
         }
         if (!propSch || typeof propSch != "object") {
           throw new Error(
@@ -98,6 +86,28 @@ const def: CodeKeywordDefinition = {
       }
       if (!tagRequired) throw new Error(`discriminator: "${tagName}" must be required`)
       return oneOfMapping
+
+      function mapDiscriminatorFromAllOf(
+        propSch: any,
+        sch: any
+      ): {hasRequired: boolean; propertyObject: any} {
+        let subSchObj: any = null
+        for (const subSch of sch.allOf) {
+          if (subSch?.properties) {
+            propSch = subSch.properties[tagName]
+            subSchObj = subSch
+          } else if (subSch?.$ref) {
+            subSchObj = resolveRef.call(it.self, it.schemaEnv.root, it.baseId, subSch.$ref)
+            if (subSchObj instanceof SchemaEnv) subSchObj = subSchObj.schema
+            propSch = subSchObj?.properties?.[tagName]
+          }
+          if (propSch) {
+            //found discriminator mapping in one of the allOf objects, stop searching
+            return {hasRequired: hasRequired(subSchObj), propertyObject: propSch}
+          }
+        }
+        return {hasRequired: false, propertyObject: null}
+      }
 
       function hasRequired({required}: AnySchemaObject): boolean {
         return Array.isArray(required) && required.includes(tagName)
