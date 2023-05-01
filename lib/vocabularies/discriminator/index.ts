@@ -21,7 +21,7 @@ const def: CodeKeywordDefinition = {
   type: "object",
   schemaType: "object",
   error,
-  code(cxt: KeywordCxt) {
+  code: function (cxt: KeywordCxt) {
     const {gen, data, schema, parentSchema, it} = cxt
     const {oneOf} = parentSchema
     if (!it.opts.discriminator) {
@@ -29,7 +29,9 @@ const def: CodeKeywordDefinition = {
     }
     const tagName = schema.propertyName
     if (typeof tagName != "string") throw new Error("discriminator: requires propertyName")
-    if (schema.mapping) throw new Error("discriminator: mapping is not supported")
+    if (schema.mapping && strictDiscriminatorValidation()) {
+      throw new Error("discriminator: mapping is not supported")
+    }
     if (!oneOf) throw new Error("discriminator: requires oneOf keyword")
     const valid = gen.let("valid", false)
     const tag = gen.const("tag", _`${data}${getProperty(tagName)}`)
@@ -39,6 +41,11 @@ const def: CodeKeywordDefinition = {
       () => cxt.error(false, {discrError: DiscrError.Tag, tag, tagName})
     )
     cxt.ok(valid)
+
+    function strictDiscriminatorValidation(): boolean {
+      if (it.opts.discriminator instanceof Object) return it.opts.discriminator.strict
+      return true
+    }
 
     function validateMapping(): void {
       const mapping = getMapping()
