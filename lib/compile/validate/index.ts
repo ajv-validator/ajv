@@ -1,4 +1,10 @@
-import type {AddedKeywordDefinition, AnySchema, AnySchemaObject, KeywordCxtParams, KeywordErrorCxt,} from "../../types"
+import type {
+  AddedKeywordDefinition,
+  AnySchema,
+  AnySchemaObject,
+  KeywordCxtParams,
+  KeywordErrorCxt,
+} from "../../types"
 import type {SchemaCxt, SchemaObjCxt} from ".."
 import type {InstanceOptions} from "../../core"
 import {boolOrEmptySchema, topBoolOrEmptySchema} from "./boolSchema"
@@ -8,7 +14,7 @@ import {
   coerceAndCheckDataType,
   DataType,
   getSchemaTypes,
-  reportTypeError
+  reportTypeError,
 } from "./dataType"
 import {shouldUseGroup, shouldUseRule} from "./applicability"
 import {assignDefaults} from "./defaults"
@@ -26,7 +32,13 @@ import {
   unescapeJsonPointer,
 } from "../util"
 import type {JSONType, Rule, RuleGroup} from "../rules"
-import {ErrorPaths, keyword$DataError, reportError, reportExtraError, resetErrorsCount,} from "../errors"
+import {
+  ErrorPaths,
+  keyword$DataError,
+  reportError,
+  reportExtraError,
+  resetErrorsCount,
+} from "../errors"
 import {strictDiscriminatorValidation} from "../../vocabularies/discriminator"
 
 // schema compilation - generates validation function, subschemaCode (below) is used for subschemas

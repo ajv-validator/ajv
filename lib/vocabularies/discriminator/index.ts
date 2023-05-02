@@ -10,10 +10,10 @@ export type DiscriminatorError = DiscrErrorObj<DiscrError.Tag> | DiscrErrorObj<D
 const error: KeywordErrorDefinition = {
   message: ({params: {discrError, tagName}}) =>
     discrError === DiscrError.Tag
-      ? `tag "${tagName}" must be string`
-      : `value of tag "${tagName}" must be in oneOf`,
+      ? `property "${tagName}" must be string`
+      : `value of property "${tagName}" must be in oneOf`,
   params: ({params: {discrError, tag, tagName}}) =>
-    _`{error: ${discrError}, tag: ${tagName}, tagValue: ${tag}}`,
+    _`{error: ${discrError}, property: ${tagName}, propertyValue: ${tag}}`,
 }
 
 const def: CodeKeywordDefinition = {
