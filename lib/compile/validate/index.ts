@@ -1,38 +1,33 @@
-import type {
-  AddedKeywordDefinition,
-  AnySchema,
-  AnySchemaObject,
-  KeywordErrorCxt,
-  KeywordCxtParams,
-} from "../../types"
+import type {AddedKeywordDefinition, AnySchema, AnySchemaObject, KeywordCxtParams, KeywordErrorCxt,} from "../../types"
 import type {SchemaCxt, SchemaObjCxt} from ".."
 import type {InstanceOptions} from "../../core"
 import {boolOrEmptySchema, topBoolOrEmptySchema} from "./boolSchema"
-import {coerceAndCheckDataType, getSchemaTypes} from "./dataType"
+import {
+  checkDataType,
+  checkDataTypes,
+  coerceAndCheckDataType,
+  DataType,
+  getSchemaTypes,
+  reportTypeError
+} from "./dataType"
 import {shouldUseGroup, shouldUseRule} from "./applicability"
-import {checkDataType, checkDataTypes, reportTypeError, DataType} from "./dataType"
 import {assignDefaults} from "./defaults"
 import {funcKeywordCode, macroKeywordCode, validateKeywordUsage, validSchemaType} from "./keyword"
-import {getSubschema, extendSubschemaData, SubschemaArgs, extendSubschemaMode} from "./subschema"
-import {_, nil, str, or, not, getProperty, Block, Code, Name, CodeGen} from "../codegen"
+import {extendSubschemaData, extendSubschemaMode, getSubschema, SubschemaArgs} from "./subschema"
+import {_, Block, Code, CodeGen, getProperty, Name, nil, not, or, str} from "../codegen"
 import N from "../names"
 import {resolveUrl} from "../resolve"
 import {
-  schemaRefOrVal,
-  schemaHasRulesButRef,
-  checkUnknownRules,
   checkStrictMode,
-  unescapeJsonPointer,
+  checkUnknownRules,
   mergeEvaluated,
+  schemaHasRulesButRef,
+  schemaRefOrVal,
+  unescapeJsonPointer,
 } from "../util"
 import type {JSONType, Rule, RuleGroup} from "../rules"
-import {
-  ErrorPaths,
-  reportError,
-  reportExtraError,
-  resetErrorsCount,
-  keyword$DataError,
-} from "../errors"
+import {ErrorPaths, keyword$DataError, reportError, reportExtraError, resetErrorsCount,} from "../errors"
+import {strictDiscriminatorValidation} from "../../vocabularies/discriminator"
 
 // schema compilation - generates validation function, subschemaCode (below) is used for subschemas
 export function validateFunctionCode(it: SchemaCxt): void {
@@ -302,7 +297,9 @@ function checkKeywordTypes(it: SchemaObjCxt, ts: JSONType[]): void {
     if (typeof rule == "object" && shouldUseRule(it.schema, rule)) {
       const {type} = rule.definition
       if (type.length && !type.some((t) => hasApplicableType(ts, t))) {
-        strictTypesError(it, `missing type "${type.join(",")}" for keyword "${keyword}"`)
+        if (keyword !== "discriminator" || strictDiscriminatorValidation(it)) {
+          strictTypesError(it, `missing type "${type.join(",")}" for keyword "${keyword}"`)
+        }
       }
     }
   }

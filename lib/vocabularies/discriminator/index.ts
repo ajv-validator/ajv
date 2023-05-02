@@ -1,8 +1,8 @@
-import type {CodeKeywordDefinition, AnySchemaObject, KeywordErrorDefinition} from "../../types"
+import type {AnySchemaObject, CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
 import {_, getProperty, Name} from "../../compile/codegen"
 import {DiscrError, DiscrErrorObj} from "../discriminator/types"
-import {resolveRef, SchemaEnv} from "../../compile"
+import {resolveRef, SchemaEnv, SchemaObjCxt} from "../../compile"
 import {schemaHasRulesButRef} from "../../compile/util"
 
 export type DiscriminatorError = DiscrErrorObj<DiscrError.Tag> | DiscrErrorObj<DiscrError.Mapping>
@@ -29,7 +29,7 @@ const def: CodeKeywordDefinition = {
     }
     const tagName = schema.propertyName
     if (typeof tagName != "string") throw new Error("discriminator: requires propertyName")
-    if (schema.mapping && strictDiscriminatorValidation()) {
+    if (schema.mapping && strictDiscriminatorValidation(it)) {
       throw new Error("discriminator: mapping is not supported")
     }
     if (!oneOf) throw new Error("discriminator: requires oneOf keyword")
@@ -41,11 +41,6 @@ const def: CodeKeywordDefinition = {
       () => cxt.error(false, {discrError: DiscrError.Tag, tag, tagName})
     )
     cxt.ok(valid)
-
-    function strictDiscriminatorValidation(): boolean {
-      if (it.opts.discriminator instanceof Object) return it.opts.discriminator.strict
-      return true
-    }
 
     function validateMapping(): void {
       const mapping = getMapping()
@@ -112,6 +107,11 @@ const def: CodeKeywordDefinition = {
       }
     }
   },
+}
+
+export function strictDiscriminatorValidation(it: SchemaObjCxt): boolean {
+  if (it.opts.discriminator instanceof Object) return it.opts.discriminator.strict
+  return true
 }
 
 export default def
