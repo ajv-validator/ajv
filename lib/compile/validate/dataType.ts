@@ -99,7 +99,7 @@ function coerceData(it: SchemaObjCxt, types: JSONType[], coerceTo: JSONType[]): 
         gen
           .elseIf(
             _`${dataType} == "boolean" || ${data} === null
-              || (${dataType} == "string" && ${data} && ${data} == +${data})`
+              || (${dataType} == "string" && ${data} && ${data}.trim() && ${data} == +${data})`
           )
           .assign(coerced, _`+${data}`)
         return
@@ -107,7 +107,7 @@ function coerceData(it: SchemaObjCxt, types: JSONType[], coerceTo: JSONType[]): 
         gen
           .elseIf(
             _`${dataType} === "boolean" || ${data} === null
-              || (${dataType} === "string" && ${data} && ${data} == +${data} && !(${data} % 1))`
+              || (${dataType} === "string" && ${data} && ${data}.trim() && ${data} == +${data} && !(${data} % 1))`
           )
           .assign(coerced, _`+${data}`)
         return
