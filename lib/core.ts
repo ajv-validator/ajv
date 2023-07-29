@@ -340,7 +340,10 @@ export default class Ajv {
   validate<T>(schema: Schema | JSONSchemaType<T> | string, data: unknown): data is T
   // Separated for type inference to work
   // eslint-disable-next-line @typescript-eslint/unified-signatures
-  validate<T>(schema: JTDSchemaType<T>, data: unknown): data is T
+  validate<T, R extends Record<string, unknown>>(
+    schema: JTDSchemaType<T, R>,
+    data: unknown
+  ): data is T
   // This overload is only intended for typescript inference, the first
   // argument prevents manual type annotation from matching this overload
   validate<N extends never, T extends SomeJTDSchemaType>(
@@ -371,7 +374,10 @@ export default class Ajv {
   compile<T = unknown>(schema: Schema | JSONSchemaType<T>, _meta?: boolean): ValidateFunction<T>
   // Separated for type inference to work
   // eslint-disable-next-line @typescript-eslint/unified-signatures
-  compile<T = unknown>(schema: JTDSchemaType<T>, _meta?: boolean): ValidateFunction<T>
+  compile<T = unknown, R extends Record<string, unknown> = Record<string, unknown>>(
+    schema: JTDSchemaType<T, R>,
+    _meta?: boolean
+  ): ValidateFunction<T>
   // This overload is only intended for typescript inference, the first
   // argument prevents manual type annotation from matching this overload
   compile<N extends never, T extends SomeJTDSchemaType>(
