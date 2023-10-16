@@ -112,6 +112,7 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): Loc
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const _resolve = this.opts.uriResolver.resolve
       ref = normalizeId(baseId ? _resolve(baseId, ref) : ref)
+      if (this.opts.addUsedSchema === false) return ref // skip adding schema reference
       if (schemaRefs.has(ref)) throw ambiguos(ref)
       schemaRefs.add(ref)
       let schOrRef = this.refs[ref]
