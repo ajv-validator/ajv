@@ -134,6 +134,37 @@ uriResolvers.forEach((resolver) => {
             }, /resolves to more than one schema/)
           })
         })
+        it("should not throw if the same id resolves to two different schemas when addUsedSchema is false", () => {
+          const ajvInstance = new _Ajv({
+            allErrors: true,
+            verbose: true,
+            inlineRefs: false,
+            allowUnionTypes: true,
+            uriResolver: resolver,
+            addUsedSchema: false,
+          })
+
+          ajvInstance.compile({
+            $id: "http://example.com/1.json",
+            type: "integer",
+          })
+
+          let errorOccurred = false
+          try {
+            ajvInstance.compile({
+              type: "object",
+              additionalProperties: {
+                $id: "http://example.com/1.json",
+                type: "string",
+              },
+            })
+          } catch (error) {
+            errorOccurred = true
+          }
+
+          // Assert that no error occurred
+          errorOccurred.should.equal(false)
+        })
 
         it("should resolve ids defined as urn's (issue #423)", () => {
           const schema = {
