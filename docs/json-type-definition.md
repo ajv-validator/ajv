@@ -7,14 +7,14 @@ To use JTD schemas you need to import a different Ajv class:
 <code-group>
 <code-block title="JavaScript">
 ```javascript
-const Ajv = require("ajv/dist/jtd")
+const {Ajv} = require("ajv/dist/jtd")
 const ajv = new Ajv()
 ```
 </code-block>
 
 <code-block title="TypeScript">
 ```typescript
-import Ajv from "ajv/dist/jtd"
+import {Ajv} from "ajv/dist/jtd"
 const ajv = new Ajv()
 ```
 </code-block>

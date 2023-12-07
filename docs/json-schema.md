@@ -15,14 +15,14 @@ This version is provided as default export:
 <code-group>
 <code-block title="JavaScript">
 ```javascript
-const Ajv = require("ajv")
+const {Ajv} = require("ajv")
 const ajv = new Ajv()
 ```
 </code-block>
 
 <code-block title="TypeScript">
 ```typescript
-import Ajv from "ajv"
+import {Ajv} from "ajv"
 const ajv = new Ajv()
 ```
 </code-block>
@@ -48,14 +48,14 @@ To use draft-2019-09 schemas you need to import a different Ajv class:
 <code-group>
 <code-block title="JavaScript">
 ```javascript
-const Ajv2019 = require("ajv/dist/2019")
+const {Ajv2019} = require("ajv/dist/2019")
 const ajv = new Ajv2019()
 ```
 </code-block>
 
 <code-block title="TypeScript">
 ```typescript
-import Ajv2019 from "ajv/dist/2019"
+import {Ajv2019} from "ajv/dist/2019"
 const ajv = new Ajv2019()
 ```
 </code-block>
@@ -96,14 +96,14 @@ To use draft-2020-12 schemas you need to import a different Ajv class:
 <code-group>
 <code-block title="JavaScript">
 ```javascript
-const Ajv2020 = require("ajv/dist/2020")
+const {Ajv2020} = require("ajv/dist/2020")
 const ajv = new Ajv2020()
 ```
 </code-block>
 
 <code-block title="TypeScript">
 ```typescript
-import Ajv2020 from "ajv/dist/2020"
+import {Ajv2020} from "ajv/dist/2020"
 const ajv = new Ajv2020()
 ```
 </code-block>
@@ -116,7 +116,7 @@ You can use JSON Schema draft-06 schemas with Ajv v7/8. If your schemas use `$sc
 <code-group>
 <code-block title="JavaScript">
 ```javascript
-const Ajv = require("ajv")
+const {Ajv} = require("ajv")
 const draft6MetaSchema = require("ajv/dist/refs/json-schema-draft-06.json")
 
 const ajv = new Ajv()
@@ -126,7 +126,7 @@ ajv.addMetaSchema(draft6MetaSchema)
 
 <code-block title="TypeScript">
 ```typescript
-import Ajv from "ajv"
+import {Ajv} from "ajv"
 import * as draft6MetaSchema from "ajv/dist/refs/json-schema-draft-06.json"
 
 const ajv = new Ajv()
@@ -142,14 +142,14 @@ You can use JSON Schema draft-04 schemas with Ajv from v8.5.0 and the additional
 <code-group>
 <code-block title="JavaScript">
 ```javascript
-const Ajv = require("ajv-draft-04")
+const {Ajv} = require("ajv-draft-04")
 const ajv = new Ajv()
 ```
 </code-block>
 
 <code-block title="TypeScript">
 ```typescript
-import Ajv from "ajv-draft-04"
+import {Ajv} from "ajv-draft-04"
 const ajv = new Ajv()
 ```
 </code-block>

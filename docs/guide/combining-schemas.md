@@ -104,8 +104,8 @@ const strictTreeSchema = {
   unevaluatedProperties: false,
 }
 
-import Ajv2019 from "ajv/dist/2019"
-// const Ajv2019 = require("ajv/dist/2019")
+import {Ajv2019} from "ajv/dist/2019"
+// const {Ajv2019} = require("ajv/dist/2019")
 const ajv = new Ajv2019({
   schemas: [treeSchema, strictTreeSchema],
 })

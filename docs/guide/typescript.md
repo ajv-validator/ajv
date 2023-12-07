@@ -20,7 +20,7 @@ For the same example as in [Getting started](./getting-started):
 <code-group>
 <code-block title="JSON Schema">
 ```typescript
-import Ajv, {JSONSchemaType} from "ajv"
+import {Ajv, JSONSchemaType} from "ajv"
 const ajv = new Ajv()
 
 interface MyData {
@@ -61,7 +61,7 @@ if (validate(data)) {
 
 <code-block title="JSON Type Definition">
 ```typescript
-import Ajv, {JTDSchemaType} from "ajv/dist/jtd"
+import {Ajv, JTDSchemaType} from "ajv/dist/jtd"
 const ajv = new Ajv()
 
 interface MyData {
@@ -110,7 +110,7 @@ You can use JTD schema to construct the type of data using utility type `JTDData
 <code-group>
 <code-block title="JSON Type Definition">
 ```typescript
-import Ajv, {JTDDataType} from "ajv/dist/jtd"
+import {Ajv, JTDDataType} from "ajv/dist/jtd"
 const ajv = new Ajv()
 
 const schema = {
@@ -214,7 +214,7 @@ This example uses the same data and schema types as above:
 <code-group>
 <code-block title="JSON Type Definition">
 ```typescript
-import Ajv, {JTDSchemaType} from "ajv/dist/jtd"
+import {Ajv, JTDSchemaType} from "ajv/dist/jtd"
 const ajv = new Ajv()
 
 interface MyData {
@@ -290,7 +290,7 @@ Here's a more detailed example showing several union types:
 <code-group>
 <code-block title="JSON Schema">
 ```typescript
-import Ajv, {JSONSchemaType} from "ajv"
+import {Ajv, JSONSchemaType} from "ajv"
 const ajv = new Ajv()
 
 type MyUnion = {prop: boolean} | string | number

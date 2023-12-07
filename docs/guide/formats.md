@@ -9,7 +9,7 @@ To add all formats from this plugin:
 <code-group>
 <code-block title="JavaScript">
 ```javascript
-const Ajv = require("ajv")
+const {Ajv} = require("ajv")
 const addFormats = require("ajv-formats")
 
 const ajv = new Ajv()
@@ -19,7 +19,7 @@ addFormats(ajv)
 
 <code-block title="TypeScript">
 ```typescript
-import Ajv from "ajv"
+import {Ajv} from "ajv"
 import addFormats from "ajv-formats"
 
 const ajv = new Ajv()
@@ -91,14 +91,14 @@ If you define your own formats, for standalone code generation to work you need 
 <code-group>
 <code-block title="JavaScript">
 ```javascript
-const {default: Ajv, _} = require("ajv")
+const {Ajv, _} = require("ajv")
 const ajv = new Ajv({code: {formats: _`require("./my_formats")`}})
 ```
 </code-block>
 
 <code-block title="TypeScript">
 ```typescript
-import Ajv, {_} from "ajv"
+import {Ajv, _} from "ajv"
 const ajv = new Ajv({code: {formats: _`require("./my_formats")`}})
 ```
 </code-block>

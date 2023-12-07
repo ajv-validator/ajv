@@ -44,7 +44,7 @@ npm install ajv
 ```javascript
 const fs = require("fs")
 const path = require("path")
-const Ajv = require("ajv")
+const {Ajv} = require("ajv")
 const standaloneCode = require("ajv/dist/standalone").default
 
 const schema = {
@@ -72,7 +72,7 @@ fs.writeFileSync(path.join(__dirname, "../consume/validate-cjs.js"), moduleCode)
 ```javascript
 const fs = require("fs")
 const path = require("path")
-const Ajv = require("ajv")
+const {Ajv} = require("ajv")
 const standaloneCode = require("ajv/dist/standalone").default
 
 const schemaFoo = {
@@ -107,7 +107,7 @@ fs.writeFileSync(path.join(__dirname, "../consume/validate-cjs.js"), moduleCode)
 ```javascript
 const fs = require("fs")
 const path = require("path")
-const Ajv = require("ajv")
+const {Ajv} = require("ajv")
 const standaloneCode = require("ajv/dist/standalone").default
 
 const schemaFoo = {
@@ -243,7 +243,7 @@ To support standalone code generation:
 
 ```javascript
 import myFormats from "./my-formats"
-import Ajv, {_} from "ajv"
+import {Ajv, _} from "ajv"
 const ajv = new Ajv({
   formats: myFormats,
   code: {

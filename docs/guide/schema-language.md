@@ -37,7 +37,7 @@ You can migrate schemas from draft-04 to draft-07 using [ajv-cli](https://github
 These are the most widely used versions of JSON Schema specification, and they are supported with the main ajv export.
 
 ```javascript
-import Ajv from "ajv"
+import {Ajv} from "ajv"
 const ajv = new Ajv()
 ```
 
@@ -55,7 +55,7 @@ The main advantage of this JSON Schema version over draft-07 is the ability to s
 To use Ajv with the support of all JSON Schema draft-2019-09/2020-12 features you need to use a different export:
 
 ```javascript
-import Ajv2019 from "ajv/dist/2019"
+import {Ajv2019} from "ajv/dist/2019"
 const ajv = new Ajv2019()
 ```
 
