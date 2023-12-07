@@ -4,7 +4,7 @@ import type {SchemaEnv} from "../compile"
 import {UsedScopeValues, UsedValueState, ValueScopeName, varKinds} from "../compile/codegen/scope"
 import {_, nil, _Code, Code, getProperty, getEsmExportName} from "../compile/codegen/code"
 
-function standaloneCode(
+export function standaloneCode(
   ajv: AjvCore,
   refsOrFunc?: {[K in string]?: string} | AnyValidateFunction
 ): string {

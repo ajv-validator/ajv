@@ -35,7 +35,7 @@ type JTDOptions = CurrentOptions & {
   multipleOfPrecision?: never
 }
 
-class Ajv extends AjvCore {
+export class Ajv extends AjvCore {
   constructor(opts: JTDOptions = {}) {
     super({
       ...opts,
