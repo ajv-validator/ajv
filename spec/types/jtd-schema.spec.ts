@@ -151,7 +151,10 @@ describe("JTDSchemaType", () => {
     const enumerateString: JTDSchemaType<"a" | "b"> = {type: "string"}
     const enumerateNull: JTDSchemaType<"a" | "b" | null> = {enum: ["a", "b"], nullable: true}
 
-    void [enumerate, enumerateMissing, enumerateNumber, enumerateString, enumerateNull]
+    const constEnumSchema = {enum: ["a", "b"]} as const
+    const enumerateConst: JTDSchemaType<"a" | "b"> = constEnumSchema
+
+    void [enumerate, enumerateMissing, enumerateNumber, enumerateString, enumerateNull, enumerateConst]
   })
 
   it("should typecheck elements schemas", () => {

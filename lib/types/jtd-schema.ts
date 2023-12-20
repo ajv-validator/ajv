@@ -137,7 +137,8 @@ export type JTDSchemaType<T, D extends Record<string, unknown> = Record<string, 
       : // enums - only accepts union of string literals
       // TODO we can't actually check that everything in the union was specified
       true extends IsEnum<Exclude<T, null>>
-      ? {enum: EnumString<Exclude<T, null>>[]}
+      // eslint-disable-next-line @typescript-eslint/array-type
+      ? {enum: ReadonlyArray<EnumString<Exclude<T, null>>>}
       : // arrays - only accepts arrays, could be array of unions to be resolved later
       true extends IsElements<Exclude<T, null>>
       ? T extends readonly (infer E)[]
