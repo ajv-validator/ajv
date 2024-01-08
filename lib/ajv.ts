@@ -9,7 +9,6 @@ const META_SUPPORT_DATA = ["/properties"]
 const META_SCHEMA_ID = "http://json-schema.org/draft-07/schema"
 
 class Ajv extends AjvCore {
-
   _addVocabularies(): void {
     super._addVocabularies()
     draft7Vocabularies.forEach((v) => this.addVocabulary(v))
@@ -39,7 +38,7 @@ Object.defineProperty(Ajv, "default", {value: Ajv})
 // eslint-disable-next-line @typescript-eslint/no-namespace, no-redeclare
 declare namespace Ajv {
   // compatibility with NodeNext
-   export { Ajv as default }
+  export {Ajv as default}
 }
 
 import * as types from "./types"
@@ -56,52 +55,51 @@ import * as compileRefError from "./compile/ref_error"
 // eslint-disable-next-line @typescript-eslint/no-namespace, no-redeclare
 namespace Ajv {
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  export import Format = types.Format;
-  export import FormatDefinition = types.FormatDefinition;
-  export import AsyncFormatDefinition = types.AsyncFormatDefinition;
-  export import KeywordDefinition = types.KeywordDefinition;
-  export import KeywordErrorDefinition = types.KeywordErrorDefinition;
-  export import CodeKeywordDefinition = types.CodeKeywordDefinition;
-  export import MacroKeywordDefinition = types.MacroKeywordDefinition;
-  export import FuncKeywordDefinition = types.FuncKeywordDefinition;
-  export import Vocabulary = types.Vocabulary;
-  export import Schema = types.Schema;
-  export import SchemaObject = types.SchemaObject;
+  export import Format = types.Format
+  export import FormatDefinition = types.FormatDefinition
+  export import AsyncFormatDefinition = types.AsyncFormatDefinition
+  export import KeywordDefinition = types.KeywordDefinition
+  export import KeywordErrorDefinition = types.KeywordErrorDefinition
+  export import CodeKeywordDefinition = types.CodeKeywordDefinition
+  export import MacroKeywordDefinition = types.MacroKeywordDefinition
+  export import FuncKeywordDefinition = types.FuncKeywordDefinition
+  export import Vocabulary = types.Vocabulary
+  export import Schema = types.Schema
+  export import SchemaObject = types.SchemaObject
   // eslint-disable-next-line no-shadow
-  export import AnySchemaObject = types.AnySchemaObject;
-  export import AsyncSchema = types.AsyncSchema;
-  export import AnySchema = types.AnySchema;
-  export import ValidateFunction = types.ValidateFunction;
-  export import AsyncValidateFunction = types.AsyncValidateFunction;
-  export import SchemaValidateFunction = types.SchemaValidateFunction;
-  export import ErrorObject = types.ErrorObject;
-  export import ErrorNoParams = types.ErrorNoParams;
+  export import AnySchemaObject = types.AnySchemaObject
+  export import AsyncSchema = types.AsyncSchema
+  export import AnySchema = types.AnySchema
+  export import ValidateFunction = types.ValidateFunction
+  export import AsyncValidateFunction = types.AsyncValidateFunction
+  export import SchemaValidateFunction = types.SchemaValidateFunction
+  export import ErrorObject = types.ErrorObject
+  export import ErrorNoParams = types.ErrorNoParams
 
-  export import Plugin = core.Plugin;
-  export import Options = core.Options;
-  export import CodeOptions = core.CodeOptions;
-  export import InstanceOptions = core.InstanceOptions;
-  export import Logger = core.Logger;
-  export import ErrorsTextOptions = core.ErrorsTextOptions;
+  export import Plugin = core.Plugin
+  export import Options = core.Options
+  export import CodeOptions = core.CodeOptions
+  export import InstanceOptions = core.InstanceOptions
+  export import Logger = core.Logger
+  export import ErrorsTextOptions = core.ErrorsTextOptions
 
-  export import SchemaCxt = compile.SchemaCxt;
-  export import SchemaObjCxt = compile.SchemaObjCxt;
+  export import SchemaCxt = compile.SchemaCxt
+  export import SchemaObjCxt = compile.SchemaObjCxt
 
-  export import KeywordCxt = compileValidate.KeywordCxt;
-  export import DefinedError = vocabulariesErrors.DefinedError;
-  export import JSONType = compileRules.JSONType;
-  export import JSONSchemaType = typesJsonSchema.JSONSchemaType;
-  export import _ = compileCodegen._;
-  export import str = compileCodegen.str;
-  export import stringify = compileCodegen.stringify;
-  export import nil = compileCodegen.nil;
-  export import Name = compileCodegen.Name;
-  export import Code = compileCodegen.Code;
-  export import CodeGen = compileCodegen.CodeGen;
-  export import CodeGenOptions = compileCodegen.CodeGenOptions;
+  export import KeywordCxt = compileValidate.KeywordCxt
+  export import DefinedError = vocabulariesErrors.DefinedError
+  export import JSONType = compileRules.JSONType
+  export import JSONSchemaType = typesJsonSchema.JSONSchemaType
+  export import _ = compileCodegen._
+  export import str = compileCodegen.str
+  export import stringify = compileCodegen.stringify
+  export import nil = compileCodegen.nil
+  export import Name = compileCodegen.Name
+  export import Code = compileCodegen.Code
+  export import CodeGen = compileCodegen.CodeGen
+  export import CodeGenOptions = compileCodegen.CodeGenOptions
 
-  export import ValidationError = runtimeValidationError.ValidationError;
-  export import MissingRefError = compileRefError.MissingRefError;
+  export import ValidationError = runtimeValidationError.ValidationError
+  export import MissingRefError = compileRefError.MissingRefError
   /* eslint-enable @typescript-eslint/no-unused-vars */
 }
-

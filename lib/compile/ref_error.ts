@@ -12,4 +12,4 @@ export class MissingRefError extends Error {
   }
 }
 
-export default MissingRefError;
+export default MissingRefError
