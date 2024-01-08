@@ -1,7 +1,7 @@
 import {resolveUrl, normalizeId, getFullPath} from "./resolve"
 import type {UriResolver} from "../types"
 
-export default class MissingRefError extends Error {
+export class MissingRefError extends Error {
   readonly missingRef: string
   readonly missingSchema: string
 
@@ -11,3 +11,5 @@ export default class MissingRefError extends Error {
     this.missingSchema = normalizeId(getFullPath(resolver, this.missingRef))
   }
 }
+
+export default MissingRefError;
