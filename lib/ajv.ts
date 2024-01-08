@@ -9,8 +9,6 @@ const META_SUPPORT_DATA = ["/properties"]
 const META_SCHEMA_ID = "http://json-schema.org/draft-07/schema"
 
 class Ajv extends AjvCore {
-  // compatibility with NodeNext
-  static default = Ajv;
 
   _addVocabularies(): void {
     super._addVocabularies()
@@ -35,7 +33,14 @@ class Ajv extends AjvCore {
 }
 
 export = Ajv
-Object.defineProperty(exports, "__esModule", {value: true})
+Object.defineProperty(Ajv, "__esModule", {value: true})
+Object.defineProperty(Ajv, "default", {value: Ajv})
+
+// eslint-disable-next-line @typescript-eslint/no-namespace, no-redeclare
+declare namespace Ajv {
+  // compatibility with NodeNext
+   export { Ajv as default }
+}
 
 import * as types from "./types"
 import * as core from "./core"
@@ -48,7 +53,9 @@ import * as compileCodegen from "./compile/codegen"
 import * as runtimeValidationError from "./runtime/validation_error"
 import * as compileRefError from "./compile/ref_error"
 
+// eslint-disable-next-line @typescript-eslint/no-namespace, no-redeclare
 namespace Ajv {
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   export import Format = types.Format;
   export import FormatDefinition = types.FormatDefinition;
   export import AsyncFormatDefinition = types.AsyncFormatDefinition;
@@ -60,6 +67,7 @@ namespace Ajv {
   export import Vocabulary = types.Vocabulary;
   export import Schema = types.Schema;
   export import SchemaObject = types.SchemaObject;
+  // eslint-disable-next-line no-shadow
   export import AnySchemaObject = types.AnySchemaObject;
   export import AsyncSchema = types.AsyncSchema;
   export import AnySchema = types.AnySchema;
@@ -94,5 +102,6 @@ namespace Ajv {
 
   export import ValidationError = runtimeValidationError.ValidationError;
   export import MissingRefError = compileRefError.MissingRefError;
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 }
 
