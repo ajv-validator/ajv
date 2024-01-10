@@ -93,7 +93,7 @@ If you use Ajv to validate data from untrusted sources **it is strongly recommen
 
 - making assessment of "format" implementations in [ajv-formats](https://github.com/ajv-validator/ajv-formats).
 - passing `"fast"` option to ajv-formats plugin (see its docs) that simplifies some of the regular expressions (although it does not guarantee that they are safe).
-- replacing format implementations provided by ajv-formats with your own implementations of "format" keyword that either use different regular expressions or another approach to format validation. Please see [addFormat](#api-addformat) method.
+- replacing format implementations provided by ajv-formats with your own implementations of "format" keyword that either use different regular expressions or another approach to format validation. Please see [addFormat](https://github.com/ajv-validator/ajv/blob/master/docs/api.md#api-addformat) method.
 - disabling format validation by ignoring "format" keyword with option `format: false`
 
 Whatever mitigation you choose, please assume all formats provided by ajv-formats as potentially unsafe and make your own assessment of their suitability for your validation scenarios.
