@@ -1,5 +1,5 @@
-import type {AnySchemaObject} from "./types"
-import AjvCore, {Options} from "./core"
+import * as types from "./types"
+import * as core from "./core"
 
 import draft2020Vocabularies from "./vocabularies/draft2020"
 import discriminator from "./vocabularies/discriminator"
@@ -7,8 +7,8 @@ import addMetaSchema2020 from "./refs/json-schema-2020-12"
 
 const META_SCHEMA_ID = "https://json-schema.org/draft/2020-12/schema"
 
-class Ajv2020 extends AjvCore {
-  constructor(opts: Options = {}) {
+class Ajv2020 extends core.Ajv {
+  constructor(opts: core.Options = {}) {
     super({
       ...opts,
       dynamicRef: true,
@@ -31,44 +31,78 @@ class Ajv2020 extends AjvCore {
     this.refs["http://json-schema.org/schema"] = META_SCHEMA_ID
   }
 
-  defaultMeta(): string | AnySchemaObject | undefined {
+  defaultMeta(): string | types.AnySchemaObject | undefined {
     return (this.opts.defaultMeta =
       super.defaultMeta() || (this.getSchema(META_SCHEMA_ID) ? META_SCHEMA_ID : undefined))
   }
 }
 
-module.exports = exports = Ajv2020
-Object.defineProperty(exports, "__esModule", {value: true})
+export = Ajv2020
+Object.defineProperty(Ajv2020, "__esModule", {value: true})
+Object.defineProperty(Ajv2020, "default", {value: Ajv2020})
 
-export default Ajv2020
+// eslint-disable-next-line @typescript-eslint/no-namespace, no-redeclare
+declare namespace Ajv2020 {
+  // compatibility with NodeNext
+  export {Ajv2020 as default}
+}
 
-export {
-  Format,
-  FormatDefinition,
-  AsyncFormatDefinition,
-  KeywordDefinition,
-  KeywordErrorDefinition,
-  CodeKeywordDefinition,
-  MacroKeywordDefinition,
-  FuncKeywordDefinition,
-  Vocabulary,
-  Schema,
-  SchemaObject,
-  AnySchemaObject,
-  AsyncSchema,
-  AnySchema,
-  ValidateFunction,
-  AsyncValidateFunction,
-  ErrorObject,
-  ErrorNoParams,
-} from "./types"
+import * as compile from "./compile"
+import * as compileValidate from "./compile/validate"
+import * as vocabulariesErrors from "./vocabularies/errors"
+import * as compileRules from "./compile/rules"
+import * as typesJsonSchema from "./types/json-schema"
+import * as compileCodegen from "./compile/codegen"
+import * as runtimeValidationError from "./runtime/validation_error"
+import * as compileRefError from "./compile/ref_error"
 
-export {Plugin, Options, CodeOptions, InstanceOptions, Logger, ErrorsTextOptions} from "./core"
-export {SchemaCxt, SchemaObjCxt} from "./compile"
-export {KeywordCxt} from "./compile/validate"
-export {DefinedError} from "./vocabularies/errors"
-export {JSONType} from "./compile/rules"
-export {JSONSchemaType} from "./types/json-schema"
-export {_, str, stringify, nil, Name, Code, CodeGen, CodeGenOptions} from "./compile/codegen"
-export {default as ValidationError} from "./runtime/validation_error"
-export {default as MissingRefError} from "./compile/ref_error"
+// eslint-disable-next-line @typescript-eslint/no-namespace, no-redeclare
+namespace Ajv2020 {
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  export import Format = types.Format
+  export import FormatDefinition = types.FormatDefinition
+  export import AsyncFormatDefinition = types.AsyncFormatDefinition
+  export import KeywordDefinition = types.KeywordDefinition
+  export import KeywordErrorDefinition = types.KeywordErrorDefinition
+  export import CodeKeywordDefinition = types.CodeKeywordDefinition
+  export import MacroKeywordDefinition = types.MacroKeywordDefinition
+  export import FuncKeywordDefinition = types.FuncKeywordDefinition
+  export import Vocabulary = types.Vocabulary
+  export import Schema = types.Schema
+  export import SchemaObject = types.SchemaObject
+  export import AnySchemaObject = types.AnySchemaObject
+  export import AsyncSchema = types.AsyncSchema
+  export import AnySchema = types.AnySchema
+  export import ValidateFunction = types.ValidateFunction
+  export import AsyncValidateFunction = types.AsyncValidateFunction
+  export import ErrorObject = types.ErrorObject
+  export import ErrorNoParams = types.ErrorNoParams
+
+  export import Plugin = core.Plugin
+  export import Options = core.Options
+  export import CodeOptions = core.CodeOptions
+  export import InstanceOptions = core.InstanceOptions
+  export import Logger = core.Logger
+  export import ErrorsTextOptions = core.ErrorsTextOptions
+
+  export import SchemaCxt = compile.SchemaCxt
+  export import SchemaObjCxt = compile.SchemaObjCxt
+
+  export import KeywordCxt = compileValidate.KeywordCxt
+  export import DefinedError = vocabulariesErrors.DefinedError
+
+  export import JSONType = compileRules.JSONType
+  export import JSONSchemaType = typesJsonSchema.JSONSchemaType
+  export import _ = compileCodegen._
+  export import str = compileCodegen.str
+  export import stringify = compileCodegen.stringify
+  export import nil = compileCodegen.nil
+  export import Name = compileCodegen.Name
+  export import Code = compileCodegen.Code
+  export import CodeGen = compileCodegen.CodeGen
+  export import CodeGenOptions = compileCodegen.CodeGenOptions
+
+  export import ValidationError = runtimeValidationError.ValidationError
+  export import MissingRefError = compileRefError.MissingRefError
+  /* eslint-enable @typescript-eslint/no-unused-vars */
+}
