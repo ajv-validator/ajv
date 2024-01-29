@@ -34,7 +34,7 @@ function standaloneCode(
       // Always do named export as `validate` rather than the variable `n` which is `validateXX` for known export value
       return `"use strict";${_n}export const validate = ${n};${_n}export default ${n};${_n}${vCode}`
     }
-    return `"use strict";${_n}module.exports = ${n};${_n}module.exports.default = ${n};${_n}${vCode}`
+    return `"use strict";${_n}module.exports = ${n};${_n}module.exports.Ajv = ${n};${_n}${vCode}`
   }
 
   function multiExportsCode<T extends SchemaEnv | string>(
