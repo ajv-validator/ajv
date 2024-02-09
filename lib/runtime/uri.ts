@@ -1,4 +1,4 @@
-import * as uri from "uri-js"
+import * as uri from "toad-uri-js"
 
 type URI = typeof uri & {code: string}
 ;(uri as URI).code = 'require("ajv/dist/runtime/uri").default'
