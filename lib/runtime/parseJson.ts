@@ -1,4 +1,4 @@
-const rxParseJson = /position\s(\d+)$/
+const rxParseJson = /position\s(\d+)(?: \(line \d+ column \d+\))?$/
 
 export function parseJson(s: string, pos: number): unknown {
   let endPos: number | undefined
