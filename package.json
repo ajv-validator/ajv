@@ -73,7 +73,7 @@
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.11.9",
     "@types/require-from-string": "^1.2.0",
-    "@typescript-eslint/eslint-plugin": "^3.8.0",
+    "@typescript-eslint/eslint-plugin": "^4.0.0",
     "@typescript-eslint/parser": "^3.8.0",
     "ajv-formats": "^3.0.0-rc.0",
     "browserify": "^17.0.0",
