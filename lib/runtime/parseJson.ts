@@ -129,6 +129,7 @@ export function parseJsonString(s: string, pos: number): string | undefined {
         while (count--) {
           code <<= 4
           c = s[pos]
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           if (c === undefined) {
             errorMessage("unexpected end")
             return undefined
