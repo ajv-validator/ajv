@@ -102,16 +102,16 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): Loc
   traverse(schema, {allKeys: true}, (sch, jsonPtr, _, parentJsonPtr) => {
     if (parentJsonPtr === undefined) return
     const fullPath = pathPrefix + jsonPtr
-    let baseId = baseIds[parentJsonPtr]
-    if (typeof sch[schemaId] == "string") baseId = addRef.call(this, sch[schemaId])
+    let innerBaseId = baseIds[parentJsonPtr]
+    if (typeof sch[schemaId] == "string") innerBaseId = addRef.call(this, sch[schemaId])
     addAnchor.call(this, sch.$anchor)
     addAnchor.call(this, sch.$dynamicAnchor)
-    baseIds[jsonPtr] = baseId
+    baseIds[jsonPtr] = innerBaseId
 
     function addRef(this: Ajv, ref: string): string {
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const _resolve = this.opts.uriResolver.resolve
-      ref = normalizeId(baseId ? _resolve(baseId, ref) : ref)
+      ref = normalizeId(innerBaseId ? _resolve(innerBaseId, ref) : ref)
       if (schemaRefs.has(ref)) throw ambiguos(ref)
       schemaRefs.add(ref)
       let schOrRef = this.refs[ref]
