@@ -46,19 +46,19 @@ type UncheckedJSONSchemaType<T, IsPartial extends boolean> = (
       type: readonly (T extends number
         ? JSONType<"number" | "integer", IsPartial>
         : T extends string
-        ? JSONType<"string", IsPartial>
-        : T extends boolean
-        ? JSONType<"boolean", IsPartial>
-        : never)[]
+          ? JSONType<"string", IsPartial>
+          : T extends boolean
+            ? JSONType<"boolean", IsPartial>
+            : never)[]
     } & UnionToIntersection<
       T extends number
         ? NumberKeywords
         : T extends string
-        ? StringKeywords
-        : T extends boolean
-        ? // eslint-disable-next-line @typescript-eslint/ban-types
-          {}
-        : never
+          ? StringKeywords
+          : T extends boolean
+            ? // eslint-disable-next-line @typescript-eslint/ban-types
+              {}
+            : never
     >)
   // this covers "normal" types; it's last so typescript looks to it first for errors
   | ((T extends number
@@ -66,64 +66,68 @@ type UncheckedJSONSchemaType<T, IsPartial extends boolean> = (
           type: JSONType<"number" | "integer", IsPartial>
         } & NumberKeywords
       : T extends string
-      ? {
-          type: JSONType<"string", IsPartial>
-        } & StringKeywords
-      : T extends boolean
-      ? {
-          type: JSONType<"boolean", IsPartial>
-        }
-      : T extends readonly [any, ...any[]]
-      ? {
-          // JSON AnySchema for tuple
-          type: JSONType<"array", IsPartial>
-          items: {
-            readonly [K in keyof T]-?: UncheckedJSONSchemaType<T[K], false> & Nullable<T[K]>
-          } & {length: T["length"]}
-          minItems: T["length"]
-        } & ({maxItems: T["length"]} | {additionalItems: false})
-      : T extends readonly any[]
-      ? {
-          type: JSONType<"array", IsPartial>
-          items: UncheckedJSONSchemaType<T[0], false>
-          contains?: UncheckedPartialSchema<T[0]>
-          minItems?: number
-          maxItems?: number
-          minContains?: number
-          maxContains?: number
-          uniqueItems?: true
-          additionalItems?: never
-        }
-      : T extends Record<string, any>
-      ? {
-          // JSON AnySchema for records and dictionaries
-          // "required" is not optional because it is often forgotten
-          // "properties" are optional for more concise dictionary schemas
-          // "patternProperties" and can be only used with interfaces that have string index
-          type: JSONType<"object", IsPartial>
-          additionalProperties?: boolean | UncheckedJSONSchemaType<T[string], false>
-          unevaluatedProperties?: boolean | UncheckedJSONSchemaType<T[string], false>
-          properties?: IsPartial extends true
-            ? Partial<UncheckedPropertiesSchema<T>>
-            : UncheckedPropertiesSchema<T>
-          patternProperties?: Record<string, UncheckedJSONSchemaType<T[string], false>>
-          propertyNames?: Omit<UncheckedJSONSchemaType<string, false>, "type"> & {type?: "string"}
-          dependencies?: {[K in keyof T]?: Readonly<(keyof T)[]> | UncheckedPartialSchema<T>}
-          dependentRequired?: {[K in keyof T]?: Readonly<(keyof T)[]>}
-          dependentSchemas?: {[K in keyof T]?: UncheckedPartialSchema<T>}
-          minProperties?: number
-          maxProperties?: number
-        } & (IsPartial extends true // "required" is not necessary if it's a non-partial type with no required keys // are listed it only asserts that optional cannot be listed. // "required" type does not guarantee that all required properties
-          ? {required: Readonly<(keyof T)[]>}
-          : [UncheckedRequiredMembers<T>] extends [never]
-          ? {required?: Readonly<UncheckedRequiredMembers<T>[]>}
-          : {required: Readonly<UncheckedRequiredMembers<T>[]>})
-      : T extends null
-      ? {
-          type: JSONType<"null", IsPartial>
-          nullable: true
-        }
-      : never) & {
+        ? {
+            type: JSONType<"string", IsPartial>
+          } & StringKeywords
+        : T extends boolean
+          ? {
+              type: JSONType<"boolean", IsPartial>
+            }
+          : T extends readonly [any, ...any[]]
+            ? {
+                // JSON AnySchema for tuple
+                type: JSONType<"array", IsPartial>
+                items: {
+                  readonly [K in keyof T]-?: UncheckedJSONSchemaType<T[K], false> & Nullable<T[K]>
+                } & {length: T["length"]}
+                minItems: T["length"]
+              } & ({maxItems: T["length"]} | {additionalItems: false})
+            : T extends readonly any[]
+              ? {
+                  type: JSONType<"array", IsPartial>
+                  items: UncheckedJSONSchemaType<T[0], false>
+                  contains?: UncheckedPartialSchema<T[0]>
+                  minItems?: number
+                  maxItems?: number
+                  minContains?: number
+                  maxContains?: number
+                  uniqueItems?: true
+                  additionalItems?: never
+                }
+              : T extends Record<string, any>
+                ? {
+                    // JSON AnySchema for records and dictionaries
+                    // "required" is not optional because it is often forgotten
+                    // "properties" are optional for more concise dictionary schemas
+                    // "patternProperties" and can be only used with interfaces that have string index
+                    type: JSONType<"object", IsPartial>
+                    additionalProperties?: boolean | UncheckedJSONSchemaType<T[string], false>
+                    unevaluatedProperties?: boolean | UncheckedJSONSchemaType<T[string], false>
+                    properties?: IsPartial extends true
+                      ? Partial<UncheckedPropertiesSchema<T>>
+                      : UncheckedPropertiesSchema<T>
+                    patternProperties?: Record<string, UncheckedJSONSchemaType<T[string], false>>
+                    propertyNames?: Omit<UncheckedJSONSchemaType<string, false>, "type"> & {
+                      type?: "string"
+                    }
+                    dependencies?: {
+                      [K in keyof T]?: Readonly<(keyof T)[]> | UncheckedPartialSchema<T>
+                    }
+                    dependentRequired?: {[K in keyof T]?: Readonly<(keyof T)[]>}
+                    dependentSchemas?: {[K in keyof T]?: UncheckedPartialSchema<T>}
+                    minProperties?: number
+                    maxProperties?: number
+                  } & (IsPartial extends true // "required" is not necessary if it's a non-partial type with no required keys // are listed it only asserts that optional cannot be listed. // "required" type does not guarantee that all required properties
+                    ? {required: Readonly<(keyof T)[]>}
+                    : [UncheckedRequiredMembers<T>] extends [never]
+                      ? {required?: Readonly<UncheckedRequiredMembers<T>[]>}
+                      : {required: Readonly<UncheckedRequiredMembers<T>[]>})
+                : T extends null
+                  ? {
+                      type: JSONType<"null", IsPartial>
+                      nullable: true
+                    }
+                  : never) & {
       allOf?: Readonly<UncheckedPartialSchema<T>[]>
       anyOf?: Readonly<UncheckedPartialSchema<T>[]>
       oneOf?: Readonly<UncheckedPartialSchema<T>[]>

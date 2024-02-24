@@ -15,10 +15,10 @@ function standaloneCode(
   return typeof refsOrFunc == "function"
     ? funcExportCode(refsOrFunc.source)
     : refsOrFunc !== undefined
-    ? multiExportsCode<string>(refsOrFunc, getValidate)
-    : multiExportsCode<SchemaEnv>(ajv.schemas, (sch) =>
-        sch.meta ? undefined : ajv.compile(sch.schema)
-      )
+      ? multiExportsCode<string>(refsOrFunc, getValidate)
+      : multiExportsCode<SchemaEnv>(ajv.schemas, (sch) =>
+          sch.meta ? undefined : ajv.compile(sch.schema)
+        )
 
   function getValidate(id: string): AnyValidateFunction {
     const v = ajv.getSchema(id)

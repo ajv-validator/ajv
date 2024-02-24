@@ -59,8 +59,8 @@ function checkWordOnServer(str: string): Promise<boolean> {
   return str === "tomorrow"
     ? Promise.resolve(true)
     : str === "manana"
-    ? Promise.resolve(false)
-    : Promise.reject(new Error("unknown word"))
+      ? Promise.resolve(false)
+      : Promise.reject(new Error("unknown word"))
 }
 
 function checkIdExists(schema: {table: string}, data: number): Promise<boolean> {

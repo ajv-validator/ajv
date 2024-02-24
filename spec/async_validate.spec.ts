@@ -394,8 +394,8 @@ function checkWordOnServer(str) {
   return str === "tomorrow"
     ? Promise.resolve(true)
     : str === "manana"
-    ? Promise.resolve(false)
-    : Promise.reject(new Error("unknown word"))
+      ? Promise.resolve(false)
+      : Promise.reject(new Error("unknown word"))
 }
 
 function shouldBeValid(p, data) {

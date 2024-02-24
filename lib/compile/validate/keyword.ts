@@ -137,8 +137,8 @@ export function validSchemaType(
       st === "array"
         ? Array.isArray(schema)
         : st === "object"
-        ? schema && typeof schema == "object" && !Array.isArray(schema)
-        : typeof schema == st || (allowUndefined && typeof schema == "undefined")
+          ? schema && typeof schema == "object" && !Array.isArray(schema)
+          : typeof schema == st || (allowUndefined && typeof schema == "undefined")
     )
   )
 }

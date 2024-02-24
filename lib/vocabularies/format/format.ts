@@ -96,8 +96,8 @@ const def: CodeKeywordDefinition = {
           fmtDef instanceof RegExp
             ? regexpCode(fmtDef)
             : opts.code.formats
-            ? _`${opts.code.formats}${getProperty(schema)}`
-            : undefined
+              ? _`${opts.code.formats}${getProperty(schema)}`
+              : undefined
         const fmt = gen.scopeValue("formats", {key: schema, ref: fmtDef, code})
         if (typeof fmtDef == "object" && !(fmtDef instanceof RegExp)) {
           return [fmtDef.type || "string", fmtDef.validate, _`${fmt}.validate`]
