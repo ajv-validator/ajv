@@ -131,4 +131,43 @@ describe("removeAdditional option", () => {
     object1.should.have.property("baz")
     object1.should.not.have.property("fizz")
   })
+
+  it("should remove properties that are defined in subschemas", () => {
+    const ajv = new _Ajv({removeAdditional: true})
+
+    const schema = {
+      type: "object",
+      properties: {
+        obj: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            a: {type: "string"},
+          },
+          allOf: [
+            {
+              properties: {
+                b: {type: "string"},
+              },
+            },
+          ],
+        },
+      },
+    }
+
+    const data = {
+      obj: {
+        a: "valid",
+        additional: "will be removed",
+        d: "will also be removed",
+      },
+    }
+
+    ajv.validate(schema, data).should.equal(true)
+    data.should.eql({
+      obj: {
+        a: "valid",
+      },
+    })
+  })
 })
