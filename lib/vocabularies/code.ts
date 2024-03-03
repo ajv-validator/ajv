@@ -98,6 +98,7 @@ export function usePattern({gen, it: {opts}}: KeywordCxt, pattern: string): Name
   const rx = regExp(pattern, u)
 
   return gen.scopeValue("pattern", {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     key: rx.toString(),
     ref: rx,
     code: _`${regExp.code === "new RegExp" ? newRegExp : useFunc(gen, regExp)}(${pattern}, ${u})`,

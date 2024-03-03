@@ -42,8 +42,11 @@ abstract class Node {
 
 class Def extends Node {
   constructor(
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     private readonly varKind: Name,
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     private readonly name: Name,
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     private rhs?: SafeExpr
   ) {
     super()
@@ -68,8 +71,11 @@ class Def extends Node {
 
 class Assign extends Node {
   constructor(
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     readonly lhs: Code,
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     public rhs: SafeExpr,
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     private readonly sideEffects?: boolean
   ) {
     super()
@@ -94,6 +100,7 @@ class Assign extends Node {
 class AssignOp extends Assign {
   constructor(
     lhs: Code,
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     private readonly op: Code,
     rhs: SafeExpr,
     sideEffects?: boolean
@@ -108,6 +115,7 @@ class AssignOp extends Assign {
 
 class Label extends Node {
   readonly names: UsedNames = {}
+  // eslint-disable-next-line @typescript-eslint/parameter-properties
   constructor(readonly label: Name) {
     super()
   }
@@ -119,6 +127,7 @@ class Label extends Node {
 
 class Break extends Node {
   readonly names: UsedNames = {}
+  // eslint-disable-next-line @typescript-eslint/parameter-properties
   constructor(readonly label?: Code) {
     super()
   }
@@ -130,6 +139,7 @@ class Break extends Node {
 }
 
 class Throw extends Node {
+  // eslint-disable-next-line @typescript-eslint/parameter-properties
   constructor(readonly error: Code) {
     super()
   }
@@ -144,6 +154,7 @@ class Throw extends Node {
 }
 
 class AnyCode extends Node {
+  // eslint-disable-next-line @typescript-eslint/parameter-properties
   constructor(private code: SafeExpr) {
     super()
   }
@@ -167,6 +178,7 @@ class AnyCode extends Node {
 }
 
 abstract class ParentNode extends Node {
+  // eslint-disable-next-line @typescript-eslint/parameter-properties
   constructor(readonly nodes: ChildNode[] = []) {
     super()
   }
@@ -225,6 +237,7 @@ class If extends BlockNode {
   static readonly kind = "if"
   else?: If | Else
   constructor(
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     private condition: Code | boolean,
     nodes?: ChildNode[]
   ) {
@@ -279,6 +292,7 @@ abstract class For extends BlockNode {
 }
 
 class ForLoop extends For {
+  // eslint-disable-next-line @typescript-eslint/parameter-properties
   constructor(private iteration: Code) {
     super()
   }
@@ -300,9 +314,13 @@ class ForLoop extends For {
 
 class ForRange extends For {
   constructor(
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     private readonly varKind: Name,
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     private readonly name: Name,
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     private readonly from: SafeExpr,
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     private readonly to: SafeExpr
   ) {
     super()
@@ -322,9 +340,13 @@ class ForRange extends For {
 
 class ForIter extends For {
   constructor(
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     private readonly loop: "of" | "in",
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     private readonly varKind: Name,
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     private readonly name: Name,
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     private iterable: Code
   ) {
     super()
@@ -348,8 +370,11 @@ class ForIter extends For {
 class Func extends BlockNode {
   static readonly kind = "func"
   constructor(
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     public name: Name,
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     public args: Code,
+    // eslint-disable-next-line @typescript-eslint/parameter-properties
     public async?: boolean
   ) {
     super()
@@ -408,6 +433,7 @@ class Try extends BlockNode {
 
 class Catch extends BlockNode {
   static readonly kind = "catch"
+  // eslint-disable-next-line @typescript-eslint/parameter-properties
   constructor(readonly error: Name) {
     super()
   }
@@ -789,6 +815,7 @@ function addExprNames(names: UsedNames, from: SafeExpr): UsedNames {
 }
 
 function optimizeExpr<T extends SafeExpr | Code>(expr: T, names: UsedNames, constants: Constants): T
+// eslint-disable-next-line no-redeclare
 function optimizeExpr(expr: SafeExpr, names: UsedNames, constants: Constants): SafeExpr {
   if (expr instanceof Name) return replaceName(expr)
   if (!canOptimize(expr)) return expr
@@ -823,6 +850,7 @@ function subtractNames(names: UsedNames, from: UsedNames): void {
 }
 
 export function not<T extends Code | SafeExpr>(x: T): T
+// eslint-disable-next-line no-redeclare
 export function not(x: Code | SafeExpr): Code | SafeExpr {
   return typeof x == "boolean" || typeof x == "number" || x === null ? !x : _`!${par(x)}`
 }

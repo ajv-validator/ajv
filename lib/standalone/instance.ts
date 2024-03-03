@@ -4,6 +4,7 @@ import * as requireFromString from "require-from-string"
 
 export default class AjvPack {
   errors?: ErrorObject[] | null // errors from the last validation
+  // eslint-disable-next-line @typescript-eslint/parameter-properties
   constructor(readonly ajv: Ajv) {}
 
   validate(schemaKeyRef: AnySchema | string, data: unknown): boolean | Promise<unknown> {
