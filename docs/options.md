@@ -240,7 +240,7 @@ An array or object of schemas that will be added to the instance. In case you pa
 
 ### logger
 
-Sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. See [Error logging](#error-logging).
+Sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. See [Error logging](./api.md#error-logging).
 
 Option values:
 
