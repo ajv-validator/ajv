@@ -615,9 +615,9 @@ export default class Ajv {
     }
     eachItem(
       keyword,
-      definition.type.length === 0
-        ? (k) => addRule.call(this, k, definition)
-        : (k) => definition.type.forEach((t) => addRule.call(this, k, definition, t))
+      definition.type.length === 0 ?
+        (k) => addRule.call(this, k, definition)
+      : (k) => definition.type.forEach((t) => addRule.call(this, k, definition, t))
     )
     return this
   }

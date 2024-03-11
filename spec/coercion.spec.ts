@@ -474,9 +474,10 @@ describe("Type coercion", () => {
         const tests = rules[toType][fromType]
         tests.forEach((test) => {
           const canCoerce = test.to !== undefined
-          const schema = canCoerce
-            ? Array.isArray(test.to)
-              ? {type: toType, items: {type: fromType, enum: [test.to[0]]}}
+          const schema =
+            canCoerce ?
+              Array.isArray(test.to) ?
+                {type: toType, items: {type: fromType, enum: [test.to[0]]}}
               : {type: toType, enum: [test.to]}
             : {type: toType}
           cb(test, schema, canCoerce, toType, fromType)

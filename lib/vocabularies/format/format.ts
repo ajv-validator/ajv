@@ -61,8 +61,9 @@ const def: CodeKeywordDefinition = {
       }
 
       function invalidFmt(): Code {
-        const callFormat = schemaEnv.$async
-          ? _`(${fDef}.async ? await ${format}(${data}) : ${format}(${data}))`
+        const callFormat =
+          schemaEnv.$async ?
+            _`(${fDef}.async ? await ${format}(${data}) : ${format}(${data}))`
           : _`${format}(${data})`
         const validData = _`(typeof ${format} == "function" ? ${callFormat} : ${format}.test(${data}))`
         return _`${format} && ${format} !== true && ${fType} === ${ruleType} && !${validData}`
@@ -93,11 +94,9 @@ const def: CodeKeywordDefinition = {
 
       function getFormat(fmtDef: AddedFormat): [string, FormatValidate, Code] {
         const code =
-          fmtDef instanceof RegExp
-            ? regexpCode(fmtDef)
-            : opts.code.formats
-              ? _`${opts.code.formats}${getProperty(schema)}`
-              : undefined
+          fmtDef instanceof RegExp ? regexpCode(fmtDef)
+          : opts.code.formats ? _`${opts.code.formats}${getProperty(schema)}`
+          : undefined
         const fmt = gen.scopeValue("formats", {key: schema, ref: fmtDef, code})
         if (typeof fmtDef == "object" && !(fmtDef instanceof RegExp)) {
           return [fmtDef.type || "string", fmtDef.validate, _`${fmt}.validate`]

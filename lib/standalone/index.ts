@@ -12,13 +12,13 @@ function standaloneCode(
     throw new Error("moduleCode: ajv instance must have code.source option")
   }
   const {_n} = ajv.scope.opts
-  return typeof refsOrFunc == "function"
-    ? funcExportCode(refsOrFunc.source)
-    : refsOrFunc !== undefined
-      ? multiExportsCode<string>(refsOrFunc, getValidate)
-      : multiExportsCode<SchemaEnv>(ajv.schemas, (sch) =>
-          sch.meta ? undefined : ajv.compile(sch.schema)
-        )
+  return (
+    typeof refsOrFunc == "function" ? funcExportCode(refsOrFunc.source)
+    : refsOrFunc !== undefined ? multiExportsCode<string>(refsOrFunc, getValidate)
+    : multiExportsCode<SchemaEnv>(ajv.schemas, (sch) =>
+        sch.meta ? undefined : ajv.compile(sch.schema)
+      )
+  )
 
   function getValidate(id: string): AnyValidateFunction {
     const v = ajv.getSchema(id)
@@ -47,8 +47,9 @@ function standaloneCode(
       const v = getValidateFunc(schemas[name] as T)
       if (v) {
         const vCode = validateCode(usedValues, v.source)
-        const exportSyntax = ajv.opts.code.esm
-          ? _`export const ${getEsmExportName(name)}`
+        const exportSyntax =
+          ajv.opts.code.esm ?
+            _`export const ${getEsmExportName(name)}`
           : _`exports${getProperty(name)}`
         code = _`${code}${_n}${exportSyntax} = ${v.source?.validateName};${_n}${vCode}`
       }

@@ -56,11 +56,11 @@ function addAsyncFormatsAndKeywords(ajv: Ajv) {
 }
 
 function checkWordOnServer(str: string): Promise<boolean> {
-  return str === "tomorrow"
-    ? Promise.resolve(true)
-    : str === "manana"
-      ? Promise.resolve(false)
-      : Promise.reject(new Error("unknown word"))
+  return (
+    str === "tomorrow" ? Promise.resolve(true)
+    : str === "manana" ? Promise.resolve(false)
+    : Promise.reject(new Error("unknown word"))
+  )
 }
 
 function checkIdExists(schema: {table: string}, data: number): Promise<boolean> {

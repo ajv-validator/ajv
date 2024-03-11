@@ -5,8 +5,9 @@ const fullTest = !isBrowser && process.env.AJV_FULL_TEST
 
 const codeOptions = {es5: true, lines: true, optimize: false}
 
-const options: Options = fullTest
-  ? {
+const options: Options =
+  fullTest ?
+    {
       allErrors: true,
       verbose: true,
       inlineRefs: false,

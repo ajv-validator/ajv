@@ -38,8 +38,8 @@ export function dynamicRef(cxt: KeywordCxt, ref: string): void {
   }
 
   function _callRef(validate: Code, valid?: Name): () => void {
-    return valid
-      ? () =>
+    return valid ?
+        () =>
           gen.block(() => {
             callRef(cxt, validate)
             gen.let(valid, true)

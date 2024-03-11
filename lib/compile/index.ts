@@ -140,9 +140,9 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
     definedProperties: new Set<string>(),
     topSchemaRef: gen.scopeValue(
       "schema",
-      this.opts.code.source === true
-        ? {ref: sch.schema, code: stringify(sch.schema)}
-        : {ref: sch.schema}
+      this.opts.code.source === true ?
+        {ref: sch.schema, code: stringify(sch.schema)}
+      : {ref: sch.schema}
     ),
     validateName,
     ValidationError: _ValidationError,

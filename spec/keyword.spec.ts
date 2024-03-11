@@ -62,8 +62,8 @@ describe("User-defined keywords", () => {
         function validateRange(schema, data, parentSchema) {
           validateRangeSchema(schema, parentSchema)
 
-          return parentSchema.exclusiveRange === true
-            ? data > schema[0] && data < schema[1]
+          return parentSchema.exclusiveRange === true ?
+              data > schema[0] && data < schema[1]
             : data >= schema[0] && data <= schema[1]
         }
       })
@@ -85,8 +85,8 @@ describe("User-defined keywords", () => {
         shouldBeInvalidSchema({type: "number", "x-range": [1, 2, 3]})
 
         function validateRange(schema, data, parentSchema) {
-          return parentSchema.exclusiveRange === true
-            ? data > schema[0] && data < schema[1]
+          return parentSchema.exclusiveRange === true ?
+              data > schema[0] && data < schema[1]
             : data >= schema[0] && data <= schema[1]
         }
       })
@@ -247,8 +247,8 @@ describe("User-defined keywords", () => {
       const min = schema[0]
       const max = schema[1]
 
-      return parentSchema.exclusiveRange === true
-        ? (data) => data > min && data < max
+      return parentSchema.exclusiveRange === true ?
+          (data) => data > min && data < max
         : (data) => data >= min && data <= max
     }
   })
@@ -552,8 +552,8 @@ describe("User-defined keywords", () => {
       validateRangeSchema(schema, parentSchema)
       const exclusive = !!parentSchema.exclusiveRange
 
-      return exclusive
-        ? {exclusiveMinimum: schema[0], exclusiveMaximum: schema[1]}
+      return exclusive ?
+          {exclusiveMinimum: schema[0], exclusiveMaximum: schema[1]}
         : {minimum: schema[0], maximum: schema[1]}
     }
   })

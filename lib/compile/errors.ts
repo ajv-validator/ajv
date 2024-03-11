@@ -11,9 +11,9 @@ export const keywordError: KeywordErrorDefinition = {
 
 export const keyword$DataError: KeywordErrorDefinition = {
   message: ({keyword, schemaType}) =>
-    schemaType
-      ? str`"${keyword}" keyword must be ${schemaType} ($data)`
-      : str`"${keyword}" keyword is invalid ($data)`,
+    schemaType ?
+      str`"${keyword}" keyword must be ${schemaType} ($data)`
+    : str`"${keyword}" keyword is invalid ($data)`,
 }
 
 export interface ErrorPaths {
@@ -142,9 +142,8 @@ function errorObject(
 }
 
 function errorInstancePath({errorPath}: SchemaCxt, {instancePath}: ErrorPaths): [Name, Code] {
-  const instPath = instancePath
-    ? str`${errorPath}${getErrorPath(instancePath, Type.Str)}`
-    : errorPath
+  const instPath =
+    instancePath ? str`${errorPath}${getErrorPath(instancePath, Type.Str)}` : errorPath
   return [N.instancePath, strConcat(N.instancePath, instPath)]
 }
 

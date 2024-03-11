@@ -16,14 +16,12 @@ export default function quote(s: string): string {
   rxEscapable.lastIndex = 0
   return (
     '"' +
-    (rxEscapable.test(s)
-      ? s.replace(rxEscapable, (a) => {
-          const c = escaped[a]
-          return typeof c === "string"
-            ? c
-            : "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4)
-        })
-      : s) +
+    (rxEscapable.test(s) ?
+      s.replace(rxEscapable, (a) => {
+        const c = escaped[a]
+        return typeof c === "string" ? c : "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4)
+      })
+    : s) +
     '"'
   )
 }

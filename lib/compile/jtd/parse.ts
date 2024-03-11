@@ -266,8 +266,9 @@ function parseType(cxt: ParseCxt): void {
       const vts = useFunc(gen, validTimestamp)
       const {allowDate, parseDate} = self.opts
       const notValid = allowDate ? _`!${vts}(${data}, true)` : _`!${vts}(${data})`
-      const fail: Code = parseDate
-        ? or(notValid, _`(${data} = new Date(${data}), false)`, _`isNaN(${data}.valueOf())`)
+      const fail: Code =
+        parseDate ?
+          or(notValid, _`(${data} = new Date(${data}), false)`, _`isNaN(${data}.valueOf())`)
         : notValid
       gen.if(fail, () => parsingError(cxt, str`invalid timestamp`))
       break
@@ -350,8 +351,8 @@ function parseRef(cxt: ParseCxt): void {
 }
 
 function getParser(gen: CodeGen, sch: SchemaEnv): Code {
-  return sch.parse
-    ? gen.scopeValue("parse", {ref: sch.parse})
+  return sch.parse ?
+      gen.scopeValue("parse", {ref: sch.parse})
     : _`${gen.scopeValue("wrapper", {ref: sch})}.parse`
 }
 
@@ -395,8 +396,8 @@ function skipWhitespace({gen, char: c}: ParseCxt): void {
 }
 
 function jsonSlice(len: number | Name): Code {
-  return len === 1
-    ? _`${N.json}[${N.jsonPos}]`
+  return len === 1 ?
+      _`${N.json}[${N.jsonPos}]`
     : _`${N.json}.slice(${N.jsonPos}, ${N.jsonPos}+${len})`
 }
 

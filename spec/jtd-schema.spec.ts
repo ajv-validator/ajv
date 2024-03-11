@@ -211,7 +211,11 @@ describe("JSON Type Definition", () => {
 type TestFunc = typeof it | typeof it.only | typeof it.skip
 
 function _it({only, skip}: JSONParseTest): TestFunc {
-  return skip ? it.skip : only ? it.only : it
+  return (
+    skip ? it.skip
+    : only ? it.only
+    : it
+  )
 }
 
 function shouldParse(parse: JTDParser, str: string, res: unknown): void {

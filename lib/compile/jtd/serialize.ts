@@ -244,8 +244,8 @@ function serializeRef(cxt: SerializeCxt): void {
 }
 
 function getSerialize(gen: CodeGen, sch: SchemaEnv): Code {
-  return sch.serialize
-    ? gen.scopeValue("serialize", {ref: sch.serialize})
+  return sch.serialize ?
+      gen.scopeValue("serialize", {ref: sch.serialize})
     : _`${gen.scopeValue("wrapper", {ref: sch})}.serialize`
 }
 

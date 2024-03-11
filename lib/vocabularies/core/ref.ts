@@ -55,8 +55,8 @@ const def: CodeKeywordDefinition = {
 
 export function getValidate(cxt: KeywordCxt, sch: SchemaEnv): Code {
   const {gen} = cxt
-  return sch.validate
-    ? gen.scopeValue("validate", {ref: sch.validate})
+  return sch.validate ?
+      gen.scopeValue("validate", {ref: sch.validate})
     : _`${gen.scopeValue("wrapper", {ref: sch})}.validate`
 }
 

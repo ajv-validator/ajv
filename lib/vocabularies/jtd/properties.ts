@@ -29,19 +29,23 @@ export type JTDPropertiesError =
 export const error: KeywordErrorDefinition = {
   message: (cxt) => {
     const {params} = cxt
-    return params.propError
-      ? params.propError === PropError.Additional
-        ? "must NOT have additional properties"
+    return (
+      params.propError ?
+        params.propError === PropError.Additional ?
+          "must NOT have additional properties"
         : `must have property '${params.missingProperty}'`
       : typeErrorMessage(cxt, "object")
+    )
   },
   params: (cxt) => {
     const {params} = cxt
-    return params.propError
-      ? params.propError === PropError.Additional
-        ? _`{error: ${params.propError}, additionalProperty: ${params.additionalProperty}}`
+    return (
+      params.propError ?
+        params.propError === PropError.Additional ?
+          _`{error: ${params.propError}, additionalProperty: ${params.additionalProperty}}`
         : _`{error: ${params.propError}, missingProperty: ${params.missingProperty}}`
       : typeErrorParams(cxt, "object")
+    )
   },
 }
 
@@ -72,9 +76,9 @@ export function validateProperties(cxt: KeywordCxt): void {
   }
 
   const [valid, cond] =
-    it.jtdDiscriminator === undefined
-      ? checkNullableObject(cxt, data)
-      : [gen.let("valid", false), true]
+    it.jtdDiscriminator === undefined ?
+      checkNullableObject(cxt, data)
+    : [gen.let("valid", false), true]
   gen.if(cond, () =>
     gen.assign(valid, true).block(() => {
       validateProps(properties, "properties", true)
@@ -141,7 +145,9 @@ export function validateProperties(cxt: KeywordCxt): void {
       const addProp = isAdditional(key, allProps, "properties", it.jtdDiscriminator)
       const addOptProp = isAdditional(key, allOptProps, "optionalProperties")
       const extra =
-        addProp === true ? addOptProp : addOptProp === true ? addProp : and(addProp, addOptProp)
+        addProp === true ? addOptProp
+        : addOptProp === true ? addProp
+        : and(addProp, addOptProp)
       gen.if(extra, () => {
         if (it.opts.removeAdditional) {
           gen.code(_`delete ${data}[${key}]`)

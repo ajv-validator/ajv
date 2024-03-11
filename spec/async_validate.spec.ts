@@ -391,11 +391,11 @@ describe("async schemas, formats and keywords", function () {
 })
 
 function checkWordOnServer(str) {
-  return str === "tomorrow"
-    ? Promise.resolve(true)
-    : str === "manana"
-      ? Promise.resolve(false)
-      : Promise.reject(new Error("unknown word"))
+  return (
+    str === "tomorrow" ? Promise.resolve(true)
+    : str === "manana" ? Promise.resolve(false)
+    : Promise.reject(new Error("unknown word"))
+  )
 }
 
 function shouldBeValid(p, data) {

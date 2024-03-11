@@ -131,13 +131,17 @@ function mergeExprItems(a: CodeItem, b: CodeItem): CodeItem | undefined {
 }
 
 export function strConcat(c1: Code, c2: Code): Code {
-  return c2.emptyStr() ? c1 : c1.emptyStr() ? c2 : str`${c1}${c2}`
+  return (
+    c2.emptyStr() ? c1
+    : c1.emptyStr() ? c2
+    : str`${c1}${c2}`
+  )
 }
 
 // TODO do not allow arrays here
 function interpolate(x?: string | string[] | number | boolean | null): SafeExpr | string {
-  return typeof x == "number" || typeof x == "boolean" || x === null
-    ? x
+  return typeof x == "number" || typeof x == "boolean" || x === null ?
+      x
     : safeStringify(Array.isArray(x) ? x.join(",") : x)
 }
 

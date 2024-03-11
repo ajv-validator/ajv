@@ -844,7 +844,10 @@ export function or(...args: Code[]): Code {
 type MAppend = (x: Code, y: Code) => Code
 
 function mappend(op: Code): MAppend {
-  return (x, y) => (x === nil ? y : y === nil ? x : _`${par(x)} ${op} ${par(y)}`)
+  return (x, y) =>
+    x === nil ? y
+    : y === nil ? x
+    : _`${par(x)} ${op} ${par(y)}`
 }
 
 function par(x: Code): Code {

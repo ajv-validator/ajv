@@ -56,8 +56,8 @@ export function getSubschema(
 
   if (keyword !== undefined) {
     const sch = it.schema[keyword]
-    return schemaProp === undefined
-      ? {
+    return schemaProp === undefined ?
+        {
           schema: sch,
           schemaPath: _`${it.schemaPath}${getProperty(keyword)}`,
           errSchemaPath: `${it.errSchemaPath}/${keyword}`,

@@ -38,9 +38,9 @@ const def: CodeKeywordDefinition = {
       )
     } else if (props !== true) {
       gen.forIn("key", data, (key: Name) =>
-        props === undefined
-          ? unevaluatedPropCode(key)
-          : gen.if(unevaluatedStatic(props, key), () => unevaluatedPropCode(key))
+        props === undefined ?
+          unevaluatedPropCode(key)
+        : gen.if(unevaluatedStatic(props, key), () => unevaluatedPropCode(key))
       )
     }
     it.props = true

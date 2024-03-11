@@ -31,7 +31,10 @@ export function getSchemaTypes(schema: AnySchemaObject): JSONType[] {
 }
 
 export function getJSONTypes(ts: unknown | unknown[]): JSONType[] {
-  const types: unknown[] = Array.isArray(ts) ? ts : ts ? [ts] : []
+  const types: unknown[] =
+    Array.isArray(ts) ? ts
+    : ts ? [ts]
+    : []
   if (types.every(isJSONType)) return types
   throw new Error("type must be JSONType or JSONType[]: " + types.join(","))
 }
@@ -54,8 +57,8 @@ export function coerceAndCheckDataType(it: SchemaObjCxt, types: JSONType[]): boo
 
 const COERCIBLE: Set<JSONType> = new Set(["string", "number", "integer", "boolean", "null"])
 function coerceToTypes(types: JSONType[], coerceTypes?: boolean | "array"): JSONType[] {
-  return coerceTypes
-    ? types.filter((t) => COERCIBLE.has(t) || (coerceTypes === "array" && t === "array"))
+  return coerceTypes ?
+      types.filter((t) => COERCIBLE.has(t) || (coerceTypes === "array" && t === "array"))
     : []
 }
 

@@ -18,9 +18,8 @@ class Ajv extends AjvCore {
   _addDefaultMetaSchema(): void {
     super._addDefaultMetaSchema()
     if (!this.opts.meta) return
-    const metaSchema = this.opts.$data
-      ? this.$dataMetaSchema(draft7MetaSchema, META_SUPPORT_DATA)
-      : draft7MetaSchema
+    const metaSchema =
+      this.opts.$data ? this.$dataMetaSchema(draft7MetaSchema, META_SUPPORT_DATA) : draft7MetaSchema
     this.addMetaSchema(metaSchema, META_SCHEMA_ID, false)
     this.refs["http://json-schema.org/schema"] = META_SCHEMA_ID
   }

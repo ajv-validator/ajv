@@ -5,7 +5,12 @@ import chai from "../chai"
 const should = chai.should()
 
 /** type is true if T is identically E */
-type TypeEquality<T, E> = [T] extends [E] ? ([E] extends [T] ? true : false) : false
+type TypeEquality<T, E> =
+  [T] extends [E] ?
+    [E] extends [T] ?
+      true
+    : false
+  : false
 
 interface A {
   type: "a"

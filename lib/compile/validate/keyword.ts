@@ -134,11 +134,9 @@ export function validSchemaType(
   return (
     !schemaType.length ||
     schemaType.some((st) =>
-      st === "array"
-        ? Array.isArray(schema)
-        : st === "object"
-          ? schema && typeof schema == "object" && !Array.isArray(schema)
-          : typeof schema == st || (allowUndefined && typeof schema == "undefined")
+      st === "array" ? Array.isArray(schema)
+      : st === "object" ? schema && typeof schema == "object" && !Array.isArray(schema)
+      : typeof schema == st || (allowUndefined && typeof schema == "undefined")
     )
   )
 }
