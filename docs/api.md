@@ -251,7 +251,7 @@ Add validation keyword to Ajv instance.
 
 Keyword should be different from all standard JSON Schema keywords and different from previously defined keywords. There is no way to redefine keywords or to remove keyword definition from the instance.
 
-Keyword must start with a letter, `_` or `$`, and may continue with letters, numbers, `_`, `$`, or `-`.
+Keyword must start with an ASCII letter, `_` or `$`, and may continue with ASCII letters, numbers, `_`, `$`, `-`, or `:`.
 It is recommended to use an application-specific prefix for keywords to avoid current and future name collisions.
 
 Example Keywords:
