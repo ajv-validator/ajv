@@ -3,4 +3,4 @@ const AjvClass: typeof Ajv = typeof window == "object" ? (window as any).ajv7 : 
 
 export default AjvClass
 module.exports = AjvClass
-module.exports.default = AjvClass
+module.exports.Ajv = AjvClass

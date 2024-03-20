@@ -4,4 +4,4 @@ const AjvClass: typeof AjvJTD =
 
 export default AjvClass
 module.exports = AjvClass
-module.exports.default = AjvClass
+module.exports.Ajv = AjvClass

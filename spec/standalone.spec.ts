@@ -291,7 +291,7 @@ describe("standalone code generation", () => {
     testExportTypeCjs(moduleCode, true)
     const m = requireFromString(moduleCode)
     testExport(m)
-    testExport(m.default)
+    testExport(m.Ajv)
 
     function testExport(validate: AnyValidateFunction<unknown>) {
       assert.strictEqual(validate(1), true)
