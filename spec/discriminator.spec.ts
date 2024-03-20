@@ -159,6 +159,84 @@ describe("discriminator keyword", function () {
     })
   })
 
+  describe("validation with referenced schemas and allOf", () => {
+    const definitions = {
+      baseObject: {
+        properties: {
+          base: {type: "string"},
+        },
+        required: ["base"],
+      },
+      schema1: {
+        properties: {
+          foo: {const: "x"},
+          a: {type: "string"},
+        },
+        required: ["foo", "a"],
+      },
+      schema2: {
+        properties: {
+          foo: {enum: ["y", "w"]},
+          b: {type: "string"},
+        },
+        required: ["foo", "b"],
+      },
+      schema1Object: {
+        allOf: [
+          {
+            $ref: "#/definitions/baseObject",
+          },
+          {
+            $ref: "#/definitions/schema1",
+          },
+        ],
+      },
+    }
+    const mainSchema = {
+      type: "object",
+      discriminator: {propertyName: "foo"},
+      oneOf: [
+        {
+          //referenced allOf
+          $ref: "#/definitions/schema1Object",
+        },
+        {
+          //inline allOf
+          allOf: [
+            {
+              $ref: "#/definitions/baseObject",
+            },
+            {
+              $ref: "#/definitions/schema2",
+            },
+          ],
+        },
+        {
+          //plain object
+          properties: {
+            base: {type: "string"},
+            foo: {const: "z"},
+            c: {type: "string"},
+          },
+          required: ["base", "foo", "c"],
+        },
+      ],
+    }
+
+    const schema = [{definitions: definitions, ...mainSchema}]
+
+    it("should validate data", () => {
+      assertValid(schema, {foo: "x", a: "a", base: "base"})
+      assertValid(schema, {foo: "y", b: "b", base: "base"})
+      assertValid(schema, {foo: "z", c: "c", base: "base"})
+      assertInvalid(schema, {})
+      assertInvalid(schema, {foo: 1})
+      assertInvalid(schema, {foo: "bar"})
+      assertInvalid(schema, {foo: "x", b: "b"})
+      assertInvalid(schema, {foo: "y", a: "a"})
+    })
+  })
+
   describe("validation with deeply referenced schemas", () => {
     const schema = [
       {
