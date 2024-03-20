@@ -1,8 +1,8 @@
-import type {CodeKeywordDefinition, AnySchemaObject, KeywordErrorDefinition} from "../../types"
+import type {AnySchemaObject, CodeKeywordDefinition, KeywordErrorDefinition} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
 import {_, getProperty, Name} from "../../compile/codegen"
 import {DiscrError, DiscrErrorObj} from "../discriminator/types"
-import {resolveRef, SchemaEnv} from "../../compile"
+import {resolveRef, SchemaEnv, SchemaObjCxt} from "../../compile"
 import {schemaHasRulesButRef} from "../../compile/util"
 
 export type DiscriminatorError = DiscrErrorObj<DiscrError.Tag> | DiscrErrorObj<DiscrError.Mapping>
@@ -10,10 +10,10 @@ export type DiscriminatorError = DiscrErrorObj<DiscrError.Tag> | DiscrErrorObj<D
 const error: KeywordErrorDefinition = {
   message: ({params: {discrError, tagName}}) =>
     discrError === DiscrError.Tag
-      ? `tag "${tagName}" must be string`
-      : `value of tag "${tagName}" must be in oneOf`,
+      ? `property "${tagName}" must be string`
+      : `value of property "${tagName}" must be in oneOf`,
   params: ({params: {discrError, tag, tagName}}) =>
-    _`{error: ${discrError}, tag: ${tagName}, tagValue: ${tag}}`,
+    _`{error: ${discrError}, property: ${tagName}, propertyValue: ${tag}}`,
 }
 
 const def: CodeKeywordDefinition = {
@@ -21,7 +21,7 @@ const def: CodeKeywordDefinition = {
   type: "object",
   schemaType: "object",
   error,
-  code(cxt: KeywordCxt) {
+  code: function (cxt: KeywordCxt) {
     const {gen, data, schema, parentSchema, it} = cxt
     const {oneOf} = parentSchema
     if (!it.opts.discriminator) {
@@ -29,7 +29,9 @@ const def: CodeKeywordDefinition = {
     }
     const tagName = schema.propertyName
     if (typeof tagName != "string") throw new Error("discriminator: requires propertyName")
-    if (schema.mapping) throw new Error("discriminator: mapping is not supported")
+    if (schema.mapping && strictDiscriminatorValidation(it)) {
+      throw new Error("discriminator: mapping is not supported")
+    }
     if (!oneOf) throw new Error("discriminator: requires oneOf keyword")
     const valid = gen.let("valid", false)
     const tag = gen.const("tag", _`${data}${getProperty(tagName)}`)
@@ -105,6 +107,11 @@ const def: CodeKeywordDefinition = {
       }
     }
   },
+}
+
+export function strictDiscriminatorValidation(it: SchemaObjCxt): boolean {
+  if (it.opts.discriminator instanceof Object) return it.opts.discriminator.strict
+  return true
 }
 
 export default def
