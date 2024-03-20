@@ -94,7 +94,13 @@ function standaloneCode(
   }
 }
 
-module.exports = exports = standaloneCode
-Object.defineProperty(exports, "__esModule", {value: true})
+export = standaloneCode
 
-export default standaloneCode
+// eslint-disable-next-line @typescript-eslint/no-namespace, no-redeclare
+declare namespace standaloneCode {
+  // compatibility with NodeNext
+  export {standaloneCode as default}
+}
+
+Object.defineProperty(standaloneCode, "__esModule", {value: true})
+Object.defineProperty(standaloneCode, "default", {value: standaloneCode})

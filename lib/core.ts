@@ -272,7 +272,7 @@ export interface Logger {
   error(...args: unknown[]): unknown
 }
 
-export default class Ajv {
+export class Ajv {
   opts: InstanceOptions
   errors?: ErrorObject[] | null // errors from the last validation
   logger: Logger
@@ -748,6 +748,7 @@ export default class Ajv {
   }
 }
 
+export default Ajv
 export interface ErrorsTextOptions {
   separator?: string
   dataVar?: string

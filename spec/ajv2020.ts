@@ -4,4 +4,3 @@ const AjvClass: typeof Ajv2020 =
 
 export default AjvClass
 module.exports = AjvClass
-module.exports.default = AjvClass
