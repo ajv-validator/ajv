@@ -186,7 +186,7 @@ In the example above, the key passed to the `addSchema` method was used to retri
 
 ### Pre-adding all schemas vs adding on demand
 
-In the example above all schemas were added in advance. It is also possible, to add schemas as they are used - it can be helpful if there is many schemas. In this case, you need to check first whether the schema is already added by calling `getSchema` method - it would return `undefined` if not:
+In the example above all schemas were added in advance. It is also possible, to add schemas as they are used - it can be helpful if there are many schemas. In this case, you need to check first whether the schema is already added by calling `getSchema` method - it would return `undefined` if not:
 
 ```javascript
 const schema_user = require("./schema_user.json")
