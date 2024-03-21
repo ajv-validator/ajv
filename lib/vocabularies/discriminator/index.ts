@@ -1,6 +1,6 @@
 import type {CodeKeywordDefinition, AnySchemaObject, KeywordErrorDefinition} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
-import {_, getProperty, Name} from "../../compile/codegen"
+import {_, or, getProperty, Name} from "../../compile/codegen"
 import {DiscrError, DiscrErrorObj} from "../discriminator/types"
 import {resolveRef, SchemaEnv} from "../../compile"
 import {schemaHasRulesButRef} from "../../compile/util"
@@ -33,8 +33,9 @@ const def: CodeKeywordDefinition = {
     if (!oneOf) throw new Error("discriminator: requires oneOf keyword")
     const valid = gen.let("valid", false)
     const tag = gen.const("tag", _`${data}${getProperty(tagName)}`)
+    const tagTypes = ["string", "number", "boolean"]
     gen.if(
-      _`typeof ${tag} == "string"`,
+      or(...tagTypes.map((t) => _`typeof ${tag} == ${t}`), _`${tag} == null`),
       () => validateMapping(),
       () => cxt.error(false, {discrError: DiscrError.Tag, tag, tagName})
     )
@@ -43,9 +44,9 @@ const def: CodeKeywordDefinition = {
     function validateMapping(): void {
       const mapping = getMapping()
       gen.if(false)
-      for (const tagValue in mapping) {
+      for (const tagValue of mapping.keys()) {
         gen.elseIf(_`${tag} === ${tagValue}`)
-        gen.assign(valid, applyTagSchema(mapping[tagValue]))
+        gen.assign(valid, applyTagSchema(mapping.get(tagValue)))
       }
       gen.else()
       cxt.error(false, {discrError: DiscrError.Mapping, tag, tagName})
@@ -59,8 +60,10 @@ const def: CodeKeywordDefinition = {
       return _valid
     }
 
-    function getMapping(): {[T in string]?: number} {
-      const oneOfMapping: {[T in string]?: number} = {}
+    type OneOfMapping = Map<string | number | boolean | null, number>
+
+    function getMapping(): OneOfMapping {
+      const oneOfMapping: OneOfMapping = new Map()
       const topRequired = hasRequired(parentSchema)
       let tagRequired = true
       for (let i = 0; i < oneOf.length; i++) {
@@ -86,7 +89,7 @@ const def: CodeKeywordDefinition = {
       }
 
       function addMappings(sch: AnySchemaObject, i: number): void {
-        if (sch.const) {
+        if (sch.const !== undefined) {
           addMapping(sch.const, i)
         } else if (sch.enum) {
           for (const tagValue of sch.enum) {
@@ -97,11 +100,16 @@ const def: CodeKeywordDefinition = {
         }
       }
 
-      function addMapping(tagValue: unknown, i: number): void {
-        if (typeof tagValue != "string" || tagValue in oneOfMapping) {
-          throw new Error(`discriminator: "${tagName}" values must be unique strings`)
+      function addMapping(tagValue: any, i: number): void {
+        if (
+          !(["string", "number", "boolean"].includes(typeof tagValue) || tagValue === null) ||
+          oneOfMapping.has(tagValue)
+        ) {
+          throw new Error(
+            `discriminator: "${tagName}" values must be unique strings, numbers, booleans or nulls`
+          )
         }
-        oneOfMapping[tagValue] = i
+        oneOfMapping.set(tagValue, i)
       }
     }
   },
