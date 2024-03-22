@@ -12,17 +12,20 @@ interface _SchemaObject {
   [x: string]: any // TODO
 }
 
-export interface SchemaObject extends _SchemaObject {
+export type SchemaObject = _SchemaObject & {
   id?: string
   $id?: string
   $schema?: string
   $async?: false
+  metadata?: {
+    async?: false
+    [x: string]: any
+  }
   [x: string]: any // TODO
 }
 
-export interface AsyncSchema extends _SchemaObject {
-  $async: true
-}
+export type AsyncSchema = _SchemaObject &
+  ({$async: true} | {metadata: {async: boolean} & {[x: string]: any}})
 
 export type AnySchemaObject = SchemaObject | AsyncSchema
 

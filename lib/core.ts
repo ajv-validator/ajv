@@ -314,7 +314,7 @@ export default class Ajv {
   }
 
   _addVocabularies(): void {
-    this.addKeyword("$async")
+    this.addKeyword(this.opts.jtd ? "async" : "$async")
   }
 
   _addDefaultMetaSchema(): void {
@@ -369,6 +369,8 @@ export default class Ajv {
   // Create validation function for passed schema
   // _meta: true if schema is a meta-schema. Used internally to compile meta schemas of user-defined keywords.
   compile<T = unknown>(schema: Schema | JSONSchemaType<T>, _meta?: boolean): ValidateFunction<T>
+  // Async validation
+  compile<T = unknown>(schema: AsyncSchema, _meta?: boolean): AsyncValidateFunction<T>
   // Separated for type inference to work
   // eslint-disable-next-line @typescript-eslint/unified-signatures
   compile<T = unknown>(schema: JTDSchemaType<T>, _meta?: boolean): ValidateFunction<T>
@@ -378,7 +380,6 @@ export default class Ajv {
     schema: T,
     _meta?: boolean
   ): ValidateFunction<JTDDataType<T>>
-  compile<T = unknown>(schema: AsyncSchema, _meta?: boolean): AsyncValidateFunction<T>
   compile<T = unknown>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T>
   compile<T = unknown>(schema: AnySchema, _meta?: boolean): AnyValidateFunction<T> {
     const sch = this._addSchema(schema, _meta)
