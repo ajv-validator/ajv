@@ -343,14 +343,17 @@ export default class Ajv {
   validate<T>(schema: JTDSchemaType<T>, data: unknown): data is T
   // This overload is only intended for typescript inference, the first
   // argument prevents manual type annotation from matching this overload
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   validate<N extends never, T extends SomeJTDSchemaType>(
     schema: T,
     data: unknown
   ): data is JTDDataType<T>
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   validate<T>(schema: AsyncSchema, data: unknown | T): Promise<T>
   validate<T>(schemaKeyRef: AnySchema | string, data: unknown): data is T | Promise<T>
   validate<T>(
     schemaKeyRef: AnySchema | string, // key, ref or schema object
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     data: unknown | T // to be validated
   ): boolean | Promise<T> {
     let v: AnyValidateFunction | undefined
@@ -374,6 +377,7 @@ export default class Ajv {
   compile<T = unknown>(schema: JTDSchemaType<T>, _meta?: boolean): ValidateFunction<T>
   // This overload is only intended for typescript inference, the first
   // argument prevents manual type annotation from matching this overload
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   compile<N extends never, T extends SomeJTDSchemaType>(
     schema: T,
     _meta?: boolean

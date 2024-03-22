@@ -48,6 +48,7 @@ export interface DataValidationCxt<T extends string | number = string | number> 
 }
 
 export interface ValidateFunction<T = unknown> {
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   (this: Ajv | any, data: any, dataCxt?: DataValidationCxt): data is T
   errors?: null | ErrorObject[]
   evaluated?: Evaluated
