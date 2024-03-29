@@ -7,7 +7,7 @@ import addMetaSchema2020 from "./refs/json-schema-2020-12"
 
 const META_SCHEMA_ID = "https://json-schema.org/draft/2020-12/schema"
 
-class Ajv2020 extends AjvCore {
+export class Ajv2020 extends AjvCore {
   constructor(opts: Options = {}) {
     super({
       ...opts,
@@ -38,6 +38,7 @@ class Ajv2020 extends AjvCore {
 }
 
 module.exports = exports = Ajv2020
+module.exports.Ajv2020 = Ajv2020
 Object.defineProperty(exports, "__esModule", {value: true})
 
 export default Ajv2020
