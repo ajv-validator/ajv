@@ -110,7 +110,7 @@ describe("$async validation and type guards", () => {
       let result: boolean | Promise<Foo>
       if ((result = validate(data))) {
         if (typeof result == "boolean") {
-          data.foo.should.equal(1)
+          ;(data as any).foo.should.equal(1)
         } else {
           await result.then((_data) => _data.foo.should.equal(1))
         }
