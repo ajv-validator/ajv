@@ -174,7 +174,7 @@ export type RequiredMembers<T> = StrictNullChecksWrapper<
 
 type Nullable<T> = undefined extends T
   ? {
-      nullable: true
+      nullable?: true
       const?: null // any non-null value would fail `const: null`, `null` would fail any other value in const
       enum?: Readonly<(T | null)[]> // `null` must be explicitly included in "enum" for `null` to pass
       default?: T | null
