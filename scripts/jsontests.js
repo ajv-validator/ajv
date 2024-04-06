@@ -32,7 +32,9 @@ for (const suite in testSuitePaths) {
 }
 
 const requires = Array.from(Object.keys(testSuitePaths), (s) => `require('./${s}')`)
-fs.writeFileSync(`./spec/_json/index.js`, `
-  // generated from ${__filename}
+fs.writeFileSync(
+  `./spec/_json/index.js`,
+  `// generated from ${__filename}
   module.exports = [${requires.join(",\n")}]
-`)
+`
+)
