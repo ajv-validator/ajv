@@ -192,10 +192,10 @@ describe("discriminator keyword", function () {
     const badData = {foo: "w"}
 
     it("compile should resolve each $ref to a schema that was added with addSchema", () => {
-      const options = {
+      const opts = {
         discriminator: true,
       }
-      const ajv = new _Ajv(options)
+      const ajv = new _Ajv(opts)
       ajv.addSchema(schemas.main, "https://host/main")
       ajv.addSchema(schemas.schema1, "https://host/schema1")
       ajv.addSchema(schemas.schema2, "https://host/schema2")
@@ -205,15 +205,15 @@ describe("discriminator keyword", function () {
       assert.strictEqual(validate(badData), false)
     })
     it("compileAsync should loadSchema each $ref", async () => {
-      const options = {
+      const opts = {
         discriminator: true,
-        async loadSchema(url) {
+        loadSchema(url) {
           if (!url.startsWith("https://host/")) return undefined
           const name = url.substring("https://host/".length)
           return schemas[name]
         },
       }
-      const ajv = new _Ajv(options)
+      const ajv = new _Ajv(opts)
       const validate = await ajv.compileAsync({$ref: "https://host/main"})
       assert.strictEqual(validate(data), true)
       assert.strictEqual(validate(badData), false)
