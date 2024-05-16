@@ -4,7 +4,7 @@ import _Ajv from "./ajv"
 import type {AnyValidateFunction} from "../dist/types"
 import type MissingRefError from "../dist/compile/ref_error"
 import chai from "./chai"
-import * as uriJs from "fast-uri"
+import * as uriJs from "uri-js"
 const should = chai.should()
 
 const uriResolvers = [undefined, uriJs]
@@ -12,7 +12,7 @@ const uriResolvers = [undefined, uriJs]
 uriResolvers.forEach((resolver) => {
   let describeTitle: string
   if (resolver !== undefined) {
-    describeTitle = "fast-uri resolver"
+    describeTitle = "uri-js resolver"
   } else {
     describeTitle = "fast-uri resolver"
   }
