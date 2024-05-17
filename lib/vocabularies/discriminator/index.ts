@@ -3,6 +3,7 @@ import type {KeywordCxt} from "../../compile/validate"
 import {_, getProperty, Name} from "../../compile/codegen"
 import {DiscrError, DiscrErrorObj} from "../discriminator/types"
 import {resolveRef, SchemaEnv} from "../../compile"
+import MissingRefError from "../../compile/ref_error"
 import {schemaHasRulesButRef} from "../../compile/util"
 
 export type DiscriminatorError = DiscrErrorObj<DiscrError.Tag> | DiscrErrorObj<DiscrError.Mapping>
@@ -66,8 +67,10 @@ const def: CodeKeywordDefinition = {
       for (let i = 0; i < oneOf.length; i++) {
         let sch = oneOf[i]
         if (sch?.$ref && !schemaHasRulesButRef(sch, it.self.RULES)) {
-          sch = resolveRef.call(it.self, it.schemaEnv.root, it.baseId, sch?.$ref)
+          const ref = sch.$ref
+          sch = resolveRef.call(it.self, it.schemaEnv.root, it.baseId, ref)
           if (sch instanceof SchemaEnv) sch = sch.schema
+          if (sch === undefined) throw new MissingRefError(it.opts.uriResolver, it.baseId, ref)
         }
         const propSch = sch?.properties?.[tagName]
         if (typeof propSch != "object") {
