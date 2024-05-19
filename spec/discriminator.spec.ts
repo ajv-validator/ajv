@@ -159,6 +159,67 @@ describe("discriminator keyword", function () {
     })
   })
 
+  describe("schema with external $refs", () => {
+    const schemas = {
+      main: {
+        type: "object",
+        discriminator: {propertyName: "foo"},
+        required: ["foo"],
+        oneOf: [
+          {
+            $ref: "schema1",
+          },
+          {
+            $ref: "schema2",
+          },
+        ],
+      },
+      schema1: {
+        type: "object",
+        properties: {
+          foo: {const: "x"},
+        },
+      },
+      schema2: {
+        type: "object",
+        properties: {
+          foo: {enum: ["y", "z"]},
+        },
+      },
+    }
+
+    const data = {foo: "x"}
+    const badData = {foo: "w"}
+
+    it("compile should resolve each $ref to a schema that was added with addSchema", () => {
+      const opts = {
+        discriminator: true,
+      }
+      const ajv = new _Ajv(opts)
+      ajv.addSchema(schemas.main, "https://host/main")
+      ajv.addSchema(schemas.schema1, "https://host/schema1")
+      ajv.addSchema(schemas.schema2, "https://host/schema2")
+
+      const validate = ajv.compile({$ref: "https://host/main"})
+      assert.strictEqual(validate(data), true)
+      assert.strictEqual(validate(badData), false)
+    })
+    it("compileAsync should loadSchema each $ref", async () => {
+      const opts = {
+        discriminator: true,
+        loadSchema(url) {
+          if (!url.startsWith("https://host/")) return undefined
+          const name = url.substring("https://host/".length)
+          return schemas[name]
+        },
+      }
+      const ajv = new _Ajv(opts)
+      const validate = await ajv.compileAsync({$ref: "https://host/main"})
+      assert.strictEqual(validate(data), true)
+      assert.strictEqual(validate(badData), false)
+    })
+  })
+
   describe("validation with deeply referenced schemas", () => {
     const schema = [
       {
