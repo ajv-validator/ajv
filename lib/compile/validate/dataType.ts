@@ -30,6 +30,7 @@ export function getSchemaTypes(schema: AnySchemaObject): JSONType[] {
   return types
 }
 
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 export function getJSONTypes(ts: unknown | unknown[]): JSONType[] {
   const types: unknown[] = Array.isArray(ts) ? ts : ts ? [ts] : []
   if (types.every(isJSONType)) return types
