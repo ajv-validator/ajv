@@ -14,7 +14,7 @@ uriResolvers.forEach((resolver) => {
   if (resolver !== undefined) {
     describeTitle = "fast-uri resolver"
   } else {
-    describeTitle = "uri-js resolver"
+    describeTitle = "toad-uri-js resolver"
   }
   describe(describeTitle, () => {
     describe("resolve", () => {
