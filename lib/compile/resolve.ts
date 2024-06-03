@@ -1,6 +1,6 @@
 import type {AnySchema, AnySchemaObject, UriResolver} from "../types"
 import type Ajv from "../ajv"
-import type {URIComponents} from "fast-uri"
+import type {URIComponents} from "uri-js"
 import {eachItem} from "./util"
 import * as equal from "fast-deep-equal"
 import * as traverse from "json-schema-traverse"

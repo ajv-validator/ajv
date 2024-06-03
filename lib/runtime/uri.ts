@@ -1,4 +1,4 @@
-import * as uri from "fast-uri"
+import * as uri from "uri-js"
 
 type URI = typeof uri & {code: string}
 ;(uri as URI).code = 'require("ajv/dist/runtime/uri").default'
