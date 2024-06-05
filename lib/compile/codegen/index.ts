@@ -41,7 +41,11 @@ abstract class Node {
 }
 
 class Def extends Node {
-  constructor(private readonly varKind: Name, private readonly name: Name, private rhs?: SafeExpr) {
+  constructor(
+    private readonly varKind: Name,
+    private readonly name: Name,
+    private rhs?: SafeExpr
+  ) {
     super()
   }
 
@@ -63,7 +67,11 @@ class Def extends Node {
 }
 
 class Assign extends Node {
-  constructor(readonly lhs: Code, public rhs: SafeExpr, private readonly sideEffects?: boolean) {
+  constructor(
+    readonly lhs: Code,
+    public rhs: SafeExpr,
+    private readonly sideEffects?: boolean
+  ) {
     super()
   }
 
@@ -84,7 +92,12 @@ class Assign extends Node {
 }
 
 class AssignOp extends Assign {
-  constructor(lhs: Code, private readonly op: Code, rhs: SafeExpr, sideEffects?: boolean) {
+  constructor(
+    lhs: Code,
+    private readonly op: Code,
+    rhs: SafeExpr,
+    sideEffects?: boolean
+  ) {
     super(lhs, rhs, sideEffects)
   }
 
@@ -211,7 +224,10 @@ class Else extends BlockNode {
 class If extends BlockNode {
   static readonly kind = "if"
   else?: If | Else
-  constructor(private condition: Code | boolean, nodes?: ChildNode[]) {
+  constructor(
+    private condition: Code | boolean,
+    nodes?: ChildNode[]
+  ) {
     super(nodes)
   }
 
@@ -331,7 +347,11 @@ class ForIter extends For {
 
 class Func extends BlockNode {
   static readonly kind = "func"
-  constructor(public name: Name, public args: Code, public async?: boolean) {
+  constructor(
+    public name: Name,
+    public args: Code,
+    public async?: boolean
+  ) {
     super()
   }
 
