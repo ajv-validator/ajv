@@ -14,7 +14,7 @@ import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
 import {schemaHasRulesButRef, unescapeFragment} from "./util"
 import {validateFunctionCode} from "./validate"
-import * as URI from "uri-js"
+import {URIComponent} from "fast-uri"
 import {JSONType} from "./rules"
 
 export type SchemaRefs = {
@@ -295,7 +295,7 @@ const PREVENT_SCOPE_CHANGE = new Set([
 
 function getJsonPointer(
   this: Ajv,
-  parsedRef: URI.URIComponents,
+  parsedRef: URIComponent,
   {baseId, schema, root}: SchemaEnv
 ): SchemaEnv | undefined {
   if (parsedRef.fragment?.[0] !== "/") return
