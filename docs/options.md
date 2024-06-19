@@ -245,7 +245,7 @@ An array or object of schemas that will be added to the instance. In case you pa
 
 ### logger
 
-Sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. See [Error logging](#error-logging).
+Sets the logging method. Default is the global `console` object that should have methods `log`, `warn` and `error`. See [Error logging](./api.md#error-logging).
 
 Option values:
 
@@ -349,7 +349,7 @@ Include human-readable messages in errors. `true` by default. `false` can be pas
 
 ### uriResolver
 
-By default `uriResolver` is undefined and relies on the embedded uriResolver [uri-js](https://github.com/garycourt/uri-js). Pass an object that satisfies the interface [UriResolver](https://github.com/ajv-validator/ajv/blob/master/lib/types/index.ts) to be used in replacement. One alternative is [fast-uri](https://github.com/fastify/fast-uri).
+By default `uriResolver` is undefined and relies on the embedded uriResolver [fast-uri](https://github.com/fastify/fast-uri). Pass an object that satisfies the interface [UriResolver](https://github.com/ajv-validator/ajv/blob/master/lib/types/index.ts) to be used in replacement. One alternative is [uri-js](https://github.com/garycourt/uri-js).
 
 ### code <Badge text="v7" />
 

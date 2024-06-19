@@ -1,4 +1,4 @@
-import * as URI from "uri-js"
+import {URIComponent} from "fast-uri"
 import type {CodeGen, Code, Name, ScopeValueSets, ValueScopeName} from "../compile/codegen"
 import type {SchemaEnv, SchemaCxt, SchemaObjCxt} from "../compile"
 import type {JSONType} from "../compile/rules"
@@ -48,6 +48,7 @@ export interface DataValidationCxt<T extends string | number = string | number> 
 }
 
 export interface ValidateFunction<T = unknown> {
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   (this: Ajv | any, data: any, dataCxt?: DataValidationCxt): data is T
   errors?: null | ErrorObject[]
   evaluated?: Evaluated
@@ -138,9 +139,12 @@ export interface DataValidateFunction {
 }
 
 export interface SchemaValidateFunction {
-  (schema: any, data: any, parentSchema?: AnySchemaObject, dataCxt?: DataValidationCxt):
-    | boolean
-    | Promise<any>
+  (
+    schema: any,
+    data: any,
+    parentSchema?: AnySchemaObject,
+    dataCxt?: DataValidationCxt
+  ): boolean | Promise<any>
   errors?: Partial<ErrorObject>[]
 }
 
@@ -234,7 +238,7 @@ export interface RegExpLike {
 }
 
 export interface UriResolver {
-  parse(uri: string): URI.URIComponents
+  parse(uri: string): URIComponent
   resolve(base: string, path: string): string
-  serialize(component: URI.URIComponents): string
+  serialize(component: URIComponent): string
 }

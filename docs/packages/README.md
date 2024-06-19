@@ -14,11 +14,11 @@ If you have published a useful plugin please submit a PR to add it to the next s
 
 ## Related packages
 
-- [ajv-formats](./ajv-formats.md) - formats defined in JSON Schema specification
-- [ajv-keywords](./ajv-keywords) - additional validation keywords (select, typeof, etc.)
-- [ajv-errors](./ajv-errors.md) - defining error messages in the schema
-- [ajv-i18n](./ajv-i18n) - internationalised error messages
-- [ajv-cli](./ajv-cli.md) - command line interface
+- [ajv-formats](https://github.com/ajv-validator/ajv-formats) - formats defined in JSON Schema specification
+- [ajv-keywords](https://github.com/ajv-validator/ajv-keywords) - additional validation keywords (select, typeof, etc.)
+- [ajv-errors](https://github.com/ajv-validator/ajv-errors) - defining error messages in the schema
+- [ajv-i18n](https://github.com/ajv-validator/ajv-i18n) - internationalised error messages
+- [ajv-cli](https://github.com/ajv-validator/ajv-cli) - command line interface
 - [ajv-bsontype](https://github.com/BoLaMN/ajv-bsontype) - MongoDB's bsonType formats
 - [ajv-formats-draft2019](https://github.com/luzlab/ajv-formats-draft2019) - formats for draft-2019-09 that are not included in [ajv-formats](./ajv-formats.md) (`idn-hostname`, `idn-email`, `iri` and `iri-reference`)
 - [ajv-merge-patch](https://github.com/ajv-validator/ajv-merge-patch) - keywords $merge and $patch

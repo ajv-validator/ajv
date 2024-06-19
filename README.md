@@ -8,11 +8,11 @@ The fastest JSON validator for Node.js and browser.
 
 Supports JSON Schema draft-04/06/07/2019-09/2020-12 ([draft-04 support](https://ajv.js.org/json-schema.html#draft-04) requires ajv-draft-04 package) and JSON Type Definition [RFC8927](https://datatracker.ietf.org/doc/rfc8927/).
 
-[![build](https://github.com/ajv-validator/ajv/workflows/build/badge.svg)](https://github.com/ajv-validator/ajv/actions?query=workflow%3Abuild)
+[![build](https://github.com/ajv-validator/ajv/actions/workflows/build.yml/badge.svg)](https://github.com/ajv-validator/ajv/actions?query=workflow%3Abuild)
 [![npm](https://img.shields.io/npm/v/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![npm downloads](https://img.shields.io/npm/dm/ajv.svg)](https://www.npmjs.com/package/ajv)
 [![Coverage Status](https://coveralls.io/repos/github/ajv-validator/ajv/badge.svg?branch=master)](https://coveralls.io/github/ajv-validator/ajv?branch=master)
-[![SimpleX](https://img.shields.io/badge/chat-on%20SimpleX-%2307b4b9)](https://simplex.chat/contact#/?v=1-2&smp=smp%3A%2F%2Fu2dS9sG8nMNURyZwqASV4yROM28Er0luVTx5X1CsMrU%3D%40smp4.simplex.im%2FV-6t4hoy_SsvKMi9KekdGX-VKQOhDeAe%23%2F%3Fv%3D1-2%26dh%3DMCowBQYDK2VuAyEAm98gjwvrAEiiz_YgBoaQB9dtKTl5Om1pborUyevQwzg%253D%26srv%3Do5vmywmrnaxalvz6wi3zicyftgio6psuvyniis6gco6bp6ekl4cqj4id.onion&data=%7B%22type%22%3A%22group%22%2C%22groupLinkId%22%3A%22wYrTFafovkymjUtc2vUjCQ%3D%3D%22%7D)
+[![SimpleX](https://img.shields.io/badge/chat-on%20SimpleX-70F0F9)](https://simplex.chat/contact#/?v=1-2&smp=smp%3A%2F%2Fu2dS9sG8nMNURyZwqASV4yROM28Er0luVTx5X1CsMrU%3D%40smp4.simplex.im%2F8KvvURM6J38Gdq9dCuPswMOkMny0xCOJ%23%2F%3Fv%3D1-2%26dh%3DMCowBQYDK2VuAyEAr8rPVRuMOXv6kwF2yUAap-eoVg-9ssOFCi1fIrxTUw0%253D%26srv%3Do5vmywmrnaxalvz6wi3zicyftgio6psuvyniis6gco6bp6ekl4cqj4id.onion&data=%7B%22type%22%3A%22group%22%2C%22groupLinkId%22%3A%224pwLRgWHU9tlroMWHz0uOg%3D%3D%22%7D)
 [![Gitter](https://img.shields.io/gitter/room/ajv-validator/ajv.svg)](https://gitter.im/ajv-validator/ajv)
 [![GitHub Sponsors](https://img.shields.io/badge/$-sponsors-brightgreen)](https://github.com/sponsors/epoberezkin)
 

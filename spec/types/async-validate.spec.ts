@@ -109,10 +109,10 @@ describe("$async validation and type guards", () => {
       const data: unknown = {foo: 1}
       let result: boolean | Promise<Foo>
       if ((result = validate(data))) {
-        if (typeof result == "boolean") {
-          data.foo.should.equal(1)
-        } else {
+        if (result instanceof Promise) {
           await result.then((_data) => _data.foo.should.equal(1))
+        } else {
+          should.fail()
         }
       } else {
         should.fail()
