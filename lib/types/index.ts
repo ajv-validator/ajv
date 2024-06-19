@@ -1,4 +1,4 @@
-import * as URI from "uri-js"
+import {URIComponent} from "fast-uri"
 import type {CodeGen, Code, Name, ScopeValueSets, ValueScopeName} from "../compile/codegen"
 import type {SchemaEnv, SchemaCxt, SchemaObjCxt} from "../compile"
 import type {JSONType} from "../compile/rules"
@@ -238,7 +238,7 @@ export interface RegExpLike {
 }
 
 export interface UriResolver {
-  parse(uri: string): URI.URIComponents
+  parse(uri: string): URIComponent
   resolve(base: string, path: string): string
-  serialize(component: URI.URIComponents): string
+  serialize(component: URIComponent): string
 }

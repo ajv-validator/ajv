@@ -280,8 +280,8 @@ The value of the keyword should be a number. The data to be valid should be a mu
 
 ### `maxLength` / `minLength`
 
-::: warning [Grapheme clusters](https://www.unicode.org/reports/tr29/tr29-17.html#Grapheme_Cluster_Boundaries) will count as multiple characters
-Certain charsets have characters that are made up of multiple unicode characters. These "grapheme clusters" are counted as multiple characters.
+::: warning Grapheme clusters will count as multiple characters
+Certain charsets have characters that are made up of multiple Unicode code points. These [grapheme clusters](https://www.unicode.org/reports/tr29/tr29-17.html#Grapheme_Cluster_Boundaries) are counted as multiple in length calculations.
 :::
 
 The value of the keywords should be a number. The data to be valid should have length satisfying this rule. Unicode pairs are counted as a single character.
