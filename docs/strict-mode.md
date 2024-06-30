@@ -42,10 +42,10 @@ By default Ajv fails schema compilation when unknown keywords are used. Users ca
 ajv.addKeyword("allowedKeyword")
 ```
 
-or
+or use the convenience method `addVocabulary` for multiple keywords
 
 ```javascript
-ajv.addVocabulary(["allowed1", "allowed2"])
+ajv.addVocabulary(["allowed1", "allowed2"]) // simply calls addKeyword multiple times
 ```
 
 #### Ignored "additionalItems" keyword

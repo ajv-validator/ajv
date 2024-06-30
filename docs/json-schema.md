@@ -478,11 +478,11 @@ To create and equivalent schema in draft-2020-12 use keywords [prefixItems](#pre
 
 The value of the keyword should be a boolean or an object.
 
-If `items` keyword is not present or it is an object, `additionalItems` keyword should be ignored regardless of its value. By default Ajv will throw exception in this case - see [Strict mode](./strict-mode.md)
+`additionalItems` keyword is ignored if `items` keyword is not present or is an object. By default Ajv will throw exception in this case - see [Strict mode](./strict-mode.md)
 
-If `items` keyword is an array and data array has not more items than the length of `items` keyword value, `additionalItems` keyword is also ignored.
+`additionalItems` keyword is ignored if `items` keyword has more elements than data array.
 
-If the length of data array is bigger than the length of "items" keyword value than the result of the validation depends on the value of `additionalItems` keyword:
+If the data array has more elements than the `items` keyword value then the result of the validation depends on the value of `additionalItems` keyword:
 
 - `false`: data is invalid
 - `true`: data is valid
