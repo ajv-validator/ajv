@@ -16,7 +16,7 @@ uriResolvers.forEach((resolver) => {
   } else {
     describeTitle = "fast-uri resolver"
   }
-  describe.only(describeTitle, () => {
+  describe(describeTitle, () => {
     describe("resolve", () => {
       let instances: AjvCore[]
 
