@@ -180,6 +180,41 @@ uriResolvers.forEach((resolver) => {
         })
       })
 
+      describe("URIs with encoded characters (issue #2447)", () => {
+        it("should resolve the ref", () => {
+          const schema = {
+            $ref: "#/definitions/Record%3Cstring%2CPerson%3E",
+            $schema: "http://json-schema.org/draft-07/schema#",
+            definitions: {
+              Person: {
+                type: "object",
+                properties: {
+                  firstName: {
+                    type: "string",
+                    description: "The person's first name.",
+                  },
+                },
+              },
+              "Record<string,Person>": {
+                type: "object",
+                additionalProperties: {
+                  $ref: "#/definitions/Person",
+                },
+              },
+            },
+          }
+          const data = {
+            joe: {
+              firstName: "Joe",
+            },
+          }
+          instances.forEach((ajv) => {
+            const validate = ajv.compile(schema)
+            validate(data).should.equal(true)
+          })
+        })
+      })
+
       describe("missing schema error", function () {
         this.timeout(4000)
 
