@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/array-type */
 /* eslint-disable @typescript-eslint/no-empty-interface */
 type StrictNullChecksWrapper<Name extends string, Type> = undefined extends null
   ? `strictNullChecks must be true in tsconfig to use ${Name}`
