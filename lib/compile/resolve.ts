@@ -2,7 +2,7 @@ import type {AnySchema, AnySchemaObject, UriResolver} from "../types"
 import type Ajv from "../ajv"
 import type {URIComponent} from "fast-uri"
 import {eachItem} from "./util"
-import { dequal as equal } from "dequal"
+import {dequal as equal} from "dequal"
 import * as traverse from "json-schema-traverse"
 
 // the hash of local references inside the schema (created by getSchemaRefs), used for inline resolution
