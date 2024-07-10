@@ -210,7 +210,7 @@ With `useDefaults` option `default` keywords throws exception during schema comp
 
 The strict mode option can change the behaviour for these unsupported defaults (`strict: false` to ignore them, `"log"` to log a warning).
 
-See [Strict mode](./strict-mode.md).
+See [Strict mode](../strict-mode.md).
 
 ::: tip Default with discriminator keyword
 Defaults will be assigned in schemas inside `oneOf` in case [discriminator](../json-schema.md#discriminator) keyword is used.
