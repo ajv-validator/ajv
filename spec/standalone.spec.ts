@@ -292,6 +292,7 @@ describe("standalone code generation", () => {
     const m = requireFromString(moduleCode)
     testExport(m)
     testExport(m.Ajv)
+    testExport(m.default)
 
     function testExport(validate: AnyValidateFunction<unknown>) {
       assert.strictEqual(validate(1), true)
