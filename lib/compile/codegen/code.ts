@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class _CodeOrName {
   abstract readonly str: string
   abstract readonly names: UsedNames
