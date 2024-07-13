@@ -1,6 +1,6 @@
 {
   "name": "ajv",
-  "version": "8.16.0",
+  "version": "8.17.1",
   "description": "Another JSON Schema Validator",
   "main": "dist/ajv.js",
   "types": "dist/ajv.d.ts",
@@ -59,7 +59,7 @@
   "runkitExampleFilename": ".runkit_example.js",
   "dependencies": {
     "fast-deep-equal": "^3.1.3",
-    "fast-uri": "^2.4.0",
+    "fast-uri": "^3.0.1",
     "json-schema-traverse": "^1.0.0",
     "require-from-string": "^2.0.2"
   },
