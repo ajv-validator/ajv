@@ -20,6 +20,7 @@ const def: CodeKeywordDefinition = {
   type: "array",
   schemaType: ["boolean", "object"],
   error,
+  subschema: true,
   code(cxt: KeywordCxt) {
     const {gen, schema, data, it} = cxt
     const items = it.items || 0

@@ -21,6 +21,7 @@ const def: CodeKeywordDefinition = {
   schemaType: ["object", "boolean"],
   trackErrors: true,
   error,
+  subschema: true,
   code(cxt: KeywordCxt) {
     const {gen, parentSchema, it} = cxt
     if (parentSchema.then === undefined && parentSchema.else === undefined) {

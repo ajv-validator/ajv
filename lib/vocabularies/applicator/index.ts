@@ -27,9 +27,9 @@ export default function getApplicator(draft2020 = false): Vocabulary {
     thenElse,
     // object
     propertyNames,
-    additionalProperties,
     dependencies,
     properties,
+    additionalProperties,
     patternProperties,
   ]
   // array

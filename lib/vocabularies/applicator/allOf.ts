@@ -5,6 +5,7 @@ import {alwaysValidSchema} from "../../compile/util"
 const def: CodeKeywordDefinition = {
   keyword: "allOf",
   schemaType: "array",
+  subschema: true,
   code(cxt: KeywordCxt) {
     const {gen, schema, it} = cxt
     /* istanbul ignore if */
