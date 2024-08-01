@@ -9,6 +9,7 @@
     "dist/",
     ".runkit_example.js"
   ],
+  "sideEffects": false,
   "scripts": {
     "eslint": "eslint \"lib/**/*.ts\" \"spec/**/*.*s\" --ignore-pattern spec/JSON-Schema-Test-Suite",
     "prettier:write": "prettier --write \"./**/*.{json,yaml,js,ts}\"",
