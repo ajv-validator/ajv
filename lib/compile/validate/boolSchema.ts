@@ -12,7 +12,10 @@ export function topBoolOrEmptySchema(it: SchemaCxt): void {
   const {gen, schema, validateName} = it
   if (schema === false) {
     falseSchemaError(it, false)
-  } else if (typeof schema == "object" && schema.$async === true) {
+  } else if (
+    typeof schema == "object" &&
+    (schema.$async === true || schema.metadata?.async === true)
+  ) {
     gen.return(N.data)
   } else {
     gen.assign(_`${validateName}.errors`, null)
