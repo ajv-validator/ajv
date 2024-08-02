@@ -119,6 +119,7 @@ export interface CurrentOptions {
   removeAdditional?: boolean | "all" | "failing"
   useDefaults?: boolean | "empty"
   coerceTypes?: boolean | "array"
+  coerceNull?: boolean
   // advanced options:
   next?: boolean // NEW
   unevaluated?: boolean // NEW
@@ -311,6 +312,8 @@ export default class Ajv {
     if (typeof opts.meta == "object") this.addMetaSchema(opts.meta)
     addInitialSchemas.call(this)
     opts.validateFormats = formatOpt
+
+    if (opts.coerceTypes && typeof opts.coerceNull === "undefined") opts.coerceNull = true
   }
 
   _addVocabularies(): void {
