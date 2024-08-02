@@ -376,10 +376,10 @@ if (validate(data)) {
   for (const err of validate.errors as DefinedError[]) {
     switch (err.keyword) {
       case "maximum":
-        console.log(err.limit)
+        console.log(err.params.limit)
         break
       case "pattern":
-        console.log(err.pattern)
+        console.log(err.params.pattern)
         break
       // ...
     }
