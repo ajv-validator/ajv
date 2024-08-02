@@ -75,7 +75,7 @@ export function getFullPath(resolver: UriResolver, id = "", normalize?: boolean)
 
 export function _getFullPath(resolver: UriResolver, p: URIComponent): string {
   const serialized = resolver.serialize(p)
-  return serialized.split("#")[0] + "#"
+  return serialized.split("#", 1)[0] + "#"
 }
 
 const TRAILING_SLASH_HASH = /#\/?$/
