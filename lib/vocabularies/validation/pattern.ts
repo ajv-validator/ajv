@@ -24,7 +24,7 @@ const def: CodeKeywordDefinition = {
         try {
           return new RegExp(${schemaCode}, ${u})
         } catch (e) {
-          throw new Error('Invalid regular expression: ' + ${schemaCode} + ' at ' + ${it.errSchemaPath})
+          throw new Error(e.message + ' | pattern ' + ${schemaCode} + ' at ' + ${it.errSchemaPath})
         }
       })()`
       : usePattern(cxt, schema)

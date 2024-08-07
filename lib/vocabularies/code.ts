@@ -100,7 +100,7 @@ export function usePattern({gen, it: {opts, errSchemaPath}}: KeywordCxt, pattern
   try {
     rx = new RegExp(pattern, u)
   } catch (e) {
-    throw new Error(`Invalid regular expression: ${pattern} at ${errSchemaPath}`)
+    throw new Error(`${(e as Error).message} | pattern ${pattern} at ${errSchemaPath}`)
   }
   rx = regExp(pattern, u)
 

@@ -13,7 +13,10 @@ describe("Invalid regexp patterns should throw more informative errors (issue #2
     assert.throws(
       () => ajv.compile(rootSchema),
       (thrown: unknown) => {
-        assert.equal((thrown as Error).message, "Invalid regular expression: ^[0-9]{2-4} at #")
+        assert.equal(
+          (thrown as Error).message,
+          "Invalid regular expression: /^[0-9]{2-4}/: Incomplete quantifier | pattern ^[0-9]{2-4} at #"
+        )
         return true
       }
     )
@@ -30,7 +33,7 @@ describe("Invalid regexp patterns should throw more informative errors (issue #2
       (thrown: unknown) => {
         assert.equal(
           (thrown as Error).message,
-          "Invalid regular expression: ^[0-9]{2-4} at #/properties/foo"
+          "Invalid regular expression: /^[0-9]{2-4}/: Incomplete quantifier | pattern ^[0-9]{2-4} at #/properties/foo"
         )
         return true
       }
@@ -52,7 +55,7 @@ describe("Invalid regexp patterns should throw more informative errors (issue #2
       (thrown: unknown) => {
         assert.equal(
           (thrown as Error).message,
-          "Invalid regular expression: ^[0-9]{2-4} at #/properties/string"
+          "Invalid regular expression: /^[0-9]{2-4}/: Incomplete quantifier | pattern ^[0-9]{2-4} at #/properties/string"
         )
         return true
       }
