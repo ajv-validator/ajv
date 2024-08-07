@@ -1,7 +1,7 @@
 import _Ajv from "../ajv2020"
 import * as assert from "assert"
 
-describe.only("Invalid regexp patterns should throw more informative errors (issue #2477)", () => {
+describe("Invalid regexp patterns should throw more informative errors (issue #2477)", () => {
   it("throws with pattern and schema path", () => {
     const ajv = new _Ajv()
 
