@@ -98,11 +98,10 @@ export function usePattern({gen, it: {opts, errSchemaPath}}: KeywordCxt, pattern
 
   let rx: RegExpLike
   try {
-    rx = new RegExp(pattern, u)
+    rx = regExp(pattern, u)
   } catch (e) {
     throw new Error(`${(e as Error).message} | pattern ${pattern} at ${errSchemaPath}`)
   }
-  rx = regExp(pattern, u)
 
   return gen.scopeValue("pattern", {
     key: rx.toString(),
