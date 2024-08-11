@@ -229,7 +229,11 @@ function serializeString({gen, data}: SerializeCxt): void {
 }
 
 function serializeNumber({gen, data}: SerializeCxt): void {
-  gen.add(N.json, _`"" + ${data}`)
+  gen.if(
+    _`${data} === Infinity || ${data} === -Infinity || Number.isNaN(${data})`,
+    () => gen.add(N.json, _`null`),
+    () => gen.add(N.json, _`"" + ${data}`)
+  )
 }
 
 function serializeRef(cxt: SerializeCxt): void {

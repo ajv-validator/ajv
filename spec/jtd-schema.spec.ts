@@ -146,6 +146,19 @@ describe("JSON Type Definition", () => {
     }
   })
 
+  describe("serialize special numeric values", () => {
+    const ajv = new _AjvJTD()
+
+    it(`should serialize Infinity to null`, () => {
+      const serialize = ajv.compileSerializer({type: "float64"})
+      assert.deepStrictEqual(JSON.parse(serialize(Infinity)), null)
+    })
+    it(`should serialize NaN to null`, () => {
+      const serialize = ajv.compileSerializer({type: "float64"})
+      assert.deepStrictEqual(JSON.parse(serialize(NaN)), null)
+    })
+  })
+
   describe("parse", () => {
     let ajv: AjvJTD
     before(() => (ajv = new _AjvJTD()))
