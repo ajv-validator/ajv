@@ -204,6 +204,14 @@ Defines how date-time strings are parsed and validated. By default Ajv only allo
 This option makes JTD validation and parsing more permissive and non-standard. The date strings without time part will be accepted by Ajv, but will be rejected by other JTD validators.
 :::
 
+### safeNumbers <Badge text="JTD only" />
+
+Defines how special case numbers, Infinity, -Infinity and NaN are handled. Use `safeNumbers: "null"` to serialize them to `null` which is correct behavior according to the JSON spec. If you wish to handle these values, however, and not lose the data you can use `safeNumbers: "string"` which will serialize them to strings. If this option is not set the values will be included as the original literal values.
+
+::: warning The default behavior can produce invalid JSON
+If `safeNumbers` is left undefined, the serializer will produce invalid JSON when there are any special case numbers in the data. This is, however, the fastest mode and so should be used unless you expect to encounter special case numbers.
+:::
+
 ### int32range <Badge text="JTD only" />
 
 Can be used to disable range checking for `int32` and `uint32` types.

@@ -146,16 +146,40 @@ describe("JSON Type Definition", () => {
     }
   })
 
-  describe("serialize special numeric values", () => {
-    const ajv = new _AjvJTD()
+  describe.only("serialize special numeric values to null", () => {
+    describe("to null", () => {
+      const ajv = new _AjvJTD({safeNumbers: "null"})
 
-    it(`should serialize Infinity to null`, () => {
-      const serialize = ajv.compileSerializer({type: "float64"})
-      assert.deepStrictEqual(JSON.parse(serialize(Infinity)), null)
+      it(`should serialize Infinity to null`, () => {
+        const serialize = ajv.compileSerializer({type: "float64"})
+        assert.deepStrictEqual(JSON.parse(serialize(Infinity)), null)
+      })
+      it(`should serialize -Infinity to null`, () => {
+        const serialize = ajv.compileSerializer({type: "float64"})
+        assert.deepStrictEqual(JSON.parse(serialize(-Infinity)), null)
+      })
+      it(`should serialize NaN to null`, () => {
+        const serialize = ajv.compileSerializer({type: "float64"})
+        assert.deepStrictEqual(JSON.parse(serialize(NaN)), null)
+      })
     })
-    it(`should serialize NaN to null`, () => {
-      const serialize = ajv.compileSerializer({type: "float64"})
-      assert.deepStrictEqual(JSON.parse(serialize(NaN)), null)
+
+    describe("to string", () => {
+      const ajv = new _AjvJTD({safeNumbers: "string"})
+
+      it(`should serialize Infinity to string`, () => {
+        const serialize = ajv.compileSerializer({type: "float64"})
+        console.log(serialize(Infinity))
+        assert.deepStrictEqual(JSON.parse(serialize(Infinity)), "Infinity")
+      })
+      it(`should serialize -Infinity to string`, () => {
+        const serialize = ajv.compileSerializer({type: "float64"})
+        assert.deepStrictEqual(JSON.parse(serialize(-Infinity)), "-Infinity")
+      })
+      it(`should serialize NaN to string`, () => {
+        const serialize = ajv.compileSerializer({type: "float64"})
+        assert.deepStrictEqual(JSON.parse(serialize(NaN)), "NaN")
+      })
     })
   })
 
