@@ -229,20 +229,15 @@ function serializeString({gen, data}: SerializeCxt): void {
 }
 
 function serializeNumber({gen, data, self}: SerializeCxt): void {
+  const condition = _`${data} === Infinity || ${data} === -Infinity || Number.isNaN(${data})`
+  const addNumber = (): CodeGen => gen.add(N.json, _`"" + ${data}`)
+
   if (self.opts.specialNumbers === "null") {
-    gen.if(
-      _`${data} === Infinity || ${data} === -Infinity || Number.isNaN(${data})`,
-      () => gen.add(N.json, _`null`),
-      () => gen.add(N.json, _`"" + ${data}`)
-    )
+    gen.if(condition, () => gen.add(N.json, _`null`), addNumber)
   } else if (self.opts.specialNumbers === "string") {
-    gen.if(
-      _`${data} === Infinity || ${data} === -Infinity || Number.isNaN(${data})`,
-      () => gen.add(N.json, str`"${data}"`),
-      () => gen.add(N.json, _`"" + ${data}`)
-    )
+    gen.if(condition, () => gen.add(N.json, str`"${data}"`), addNumber)
   } else {
-    gen.add(N.json, _`"" + ${data}`)
+    addNumber()
   }
 }
 
