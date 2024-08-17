@@ -107,7 +107,7 @@ export interface CurrentOptions {
   timestamp?: "string" | "date" // JTD only
   parseDate?: boolean // JTD only
   allowDate?: boolean // JTD only
-  safeNumbers?: "string" | "null" // JTD only
+  specialNumbers?: "string" | "null" // JTD only
   $comment?:
     | true
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)

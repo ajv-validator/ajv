@@ -170,7 +170,7 @@ describe("JSON Type Definition", () => {
       })
     })
     describe("to null", () => {
-      const ajv = new _AjvJTD({safeNumbers: "null"})
+      const ajv = new _AjvJTD({specialNumbers: "null"})
 
       it(`should serialize Infinity to null`, () => {
         const serialize = ajv.compileSerializer({type: "float64"})
@@ -193,7 +193,7 @@ describe("JSON Type Definition", () => {
     })
 
     describe("to string", () => {
-      const ajv = new _AjvJTD({safeNumbers: "string"})
+      const ajv = new _AjvJTD({specialNumbers: "string"})
 
       it(`should serialize Infinity to string`, () => {
         const serialize = ajv.compileSerializer({type: "float64"})

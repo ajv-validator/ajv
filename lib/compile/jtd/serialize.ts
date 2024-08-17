@@ -229,13 +229,13 @@ function serializeString({gen, data}: SerializeCxt): void {
 }
 
 function serializeNumber({gen, data, self}: SerializeCxt): void {
-  if (self.opts.safeNumbers === "null") {
+  if (self.opts.specialNumbers === "null") {
     gen.if(
       _`${data} === Infinity || ${data} === -Infinity || Number.isNaN(${data})`,
       () => gen.add(N.json, _`null`),
       () => gen.add(N.json, _`"" + ${data}`)
     )
-  } else if (self.opts.safeNumbers === "string") {
+  } else if (self.opts.specialNumbers === "string") {
     gen.if(
       _`${data} === Infinity || ${data} === -Infinity || Number.isNaN(${data})`,
       () => gen.add(N.json, str`"${data}"`),
