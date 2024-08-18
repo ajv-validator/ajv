@@ -212,7 +212,6 @@ Option values:
 
 - `"fast"` - (default): Do not treat special numbers differently to normal numbers. This is the fastest method but also can produce invalid JSON if the data contains special numbers.
 - `"null"` - Special numbers will be serialized to `null` which is the correct behavior according to the JSON spec and is also the same behavior as `JSON.stringify`.
-- `"string"` - Special numbers will be serialized as strings, for example `"Infinity"`. This, while non-standard behavior, will allow parsing of the data without losing what the original values were.
 
 ::: warning The default behavior can produce invalid JSON
 Using `specialNumbers: "fast" or undefined` can produce invalid JSON when there are any special case numbers in the data.

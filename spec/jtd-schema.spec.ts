@@ -191,29 +191,6 @@ describe("JSON Type Definition", () => {
         assert.equal(JSON.parse(res), null)
       })
     })
-
-    describe("to string", () => {
-      const ajv = new _AjvJTD({specialNumbers: "string"})
-
-      it(`should serialize Infinity to string`, () => {
-        const serialize = ajv.compileSerializer({type: "float64"})
-        const res = serialize(Infinity)
-        assert.equal(res, '"Infinity"')
-        assert.equal(JSON.parse(res), "Infinity")
-      })
-      it(`should serialize -Infinity to string`, () => {
-        const serialize = ajv.compileSerializer({type: "float64"})
-        const res = serialize(-Infinity)
-        assert.equal(res, '"-Infinity"')
-        assert.equal(JSON.parse(res), "-Infinity")
-      })
-      it(`should serialize NaN to string`, () => {
-        const serialize = ajv.compileSerializer({type: "float64"})
-        const res = serialize(NaN)
-        assert.equal(res, '"NaN"')
-        assert.equal(JSON.parse(res), "NaN")
-      })
-    })
   })
 
   describe("parse", () => {

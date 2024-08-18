@@ -233,17 +233,11 @@ function serializeNumber({gen, data, self}: SerializeCxt): void {
 
   if (self.opts.specialNumbers === undefined || self.opts.specialNumbers === "fast") {
     gen.add(N.json, _`"" + ${data}`)
-  } else if (self.opts.specialNumbers === "null") {
+  } else {
+    // specialNumbers === "null"
     gen.if(
       condition,
       () => gen.add(N.json, _`null`),
-      () => gen.add(N.json, _`"" + ${data}`)
-    )
-  } else {
-    // specialNumbers === "string"
-    gen.if(
-      condition,
-      () => gen.add(N.json, str`"${data}"`),
       () => gen.add(N.json, _`"" + ${data}`)
     )
   }
