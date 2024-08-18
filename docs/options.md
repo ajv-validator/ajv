@@ -206,10 +206,16 @@ This option makes JTD validation and parsing more permissive and non-standard. T
 
 ### specialNumbers <Badge text="JTD only" />
 
-Defines how special case numbers, Infinity, -Infinity and NaN are handled. Use `specialNumbers: "null"` to serialize them to `null` which is correct behavior according to the JSON spec. If you wish to handle these values, however, and not lose the data you can use `specialNumbers: "string"` which will serialize them to strings. If this option is not set the values will be included as the original literal values.
+Defines how special case numbers `Infinity`, `-Infinity` and `NaN` are handled.
+
+Option values:
+
+- `"fast"` - (default): Do not treat special numbers differently to normal numbers. This is the fastest method but also can produce invalid JSON if the data contains special numbers.
+- `"null"` - Special numbers will be serialized to `null` which is the correct behavior according to the JSON spec and is also the same behavior as `JSON.stringify`.
+- `"string"` - Special numbers will be serialized as strings, for example `"Infinity"`. This, while non-standard behavior, will allow parsing of the data without losing what the original values were.
 
 ::: warning The default behavior can produce invalid JSON
-If `specialNumbers` is left undefined, the serializer will produce invalid JSON when there are any special case numbers in the data. This is, however, the fastest mode and so should be used unless you expect to encounter special case numbers.
+Using `specialNumbers: "fast" or undefined` can produce invalid JSON when there are any special case numbers in the data.
 :::
 
 ### int32range <Badge text="JTD only" />

@@ -147,8 +147,8 @@ describe("JSON Type Definition", () => {
   })
 
   describe("serialize special numeric values", () => {
-    describe("default", () => {
-      const ajv = new _AjvJTD()
+    describe("fast", () => {
+      const ajv = new _AjvJTD({specialNumbers: "fast"})
 
       it(`should serialize Infinity to literal`, () => {
         const serialize = ajv.compileSerializer({type: "float64"})
