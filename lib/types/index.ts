@@ -1,4 +1,4 @@
-import * as URI from "uri-js"
+import * as URI from "uri-js-replace"
 import type {CodeGen, Code, Name, ScopeValueSets, ValueScopeName} from "../compile/codegen"
 import type {SchemaEnv, SchemaCxt, SchemaObjCxt} from "../compile"
 import type {JSONType} from "../compile/rules"
