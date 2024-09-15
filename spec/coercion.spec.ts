@@ -468,12 +468,40 @@ describe("Type coercion", () => {
     })
   })
 
-  function testRules(rules, cb) {
+  describe("coerceNull", () => {
+    beforeEach(() => {
+      ajv = new _Ajv({coerceTypes: true, coerceNull: false, verbose: true, allowUnionTypes: true})
+      fullAjv = new _Ajv({
+        coerceTypes: true,
+        coerceNull: false,
+        verbose: true,
+        allErrors: true,
+        allowUnionTypes: true,
+      })
+      instances = [ajv, fullAjv]
+    })
+
+    it("should not coerce null type", () => {
+      testRules(
+        coercionRules,
+        (test, schema, canCoerce) => {
+          instances.forEach((_ajv) => {
+            const valid = _ajv.validate(schema, test.from)
+            valid.should.equal(canCoerce)
+          })
+        },
+        false
+      )
+    })
+  })
+
+  function testRules(rules, cb, coerceNull = true) {
     for (const toType in rules) {
       for (const fromType in rules[toType]) {
         const tests = rules[toType][fromType]
         tests.forEach((test) => {
-          const canCoerce = test.to !== undefined
+          let canCoerce = test.to !== undefined
+          if (!coerceNull && test.from === null) canCoerce = false
           const schema = canCoerce
             ? Array.isArray(test.to)
               ? {type: toType, items: {type: fromType, enum: [test.to[0]]}}

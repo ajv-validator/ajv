@@ -51,6 +51,7 @@ const defaultOptions = {
   removeAdditional: false,
   useDefaults: false, // *
   coerceTypes: false, // *
+  coerceNull: true, // *
   // advanced options:
   meta: true,
   validateSchema: true,
@@ -300,6 +301,15 @@ Option values:
 - `false` (default) - no type coercion.
 - `true` - coerce scalar data types.
 - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
+
+### coerceNull
+
+Allows control over `null` type coercion when using the `coerceTypes` option. This can be particularly helpful when combining with `nullable` usage so these two can be used alongside each other.
+
+Option values:
+
+- `true` (default) - coerce `null` to the requested data type.
+- `false` - keep `null` type and don't coerce.
 
 ## Advanced options
 
