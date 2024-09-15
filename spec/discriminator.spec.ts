@@ -19,7 +19,7 @@ describe("discriminator keyword", function () {
   })
 
   function getAjvs(AjvClass: typeof AjvCore) {
-    return withStandalone(getAjvInstances(AjvClass, options, {discriminator: true}))
+    return withStandalone(getAjvInstances(AjvClass, options, {discriminator: {strict: false}}))
   }
 
   describe("validation", () => {
@@ -145,6 +145,57 @@ describe("discriminator keyword", function () {
       {definitions: definitions1, ...mainSchema1},
       {definitions: definitions2, ...mainSchema2},
     ]
+
+    it("should validate data", () => {
+      assertValid(schema, {foo: "x", a: "a"})
+      assertValid(schema, {foo: "y", b: "b"})
+      assertValid(schema, {foo: "z", b: "b"})
+      assertInvalid(schema, {})
+      assertInvalid(schema, {foo: 1})
+      assertInvalid(schema, {foo: "bar"})
+      assertInvalid(schema, {foo: "x", b: "b"})
+      assertInvalid(schema, {foo: "y", a: "a"})
+      assertInvalid(schema, {foo: "z", a: "a"})
+    })
+  })
+
+  describe("validation with referenced schemas and mapping", () => {
+    const definitions1 = {
+      schema1: {
+        properties: {
+          foo: {const: "x"},
+          a: {type: "string"},
+        },
+        required: ["foo", "a"],
+      },
+      schema2: {
+        properties: {
+          foo: {enum: ["y", "z"]},
+          b: {type: "string"},
+        },
+        required: ["foo", "b"],
+      },
+    }
+    const mainSchema1 = {
+      type: "object",
+      discriminator: {
+        propertyName: "foo",
+        mapping: {
+          x: "#/definitions/schema1",
+          z: "#/definitions/schema2",
+        },
+      },
+      oneOf: [
+        {
+          $ref: "#/definitions/schema1",
+        },
+        {
+          $ref: "#/definitions/schema2",
+        },
+      ],
+    }
+
+    const schema = [{definitions: definitions1, ...mainSchema1}]
 
     it("should validate data", () => {
       assertValid(schema, {foo: "x", a: "a"})
