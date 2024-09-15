@@ -3,6 +3,7 @@ spec/json-typedef-spec
 .browser
 coverage
 dist
+dist-esm
 bundle
 .nyc_output
 spec/_json
