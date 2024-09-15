@@ -1,5 +1,5 @@
 {
-  "extends": "@ajv-validator/config",
+  "extends": "@ajv-validator/config/tsconfig.json",
   "include": ["lib"],
   "compilerOptions": {
     "outDir": "dist",
