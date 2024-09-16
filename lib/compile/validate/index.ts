@@ -181,7 +181,9 @@ function updateContext(it: SchemaObjCxt): void {
 }
 
 function checkAsyncSchema(it: SchemaObjCxt): void {
-  if (it.schema.$async && !it.schemaEnv.$async) throw new Error("async schema in sync schema")
+  if ((it.schema.$async || it.schema.metadata?.async) && !it.schemaEnv.$async) {
+    throw new Error("async schema in sync schema")
+  }
 }
 
 function commentKeyword({gen, schemaEnv, schema, errSchemaPath, opts}: SchemaObjCxt): void {

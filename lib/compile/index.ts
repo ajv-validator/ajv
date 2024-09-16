@@ -99,7 +99,7 @@ export class SchemaEnv implements SchemaEnvArgs {
     this.schemaPath = env.schemaPath
     this.localRefs = env.localRefs
     this.meta = env.meta
-    this.$async = schema?.$async
+    this.$async = schema?.$async ?? schema?.["metadata"]?.async
     this.refs = {}
   }
 }
