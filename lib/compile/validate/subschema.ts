@@ -113,6 +113,8 @@ export function extendSubschemaData(
 
   if (dataTypes) subschema.dataTypes = dataTypes
 
+  it.definedProperties = new Set([...it.definedProperties])
+
   function dataContextProps(_nextData: Name): void {
     subschema.data = _nextData
     subschema.dataLevel = it.dataLevel + 1

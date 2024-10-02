@@ -114,6 +114,7 @@ interface _KeywordDef {
   dependencies?: string[] // keywords that must be present in the same schema
   error?: KeywordErrorDefinition
   $dataError?: KeywordErrorDefinition
+  subschema?: boolean
 }
 
 export interface CodeKeywordDefinition extends _KeywordDef {

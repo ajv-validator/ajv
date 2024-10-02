@@ -8,6 +8,7 @@ const def: CodeKeywordDefinition = {
   keyword: "properties",
   type: "object",
   schemaType: "object",
+  before: "required",
   code(cxt: KeywordCxt) {
     const {gen, schema, parentSchema, data, it} = cxt
     if (it.opts.removeAdditional === "all" && parentSchema.additionalProperties === undefined) {

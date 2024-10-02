@@ -7,6 +7,7 @@ const def: CodeKeywordDefinition = {
   keyword: "anyOf",
   schemaType: "array",
   trackErrors: true,
+  subschema: true,
   code: validateUnion,
   error: {message: "must match a schema in anyOf"},
 }
