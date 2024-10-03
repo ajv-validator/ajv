@@ -118,6 +118,7 @@ export interface CurrentOptions {
   loadSchema?: (uri: string) => Promise<AnySchemaObject>
   // options to modify validated data:
   removeAdditional?: boolean | "all" | "failing"
+  removeUnevaluated?: boolean
   useDefaults?: boolean | "empty"
   coerceTypes?: boolean | "array"
   // advanced options:
