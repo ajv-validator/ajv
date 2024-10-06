@@ -60,7 +60,7 @@ In this case you need to load Ajv using the correct bundle, depending on which s
 ```html
 <script src="bundle/ajvJTD.min.js"></script>
 <script>
-  ;(function () {
+  (function () {
     const Ajv = window.ajvJTD
     const ajv = new Ajv()
   })()
