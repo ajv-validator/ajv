@@ -29,6 +29,7 @@ const coercionRules = {
       {from: "1a", to: undefined},
       {from: "abc", to: undefined},
       {from: "", to: undefined},
+      {from: " ", to: undefined},
     ],
     boolean: [
       {from: false, to: 0},
@@ -49,6 +50,7 @@ const coercionRules = {
       {from: "1a", to: undefined},
       {from: "abc", to: undefined},
       {from: "", to: undefined},
+      {from: " ", to: undefined},
     ],
     boolean: [
       {from: false, to: 0},
