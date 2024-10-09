@@ -37,6 +37,8 @@ Object.defineProperty(exports, "__esModule", {value: true})
 
 export default Ajv
 
+export {Ajv}
+
 export {
   Format,
   FormatDefinition,
