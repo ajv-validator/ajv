@@ -39,7 +39,7 @@ ajv.addKeyword({
   keyword: "range",
   type: "number",
   schemaType: "array",
-  implements: "exclusiveRange",
+  implements: ["exclusiveRange"],
   compile: ([min, max], parentSchema) =>
     parentSchema.exclusiveRange === true
       ? (data) => data > min && data < max
