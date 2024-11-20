@@ -228,8 +228,19 @@ function serializeString({gen, data}: SerializeCxt): void {
   gen.add(N.json, _`${useFunc(gen, quote)}(${data})`)
 }
 
-function serializeNumber({gen, data}: SerializeCxt): void {
-  gen.add(N.json, _`"" + ${data}`)
+function serializeNumber({gen, data, self}: SerializeCxt): void {
+  const condition = _`${data} === Infinity || ${data} === -Infinity || ${data} !== ${data}`
+
+  if (self.opts.specialNumbers === undefined || self.opts.specialNumbers === "fast") {
+    gen.add(N.json, _`"" + ${data}`)
+  } else {
+    // specialNumbers === "null"
+    gen.if(
+      condition,
+      () => gen.add(N.json, _`null`),
+      () => gen.add(N.json, _`"" + ${data}`)
+    )
+  }
 }
 
 function serializeRef(cxt: SerializeCxt): void {
