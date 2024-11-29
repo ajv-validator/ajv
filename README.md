@@ -94,14 +94,14 @@ Ajv generates code to turn JSON Schemas into super-fast validation functions tha
 
 Currently Ajv is the fastest and the most standard compliant validator according to these benchmarks:
 
-- [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark) - 50% faster than the second place
-- [jsck benchmark](https://github.com/pandastrike/jsck#benchmarks) - 20-190% faster
+- [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark) - 30% faster than the second place
+- [jsck benchmark](https://github.com/pandastrike/jsck#benchmarks) - 30-190% faster
 - [z-schema benchmark](https://rawgit.com/zaggino/z-schema/master/benchmark/results.html)
 - [themis benchmark](https://cdn.rawgit.com/playlyfe/themis/master/benchmark/results.html)
 
 Performance of different validators by [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark):
 
-[![performance](https://chart.googleapis.com/chart?chxt=x,y&cht=bhs&chco=76A4FB&chls=2.0&chbh=62,4,1&chs=600x416&chxl=-1:|ajv|@exodus/schemasafe|is-my-json-valid|djv|@cfworker/json-schema|jsonschema/=t:100,69.2,51.5,13.1,5.1,1.2)](https://github.com/ebdrup/json-schema-benchmark/blob/master/README.md#performance)
+[![performance](https://chart.googleapis.com/chart?chxt=x,y&cht=bhs&chco=76A4FB&chls=2.0&chbh=62,4,1&chs=600x416&chxl=-1:|ajv|@exodus&#x2F;schemasafe|is-my-json-valid|djv|@cfworker&#x2F;json-schema|jsonschema&chd=t:100,69.2,51.5,13.1,5.1,1.2)](https://github.com/ebdrup/json-schema-benchmark/blob/master/README.md#performance)
 
 ## Features
 
