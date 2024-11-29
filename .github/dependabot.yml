@@ -24,3 +24,8 @@ updates:
     - 6.2.0
     - 6.3.0
     - 6.3.1
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule: 
+   interval: daily
+  open-pull-requests-limit: 10
