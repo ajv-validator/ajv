@@ -3,6 +3,7 @@
   "version": "8.17.1",
   "description": "Another JSON Schema Validator",
   "main": "dist/ajv.js",
+  "module": "dist/ajv.js",
   "types": "dist/ajv.d.ts",
   "files": [
     "lib/",
