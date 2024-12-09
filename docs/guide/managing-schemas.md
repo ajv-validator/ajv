@@ -88,7 +88,7 @@ app.post("/user", async (cxt) => {
 </code-group>
 
 ::: warning Use single Ajv instance
-It recommended to use a single Ajv instance for the whole application, so if you use validation in more than one module, you should:
+It is recommended to use a single Ajv instance for the whole application, so if you use validation in more than one module, you should:
 
 - require Ajv in a separate module responsible for validation
 - compile all validators there
