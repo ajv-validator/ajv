@@ -177,6 +177,11 @@ Include the reference to the part of the schema (`schema` and `parentSchema`) an
 
 Support [discriminator keyword](./json-schema.md#discriminator) from [OpenAPI specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.1.0.md).
 
+
+To bypass the validation exception 'discriminator: mapping is not supported', the following option can be set:
+
+```discriminator: { strict: false }```
+
 ### unicodeRegExp
 
 By default Ajv uses unicode flag "u" with "pattern" and "patternProperties", as per JSON Schema spec. See [RegExp.prototype.unicode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/unicode) .
