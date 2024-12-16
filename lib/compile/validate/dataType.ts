@@ -73,6 +73,10 @@ function coerceData(it: SchemaObjCxt, types: JSONType[], coerceTo: JSONType[]): 
     )
   }
   gen.if(_`${coerced} !== undefined`)
+  if (!opts.coerceNull) {
+    gen.elseIf(_`${data} === null`)
+    reportTypeError(it)
+  }
   for (const t of coerceTo) {
     if (COERCIBLE.has(t) || (t === "array" && opts.coerceTypes === "array")) {
       coerceSpecificType(t)
