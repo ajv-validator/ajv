@@ -30,7 +30,11 @@ export type DependenciesError = ErrorObject<
 export const error: KeywordErrorDefinition = {
   message: ({params: {property, depsCount, deps}}) => {
     const property_ies = depsCount === 1 ? "property" : "properties"
-    return str`must have ${property_ies} ${deps} when property ${property} is present`
+    const quotedDeps = (deps as string)
+      .split(", ")
+      .map((v) => `'${v}'`)
+      .join(", ")
+    return str`must have ${property_ies} ${quotedDeps} when property '${property}' is present`
   },
   params: ({params: {property, depsCount, deps, missingProperty}}) =>
     _`{property: ${property},
