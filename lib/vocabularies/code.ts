@@ -1,4 +1,4 @@
-import type {AnySchema, SchemaMap} from "../types"
+import type {AnySchema, RegExpLike, SchemaMap} from "../types"
 import type {SchemaCxt} from "../compile"
 import type {KeywordCxt} from "../compile/validate"
 import {CodeGen, _, and, or, not, nil, strConcat, getProperty, Code, Name} from "../compile/codegen"
@@ -92,10 +92,16 @@ export function callValidateCode(
 
 const newRegExp = _`new RegExp`
 
-export function usePattern({gen, it: {opts}}: KeywordCxt, pattern: string): Name {
+export function usePattern({gen, it: {opts, errSchemaPath}}: KeywordCxt, pattern: string): Name {
   const u = opts.unicodeRegExp ? "u" : ""
   const {regExp} = opts.code
-  const rx = regExp(pattern, u)
+
+  let rx: RegExpLike
+  try {
+    rx = regExp(pattern, u)
+  } catch (e) {
+    throw new Error(`${(e as Error).message} | pattern ${pattern} at ${errSchemaPath}`)
+  }
 
   return gen.scopeValue("pattern", {
     key: rx.toString(),
