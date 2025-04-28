@@ -71,7 +71,7 @@ Draft-2019-09 support is provided via a separate export in order to avoid increa
 With this import Ajv supports the following features:
 
 - keywords [`unevaluatedProperties`](../json-schema.md#unevaluatedproperties) and [`unevaluatedItems`](../json-schema.md#unevaluateditems)
-- keywords [`dependentRequired`](../json-schema.md#dependentrequired), [`dependentSchemas`](../json-schema.md#dependentschemas), [`maxContains`/`minContain`](../json-schema.md#maxcontains--mincontains)
+- keywords [`dependentRequired`](../json-schema.md#dependentrequired), [`dependentSchemas`](../json-schema.md#dependentschemas), [`maxContains`/`minContains`](../json-schema.md#maxcontains-mincontains)
 - dynamic recursive references with [`recursiveAnchor`/`recursiveReference`] - see [Extending recursive schemas](./combining-schemas.md#extending-recursive-schemas)
 - draft-2019-09 meta-schema is the default.
 

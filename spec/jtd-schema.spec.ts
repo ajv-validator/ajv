@@ -146,6 +146,53 @@ describe("JSON Type Definition", () => {
     }
   })
 
+  describe("serialize special numeric values", () => {
+    describe("fast", () => {
+      const ajv = new _AjvJTD({specialNumbers: "fast"})
+
+      it(`should serialize Infinity to literal`, () => {
+        const serialize = ajv.compileSerializer({type: "float64"})
+        const res = serialize(Infinity)
+        assert.equal(res, "Infinity")
+        assert.throws(() => JSON.parse(res))
+      })
+      it(`should serialize -Infinity to literal`, () => {
+        const serialize = ajv.compileSerializer({type: "float64"})
+        const res = serialize(-Infinity)
+        assert.equal(res, "-Infinity")
+        assert.throws(() => JSON.parse(res))
+      })
+      it(`should serialize NaN to literal`, () => {
+        const serialize = ajv.compileSerializer({type: "float64"})
+        const res = serialize(NaN)
+        assert.equal(res, "NaN")
+        assert.throws(() => JSON.parse(res))
+      })
+    })
+    describe("to null", () => {
+      const ajv = new _AjvJTD({specialNumbers: "null"})
+
+      it(`should serialize Infinity to null`, () => {
+        const serialize = ajv.compileSerializer({type: "float64"})
+        const res = serialize(Infinity)
+        assert.equal(res, "null")
+        assert.equal(JSON.parse(res), null)
+      })
+      it(`should serialize -Infinity to null`, () => {
+        const serialize = ajv.compileSerializer({type: "float64"})
+        const res = serialize(-Infinity)
+        assert.equal(res, "null")
+        assert.equal(JSON.parse(res), null)
+      })
+      it(`should serialize NaN to null`, () => {
+        const serialize = ajv.compileSerializer({type: "float64"})
+        const res = serialize(NaN)
+        assert.equal(res, "null")
+        assert.equal(JSON.parse(res), null)
+      })
+    })
+  })
+
   describe("parse", () => {
     let ajv: AjvJTD
     before(() => (ajv = new _AjvJTD()))
