@@ -129,6 +129,16 @@ describe("standalone code generation", () => {
         assert.strictEqual(Object.keys(m).length, 2)
         testExports(m)
       })
+
+      it("should generate module code with all exports when noCache option enabled", () => {
+        ajv = new _Ajv({code: {source: true}, noCache: true})
+        ajv.addSchema(numSchema, "validateNumber")
+        ajv.addSchema(strSchema, "validateString")
+        const moduleCode = standaloneCode(ajv)
+        const m = requireFromString(moduleCode)
+        assert.strictEqual(Object.keys(m).length, 2)
+        testExports(m)
+      })
     })
 
     function testExports(m: {[n: string]: AnyValidateFunction<unknown>}) {

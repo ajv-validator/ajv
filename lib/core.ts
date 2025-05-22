@@ -130,6 +130,7 @@ export interface CurrentOptions {
   defaultMeta?: string | AnySchemaObject
   validateSchema?: boolean | "log"
   addUsedSchema?: boolean
+  noCache?: boolean
   inlineRefs?: boolean | number
   passContext?: boolean
   loopRequired?: number
@@ -488,8 +489,7 @@ export default class Ajv {
     }
     key = normalizeId(key || id)
     this._checkUnique(key)
-    const keyIsUnset = !key
-    this.schemas[key] = this._addSchema(schema, _meta, key, _validateSchema, true, keyIsUnset)
+    this.schemas[key] = this._addSchema(schema, _meta, key, _validateSchema, true)
     return this
   }
 
@@ -703,7 +703,7 @@ export default class Ajv {
     baseId?: string,
     validateSchema = this.opts.validateSchema,
     addSchema = this.opts.addUsedSchema,
-    cacheSchema = true
+    noCache = this.opts.noCache
   ): SchemaEnv {
     let id: string | undefined
     const {schemaId} = this.opts
@@ -713,14 +713,14 @@ export default class Ajv {
       if (this.opts.jtd) throw new Error("schema must be object")
       else if (typeof schema != "boolean") throw new Error("schema must be object or boolean")
     }
-    let sch = this._cache.get(schema) ?? (baseId ? this.schemas[baseId] : undefined)
+    let sch = this._cache.get(schema) ?? this.schemas[normalizeId(baseId || id)]
     if (sch !== undefined) return sch
 
     baseId = normalizeId(id || baseId)
     const localRefs = getSchemaRefs.call(this, schema, baseId)
     sch = new SchemaEnv({schema, schemaId, meta, baseId, localRefs})
-    if (cacheSchema) this._cache.set(sch.schema, sch)
-    if (addSchema && !baseId.startsWith("#")) {
+    if (!noCache) this._cache.set(sch.schema, sch)
+    if (!noCache && addSchema && !baseId.startsWith("#")) {
       // TODO atm it is allowed to overwrite schemas without id (instead of not adding them)
       if (baseId) this._checkUnique(baseId)
       this.refs[baseId] = sch

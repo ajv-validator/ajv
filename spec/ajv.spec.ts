@@ -37,6 +37,18 @@ describe("Ajv", () => {
       v1.should.equal(v2)
     })
 
+    it("should not cache compiled functions for the same schema when opt.noCache", () => {
+      ajv = new _Ajv({keywords: ["foo"], allowUnionTypes: true, noCache: true})
+      const schema = {
+        $id: "//e.com/int.json",
+        type: "integer",
+        minimum: 1,
+      }
+      const v1 = ajv.compile(schema)
+      const v2 = ajv.compile(schema)
+      v1.should.not.equal(v2)
+    })
+
     it("should throw if different schema has the same id", () => {
       ajv.compile({$id: "//e.com/int.json", type: "integer"})
       should.throw(() => {
@@ -313,9 +325,8 @@ describe("Ajv", () => {
       const v = ajv.getSchema("int")
       assert(typeof v == "function")
       v.should.be.a("function")
-
       //@ts-expect-error
-      should.not.exist(ajv._cache.get(schema))
+      ajv._cache.get(schema).validate.should.equal(v)
 
       ajv.removeSchema("int")
       should.not.exist(ajv.getSchema("int"))
@@ -330,6 +341,8 @@ describe("Ajv", () => {
       const v = ajv.getSchema("//e.com/int.json")
       assert(typeof v == "function")
       v.should.be.a("function")
+      //@ts-expect-error
+      ajv._cache.get(schema).validate.should.equal(v)
 
       ajv.removeSchema("//e.com/int.json")
       should.not.exist(ajv.getSchema("//e.com/int.json"))
@@ -338,17 +351,20 @@ describe("Ajv", () => {
     })
 
     it("should remove schema by schema object", () => {
-      const schema = {$id: "//e.com/object_test.json", type: "integer"}
+      const schema = {type: "integer"}
       ajv.addSchema(schema)
+      //@ts-expect-error
+      ajv._cache.get(schema).should.be.an("object")
       ajv.removeSchema(schema)
       //@ts-expect-error
       should.not.exist(ajv._cache.get(schema))
-      should.not.exist(ajv.getSchema("//e.com/object_test.json"))
     })
 
     it("should remove schema with id by schema object", () => {
       const schema = {$id: "//e.com/int.json", type: "integer"}
       ajv.addSchema(schema)
+      //@ts-expect-error
+      ajv._cache.get(schema).should.be.an("object")
       ajv.removeSchema(schema)
       should.not.exist(ajv.getSchema("//e.com/int.json"))
       //@ts-expect-error
@@ -365,7 +381,8 @@ describe("Ajv", () => {
     it("should remove all schemas but meta-schemas if called without an arguments", () => {
       const schema1 = {$id: "//e.com/int.json", type: "integer"}
       ajv.addSchema(schema1)
-      ajv.getSchema("//e.com/int.json")!.should.be.an("function")
+      //@ts-expect-error
+      ajv._cache.get(schema1).should.be.an("object")
 
       const schema2 = {type: "integer"}
       ajv.addSchema(schema2)
@@ -373,7 +390,8 @@ describe("Ajv", () => {
       ajv._cache.get(schema2).should.be.an("object")
 
       ajv.removeSchema()
-      should.not.exist(ajv.getSchema("//e.com/int.json"))
+      //@ts-expect-error
+      should.not.exist(ajv._cache.get(schema1))
       //@ts-expect-error
       should.not.exist(ajv._cache.get(schema2))
     })
@@ -381,12 +399,13 @@ describe("Ajv", () => {
     it("should remove all schemas but meta-schemas with key/id matching pattern", () => {
       const schema1 = {$id: "//e.com/int.json", type: "integer"}
       ajv.addSchema(schema1)
-      ajv.getSchema("//e.com/int.json")!.should.be.an("function")
+      //@ts-expect-error
+      ajv._cache.get(schema1).should.be.an("object")
 
       const schema2 = {$id: "str.json", type: "string"}
       ajv.addSchema(schema2, "//e.com/str.json")
       //@ts-expect-error
-      ajv.getSchema("//e.com/str.json").should.be.an("function")
+      ajv._cache.get(schema2).should.be.an("object")
 
       const schema3 = {type: "integer"}
       ajv.addSchema(schema3)
@@ -394,11 +413,8 @@ describe("Ajv", () => {
       ajv._cache.get(schema3).should.be.an("object")
 
       ajv.removeSchema(/e\.com/)
-      should.not.exist(ajv.getSchema("//e.com/int.json"))
       //@ts-expect-error
       should.not.exist(ajv._cache.get(schema1))
-
-      should.not.exist(ajv.getSchema("//e.com/str.json"))
       //@ts-expect-error
       should.not.exist(ajv._cache.get(schema2))
       //@ts-expect-error
