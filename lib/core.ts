@@ -488,7 +488,8 @@ export default class Ajv {
     }
     key = normalizeId(key || id)
     this._checkUnique(key)
-    this.schemas[key] = this._addSchema(schema, _meta, key, _validateSchema, true, false)
+    const keyIsUnset = !key
+    this.schemas[key] = this._addSchema(schema, _meta, key, _validateSchema, true, keyIsUnset)
     return this
   }
 
