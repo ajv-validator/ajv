@@ -488,7 +488,7 @@ export default class Ajv {
     }
     key = normalizeId(key || id)
     this._checkUnique(key)
-    this.schemas[key] = this._addSchema(schema, _meta, key, _validateSchema, true)
+    this.schemas[key] = this._addSchema(schema, _meta, key, _validateSchema, true, false)
     return this
   }
 
@@ -701,7 +701,8 @@ export default class Ajv {
     meta?: boolean,
     baseId?: string,
     validateSchema = this.opts.validateSchema,
-    addSchema = this.opts.addUsedSchema
+    addSchema = this.opts.addUsedSchema,
+    cacheSchema = true
   ): SchemaEnv {
     let id: string | undefined
     const {schemaId} = this.opts
@@ -711,13 +712,13 @@ export default class Ajv {
       if (this.opts.jtd) throw new Error("schema must be object")
       else if (typeof schema != "boolean") throw new Error("schema must be object or boolean")
     }
-    let sch = this._cache.get(schema)
+    let sch = this._cache.get(schema) ?? (baseId ? this.schemas[baseId] : undefined)
     if (sch !== undefined) return sch
 
     baseId = normalizeId(id || baseId)
     const localRefs = getSchemaRefs.call(this, schema, baseId)
     sch = new SchemaEnv({schema, schemaId, meta, baseId, localRefs})
-    this._cache.set(sch.schema, sch)
+    if (cacheSchema) this._cache.set(sch.schema, sch)
     if (addSchema && !baseId.startsWith("#")) {
       // TODO atm it is allowed to overwrite schemas without id (instead of not adding them)
       if (baseId) this._checkUnique(baseId)
