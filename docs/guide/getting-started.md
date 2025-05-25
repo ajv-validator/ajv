@@ -105,7 +105,7 @@ Every time a validation function (or `ajv.validate`) is called the `errors` prop
 
 Ajv can compile efficient parsers and serializers from [JSON Type Definition](../json-type-definition) schemas.
 
-Serializing the data with a function specialized to your data shape can be more than 10x compared with `JSON.stringify`.
+Serializing the data with a function specialized to your data shape can be more than 10x faster compared with `JSON.stringify`.
 
 Parsing the data replaces the need for separate validation after generic parsing with `JSON.parse` (although validation itself is usually much faster than parsing). In case your JSON string is valid, the specialized parsing is approximately as fast as JSON.parse, but in case your JSON is invalid, the specialized parsing would fail much faster - so it can be very efficient in some scenarios.
 
