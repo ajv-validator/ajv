@@ -119,9 +119,9 @@ console.log(parseMyData.message) // property x not allowed
 
 ### ajv.compileAsync(schema: object, meta?: boolean): Promise < Function >
 
-Asynchronous version of `compile` method that loads missing remote schemas using asynchronous function in `options.loadSchema`. This function returns a Promise that resolves to a validation function. An optional callback passed to `compileAsync` will be called with 2 parameters: error (or null) and validating function. The returned promise will reject (and the callback will be called with an error) when:
+Asynchronous version of `compile` method that loads missing remote schemas using asynchronous function in `options.loadSchema` (optionally in parallel when `enableParallelLoading` is set to `true`). This function returns a `Promise` that resolves to a validation function. An optional callback passed to `compileAsync` will be called with 2 parameters: error (or `null`) and validating function. The returned promise will reject (and the callback will be called with an error) when:
 
-- missing schema can't be loaded (`loadSchema` returns a Promise that rejects).
+- missing schema can't be loaded (`loadSchema` returns a `Promise` that rejects).
 - a schema containing a missing reference is loaded, but the reference cannot be resolved.
 - schema (or some loaded/referenced schema) is invalid.
 

@@ -47,6 +47,7 @@ const defaultOptions = {
   schemas: {},
   logger: undefined,
   loadSchema: undefined, // *, function(uri: string): Promise {}
+  enableParallelLoading: false,
   // options to modify validated data:
   removeAdditional: false,
   useDefaults: false, // *
@@ -263,6 +264,10 @@ Option values:
 ### loadSchema
 
 Asynchronous function that will be used to load remote schemas when `compileAsync` [method](#api-compileAsync) is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept remote schema uri as a parameter and return a Promise that resolves to a schema. See example in [Asynchronous compilation](./guide/managing-schemas.md#asynchronous-schema-compilation).
+
+### enableParallelLoading
+
+If `true`, `Ajv` will pre-load external `$ref` targets during `compileAsync` by calling `loadSchema` in parallel. Default is `false` to keep the legacy sequential loading behavior for backward compatibility.
 
 ## Options to modify validated data
 

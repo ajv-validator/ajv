@@ -58,10 +58,11 @@ import MissingRefError from "./compile/ref_error"
 import {getRules, ValidationRules, Rule, RuleGroup, JSONType} from "./compile/rules"
 import {SchemaEnv, compileSchema, resolveSchema} from "./compile"
 import {Code, ValueScope} from "./compile/codegen"
-import {normalizeId, getSchemaRefs} from "./compile/resolve"
+import {normalizeId, getFullPath, resolveUrl, getSchemaRefs} from "./compile/resolve"
 import {getJSONTypes} from "./compile/validate/dataType"
 import {eachItem} from "./compile/util"
 import * as $dataRefSchema from "./refs/data.json"
+import * as traverse from "json-schema-traverse"
 
 import DefaultUriResolver from "./runtime/uri"
 
@@ -84,6 +85,8 @@ const EXT_SCOPE_NAMES = new Set([
   "obj",
   "Error",
 ])
+
+const REF_KEYS = ["$ref", "$recursiveRef", "$dynamicRef"] as const
 
 export type Options = CurrentOptions & DeprecatedOptions
 
@@ -116,6 +119,7 @@ export interface CurrentOptions {
   schemas?: AnySchema[] | {[Key in string]?: AnySchema}
   logger?: Logger | false
   loadSchema?: (uri: string) => Promise<AnySchemaObject>
+  enableParallelLoading?: boolean
   // options to modify validated data:
   removeAdditional?: boolean | "all" | "failing"
   useDefaults?: boolean | "empty"
@@ -424,6 +428,9 @@ export default class Ajv {
     ): Promise<AnyValidateFunction> {
       await loadMetaSchema.call(this, _schema.$schema)
       const sch = this._addSchema(_schema, _meta)
+      if (this.opts.enableParallelLoading) {
+        await preloadExternalSchemas.call(this, sch, _meta)
+      }
       return sch.validate || _compileAsync.call(this, sch)
     }
 
@@ -463,6 +470,42 @@ export default class Ajv {
         return await (this._loading[ref] = loadSchema(ref))
       } finally {
         delete this._loading[ref]
+      }
+    }
+
+    async function preloadExternalSchemas(
+      this: Ajv,
+      sch: SchemaEnv,
+      _meta?: boolean
+    ): Promise<void> {
+      const seen = new Set<string>()
+      let pending = collectMissingExternalRefs.call(this, sch.schema, sch.baseId, seen)
+      while (pending.length) {
+        const refs = pending
+        pending = []
+        const results = await Promise.allSettled(refs.map((ref) => _loadSchema.call(this, ref)))
+        const errors: {ref: string; error: unknown}[] = []
+
+        for (let i = 0; i < results.length; i++) {
+          const result = results[i]
+          const ref = refs[i]
+          if (result.status === "rejected") {
+            errors.push({ref, error: result.reason})
+            continue
+          }
+          const _schema = result.value
+          if (!this.refs[ref]) await loadMetaSchema.call(this, _schema.$schema)
+          if (!this.refs[ref]) this.addSchema(_schema, ref, _meta)
+          const schemaBaseId =
+            typeof _schema == "object"
+              ? normalizeId(_schema[this.opts.schemaId] || ref)
+              : normalizeId(ref)
+          pending.push(...collectMissingExternalRefs.call(this, _schema, schemaBaseId, seen))
+        }
+
+        if (errors.length) {
+          throw aggregateLoadErrors(errors)
+        }
       }
     }
   }
@@ -756,6 +799,55 @@ export default class Ajv {
 export interface ErrorsTextOptions {
   separator?: string
   dataVar?: string
+}
+
+function collectMissingExternalRefs(
+  this: Ajv,
+  schema: AnySchema,
+  baseId: string,
+  seen: Set<string>
+): string[] {
+  if (typeof schema != "object") return []
+  const {schemaId, uriResolver} = this.opts
+  const missing: string[] = []
+  const baseIds: {[key: string]: string | undefined} = {
+    "": normalizeId(schema[schemaId] || baseId),
+  }
+
+  traverse(schema, {allKeys: true}, (sch, jsonPtr, _, parentJsonPtr) => {
+    if (parentJsonPtr === undefined) return
+    if (typeof sch != "object") return
+    let innerBaseId = baseIds[parentJsonPtr] ?? baseIds[""] ?? ""
+    if (typeof sch[schemaId] == "string") {
+      innerBaseId = normalizeId(
+        innerBaseId ? uriResolver.resolve(innerBaseId, sch[schemaId]) : sch[schemaId]
+      )
+    }
+    baseIds[jsonPtr] = innerBaseId
+
+    for (const refKey of REF_KEYS) {
+      const ref = sch[refKey]
+      if (typeof ref != "string") continue
+      const fullRef = resolveUrl(uriResolver, innerBaseId, ref)
+      const refSchema = normalizeId(getFullPath(uriResolver, fullRef))
+      if (!refSchema) continue
+      if (this.refs[refSchema] || this.schemas[refSchema]) continue
+      if (seen.has(refSchema)) continue
+      seen.add(refSchema)
+      missing.push(refSchema)
+    }
+  })
+
+  return missing
+}
+
+function aggregateLoadErrors(errors: {ref: string; error: unknown}[]): Error {
+  const message = `Failed to load ${errors.length} schema reference(s): ${errors
+    .map(({ref}) => ref)
+    .join(", ")}`
+  const err = new Error(message) as Error & {errors?: {ref: string; error: unknown}[]}
+  err.errors = errors
+  return err
 }
 
 function checkOptions(

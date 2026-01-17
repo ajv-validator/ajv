@@ -228,7 +228,7 @@ The above is possible because when the schema has `$id` attribute `compile` meth
 
 There are cases when you need to have a large collection of schemas stored in some database or on the remote server. In this case you are likely to use schema `$id` as some resource identifier to retrieve it - either network URI or database ID.
 
-You can use `compileAsync` [method](./api.md#api-compileAsync) to asynchronously load the schemas as they are compiled, loading the schemas that are referenced from compiled schemas on demand. Ajv itself does not do any IO operations, it uses the function you supply via `loadSchema` [option](./api.md#options) to load schema from the passed ID. This function should return `Promise` that resolves to the schema (you can use async function, as in the example).
+You can use `compileAsync` [method](./api.md#api-compileAsync) to asynchronously load the schemas as they are compiled, loading the schemas that are referenced from compiled schemas on demand. Ajv itself does not do any IO operations, it uses the function you supply via `loadSchema` [option](./api.md#options) to load schema from the passed ID. This function should return `Promise` that resolves to the schema (you can use async function, as in the example). To preload external references in **parallel**, pass `enableParallelLoading: true`.
 
 Example:
 
