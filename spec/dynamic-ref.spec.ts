@@ -43,6 +43,32 @@ describe("recursiveRef and dynamicRef", () => {
   })
 
   describe("dynamicRef", () => {
+    it("should resolve $dynamicRef to $dynamicAnchor in $defs", () => {
+      // This test demonstrates the bug: $dynamicAnchor in $defs is not found by $dynamicRef
+      // because schemas in $defs are only compiled when referenced by $ref
+      const schema = {
+        type: "object",
+        properties: {
+          test: {$dynamicRef: "#meta"},
+        },
+        $defs: {
+          schema: {
+            $dynamicAnchor: "meta",
+            type: ["object", "boolean"],
+          },
+        },
+      }
+
+      ajvs.forEach((ajv) => {
+        const validate = ajv.compile(schema)
+        // $dynamicRef should resolve to the $defs/schema which allows object or boolean
+        assert.strictEqual(validate({test: true}), true, "boolean should be valid")
+        assert.strictEqual(validate({test: {}}), true, "object should be valid")
+        assert.strictEqual(validate({test: "string"}), false, "string should be invalid")
+        assert.strictEqual(validate({test: 123}), false, "number should be invalid")
+      })
+    })
+
     it("should allow extending recursive schema with dynamicRef (future draft2020)", () => {
       const treeSchema = {
         $id: "https://example.com/tree",
