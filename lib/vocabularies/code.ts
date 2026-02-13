@@ -92,16 +92,21 @@ export function callValidateCode(
 
 const newRegExp = _`new RegExp`
 
-export function usePattern({gen, it: {opts}}: KeywordCxt, pattern: string): Name {
+export function usePattern({gen, it: {opts}}: KeywordCxt, pattern: string | Code): Code {
   const u = opts.unicodeRegExp ? "u" : ""
   const {regExp} = opts.code
-  const rx = regExp(pattern, u)
+  const regExpCode = regExp.code === "new RegExp" ? newRegExp : useFunc(gen, regExp)
 
-  return gen.scopeValue("pattern", {
-    key: rx.toString(),
-    ref: rx,
-    code: _`${regExp.code === "new RegExp" ? newRegExp : useFunc(gen, regExp)}(${pattern}, ${u})`,
-  })
+  if (typeof pattern == "string") {
+    const rx = regExp(pattern, u)
+    return gen.scopeValue("pattern", {
+      key: rx.toString(),
+      ref: rx,
+      code: _`${regExpCode}(${pattern}, ${u})`,
+    })
+  }
+
+  return _`${regExpCode}(${pattern}, ${u})`
 }
 
 export function validateArray(cxt: KeywordCxt): Name {

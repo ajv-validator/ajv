@@ -46,6 +46,30 @@ describe("code generation options", () => {
     })
   })
 
+  describe("regExp option", () => {
+    it("should use code.regExp for $data pattern values", () => {
+      const calls: {pattern: string; u: string}[] = []
+      const regExp: any = (pattern: string, u: string) => {
+        calls.push({pattern, u})
+        return {test: () => true}
+      }
+      regExp.code = "regExp"
+
+      const ajv = new _Ajv({$data: true, code: {regExp}})
+      const validate = ajv.compile({
+        type: "object",
+        properties: {
+          pattern: {type: "string"},
+          value: {type: "string", pattern: {$data: "1/pattern"}},
+        },
+      })
+
+      validate({pattern: "(", value: "abc"}).should.equal(true)
+      calls.should.have.length(1)
+      calls[0].pattern.should.equal("(")
+    })
+  })
+
   describe("passContext option", () => {
     let ajv: Ajv, contexts: any[]
 
