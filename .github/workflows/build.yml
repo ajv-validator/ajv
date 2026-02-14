@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 20.x, 21.x]
+        node-version: [18.x, 20.x, 21.x]
 
     steps:
       - uses: actions/checkout@v4
@@ -23,7 +23,7 @@ jobs:
       - run: npm install
       - run: git submodule update --init
       - name: update website
-        if: ${{ github.event_name == 'push' && matrix.node-version == '16.x' }}
+        if: ${{ github.event_name == 'push' && matrix.node-version == '18.x' }}
         run: ./scripts/publish-site
         env:
           GH_TOKEN_PUBLIC: ${{ secrets.GH_TOKEN_PUBLIC }}
