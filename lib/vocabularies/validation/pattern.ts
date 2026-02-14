@@ -18,16 +18,15 @@ const def: CodeKeywordDefinition = {
   $data: true,
   error,
   code(cxt: KeywordCxt) {
-    const {data, $data, schema, schemaCode, it} = cxt
+    const {gen, data, $data, schema, schemaCode, it} = cxt
     const u = it.opts.unicodeRegExp ? "u" : ""
     if ($data) {
-      const {gen} = cxt
       const {regExp} = it.opts.code
       const regExpCode = regExp.code === "new RegExp" ? _`new RegExp` : useFunc(gen, regExp)
       const valid = gen.let("valid")
       gen.try(
         () => gen.assign(valid, _`${regExpCode}(${schemaCode}, ${u}).test(${data})`),
-        (_e) => gen.assign(valid, false)
+        () => gen.assign(valid, false)
       )
       cxt.fail$data(_`!${valid}`)
     } else {

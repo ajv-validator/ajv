@@ -77,13 +77,7 @@ describe("CVE-2025-69873: ReDoS Attack Scenario", () => {
     const validate = ajv.compile(schema)
 
     // Various ReDoS-vulnerable patterns
-    const redosPatterns = [
-      "^(a+)+$",
-      "^(a|a)*$",
-      "^(a|ab)*$",
-      "(x+x+)+y",
-      "(a*)*b",
-    ]
+    const redosPatterns = ["^(a+)+$", "^(a|a)*$", "^(a|ab)*$", "(x+x+)+y", "(a*)*b"]
 
     for (const pattern of redosPatterns) {
       const start = Date.now()
@@ -134,7 +128,7 @@ describe("CVE-2025-69873: ReDoS Attack Scenario", () => {
 
     // Invalid regex patterns that RE2 rejects
     const invalidPatterns = [
-      "[invalid",      // Unclosed bracket
+      "[invalid", // Unclosed bracket
       "(?P<name>...)", // Perl-style named groups not supported
     ]
 
@@ -177,7 +171,6 @@ describe("CVE-2025-69873: ReDoS Attack Scenario", () => {
     const elapsed = Date.now() - start
 
     result.should.equal(false)
-    console.log(`\n  ✓ CVE-2025-69873 attack payload processed in ${elapsed}ms (safe: < 500ms)`)
     elapsed.should.be.below(500)
   })
 })
