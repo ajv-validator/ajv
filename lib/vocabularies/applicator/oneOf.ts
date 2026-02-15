@@ -4,20 +4,20 @@ import type {
   KeywordErrorDefinition,
   AnySchema,
 } from "../../types"
-import type { KeywordCxt } from "../../compile/validate"
-import { _, Name } from "../../compile/codegen"
-import { alwaysValidSchema, mergeEvaluated } from "../../compile/util"
-import { SchemaCxt } from "../../compile"
+import type {KeywordCxt} from "../../compile/validate"
+import {_, Name} from "../../compile/codegen"
+import {alwaysValidSchema, mergeEvaluated} from "../../compile/util"
+import {SchemaCxt} from "../../compile"
 
 export type OneOfError = ErrorObject<
   "oneOf",
-  { passingSchemas: [number, number] | null },
+  {passingSchemas: [number, number] | null},
   AnySchema[]
 >
 
 const error: KeywordErrorDefinition = {
   message: "must match exactly one schema in oneOf",
-  params: ({ params }) => _`{passingSchemas: ${params.passing}}`,
+  params: ({params}) => _`{passingSchemas: ${params.passing}}`,
 }
 
 const def: CodeKeywordDefinition = {
@@ -26,7 +26,7 @@ const def: CodeKeywordDefinition = {
   trackErrors: true,
   error,
   code(cxt: KeywordCxt) {
-    const { gen, schema, parentSchema, it } = cxt
+    const {gen, schema, parentSchema, it} = cxt
     /* istanbul ignore if */
     if (!Array.isArray(schema)) throw new Error("ajv implementation error")
     if (it.opts.discriminator && parentSchema.discriminator) return
@@ -34,7 +34,7 @@ const def: CodeKeywordDefinition = {
     const valid = gen.let("valid", false)
     const passing = gen.let("passing", null)
     const schValid = gen.name("_valid")
-    cxt.setParams({ passing })
+    cxt.setParams({passing})
     // TODO possibly fail straight away (with warning or exception) if there are two empty always valid schemas
 
     gen.block(validateOneOf)
@@ -108,4 +108,3 @@ const def: CodeKeywordDefinition = {
 }
 
 export default def
-
