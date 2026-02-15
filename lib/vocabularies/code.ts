@@ -63,7 +63,9 @@ export function noPropertyInData(
 }
 
 export function allSchemaProperties(schemaMap?: SchemaMap): string[] {
-  return schemaMap ? Object.keys(schemaMap).filter((p) => p !== "__proto__" && schemaMap[p] !== undefined) : []
+  return schemaMap
+    ? Object.keys(schemaMap).filter((p) => p !== "__proto__" && schemaMap[p] !== undefined)
+    : []
 }
 
 export function schemaProperties(it: SchemaCxt, schemaMap: SchemaMap): string[] {

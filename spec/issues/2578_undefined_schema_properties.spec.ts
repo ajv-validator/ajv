@@ -27,12 +27,12 @@ describe("issue #2578, undefined values in schemas should be ignored", () => {
         baz: {type: "number"},
       },
     }
-    
+
     // Valid data
     const data1 = {foo: "FOO", baz: 42}
     const valid1 = ajv.validate(schema, data1)
     valid1.should.equal(true)
-    
+
     // Invalid data (wrong type for foo)
     const data2: any = {foo: 123, baz: 42}
     const valid2 = ajv.validate(schema, data2)
@@ -63,7 +63,7 @@ describe("issue #2578, undefined values in schemas should be ignored", () => {
   it("should handle undefined properties from destructuring", () => {
     const ajv = new _Ajv({strictSchema: false, validateSchema: false})
     // Simulating a common scenario where properties come from destructuring
-    const optionalProp: any = (undefined as any)
+    const optionalProp: any = undefined as any
     const schema = {
       type: "object",
       properties: {
