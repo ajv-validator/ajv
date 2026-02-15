@@ -4,20 +4,20 @@ import type {
   KeywordErrorDefinition,
   AnySchema,
 } from "../../types"
-import type {KeywordCxt} from "../../compile/validate"
-import {_, Name} from "../../compile/codegen"
-import {alwaysValidSchema} from "../../compile/util"
-import {SchemaCxt} from "../../compile"
+import type { KeywordCxt } from "../../compile/validate"
+import { _, Name } from "../../compile/codegen"
+import { alwaysValidSchema, mergeEvaluated } from "../../compile/util"
+import { SchemaCxt } from "../../compile"
 
 export type OneOfError = ErrorObject<
   "oneOf",
-  {passingSchemas: [number, number] | null},
+  { passingSchemas: [number, number] | null },
   AnySchema[]
 >
 
 const error: KeywordErrorDefinition = {
   message: "must match exactly one schema in oneOf",
-  params: ({params}) => _`{passingSchemas: ${params.passing}}`,
+  params: ({ params }) => _`{passingSchemas: ${params.passing}}`,
 }
 
 const def: CodeKeywordDefinition = {
@@ -26,7 +26,7 @@ const def: CodeKeywordDefinition = {
   trackErrors: true,
   error,
   code(cxt: KeywordCxt) {
-    const {gen, schema, parentSchema, it} = cxt
+    const { gen, schema, parentSchema, it } = cxt
     /* istanbul ignore if */
     if (!Array.isArray(schema)) throw new Error("ajv implementation error")
     if (it.opts.discriminator && parentSchema.discriminator) return
@@ -34,7 +34,7 @@ const def: CodeKeywordDefinition = {
     const valid = gen.let("valid", false)
     const passing = gen.let("passing", null)
     const schValid = gen.name("_valid")
-    cxt.setParams({passing})
+    cxt.setParams({ passing })
     // TODO possibly fail straight away (with warning or exception) if there are two empty always valid schemas
 
     gen.block(validateOneOf)
@@ -74,9 +74,38 @@ const def: CodeKeywordDefinition = {
           gen.assign(passing, i)
           if (schCxt) cxt.mergeEvaluated(schCxt, Name)
         })
+
+        // Merge statically known evaluated properties from all branches
+        // (including failing ones) per Draft 2020-12 §6.5.3.2.2.
+        // Only static property hashes are merged unconditionally;
+        // dynamic (Name) or universal (true) props are kept gated on
+        // schValid above, as they may come from applicators like
+        // unevaluatedProperties: true that should not propagate from
+        // failing branches.
+        if (schCxt && it.opts.unevaluated) {
+          if (
+            schCxt.props !== undefined &&
+            schCxt.props !== true &&
+            !(schCxt.props instanceof Name)
+          ) {
+            if (it.props !== true) {
+              it.props = mergeEvaluated.props(gen, schCxt.props, it.props)
+            }
+          }
+          if (
+            schCxt.items !== undefined &&
+            schCxt.items !== true &&
+            !(schCxt.items instanceof Name)
+          ) {
+            if (it.items !== true) {
+              it.items = mergeEvaluated.items(gen, schCxt.items, it.items)
+            }
+          }
+        }
       })
     }
   },
 }
 
 export default def
+
