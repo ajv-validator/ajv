@@ -1330,7 +1330,7 @@ Defaults:
   - `transpile` that transpiled asynchronous validation function. You can still use `transpile` option with [ajv-async](https://github.com/ajv-validator/ajv-async) package. See [Asynchronous validation](#asynchronous-validation) for more information.
 - _cache_: an optional instance of cache to store compiled schemas using stable-stringified schema as a key. For example, set-associative cache [sacjs](https://github.com/epoberezkin/sacjs) can be used. If not passed then a simple hash is used which is good enough for the common use case (a limited number of statically defined schemas). Cache should have methods `put(key, value)`, `get(key)`, `del(key)` and `clear()`.
 - _serialize_: an optional function to serialize schema to cache key. Pass `false` to use schema itself as a key (e.g., if WeakMap used as a cache). By default [fast-json-stable-stringify](https://github.com/epoberezkin/fast-json-stable-stringify) is used.
-- _regExp_: an optional function to create RegExp objects. This allows using a custom RegExp engine (e.g., [RE2](https://github.com/uhop/node-re2)) to mitigate ReDoS attacks. The function must have the signature `(pattern: string, flags: string) => RegExpLike` where `RegExpLike` is an object with a `test(string) => boolean` method. Example with RE2:
+- _regExp_: an optional function to create RegExp objects. This allows using a custom RegExp engine (e.g., [RE2](https://github.com/uhop/node-re2)) to mitigate ReDoS attacks. The function must have the signature `(pattern: string) => RegExpLike` where `RegExpLike` is an object with a `test(string) => boolean` method. Example with RE2:
   ```javascript
   var ajv = new Ajv({regExp: require('re2')});
   ```

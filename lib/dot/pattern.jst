@@ -4,14 +4,13 @@
 {{# def.$data }}
 
 {{
-  var $u = it.opts.unicodeRegExp ? '"u"' : '""';
   var $regExpCode = it.opts.regExp ? 'regExp' : 'new RegExp';
 }}
 
 {{? $isData }}
   var {{=$valid}} = true;
   try {
-    {{=$valid}} = {{=$regExpCode}}({{=$schemaValue}}, {{=$u}}).test({{=$data}});
+    {{=$valid}} = {{=$regExpCode}}({{=$schemaValue}}).test({{=$data}});
   } catch(e) {
     {{=$valid}} = false;
   }

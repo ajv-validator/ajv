@@ -203,7 +203,7 @@ declare namespace ajv {
     logger?: CustomLogger | false;
     nullable?: boolean;
     serialize?: ((schema: object | boolean) => any) | false;
-    regExp?: (pattern: string, flags: string) => RegExpLike;
+    regExp?: (pattern: string) => RegExpLike;
   }
 
   interface RegExpLike {
