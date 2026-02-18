@@ -5,7 +5,7 @@
 
 {{
   var $u = it.opts.unicodeRegExp ? '"u"' : '""';
-  var $regExpCode = it.opts.regExp && it.opts.regExp.code !== 'new RegExp' ? 'regExp' : 'new RegExp';
+  var $regExpCode = it.opts.regExp ? 'regExp' : 'new RegExp';
 }}
 
 {{? $isData }}
