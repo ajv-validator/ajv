@@ -28,6 +28,7 @@ var FUNCTION_NAME = /function\s+anonymous\s*\(it[^)]*\)\s*{/;
 var OUT_EMPTY_STRING = /out\s*\+=\s*'\s*';/g;
 var ISTANBUL = /'(istanbul[^']+)';/g;
 var ERROR_KEYWORD = /\$errorKeyword/g;
+var ERROR_KEYWORD_STR = ERROR_KEYWORD.source.replace(/^\\\\/, '');
 var ERROR_KEYWORD_OR = /\$errorKeyword\s+\|\|/g;
 var VARS = [
   '$errs', '$valid', '$lvl', '$data', '$dataLvl',
@@ -52,22 +53,22 @@ files.forEach(function (f) {
   console.log('compiled', keyword);
 
   function removeUnusedVar(v) {
-    v = v.replace(/\$/g, '\\$$');
-    var regexp = new RegExp(v + '[^A-Za-z0-9_$]', 'g');
-    var count = occurrences(regexp);
+    var count = 0, idx = 0;
+    while ((idx = code.indexOf(v, idx)) !== -1) {
+      if (idx + v.length >= code.length || !/[A-Za-z0-9_$]/.test(code[idx + v.length])) count++;
+      idx += 1;
+    }
     if (count == 1) {
-      regexp = new RegExp('var\\s+' + v + '\\s*=[^;]+;|var\\s+' + v + ';');
+      var vEsc = v.replace(/\$/g, '\\$$');
+      var regexp = new RegExp('var\\s+' + vEsc + '\\s*=[^;]*?;|var\\s+' + vEsc + ';');
       code = code.replace(regexp, '');
     }
   }
 
   function removeAlwaysFalsyInOr() {
-    var countUsed = occurrences(ERROR_KEYWORD);
-    var countOr = occurrences(ERROR_KEYWORD_OR);
+    var countUsed = code.split(ERROR_KEYWORD_STR).length - 1;
+    var countOr = 0, idx = 0;
+    while ((idx = code.indexOf(ERROR_KEYWORD_STR + ' ||', idx)) !== -1) { countOr++; idx += 1; }
     if (countUsed == countOr + 1) code = code.replace(ERROR_KEYWORD_OR, '');
-  }
-
-  function occurrences(regexp) {
-    return (code.match(regexp) || []).length;
   }
 });
