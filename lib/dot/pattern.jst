@@ -4,11 +4,23 @@
 {{# def.$data }}
 
 {{
-  var $regexp = $isData
-                ? '(new RegExp(' + $schemaValue + '))'
-                : it.usePattern($schema);
+  var $u = it.opts.unicodeRegExp ? '"u"' : '""';
+  var $regExpCode = it.opts.regExp && it.opts.regExp.code !== 'new RegExp' ? 'regExp' : 'new RegExp';
 }}
 
-if ({{# def.$dataNotType:'string' }} !{{=$regexp}}.test({{=$data}}) ) {
+{{? $isData }}
+  var {{=$valid}} = true;
+  try {
+    {{=$valid}} = {{=$regExpCode}}({{=$schemaValue}}, {{=$u}}).test({{=$data}});
+  } catch(e) {
+    {{=$valid}} = false;
+  }
+  if ({{# def.$dataNotType:'string' }} !{{=$valid}}) {
+{{??}}
+  {{
+    var $regexp = it.usePattern($schema);
+  }}
+  if ({{# def.$dataNotType:'string' }} !{{=$regexp}}.test({{=$data}}) ) {
+{{?}}
   {{# def.error:'pattern' }}
 } {{? $breakOnError }} else { {{?}}
