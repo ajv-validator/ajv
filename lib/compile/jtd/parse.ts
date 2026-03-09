@@ -128,6 +128,7 @@ function parseElements(cxt: ParseCxt): void {
   parseToken(cxt, "[")
   const ix = gen.let("i", 0)
   gen.assign(data, _`[]`)
+  skipWhitespace(cxt)
   parseItems(cxt, "]", () => {
     const el = gen.let("el")
     parseCode({...cxt, schema: schema.elements, data: el})
