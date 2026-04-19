@@ -3,7 +3,7 @@
   "include": ["lib"],
   "compilerOptions": {
     "outDir": "dist",
-    "lib": ["ES2018", "DOM"],
+    "lib": ["ES2018", "ES2022.RegExp", "DOM"],
     "types": ["node"],
     "allowJs": true,
     "target": "ES2018",
