@@ -281,7 +281,7 @@ export default class Ajv {
   readonly scope: ValueScope
   readonly schemas: {[Key in string]?: SchemaEnv} = {}
   readonly refs: {[Ref in string]?: SchemaEnv | string} = {}
-  readonly formats: {[Name in string]?: AddedFormat} = {}
+  readonly formats: {[Name in string]?: AddedFormat} = Object.create(null)
   readonly RULES: ValidationRules
   readonly _compilations: Set<SchemaEnv> = new Set()
   private readonly _loading: {[Ref in string]?: Promise<AnySchemaObject>} = {}
