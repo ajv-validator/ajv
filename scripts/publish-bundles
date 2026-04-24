@@ -10,7 +10,7 @@ if [[ $GITHUB_REF == refs/tags/v* ]]; then
   git config --global user.name "$GIT_USER_NAME"
   git config --global user.email "$GIT_USER_EMAIL"
 
-  git clone https://"${GH_TOKEN_PUBLIC}"@github.com/ajv-validator/ajv-dist.git ../ajv-dist
+  git clone https://"${GH_TOKEN_PUSH_DIST}"@github.com/ajv-validator/ajv-dist.git ../ajv-dist
 
   rm -rf ../ajv-dist/dist
   mkdir ../ajv-dist/dist
