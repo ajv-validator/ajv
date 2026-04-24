@@ -11,7 +11,7 @@ npm run docs:build
 
 git config --global user.name "$GIT_USER_NAME"
 git config --global user.email "$GIT_USER_EMAIL"
-git clone -b gh-pages --single-branch https://"${GH_TOKEN_PUBLIC}"@github.com/ajv-validator/ajv.git ../gh-pages
+git clone -b gh-pages --single-branch https://x-access-token:"${GITHUB_TOKEN}"@github.com/ajv-validator/ajv.git ../gh-pages
 
 rsync -a ./docs/.vuepress/dist/ ../gh-pages
 

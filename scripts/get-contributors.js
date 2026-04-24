@@ -7,7 +7,7 @@ const Jimp = require("jimp")
 process.chdir(__dirname)
 
 const base = `https://api.github.com/repos/ajv-validator/ajv/contributors`
-const {GH_TOKEN_PUBLIC} = process.env
+const {GITHUB_TOKEN} = process.env
 
 const SIZE = 64
 
@@ -22,7 +22,7 @@ async function main() {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const res = await fetch(`${base}?per_page=100&page=${page++}`, {
-      headers: {Authorization: `token ${GH_TOKEN_PUBLIC}`},
+      headers: {Authorization: `token ${GITHUB_TOKEN}`},
     })
     const list = await res.json()
     if (list.length === 0) break

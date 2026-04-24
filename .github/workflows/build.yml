@@ -26,7 +26,7 @@ jobs:
         if: ${{ github.event_name == 'push' && matrix.node-version == '18.x' }}
         run: ./scripts/publish-site
         env:
-          GH_TOKEN_PUBLIC: ${{ secrets.GH_TOKEN_PUBLIC }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
           GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
       - run: npm run build
