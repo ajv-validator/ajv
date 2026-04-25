@@ -14,6 +14,8 @@ module.exports = function (config) {
     files: [
       "bundle/ajv7.min.js",
       "bundle/ajv2019.min.js",
+      "bundle/ajv2020.min.js",
+      "bundle/ajvJTD.min.js",
       "node_modules/chai/chai.js",
       ".browser/*.spec.js",
     ],
