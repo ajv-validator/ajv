@@ -1,0 +1,13 @@
+[
+  {
+    "description": "large integer is multiple of 1",
+    "schema": {"multipleOf": 1},
+    "tests": [
+      {
+        "description": "1e21 is multiple of 1",
+        "data": 1e21,
+        "valid": true
+      }
+    ]
+  }
+]
