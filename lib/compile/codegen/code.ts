@@ -158,8 +158,8 @@ export function getProperty(key: Code | string | number): Code {
 
 //Does best effort to format the name properly
 export function getEsmExportName(key: Code | string | number): Code {
-  if (typeof key == "string" && IDENTIFIER.test(key)) {
-    return new _Code(`${key}`)
+  if (typeof key == "string") {
+    return IDENTIFIER.test(key) ? new _Code(`${key}`) : _`${key}`
   }
   throw new Error(`CodeGen: invalid export name: ${key}, use explicit $id name mapping`)
 }

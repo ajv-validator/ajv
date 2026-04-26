@@ -32,7 +32,7 @@ function standaloneCode(
     const vCode = validateCode(usedValues, source)
     if (ajv.opts.code.esm) {
       // Always do named export as `validate` rather than the variable `n` which is `validateXX` for known export value
-      return `"use strict";${_n}export const validate = ${n};${_n}export default ${n};${_n}${vCode}`
+      return `"use strict";${_n}export {${n} as validate,${_n}${n} as default};${_n}${vCode}`
     }
     return `"use strict";${_n}module.exports = ${n};${_n}module.exports.default = ${n};${_n}${vCode}`
   }
@@ -48,9 +48,9 @@ function standaloneCode(
       if (v) {
         const vCode = validateCode(usedValues, v.source)
         const exportSyntax = ajv.opts.code.esm
-          ? _`export const ${getEsmExportName(name)}`
-          : _`exports${getProperty(name)}`
-        code = _`${code}${_n}${exportSyntax} = ${v.source?.validateName};${_n}${vCode}`
+          ? _`export { ${v.source?.validateName} as ${getEsmExportName(name)} };`
+          : _`exports${getProperty(name)} = ${v.source?.validateName};`
+        code = _`${code}${_n}${exportSyntax}${_n}${vCode}`
       }
     }
     return `${code}`
