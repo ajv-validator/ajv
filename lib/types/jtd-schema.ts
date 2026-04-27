@@ -11,7 +11,7 @@ export type SomeJTDSchemaType = (
   // primitives
   | {type: NumberType | StringType | "boolean"}
   // enum
-  | {enum: string[]}
+  | {enum: readonly string[]}
   // elements
   | {elements: SomeJTDSchemaType}
   // values

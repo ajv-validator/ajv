@@ -379,6 +379,52 @@ const schema: JTDSchemaType<LinkedList, {node: LinkedList}> = {
 `JTDSchemaType` currently validates that if the schema compiles it will verify an accurate type, but there are a few places with potentially unexpected behavior.
 `JTDSchemaType` doesn't verify the schema is correct. It won't reject schemas that definitions anywhere by the root, and it won't reject discriminator schemas that still define the descriminator in mapping properties. It also won't verify that enum schemas have every enum member as this isn't generally feasible in typescript yet.
 
+## JTDDataType
+
+The type `JTDDataType` can be used to transform a written schema to a type you can expect to be valid. This type is strict such that if typescript compiles, you should require no further type guards. The downside of this is that the types that `JTDDataType` can verify are limited to the types that JTD can verify. If a type doesn't verify, `JTDDataType` should resolve to `never`, throwing an error when you try to assign to it. This means that types like `1 | 2 | 3`, or general untagged unions (outside of unions of string literals) cannot be used with `JTDDataType`.
+
+### Most Schemas
+
+Most straightforward schemas should work with `JTDDataType`, e.g.
+
+```typescript
+const schema = {
+  properties: {
+    num: {type: "float64"},
+    nullableEnum: {enum: ["v1.0", "v1.2"], nullable: true},
+    values: {values: {type: "int32"}},
+  },
+  optionalProperties: {
+    optionalStr: {type: "string"},
+  },
+} as const
+
+type MyType = JTDDataType<typeof schema>
+```
+
+will compile. Using `MyType` with TypeScript will guarantee that AJV will accept it.
+
+### Avoiding invalid schema
+
+The validity of the schema can be enforced before converting it to a type to avoid having some stray `never` in the output type.
+
+```typescript
+const schema = {
+  properties: {
+    num: {type: "float64"},
+    nullableEnum: {enum: ["v1.0", "v1.2"], nullable: true},
+    values: {values: {type: "int32"}},
+  },
+  optionalProperties: {
+    optionalStr: {type: "string"},
+  },
+} as const satisfies SomeJTDSchemaType
+
+type MyType = JTDDataType<typeof schema>
+```
+
+Should a type in the schema be invalid, such as defining `{type: "float"}` instead of `{type: "float64"}`, TypeScript should refuse to compile instead of letting a `never` appear in `MyType`.
+
 ## Extending JTD
 
 ### Metadata schema member
