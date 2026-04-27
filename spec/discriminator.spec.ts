@@ -302,6 +302,249 @@ describe("discriminator keyword", function () {
     })
   })
 
+  describe("validation with nested discriminator (union of unions)", () => {
+    const schema = [
+      {
+        type: "object",
+        discriminator: {propertyName: "type"},
+        required: ["type"],
+        oneOf: [
+          {
+            discriminator: {propertyName: "type"},
+            required: ["type"],
+            oneOf: [
+              {
+                properties: {
+                  type: {type: "string", const: "a"},
+                  fieldA: {type: "number"},
+                },
+                required: ["type", "fieldA"],
+              },
+              {
+                properties: {
+                  type: {type: "string", const: "b"},
+                  fieldB: {type: "number"},
+                },
+                required: ["type", "fieldB"],
+              },
+            ],
+          },
+          {
+            properties: {
+              type: {type: "string", const: "c"},
+              fieldC: {type: "number"},
+            },
+            required: ["type", "fieldC"],
+          },
+        ],
+      },
+    ]
+
+    it("should validate data", () => {
+      assertValid(schema, {type: "a", fieldA: 1})
+      assertValid(schema, {type: "b", fieldB: 2})
+      assertValid(schema, {type: "c", fieldC: 3})
+      assertInvalid(schema, {})
+      assertInvalid(schema, {type: 1})
+      assertInvalid(schema, {type: "unknown"})
+      assertInvalid(schema, {type: "a", fieldB: 1})
+      assertInvalid(schema, {type: "b", fieldA: 1})
+      assertInvalid(schema, {type: "c", fieldA: 1})
+    })
+  })
+
+  describe("validation with deeply nested discriminator (3 levels)", () => {
+    const schema = [
+      {
+        type: "object",
+        discriminator: {propertyName: "type"},
+        required: ["type"],
+        oneOf: [
+          {
+            discriminator: {propertyName: "type"},
+            required: ["type"],
+            oneOf: [
+              {
+                discriminator: {propertyName: "type"},
+                required: ["type"],
+                oneOf: [
+                  {
+                    properties: {
+                      type: {type: "string", const: "a"},
+                      fieldA: {type: "number"},
+                    },
+                    required: ["type", "fieldA"],
+                  },
+                  {
+                    properties: {
+                      type: {type: "string", const: "b"},
+                      fieldB: {type: "number"},
+                    },
+                    required: ["type", "fieldB"],
+                  },
+                ],
+              },
+              {
+                properties: {
+                  type: {type: "string", const: "c"},
+                  fieldC: {type: "number"},
+                },
+                required: ["type", "fieldC"],
+              },
+            ],
+          },
+          {
+            properties: {
+              type: {type: "string", const: "d"},
+              fieldD: {type: "number"},
+            },
+            required: ["type", "fieldD"],
+          },
+        ],
+      },
+    ]
+
+    it("should validate data", () => {
+      assertValid(schema, {type: "a", fieldA: 1})
+      assertValid(schema, {type: "b", fieldB: 2})
+      assertValid(schema, {type: "c", fieldC: 3})
+      assertValid(schema, {type: "d", fieldD: 4})
+      assertInvalid(schema, {})
+      assertInvalid(schema, {type: "unknown"})
+      assertInvalid(schema, {type: "a", fieldD: 1})
+    })
+  })
+
+  describe("validation with allOf subschemas", () => {
+    const schema = [
+      {
+        type: "object",
+        discriminator: {propertyName: "type"},
+        required: ["type"],
+        oneOf: [
+          {
+            allOf: [
+              {
+                properties: {
+                  type: {type: "string", const: "a"},
+                },
+              },
+              {
+                properties: {
+                  fieldA: {type: "number"},
+                },
+                required: ["fieldA"],
+              },
+            ],
+          },
+          {
+            properties: {
+              type: {type: "string", const: "b"},
+              fieldB: {type: "number"},
+            },
+            required: ["type", "fieldB"],
+          },
+        ],
+      },
+    ]
+
+    it("should validate data", () => {
+      assertValid(schema, {type: "a", fieldA: 1})
+      assertValid(schema, {type: "b", fieldB: 2})
+      assertInvalid(schema, {})
+      assertInvalid(schema, {type: 1})
+      assertInvalid(schema, {type: "unknown"})
+      assertInvalid(schema, {type: "a", fieldB: 1})
+      assertInvalid(schema, {type: "b", fieldA: 1})
+    })
+  })
+
+  describe("validation with anyOf subschemas", () => {
+    const schema = [
+      {
+        type: "object",
+        discriminator: {propertyName: "type"},
+        required: ["type"],
+        oneOf: [
+          {
+            anyOf: [
+              {
+                properties: {
+                  type: {type: "string", const: "a"},
+                },
+              },
+              {
+                properties: {
+                  fieldA: {type: "number"},
+                },
+                required: ["fieldA"],
+              },
+            ],
+          },
+          {
+            properties: {
+              type: {type: "string", const: "b"},
+              fieldB: {type: "number"},
+            },
+            required: ["type", "fieldB"],
+          },
+        ],
+      },
+    ]
+
+    it("should validate data", () => {
+      assertValid(schema, {type: "a", fieldA: 1})
+      assertValid(schema, {type: "b", fieldB: 2})
+      assertValid(schema, {type: "a", fieldB: 1}) // anyOf: first sub-part matches (type=a)
+      assertInvalid(schema, {})
+      assertInvalid(schema, {type: 1})
+      assertInvalid(schema, {type: "unknown"})
+      assertInvalid(schema, {type: "b", fieldA: 1})
+    })
+  })
+
+  describe("validation with allOf subschemas and required in composed schema", () => {
+    const schema = [
+      {
+        type: "object",
+        discriminator: {propertyName: "type"},
+        oneOf: [
+          {
+            allOf: [
+              {
+                properties: {
+                  type: {type: "string", const: "a"},
+                },
+                required: ["type"],
+              },
+              {
+                properties: {
+                  fieldA: {type: "number"},
+                },
+                required: ["fieldA"],
+              },
+            ],
+          },
+          {
+            properties: {
+              type: {type: "string", const: "b"},
+              fieldB: {type: "number"},
+            },
+            required: ["type", "fieldB"],
+          },
+        ],
+      },
+    ]
+
+    it("should validate data", () => {
+      assertValid(schema, {type: "a", fieldA: 1})
+      assertValid(schema, {type: "b", fieldB: 2})
+      assertInvalid(schema, {})
+      assertInvalid(schema, {type: "unknown"})
+      assertInvalid(schema, {type: "a", fieldB: 1})
+    })
+  })
+
   describe("valid schemas", () => {
     it("should have oneOf", () => {
       invalidSchema(
@@ -366,6 +609,98 @@ describe("discriminator keyword", function () {
           oneOf: [
             {properties: {foo: {const: "a"}}, required: ["foo"]},
             {properties: {foo: {const: "b"}}},
+          ],
+        },
+        /discriminator: "foo" must be required/
+      )
+    })
+
+    it("nested oneOf subschemas should have tag property", () => {
+      invalidSchema(
+        {
+          type: "object",
+          discriminator: {propertyName: "foo"},
+          required: ["foo"],
+          oneOf: [
+            {
+              discriminator: {propertyName: "foo"},
+              required: ["foo"],
+              oneOf: [
+                {properties: {foo: {const: "a"}}, required: ["foo"]},
+                {properties: {}, required: ["foo"]},
+              ],
+            },
+            {properties: {foo: {const: "c"}}, required: ["foo"]},
+          ],
+        },
+        /discriminator: oneOf subschemas \(or referenced schemas\) must have "properties\/foo"/
+      )
+    })
+
+    it("nested oneOf subschemas should have required tag", () => {
+      invalidSchema(
+        {
+          type: "object",
+          discriminator: {propertyName: "foo"},
+          oneOf: [
+            {
+              discriminator: {propertyName: "foo"},
+              oneOf: [
+                {properties: {foo: {const: "a"}}},
+                {properties: {foo: {const: "b"}}, required: ["foo"]},
+              ],
+            },
+            {properties: {foo: {const: "c"}}, required: ["foo"]},
+          ],
+        },
+        /discriminator: "foo" must be required/
+      )
+    })
+
+    it("allOf subschemas should have tag property", () => {
+      invalidSchema(
+        {
+          type: "object",
+          discriminator: {propertyName: "foo"},
+          required: ["foo"],
+          oneOf: [
+            {
+              allOf: [{properties: {bar: {type: "string"}}}],
+            },
+            {properties: {foo: {const: "b"}}, required: ["foo"]},
+          ],
+        },
+        /discriminator: oneOf subschemas \(or referenced schemas\) must have "properties\/foo"/
+      )
+    })
+
+    it("allOf subschemas should have const or enum for tag", () => {
+      invalidSchema(
+        {
+          type: "object",
+          discriminator: {propertyName: "foo"},
+          required: ["foo"],
+          oneOf: [
+            {
+              allOf: [{properties: {foo: {type: "string"}}}],
+            },
+            {properties: {foo: {const: "b"}}, required: ["foo"]},
+          ],
+        },
+        /discriminator: "properties\/foo" must have "const" or "enum"/
+      )
+    })
+
+    it("allOf subschemas should have required tag", () => {
+      invalidSchema(
+        {
+          type: "object",
+          discriminator: {propertyName: "foo"},
+          oneOf: [
+            {
+              allOf: [{properties: {foo: {const: "a"}}}, {properties: {bar: {type: "string"}}}],
+            },
+            {properties: {foo: {const: "b"}}, required: ["foo"]},
           ],
         },
         /discriminator: "foo" must be required/
