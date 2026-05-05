@@ -288,10 +288,10 @@ describe("code generation", () => {
         assertEqual(_gen, "for(var _i0=0; _i0<xs.length; _i0++){var x0 = xs[_i0];console.log(x0);}")
       })
 
-      it("renders `for-in` statement", () => {
+      it("renders `for-in` statement with `let` because coerceTypes:array may generate a coercion assignment to the key variable", () => {
         gen.forIn("x", xs, (x: Name) => gen.code(_`console.log(${x})`))
         gen.optimize()
-        assertEqual(gen, "for(const x0 in xs){console.log(x0);}")
+        assertEqual(gen, "for(let x0 in xs){console.log(x0);}")
       })
 
       it("renders `for-in` statement as `for-of` with `ownProperties` option", () => {

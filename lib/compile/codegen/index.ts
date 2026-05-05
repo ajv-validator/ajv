@@ -638,7 +638,7 @@ export class CodeGen {
     nameOrPrefix: Name | string,
     obj: Code,
     forBody: (item: Name) => void,
-    varKind: Code = this.opts.es5 ? varKinds.var : varKinds.const
+    varKind: Code = this.opts.es5 ? varKinds.var : varKinds.let
   ): CodeGen {
     if (this.opts.ownProperties) {
       return this.forOf(nameOrPrefix, _`Object.keys(${obj})`, forBody)

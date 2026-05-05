@@ -468,6 +468,29 @@ describe("Type coercion", () => {
     })
   })
 
+  it("should generate valid code for additionalProperties + propertyNames with coerceTypes array", () => {
+    // When coerceTypes:"array" is combined with propertyNames, AJV validates the loop
+    // key variable against the propertyNames schema and generates coercion code for it.
+    // With `const` on the for-in loop variable, that coercion assignment is invalid in
+    // strict mode and static analysis tools (e.g. esbuild) reject the output. The loop
+    // variable must use `let` so the generated assignment is syntactically valid.
+    const ajvWithSource = new _Ajv({coerceTypes: "array", code: {source: true}})
+    const validate = ajvWithSource.compile({
+      type: "object",
+      additionalProperties: {type: "string"},
+      propertyNames: {type: "string", pattern: "^[a-z]+$", maxLength: 32},
+      maxProperties: 32,
+    })
+    const src = validate.toString()
+    src.should.not.include("for(const ", "for-in loop variable must use `let` not `const`")
+    src.should.include("for(let ", "for-in loop variable must use `let`")
+
+    // Validate coercion still works correctly on the value
+    const data: Record<string, unknown> = {key: ["hello"]}
+    validate(data).should.equal(true)
+    ;(data.key as string).should.equal("hello")
+  })
+
   function testRules(rules, cb) {
     for (const toType in rules) {
       for (const fromType in rules[toType]) {
