@@ -393,7 +393,7 @@ describe("Validation errors", () => {
         invalidData1 = {a: 0, foo: 1, baz: 3},
         invalidData2 = {a: 0, bar: 2}
 
-      const msg = "must have properties foo, bar, baz when property a is present"
+      const msg = "must have properties 'foo', 'bar', 'baz' when property 'a' is present"
 
       const validate = ajv.compile(schema)
       shouldBeValid(validate, data)
