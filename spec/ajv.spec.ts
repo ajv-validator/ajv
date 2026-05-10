@@ -37,6 +37,18 @@ describe("Ajv", () => {
       v1.should.equal(v2)
     })
 
+    it("should not cache compiled functions for the same schema when opt.noCache", () => {
+      ajv = new _Ajv({keywords: ["foo"], allowUnionTypes: true, noCache: true})
+      const schema = {
+        $id: "//e.com/int.json",
+        type: "integer",
+        minimum: 1,
+      }
+      const v1 = ajv.compile(schema)
+      const v2 = ajv.compile(schema)
+      v1.should.not.equal(v2)
+    })
+
     it("should throw if different schema has the same id", () => {
       ajv.compile({$id: "//e.com/int.json", type: "integer"})
       should.throw(() => {
