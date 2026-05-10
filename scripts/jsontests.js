@@ -30,3 +30,11 @@ for (const suite in testSuitePaths) {
     .reduce((list, f) => list + f)
   fs.writeFileSync(`./spec/_json/${suite}.js`, `module.exports = [${code}\n]\n`)
 }
+
+const requires = Array.from(Object.keys(testSuitePaths), (s) => `require('./${s}')`)
+fs.writeFileSync(
+  `./spec/_json/index.js`,
+  `// generated from ${__filename}
+  module.exports = [${requires.join(",\n")}]
+`
+)
