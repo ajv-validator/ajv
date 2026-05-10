@@ -121,6 +121,99 @@ describe("compileAsync method", () => {
     })
   })
 
+  it("should start loading multiple external refs in parallel when enabled", () => {
+    const started: string[] = []
+    const resolvers = new Map<string, (schema: SchemaObject) => void>()
+    const deferred = new Set([
+      "http://example.com/object.json",
+      "http://example.com/other.json",
+    ])
+
+    const customAjv = new _Ajv({
+      enableParallelLoading: true,
+      loadSchema(uri) {
+        started.push(uri)
+        if (deferred.has(uri)) {
+          return new Promise((resolve) => {
+            resolvers.set(uri, resolve)
+          })
+        }
+        if (SCHEMAS[uri]) return Promise.resolve(SCHEMAS[uri])
+        return Promise.reject(new Error("404"))
+      },
+    })
+
+    const schema = {
+      $id: "http://example.com/parent-parallel.json",
+      type: "object",
+      properties: {
+        a: {$ref: "object.json"},
+        b: {$ref: "other.json"},
+      },
+    }
+
+    const p = customAjv.compileAsync(schema)
+
+    return Promise.resolve()
+      .then(() => {
+        // With parallel loading enabled, Ajv should kick off both loadSchema calls immediately.
+        // If it were still sequential, we'd only see the first ref here until it resolves.
+        started.should.include.members([
+          "http://example.com/object.json",
+          "http://example.com/other.json",
+        ])
+        resolvers.get("http://example.com/object.json")?.(SCHEMAS["http://example.com/object.json"])
+        resolvers.get("http://example.com/other.json")?.(SCHEMAS["http://example.com/other.json"])
+        return p
+      })
+      .then((validate) => {
+        validate.should.be.a("function")
+      })
+  })
+
+  it("should not preload external refs in parallel by default", () => {
+    const started: string[] = []
+    const resolvers = new Map<string, (schema: SchemaObject) => void>()
+    const deferred = new Set(["http://example.com/object.json"])
+
+    const customAjv = new _Ajv({
+      loadSchema(uri) {
+        started.push(uri)
+        if (deferred.has(uri)) {
+          return new Promise((resolve) => {
+            resolvers.set(uri, resolve)
+          })
+        }
+        if (SCHEMAS[uri]) return Promise.resolve(SCHEMAS[uri])
+        return Promise.reject(new Error("404"))
+      },
+    })
+
+    const schema = {
+      $id: "http://example.com/parent-serial.json",
+      type: "object",
+      properties: {
+        a: {$ref: "object.json"},
+        b: {$ref: "other.json"},
+      },
+    }
+
+    const p = customAjv.compileAsync(schema)
+
+    return Promise.resolve()
+      .then(() => {
+        // Leave the first ref pending to force the legacy sequential path.
+        // In sequential mode Ajv can't discover the next external ref until this one resolves,
+        // so only "object.json" should have started at this point.
+        started.should.deep.equal(["http://example.com/object.json"])
+        resolvers.get("http://example.com/object.json")?.(SCHEMAS["http://example.com/object.json"])
+        return p
+      })
+      .then((validate) => {
+        validate.should.be.a("function")
+      })
+  })
+
   it("should correctly load schemas when missing reference has JSON path", () => {
     const schema = {
       $id: "http://example.com/parent.json",
