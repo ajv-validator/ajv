@@ -1,6 +1,7 @@
 import type Ajv from "../dist/core"
 import type {SchemaObject} from ".."
 import _Ajv from "./ajv2019"
+import _Ajv2020 from "./ajv2020"
 import getAjvInstances from "./ajv_instances"
 import options from "./ajv_options"
 import * as assert from "assert"
@@ -43,6 +44,55 @@ describe("recursiveRef and dynamicRef", () => {
   })
 
   describe("dynamicRef", () => {
+    it("should resolve a non-root dynamicAnchor as the static target", () => {
+      const schema = {
+        type: "object",
+        properties: {
+          schema: {$dynamicRef: "#meta"},
+        },
+        unevaluatedProperties: false,
+        $defs: {
+          schema: {
+            $dynamicAnchor: "meta",
+            type: ["object", "boolean"],
+          },
+        },
+      }
+
+      ajvs.forEach((ajv) => {
+        const validate = ajv.compile(schema)
+        assert.strictEqual(validate({schema: {type: "string"}}), true)
+        assert.strictEqual(validate({schema: true}), true)
+        assert.strictEqual(validate({schema: "bad"}), false)
+        assert.strictEqual(validate({other: true}), false)
+      })
+    })
+
+    it("should compile and validate an OpenAPI-style dynamic meta schema", () => {
+      const schema = {
+        $schema: "https://json-schema.org/draft/2020-12/schema",
+        type: "object",
+        properties: {
+          schema: {$dynamicRef: "#meta"},
+        },
+        unevaluatedProperties: false,
+        $defs: {
+          schema: {
+            $dynamicAnchor: "meta",
+            type: ["object", "boolean"],
+          },
+        },
+      }
+
+      getAjvInstances(_Ajv2020, options, {strict: false}).forEach((ajv) => {
+        const validate = ajv.compile(schema)
+        assert.strictEqual(validate({schema: {type: "string"}}), true)
+        assert.strictEqual(validate({schema: false}), true)
+        assert.strictEqual(validate({schema: "bad"}), false)
+        assert.strictEqual(validate({schema: {type: "string"}, extra: true}), false)
+      })
+    })
+
     it("should allow extending recursive schema with dynamicRef (future draft2020)", () => {
       const treeSchema = {
         $id: "https://example.com/tree",
