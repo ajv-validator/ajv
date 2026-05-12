@@ -164,7 +164,9 @@ function parseKeyValue(cxt: ParseCxt, schema: SchemaObject): void {
   const key = gen.let("key")
   parseString({...cxt, data: key})
   parseToken(cxt, ":")
-  parsePropertyValue(cxt, key, schema)
+  const val = gen.let("val")
+  parseCode({...cxt, schema, data: val})
+  safeSet(gen, cxt.data, key, val)
 }
 
 function parseDiscriminator(cxt: ParseCxt): void {
@@ -225,7 +227,9 @@ function parseSchemaProperties(cxt: ParseCxt, discriminator?: string): void {
     }
     gen.else()
     if (additionalProperties) {
-      parseEmpty({...cxt, data: _`${data}[${key}]`})
+      const val = gen.let("val")
+      parseEmpty({...cxt, data: val})
+      safeSet(gen, data, key, val)
     } else {
       parsingError(cxt, str`property ${key} not allowed`)
     }
@@ -250,6 +254,17 @@ function parseDefinedProperty(cxt: ParseCxt, key: Name, schemas: SchemaObjectMap
 
 function parsePropertyValue(cxt: ParseCxt, key: Name, schema: SchemaObject): void {
   parseCode({...cxt, schema, data: _`${cxt.data}[${key}]`})
+}
+
+function safeSet(gen: CodeGen, data: Code, key: Name, val: Name): void {
+  gen.if(
+    _`${key} === "__proto__"`,
+    () =>
+      gen.code(
+        _`Object.defineProperty(${data}, ${key}, {value: ${val}, writable: true, enumerable: true, configurable: true})`
+      ),
+    () => gen.assign(_`${data}[${key}]`, val)
+  )
 }
 
 function parseType(cxt: ParseCxt): void {
