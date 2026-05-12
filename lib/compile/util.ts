@@ -43,6 +43,35 @@ export function schemaHasRulesButRef(schema: AnySchema, RULES: ValidationRules):
   return false
 }
 
+export function schemaResourceDynamicAnchors(schema: AnySchema, schemaId: "$id" | "id"): string[] {
+  const anchors: {[Ref in string]?: true} = {}
+  findDynamicAnchors(schema, true)
+  return Object.keys(anchors)
+
+  function findDynamicAnchors(sch: unknown, isRoot: boolean): void {
+    if (!sch || typeof sch != "object") return
+    if (Array.isArray(sch)) {
+      for (const item of sch) findDynamicAnchors(item, false)
+      return
+    }
+
+    const schObj = sch as {[Key in string]?: unknown}
+    if (!isRoot && typeof schObj[schemaId] == "string") return
+    const {$dynamicAnchor, $recursiveAnchor} = schObj
+    if (typeof $dynamicAnchor == "string") anchors[$dynamicAnchor] = true
+    if ($recursiveAnchor === true) anchors[""] = true
+
+    for (const key in schObj) findDynamicAnchors(schObj[key], false)
+  }
+}
+
+export function schemaHasResourceDynamicAnchors(
+  schema: AnySchema,
+  schemaId: "$id" | "id"
+): boolean {
+  return schemaResourceDynamicAnchors(schema, schemaId).length > 0
+}
+
 export function schemaRefOrVal(
   {topSchemaRef, schemaPath}: SchemaObjCxt,
   schema: unknown,

@@ -12,7 +12,7 @@ import {CodeGen, _, nil, stringify, Name, Code, ValueScopeName} from "./codegen"
 import ValidationError from "../runtime/validation_error"
 import N from "./names"
 import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
-import {schemaHasRulesButRef, unescapeFragment} from "./util"
+import {schemaHasResourceDynamicAnchors, schemaHasRulesButRef, unescapeFragment} from "./util"
 import {validateFunctionCode} from "./validate"
 import {URIComponent} from "fast-uri"
 import {JSONType} from "./rules"
@@ -311,7 +311,12 @@ function getJsonPointer(
     }
   }
   let env: SchemaEnv | undefined
-  if (typeof schema != "boolean" && schema.$ref && !schemaHasRulesButRef(schema, this.RULES)) {
+  if (
+    typeof schema != "boolean" &&
+    schema.$ref &&
+    !schemaHasRulesButRef(schema, this.RULES) &&
+    !schemaHasResourceDynamicAnchors(schema, this.opts.schemaId)
+  ) {
     const $ref = resolveUrl(this.opts.uriResolver, baseId, schema.$ref)
     env = resolveSchema.call(this, root, $ref)
   }
