@@ -2,7 +2,7 @@ import type {CodeKeywordDefinition, AnySchema} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
 import MissingRefError from "../../compile/ref_error"
 import {callValidateCode} from "../code"
-import {_, nil, stringify, Code, Name} from "../../compile/codegen"
+import {_, getProperty, nil, stringify, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 import {SchemaEnv, resolveRef} from "../../compile"
 import {mergeEvaluated} from "../../compile/util"
@@ -14,6 +14,7 @@ const def: CodeKeywordDefinition = {
     const {gen, schema: $ref, it} = cxt
     const {baseId, schemaEnv: env, validateName, opts, self} = it
     const {root} = env
+    if (opts.dynamicRef) setupDynamicAnchors(cxt)
     if (($ref === "#" || $ref === "#/") && baseId === root.baseId) return callRootRef()
     const schOrEnv = resolveRef.call(self, root, baseId, $ref)
     if (schOrEnv === undefined) throw new MissingRefError(it.opts.uriResolver, baseId, $ref)
@@ -124,6 +125,45 @@ export function callRef(cxt: KeywordCxt, v: Code, sch?: SchemaEnv, $async?: bool
       }
     }
   }
+}
+
+function setupDynamicAnchors(cxt: KeywordCxt): void {
+  const {gen, it} = cxt
+  const {baseId, schemaEnv: env, self} = it
+  for (const anchor of dynamicAnchorsForBaseId(env, baseId)) {
+    const ref = anchor ? `#${anchor}` : "#"
+    const schOrEnv = resolveRef.call(self, env.root, baseId, ref)
+    if (!(schOrEnv instanceof SchemaEnv) || !schemaHasDynamicAnchor(schOrEnv, anchor)) continue
+    const v = _`${N.dynamicAnchors}${getProperty(anchor)}`
+    const validate = getValidate(cxt, schOrEnv)
+    gen.if(_`!${v}`, () => gen.assign(v, validate))
+  }
+
+  function dynamicAnchorsForBaseId(schemaEnv: SchemaEnv, refBaseId: string): string[] {
+    const anchors: {[Ref in string]?: true} = {}
+    const prefix = refBaseId ? `${refBaseId}#` : "#"
+    for (const ref in self.refs) {
+      if (ref.startsWith(prefix)) addAnchor(ref.slice(prefix.length))
+    }
+    if (!refBaseId && schemaEnv.root.localRefs) {
+      for (const ref in schemaEnv.root.localRefs) {
+        if (ref[0] === "#") addAnchor(ref.slice(1))
+      }
+    }
+    return Object.keys(anchors)
+
+    function addAnchor(anchor: string): void {
+      if (anchor[0] === "/") return
+      anchors[anchor] = true
+    }
+  }
+}
+
+function schemaHasDynamicAnchor(sch: SchemaEnv, anchor: string): boolean {
+  return (
+    typeof sch.schema == "object" &&
+    (anchor ? sch.schema.$dynamicAnchor === anchor : sch.schema.$recursiveAnchor === true)
+  )
 }
 
 export default def
