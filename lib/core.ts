@@ -102,7 +102,7 @@ export interface CurrentOptions {
   $data?: boolean
   allErrors?: boolean
   verbose?: boolean
-  discriminator?: boolean
+  discriminator?: boolean | {strict: boolean}
   unicodeRegExp?: boolean
   timestamp?: "string" | "date" // JTD only
   parseDate?: boolean // JTD only
