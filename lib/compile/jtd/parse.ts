@@ -231,7 +231,7 @@ function parseSchemaProperties(cxt: ParseCxt, discriminator?: string): void {
     }
     gen.endIf()
   })
-  if (properties) {
+  if (properties && Object.keys(properties).length > 0) {
     const hasProp = hasPropFunc(gen)
     const allProps: Code = and(
       ...Object.keys(properties).map((p): Code => _`${hasProp}.call(${data}, ${p})`)

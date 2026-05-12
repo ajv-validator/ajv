@@ -220,6 +220,25 @@ describe("JSON Type Definition", () => {
     }
   })
 
+  describe("parse with empty properties", () => {
+    let ajv: AjvJTD
+    before(() => (ajv = new _AjvJTD()))
+
+    it("should compile parser for properties: {}", () => {
+      const parse = ajv.compileParser({properties: {}})
+      shouldParse(parse, "{}", {})
+    })
+
+    it("should compile parser for discriminator mapping with empty properties", () => {
+      const parse = ajv.compileParser({
+        discriminator: "t",
+        mapping: {a: {properties: {}}, b: {properties: {b: {type: "int32"}}}},
+      })
+      shouldParse(parse, '{"t":"a"}', {t: "a"})
+      shouldParse(parse, '{"t":"b","b":1}', {t: "b", b: 1})
+    })
+  })
+
   describe("parse tests nst/JSONTestSuite", () => {
     const ajv = new _AjvJTD()
     const parseJson: JTDParser = ajv.compileParser({})
