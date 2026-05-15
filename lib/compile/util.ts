@@ -1,7 +1,7 @@
 import type {AnySchema, EvaluatedProperties, EvaluatedItems} from "../types"
 import type {SchemaCxt, SchemaObjCxt} from "."
 import {_, getProperty, Code, Name, CodeGen} from "./codegen"
-import {_Code} from "./codegen/code"
+import {_Code, NamedImport} from "./codegen/code"
 import type {Rule, ValidationRules} from "./rules"
 
 // TODO refactor to use Set
@@ -168,12 +168,24 @@ export function setEvaluated(gen: CodeGen, props: Name, ps: {[K in string]?: tru
   Object.keys(ps).forEach((p) => gen.assign(_`${props}${getProperty(p)}`, true))
 }
 
-const snippets: {[S in string]?: _Code} = {}
+const codeSnippets: {[S in string]?: _Code} = {}
+const importSnippets: {[S in string]?: NamedImport} = {}
 
-export function useFunc(gen: CodeGen, f: {code: string}): Name {
+export function useFunc(
+  gen: CodeGen,
+  f: {code: string; import?: readonly [name: string, module: string]}
+): Name {
+  if (f.import) {
+    const key = f.import[0] + "|" + f.import[1] // not ambiguous since bar (|) is not a valid name character
+    return gen.scopeValue("func", {
+      ref: f,
+      code:
+        importSnippets[key] || (importSnippets[key] = new NamedImport(f.import[0], f.import[1])),
+    })
+  }
   return gen.scopeValue("func", {
     ref: f,
-    code: snippets[f.code] || (snippets[f.code] = new _Code(f.code)),
+    code: codeSnippets[f.code] || (codeSnippets[f.code] = new _Code(f.code)),
   })
 }
 

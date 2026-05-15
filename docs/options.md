@@ -384,6 +384,8 @@ type CodeOptions = {
   // Code snippet created with `_` tagged template literal that contains all format definitions,
   // it can be the code of actual definitions or `require` call:
   // _`require("./my-formats")`
+  // Or an ESM import:
+  // new NamedImport("allFormats", "./my-formats", ".js")
   regExp: RegExpEngine
   // Pass non-standard RegExp engine to mitigate ReDoS, e.g. node-re2.
   // During validation of a schema, code.regExp will be 

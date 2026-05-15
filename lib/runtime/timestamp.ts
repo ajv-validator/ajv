@@ -44,3 +44,6 @@ function validTime(str: string): boolean {
 }
 
 validTimestamp.code = 'require("ajv/dist/runtime/timestamp").default'
+validTimestamp.import = ["validTimestamp", "ajv/dist/runtime/timestamp"] as const
+
+export {validTimestamp}

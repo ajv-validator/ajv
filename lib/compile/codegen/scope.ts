@@ -1,4 +1,4 @@
-import {_, nil, Code, Name} from "./code"
+import {_, nil, Code, Name, NamedImport} from "./code"
 
 interface NameGroup {
   prefix: string
@@ -29,6 +29,7 @@ interface ScopeOptions {
 interface ValueScopeOptions extends ScopeOptions {
   scope: ScopeStore
   es5?: boolean
+  esm?: boolean
   lines?: boolean
 }
 
@@ -200,8 +201,15 @@ export class ValueScope extends Scope {
         nameSet.set(name, UsedValueState.Started)
         let c = valueCode(name)
         if (c) {
-          const def = this.opts.es5 ? varKinds.var : varKinds.const
-          code = _`${code}${def} ${name} = ${c};${this.opts._n}`
+          if (this.opts.esm && c instanceof NamedImport) {
+            const moduleId = `${c.module}${c.extension}`
+            code = c.name
+              ? _`${code}import { ${c.name} as ${name} } from ${moduleId};${this.opts._n}`
+              : _`${code}import * as ${name} from ${moduleId};${this.opts._n}`
+          } else {
+            const def = this.opts.es5 ? varKinds.var : varKinds.const
+            code = _`${code}${def} ${name} = ${c};${this.opts._n}`
+          }
         } else if ((c = getCode?.(name))) {
           code = _`${code}${c}${this.opts._n}`
         } else {

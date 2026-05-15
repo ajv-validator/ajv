@@ -163,6 +163,8 @@ git submodule update --init
 npm test
 ```
 
+`npm run prettier:write` - to auto-format all files (test command fails if there are formatting issues)
+
 `npm run build` - compiles typescript to dist folder.
 
 `npm run watch` - automatically compiles typescript when files on lib folder changes.

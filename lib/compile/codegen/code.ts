@@ -29,6 +29,39 @@ export class Name extends _CodeOrName {
   }
 }
 
+export class NamedImport extends _CodeOrName {
+  private _str?: string
+  readonly name: string // the name of the symbol to import, can be empty for all imports (star import)
+  readonly module: string // the module (ID) to import from, without the extension
+  readonly extension: string // the extension to add to the module when importing, default is .js
+
+  constructor(name: string, module: string, extension?: string) {
+    super()
+    if (name && !IDENTIFIER.test(name)) throw new Error("CodeGen: name must be a valid identifier")
+    this.name = name
+    this.module = module
+    this.extension = extension ?? ".js"
+  }
+
+  toString(): string {
+    return this.str
+  }
+
+  emptyStr(): boolean {
+    return false
+  }
+
+  get str(): string {
+    return this.name
+      ? (this._str ??= `require(${safeStringify(this.module)}).${this.name}`)
+      : (this._str ??= `require(${safeStringify(this.module)})`)
+  }
+
+  get names(): UsedNames {
+    return {}
+  }
+}
+
 export class _Code extends _CodeOrName {
   readonly _items: readonly CodeItem[]
   private _str?: string
@@ -65,7 +98,7 @@ export type CodeItem = Name | string | number | boolean | null
 
 export type UsedNames = Record<string, number | undefined>
 
-export type Code = _Code | Name
+export type Code = _Code | Name | NamedImport
 
 export type SafeExpr = Code | number | boolean | null
 
@@ -100,6 +133,7 @@ export function str(strs: TemplateStringsArray, ...args: (CodeArg | string[])[])
 export function addCodeArg(code: CodeItem[], arg: CodeArg | string[]): void {
   if (arg instanceof _Code) code.push(...arg._items)
   else if (arg instanceof Name) code.push(arg)
+  else if (arg instanceof NamedImport) code.push(arg)
   else code.push(interpolate(arg))
 }
 

@@ -359,7 +359,11 @@ function parseEmpty(cxt: ParseCxt): void {
   parseWith(cxt, parseJson)
 }
 
-function parseWith(cxt: ParseCxt, parseFunc: {code: string}, args?: SafeExpr): void {
+function parseWith(
+  cxt: ParseCxt,
+  parseFunc: {code: string; import: readonly [string, string]},
+  args?: SafeExpr
+): void {
   partialParse(cxt, useFunc(cxt.gen, parseFunc), args)
 }
 

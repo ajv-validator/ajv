@@ -293,9 +293,9 @@ export default class Ajv {
 
   constructor(opts: Options = {}) {
     opts = this.opts = {...opts, ...requiredOptions(opts)}
-    const {es5, lines} = this.opts.code
+    const {es5, esm, lines} = this.opts.code
 
-    this.scope = new ValueScope({scope: {}, prefixes: EXT_SCOPE_NAMES, es5, lines})
+    this.scope = new ValueScope({scope: {}, prefixes: EXT_SCOPE_NAMES, es5, esm, lines})
     this.logger = getLogger(opts.logger)
     const formatOpt = opts.validateFormats
     opts.validateFormats = false

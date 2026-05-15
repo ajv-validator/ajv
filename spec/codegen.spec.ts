@@ -9,7 +9,10 @@ import {
   not,
   Code,
   Name,
+  NamedImport,
 } from "../dist/compile/codegen"
+import {_Code} from "../dist/compile/codegen/code"
+import {useFunc} from "../dist/compile/util"
 import * as assert from "assert"
 
 describe("code generation", () => {
@@ -22,6 +25,35 @@ describe("code generation", () => {
 
     it("returns false from emptyStr", () => {
       assert.strictEqual(new Name("x").emptyStr(), false)
+    })
+  })
+
+  describe("NamedImport", () => {
+    it("throws if non-identifier is passed", () => {
+      assert.throws(() => new NamedImport("1x", "foo"), /name must be a valid identifier/)
+      assert.throws(() => new NamedImport("-x", "foo"), /name must be a valid identifier/)
+      new NamedImport("", "foo")
+      new NamedImport("x", "foo")
+    })
+
+    it("returns false from emptyStr", () => {
+      assert.strictEqual(new NamedImport("x", "y").emptyStr(), false)
+    })
+
+    it("returns require call from str getter", () => {
+      assert.strictEqual(new NamedImport("x", "foo").str, 'require("foo").x')
+    })
+
+    it("returns require call from toString method", () => {
+      assert.strictEqual(new NamedImport("x", "foo").toString(), 'require("foo").x')
+    })
+
+    it("returns require call without property when name is empty", () => {
+      assert.strictEqual(new NamedImport("", "foo").str, 'require("foo")')
+    })
+
+    it("returns empty object from names getter", () => {
+      assert.deepStrictEqual(new NamedImport("x", "foo").names, {})
     })
   })
 
@@ -490,6 +522,37 @@ describe("code generation", () => {
       })
       assertEqual(gen.scopeRefs(new Name("scope")), "const val0 = scope.val[0];")
       assertEqual(gen.scopeCode(), "const val0 = 1;")
+    })
+  })
+
+  describe("useFunc", () => {
+    let gen: CodeGen
+    let scope: ScopeStore
+
+    beforeEach(() => {
+      scope = {}
+      gen = new CodeGen(new ValueScope({scope, esm: true}))
+    })
+
+    it("returns a new code instance referencing the function when no import is present", () => {
+      const fn = {code: 'require("foo").default'}
+      const name = useFunc(gen, fn)
+      assert.strictEqual(name.str, "func0")
+      assert.strictEqual(gen.getScopeValue("func", fn)?.str, "func0")
+      assert.strictEqual(gen.getScopeValue("func", fn)?.value?.code instanceof _Code, true)
+      assert.strictEqual(gen.getScopeValue("func", fn)?.value?.ref, fn)
+      assert.strictEqual(gen.scopeCode().str, 'const func0 = require("foo").default;')
+    })
+
+    it("returns a new named import instance referencing the function when an import is present", () => {
+      const fn = {code: 'require("foo").default', import: ["default", "foo"]} as const
+      const name = useFunc(gen, fn)
+      assert.strictEqual(name.str, "func0")
+      assert.strictEqual(gen.getScopeValue("func", fn)?.prefix, "func")
+      assert.strictEqual(gen.getScopeValue("func", fn)?.str, "func0")
+      assert.strictEqual(gen.getScopeValue("func", fn)?.value?.code instanceof NamedImport, true)
+      assert.strictEqual(gen.getScopeValue("func", fn)?.value?.ref, fn)
+      assert.strictEqual(gen.scopeCode().str, 'import { "default" as func0 } from "foo.js";')
     })
   })
 })

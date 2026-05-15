@@ -6,6 +6,7 @@ import ajvFormats from "ajv-formats"
 import * as requireFromString from "require-from-string"
 import {importFromStringSync} from "module-from-string"
 import * as assert from "assert"
+import {NamedImport} from "../dist/compile/codegen"
 
 function testExportTypeEsm(moduleCode: string, singleExport: boolean) {
   //Must have
@@ -25,6 +26,25 @@ function testExportTypeCjs(moduleCode: string, singleExport: boolean) {
   }
   //Must not have
   assert.strictEqual(moduleCode.includes("export const"), false)
+}
+
+function testImportTypeEsm(moduleCode: string) {
+  //Must have
+  assert.strictEqual(moduleCode.includes("import { "), true)
+  assert.strictEqual(moduleCode.includes(" as "), true)
+  assert.strictEqual(moduleCode.includes(' from "'), true)
+  assert.strictEqual(moduleCode.includes('.js";'), true)
+  //Must not have
+  assert.strictEqual(moduleCode.includes("require("), false)
+  assert.strictEqual(moduleCode.includes(".js.js"), false)
+}
+function testImportTypeCjs(moduleCode: string) {
+  //Must have
+  assert.strictEqual(moduleCode.includes(' = require("'), true)
+  //Must not have
+  assert.strictEqual(moduleCode.includes("import "), false)
+  assert.strictEqual(moduleCode.includes('.js")'), false)
+  assert.strictEqual(moduleCode.includes(".js.js"), false)
 }
 
 describe("standalone code generation", () => {
@@ -103,6 +123,28 @@ describe("standalone code generation", () => {
             throw err
           }
         }
+      })
+
+      it("should generate module code with require calls - CJS", () => {
+        ajv = new _Ajv({code: {source: true}})
+        ajv.addSchema(numSchema)
+        ajv.addSchema(strSchema)
+        const moduleCode = standaloneCode(ajv, {
+          validateNumber: "https://example.com/number.json",
+          validateString: "https://example.com/string.json",
+        })
+        testImportTypeCjs(moduleCode)
+      })
+
+      it("should generate module code with named imports - ESM", () => {
+        ajv = new _Ajv({code: {source: true, esm: true}})
+        ajv.addSchema(numSchema)
+        ajv.addSchema(strSchema)
+        const moduleCode = standaloneCode(ajv, {
+          validateNumber: "https://example.com/number.json",
+          validateString: "https://example.com/string.json",
+        })
+        testImportTypeEsm(moduleCode)
       })
     })
 
@@ -336,6 +378,17 @@ describe("standalone code generation", () => {
           required: ["email"],
           additionalProperties: false,
         },
+        ProductPage: {
+          type: "object",
+          properties: {
+            location: {
+              type: "string",
+              format: "uri",
+            },
+          },
+          required: ["uri"],
+          additionalProperties: false,
+        },
       },
     }
 
@@ -350,6 +403,48 @@ describe("standalone code generation", () => {
       assert.strictEqual(validateUser({}), false)
       assert.strictEqual(validateUser({email: "foo"}), false)
       assert.strictEqual(validateUser({email: "foo@bar.com"}), true)
+    })
+
+    it("should generate require call when esm flag is disabled", () => {
+      const ajv = new _Ajv({code: {source: true, esm: false}})
+      ajvFormats(ajv)
+      ajv.addSchema(schema)
+      const moduleCode = standaloneCode(ajv, {validateUser: "#/definitions/ProductPage"})
+
+      assert.strictEqual(
+        moduleCode.includes('require("ajv-formats/dist/formats").fullFormats.uri'),
+        true
+      )
+      assert.strictEqual(moduleCode.includes("import {"), false)
+      assert.strictEqual(moduleCode.includes('from "ajv-formats'), false)
+    })
+
+    it("should generate named import statement when esm flag is enabled", () => {
+      const ajv = new _Ajv({code: {source: true, esm: true}})
+      // Can use ajvFormats(ajv) instead once ajv-format was updated to support ESM
+      // ajvFormats(ajv)
+      ajv.opts.code.formats = new NamedImport("formats", "ajv-formats/dist/formats", ".js")
+      ajv.addFormat("uri", () => true)
+
+      ajv.addSchema(schema)
+      const moduleCode = standaloneCode(ajv, {validateUser: "#/definitions/ProductPage"})
+
+      assert.strictEqual(moduleCode.includes('import { "formats"'), true)
+      assert.strictEqual(moduleCode.includes('from "ajv-formats/dist/formats.js";'), true)
+      assert.strictEqual(moduleCode.includes("require("), false)
+    })
+
+    it("should generate star import statement when name is empty", () => {
+      const ajv = new _Ajv({code: {source: true, esm: true}})
+      ajv.opts.code.formats = new NamedImport("", "./myFormat", ".js")
+      ajv.addFormat("uri", () => true)
+
+      ajv.addSchema(schema)
+      const moduleCode = standaloneCode(ajv, {validateUser: "#/definitions/ProductPage"})
+
+      assert.strictEqual(moduleCode.includes("import * as "), true)
+      assert.strictEqual(moduleCode.includes('from "./myFormat.js";'), true)
+      assert.strictEqual(moduleCode.includes("require("), false)
     })
   })
 
