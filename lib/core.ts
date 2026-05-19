@@ -586,6 +586,11 @@ export default class Ajv {
     return this
   }
 
+  allowCustomAnnotations(): Ajv {
+    this.RULES.allowCustomAnnotations = true
+    return this
+  }
+
   addKeyword(
     kwdOrDef: string | KeywordDefinition,
     def?: KeywordDefinition // deprecated

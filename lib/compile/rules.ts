@@ -19,6 +19,7 @@ export interface ValidationRules {
   post: RuleGroup
   all: {[Key in string]?: boolean | Rule} // rules that have to be validated
   keywords: {[Key in string]?: boolean} // all known keywords (superset of "all")
+  allowCustomAnnotations?: boolean // allow ignored x-* annotation keywords
   types: ValidationTypes
 }
 

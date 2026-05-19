@@ -33,4 +33,9 @@ export default class AjvPack {
     this.ajv.addKeyword.call(this.ajv, ...args)
     return this
   }
+
+  allowCustomAnnotations(): AjvPack {
+    this.ajv.allowCustomAnnotations.call(this.ajv)
+    return this
+  }
 }

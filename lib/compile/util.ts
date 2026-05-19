@@ -24,8 +24,15 @@ export function checkUnknownRules(it: SchemaCxt, schema: AnySchema = it.schema):
   if (typeof schema === "boolean") return
   const rules = self.RULES.keywords
   for (const key in schema) {
-    if (!rules[key]) checkStrictMode(it, `unknown keyword: "${key}"`)
+    if (!rules[key] && !allowedCustomAnnotation(self.RULES, key)) {
+      checkStrictMode(it, `unknown keyword: "${key}"`)
+    }
   }
+}
+
+// https://json-schema.org/blog/posts/custom-annotations-will-continue
+function allowedCustomAnnotation(RULES: ValidationRules, keyword: string): boolean {
+  return RULES.allowCustomAnnotations === true && keyword.startsWith("x-")
 }
 
 export function schemaHasRules(
