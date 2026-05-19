@@ -48,6 +48,12 @@ or use the convenience method `addVocabulary` for multiple keywords
 ajv.addVocabulary(["allowed1", "allowed2"]) // simply calls addKeyword multiple times
 ```
 
+To allow all [custom annotation keywords](https://json-schema.org/blog/posts/custom-annotations-will-continue) prefixed with `x-`, use `allowCustomAnnotations`:
+
+```javascript
+ajv.allowCustomAnnotations()
+```
+
 #### Ignored "additionalItems" keyword
 
 JSON Schema section [9.3.1.2](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-9.3.1.2) requires to ignore "additionalItems" keyword if "items" keyword is absent or if it is not an array of items. This is inconsistent with the interaction of "additionalProperties" and "properties", and may cause unexpected results.

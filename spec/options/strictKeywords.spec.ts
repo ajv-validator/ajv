@@ -67,6 +67,56 @@ describe("strict option with keywords (replaced strictKeywords)", () => {
     })
   })
 
+  describe("custom annotations", () => {
+    it('should throw an error for "x-" prefixed keywords by default', () => {
+      const ajv = new _Ajv()
+      should.throw(() => ajv.compile({"x-annotation": 1}), /unknown keyword: "x-annotation"/)
+    })
+
+    it('should allow ignored "x-" prefixed keywords when enabled', () => {
+      const ajv = new _Ajv()
+      const result = ajv.allowCustomAnnotations()
+      result.should.equal(ajv)
+
+      const validate = ajv.compile({
+        type: "object",
+        "x-root": 1,
+        properties: {
+          foo: {
+            type: "string",
+            "x-property": {description: "ignored"},
+          },
+        },
+        anyOf: [{"x-sub-schema": true}],
+      })
+
+      validate({foo: "bar"}).should.equal(true)
+    })
+
+    it("should still throw an error for other unknown keywords", () => {
+      const ajv = new _Ajv()
+      ajv.allowCustomAnnotations()
+
+      should.throw(
+        () => ajv.compile({type: "object", "x-annotation": 1, unknownKeyword: 1}),
+        /unknown keyword: "unknownKeyword"/
+      )
+    })
+
+    it('should not log a warning for "x-" prefixed keywords when enabled', () => {
+      const output: any = {}
+      const ajv = new _Ajv({
+        strict: "log",
+        logger: getLogger(output),
+      })
+      ajv.allowCustomAnnotations()
+
+      ajv.compile({"x-annotation": 1})
+
+      should.not.exist(output.warning)
+    })
+  })
+
   function getLogger(output) {
     return {
       log() {

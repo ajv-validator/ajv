@@ -307,6 +307,10 @@ If the keyword is validating data type that is different from the type(s) in its
 
 See [User defined keywords](./keywords.md) for more details.
 
+### ajv.allowCustomAnnotations(): Ajv
+
+Allows unknown schema keywords prefixed with `x-` when `strictSchema` is enabled. These keywords are treated as annotations and ignored by validation.
+
 ### ajv.getKeyword(keyword: string): object | boolean
 
 Returns keyword definition, `false` if the keyword is unknown.
