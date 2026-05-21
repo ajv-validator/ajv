@@ -1,8 +1,10 @@
-import type {CodeKeywordDefinition} from "../../types"
+import type {AnySchema, CodeKeywordDefinition} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
 import {_, getProperty, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
-import {callRef} from "../core/ref"
+import {SchemaEnv, compileSchema, resolveRef} from "../../compile"
+import MissingRefError from "../../compile/ref_error"
+import {callRef, getValidate} from "../core/ref"
 
 const def: CodeKeywordDefinition = {
   keyword: "$dynamicRef",
@@ -23,29 +25,54 @@ export function dynamicRef(cxt: KeywordCxt, ref: string): void {
   }
 
   function _dynamicRef(valid?: Name): void {
-    // TODO the assumption here is that `recursiveRef: #` always points to the root
-    // of the schema object, which is not correct, because there may be $id that
-    // makes # point to it, and the target schema may not contain dynamic/recursiveAnchor.
-    // Because of that 2 tests in recursiveRef.json fail.
-    // This is a similar problem to #815 (`$id` doesn't alter resolution scope for `{ "$ref": "#" }`).
-    // (This problem is not tested in JSON-Schema-Test-Suite)
-    if (it.schemaEnv.root.dynamicAnchors[anchor]) {
+    const staticRef = getStaticRef(cxt, ref, anchor)
+    if (staticRef.dynamic) {
       const v = gen.let("_v", _`${N.dynamicAnchors}${getProperty(anchor)}`)
-      gen.if(v, _callRef(v, valid), _callRef(it.validateName, valid))
+      gen.if(v, _callRef(v, valid), _callRef(staticRef.validate, valid, staticRef.schemaEnv))
     } else {
-      _callRef(it.validateName, valid)()
+      _callRef(staticRef.validate, valid, staticRef.schemaEnv)()
     }
   }
 
-  function _callRef(validate: Code, valid?: Name): () => void {
+  function _callRef(validate: Code, valid?: Name, schemaEnv?: SchemaEnv): () => void {
     return valid
       ? () =>
           gen.block(() => {
-            callRef(cxt, validate)
+            callRef(cxt, validate, schemaEnv, schemaEnv?.$async)
             gen.let(valid, true)
           })
-      : () => callRef(cxt, validate)
+      : () => callRef(cxt, validate, schemaEnv, schemaEnv?.$async)
   }
+}
+
+function getStaticRef(
+  cxt: KeywordCxt,
+  ref: string,
+  anchor: string
+): {validate: Code; schemaEnv?: SchemaEnv; dynamic: boolean} {
+  const {baseId, schemaEnv, self} = cxt.it
+  const staticRef = resolveRef.call(self, schemaEnv.root, baseId, ref)
+  if (staticRef === undefined) {
+    if (schemaEnv.root.dynamicAnchors[anchor]) {
+      return {validate: cxt.it.validateName, dynamic: true}
+    }
+    throw new MissingRefError(self.opts.uriResolver, baseId, ref)
+  }
+  const refEnv = staticRef instanceof SchemaEnv ? staticRef : compileRef(cxt, staticRef)
+  const {schema} = refEnv
+  const dynamic =
+    typeof schema == "object" &&
+    (anchor ? schema.$dynamicAnchor === anchor : schema.$recursiveAnchor === true)
+  return {validate: getValidate(cxt, refEnv), schemaEnv: refEnv, dynamic}
+}
+
+function compileRef(cxt: KeywordCxt, schema: AnySchema): SchemaEnv {
+  const {schemaEnv, self} = cxt.it
+  const {schemaId} = self.opts
+  const {root, baseId, localRefs, meta} = schemaEnv.root
+  const sch = new SchemaEnv({schema, schemaId, root, baseId, localRefs, meta})
+  compileSchema.call(self, sch)
+  return sch
 }
 
 export default def
