@@ -1,6 +1,7 @@
 import type Ajv from "../dist/core"
 import type {SchemaObject} from ".."
 import _Ajv from "./ajv2019"
+import _Ajv2020 from "./ajv2020"
 import getAjvInstances from "./ajv_instances"
 import options from "./ajv_options"
 import * as assert from "assert"
@@ -43,6 +44,29 @@ describe("recursiveRef and dynamicRef", () => {
   })
 
   describe("dynamicRef", () => {
+    it("should resolve dynamicRef to a nested dynamicAnchor in the same schema resource", () => {
+      const schema = {
+        $schema: "https://json-schema.org/draft/2020-12/schema",
+        type: "object",
+        properties: {
+          schema: {$dynamicRef: "#meta"},
+        },
+        unevaluatedProperties: false,
+        $defs: {
+          schema: {
+            $dynamicAnchor: "meta",
+            type: ["object", "boolean"],
+          },
+        },
+      }
+
+      const ajv = new _Ajv2020({strict: false})
+      const validate = ajv.compile(schema)
+
+      assert.strictEqual(validate({schema: {type: "string"}}), true)
+      assert.strictEqual(validate({schema: "string"}), false)
+    })
+
     it("should allow extending recursive schema with dynamicRef (future draft2020)", () => {
       const treeSchema = {
         $id: "https://example.com/tree",

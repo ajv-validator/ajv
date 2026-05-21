@@ -2,9 +2,9 @@ import type {CodeKeywordDefinition, AnySchema} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
 import MissingRefError from "../../compile/ref_error"
 import {callValidateCode} from "../code"
-import {_, nil, stringify, Code, Name} from "../../compile/codegen"
+import {_, nil, stringify, getProperty, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
-import {SchemaEnv, resolveRef} from "../../compile"
+import {SchemaEnv, compileSchema, resolveRef} from "../../compile"
 import {mergeEvaluated} from "../../compile/util"
 
 const def: CodeKeywordDefinition = {
@@ -64,8 +64,22 @@ export function callRef(cxt: KeywordCxt, v: Code, sch?: SchemaEnv, $async?: bool
   const {gen, it} = cxt
   const {allErrors, schemaEnv: env, opts} = it
   const passCxt = opts.passContext ? N.this : nil
+  if (opts.dynamicRef) setDynamicAnchors()
   if ($async) callAsyncRef()
   else callSyncRef()
+
+  function setDynamicAnchors(): void {
+    for (const anchor in env.root.dynamicAnchors) {
+      const ref = anchor ? `#${anchor}` : "#"
+      const anchorSchema = getDynamicAnchorSchema(cxt, ref, anchor)
+      if (anchorSchema) {
+        const dynamicAnchor = _`${N.dynamicAnchors}${getProperty(anchor)}`
+        gen.if(_`!${dynamicAnchor}`, () =>
+          gen.assign(dynamicAnchor, getValidate(cxt, anchorSchema))
+        )
+      }
+    }
+  }
 
   function callAsyncRef(): void {
     if (!env.$async) throw new Error("async schema referenced by sync schema")
@@ -124,6 +138,34 @@ export function callRef(cxt: KeywordCxt, v: Code, sch?: SchemaEnv, $async?: bool
       }
     }
   }
+}
+
+function getDynamicAnchorSchema(
+  cxt: KeywordCxt,
+  ref: string,
+  anchor: string
+): SchemaEnv | undefined {
+  const {schemaEnv: env, self, baseId} = cxt.it
+  const schOrEnv = resolveRef.call(self, env.root, baseId, ref)
+  if (schOrEnv === undefined) return
+  const sch = schOrEnv instanceof SchemaEnv ? schOrEnv : compileRef(cxt, schOrEnv)
+  if (!hasDynamicAnchor(sch.schema, anchor)) return
+  return sch
+}
+
+function compileRef(cxt: KeywordCxt, schema: AnySchema): SchemaEnv {
+  const {schemaEnv: env, self, baseId} = cxt.it
+  const {schemaId} = self.opts
+  const sch = new SchemaEnv({schema, schemaId, root: env.root, baseId})
+  compileSchema.call(self, sch)
+  return sch
+}
+
+function hasDynamicAnchor(schema: AnySchema, anchor: string): boolean {
+  return (
+    typeof schema == "object" &&
+    (anchor ? schema.$dynamicAnchor === anchor : schema.$recursiveAnchor === true)
+  )
 }
 
 export default def
