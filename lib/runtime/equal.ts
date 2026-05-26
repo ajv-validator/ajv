@@ -5,20 +5,21 @@ import * as equal from "fast-deep-equal"
 // (see https://github.com/ajv-validator/ajv/issues/2624)
 function safeEqual(a: unknown, b: unknown): boolean {
   if (a && typeof a === "object") {
-    safeGuard(a as Record<string, unknown>)
+    safeGuard(a)
   }
   if (b && typeof b === "object") {
-    safeGuard(b as Record<string, unknown>)
+    safeGuard(b)
   }
   return equal(a, b)
 }
 
-function safeGuard(obj: Record<string, unknown>) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function safeGuard(obj: any) {
   if (typeof obj.toString !== "function") {
-    obj.toString = Object.prototype.toString as () => string
+    obj.toString = Object.prototype.toString
   }
   if (typeof obj.valueOf !== "function") {
-    obj.valueOf = Object.prototype.valueOf as () => unknown
+    obj.valueOf = Object.prototype.valueOf
   }
 }
 
