@@ -841,10 +841,12 @@ function addRule(
   definition?: AddedKeywordDefinition,
   dataType?: JSONType
 ): void {
-  const post = definition?.post
+  const {post, subschema = false} = definition ?? {}
   if (dataType && post) throw new Error('keyword with "post" flag cannot have "type"')
   const {RULES} = this
-  let ruleGroup = post ? RULES.post : RULES.rules.find(({type: t}) => t === dataType)
+  let ruleGroup = post
+    ? RULES.post
+    : RULES.rules.find(({type: t, subschema: s = false}) => t === dataType && s === subschema)
   if (!ruleGroup) {
     ruleGroup = {type: dataType, rules: []}
     RULES.rules.push(ruleGroup)

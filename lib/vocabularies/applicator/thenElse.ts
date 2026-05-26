@@ -5,6 +5,7 @@ import {checkStrictMode} from "../../compile/util"
 const def: CodeKeywordDefinition = {
   keyword: ["then", "else"],
   schemaType: ["object", "boolean"],
+  subschema: true,
   code({keyword, parentSchema, it}: KeywordCxt) {
     if (parentSchema.if === undefined) checkStrictMode(it, `"${keyword}" without "if" is ignored`)
   },

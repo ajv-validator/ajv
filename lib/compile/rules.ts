@@ -25,6 +25,7 @@ export interface ValidationRules {
 export interface RuleGroup {
   type?: JSONType
   rules: Rule[]
+  subschema?: boolean
 }
 
 // This interface wraps KeywordDefinition because definition can have multiple keywords
@@ -42,7 +43,14 @@ export function getRules(): ValidationRules {
   }
   return {
     types: {...groups, integer: true, boolean: true, null: true},
-    rules: [{rules: []}, groups.number, groups.string, groups.array, groups.object],
+    rules: [
+      {rules: []},
+      groups.number,
+      groups.string,
+      groups.array,
+      groups.object,
+      {rules: [], subschema: true},
+    ],
     post: {rules: []},
     all: {},
     keywords: {},

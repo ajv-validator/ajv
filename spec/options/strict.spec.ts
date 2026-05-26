@@ -295,7 +295,7 @@ describe("strict mode", () => {
       }, 'strict mode: required property "keyname" is not defined at "#/properties/test" (strictRequired)')
     })
 
-    it.skip("should not throw with a same level if then", () => {
+    it("should not throw with a same level if then", () => {
       should.not.throw(() => {
         ajv.compile({
           type: "object",
@@ -313,7 +313,7 @@ describe("strict mode", () => {
           properties: {
             foo: {
               type: "object",
-              required: "foo",
+              required: ["foo"],
               properties: {
                 test: {
                   type: "integer",
@@ -322,7 +322,7 @@ describe("strict mode", () => {
             },
           },
         })
-      })
+      }, 'strict mode: required property "foo" is not defined at "#/properties/foo" (strictRequired)')
     })
 
     it("should throw if property exists in parent but not in actual object required references", () => {
@@ -332,7 +332,7 @@ describe("strict mode", () => {
           properties: {
             foo: {
               type: "object",
-              required: "foo",
+              required: ["foo"],
               properties: {
                 test: {
                   type: "number",
@@ -341,10 +341,10 @@ describe("strict mode", () => {
             },
           },
         })
-      })
+      }, 'strict mode: required property "foo" is not defined at "#/properties/foo" (strictRequired)')
     })
 
-    it.skip("should not throw because all referenced properties are defined", () => {
+    it("should not throw because all referenced properties are defined", () => {
       should.not.throw(() => {
         ajv.compile({
           type: "object",
@@ -379,7 +379,7 @@ describe("strict mode", () => {
             },
           ],
         })
-      })
+      }, 'strict mode: required property "baz" is not defined at "#/allOf/0/allOf/0/then" (strictRequired)')
     })
   })
 })

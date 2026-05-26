@@ -29,6 +29,7 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
   allowUndefined: true,
   trackErrors: true,
   error,
+  before: "properties",
   code(cxt) {
     const {gen, schema, parentSchema, data, errsCount, it} = cxt
     /* istanbul ignore if */
