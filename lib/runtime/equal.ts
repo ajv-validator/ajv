@@ -14,12 +14,12 @@ function safeEqual(a: unknown, b: unknown): boolean {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function safeGuard(obj: any) {
+function safeGuard(obj: any): void {
   if (typeof obj.toString !== "function") {
-    obj.toString = Object.prototype.toString
+    obj.toString = (): string => Object.prototype.toString.call(obj)
   }
   if (typeof obj.valueOf !== "function") {
-    obj.valueOf = Object.prototype.valueOf
+    obj.valueOf = (): unknown => Object.prototype.valueOf.call(obj)
   }
 }
 
