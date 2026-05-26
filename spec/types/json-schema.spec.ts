@@ -12,7 +12,7 @@ interface MyData {
     [x: string]: string
   }
   boo?: true
-  tuple?: readonly [number, string]
+  tuple?: readonly [number, string] | null
   arr: {id: number}[]
   map: {[K in string]?: number}
   notBoo?: string // should not be present if "boo" is present
@@ -70,18 +70,17 @@ const mySchema: JSONSchemaType<MyData> & {
       required: ["negativeIfBoo"],
       properties: {
         // partial properties can be used in partial schemas
-        negativeIfBoo: {type: "number", nullable: true, exclusiveMaximum: 0},
+        negativeIfBoo: {type: "number", exclusiveMaximum: 0},
       },
     },
   },
   properties: {
     foo: {type: "string"},
-    bar: {type: "number", nullable: true},
+    bar: {type: "number"},
     baz: {$ref: "#/definitions/baz"}, // ... but it does not check type here, ...
     boo: {
       type: "boolean",
-      nullable: true,
-      enum: [true, null],
+      const: true,
     },
     tuple: {$ref: "#/definitions/tuple"}, // ... nor here.
     arr: arrSchema, // ... The alternative is to define it externally - here it checks type
@@ -90,8 +89,8 @@ const mySchema: JSONSchemaType<MyData> & {
       required: [],
       additionalProperties: {type: "number"},
     },
-    notBoo: {type: "string", nullable: true},
-    negativeIfBoo: {type: "number", nullable: true},
+    notBoo: {type: "string"},
+    negativeIfBoo: {type: "number"},
   },
   additionalProperties: false,
   required: ["foo", "baz", "arr", "map"], // any other property added here won't typecheck
@@ -146,6 +145,12 @@ const emptyType: JSONSchemaType<MyData> = {
 } as const
 
 type MyEnumRecord = Record<"a" | "b" | "c" | "d", number | undefined>
+
+interface SimpleOptional {
+  foo: string
+  bar?: string
+  baz?: string | null
+}
 
 describe("JSONSchemaType type and validation as a type guard", () => {
   const ajv = new _Ajv({allowUnionTypes: true})
@@ -347,6 +352,68 @@ describe("JSONSchemaType type and validation as a type guard", () => {
       const validate = ajv.compile(nullSchema)
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       validate(null).should.be.true
+    })
+
+    it("validates top level ref", () => {
+      const refSchema: JSONSchemaType<null> = {
+        $ref: "https://some_other_schema",
+      }
+
+      // eslint-disable-next-line no-void
+      void refSchema
+    })
+
+    it("requires toplevel null", () => {
+      // @ts-expect-error needs nullable
+      const nullNum: JSONSchemaType<number | null> = {
+        type: "number",
+      }
+
+      // eslint-disable-next-line no-void
+      void nullNum
+    })
+  })
+
+  describe("schema handles optional properties", () => {
+    it("doesn't require nullable for optionals", () => {
+      const schema: JSONSchemaType<SimpleOptional> = {
+        type: "object",
+        properties: {
+          foo: {
+            type: "string",
+          },
+          bar: {
+            type: "string",
+          },
+          baz: {
+            type: "string",
+            nullable: true,
+          },
+        },
+        required: ["foo"],
+        additionalProperties: false,
+      }
+
+      // @ts-expect-error needed baz to by nullable
+      const nonNullSchema: JSONSchemaType<SimpleOptional> = {
+        type: "object",
+        properties: {
+          foo: {
+            type: "string",
+          },
+          bar: {
+            type: "string",
+          },
+          baz: {
+            type: "string",
+          },
+        },
+        required: ["foo"],
+        additionalProperties: false,
+      }
+
+      // eslint-disable-next-line no-void
+      void [schema, nonNullSchema]
     })
   })
 })

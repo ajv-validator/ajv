@@ -34,12 +34,15 @@ interface StringKeywords {
 }
 
 type UncheckedJSONSchemaType<T, IsPartial extends boolean> = (
-  | // these two unions allow arbitrary unions of types
+  | // this allows empty $refs without needing to be in properties or items
   {
-      anyOf: readonly UncheckedJSONSchemaType<T, IsPartial>[]
+      readonly $ref: string
+    } // these two unions allow arbitrary unions of types
+  | {
+      readonly anyOf: readonly UncheckedJSONSchemaType<T, IsPartial>[]
     }
   | {
-      oneOf: readonly UncheckedJSONSchemaType<T, IsPartial>[]
+      readonly oneOf: readonly UncheckedJSONSchemaType<T, IsPartial>[]
     }
   // this union allows for { type: (primitive)[] } style schemas
   | ({
@@ -59,7 +62,8 @@ type UncheckedJSONSchemaType<T, IsPartial extends boolean> = (
         ? // eslint-disable-next-line @typescript-eslint/ban-types
           {}
         : never
-    >)
+    > &
+      Nullable<T>)
   // this covers "normal" types; it's last so typescript looks to it first for errors
   | ((T extends number
       ? {
@@ -78,14 +82,14 @@ type UncheckedJSONSchemaType<T, IsPartial extends boolean> = (
           // JSON AnySchema for tuple
           type: JSONType<"array", IsPartial>
           items: {
-            readonly [K in keyof T]-?: UncheckedJSONSchemaType<T[K], false> & Nullable<T[K]>
+            readonly [K in keyof T]-?: UncheckedJSONSchemaType<T[K], false>
           } & {length: T["length"]}
           minItems: T["length"]
         } & ({maxItems: T["length"]} | {additionalItems: false})
       : T extends readonly any[]
       ? {
           type: JSONType<"array", IsPartial>
-          items: UncheckedJSONSchemaType<T[0], false>
+          items?: UncheckedJSONSchemaType<T[0], false>
           contains?: UncheckedPartialSchema<T[0]>
           minItems?: number
           maxItems?: number
@@ -104,8 +108,8 @@ type UncheckedJSONSchemaType<T, IsPartial extends boolean> = (
           additionalProperties?: boolean | UncheckedJSONSchemaType<T[string], false>
           unevaluatedProperties?: boolean | UncheckedJSONSchemaType<T[string], false>
           properties?: IsPartial extends true
-            ? Partial<UncheckedPropertiesSchema<T>>
-            : UncheckedPropertiesSchema<T>
+            ? {[K in keyof T]+?: UncheckedJSONSchemaType<T[K], false>}
+            : {[K in keyof T]-?: UncheckedJSONSchemaType<T[K], false>}
           patternProperties?: Record<string, UncheckedJSONSchemaType<T[string], false>>
           propertyNames?: Omit<UncheckedJSONSchemaType<string, false>, "type"> & {type?: "string"}
           dependencies?: {[K in keyof T]?: readonly (keyof T)[] | UncheckedPartialSchema<T>}
@@ -131,7 +135,7 @@ type UncheckedJSONSchemaType<T, IsPartial extends boolean> = (
       then?: UncheckedPartialSchema<T>
       else?: UncheckedPartialSchema<T>
       not?: UncheckedPartialSchema<T>
-    })
+    } & Nullable<T>)
 ) & {
   [keyword: string]: any
   $id?: string
@@ -145,22 +149,11 @@ export type JSONSchemaType<T> = StrictNullChecksWrapper<
   UncheckedJSONSchemaType<T, false>
 >
 
-type Known =
-  | {[key: string]: Known}
-  | [Known, ...Known[]]
-  | Known[]
-  | number
-  | string
-  | boolean
-  | null
-
-type UncheckedPropertiesSchema<T> = {
-  [K in keyof T]-?: (UncheckedJSONSchemaType<T[K], false> & Nullable<T[K]>) | {$ref: string}
-}
+type Known = {[key: string]: Known} | [Known, ...Known[]] | Known[] | number | string | boolean
 
 export type PropertiesSchema<T> = StrictNullChecksWrapper<
   "PropertiesSchema",
-  UncheckedPropertiesSchema<T>
+  {[K in keyof T]-?: UncheckedJSONSchemaType<T[K], false>}
 >
 
 type UncheckedRequiredMembers<T> = {
@@ -172,7 +165,14 @@ export type RequiredMembers<T> = StrictNullChecksWrapper<
   UncheckedRequiredMembers<T>
 >
 
-type Nullable<T> = undefined extends T
+// hacky short circuit where the Nullable<Known> is the union with null
+type Nullable<T> = [Known] extends [T]
+  ? [T] extends [Known]
+    ? BaseNullable<Known> | BaseNullable<null>
+    : BaseNullable<T>
+  : BaseNullable<T>
+
+type BaseNullable<T> = null extends T
   ? {
       nullable: true
       const?: null // any non-null value would fail `const: null`, `null` would fail any other value in const
