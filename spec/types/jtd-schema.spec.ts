@@ -353,12 +353,30 @@ describe("JTDSchemaType", () => {
   })
 
   it("should typecheck ref schemas", () => {
+    const ajv = new _Ajv()
     const refs: JTDSchemaType<number[], {num: number}> = {
       definitions: {
         num: {type: "float64"},
       },
       elements: {ref: "num"},
     }
+
+    // test that ajv.validate captures ref data type
+    const validData: unknown = [0]
+    if (ajv.validate(refs, validData)) {
+      const postValidation: number[] = validData
+      postValidation[0].should.equal(0)
+    }
+    should.not.exist(ajv.errors)
+
+    // test that ajv.compile captures ref data type
+    const validate = ajv.compile(refs)
+    if (validate(validData)) {
+      const postValidation: number[] = validData
+      postValidation[0].should.equal(0)
+    }
+    should.not.exist(validate.errors)
+
     const missingDef: JTDSchemaType<number[], {num: number}> = {
       // @ts-expect-error
       definitions: {},
@@ -391,6 +409,35 @@ describe("JTDSchemaType", () => {
     }
 
     void [refs, missingDef, missingType, nullRefs, refsNullOne, refsNullTwo]
+  })
+
+  it("should typecheck nested ref schemas", () => {
+    const ajv = new _Ajv()
+    const schema: JTDSchemaType<{str: string; ref: number}, {num: number}> = {
+      definitions: {
+        num: {type: "int32"},
+      },
+      properties: {
+        ref: {ref: "num"},
+        str: {type: "string"},
+      },
+    }
+
+    // test that ajv.validate captures ref data type
+    const validData: unknown = {str: "", ref: 0}
+    if (ajv.validate(schema, validData)) {
+      const validated: string = validData.str
+      validated.should.equal("")
+    }
+    should.not.exist(ajv.errors)
+
+    // test that ajv.compile captures ref data type
+    const validate = ajv.compile(schema)
+    if (validate(validData)) {
+      const validated: string = validData.str
+      validated.should.equal("")
+    }
+    should.not.exist(validate.errors)
   })
 
   it("should typecheck metadata schemas", () => {
