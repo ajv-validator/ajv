@@ -473,7 +473,6 @@ describe("Type coercion", () => {
     }
 
     instances.forEach((_ajv) => {
-      console.log(_ajv.validate.toString())
       _ajv.validate(schema, "Infinity").should.equal(false)
       _ajv.validate(schema, "9e600").should.equal(false)
       _ajv.validate(schema, "9E600").should.equal(false)
