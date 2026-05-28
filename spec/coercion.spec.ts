@@ -467,7 +467,22 @@ describe("Type coercion", () => {
       validate.errors?.pop()?.keyword.should.equal("contains")
     })
   })
+  it("coerceTypes with non-finite values", () => {
+    const schema = {
+      type: "integer",
+    }
 
+    instances.forEach((_ajv) => {
+      console.log(_ajv.validate.toString())
+      _ajv.validate(schema, "Infinity").should.equal(false)
+      _ajv.validate(schema, "9e600").should.equal(false)
+      _ajv.validate(schema, "9E600").should.equal(false)
+
+      _ajv.validate(schema, "-Infinity").should.equal(false)
+      _ajv.validate(schema, "-9e600").should.equal(false)
+      _ajv.validate(schema, "-9E600").should.equal(false)
+    })
+  })
   function testRules(rules, cb) {
     for (const toType in rules) {
       for (const fromType in rules[toType]) {
