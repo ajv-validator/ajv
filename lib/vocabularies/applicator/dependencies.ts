@@ -6,8 +6,8 @@ import type {
   AnySchema,
 } from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
-import {_, str} from "../../compile/codegen"
-import {alwaysValidSchema} from "../../compile/util"
+import {_, str, Name} from "../../compile/codegen"
+import {alwaysValidSchema, evaluatedPropsToName} from "../../compile/util"
 import {checkReportMissingProp, checkMissingProp, reportMissingProp, propertyInData} from "../code"
 
 export type PropertyDependencies = {[K in string]?: string[]}
@@ -95,6 +95,14 @@ export function validatePropertyDeps(
 export function validateSchemaDeps(cxt: KeywordCxt, schemaDeps: SchemaMap = cxt.schema): void {
   const {gen, data, keyword, it} = cxt
   const valid = gen.name("valid")
+  if (
+    it.opts.unevaluated &&
+    it.props !== true &&
+    it.props !== undefined &&
+    !(it.props instanceof Name)
+  ) {
+    it.props = evaluatedPropsToName(gen, it.props)
+  }
   for (const prop in schemaDeps) {
     if (alwaysValidSchema(it, schemaDeps[prop] as AnySchema)) continue
     gen.if(
