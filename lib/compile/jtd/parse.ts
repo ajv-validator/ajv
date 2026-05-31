@@ -232,11 +232,12 @@ function parseSchemaProperties(cxt: ParseCxt, discriminator?: string): void {
     gen.endIf()
   })
   if (properties) {
-    const hasProp = hasPropFunc(gen)
-    const allProps: Code = and(
-      ...Object.keys(properties).map((p): Code => _`${hasProp}.call(${data}, ${p})`)
-    )
-    gen.if(not(allProps), () => parsingError(cxt, str`missing required properties`))
+    const props = Object.keys(properties)
+    if (props.length) {
+      const hasProp = hasPropFunc(gen)
+      const allProps: Code = and(...props.map((p): Code => _`${hasProp}.call(${data}, ${p})`))
+      gen.if(not(allProps), () => parsingError(cxt, str`missing required properties`))
+    }
   }
 }
 
