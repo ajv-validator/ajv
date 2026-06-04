@@ -119,7 +119,7 @@ Performance of different validators by [json-schema-benchmark](https://github.co
   - all keywords (see [JSON Type Definition schema forms](https://ajv.js.org/json-type-definition.html))
   - meta-schema for JTD schemas
   - "union" keyword and user-defined keywords (can be used inside "metadata" member of the schema)
-- supports [browsers](https://ajv.js.org/guide/environments.html#browsers) and Node.js 10.x - current
+- supports [browsers](https://ajv.js.org/guide/environments.html#browsers) and Node.js 18.x - current
 - [asynchronous loading](https://ajv.js.org/guide/managing-schemas.html#asynchronous-schema-loading) of referenced schemas during compilation
 - "All errors" validation mode with [option allErrors](https://ajv.js.org/options.html#allerrors)
 - [error messages with parameters](https://ajv.js.org/api.html#validation-errors) describing error reasons to allow error message generation

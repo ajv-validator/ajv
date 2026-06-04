@@ -1,7 +1,7 @@
 import _Ajv from "../ajv"
 import standaloneCode from "../../dist/standalone"
-import requireFromString = require("require-from-string")
-import assert = require("assert")
+import * as requireFromString from "require-from-string"
+import * as assert from "assert"
 
 const schema = {
   $schema: "http://json-schema.org/draft-07/schema#",

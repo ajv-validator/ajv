@@ -1,5 +1,5 @@
 import _Ajv from "../ajv"
-import assert = require("assert")
+import * as assert from "assert"
 
 const schema1 = {
   $id: "one",

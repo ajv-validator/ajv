@@ -3,9 +3,9 @@ import type {AnyValidateFunction} from "../dist/core"
 import _Ajv from "./ajv"
 import standaloneCode from "../dist/standalone"
 import ajvFormats from "ajv-formats"
-import requireFromString = require("require-from-string")
+import * as requireFromString from "require-from-string"
 import {importFromStringSync} from "module-from-string"
-import assert = require("assert")
+import * as assert from "assert"
 
 function testExportTypeEsm(moduleCode: string, singleExport: boolean) {
   //Must have

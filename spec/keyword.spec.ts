@@ -5,7 +5,7 @@ import {_, nil} from "../dist/compile/codegen/code"
 import getAjvAllInstances from "./ajv_all_instances"
 import _Ajv from "./ajv"
 import equal from "../dist/runtime/equal"
-import assert = require("assert")
+import * as assert from "assert"
 import chai from "./chai"
 const should = chai.should()
 

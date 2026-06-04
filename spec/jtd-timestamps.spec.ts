@@ -1,5 +1,5 @@
 import _AjvJTD from "./ajv_jtd"
-import assert = require("assert")
+import * as assert from "assert"
 import type {JTDOptions, JTDSchemaType} from "../dist/jtd"
 
 describe("JTD timestamps", function () {

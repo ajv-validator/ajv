@@ -1,5 +1,5 @@
 import getAjvAsyncInstances from "./ajv_async_instances"
-import jsonSchemaTest = require("json-schema-test")
+import * as jsonSchemaTest from "json-schema-test"
 import {afterError} from "./after_test"
 import type Ajv from ".."
 import _Ajv from "./ajv"
