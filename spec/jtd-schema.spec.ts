@@ -193,6 +193,30 @@ describe("JSON Type Definition", () => {
     })
   })
 
+  describe("coverage-focused validation cases", () => {
+    it("should validate nullable arrays with element schemas", () => {
+      const ajv = new _AjvJTD()
+      const validate = ajv.compile({nullable: true, elements: {type: "string"}})
+
+      assert.strictEqual(validate(null), true)
+      assert.strictEqual(validate(["foo", "bar"]), true)
+      assert.strictEqual(validate(["foo", 1]), false)
+      assert.deepStrictEqual(validate.errors?.[0].instancePath, "/1")
+    })
+
+    it("should validate large nullable enums using loopEnum", () => {
+      const ajv = new _AjvJTD({loopEnum: 2})
+      const validate = ajv.compile({nullable: true, enum: ["red", "green", "blue"]})
+
+      assert.strictEqual(validate(null), true)
+      assert.strictEqual(validate("green"), true)
+      assert.strictEqual(validate("yellow"), false)
+      assert.deepStrictEqual(validate.errors?.[0].params, {
+        allowedValues: ["red", "green", "blue"],
+      })
+    })
+  })
+
   describe("parse", () => {
     let ajv: AjvJTD
     before(() => (ajv = new _AjvJTD()))
@@ -218,6 +242,14 @@ describe("JSON Type Definition", () => {
         }
       })
     }
+
+    it("should parse a JSON prefix when jsonPart is true", () => {
+      const parse = ajv.compileParser({properties: {id: {type: "uint32"}}}) as any
+
+      assert.deepStrictEqual(parse('{"id":1} trailing', 0, true), {id: 1})
+      assert.strictEqual(parse.position, 9)
+      assert.strictEqual(parse.message, undefined)
+    })
   })
 
   describe("parse tests nst/JSONTestSuite", () => {
