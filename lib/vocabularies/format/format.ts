@@ -8,6 +8,7 @@ import type {
 } from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
 import {_, str, nil, or, Code, getProperty, regexpCode} from "../../compile/codegen"
+import {checkStrictMode} from "../../compile/util"
 
 type FormatValidate =
   | FormatValidator<string>
@@ -80,15 +81,10 @@ const def: CodeKeywordDefinition = {
       if (fmtType === ruleType) cxt.pass(validCondition())
 
       function unknownFormat(): void {
-        if (opts.strictSchema === false) {
-          self.logger.warn(unknownMsg())
-          return
-        }
-        throw new Error(unknownMsg())
-
-        function unknownMsg(): string {
-          return `unknown format "${schema as string}" ignored in schema at path "${errSchemaPath}"`
-        }
+        checkStrictMode(
+          it,
+          `unknown format "${schema as string}" ignored in schema at path "${errSchemaPath}"`
+        )
       }
 
       function getFormat(fmtDef: AddedFormat): [string, FormatValidate, Code] {
