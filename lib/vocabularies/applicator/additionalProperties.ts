@@ -10,6 +10,7 @@ import {_, nil, or, not, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 import type {SubschemaArgs} from "../../compile/validate/subschema"
 import {alwaysValidSchema, schemaRefOrVal, Type} from "../../compile/util"
+import {AdditionalProperties} from "../../core"
 
 export type AdditionalPropertiesError = ErrorObject<
   "additionalProperties",
@@ -34,8 +35,16 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
     /* istanbul ignore if */
     if (!errsCount) throw new Error("ajv implementation error")
     const {allErrors, opts} = it
+    const addOpt = opts.additionalProperties
     it.props = true
-    if (opts.removeAdditional !== "all" && alwaysValidSchema(it, schema)) return
+    if (addOpt === AdditionalProperties.AlwaysAllow) return // treat as `true`: allow additional properties, no validation
+    if (
+      addOpt !== AdditionalProperties.AlwaysError &&
+      opts.removeAdditional !== "all" &&
+      alwaysValidSchema(it, schema)
+    ) {
+      return
+    }
     const props = allSchemaProperties(parentSchema.properties)
     const patProps = allSchemaProperties(parentSchema.patternProperties)
     checkAdditionalProperties()
@@ -75,7 +84,7 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
         return
       }
 
-      if (schema === false) {
+      if (addOpt === AdditionalProperties.AlwaysError || schema === false) {
         cxt.setParams({additionalProperty: key})
         cxt.error()
         if (!allErrors) gen.break()

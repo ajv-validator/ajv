@@ -3,6 +3,7 @@ import {KeywordCxt} from "../../compile/validate"
 import {propertyInData, allSchemaProperties} from "../code"
 import {alwaysValidSchema, toHash, mergeEvaluated} from "../../compile/util"
 import apDef from "./additionalProperties"
+import {AdditionalProperties} from "../../core"
 
 const def: CodeKeywordDefinition = {
   keyword: "properties",
@@ -10,7 +11,11 @@ const def: CodeKeywordDefinition = {
   schemaType: "object",
   code(cxt: KeywordCxt) {
     const {gen, schema, parentSchema, data, it} = cxt
-    if (it.opts.removeAdditional === "all" && parentSchema.additionalProperties === undefined) {
+    if (
+      parentSchema.additionalProperties === undefined &&
+      (it.opts.removeAdditional === "all" ||
+        it.opts.additionalProperties === AdditionalProperties.AlwaysError)
+    ) {
       apDef.code(new KeywordCxt(it, apDef, "additionalProperties"))
     }
     const allProps = allSchemaProperties(schema)

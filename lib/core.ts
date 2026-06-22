@@ -68,7 +68,12 @@ import DefaultUriResolver from "./runtime/uri"
 const defaultRegExp: RegExpEngine = (str, flags) => new RegExp(str, flags)
 defaultRegExp.code = "new RegExp"
 
-const META_IGNORE_OPTIONS: (keyof Options)[] = ["removeAdditional", "useDefaults", "coerceTypes"]
+const META_IGNORE_OPTIONS: (keyof Options)[] = [
+  "removeAdditional",
+  "useDefaults",
+  "coerceTypes",
+  "additionalProperties",
+]
 const EXT_SCOPE_NAMES = new Set([
   "validate",
   "serialize",
@@ -84,6 +89,15 @@ const EXT_SCOPE_NAMES = new Set([
   "obj",
   "Error",
 ])
+
+export const AdditionalProperties = {
+  Default: "default",
+  AlwaysAllow: "alwaysAllow",
+  AlwaysError: "alwaysError",
+} as const
+
+export type AdditionalPropertiesOption =
+  (typeof AdditionalProperties)[keyof typeof AdditionalProperties]
 
 export type Options = CurrentOptions & DeprecatedOptions
 
@@ -111,6 +125,7 @@ export interface CurrentOptions {
   $comment?:
     | true
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
+  additionalProperties?: AdditionalPropertiesOption
   formats?: {[Name in string]?: Format}
   keywords?: Vocabulary
   schemas?: AnySchema[] | {[Key in string]?: AnySchema}
