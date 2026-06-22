@@ -264,6 +264,22 @@ Option values:
 
 Asynchronous function that will be used to load remote schemas when `compileAsync` [method](#api-compileAsync) is used and some reference is missing (option `missingRefs` should NOT be 'fail' or 'ignore'). This function should accept remote schema uri as a parameter and return a Promise that resolves to a schema. See example in [Asynchronous compilation](./guide/managing-schemas.md#asynchronous-schema-compilation).
 
+### additionalProperties
+
+Override how additional (unknown) object properties are handled across all schemas validated by the instance, regardless of the `additionalProperties` keyword in each schema. Unlike `removeAdditional`, this option never modifies the data.
+
+Option values:
+
+- `"default"` (default) - respect each schema's `additionalProperties` keyword.
+- `"alwaysAllow"` - additional properties are always allowed, regardless of the schema. The `additionalProperties` keyword is treated as `true`: additional properties are neither validated against a subschema nor rejected when the keyword is `false`.
+- `"alwaysError"` - additional properties always produce a validation error, regardless of the schema. The `additionalProperties` keyword is treated as `false`.
+
+`"alwaysError"` takes effect on object schemas that contain a `properties`, `patternProperties`, or `additionalProperties` keyword (the same trigger model as `removeAdditional: "all"`); it does not apply to a bare `type: "object"` schema that has none of these keywords.
+
+If `removeAdditional` is also set, it takes precedence (additional properties are removed rather than producing an error).
+
+This option is not used if schema is added with `addMetaSchema` method.
+
 ## Options to modify validated data
 
 ### removeAdditional
