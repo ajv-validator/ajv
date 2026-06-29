@@ -279,8 +279,8 @@ export default class Ajv {
   logger: Logger
   // shared external scope values for compiled functions
   readonly scope: ValueScope
-  readonly schemas: {[Key in string]?: SchemaEnv} = {}
-  readonly refs: {[Ref in string]?: SchemaEnv | string} = {}
+  readonly schemas: {[Key in string]?: SchemaEnv} = Object.create(null)
+  readonly refs: {[Ref in string]?: SchemaEnv | string} = Object.create(null)
   readonly formats: {[Name in string]?: AddedFormat} = Object.create(null)
   readonly RULES: ValidationRules
   readonly _compilations: Set<SchemaEnv> = new Set()
