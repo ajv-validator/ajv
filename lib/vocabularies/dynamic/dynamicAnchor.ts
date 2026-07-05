@@ -13,7 +13,8 @@ const def: CodeKeywordDefinition = {
 
 export function dynamicAnchor(cxt: KeywordCxt, anchor: string): void {
   const {gen, it} = cxt
-  it.schemaEnv.root.dynamicAnchors[anchor] = true
+  const anchors = (it.schemaEnv.root.dynamicAnchors[it.baseId] ||= {})
+  anchors[anchor] = true
   const v = _`${N.dynamicAnchors}${getProperty(anchor)}`
   const validate = it.errSchemaPath === "#" ? it.validateName : _getValidate(cxt)
   gen.if(_`!${v}`, () => gen.assign(v, validate))
