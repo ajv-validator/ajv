@@ -56,7 +56,7 @@ function hasRef(schema: AnySchemaObject): boolean {
 function countKeys(schema: AnySchemaObject): number {
   let count = 0
   for (const key in schema) {
-    if (key === "$ref") return Infinity
+    if (REF_KEYWORDS.has(key)) return Infinity
     count++
     if (SIMPLE_INLINED.has(key)) continue
     if (typeof schema[key] == "object") {
@@ -90,7 +90,12 @@ export function resolveUrl(resolver: UriResolver, baseId: string, id: string): s
 
 const ANCHOR = /^[a-z_][-a-z0-9._]*$/i
 
-export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): LocalRefs {
+export function getSchemaRefs(
+  this: Ajv,
+  schema: AnySchema,
+  baseId: string,
+  dynamicAnchors?: DynamicAnchors
+): LocalRefs {
   if (typeof schema == "boolean") return {}
   const {schemaId, uriResolver} = this.opts
   const schId = normalizeId(schema[schemaId] || baseId)
@@ -100,27 +105,36 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): Loc
   const schemaRefs: Set<string> = new Set()
 
   traverse(schema, {allKeys: true}, (sch, jsonPtr, _, parentJsonPtr) => {
-    if (parentJsonPtr === undefined) return
+    if (parentJsonPtr === undefined) {
+      // ponytail: root node — only collect its dynamic anchor against schId
+      if (dynamicAnchors && typeof sch.$dynamicAnchor == "string") {
+        ;(dynamicAnchors[schId] ||= {})[sch.$dynamicAnchor] = true
+      }
+      return
+    }
     const fullPath = pathPrefix + jsonPtr
     let innerBaseId = baseIds[parentJsonPtr]
     if (typeof sch[schemaId] == "string") innerBaseId = addRef.call(this, sch[schemaId])
     addAnchor.call(this, sch.$anchor)
-    addAnchor.call(this, sch.$dynamicAnchor)
+    addAnchor.call(this, sch.$dynamicAnchor, true)
+    if (dynamicAnchors && typeof sch.$dynamicAnchor == "string") {
+      ;(dynamicAnchors[innerBaseId!] ||= {})[sch.$dynamicAnchor] = true
+    }
     baseIds[jsonPtr] = innerBaseId
 
-    function addRef(this: Ajv, ref: string): string {
+    function addRef(this: Ajv, ref: string, dynamic = false): string {
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const _resolve = this.opts.uriResolver.resolve
       ref = normalizeId(innerBaseId ? _resolve(innerBaseId, ref) : ref)
-      if (schemaRefs.has(ref)) throw ambiguos(ref)
+      if (!dynamic && schemaRefs.has(ref)) throw ambiguos(ref)
       schemaRefs.add(ref)
       let schOrRef = this.refs[ref]
       if (typeof schOrRef == "string") schOrRef = this.refs[schOrRef]
       if (typeof schOrRef == "object") {
-        checkAmbiguosRef(sch, schOrRef.schema, ref)
+        if (!dynamic) checkAmbiguosRef(sch, schOrRef.schema, ref)
       } else if (ref !== normalizeId(fullPath)) {
         if (ref[0] === "#") {
-          checkAmbiguosRef(sch, localRefs[ref], ref)
+          if (!dynamic) checkAmbiguosRef(sch, localRefs[ref], ref)
           localRefs[ref] = sch
         } else {
           this.refs[ref] = fullPath
@@ -129,10 +143,10 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): Loc
       return ref
     }
 
-    function addAnchor(this: Ajv, anchor: unknown): void {
+    function addAnchor(this: Ajv, anchor: unknown, dynamic = false): void {
       if (typeof anchor == "string") {
         if (!ANCHOR.test(anchor)) throw new Error(`invalid anchor "${anchor}"`)
-        addRef.call(this, `#${anchor}`)
+        addRef.call(this, `#${anchor}`, dynamic)
       }
     }
   })
@@ -147,3 +161,5 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): Loc
     return new Error(`reference "${ref}" resolves to more than one schema`)
   }
 }
+
+export type DynamicAnchors = {[BaseId in string]?: {[Ref in string]?: true}}

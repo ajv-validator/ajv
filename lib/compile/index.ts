@@ -11,7 +11,15 @@ import type {InstanceOptions} from "../core"
 import {CodeGen, _, nil, stringify, Name, Code, ValueScopeName} from "./codegen"
 import ValidationError from "../runtime/validation_error"
 import N from "./names"
-import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
+import {
+  LocalRefs,
+  DynamicAnchors,
+  getFullPath,
+  _getFullPath,
+  inlineRef,
+  normalizeId,
+  resolveUrl,
+} from "./resolve"
 import {schemaHasRulesButRef, unescapeFragment} from "./util"
 import {validateFunctionCode} from "./validate"
 import {URIComponent} from "fast-uri"
@@ -81,7 +89,7 @@ export class SchemaEnv implements SchemaEnvArgs {
   readonly meta?: boolean
   readonly $async?: boolean // true if the current schema is asynchronous.
   readonly refs: SchemaRefs = {}
-  readonly dynamicAnchors: {[Ref in string]?: true} = {}
+  readonly dynamicAnchors: DynamicAnchors = {}
   validate?: AnyValidateFunction
   validateName?: ValueScopeName
   serialize?: (data: unknown) => string
@@ -311,7 +319,12 @@ function getJsonPointer(
     }
   }
   let env: SchemaEnv | undefined
-  if (typeof schema != "boolean" && schema.$ref && !schemaHasRulesButRef(schema, this.RULES)) {
+  if (
+    typeof schema != "boolean" &&
+    schema.$ref &&
+    !schemaHasRulesButRef(schema, this.RULES) &&
+    !root.dynamicAnchors[baseId] // ponytail: don't skip resources with dynamic anchors
+  ) {
     const $ref = resolveUrl(this.opts.uriResolver, baseId, schema.$ref)
     env = resolveSchema.call(this, root, $ref)
   }

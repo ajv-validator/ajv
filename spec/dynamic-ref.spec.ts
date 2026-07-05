@@ -70,6 +70,105 @@ describe("recursiveRef and dynamicRef", () => {
 
       testTree(treeSchema, strictTreeSchema)
     })
+
+    it("should not inline dynamicRef targets with numeric inlineRefs", () => {
+      const treeSchema = {
+        $id: "https://example.com/tree",
+        $dynamicAnchor: "node",
+        type: "object",
+        properties: {
+          children: {type: "array", items: {$dynamicRef: "#node"}},
+        },
+      }
+
+      const strictTreeSchema = {
+        $id: "https://example.com/strict-tree",
+        $dynamicAnchor: "node",
+        $ref: "tree",
+        type: "object",
+        unevaluatedProperties: false,
+      }
+
+      const ajv = new _Ajv({inlineRefs: 20, unevaluated: true})
+      ajv.addSchema(treeSchema)
+      const validate = ajv.compile(strictTreeSchema)
+      assert.strictEqual(validate({children: [{extra: 1}]}), false)
+    })
+
+    it("should fail on missing non-fragment dynamicRef", () => {
+      const ajv = new _Ajv()
+      assert.throws(
+        () => ajv.compile({$dynamicRef: "missing.json#node"}),
+        /can't resolve reference missing.json#node/
+      )
+    })
+
+    it("should fail on missing local dynamicRef", () => {
+      const ajv = new _Ajv()
+      assert.throws(
+        () => ajv.compile({$dynamicRef: "#missing"}),
+        /can't resolve reference #missing/
+      )
+    })
+
+    it("should allow duplicate $dynamicAnchor without per-schema $id", () => {
+      const ajv = new _Ajv()
+      // Without the dynamic flag in addRef, addSchema throws
+      // "resolves to more than one schema" because both $defs
+      // declare $dynamicAnchor: "item" under the same root $id
+      assert.doesNotThrow(() =>
+        ajv.addSchema({
+          $id: "https://example.com/dup-anchors",
+          $defs: {
+            a: {$dynamicAnchor: "item", type: "string"},
+            b: {$dynamicAnchor: "item", type: "number"},
+          },
+        })
+      )
+    })
+
+    it("should not skip resources with dynamic anchors in $ref resolution", () => {
+      const ajv = new _Ajv({unevaluated: true})
+      ajv.addSchema({
+        $id: "https://example.com/template",
+        $defs: {slot: {$dynamicAnchor: "slot", not: {}}},
+        type: "array",
+        items: {$dynamicRef: "#slot"},
+      })
+      const validate = ajv.compile({
+        $id: "https://example.com/binder",
+        $defs: {slot: {$dynamicAnchor: "slot", type: "string"}},
+        $ref: "https://example.com/template",
+      })
+      assert.strictEqual(validate(["hello"]), true)
+      assert.strictEqual(validate([42]), false)
+    })
+
+    it("should resolve dynamicRef across schemas without per-schema $id", () => {
+      const ajv = new _Ajv({unevaluated: true})
+      ajv.addSchema({
+        $id: "https://example.com/openapi",
+        $defs: {
+          Paged: {
+            type: "object",
+            required: ["items"],
+            properties: {
+              items: {type: "array", items: {$dynamicRef: "#itemType"}},
+            },
+            $defs: {itemType: {$dynamicAnchor: "itemType", not: {}}},
+          },
+          UserPage: {
+            allOf: [
+              {$ref: "https://example.com/openapi#/$defs/Paged"},
+              {$defs: {itemType: {$dynamicAnchor: "itemType", type: "string"}}},
+            ],
+          },
+        },
+      })
+      const validate = ajv.compile({$ref: "https://example.com/openapi#/$defs/UserPage"})
+      assert.strictEqual(validate({items: ["hello"]}), true)
+      assert.strictEqual(validate({items: [42]}), false)
+    })
   })
 
   function testTree(treeSchema: SchemaObject, strictTreeSchema: SchemaObject): void {

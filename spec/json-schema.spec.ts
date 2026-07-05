@@ -86,6 +86,10 @@ runTest({
         "leaf node matches: recursion uses the inner schema",
         "leaf node does not match: recursion uses the inner schema",
       ],
+      "$recursiveRef with no $recursiveAnchor in the outer schema resource": [
+        "leaf node matches: recursion only uses inner schema",
+        "leaf node does not match: recursion only uses inner schema",
+      ],
     },
     ref: {
       "refs with relative uris and defs": [
@@ -119,46 +123,6 @@ runTest({
   }),
   draft: 2020,
   tests: skipTestCases(require("./_json/draft2020"), {
-    dynamicRef: {
-      "A $dynamicRef to a $dynamicAnchor in the same schema resource should behave like a normal $ref to an $anchor":
-        ["An array of strings is valid"],
-      "A $dynamicRef to an $anchor in the same schema resource should behave like a normal $ref to an $anchor":
-        ["An array of strings is valid"],
-      "A $dynamicRef should resolve to the first $dynamicAnchor still in scope that is encountered when the schema is evaluated":
-        ["An array of strings is valid"],
-      "A $dynamicRef with intermediate scopes that don't include a matching $dynamicAnchor should not affect dynamic scope resolution":
-        ["An array of strings is valid"],
-      "An $anchor with the same name as a $dynamicAnchor should not be used for dynamic scope resolution":
-        ["Any array is valid"],
-      "A $dynamicRef without a matching $dynamicAnchor in the same schema resource should behave like a normal $ref to $anchor":
-        ["Any array is valid"],
-      "A $dynamicRef with a non-matching $dynamicAnchor in the same schema resource should behave like a normal $ref to $anchor":
-        ["Any array is valid"],
-      "A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor should resolve to the first $dynamicAnchor in the dynamic scope":
-        [
-          "The recursive part is valid against the root",
-          "The recursive part is not valid against the root",
-        ],
-      "A $dynamicRef that initially resolves to a schema without a matching $dynamicAnchor should behave like a normal $ref to $anchor":
-        ["The recursive part doesn't need to validate against the root"],
-      "after leaving a dynamic scope, it should not be used by a $dynamicRef": [
-        "string matches /$defs/thingy, but the $dynamicRef does not stop here",
-        "first_scope is not in dynamic scope for the $dynamicRef",
-        "/then/$defs/thingy is the final stop for the $dynamicRef",
-      ],
-      "strict-tree schema, guards against misspelled properties": [
-        "instance with misspelled field",
-        "instance with correct field",
-      ],
-      "tests for implementation dynamic anchor and reference link": [
-        "incorrect parent schema",
-        "incorrect extended schema",
-        "correct extended schema",
-      ],
-      // duplicate
-      "Tests for implementation dynamic anchor and reference link. Reference should be independent of any possible ordering.":
-        ["incorrect parent schema", "incorrect extended schema", "correct extended schema"],
-    },
     ref: {
       "refs with relative uris and defs": [
         "invalid on inner field",
@@ -196,6 +160,8 @@ runTest({
     "http://localhost:1234/draft2020-12/format-assertion-false.json": require("./JSON-Schema-Test-Suite/remotes/draft2020-12/format-assertion-false.json"),
     "http://localhost:1234/draft2020-12/format-assertion-true.json": require("./JSON-Schema-Test-Suite/remotes/draft2020-12/format-assertion-true.json"),
     "http://localhost:1234/draft2020-12/metaschema-no-validation.json": require("./JSON-Schema-Test-Suite/remotes/draft2020-12/metaschema-no-validation.json"),
+    "http://localhost:1234/tree.json": require("./JSON-Schema-Test-Suite/remotes/tree.json"),
+    "http://localhost:1234/extendible-dynamic-ref.json": require("./JSON-Schema-Test-Suite/remotes/extendible-dynamic-ref.json"),
   },
   skip: [...SKIP_DRAFT7, "optional/format-assertion"],
 })
