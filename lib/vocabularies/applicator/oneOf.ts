@@ -46,34 +46,52 @@ const def: CodeKeywordDefinition = {
     )
 
     function validateOneOf(): void {
+      // Emit a flat sequence of `if` blocks (one per variant, all at the same
+      // nesting level) instead of nesting each variant inside the previous one's
+      // `else`. A nested else-chain grows O(N) deep, which overflows the call
+      // stack both while rendering the code and while running the generated
+      // validator for large `oneOf` arrays (#2641). `valid` tracks "exactly one
+      // matched so far" and `passing` records the matching index (or the first
+      // conflicting pair). Once a second variant matches, `oneOf` has already
+      // failed, so the remaining variants are guarded out at run time to keep
+      // the same short-circuit behaviour (and error output) as before.
       schArr.forEach((sch: AnySchema, i: number) => {
-        let schCxt: SchemaCxt | undefined
-        if (alwaysValidSchema(it, sch)) {
-          gen.var(schValid, true)
+        const evalVariant = (): void => {
+          let schCxt: SchemaCxt | undefined
+          if (alwaysValidSchema(it, sch)) {
+            gen.var(schValid, true)
+          } else {
+            schCxt = cxt.subschema(
+              {
+                keyword: "oneOf",
+                schemaProp: i,
+                compositeRule: true,
+              },
+              schValid
+            )
+          }
+          gen.if(schValid, () => {
+            // `mergeEvaluated` must only run for the first matching variant
+            // (`passing === null`). Merging on a later, conflict-causing match
+            // would mark that variant's properties/items as evaluated, which is
+            // wrong once `oneOf` has failed. This matches the stock nested-else
+            // codegen, where the conflicting branch's merge site never executes.
+            gen.if(
+              _`${passing} === null`,
+              () => {
+                gen.assign(valid, true).assign(passing, i)
+                if (schCxt) cxt.mergeEvaluated(schCxt, Name)
+              },
+              () =>
+                gen.if(valid, () => gen.assign(valid, false).assign(passing, _`[${passing}, ${i}]`))
+            )
+          })
+        }
+        if (i > 1) {
+          gen.if(_`${valid} || ${passing} === null`, evalVariant)
         } else {
-          schCxt = cxt.subschema(
-            {
-              keyword: "oneOf",
-              schemaProp: i,
-              compositeRule: true,
-            },
-            schValid
-          )
+          evalVariant()
         }
-
-        if (i > 0) {
-          gen
-            .if(_`${schValid} && ${valid}`)
-            .assign(valid, false)
-            .assign(passing, _`[${passing}, ${i}]`)
-            .else()
-        }
-
-        gen.if(schValid, () => {
-          gen.assign(valid, true)
-          gen.assign(passing, i)
-          if (schCxt) cxt.mergeEvaluated(schCxt, Name)
-        })
       })
     }
   },
