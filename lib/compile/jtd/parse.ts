@@ -149,6 +149,11 @@ function parseItems(cxt: ParseCxt, endToken: string, block: () => void): void {
 
 function tryParseItems(cxt: ParseCxt, endToken: string, block: () => void): void {
   const {gen} = cxt
+  // Skip whitespace before the first end-token check so an empty container
+  // written with whitespace between the brackets (e.g. `[ ]` / `{ }`) is not
+  // treated as having an item. Subsequent iterations are already whitespace-
+  // safe because the comma/end-token checks below call skipWhitespace.
+  skipWhitespace(cxt)
   gen.for(_`;${N.jsonPos}<${N.jsonLen} && ${jsonSlice(1)}!==${endToken};`, () => {
     block()
     tryParseToken(cxt, ",", () => gen.break(), hasItem)
