@@ -218,6 +218,16 @@ describe("JSON Type Definition", () => {
         }
       })
     }
+
+    it("parses empty containers written with whitespace (#2595)", () => {
+      const arr = ajv.compileParser({elements: {type: "string"}})
+      shouldParse(arr, "[ ]", [])
+      shouldParse(arr, "[\n  ]", [])
+      const values = ajv.compileParser({values: {type: "string"}})
+      shouldParse(values, "{ }", {})
+      const props = ajv.compileParser({properties: {data: {elements: {type: "string"}}}})
+      shouldParse(props, `{"data": [ ]}`, {data: []})
+    })
   })
 
   describe("parse tests nst/JSONTestSuite", () => {
