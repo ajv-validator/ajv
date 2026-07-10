@@ -231,11 +231,10 @@ function parseSchemaProperties(cxt: ParseCxt, discriminator?: string): void {
     }
     gen.endIf()
   })
-  if (properties) {
+  const propKeys = properties ? Object.keys(properties) : []
+  if (propKeys.length > 0) {
     const hasProp = hasPropFunc(gen)
-    const allProps: Code = and(
-      ...Object.keys(properties).map((p): Code => _`${hasProp}.call(${data}, ${p})`)
-    )
+    const allProps: Code = and(...propKeys.map((p): Code => _`${hasProp}.call(${data}, ${p})`))
     gen.if(not(allProps), () => parsingError(cxt, str`missing required properties`))
   }
 }

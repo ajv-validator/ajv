@@ -218,6 +218,21 @@ describe("JSON Type Definition", () => {
         }
       })
     }
+
+    it("compiles a parser for an empty properties schema (#2609)", () => {
+      const parse = ajv.compileParser({properties: {}})
+      shouldParse(parse, "{}", {})
+      shouldFail(parse, `{"extra":1}`)
+    })
+
+    it("compiles a parser for a discriminator mapping with empty properties (#2609)", () => {
+      const parse = ajv.compileParser({
+        discriminator: "t",
+        mapping: {a: {properties: {}}, b: {properties: {b: {type: "int32"}}}},
+      })
+      shouldParse(parse, `{"t":"a"}`, {t: "a"})
+      shouldParse(parse, `{"t":"b","b":1}`, {t: "b", b: 1})
+    })
   })
 
   describe("parse tests nst/JSONTestSuite", () => {
