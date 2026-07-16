@@ -24,6 +24,7 @@ import {
   checkStrictMode,
   unescapeJsonPointer,
   mergeEvaluated,
+  evaluatedPropsToName,
 } from "../util"
 import type {JSONType, Rule, RuleGroup} from "../rules"
 import {
@@ -509,6 +510,23 @@ export class KeywordCxt implements KeywordErrorCxt {
     }
     if (it.items !== true && schemaCxt.items !== undefined) {
       it.items = mergeEvaluated.items(gen, schemaCxt.items, it.items, toName)
+    }
+  }
+
+  // Materialize statically-tracked evaluated props/items into runtime variables so that they are
+  // recorded unconditionally. Keywords with conditional branches (oneOf/anyOf/dependentSchemas)
+  // merge each branch's evaluated props into a runtime object only when that branch is taken; if
+  // evaluated props accumulated before the keyword (e.g. via a sibling `$ref`) were still a static
+  // object, they would only be emitted inside the first branch and lost when a different branch
+  // matches. Calling this before generating the branches keeps them for every branch.
+  nameEvaluated(): void {
+    const {it, gen} = this
+    if (!it.opts.unevaluated) return
+    if (it.props !== true && it.props !== undefined && !(it.props instanceof Name)) {
+      it.props = evaluatedPropsToName(gen, it.props)
+    }
+    if (it.items !== true && it.items !== undefined && !(it.items instanceof Name)) {
+      it.items = gen.var("items", it.items)
     }
   }
 

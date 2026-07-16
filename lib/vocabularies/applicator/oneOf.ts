@@ -37,6 +37,7 @@ const def: CodeKeywordDefinition = {
     cxt.setParams({passing})
     // TODO possibly fail straight away (with warning or exception) if there are two empty always valid schemas
 
+    cxt.nameEvaluated()
     gen.block(validateOneOf)
 
     cxt.result(

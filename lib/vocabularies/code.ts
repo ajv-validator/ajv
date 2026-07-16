@@ -142,6 +142,7 @@ export function validateUnion(cxt: KeywordCxt): void {
   const valid = gen.let("valid", false)
   const schValid = gen.name("_valid")
 
+  cxt.nameEvaluated()
   gen.block(() =>
     schema.forEach((_sch: AnySchema, i: number) => {
       const schCxt = cxt.subschema(

@@ -95,6 +95,7 @@ export function validatePropertyDeps(
 export function validateSchemaDeps(cxt: KeywordCxt, schemaDeps: SchemaMap = cxt.schema): void {
   const {gen, data, keyword, it} = cxt
   const valid = gen.name("valid")
+  cxt.nameEvaluated()
   for (const prop in schemaDeps) {
     if (alwaysValidSchema(it, schemaDeps[prop] as AnySchema)) continue
     gen.if(
