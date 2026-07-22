@@ -4,7 +4,7 @@
 
 **Ensure your data is valid as soon as it's received**
 
-Instead of having your data validation and sanitization logic written as lengthy code, you can declare the requirements to your data with concise, easy to read and cross-platform [JSON Schema](https://json-schema.org) or [JSON Type Definition](https://jsontypedef.com) specifications and validate the data as soon as it arrives to your application.
+Instead of having your data validation and sanitization logic written as lengthy code, you can declare the requirements to your data with concise, easy to read and cross-platform [JSON Schema](https://json-schema.org) or [JSON Type Definition](https://datatracker.ietf.org/doc/rfc8927/) specifications and validate the data as soon as it arrives to your application.
 
 TypeScript users can use validation functions as type guards, having type level guarantee that if your data is validated - it is correct.
 
