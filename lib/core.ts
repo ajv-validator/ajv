@@ -558,6 +558,7 @@ export default class Ajv {
         this._cache.clear()
         return this
       case "string": {
+        schemaKeyRef = normalizeId(schemaKeyRef)
         const sch = getSchEnv.call(this, schemaKeyRef)
         if (typeof sch == "object") this._cache.delete(sch.schema)
         delete this.schemas[schemaKeyRef]
