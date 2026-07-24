@@ -79,8 +79,15 @@ export function _getFullPath(resolver: UriResolver, p: URIComponent): string {
 }
 
 const TRAILING_SLASH_HASH = /#\/?$/
+const URI_HOST = /^((?:[a-z][a-z0-9+.-]*:)?\/\/(?:[^/?#@]*@)?)(\[[^\]]+\]|[^/?#:]+)/i
 export function normalizeId(id: string | undefined): string {
-  return id ? id.replace(TRAILING_SLASH_HASH, "") : ""
+  return id
+    ? id
+        .replace(URI_HOST, (_match: string, prefix: string, host: string) => {
+          return `${prefix}${host.toLowerCase()}`
+        })
+        .replace(TRAILING_SLASH_HASH, "")
+    : ""
 }
 
 export function resolveUrl(resolver: UriResolver, baseId: string, id: string): string {
