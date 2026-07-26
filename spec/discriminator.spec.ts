@@ -373,6 +373,66 @@ describe("discriminator keyword", function () {
     })
   })
 
+  describe("tag values that are Object.prototype member names (#2650)", () => {
+    const schema = {
+      type: "object",
+      discriminator: {propertyName: "kind"},
+      required: ["kind"],
+      oneOf: [
+        {
+          properties: {kind: {const: "toString"}, a: {type: "number"}},
+          required: ["a"],
+        },
+        {
+          properties: {kind: {const: "foo"}, b: {type: "number"}},
+          required: ["b"],
+        },
+      ],
+    }
+
+    it("should compile a schema whose tag value is an inherited member name", () => {
+      ajvs.forEach((ajv) => assert.doesNotThrow(() => ajv.compile(schema)))
+    })
+
+    it("should validate data with such tag values", () => {
+      assertValid([schema], {kind: "toString", a: 1})
+      assertValid([schema], {kind: "foo", b: 1})
+      assertInvalid([schema], {kind: "toString", b: 1})
+      assertInvalid([schema], {kind: "foo", a: 1})
+      assertInvalid([schema], {kind: "bar"})
+    })
+
+    it("should accept every Object.prototype member name as a unique tag value", () => {
+      for (const name of ["toString", "constructor", "valueOf", "hasOwnProperty", "__proto__"]) {
+        const s = {
+          type: "object",
+          discriminator: {propertyName: "kind"},
+          required: ["kind"],
+          oneOf: [{properties: {kind: {const: name}}}, {properties: {kind: {const: "other"}}}],
+        }
+        ajvs.forEach((ajv) => assert.doesNotThrow(() => ajv.compile(s)))
+        assertValid([s], {kind: name})
+        assertValid([s], {kind: "other"})
+        assertInvalid([s], {kind: "missing"})
+      }
+    })
+
+    it("should still reject genuine duplicate tag values that are member names", () => {
+      invalidSchema(
+        {
+          type: "object",
+          discriminator: {propertyName: "kind"},
+          required: ["kind"],
+          oneOf: [
+            {properties: {kind: {const: "toString"}}},
+            {properties: {kind: {const: "toString"}}},
+          ],
+        },
+        /discriminator: "kind" values must be unique strings/
+      )
+    })
+  })
+
   function assertValid(schemas: SchemaObject[], data: unknown): void {
     schemas.forEach((schema) =>
       ajvs.forEach((ajv) => assert.strictEqual(ajv.validate(schema, data), true))

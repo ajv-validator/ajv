@@ -61,7 +61,11 @@ const def: CodeKeywordDefinition = {
     }
 
     function getMapping(): {[T in string]?: number} {
-      const oneOfMapping: {[T in string]?: number} = {}
+      // Use a prototype-less object so that tag values that happen to be
+      // Object.prototype member names (e.g. "toString", "constructor",
+      // "valueOf", "hasOwnProperty", "__proto__") are not mistaken for
+      // duplicates by the `in` check in addMapping below (see issue #2650).
+      const oneOfMapping: {[T in string]?: number} = Object.create(null)
       const topRequired = hasRequired(parentSchema)
       let tagRequired = true
       for (let i = 0; i < oneOf.length; i++) {
