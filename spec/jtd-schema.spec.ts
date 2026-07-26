@@ -218,6 +218,32 @@ describe("JSON Type Definition", () => {
         }
       })
     }
+
+    describe("enum with alternate JSON string encodings", () => {
+      it("should accept unicode escapes for enum values", () => {
+        const parse = ajv.compileParser({enum: ["Active"]})
+        shouldParse(parse, '"\\u0041ctive"', "Active")
+      })
+
+      it("should accept escaped solidus in enum values", () => {
+        const parse = ajv.compileParser({enum: ["A/B"]})
+        shouldParse(parse, '"A\\/B"', "A/B")
+      })
+
+      it("should round-trip serializer output for enum values", () => {
+        const schema = {enum: ["Active", "x\u200dy"]}
+        const parse = ajv.compileParser(schema)
+        const serialize = ajv.compileSerializer(schema)
+        for (const value of schema.enum) {
+          shouldParse(parse, serialize(value), value)
+        }
+      })
+
+      it("should reject values not in the enum", () => {
+        const parse = ajv.compileParser({enum: ["Active"]})
+        shouldFail(parse, '"Inactive"')
+      })
+    })
   })
 
   describe("parse tests nst/JSONTestSuite", () => {

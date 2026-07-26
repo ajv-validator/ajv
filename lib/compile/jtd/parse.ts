@@ -301,19 +301,12 @@ function parseString(cxt: ParseCxt): void {
 
 function parseEnum(cxt: ParseCxt): void {
   const {gen, data, schema} = cxt
-  const enumSch = schema.enum
-  parseToken(cxt, '"')
-  // TODO loopEnum
-  gen.if(false)
-  for (const value of enumSch) {
-    const valueStr = JSON.stringify(value).slice(1) // remove starting quote
-    gen.elseIf(_`${jsonSlice(valueStr.length)} === ${valueStr}`)
-    gen.assign(data, str`${value}`)
-    gen.add(N.jsonPos, valueStr.length)
-  }
-  gen.else()
-  jsonSyntaxError(cxt)
-  gen.endIf()
+  const enumSch = schema.enum as string[]
+  // Decode escapes first (same as parseString), then check membership on the value
+  parseString(cxt)
+  gen.if(not(or(...enumSch.map((value: string) => _`${data} === ${value}`))), () =>
+    parsingError(cxt, str`unexpected enum value`)
+  )
 }
 
 function parseNumber(cxt: ParseCxt, maxDigits?: number): void {
