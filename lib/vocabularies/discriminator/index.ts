@@ -61,7 +61,8 @@ const def: CodeKeywordDefinition = {
     }
 
     function getMapping(): {[T in string]?: number} {
-      const oneOfMapping: {[T in string]?: number} = {}
+      // Prototype-free map so tag values like "toString" are not treated as duplicates
+      const oneOfMapping: {[T in string]?: number} = Object.create(null)
       const topRequired = hasRequired(parentSchema)
       let tagRequired = true
       for (let i = 0; i < oneOf.length; i++) {

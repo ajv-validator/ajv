@@ -358,6 +358,21 @@ describe("discriminator keyword", function () {
       )
     })
 
+    it("should allow Object.prototype property names as tag values", () => {
+      const schema = {
+        type: "object",
+        discriminator: {propertyName: "kind"},
+        required: ["kind"],
+        oneOf: [
+          {properties: {kind: {const: "toString"}}, required: ["a"]},
+          {properties: {kind: {const: "constructor"}}, required: ["b"]},
+        ],
+      }
+      assertValid([schema], {kind: "toString", a: 1})
+      assertValid([schema], {kind: "constructor", b: 1})
+      assertInvalid([schema], {kind: "toString", b: 1})
+    })
+
     it("tag should be required", () => {
       invalidSchema(
         {
