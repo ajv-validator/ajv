@@ -9,7 +9,7 @@ import {allSchemaProperties, usePattern, isOwnProperty} from "../code"
 import {_, nil, or, not, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
 import type {SubschemaArgs} from "../../compile/validate/subschema"
-import {alwaysValidSchema, schemaRefOrVal, Type} from "../../compile/util"
+import {alwaysValidSchema, alwaysInvalidSchema, schemaRefOrVal, Type} from "../../compile/util"
 
 export type AdditionalPropertiesError = ErrorObject<
   "additionalProperties",
@@ -70,7 +70,7 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
     }
 
     function additionalPropertyCode(key: Name): void {
-      if (opts.removeAdditional === "all" || (opts.removeAdditional && schema === false)) {
+      if (opts.removeAdditional === "all" || (opts.removeAdditional && alwaysInvalidSchema(it, schema))) {
         deleteAdditional(key)
         return
       }
