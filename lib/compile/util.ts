@@ -18,6 +18,12 @@ export function alwaysValidSchema(it: SchemaCxt, schema: AnySchema): boolean | v
   return !schemaHasRules(schema, it.self.RULES.all)
 }
 
+export function alwaysInvalidSchema(it: SchemaCxt, schema: boolean: AnySchema): boolean {
+  if (schema === false) return true
+  if (typeof sch != 'object' || schema === null || schame.not === undefined) return false
+  return alwaysValidSchema(it, schema.not)
+}
+
 export function checkUnknownRules(it: SchemaCxt, schema: AnySchema = it.schema): void {
   const {opts, self} = it
   if (!opts.strictSchema) return
