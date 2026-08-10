@@ -468,6 +468,45 @@ describe("Type coercion", () => {
     })
   })
 
+  describe("non-finite numbers", () => {
+    const nonFinite = ["Infinity", "-Infinity", "1e999", "-1e999"]
+
+    it("should not coerce strings to Infinity by default", () => {
+      const ajvInstance = new _Ajv({coerceTypes: true})
+      for (const type of ["number", "integer"]) {
+        const validate = ajvInstance.compile({type})
+        for (const from of nonFinite) {
+          validate(from).should.equal(false, `${JSON.stringify(from)} coerced to ${type}`)
+          validate.errors?.[0].keyword.should.equal("type")
+        }
+      }
+    })
+
+    it("should still coerce finite strings", () => {
+      const ajvInstance = new _Ajv({coerceTypes: true})
+      const data = {n: "1e300", i: "42"}
+      const validate = ajvInstance.compile({
+        type: "object",
+        properties: {n: {type: "number"}, i: {type: "integer"}},
+      })
+      validate(data).should.equal(true)
+      data.n.should.equal(1e300)
+      data.i.should.equal(42)
+    })
+
+    it("should coerce strings to Infinity with strictNumbers: false", () => {
+      const ajvInstance = new _Ajv({coerceTypes: true, strictNumbers: false})
+      for (const type of ["number", "integer"]) {
+        const validate = ajvInstance.compile({type: "object", properties: {v: {type}}})
+        for (const from of nonFinite) {
+          const data = {v: from}
+          validate(data).should.equal(true)
+          Number.isFinite(data.v).should.equal(false)
+        }
+      }
+    })
+  })
+
   function testRules(rules, cb) {
     for (const toType in rules) {
       for (const fromType in rules[toType]) {

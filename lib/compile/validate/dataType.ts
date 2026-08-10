@@ -87,6 +87,14 @@ function coerceData(it: SchemaObjCxt, types: JSONType[], coerceTo: JSONType[]): 
     assignParentData(it, coerced)
   })
 
+  // `strictNumbers` is applied by `checkDataType` when a value is already a number, but string
+  // coercion assigned its result without repeating the check. "Infinity" satisfies
+  // `data == +data`, and `!(data % 1)` is also true for it because `Infinity % 1` is NaN, so a
+  // non-finite value could be coerced in and then pass validation as a number or an integer.
+  function finiteCoercion(): Code {
+    return opts.strictNumbers ? _` && isFinite(+${data})` : nil
+  }
+
   function coerceSpecificType(t: string): void {
     switch (t) {
       case "string":
@@ -100,7 +108,7 @@ function coerceData(it: SchemaObjCxt, types: JSONType[], coerceTo: JSONType[]): 
         gen
           .elseIf(
             _`${dataType} == "boolean" || ${data} === null
-              || (${dataType} == "string" && ${data} && ${data} == +${data})`
+              || (${dataType} == "string" && ${data} && ${data} == +${data}${finiteCoercion()})`
           )
           .assign(coerced, _`+${data}`)
         return
@@ -108,7 +116,7 @@ function coerceData(it: SchemaObjCxt, types: JSONType[], coerceTo: JSONType[]): 
         gen
           .elseIf(
             _`${dataType} === "boolean" || ${data} === null
-              || (${dataType} === "string" && ${data} && ${data} == +${data} && !(${data} % 1))`
+              || (${dataType} === "string" && ${data} && ${data} == +${data} && !(${data} % 1)${finiteCoercion()})`
           )
           .assign(coerced, _`+${data}`)
         return
