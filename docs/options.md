@@ -347,6 +347,8 @@ By default `enum` keyword is compiled into a single expression with up to 200 al
 
 By default Ajv iterates over all enumerable object properties; when this option is `true` only own enumerable object properties (i.e. found directly on the object rather than on its prototype) are iterated. Contributed by @mbroadst.
 
+Properties of `Object.prototype` (`toString`, `constructor`, `__proto__`, etc.) are not enumerable, so they are not considered present in the data regardless of this option - only own properties with these names are.
+
 ### multipleOfPrecision
 
 By default `multipleOf` keyword is validated by comparing the result of division with `parseInt()` of that result. It works for dividers that are bigger than 1. For small dividers such as 0.01 the result of the division is usually not integer (even when it should be integer, see issue [#84](https://github.com/ajv-validator/ajv/issues/84)). If you need to use fractional dividers set this option to some positive integer N to have `multipleOf` validated using this formula: `Math.abs(Math.round(division) - division) < 1e-N` (it is slower but allows for float arithmetic deviations).
