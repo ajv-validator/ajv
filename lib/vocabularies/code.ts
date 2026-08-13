@@ -5,6 +5,7 @@ import {CodeGen, _, and, or, not, nil, strConcat, getProperty, Code, Name} from 
 import {alwaysValidSchema, Type} from "../compile/util"
 import N from "../compile/names"
 import {useFunc} from "../compile/util"
+import hasProperty, {isObjectProtoProperty} from "../runtime/hasProperty"
 export function checkReportMissingProp(cxt: KeywordCxt, prop: string): void {
   const {gen, data, it} = cxt
   gen.if(noPropertyInData(gen, data, prop, it.opts.ownProperties), () => {
@@ -42,6 +43,20 @@ export function isOwnProperty(gen: CodeGen, data: Name, property: Name | string)
   return _`${hasPropFunc(gen)}.call(${data}, ${property})`
 }
 
+// `data[property] !== undefined` is not sufficient for properties of Object.prototype
+// ("toString", "constructor", "__proto__", ...) - they are inherited by most objects
+// and are not enumerable, so they have to be checked with hasProperty.
+// The name of the property is not known at compile time when it comes from $data
+// or from the `required` keyword compiled into a loop - hasProperty makes the same
+// check at run time and returns true for any other property name.
+function mayBeObjectProtoProperty(property: Name | string): boolean {
+  return typeof property != "string" || isObjectProtoProperty(property)
+}
+
+function hasPropertyFunc(gen: CodeGen, data: Name, property: Name | string): Code {
+  return _`${useFunc(gen, hasProperty)}(${data}, ${property})`
+}
+
 export function propertyInData(
   gen: CodeGen,
   data: Name,
@@ -49,7 +64,10 @@ export function propertyInData(
   ownProperties?: boolean
 ): Code {
   const cond = _`${data}${getProperty(property)} !== undefined`
-  return ownProperties ? _`${cond} && ${isOwnProperty(gen, data, property)}` : cond
+  if (ownProperties) return _`${cond} && ${isOwnProperty(gen, data, property)}`
+  return mayBeObjectProtoProperty(property)
+    ? _`${cond} && ${hasPropertyFunc(gen, data, property)}`
+    : cond
 }
 
 export function noPropertyInData(
@@ -59,7 +77,10 @@ export function noPropertyInData(
   ownProperties?: boolean
 ): Code {
   const cond = _`${data}${getProperty(property)} === undefined`
-  return ownProperties ? or(cond, not(isOwnProperty(gen, data, property))) : cond
+  if (ownProperties) return or(cond, not(isOwnProperty(gen, data, property)))
+  return mayBeObjectProtoProperty(property)
+    ? or(cond, not(hasPropertyFunc(gen, data, property)))
+    : cond
 }
 
 export function allSchemaProperties(schemaMap?: SchemaMap): string[] {

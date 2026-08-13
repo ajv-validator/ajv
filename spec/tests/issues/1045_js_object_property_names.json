@@ -1,0 +1,109 @@
+[
+  {
+    "description": "required properties whose names are Object.prototype property names",
+    "schema": {
+      "required": ["__proto__", "toString", "constructor"]
+    },
+    "tests": [
+      {
+        "description": "ignores arrays",
+        "data": [],
+        "valid": true
+      },
+      {
+        "description": "ignores other non-objects",
+        "data": 12,
+        "valid": true
+      },
+      {
+        "description": "none of the properties mentioned",
+        "data": {},
+        "valid": false
+      },
+      {
+        "description": "__proto__ present",
+        "data": {"__proto__": "foo"},
+        "valid": false
+      },
+      {
+        "description": "toString present",
+        "data": {"toString": {"length": 37}},
+        "valid": false
+      },
+      {
+        "description": "constructor present",
+        "data": {"constructor": {"length": 37}},
+        "valid": false
+      },
+      {
+        "description": "all present",
+        "data": {"__proto__": 12, "toString": {"length": "foo"}, "constructor": 37},
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "properties whose names are Object.prototype property names",
+    "schema": {
+      "properties": {
+        "toString": {"properties": {"length": {"type": "string"}}},
+        "constructor": {"type": "number"}
+      }
+    },
+    "tests": [
+      {
+        "description": "ignores arrays",
+        "data": [],
+        "valid": true
+      },
+      {
+        "description": "ignores other non-objects",
+        "data": 12,
+        "valid": true
+      },
+      {
+        "description": "none of the properties mentioned",
+        "data": {},
+        "valid": true
+      },
+      {
+        "description": "toString not valid",
+        "data": {"toString": {"length": 37}},
+        "valid": false
+      },
+      {
+        "description": "constructor not valid",
+        "data": {"constructor": {"length": 37}},
+        "valid": false
+      },
+      {
+        "description": "all present and valid",
+        "data": {"toString": {"length": "foo"}, "constructor": 37},
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "dependencies with Object.prototype property names",
+    "schema": {
+      "dependencies": {"foo": ["toString"]}
+    },
+    "tests": [
+      {
+        "description": "dependency not triggered",
+        "data": {},
+        "valid": true
+      },
+      {
+        "description": "missing dependency",
+        "data": {"foo": 1},
+        "valid": false
+      },
+      {
+        "description": "dependency present",
+        "data": {"foo": 1, "toString": 2},
+        "valid": true
+      }
+    ]
+  }
+]
