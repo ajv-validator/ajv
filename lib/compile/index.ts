@@ -16,12 +16,15 @@ import {schemaHasRulesButRef, unescapeFragment} from "./util"
 import {validateFunctionCode} from "./validate"
 import {URIComponent} from "fast-uri"
 import {JSONType} from "./rules"
+import type {ResourceIndex, SchemaResource} from "./dynamic"
 
 export type SchemaRefs = {
   [Ref in string]?: SchemaEnv | AnySchema
 }
 
 export interface SchemaCxt {
+  dynamicScope?: Name
+  resource?: SchemaResource
   readonly gen: CodeGen
   readonly allErrors?: boolean // validation mode - whether to collect all errors or break on error
   readonly data: Name // Name with reference to the current part of data instance
@@ -62,6 +65,7 @@ export interface SchemaObjCxt extends SchemaCxt {
   readonly schema: AnySchemaObject
 }
 interface SchemaEnvArgs {
+  readonly resources?: ResourceIndex
   readonly schema: AnySchema
   readonly schemaId?: "$id" | "id"
   readonly root?: SchemaEnv
@@ -72,6 +76,7 @@ interface SchemaEnvArgs {
 }
 
 export class SchemaEnv implements SchemaEnvArgs {
+  readonly resources?: ResourceIndex
   readonly schema: AnySchema
   readonly schemaId?: "$id" | "id"
   readonly root: SchemaEnv
@@ -98,6 +103,7 @@ export class SchemaEnv implements SchemaEnvArgs {
     this.baseId = env.baseId ?? normalizeId(schema?.[env.schemaId || "$id"])
     this.schemaPath = env.schemaPath
     this.localRefs = env.localRefs
+    if (env.resources) this.resources = env.resources
     this.meta = env.meta
     this.$async = schema?.$async
     this.refs = {}
@@ -109,6 +115,13 @@ export class SchemaEnv implements SchemaEnvArgs {
 
 // Compiles schema in SchemaEnv
 export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
+  const validators = sch.root.resources?.get(normalizeId(sch.baseId))?.validators
+  const cached = validators?.get(sch.schema)
+  if (cached) {
+    sch.validate = cached.validate
+    sch.validateName = cached.validateName
+    return cached
+  }
   // TODO refactor - remove compilations
   const _sch = getCompilingSchema.call(this, sch)
   if (_sch) return _sch
@@ -190,6 +203,7 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
       if (validate.source) validate.source.evaluated = stringify(validate.evaluated)
     }
     sch.validate = validate
+    validators?.set(sch.schema, sch)
     return sch
   } catch (e) {
     delete sch.validate
@@ -206,25 +220,37 @@ export function resolveRef(
   this: Ajv,
   root: SchemaEnv,
   baseId: string,
-  ref: string
+  ref: string,
+  forceCompile = false
 ): AnySchema | SchemaEnv | undefined {
   ref = resolveUrl(this.opts.uriResolver, baseId, ref)
   const schOrFunc = root.refs[ref]
-  if (schOrFunc) return schOrFunc
+  if (schOrFunc && (!forceCompile || schOrFunc instanceof SchemaEnv)) return schOrFunc
 
   let _sch = resolve.call(this, root, ref)
   if (_sch === undefined) {
     const schema = root.localRefs?.[ref] // TODO maybe localRefs should hold SchemaEnv
     const {schemaId} = this.opts
-    if (schema) _sch = new SchemaEnv({schema, schemaId, root, baseId})
+    if (schema) {
+      _sch = new SchemaEnv({
+        schema,
+        schemaId,
+        root,
+        baseId: this.opts.fullDynamicRefs ? normalizeId(baseId) : baseId,
+      })
+    }
   }
 
   if (_sch === undefined) return
+  if (forceCompile) return inlineOrCompile.call(this, _sch, true)
   return (root.refs[ref] = inlineOrCompile.call(this, _sch))
 }
 
-function inlineOrCompile(this: Ajv, sch: SchemaEnv): AnySchema | SchemaEnv {
-  if (inlineRef(sch.schema, this.opts.inlineRefs)) return sch.schema
+function inlineOrCompile(this: Ajv, sch: SchemaEnv, forceCompile = false): AnySchema | SchemaEnv {
+  const full = this.opts.fullDynamicRefs
+  const resource = full ? sch.root.resources?.get(normalizeId(sch.baseId)) : undefined
+  const canInline = !full || (!resource?.anchors.size && inlineRef(sch.schema, true))
+  if (!forceCompile && canInline && inlineRef(sch.schema, this.opts.inlineRefs)) return sch.schema
   return sch.validate ? sch : compileSchema.call(this, sch)
 }
 
@@ -280,7 +306,12 @@ export function resolveSchema(
     const {schemaId} = this.opts
     const schId = schema[schemaId]
     if (schId) baseId = resolveUrl(this.opts.uriResolver, baseId, schId)
-    return new SchemaEnv({schema, schemaId, root, baseId})
+    return new SchemaEnv({
+      schema,
+      schemaId,
+      root: this.opts.fullDynamicRefs ? schOrRef.root : root,
+      baseId,
+    })
   }
   return getJsonPointer.call(this, p, schOrRef)
 }
@@ -311,7 +342,12 @@ function getJsonPointer(
     }
   }
   let env: SchemaEnv | undefined
-  if (typeof schema != "boolean" && schema.$ref && !schemaHasRulesButRef(schema, this.RULES)) {
+  if (
+    !this.opts.fullDynamicRefs &&
+    typeof schema != "boolean" &&
+    schema.$ref &&
+    !schemaHasRulesButRef(schema, this.RULES)
+  ) {
     const $ref = resolveUrl(this.opts.uriResolver, baseId, schema.$ref)
     env = resolveSchema.call(this, root, $ref)
   }

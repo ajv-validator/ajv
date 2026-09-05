@@ -12,6 +12,7 @@ const def: CodeKeywordDefinition = {
 }
 
 export function dynamicAnchor(cxt: KeywordCxt, anchor: string): void {
+  if (cxt.it.opts.fullDynamicRefs) return
   const {gen, it} = cxt
   it.schemaEnv.root.dynamicAnchors[anchor] = true
   const v = _`${N.dynamicAnchors}${getProperty(anchor)}`
@@ -25,7 +26,7 @@ function _getValidate(cxt: KeywordCxt): Code {
   const {schemaId} = self.opts
   const sch = new SchemaEnv({schema, schemaId, root, baseId, localRefs, meta})
   compileSchema.call(self, sch)
-  return getValidate(cxt, sch)
+  return getValidate(cxt.gen, sch)
 }
 
 export default def

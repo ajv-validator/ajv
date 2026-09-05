@@ -17,6 +17,7 @@ import {getSubschema, extendSubschemaData, SubschemaArgs, extendSubschemaMode} f
 import {_, nil, str, or, not, getProperty, Block, Code, Name, CodeGen} from "../codegen"
 import N from "../names"
 import {resolveUrl} from "../resolve"
+import {enterDynamicResource} from "../dynamic"
 import {
   schemaRefOrVal,
   schemaHasRulesButRef,
@@ -77,7 +78,14 @@ function destructureValCxtES5(gen: CodeGen, opts: InstanceOptions): void {
       gen.var(N.parentData, _`${N.valCxt}.${N.parentData}`)
       gen.var(N.parentDataProperty, _`${N.valCxt}.${N.parentDataProperty}`)
       gen.var(N.rootData, _`${N.valCxt}.${N.rootData}`)
-      if (opts.dynamicRef) gen.var(N.dynamicAnchors, _`${N.valCxt}.${N.dynamicAnchors}`)
+      if (opts.dynamicRef) {
+        gen.var(
+          N.dynamicAnchors,
+          opts.fullDynamicRefs
+            ? _`${N.valCxt}.${N.dynamicAnchors} || {}`
+            : _`${N.valCxt}.${N.dynamicAnchors}`
+        )
+      }
     },
     () => {
       gen.var(N.instancePath, _`""`)
@@ -155,6 +163,7 @@ function checkKeywords(it: SchemaObjCxt): void {
 }
 
 function typeAndKeywords(it: SchemaObjCxt, errsCount?: Name): void {
+  if (it.opts.fullDynamicRefs) enterDynamicResource(it)
   if (it.opts.jtd) return schemaKeywords(it, [], false, errsCount)
   const types = getSchemaTypes(it.schema)
   const checkedTypes = coerceAndCheckDataType(it, types)

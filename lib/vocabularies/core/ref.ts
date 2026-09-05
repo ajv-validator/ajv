@@ -2,7 +2,7 @@ import type {CodeKeywordDefinition, AnySchema} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
 import MissingRefError from "../../compile/ref_error"
 import {callValidateCode} from "../code"
-import {_, nil, stringify, Code, Name} from "../../compile/codegen"
+import {_, nil, stringify, Code, Name, CodeGen} from "../../compile/codegen"
 import N from "../../compile/names"
 import {SchemaEnv, resolveRef} from "../../compile"
 import {mergeEvaluated} from "../../compile/util"
@@ -27,7 +27,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function callValidate(sch: SchemaEnv): void {
-      const v = getValidate(cxt, sch)
+      const v = getValidate(gen, sch)
       callRef(cxt, v, sch, sch.$async)
     }
 
@@ -53,8 +53,7 @@ const def: CodeKeywordDefinition = {
   },
 }
 
-export function getValidate(cxt: KeywordCxt, sch: SchemaEnv): Code {
-  const {gen} = cxt
+export function getValidate(gen: CodeGen, sch: SchemaEnv): Code {
   return sch.validate
     ? gen.scopeValue("validate", {ref: sch.validate})
     : _`${gen.scopeValue("wrapper", {ref: sch})}.validate`

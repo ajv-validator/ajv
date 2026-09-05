@@ -124,6 +124,7 @@ export interface CurrentOptions {
   next?: boolean // NEW
   unevaluated?: boolean // NEW
   dynamicRef?: boolean // NEW
+  fullDynamicRefs?: boolean
   schemaId?: "id" | "$id"
   jtd?: boolean // NEW
   meta?: SchemaObject | boolean
@@ -221,6 +222,7 @@ type RequiredInstanceOptions = {
     | "strictTuples"
     | "strictRequired"
     | "inlineRefs"
+    | "fullDynamicRefs"
     | "loopRequired"
     | "loopEnum"
     | "meta"
@@ -257,6 +259,7 @@ function requiredOptions(o: Options): RequiredInstanceOptions {
     meta: o.meta ?? true,
     messages: o.messages ?? true,
     inlineRefs: o.inlineRefs ?? true,
+    fullDynamicRefs: !!(o.fullDynamicRefs && o.dynamicRef),
     schemaId: o.schemaId ?? "$id",
     addUsedSchema: o.addUsedSchema ?? true,
     validateSchema: o.validateSchema ?? true,
@@ -715,8 +718,9 @@ export default class Ajv {
     if (sch !== undefined) return sch
 
     baseId = normalizeId(id || baseId)
-    const localRefs = getSchemaRefs.call(this, schema, baseId)
-    sch = new SchemaEnv({schema, schemaId, meta, baseId, localRefs})
+    const resources = this.opts.fullDynamicRefs ? new Map() : undefined
+    const localRefs = getSchemaRefs.call(this, schema, baseId, resources)
+    sch = new SchemaEnv({schema, schemaId, meta, baseId, localRefs, resources})
     this._cache.set(sch.schema, sch)
     if (addSchema && !baseId.startsWith("#")) {
       // TODO atm it is allowed to overwrite schemas without id (instead of not adding them)
