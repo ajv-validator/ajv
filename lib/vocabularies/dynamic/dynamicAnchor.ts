@@ -26,7 +26,7 @@ function _getValidate(cxt: KeywordCxt): Code {
   const {schemaId} = self.opts
   const sch = new SchemaEnv({schema, schemaId, root, baseId, localRefs, meta})
   compileSchema.call(self, sch)
-  return getValidate(cxt.gen, sch)
+  return getValidate(cxt, sch)
 }
 
 export default def

@@ -4,7 +4,7 @@ import {_, Code, getProperty, or, not} from "./codegen"
 import N from "./names"
 import {isOwnProperty} from "../vocabularies/code"
 import {normalizeId} from "./resolve"
-import {getValidate} from "../vocabularies/core/ref"
+import {getValidateCode} from "../vocabularies/core/ref"
 
 export interface SchemaResource {
   baseId: string
@@ -60,5 +60,5 @@ function anchorValidator(
       meta: it.schemaEnv.root.meta,
     })
   )
-  return getValidate(it.gen, env)
+  return getValidateCode(it.gen, env)
 }

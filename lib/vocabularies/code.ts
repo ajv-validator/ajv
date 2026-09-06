@@ -85,7 +85,10 @@ export function callValidateCode(
     [N.parentDataProperty, it.parentDataProperty],
     [N.rootData, N.rootData],
   ]
-  if (it.opts.dynamicRef) valCxt.push([N.dynamicAnchors, it.dynamicScope || N.dynamicAnchors])
+  if (it.opts.dynamicRef) {
+    const scope = it.opts.fullDynamicRefs ? it.dynamicScope || N.dynamicAnchors : N.dynamicAnchors
+    valCxt.push([N.dynamicAnchors, scope])
+  }
   const args = _`${dataAndSchema}, ${gen.object(...valCxt)}`
   return context !== nil ? _`${func}.call(${context}, ${args})` : _`${func}(${args})`
 }

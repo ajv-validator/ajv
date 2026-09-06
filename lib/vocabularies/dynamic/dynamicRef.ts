@@ -59,7 +59,7 @@ function fullDynamicRef(cxt: KeywordCxt, ref: string): void {
   if (target.$async) {
     throw new Error("async dynamic references are not supported")
   }
-  const validate = getValidate(gen, target)
+  const validate = getValidate(cxt, target)
   const {schema} = target
   const {fragment} = it.opts.uriResolver.parse(ref)
   let anchor: string | undefined

@@ -27,7 +27,7 @@ const def: CodeKeywordDefinition = {
     }
 
     function callValidate(sch: SchemaEnv): void {
-      const v = getValidate(gen, sch)
+      const v = getValidate(cxt, sch)
       callRef(cxt, v, sch, sch.$async)
     }
 
@@ -53,7 +53,11 @@ const def: CodeKeywordDefinition = {
   },
 }
 
-export function getValidate(gen: CodeGen, sch: SchemaEnv): Code {
+export function getValidate(cxt: KeywordCxt, sch: SchemaEnv): Code {
+  return getValidateCode(cxt.gen, sch)
+}
+
+export function getValidateCode(gen: CodeGen, sch: SchemaEnv): Code {
   return sch.validate
     ? gen.scopeValue("validate", {ref: sch.validate})
     : _`${gen.scopeValue("wrapper", {ref: sch})}.validate`

@@ -40,7 +40,7 @@ const def: CodeKeywordDefinition = {
         it.self,
         new SchemaEnv({schema, root, schemaPath: `/definitions/${ref}`})
       )
-      const v = getValidate(gen, sch)
+      const v = getValidate(cxt, sch)
       const errsCount = gen.const("_errs", N.errors)
       callRef(cxt, v, sch, sch.$async)
       gen.assign(valid, _`${errsCount} === ${N.errors}`)

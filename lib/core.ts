@@ -222,7 +222,6 @@ type RequiredInstanceOptions = {
     | "strictTuples"
     | "strictRequired"
     | "inlineRefs"
-    | "fullDynamicRefs"
     | "loopRequired"
     | "loopEnum"
     | "meta"
@@ -241,7 +240,7 @@ export type InstanceOptions = Options & RequiredInstanceOptions
 const MAX_EXPRESSION = 200
 
 // eslint-disable-next-line complexity
-function requiredOptions(o: Options): RequiredInstanceOptions {
+function requiredOptions(o: Options): RequiredInstanceOptions & {fullDynamicRefs: boolean} {
   const s = o.strict
   const _optz = o.code?.optimize
   const optimize = _optz === true || _optz === undefined ? 1 : _optz || 0

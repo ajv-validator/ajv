@@ -1,12 +1,15 @@
 import Ajv2020 from "../dist/2020"
 import Ajv2019 from "../dist/2019"
 import Ajv from "../dist/ajv"
+import type {InstanceOptions} from "../dist/ajv"
 import type AjvCore from "../dist/core"
 import type {Options} from "../dist/core"
 import type {AnySchema, ValidateFunction, AsyncValidateFunction} from "../dist/types"
 import standalone from "../dist/standalone"
 import * as fromString from "require-from-string"
 import * as assert from "assert"
+import {SchemaEnv, compileSchema} from "../dist/compile"
+import {getValidate, callRef} from "../dist/vocabularies/core/ref"
 
 interface TestGroup {
   description: string
@@ -132,6 +135,86 @@ describe("fullDynamicRefs", () => {
       standalone(legacy, legacy.compile(schema)),
       standalone(enabled, enabled.compile(schema))
     )
+  })
+
+  it("accepts instance options without the new option", () => {
+    const {fullDynamicRefs, ...existingOptions} = new Ajv().opts
+    const settings: InstanceOptions = existingOptions
+    assert.strictEqual(fullDynamicRefs, false)
+    assert.strictEqual(settings.fullDynamicRefs, undefined)
+    assert.strictEqual(new Ajv(settings).opts.fullDynamicRefs, false)
+  })
+
+  it("accepts a keyword context in getValidate for ready and deferred validators", () => {
+    for (const fullDynamicRefs of [undefined, false, true]) {
+      for (const ready of [false, true]) {
+        const ajv = new Ajv2020({...options, fullDynamicRefs})
+        const schema = {type: "string"}
+        const target = ajv.compile(schema)
+        const env = new SchemaEnv({schema})
+        env.validateName = target.source!.validateName
+        if (ready) env.validate = target
+        ajv.addKeyword({
+          keyword: "checkString",
+          schemaType: "boolean",
+          code(cxt) {
+            const validate = getValidate(cxt, env)
+            assert.strictEqual(String(validate).endsWith(".validate"), !ready)
+            env.validate = target
+            callRef(cxt, validate, env)
+          },
+        })
+        for (const validate of validators(ajv, {checkString: true})) {
+          assert.strictEqual(validate("ok"), true)
+          assert.strictEqual(validate(42), false)
+        }
+      }
+    }
+  })
+
+  it("does not read resource metadata when disabled or omitted", () => {
+    for (const fullDynamicRefs of [undefined, false]) {
+      const ajv = new Ajv2020({...options, fullDynamicRefs})
+      const env = new SchemaEnv({schema: {type: "string"}})
+      Object.defineProperty(env, "resources", {
+        get() {
+          throw new Error("extension-owned resources must not be read")
+        },
+      })
+      const validate = compileSchema.call(ajv, env).validate!
+      assert.strictEqual(validate("ok"), true)
+      assert.strictEqual(validate(42), false)
+    }
+  })
+
+  it("does not read dynamic scope metadata when disabled or omitted", () => {
+    for (const fullDynamicRefs of [undefined, false]) {
+      const ajv = new Ajv2020({...options, fullDynamicRefs})
+      const schema = {type: "string"}
+      const env = new SchemaEnv({schema})
+      env.validate = ajv.compile(schema)
+      ajv.addKeyword({
+        keyword: "checkString",
+        schemaType: "boolean",
+        code(cxt) {
+          Object.defineProperty(cxt.it, "dynamicScope", {
+            configurable: true,
+            get() {
+              throw new Error("extension-owned dynamicScope must not be read")
+            },
+          })
+          try {
+            callRef(cxt, getValidate(cxt, env), env)
+          } finally {
+            delete cxt.it.dynamicScope
+          }
+        },
+      })
+      for (const validate of validators(ajv, {checkString: true})) {
+        assert.strictEqual(validate("ok"), true)
+        assert.strictEqual(validate(42), false)
+      }
+    }
   })
 
   it("supports meta-schema registration and lookup", () => {

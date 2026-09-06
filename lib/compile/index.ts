@@ -115,7 +115,7 @@ export class SchemaEnv implements SchemaEnvArgs {
 
 // Compiles schema in SchemaEnv
 export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
-  const validators = sch.root.resources?.get(normalizeId(sch.baseId))?.validators
+  const validators = getResourceValidators(sch, this.opts.fullDynamicRefs)
   const cached = validators?.get(sch.schema)
   if (cached) {
     sch.validate = cached.validate
@@ -214,6 +214,14 @@ export function compileSchema(this: Ajv, sch: SchemaEnv): SchemaEnv {
   } finally {
     this._compilations.delete(sch)
   }
+}
+
+function getResourceValidators(
+  sch: SchemaEnv,
+  fullDynamicRefs?: boolean
+): SchemaResource["validators"] | undefined {
+  if (!fullDynamicRefs) return
+  return sch.root.resources?.get(normalizeId(sch.baseId))?.validators
 }
 
 export function resolveRef(
