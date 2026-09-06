@@ -12,6 +12,7 @@ const def: CodeKeywordDefinition = {
 }
 
 export function dynamicAnchor(cxt: KeywordCxt, anchor: string): void {
+  if (cxt.it.opts.fullDynamicRefs) return
   const {gen, it} = cxt
   it.schemaEnv.root.dynamicAnchors[anchor] = true
   const v = _`${N.dynamicAnchors}${getProperty(anchor)}`

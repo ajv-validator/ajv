@@ -4,6 +4,7 @@ import type {URIComponent} from "fast-uri"
 import {eachItem} from "./util"
 import * as equal from "fast-deep-equal"
 import * as traverse from "json-schema-traverse"
+import type {ResourceIndex} from "./dynamic"
 
 // the hash of local references inside the schema (created by getSchemaRefs), used for inline resolution
 export type LocalRefs = {[Ref in string]?: AnySchemaObject}
@@ -90,7 +91,12 @@ export function resolveUrl(resolver: UriResolver, baseId: string, id: string): s
 
 const ANCHOR = /^[a-z_][-a-z0-9._]*$/i
 
-export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): LocalRefs {
+export function getSchemaRefs(
+  this: Ajv,
+  schema: AnySchema,
+  baseId: string,
+  resources?: ResourceIndex
+): LocalRefs {
   if (typeof schema == "boolean") return {}
   const {schemaId, uriResolver} = this.opts
   const schId = normalizeId(schema[schemaId] || baseId)
@@ -100,13 +106,16 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): Loc
   const schemaRefs: Set<string> = new Set()
 
   traverse(schema, {allKeys: true}, (sch, jsonPtr, _, parentJsonPtr) => {
-    if (parentJsonPtr === undefined) return
+    if (parentJsonPtr === undefined && !resources) return
     const fullPath = pathPrefix + jsonPtr
-    let innerBaseId = baseIds[parentJsonPtr]
-    if (typeof sch[schemaId] == "string") innerBaseId = addRef.call(this, sch[schemaId])
+    let innerBaseId = parentJsonPtr === undefined ? schId : baseIds[parentJsonPtr]
+    if (parentJsonPtr !== undefined && typeof sch[schemaId] == "string") {
+      innerBaseId = addRef.call(this, sch[schemaId])
+    }
     addAnchor.call(this, sch.$anchor)
     addAnchor.call(this, sch.$dynamicAnchor)
     baseIds[jsonPtr] = innerBaseId
+    if (resources) indexDynamicAnchors(resources, sch, innerBaseId)
 
     function addRef(this: Ajv, ref: string): string {
       // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -123,7 +132,7 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): Loc
           checkAmbiguosRef(sch, localRefs[ref], ref)
           localRefs[ref] = sch
         } else {
-          this.refs[ref] = fullPath
+          this.refs[ref] = resources ? normalizeId(fullPath) : fullPath
         }
       }
       return ref
@@ -145,5 +154,17 @@ export function getSchemaRefs(this: Ajv, schema: AnySchema, baseId: string): Loc
 
   function ambiguos(ref: string): Error {
     return new Error(`reference "${ref}" resolves to more than one schema`)
+  }
+}
+
+function indexDynamicAnchors(resources: ResourceIndex, schema: AnySchemaObject, baseId = ""): void {
+  let resource = resources.get(baseId)
+  if (!resource) {
+    resource = {baseId, schema, anchors: new Map(), validators: new Map()}
+    resources.set(baseId, resource)
+  }
+  if (typeof schema.$dynamicAnchor === "string") resource.anchors.set(schema.$dynamicAnchor, schema)
+  if (resource.schema === schema && schema.$recursiveAnchor === true) {
+    resource.anchors.set("", schema)
   }
 }

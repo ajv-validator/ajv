@@ -55,6 +55,7 @@ const defaultOptions = {
   meta: true,
   validateSchema: true,
   addUsedSchema: true,
+  fullDynamicRefs: false, // *
   inlineRefs: true,
   passContext: false,
   loopRequired: 200, // *
@@ -320,6 +321,25 @@ Option values:
 ### addUsedSchema
 
 By default methods `compile` and `validate` add schemas to the instance if they have `$id` (or `id`) property that doesn't start with "#". If `$id` is present and it is not unique the exception will be thrown. Set this option to `false` to skip adding schemas to the instance and the `$id` uniqueness check when these methods are used. This option does not affect `addSchema` method.
+
+### fullDynamicRefs
+
+Enable complete dynamic-reference resolution for draft-2020-12 (`Ajv2020`) and recursive-reference resolution for draft-2019-09 (`Ajv2019`). The default is `false`, preserving the existing behavior and generated validation code, including its known reference-resolution limitations.
+
+When enabled, Ajv resolves initial reference targets before applying dynamic scope, discovers anchors throughout each schema resource, and keeps bindings local to the active evaluation path. This supports nested `$dynamicAnchor` declarations, external URI `$dynamicRef` targets, and recursive references across nested resource boundaries.
+
+```javascript
+const Ajv2020 = require("ajv/dist/2020")
+const ajv = new Ajv2020({fullDynamicRefs: true})
+```
+
+Enable this option when validating OpenAPI schemas that depend on nested dynamic anchors, including the OpenAPI `schema-base` schemas. The document schema alone does not validate Schema Object keywords; use the corresponding `schema-base` and register its referenced dialect and vocabulary schemas when those checks are required.
+
+The option adds schema-resource indexing during registration and scope management during validation. References that require resource boundaries cannot be inlined, even with numeric `inlineRefs` settings. Measure compilation and validation costs against your own schemas before enabling it. Async callers can use synchronous dynamic-reference targets, but asynchronous anchors and targets remain unsupported. The option does not change validation behavior in draft-07 or JTD and does not implement future JSON Schema dialects. The added compiler code increases browser bundle size even when the option is disabled.
+
+For custom keywords and compiler extensions, enabling this option can change when anchor schemas are compiled, including anchors in subschemas that validation has not visited. References to the same schema within a resource can share a compiled validator. Extensions must not depend on a particular compilation order, compilation count, or mutation of a caller's `dynamicAnchors` object. The generated scope keeps outer bindings without changing that object.
+
+A resource declared directly inside an iterated subschema, such as `items: {$id: "item", $dynamicAnchor: "item", ...}`, can rebuild its dynamic scope for every array element. This can substantially increase validation time for large arrays even when the item checks themselves are cheap; scope construction is not currently hoisted out of these loops.
 
 ### inlineRefs
 

@@ -2,7 +2,10 @@ import type {CodeKeywordDefinition} from "../../types"
 import type {KeywordCxt} from "../../compile/validate"
 import {_, getProperty, Code, Name} from "../../compile/codegen"
 import N from "../../compile/names"
-import {callRef} from "../core/ref"
+import {callRef, getValidate} from "../core/ref"
+import {resolveRef, SchemaEnv} from "../../compile"
+import MissingRefError from "../../compile/ref_error"
+import {isOwnProperty} from "../code"
 
 const def: CodeKeywordDefinition = {
   keyword: "$dynamicRef",
@@ -11,6 +14,7 @@ const def: CodeKeywordDefinition = {
 }
 
 export function dynamicRef(cxt: KeywordCxt, ref: string): void {
+  if (cxt.it.opts.fullDynamicRefs) return fullDynamicRef(cxt, ref)
   const {gen, keyword, it} = cxt
   if (ref[0] !== "#") throw new Error(`"${keyword}" only supports hash fragment reference`)
   const anchor = ref.slice(1)
@@ -46,6 +50,33 @@ export function dynamicRef(cxt: KeywordCxt, ref: string): void {
           })
       : () => callRef(cxt, validate)
   }
+}
+
+function fullDynamicRef(cxt: KeywordCxt, ref: string): void {
+  const {it, gen, keyword} = cxt
+  const target = resolveRef.call(it.self, it.schemaEnv.root, it.baseId, ref, true)
+  if (!(target instanceof SchemaEnv)) throw new MissingRefError(it.opts.uriResolver, it.baseId, ref)
+  if (target.$async) {
+    throw new Error("async dynamic references are not supported")
+  }
+  const validate = getValidate(cxt, target)
+  const {schema} = target
+  const {fragment} = it.opts.uriResolver.parse(ref)
+  let anchor: string | undefined
+  if (typeof schema === "object") {
+    if (keyword === "$recursiveRef") {
+      if (schema.$recursiveAnchor === true) anchor = ""
+    } else if (fragment !== undefined && fragment === schema.$dynamicAnchor) {
+      anchor = fragment
+    }
+  }
+  if (anchor === undefined) return callRef(cxt, validate, target)
+  const scope = it.dynamicScope || N.dynamicAnchors
+  const selected = gen.let(
+    "dynamicRef",
+    _`${isOwnProperty(gen, scope, anchor)} && ${scope}${getProperty(anchor)} || ${validate}`
+  )
+  callRef(cxt, selected)
 }
 
 export default def

@@ -1,0 +1,308 @@
+[
+  {
+    "description": "A $dynamicRef without anchor in fragment behaves identical to $ref",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://test.json-schema.org/dynamicRef-without-anchor/root",
+      "$ref": "list",
+      "$defs": {
+        "foo": {
+          "$dynamicAnchor": "items",
+          "type": "string"
+        },
+        "list": {
+          "$id": "list",
+          "type": "array",
+          "items": {
+            "$dynamicRef": "#/$defs/items"
+          },
+          "$defs": {
+            "items": {
+              "$comment": "This is only needed to satisfy the bookending requirement",
+              "$dynamicAnchor": "items",
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "An array of strings is invalid",
+        "data": ["foo", "bar"],
+        "valid": false
+      },
+      {
+        "description": "An array of numbers is valid",
+        "data": [24, 42],
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "multiple dynamic paths to the $dynamicRef keyword",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://test.json-schema.org/dynamic-ref-with-multiple-paths/main",
+      "if": {
+        "properties": {
+          "kindOfList": {
+            "const": "numbers"
+          }
+        },
+        "required": ["kindOfList"]
+      },
+      "then": {
+        "$ref": "numberList"
+      },
+      "else": {
+        "$ref": "stringList"
+      },
+      "$defs": {
+        "genericList": {
+          "$id": "genericList",
+          "properties": {
+            "list": {
+              "items": {
+                "$dynamicRef": "#itemType"
+              }
+            }
+          },
+          "$defs": {
+            "defaultItemType": {
+              "$comment": "Only needed to satisfy bookending requirement",
+              "$dynamicAnchor": "itemType"
+            }
+          }
+        },
+        "numberList": {
+          "$id": "numberList",
+          "$defs": {
+            "itemType": {
+              "$dynamicAnchor": "itemType",
+              "type": "number"
+            }
+          },
+          "$ref": "genericList"
+        },
+        "stringList": {
+          "$id": "stringList",
+          "$defs": {
+            "itemType": {
+              "$dynamicAnchor": "itemType",
+              "type": "string"
+            }
+          },
+          "$ref": "genericList"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "number list with number values",
+        "data": {
+          "kindOfList": "numbers",
+          "list": [1.1]
+        },
+        "valid": true
+      },
+      {
+        "description": "number list with string values",
+        "data": {
+          "kindOfList": "numbers",
+          "list": ["foo"]
+        },
+        "valid": false
+      },
+      {
+        "description": "string list with number values",
+        "data": {
+          "kindOfList": "strings",
+          "list": [1.1]
+        },
+        "valid": false
+      },
+      {
+        "description": "string list with string values",
+        "data": {
+          "kindOfList": "strings",
+          "list": ["foo"]
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "$ref to $dynamicRef finds detached $dynamicAnchor",
+    "schema": {
+      "$ref": "http://localhost:1234/draft2020-12/detached-dynamicref.json#/$defs/foo"
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "non-number is invalid",
+        "data": "a",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "$dynamicRef points to a boolean schema",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$defs": {
+        "true": true,
+        "false": false
+      },
+      "properties": {
+        "true": {
+          "$dynamicRef": "#/$defs/true"
+        },
+        "false": {
+          "$dynamicRef": "#/$defs/false"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "follow $dynamicRef to a true schema",
+        "data": {
+          "true": 1
+        },
+        "valid": true
+      },
+      {
+        "description": "follow $dynamicRef to a false schema",
+        "data": {
+          "false": 1
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "$dynamicRef skips over intermediate resources - direct reference",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://test.json-schema.org/dynamic-ref-skips-intermediate-resource/main",
+      "type": "object",
+      "properties": {
+        "bar-item": {
+          "$ref": "item"
+        }
+      },
+      "$defs": {
+        "bar": {
+          "$id": "bar",
+          "type": "array",
+          "items": {
+            "$ref": "item"
+          },
+          "$defs": {
+            "item": {
+              "$id": "item",
+              "type": "object",
+              "properties": {
+                "content": {
+                  "$dynamicRef": "#content"
+                }
+              },
+              "$defs": {
+                "defaultContent": {
+                  "$dynamicAnchor": "content",
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "$dynamicAnchor": "content",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "integer property passes",
+        "data": {
+          "bar-item": {
+            "content": 42
+          }
+        },
+        "valid": true
+      },
+      {
+        "description": "string property fails",
+        "data": {
+          "bar-item": {
+            "content": "value"
+          }
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "$dynamicRef avoids the root of each schema, but scopes are still registered",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://test.json-schema.org/dynamic-ref-avoids-root-of-each-schema/base",
+      "$ref": "first#/$defs/stuff",
+      "$defs": {
+        "first": {
+          "$id": "first",
+          "$defs": {
+            "stuff": {
+              "$ref": "second#/$defs/stuff"
+            },
+            "length": {
+              "$comment": "unused, because there is no $dynamicAnchor here",
+              "maxLength": 1
+            }
+          }
+        },
+        "second": {
+          "$id": "second",
+          "$defs": {
+            "stuff": {
+              "$ref": "third#/$defs/stuff"
+            },
+            "length": {
+              "$dynamicAnchor": "length",
+              "maxLength": 2
+            }
+          }
+        },
+        "third": {
+          "$id": "third",
+          "$defs": {
+            "stuff": {
+              "$dynamicRef": "#length"
+            },
+            "length": {
+              "$dynamicAnchor": "length",
+              "maxLength": 3
+            }
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "data is sufficient for schema at second#/$defs/length",
+        "data": "hi",
+        "valid": true
+      },
+      {
+        "description": "data is not sufficient for schema at second#/$defs/length",
+        "data": "hey",
+        "valid": false
+      }
+    ]
+  }
+]

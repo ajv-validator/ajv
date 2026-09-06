@@ -114,12 +114,14 @@ const validate = ajv.getSchema("https://example.com/strict-tree")
 
 See [dynamic-refs](https://github.com/ajv-validator/ajv/blob/master/spec/dynamic-ref.spec.ts) test for the example using `$dynamicAnchor`/`$dynamicRef`.
 
-At the moment Ajv implements the spec for dynamic recursive references with these limitations:
+By default, Ajv retains its original dynamic-reference implementation with these limitations:
 
 - `$recursiveAnchor`/`$dynamicAnchor` can only be used in the schema root.
 - `$recursiveRef`/`$dynamicRef` can only be hash fragments, without URI.
 
-Ajv also does not support dynamic references in [asynchronous schemas](#asynchronous-validation) (Ajv extension) - it is assumed that the referenced schema is synchronous, and there is no validation-time check for it.
+Use [`fullDynamicRefs: true`](../options.md#fulldynamicrefs) with `Ajv2020` or `Ajv2019` for complete reference resolution under their published specifications. This enables nested dynamic anchors, URI-based dynamic references, and correct recursive-reference resource boundaries. It is opt-in because resource indexing and runtime scope management can increase compilation and validation costs. `$recursiveAnchor` still applies to schema resource roots as specified by draft-2019-09; it is not a general-purpose nested dynamic anchor.
+
+Ajv does not support dynamic references to [asynchronous validators](#asynchronous-validation) (Ajv extension). The default implementation assumes referenced schemas are synchronous without a validation-time check. With `fullDynamicRefs` enabled, async callers can reference synchronous targets, but known async anchors and dynamic-reference targets are rejected during compilation.
 
 ## $data reference
 
