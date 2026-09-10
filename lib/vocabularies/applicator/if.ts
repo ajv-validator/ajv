@@ -4,10 +4,10 @@ import type {
   KeywordErrorDefinition,
   AnySchema,
 } from "../../types"
-import type {SchemaObjCxt} from "../../compile"
+import type {SchemaCxt, SchemaObjCxt} from "../../compile"
 import type {KeywordCxt} from "../../compile/validate"
 import {_, str, not, Name} from "../../compile/codegen"
-import {alwaysValidSchema, checkStrictMode} from "../../compile/util"
+import {alwaysValidSchema, checkStrictMode, evaluatedPropsToName} from "../../compile/util"
 
 export type IfKeywordError = ErrorObject<"if", {failingKeyword: string}, AnySchema>
 
@@ -28,12 +28,30 @@ const def: CodeKeywordDefinition = {
     }
     const hasThen = hasSchema(it, "then")
     const hasElse = hasSchema(it, "else")
-    if (!hasThen && !hasElse) return
 
     const valid = gen.let("valid", true)
     const schValid = gen.name("_valid")
-    validateIf()
+    const ifCxt = validateIf()
     cxt.reset()
+
+    if (!hasThen && !hasElse) {
+      // "then"/"else" absent: the "if" assertion is ignored, but its
+      // annotations are still collected when the instance matches "if".
+      // Names that hold the merged evaluated props/items are declared first
+      // so that the conditional merge only assigns to them (when "if" passes)
+      // and they keep their initial value otherwise.
+      if (it.opts.unevaluated) {
+        if (it.props !== true && !(it.props instanceof Name)) {
+          it.props = evaluatedPropsToName(gen, it.props)
+        }
+        if (it.items !== true && !(it.items instanceof Name)) {
+          it.items = gen.var("items", it.items ?? 0)
+        }
+      }
+      cxt.mergeValidEvaluated(ifCxt, schValid)
+      return
+    }
+    cxt.mergeEvaluated(ifCxt)
 
     if (hasThen && hasElse) {
       const ifClause = gen.let("ifClause")
@@ -47,8 +65,8 @@ const def: CodeKeywordDefinition = {
 
     cxt.pass(valid, () => cxt.error(true))
 
-    function validateIf(): void {
-      const schCxt = cxt.subschema(
+    function validateIf(): SchemaCxt {
+      return cxt.subschema(
         {
           keyword: "if",
           compositeRule: true,
@@ -57,7 +75,6 @@ const def: CodeKeywordDefinition = {
         },
         schValid
       )
-      cxt.mergeEvaluated(schCxt)
     }
 
     function validateClause(keyword: string, ifClause?: Name): () => void {
