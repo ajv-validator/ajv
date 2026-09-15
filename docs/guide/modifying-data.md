@@ -102,7 +102,9 @@ For example, with this non-discriminated union you will have unexpected results:
 
 The intention of the schema above is to allow objects with either the string property "foo" or the integer property "bar", but not with both and not with any other properties.
 
-With the option `removeAdditional: true` the validation will pass for the object `{ "foo": "abc"}` but will fail for the object `{"bar": 1}`. It happens because while the first subschema in `oneOf` is validated, the property `bar` is removed because it is an additional property according to the standard (because it is not included in `properties` keyword in the same schema).
+With the options `removeAdditional: true` and `allErrors: true` the validation will pass for the object `{ "foo": "abc"}` but will fail for the object `{"bar": 1}`. It happens because while the first subschema in `oneOf` is validated, the property `bar` is removed because it is an additional property according to the standard (because it is not included in `properties` keyword in the same schema).
+
+With the default `allErrors: false`, the object `{"bar": 1}` passes validation instead. The first subschema fails its `required: ["foo"]` check and stops before evaluating `additionalProperties`, so `bar` is still present when the second subschema is validated. The behaviour of `removeAdditional` in this example therefore depends on the `allErrors` option.
 
 While this behaviour is unexpected (issues [#129](https://github.com/ajv-validator/ajv/issues/129), [#134](https://github.com/ajv-validator/ajv/issues/134)), it is correct. To have the expected behaviour (both objects are allowed and additional properties are removed) the schema has to be refactored in this way:
 
