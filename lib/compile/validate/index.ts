@@ -260,12 +260,28 @@ function iterateKeywords(it: SchemaObjCxt, group: RuleGroup): void {
   } = it
   if (useDefaults) assignDefaults(it, group.type)
   gen.block(() => {
-    for (const rule of group.rules) {
+    for (const rule of rulesForGroup(it, group)) {
       if (shouldUseRule(schema, rule)) {
         keywordCode(it, rule.keyword, rule.definition, group.type)
       }
     }
   })
+}
+
+// removeAdditional: "failing" deletes extras that fail additionalProperties.
+// Apply that keyword before required/minProperties/maxProperties so:
+// - allErrors: false does not skip removal after an earlier error (#897)
+// - property-count keywords see data after extras are removed
+function rulesForGroup(it: SchemaObjCxt, group: RuleGroup): Rule[] {
+  const {rules} = group
+  if (it.opts.removeAdditional !== "failing" || group.type !== "object") return rules
+  let additionalProperties: Rule | undefined
+  const rest: Rule[] = []
+  for (const rule of rules) {
+    if (rule.keyword === "additionalProperties") additionalProperties = rule
+    else rest.push(rule)
+  }
+  return additionalProperties ? [additionalProperties, ...rest] : rules
 }
 
 function checkStrictTypes(it: SchemaObjCxt, types: JSONType[]): void {
