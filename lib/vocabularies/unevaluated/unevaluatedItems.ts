@@ -25,15 +25,26 @@ const def: CodeKeywordDefinition = {
     const items = it.items || 0
     if (items === true) return
     const len = gen.const("len", _`${data}.length`)
-    if (schema === false) {
-      cxt.setParams({len: items})
-      cxt.fail(_`${len} > ${items}`)
-    } else if (typeof schema == "object" && !alwaysValidSchema(it, schema)) {
-      const valid = gen.var("valid", _`${len} <= ${items}`)
-      gen.if(not(valid), () => validateItems(valid, items))
-      cxt.ok(valid)
+    if (items instanceof Name) {
+      gen.if(_`${items} !== true`, () => {
+        gen.assign(items, _`${items} || 0`)
+        validateUnevaluated(items)
+      })
+    } else {
+      validateUnevaluated(items)
     }
     it.items = true
+
+    function validateUnevaluated(evaluatedItems: Name | number): void {
+      if (schema === false) {
+        cxt.setParams({len: evaluatedItems})
+        cxt.fail(_`${len} > ${evaluatedItems}`)
+      } else if (typeof schema == "object" && !alwaysValidSchema(it, schema)) {
+        const valid = gen.var("valid", _`${len} <= ${evaluatedItems}`)
+        gen.if(not(valid), () => validateItems(valid, evaluatedItems))
+        cxt.ok(valid)
+      }
+    }
 
     function validateItems(valid: Name, from: Name | number): void {
       gen.forRange("i", from, len, (i) => {

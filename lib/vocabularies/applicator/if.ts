@@ -7,7 +7,7 @@ import type {
 import type {SchemaObjCxt} from "../../compile"
 import type {KeywordCxt} from "../../compile/validate"
 import {_, str, not, Name} from "../../compile/codegen"
-import {alwaysValidSchema, checkStrictMode} from "../../compile/util"
+import {alwaysValidSchema, checkStrictMode, evaluatedPropsToName} from "../../compile/util"
 
 export type IfKeywordError = ErrorObject<"if", {failingKeyword: string}, AnySchema>
 
@@ -32,6 +32,13 @@ const def: CodeKeywordDefinition = {
 
     const valid = gen.let("valid", true)
     const schValid = gen.name("_valid")
+    // Initialize existing annotations outside the branch that may merge new ones.
+    if (it.opts.unevaluated) {
+      if (it.props && it.props !== true && !(it.props instanceof Name)) {
+        it.props = evaluatedPropsToName(gen, it.props)
+      }
+      if (typeof it.items === "number") it.items = gen.var("items", it.items)
+    }
     validateIf()
     cxt.reset()
 
@@ -57,7 +64,7 @@ const def: CodeKeywordDefinition = {
         },
         schValid
       )
-      cxt.mergeEvaluated(schCxt)
+      cxt.mergeValidEvaluated(schCxt, schValid)
     }
 
     function validateClause(keyword: string, ifClause?: Name): () => void {
