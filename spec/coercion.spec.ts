@@ -452,6 +452,33 @@ describe("Type coercion", () => {
     })
   })
 
+  it("should not coerce types inside not keyword (issue #2673)", () => {
+    const schema = {
+      type: "object",
+      properties: {
+        foo: {
+          not: {
+            type: "string",
+          },
+        },
+      },
+    }
+
+    instances.forEach((_ajv) => {
+      const validate = _ajv.compile(schema)
+      let data: any
+
+      validate((data = {foo: 123})).should.equal(true)
+      data.should.eql({foo: 123})
+
+      validate((data = {foo: true})).should.equal(true)
+      data.should.eql({foo: true})
+
+      validate((data = {foo: "hello"})).should.equal(false)
+      data.should.eql({foo: "hello"})
+    })
+  })
+
   it('should check "contains" after coercion', () => {
     const schema = {
       type: "array",

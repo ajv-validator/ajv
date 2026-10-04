@@ -24,6 +24,7 @@ export interface SubschemaContext {
   compositeRule?: true
   createErrors?: boolean
   allErrors?: boolean
+  opts?: SchemaObjCxt["opts"]
 }
 
 export type SubschemaArgs = Partial<{
@@ -44,6 +45,7 @@ export type SubschemaArgs = Partial<{
   compositeRule: true
   createErrors: boolean
   allErrors: boolean
+  opts: SchemaObjCxt["opts"]
 }>
 
 export function getSubschema(
@@ -125,8 +127,9 @@ export function extendSubschemaData(
 
 export function extendSubschemaMode(
   subschema: SubschemaContext,
-  {jtdDiscriminator, jtdMetadata, compositeRule, createErrors, allErrors}: SubschemaArgs
+  {jtdDiscriminator, jtdMetadata, compositeRule, createErrors, allErrors, opts}: SubschemaArgs
 ): void {
+  if (opts !== undefined) subschema.opts = opts
   if (compositeRule !== undefined) subschema.compositeRule = compositeRule
   if (createErrors !== undefined) subschema.createErrors = createErrors
   if (allErrors !== undefined) subschema.allErrors = allErrors

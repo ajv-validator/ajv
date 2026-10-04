@@ -22,6 +22,7 @@ const def: CodeKeywordDefinition = {
         compositeRule: true,
         createErrors: false,
         allErrors: false,
+        opts: it.opts.coerceTypes ? {...it.opts, coerceTypes: false} : it.opts,
       },
       valid
     )
