@@ -20,7 +20,10 @@ export function checkMissingProp(
 ): Code {
   return or(
     ...properties.map((prop) =>
-      and(noPropertyInData(gen, data, prop, opts.ownProperties), _`${missing} = ${prop}`)
+      // the assignment must evaluate to true even when the property name
+      // is an empty string (a falsy value), otherwise a missing empty-string
+      // property would not be reported - see issue #2077
+      and(noPropertyInData(gen, data, prop, opts.ownProperties), _`(${missing} = ${prop}, true)`)
     )
   )
 }
