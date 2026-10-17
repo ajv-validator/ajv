@@ -142,8 +142,12 @@ function interpolate(x?: string | string[] | number | boolean | null): SafeExpr 
     : safeStringify(Array.isArray(x) ? x.join(",") : x)
 }
 
+const PROTO_KEY = /[{,]"__proto__":/
+
 export function stringify(x: unknown): Code {
-  return new _Code(safeStringify(x))
+  const json = safeStringify(x)
+  // "__proto__" key in object literal would set the prototype instead of creating a property
+  return new _Code(PROTO_KEY.test(json) ? `JSON.parse(${safeStringify(json)})` : json)
 }
 
 export function safeStringify(x: unknown): string {
