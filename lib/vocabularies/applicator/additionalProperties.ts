@@ -22,6 +22,10 @@ const error: KeywordErrorDefinition = {
   params: ({params}) => _`{additionalProperty: ${params.additionalProperty}}`,
 }
 
+// Up to this many properties, a chain of `===` comparisons with the property names is faster
+// than hasOwnProperty in V8 and not slower in SpiderMonkey and JavaScriptCore
+const MAX_PROPS_TO_COMPARE = 12
+
 const def: CodeKeywordDefinition & AddedKeywordDefinition = {
   keyword: "additionalProperties",
   type: ["object"],
@@ -50,12 +54,13 @@ const def: CodeKeywordDefinition & AddedKeywordDefinition = {
 
     function isAdditional(key: Name): Code {
       let definedProp: Code
-      if (props.length > 8) {
-        // TODO maybe an option instead of hard-coded 8?
+      if (props.length > MAX_PROPS_TO_COMPARE) {
         const propsSchema = schemaRefOrVal(it, parentSchema.properties, "properties")
         definedProp = isOwnProperty(gen, propsSchema as Code, key)
       } else if (props.length) {
-        definedProp = or(...props.map((p) => _`${key} === ${p}`))
+        // above 8 properties, use the same names as hasOwnProperty check (it includes own "__proto__")
+        const names = props.length > 8 ? Object.getOwnPropertyNames(parentSchema.properties) : props
+        definedProp = or(...names.map((p) => _`${key} === ${p}`))
       } else {
         definedProp = nil
       }
