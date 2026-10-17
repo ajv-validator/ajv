@@ -109,7 +109,7 @@ export interface CurrentOptions {
   allowDate?: boolean // JTD only
   specialNumbers?: "fast" | "null" // JTD only
   $comment?:
-    | true
+    | boolean
     | ((comment: string, schemaPath?: string, rootSchema?: AnySchemaObject) => unknown)
   formats?: {[Name in string]?: Format}
   keywords?: Vocabulary

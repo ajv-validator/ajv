@@ -3,6 +3,23 @@ import chai from "../chai"
 chai.should()
 
 describe("$comment option", () => {
+  ;[false, undefined].forEach(($comment) => {
+    it(`should ignore comments when $comment = ${$comment}`, () => {
+      const logCalls: any[][] = []
+      const log = (...args: any[]) => logCalls.push(args)
+      const ajv = new _Ajv({$comment, logger: {log, warn: log, error: log}})
+      const validate = ajv.compile({
+        $comment: "object root",
+        type: "object",
+        properties: {foo: {$comment: "property foo", type: "integer"}},
+      })
+
+      validate({foo: 1}).should.equal(true)
+      validate({foo: "bar"}).should.equal(false)
+      logCalls.should.eql([])
+    })
+  })
+
   describe("= true", () => {
     let logCalls: any[][]
 
