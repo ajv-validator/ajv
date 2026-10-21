@@ -119,7 +119,7 @@ If nothing helps, please submit:
 
 ### Using JSON Schema standard
 
-Ajv implements JSON Schema standard draft-04 and draft-06/07.
+Ajv supports JSON Schema draft-06/07, draft-2019-09 and draft-2020-12. Draft-07 is the default; newer drafts require their corresponding Ajv classes. Draft-04 is supported with the additional `ajv-draft-04` package. See [JSON Schema versions](./docs/json-schema.md#json-schema-versions) for the imports and compatibility restrictions.
 
 If it is a general issue related to using the standard keywords included in JSON Schema specification or implementing some advanced validation logic please ask the question on [Stack Overflow](https://stackoverflow.com/questions/ask?tags=jsonschema,ajv) (my account is [esp](https://stackoverflow.com/users/1816503/esp)) or submit the question to [json-schema.org](https://github.com/json-schema-org/json-schema-spec/issues/new). Please mention @epoberezkin.
 
