@@ -20,7 +20,9 @@ export class Ajv2020 extends AjvCore {
   _addVocabularies(): void {
     super._addVocabularies()
     draft2020Vocabularies.forEach((v) => this.addVocabulary(v))
-    if (this.opts.discriminator) this.addKeyword(discriminator)
+    if (this.opts.discriminator) {
+      this.addKeyword({...discriminator, before: "unevaluatedProperties"})
+    }
   }
 
   _addDefaultMetaSchema(): void {
