@@ -128,7 +128,8 @@ export const mergeEvaluated: MergeEvaluated = {
         gen.if(
           _`${from} === true`,
           () => gen.assign(to, true),
-          () => gen.assign(to, _`${to} || {}`).code(_`Object.assign(${to}, ${from})`)
+          () =>
+            gen.assign(to, _`${to} || Object.create(null)`).code(_`Object.assign(${to}, ${from})`)
         )
       }),
     mergeToName: (gen, from, to) =>
@@ -136,7 +137,7 @@ export const mergeEvaluated: MergeEvaluated = {
         if (from === true) {
           gen.assign(to, true)
         } else {
-          gen.assign(to, _`${to} || {}`)
+          gen.assign(to, _`${to} || Object.create(null)`)
           setEvaluated(gen, to, from)
         }
       }),
@@ -159,7 +160,7 @@ export const mergeEvaluated: MergeEvaluated = {
 
 export function evaluatedPropsToName(gen: CodeGen, ps?: EvaluatedProperties): Name {
   if (ps === true) return gen.var("props", true)
-  const props = gen.var("props", _`{}`)
+  const props = gen.var("props", _`Object.create(null)`)
   if (ps !== undefined) setEvaluated(gen, props, ps)
   return props
 }
