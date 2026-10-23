@@ -1,4 +1,4 @@
-import {URIComponent} from "fast-uri"
+import type {URIComponent} from "fast-uri"
 import type {CodeGen, Code, Name, ScopeValueSets, ValueScopeName} from "../compile/codegen"
 import type {SchemaEnv, SchemaCxt, SchemaObjCxt} from "../compile"
 import type {JSONType} from "../compile/rules"
