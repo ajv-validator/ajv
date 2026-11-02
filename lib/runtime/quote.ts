@@ -1,6 +1,6 @@
 const rxEscapable =
   // eslint-disable-next-line no-control-regex, no-misleading-character-class
-  /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g
+  /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]|[\ud800-\udbff][\udc00-\udfff]|[\ud800-\udfff]/g
 
 const escaped: {[K in string]?: string} = {
   "\b": "\\b",
@@ -18,6 +18,8 @@ export default function quote(s: string): string {
     '"' +
     (rxEscapable.test(s)
       ? s.replace(rxEscapable, (a) => {
+          // A paired surrogate is already valid Unicode; escape only lone halves.
+          if (a.length === 2) return a
           const c = escaped[a]
           return typeof c === "string"
             ? c
