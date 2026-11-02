@@ -2,6 +2,9 @@ const rxEscapable =
   // eslint-disable-next-line no-control-regex, no-misleading-character-class
   /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g
 
+const rxLoneSurrogate = /[\ud800-\udbff](?![\udc00-\udfff])|(?:^|[^\ud800-\udbff])[\udc00-\udfff]/
+const rxSurrogate = /[\ud800-\udbff][\udc00-\udfff]|[\ud800-\udfff]/g
+
 const escaped: {[K in string]?: string} = {
   "\b": "\\b",
   "\t": "\\t",
@@ -14,7 +17,7 @@ const escaped: {[K in string]?: string} = {
 
 export default function quote(s: string): string {
   rxEscapable.lastIndex = 0
-  return (
+  const json =
     '"' +
     (rxEscapable.test(s)
       ? s.replace(rxEscapable, (a) => {
@@ -25,7 +28,12 @@ export default function quote(s: string): string {
         })
       : s) +
     '"'
-  )
+  // Avoid a replacement pass for strings containing only valid surrogate pairs.
+  return rxLoneSurrogate.test(s)
+    ? json.replace(rxSurrogate, (a) =>
+        a.length === 2 ? a : "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4)
+      )
+    : json
 }
 
 quote.code = 'require("ajv/dist/runtime/quote").default'
