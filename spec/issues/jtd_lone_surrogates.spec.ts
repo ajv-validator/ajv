@@ -17,4 +17,10 @@ describe("JTD serialization of lone UTF-16 surrogates", () => {
     const value = "hello \ud83d\ude00"
     assert.strictEqual(serialize(value), JSON.stringify(value))
   })
+
+  it("preserves existing escaping alongside lone surrogates", () => {
+    const json = serialize('"\ud800\u2028\udc00\\')
+    assert.strictEqual(json, '"\\"\\ud800\\u2028\\udc00\\\\"')
+    assert.strictEqual(JSON.parse(json), '"\ud800\u2028\udc00\\')
+  })
 })
