@@ -373,6 +373,29 @@ describe("compileAsync method", () => {
     })
   })
 
+  it("should support boolean schemas returned by loadSchema (#2689)", async () => {
+    const ajvBool = new _Ajv({
+      loadSchema: (uri: string) => {
+        if (uri === "http://example.com/true.json") return Promise.resolve(true)
+        if (uri === "http://example.com/false.json") return Promise.resolve(false)
+        return Promise.reject(new Error(`unknown uri: ${uri}`))
+      },
+    })
+
+    const schema = {
+      $id: "http://example.com/root.json",
+      type: "object",
+      properties: {
+        alwaysValid: {$ref: "http://example.com/true.json"},
+        alwaysInvalid: {$ref: "http://example.com/false.json"},
+      },
+    }
+
+    const validate = await ajvBool.compileAsync(schema)
+    validate({alwaysValid: "test"}).should.equal(true)
+    validate({alwaysValid: "test", alwaysInvalid: "test"}).should.equal(false)
+  })
+
   function loadSchema(uri: string): Promise<SchemaObject> {
     loadCallCount++
     return new Promise((resolve, reject) => {

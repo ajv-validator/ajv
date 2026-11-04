@@ -115,7 +115,7 @@ export interface CurrentOptions {
   keywords?: Vocabulary
   schemas?: AnySchema[] | {[Key in string]?: AnySchema}
   logger?: Logger | false
-  loadSchema?: (uri: string) => Promise<AnySchemaObject>
+  loadSchema?: (uri: string) => Promise<AnySchema>
   // options to modify validated data:
   removeAdditional?: boolean | "all" | "failing"
   useDefaults?: boolean | "empty"
@@ -284,7 +284,7 @@ export default class Ajv {
   readonly formats: {[Name in string]?: AddedFormat} = Object.create(null)
   readonly RULES: ValidationRules
   readonly _compilations: Set<SchemaEnv> = new Set()
-  private readonly _loading: {[Ref in string]?: Promise<AnySchemaObject>} = {}
+  private readonly _loading: {[Ref in string]?: Promise<AnySchema>} = {}
   private readonly _cache: Map<AnySchema, SchemaEnv> = new Map()
   private readonly _metaOpts: InstanceOptions
 
@@ -452,11 +452,13 @@ export default class Ajv {
 
     async function loadMissingSchema(this: Ajv, ref: string): Promise<void> {
       const _schema = await _loadSchema.call(this, ref)
-      if (!this.refs[ref]) await loadMetaSchema.call(this, _schema.$schema)
+      if (!this.refs[ref] && _schema && typeof _schema == "object") {
+        await loadMetaSchema.call(this, _schema.$schema)
+      }
       if (!this.refs[ref]) this.addSchema(_schema, ref, meta)
     }
 
-    async function _loadSchema(this: Ajv, ref: string): Promise<AnySchemaObject> {
+    async function _loadSchema(this: Ajv, ref: string): Promise<AnySchema> {
       const p = this._loading[ref]
       if (p) return p
       try {
