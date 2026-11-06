@@ -46,7 +46,7 @@ const def: CodeKeywordDefinition = {
     function loopN(i: Name, j: Name): void {
       const item = gen.name("item")
       const wrongType = checkDataTypes(itemTypes, item, it.opts.strictNumbers, DataType.Wrong)
-      const indices = gen.const("indices", _`{}`)
+      const indices = gen.const("indices", _`Object.create(null)`)
       gen.for(_`;${i}--;`, () => {
         gen.let(item, _`${data}[${i}]`)
         gen.if(wrongType, _`continue`)
