@@ -255,20 +255,23 @@ function resolve(
 export function resolveSchema(
   this: Ajv,
   root: SchemaEnv, // root object with properties schema, refs TODO below SchemaEnv is assigned to it
-  ref: string // reference to resolve
+  ref: string, // reference to resolve
+  followRef = true // whether a schema that is only a $ref resolves to its target, see getJsonPointer
 ): SchemaEnv | undefined {
   const p = this.opts.uriResolver.parse(ref)
   const refPath = _getFullPath(this.opts.uriResolver, p)
   let baseId = getFullPath(this.opts.uriResolver, root.baseId, undefined)
   // TODO `Object.keys(root.schema).length > 0` should not be needed - but removing breaks 2 tests
   if (Object.keys(root.schema).length > 0 && refPath === baseId) {
-    return getJsonPointer.call(this, p, root)
+    return getJsonPointer.call(this, p, root, followRef)
   }
 
   const id = normalizeId(refPath)
   const schOrRef = this.refs[id] || this.schemas[id]
   if (typeof schOrRef == "string") {
-    const sch = resolveSchema.call(this, root, schOrRef)
+    // `schOrRef` locates the embedded resource that `ref`'s fragment is resolved in: that resource
+    // itself, even when it is only a `$ref`, since its `$ref` may point back into it (#2699)
+    const sch = resolveSchema.call(this, root, schOrRef, false)
     if (typeof sch?.schema !== "object") return
     return getJsonPointer.call(this, p, sch)
   }
@@ -296,7 +299,8 @@ const PREVENT_SCOPE_CHANGE = new Set([
 function getJsonPointer(
   this: Ajv,
   parsedRef: URIComponent,
-  {baseId, schema, root}: SchemaEnv
+  {baseId, schema, root}: SchemaEnv,
+  followRef = true
 ): SchemaEnv | undefined {
   if (parsedRef.fragment?.[0] !== "/") return
   for (const part of parsedRef.fragment.slice(1).split("/")) {
@@ -311,7 +315,12 @@ function getJsonPointer(
     }
   }
   let env: SchemaEnv | undefined
-  if (typeof schema != "boolean" && schema.$ref && !schemaHasRulesButRef(schema, this.RULES)) {
+  if (
+    followRef &&
+    typeof schema != "boolean" &&
+    schema.$ref &&
+    !schemaHasRulesButRef(schema, this.RULES)
+  ) {
     const $ref = resolveUrl(this.opts.uriResolver, baseId, schema.$ref)
     env = resolveSchema.call(this, root, $ref)
   }
