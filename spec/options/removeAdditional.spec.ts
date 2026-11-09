@@ -132,7 +132,7 @@ describe("removeAdditional option", () => {
     object1.should.not.have.property("fizz")
   })
 
-  describe('patternProperties without properties', () => {
+  describe("patternProperties without properties", () => {
     // `properties` is what used to fire the synthetic additionalProperties
     // pass, so a schema constrained only by patternProperties kept every extra
     // key under removeAdditional:"all" even though ajv 6 removed them.
@@ -142,22 +142,25 @@ describe("removeAdditional option", () => {
       ajv = new _Ajv({removeAdditional: "all"})
     })
 
-    it('should remove additional properties when only patternProperties is present', () => {
+    it("should remove additional properties when only patternProperties is present", () => {
       const schema = {type: "object", patternProperties: {"^a": {type: "number"}}}
       const data: any = {a1: 1, b: 2}
       ajv.validate(schema, data).should.equal(true)
       data.should.eql({a1: 1})
     })
 
-    it('should agree with the same schema plus an empty properties', () => {
+    it("should agree with the same schema plus an empty properties", () => {
       const data1: any = {a1: 1, b: 2}
       const data2: any = {a1: 1, b: 2}
       ajv.validate({type: "object", patternProperties: {"^a": {type: "number"}}}, data1)
-      ajv.validate({type: "object", properties: {}, patternProperties: {"^a": {type: "number"}}}, data2)
+      ajv.validate(
+        {type: "object", properties: {}, patternProperties: {"^a": {type: "number"}}},
+        data2
+      )
       data1.should.eql(data2)
     })
 
-    it('should not remove additional properties for the other modes', () => {
+    it("should not remove additional properties for the other modes", () => {
       for (const mode of [true, "failing"] as const) {
         const local = new _Ajv({removeAdditional: mode})
         const data: any = {a1: 1, b: 2}
@@ -166,7 +169,7 @@ describe("removeAdditional option", () => {
       }
     })
 
-    it('should still apply all three keywords together', () => {
+    it("should still apply all three keywords together", () => {
       const schema = {
         type: "object",
         properties: {x: {type: "number"}},
