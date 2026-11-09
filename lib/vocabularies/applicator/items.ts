@@ -32,16 +32,17 @@ export function validateTuple(
   const len = gen.const("len", _`${data}.length`)
   schArr.forEach((sch: AnySchema, i: number) => {
     if (alwaysValidSchema(it, sch)) return
-    gen.if(_`${len} > ${i}`, () =>
-      cxt.subschema(
-        {
-          keyword,
-          schemaProp: i,
-          dataProp: i,
-        },
-        valid
-      )
+    gen.if(_`${len} > ${i}`)
+    cxt.subschema(
+      {
+        keyword,
+        schemaProp: i,
+        dataProp: i,
+      },
+      valid
     )
+    if (!it.allErrors) gen.else().var(valid, true)
+    gen.endIf()
     cxt.ok(valid)
   })
 
