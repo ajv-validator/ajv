@@ -104,7 +104,7 @@
     "ts-node": "^10.9.2",
     "tsify": "^5.0.4",
     "typescript": "5.3.3",
-    "uri-js": "^4.4.1"
+    "uri-js-replace": "^1.0.2"
   },
   "collective": {
     "type": "opencollective",
