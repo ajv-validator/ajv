@@ -1,10 +1,11 @@
 import type {CodeKeywordDefinition} from "../../types"
-import type {KeywordCxt} from "../../compile/validate"
+import {KeywordCxt} from "../../compile/validate"
 import {allSchemaProperties, usePattern} from "../code"
 import {_, not, Name} from "../../compile/codegen"
 import {alwaysValidSchema, checkStrictMode} from "../../compile/util"
 import {evaluatedPropsToName, Type} from "../../compile/util"
 import {AnySchema} from "../../types"
+import apDef from "./additionalProperties"
 
 const def: CodeKeywordDefinition = {
   keyword: "patternProperties",
@@ -13,6 +14,20 @@ const def: CodeKeywordDefinition = {
   code(cxt: KeywordCxt) {
     const {gen, schema, data, parentSchema, it} = cxt
     const {opts} = it
+    // `properties` fires the synthetic additionalProperties pass, and that
+    // pass already treats patternProperties correctly through its
+    // isAdditional test. When `properties` is absent nothing ran it at all, so
+    // a schema constrained only by patternProperties kept every extra key
+    // under removeAdditional:"all" even though ajv 6 (one rule covering all
+    // three keywords) removed them. Fire it here under the same guard, but
+    // only when `properties` is absent so the two keywords cannot both run it.
+    if (
+      opts.removeAdditional === "all" &&
+      parentSchema.additionalProperties === undefined &&
+      parentSchema.properties === undefined
+    ) {
+      apDef.code(new KeywordCxt(it, apDef, "additionalProperties"))
+    }
     const patterns = allSchemaProperties(schema)
     const alwaysValidPatterns = patterns.filter((p) =>
       alwaysValidSchema(it, schema[p] as AnySchema)
