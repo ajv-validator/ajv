@@ -88,7 +88,7 @@ ajv.addKeyword({
 })
 ```
 
-You can review pre-defined Ajv keywords in [validation](https://github.com/ajv-validator/ajv/blob/master/lib/validation) folder for more advanced examples - it is much easier to define code generation keywords than it was in the previous version of Ajv.
+You can review pre-defined Ajv keywords in [validation](https://github.com/ajv-validator/ajv/blob/master/lib/vocabularies/validation) folder for more advanced examples - it is much easier to define code generation keywords than it was in the previous version of Ajv.
 
 See [KeywordCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/validate/index.ts) and [SchemaCxt](https://github.com/ajv-validator/ajv/blob/master/lib/compile/index.ts) type definitions for more information about properties you can use in your keywords.
 
