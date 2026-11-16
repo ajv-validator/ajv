@@ -87,7 +87,7 @@ type IsElements<T> = false extends IsUnion<T>
     : false
   : false
 
-/** true if the the type is a values type */
+/** true if the type is a values type */
 type IsValues<T> = false extends IsUnion<T> ? TypeEquality<keyof T, string> : false
 
 /** true if type is a properties type and Union is false, or type is a discriminator type and Union is true */
