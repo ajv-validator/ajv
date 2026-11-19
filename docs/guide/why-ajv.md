@@ -20,8 +20,7 @@ Currently Ajv is the fastest and the most standard compliant validator according
 
 - [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark) - 50% faster than the second place
 - [jsck benchmark](https://github.com/pandastrike/jsck#benchmarks) - 20-190% faster
-- [z-schema benchmark](https://rawgit.com/zaggino/z-schema/master/benchmark/results.html)
-- [themis benchmark](https://cdn.rawgit.com/playlyfe/themis/master/benchmark/results.html)
+- [themis benchmark](https://github.com/playlyfe/themis/blob/master/benchmark/results.html)
 
 Ajv was designed at the time when there were no validators fully complying with JSON Schema specification, aiming to achieve the best possibly validation performance via just-in-time compilation of JSON schemas to code. Ajv achieved both speed and rigour, but initially security was an afterthought - many security flaws have been fixed thanks to the reports from its users.
 
