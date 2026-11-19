@@ -96,16 +96,13 @@ Currently Ajv is the fastest and the most standard compliant validator according
 
 - [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark) - 50% faster than the second place
 - [jsck benchmark](https://github.com/pandastrike/jsck#benchmarks) - 20-190% faster
-- [z-schema benchmark](https://rawgit.com/zaggino/z-schema/master/benchmark/results.html)
-- [themis benchmark](https://cdn.rawgit.com/playlyfe/themis/master/benchmark/results.html)
+- [themis benchmark](https://github.com/playlyfe/themis/blob/master/benchmark/results.html)
 
-Performance of different validators by [json-schema-benchmark](https://github.com/ebdrup/json-schema-benchmark):
-
-[![performance](https://chart.googleapis.com/chart?chxt=x,y&cht=bhs&chco=76A4FB&chls=2.0&chbh=62,4,1&chs=600x416&chxl=-1:|ajv|@exodus/schemasafe|is-my-json-valid|djv|@cfworker/json-schema|jsonschema/=t:100,69.2,51.5,13.1,5.1,1.2)](https://github.com/ebdrup/json-schema-benchmark/blob/master/README.md#performance)
+Performance of different validators is compared in the [json-schema-benchmark performance table](https://github.com/ebdrup/json-schema-benchmark/blob/master/README.md#performance).
 
 ## Features
 
-- Ajv implements JSON Schema [draft-06/07/2019-09/2020-12](http://json-schema.org/) standards (draft-04 is supported in v6):
+- Ajv implements JSON Schema [draft-06/07/2019-09/2020-12](https://json-schema.org/) standards (draft-04 is supported in v6):
   - all validation keywords (see [JSON Schema validation keywords](https://ajv.js.org/json-schema.html))
   - [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md) extensions:
     - NEW: keyword [discriminator](https://ajv.js.org/json-schema.html#discriminator).
