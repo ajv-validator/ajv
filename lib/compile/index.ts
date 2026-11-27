@@ -11,7 +11,15 @@ import type {InstanceOptions} from "../core"
 import {CodeGen, _, nil, stringify, Name, Code, ValueScopeName} from "./codegen"
 import ValidationError from "../runtime/validation_error"
 import N from "./names"
-import {LocalRefs, getFullPath, _getFullPath, inlineRef, normalizeId, resolveUrl} from "./resolve"
+import {
+  LocalRefs,
+  ResourceDynamicAnchors,
+  getFullPath,
+  _getFullPath,
+  inlineRef,
+  normalizeId,
+  resolveUrl,
+} from "./resolve"
 import {schemaHasRulesButRef, unescapeFragment} from "./util"
 import {validateFunctionCode} from "./validate"
 import {URIComponent} from "fast-uri"
@@ -68,6 +76,7 @@ interface SchemaEnvArgs {
   readonly baseId?: string
   readonly schemaPath?: string
   readonly localRefs?: LocalRefs
+  readonly resourceDynamicAnchors?: ResourceDynamicAnchors
   readonly meta?: boolean
 }
 
@@ -78,6 +87,7 @@ export class SchemaEnv implements SchemaEnvArgs {
   baseId: string // TODO possibly, it should be readonly
   schemaPath?: string
   localRefs?: LocalRefs
+  resourceDynamicAnchors?: ResourceDynamicAnchors
   readonly meta?: boolean
   readonly $async?: boolean // true if the current schema is asynchronous.
   readonly refs: SchemaRefs = {}
@@ -98,6 +108,7 @@ export class SchemaEnv implements SchemaEnvArgs {
     this.baseId = env.baseId ?? normalizeId(schema?.[env.schemaId || "$id"])
     this.schemaPath = env.schemaPath
     this.localRefs = env.localRefs
+    this.resourceDynamicAnchors = env.resourceDynamicAnchors
     this.meta = env.meta
     this.$async = schema?.$async
     this.refs = {}
@@ -216,7 +227,12 @@ export function resolveRef(
   if (_sch === undefined) {
     const schema = root.localRefs?.[ref] // TODO maybe localRefs should hold SchemaEnv
     const {schemaId} = this.opts
-    if (schema) _sch = new SchemaEnv({schema, schemaId, root, baseId})
+    if (schema) {
+      _sch =
+        schema === root.schema && normalizeId(baseId) === normalizeId(root.baseId)
+          ? root
+          : new SchemaEnv({schema, schemaId, root, baseId})
+    }
   }
 
   if (_sch === undefined) return
@@ -248,7 +264,16 @@ function resolve(
 ): SchemaEnv | undefined {
   let sch
   while (typeof (sch = this.refs[ref]) == "string") ref = sch
-  return sch || this.schemas[ref] || resolveSchema.call(this, root, ref)
+  if (sch) return sch
+  if (this.schemas[ref]) return this.schemas[ref]
+  if (
+    ref === root.baseId &&
+    typeof root.schema == "object" &&
+    Object.keys(root.schema).length > 0
+  ) {
+    return root
+  }
+  return resolveSchema.call(this, root, ref)
 }
 
 // Resolve schema, its root and baseId
@@ -280,7 +305,13 @@ export function resolveSchema(
     const {schemaId} = this.opts
     const schId = schema[schemaId]
     if (schId) baseId = resolveUrl(this.opts.uriResolver, baseId, schId)
-    return new SchemaEnv({schema, schemaId, root, baseId})
+    return new SchemaEnv({
+      schema,
+      schemaId,
+      root,
+      baseId,
+      resourceDynamicAnchors: schOrRef.root.resourceDynamicAnchors,
+    })
   }
   return getJsonPointer.call(this, p, schOrRef)
 }
@@ -311,7 +342,15 @@ function getJsonPointer(
     }
   }
   let env: SchemaEnv | undefined
-  if (typeof schema != "boolean" && schema.$ref && !schemaHasRulesButRef(schema, this.RULES)) {
+  if (
+    typeof schema != "boolean" &&
+    schema.$ref &&
+    !schemaHasRulesButRef(schema, this.RULES) &&
+    !(
+      this.opts.dynamicRef &&
+      (schema.$anchor !== undefined || hasResourceDynamicAnchors(root, baseId))
+    )
+  ) {
     const $ref = resolveUrl(this.opts.uriResolver, baseId, schema.$ref)
     env = resolveSchema.call(this, root, $ref)
   }
@@ -321,4 +360,9 @@ function getJsonPointer(
   env = env || new SchemaEnv({schema, schemaId, root, baseId})
   if (env.schema !== env.root.schema) return env
   return undefined
+}
+
+function hasResourceDynamicAnchors(root: SchemaEnv, baseId: string): boolean {
+  const anchors = root.resourceDynamicAnchors?.[normalizeId(baseId)]
+  return anchors !== undefined && Object.keys(anchors).length > 0
 }

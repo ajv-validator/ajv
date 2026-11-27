@@ -18,6 +18,10 @@ import {_, nil, str, or, not, getProperty, Block, Code, Name, CodeGen} from "../
 import N from "../names"
 import {resolveUrl} from "../resolve"
 import {
+  bindResourceDynamicAnchors,
+  hasResourceDynamicAnchors,
+} from "../../vocabularies/dynamic/dynamicAnchor"
+import {
   schemaRefOrVal,
   schemaHasRulesButRef,
   checkUnknownRules,
@@ -66,7 +70,7 @@ function validateFunction(
 function destructureValCxt(opts: InstanceOptions): Code {
   return _`{${N.instancePath}="", ${N.parentData}, ${N.parentDataProperty}, ${N.rootData}=${
     N.data
-  }${opts.dynamicRef ? _`, ${N.dynamicAnchors}={}` : nil}}={}`
+  }${opts.dynamicRef ? _`, ${N.dynamicAnchors}=Object.create(null)` : nil}}={}`
 }
 
 function destructureValCxtES5(gen: CodeGen, opts: InstanceOptions): void {
@@ -77,14 +81,16 @@ function destructureValCxtES5(gen: CodeGen, opts: InstanceOptions): void {
       gen.var(N.parentData, _`${N.valCxt}.${N.parentData}`)
       gen.var(N.parentDataProperty, _`${N.valCxt}.${N.parentDataProperty}`)
       gen.var(N.rootData, _`${N.valCxt}.${N.rootData}`)
-      if (opts.dynamicRef) gen.var(N.dynamicAnchors, _`${N.valCxt}.${N.dynamicAnchors}`)
+      if (opts.dynamicRef) {
+        gen.var(N.dynamicAnchors, _`${N.valCxt}.${N.dynamicAnchors} || Object.create(null)`)
+      }
     },
     () => {
       gen.var(N.instancePath, _`""`)
       gen.var(N.parentData, _`undefined`)
       gen.var(N.parentDataProperty, _`undefined`)
       gen.var(N.rootData, N.data)
-      if (opts.dynamicRef) gen.var(N.dynamicAnchors, _`{}`)
+      if (opts.dynamicRef) gen.var(N.dynamicAnchors, _`Object.create(null)`)
     }
   )
 }
@@ -97,6 +103,7 @@ function topSchemaObjCode(it: SchemaObjCxt): void {
     gen.let(N.vErrors, null)
     gen.let(N.errors, 0)
     if (opts.unevaluated) resetEvaluated(it)
+    if (opts.dynamicRef) bindResourceDynamicAnchors(it)
     typeAndKeywords(it)
     returnResults(it)
   })
@@ -141,10 +148,17 @@ function isSchemaObj(it: SchemaCxt): it is SchemaObjCxt {
 function subSchemaObjCode(it: SchemaObjCxt, valid: Name): void {
   const {schema, gen, opts} = it
   if (opts.$comment && schema.$comment) commentKeyword(it)
+  const prevBaseId = it.baseId
   updateContext(it)
   checkAsyncSchema(it)
   const errsCount = gen.const("_errs", N.errors)
+  let prevDynamicAnchors: Name | undefined
+  if (opts.dynamicRef && it.baseId !== prevBaseId && hasResourceDynamicAnchors(it)) {
+    prevDynamicAnchors = gen.const("_da", N.dynamicAnchors)
+    bindResourceDynamicAnchors(it)
+  }
   typeAndKeywords(it, errsCount)
+  if (prevDynamicAnchors) gen.assign(N.dynamicAnchors, prevDynamicAnchors)
   // TODO var
   gen.var(valid, _`${errsCount} === ${N.errors}`)
 }

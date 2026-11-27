@@ -58,7 +58,7 @@ import MissingRefError from "./compile/ref_error"
 import {getRules, ValidationRules, Rule, RuleGroup, JSONType} from "./compile/rules"
 import {SchemaEnv, compileSchema, resolveSchema} from "./compile"
 import {Code, ValueScope} from "./compile/codegen"
-import {normalizeId, getSchemaRefs} from "./compile/resolve"
+import {normalizeId, getSchemaRefs, ResourceDynamicAnchors} from "./compile/resolve"
 import {getJSONTypes} from "./compile/validate/dataType"
 import {eachItem} from "./compile/util"
 import * as $dataRefSchema from "./refs/data.json"
@@ -715,8 +715,11 @@ export default class Ajv {
     if (sch !== undefined) return sch
 
     baseId = normalizeId(id || baseId)
-    const localRefs = getSchemaRefs.call(this, schema, baseId)
-    sch = new SchemaEnv({schema, schemaId, meta, baseId, localRefs})
+    const resourceDynamicAnchors: ResourceDynamicAnchors | undefined = this.opts.dynamicRef
+      ? {}
+      : undefined
+    const localRefs = getSchemaRefs.call(this, schema, baseId, resourceDynamicAnchors)
+    sch = new SchemaEnv({schema, schemaId, meta, baseId, localRefs, resourceDynamicAnchors})
     this._cache.set(sch.schema, sch)
     if (addSchema && !baseId.startsWith("#")) {
       // TODO atm it is allowed to overwrite schemas without id (instead of not adding them)
